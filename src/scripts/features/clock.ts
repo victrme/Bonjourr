@@ -1,5 +1,6 @@
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
+import { eventDebounce } from '../utils/debounce'
 import { SYNC_DEFAULT } from '../defaults'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
@@ -14,12 +15,20 @@ type ClockUpdate = {
 	shape?: string
 	face?: string
 	hands?: string
-	border?: string
-	background?: string
 	size?: number
+	border?: { opacity?: number; shade?: 'light' | 'dark' }
+	background?: { opacity?: number; shade?: 'light' | 'dark' }
 }
 
 type DateFormat = Sync.Storage['dateformat']
+
+const defaultAnalogStyle: Sync.AnalogStyle = {
+	face: 'none',
+	hands: 'modern',
+	shape: 'round',
+	border: { alpha: 0.1, rgb: '255, 255, 255' },
+	background: { alpha: 0.1, rgb: '255, 255, 255' },
+}
 
 const oneInFive = Math.random() > 0.8 ? 1 : 0
 let numberWidths = [1]
@@ -31,17 +40,13 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		return
 	}
 
-	let clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
+	const clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
 
 	try {
 		startClock(clock, init?.greeting || '', init?.dateformat || 'eu')
 		clockDate(zonedDate(clock.timezone), init?.dateformat || 'eu')
 		greetings(zonedDate(clock.timezone), init?.greeting || '')
-		analogFace(clock.face)
-		analogHands(clock.hands)
-		analogBorder(clock.border)
-		analogShape(clock.shape)
-		analogBackground(clock.background)
+		analogStyle(init?.analogstyle)
 		clockSize(clock.size)
 		displayInterface('clock')
 	} catch (e) {
@@ -53,8 +58,9 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 //	Update
 //
 
-async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, shape, face, background, hands, border, size }: ClockUpdate) {
-	const data = await storage.sync.get(['clock', 'dateformat', 'greeting'])
+async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezone, size, ...update }: ClockUpdate) {
+	const data = await storage.sync.get(['clock', 'dateformat', 'greeting', 'analogstyle'])
+	const analogstyle = data.analogstyle ?? structuredClone(defaultAnalogStyle)
 	let clock = data?.clock
 
 	if (!clock || data.dateformat === undefined || data.greeting === undefined) {
@@ -88,54 +94,89 @@ async function clockUpdate({ ampm, analog, seconds, dateformat, greeting, timezo
 		analog: analog ?? clock.analog,
 		seconds: seconds ?? clock.seconds,
 		timezone: timezone ?? clock.timezone,
-		face: isFace(face) ? face : clock.face,
-		hands: isHands(hands) ? hands : clock.hands,
-		border: isBorder(border) ? border : clock.border,
-		background: isBackground(background) ? background : clock.background,
-		shape: isShape(shape) ? shape : clock.shape,
 	}
 
+	// const option = update.background ? 'background' : 'border'
+
+	if (update.background?.opacity !== undefined) {
+		analogstyle.background.alpha = update.background?.opacity
+		eventDebounce({ analogstyle })
+		analogStyle(analogstyle)
+		return
+	}
+
+	if (update.border?.opacity !== undefined) {
+		analogstyle.border.alpha = update.border?.opacity
+		eventDebounce({ analogstyle })
+		analogStyle(analogstyle)
+		return
+	}
+
+	if (update.background?.shade) {
+		const rgb = update.background?.shade === 'light' ? '0, 0, 0' : '255, 255, 255'
+		toggleShadeButtons('background')
+		analogstyle.background.rgb = rgb
+		storage.sync.set({ analogstyle })
+		analogStyle(analogstyle)
+		return
+	}
+
+	if (update.border?.shade) {
+		const rgb = update.border?.shade === 'light' ? '0, 0, 0' : '255, 255, 255'
+		toggleShadeButtons('border')
+		analogstyle.border.rgb = rgb
+		storage.sync.set({ analogstyle })
+		analogStyle(analogstyle)
+		return
+	}
+
+	if (isHands(update.hands)) analogstyle.hands = update.hands
+	if (isShape(update.shape)) analogstyle.shape = update.shape
+	if (isFace(update.face)) analogstyle.face = update.face
+
 	storage.sync.set({ clock })
+	storage.sync.set({ analogstyle })
 	startClock(clock, data.greeting, data.dateformat)
-	analogFace(clock.face)
-	analogHands(clock.hands)
-	analogBorder(clock.border)
-	analogBackground(clock.background)
-	analogShape(clock.shape)
+	analogStyle(analogstyle)
 	clockSize(clock.size)
 }
 
-function analogFace(face = 'none') {
+function analogStyle(style?: Sync.AnalogStyle) {
+	style = style ?? structuredClone(defaultAnalogStyle)
+	const { face, shape, hands } = style
+
+	const analog = document.getElementById('analog') as HTMLElement
 	const spans = document.querySelectorAll<HTMLSpanElement>('#analog span')
 
+	const isWhiteOpaque = style.background?.rgb?.includes('255, 255, 255') && (style?.background?.alpha ?? 10) > 0.5
+	const isTransparent = style.background?.alpha === 0
+
 	spans.forEach((span, i) => {
-		if (face === 'none' || face === 'swiss' || face === 'braun') span.textContent = ['', '', '', ''][i]
 		if (face === 'number') span.textContent = ['12', '3', '6', '9'][i]
-		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
-		if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
+		else if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
+		else if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
+		else span.textContent = ['', '', '', ''][i]
 	})
 
-	document.getElementById('analog')?.setAttribute('data-clock-face', (face === 'swiss' || face === 'braun') ? face : '')
-}
+	analog.dataset.face = face === 'swiss' || face === 'braun' ? face : ''
+	analog.dataset.shape = shape || ''
+	analog.dataset.hands = hands || ''
 
-function analogShape(shape?: string) {
-	document.getElementById('analog')?.setAttribute('data-clock-shape', shape || '')
-}
+	analog.classList.toggle('transparent', isTransparent)
+	analog.classList.toggle('white-opaque', isWhiteOpaque)
 
-function analogBackground(background?: string) {
-	document.getElementById('analog')?.setAttribute('data-clock-background', background || '')
-}
-
-function analogHands(hands?: string) {
-	document.getElementById('analog')?.setAttribute('data-clock-hands', hands || '')
-}
-
-function analogBorder(border?: string) {
-	document.getElementById('analog')?.setAttribute('data-clock-border', border || '')
+	analog.style.setProperty('--analog-border', `rgba(${style.border.rgb}, ${style.border.alpha})`)
+	analog.style.setProperty('--analog-background', `rgba(${style.background.rgb}, ${style.background.alpha})`)
 }
 
 function clockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
+}
+
+function toggleShadeButtons(option: 'background' | 'border') {
+	const button = document.querySelector<HTMLButtonElement>(`#i_clock${option}-shade`)
+	button?.classList.toggle('shade-light')
+	button?.classList.toggle('shade-dark')
 }
 
 //
@@ -337,29 +378,41 @@ function zonedDate(timezone: string = 'auto') {
 	return date
 }
 
+function createHexColorFromSettings(option: 'background' | 'border'): string {
+	const domopacity = document.querySelector<HTMLInputElement>(`#i_clock${option}-opacity`)
+	const domshade = document.querySelector<HTMLButtonElement>(`#i_clock${option}-shade`)
+
+	const opacity = parseInt(domopacity?.value ?? '0')
+	const shade = domshade?.classList.contains('shade-light') ? 'light' : 'dark'
+	const color = shade === 'dark' ? '#000' : '#fff'
+	const alpha = opacity.toString(16)
+
+	return color + alpha
+}
+
 function fixunits(val: number) {
 	return (val < 10 ? '0' : '') + val.toString()
 }
 
-function isFace(str = ''): str is Sync.Clock['face'] {
-	return ['none', 'number', 'roman', 'marks', 'swiss', 'braun'].includes(str)
+function isFace(str?: string): str is Sync.AnalogStyle['face'] {
+	return ['none', 'number', 'roman', 'marks', 'swiss', 'braun'].includes(str ?? '')
 }
 
-function isHands(str = ''): str is Sync.Clock['hands'] {
-	return ['modern', 'swiss-hands', 'classic', 'braun', 'apple'].includes(str)
+function isHands(str?: string): str is Sync.AnalogStyle['hands'] {
+	return ['modern', 'swiss-hands', 'classic', 'braun', 'apple'].includes(str ?? '')
 }
 
-function isBorder(str = ''): str is Sync.Clock['border'] {
-	return ['white', 'black', 'none'].includes(str)
+function isShape(str?: string): str is Sync.AnalogStyle['shape'] {
+	return ['round', 'square', 'rectangle'].includes(str ?? '')
 }
 
-function isShape(str = ''): str is Sync.Clock['shape'] {
-	return ['round', 'square', 'rectangle'].includes(str)
-}
+// function isBorder(str = ''): str is Sync.Clock['border'] {
+// 	return ['white', 'black', 'none'].includes(str)
+// }
 
-function isBackground(str = ''): str is Sync.Clock['background'] {
-	return ['light', 'dark', 'white', 'black', 'none'].includes(str)
-}
+// function isBackground(str = ''): str is Sync.Clock['background'] {
+// 	return ['light', 'dark', 'white', 'black', 'none'].includes(str)
+// }
 
 function isDateFormat(str = ''): str is DateFormat {
 	return ['eu', 'us', 'cn'].includes(str)

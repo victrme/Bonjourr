@@ -32,6 +32,7 @@ declare namespace Sync {
 		background_type: 'local' | 'unsplash'
 		dateformat: 'eu' | 'us' | 'cn'
 		clock: Clock
+		analogstyle?: AnalogStyle
 		unsplash: Unsplash.Sync
 		weather: Weather.Sync
 		searchbar: Searchbar
@@ -77,12 +78,15 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
-		shape: 'round' | 'square' | 'rectangle'
-		background: 'light' | 'dark' | 'white' | 'black' | 'none'
-		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
-		border: 'white' | 'black' | 'none'
-		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun' | 'apple'
 		style?: 'round' | 'square' | 'transparent' // legacy value
+	}
+
+	type AnalogStyle = {
+		border: { rgb: string; alpha: number }
+		background: { rgb: string; alpha: number }
+		shape: 'round' | 'square' | 'rectangle'
+		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
+		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun' | 'apple'
 	}
 
 	type Searchbar = {

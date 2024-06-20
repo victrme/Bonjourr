@@ -123,11 +123,11 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
 	setInput('i_qttype', data.quotes?.type || 'classic')
 	setInput('i_qtlist', userQuotes ?? '')
-	setInput('i_clockface', data.clock?.face || 'none')
-	setInput('i_clockhands', data.clock?.hands || 'none')
-	setInput('i_clockborder', data.clock?.border || 'white')
-	setInput('i_clockbackground', data.clock?.background || 'light')
-	setInput('i_clockshape', data.clock?.shape || 'round')
+	setInput('i_clockface', data.analogstyle?.face || 'none')
+	setInput('i_clockhands', data.analogstyle?.hands || 'none')
+	setInput('i_clockshape', data.analogstyle?.shape || 'round')
+	setInput('i_clockborder-opacity', data.analogstyle?.border?.alpha ?? 0.1)
+	setInput('i_clockbackground-opacity', data.analogstyle?.background?.alpha ?? 0.1)
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_collection', data.unsplash?.collection ?? '')
@@ -202,7 +202,6 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// Link show title
 	paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
-
 	paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
 
 	// Time & main hide elems
@@ -213,6 +212,12 @@ function initOptionsValues(data: Sync.Storage) {
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
 	})()
+
+	// Analog shade buttons
+	paramId('i_clockbackground-shade').classList.toggle('shade-light', data?.analogstyle?.background?.rgb !== '0, 0, 0')
+	paramId('i_clockbackground-shade').classList.toggle('shade-dark', data?.analogstyle?.background?.rgb === '0, 0, 0')
+	paramId('i_clockborder-shade').classList.toggle('shade-light', data?.analogstyle?.border?.rgb !== '0, 0, 0')
+	paramId('i_clockborder-shade').classList.toggle('shade-dark', data?.analogstyle?.border?.rgb === '0, 0, 0')
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
@@ -383,12 +388,20 @@ function initOptionsEvents() {
 		clock(undefined, { hands: this.value })
 	})
 
-	paramId('i_clockborder').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { border: this.value })
+	paramId('i_clockborder-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { border: { opacity: parseFloat(this.value) } })
 	})
 
-	paramId('i_clockbackground').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { background: this.value })
+	paramId('i_clockbackground-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { background: { opacity: parseFloat(this.value) } })
+	})
+
+	paramId('i_clockborder-shade').addEventListener('click', function (this: HTMLInputElement) {
+		clock(undefined, { border: { shade: this.classList.contains('shade-light') ? 'light' : 'dark' } })
+	})
+
+	paramId('i_clockbackground-shade').addEventListener('click', function (this: HTMLInputElement) {
+		clock(undefined, { background: { shade: this.classList.contains('shade-light') ? 'light' : 'dark' } })
 	})
 
 	paramId('i_clockshape').addEventListener('change', function (this: HTMLInputElement) {

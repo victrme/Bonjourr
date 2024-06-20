@@ -595,6 +595,22 @@ aside .settings-title .tooltip {
 	column-gap: 4px;
 }
 
+.split-range {
+	height: 31px;
+	align-items: center;
+}
+
+.split-inputs input {
+	width: 100%;
+}
+
+.split-range button {
+	height: 31px;
+	width: 40px;
+	font-size: 20px;
+	background-color: transparent;
+}
+
 .freq_wrap select {
 	width: 100%;
 }
@@ -768,6 +784,16 @@ aside .settings-title .tooltip {
 #clockoptions.analog #w_ampm {
 	max-height: 0;
 	opacity: 0;
+}
+
+.shade-dark span,
+.shade-light span {
+	display: none;
+}
+
+.shade-dark span[data-shade='dark'],
+.shade-light span[data-shade='light'] {
+	display: initial;
 }
 
 #f_location {

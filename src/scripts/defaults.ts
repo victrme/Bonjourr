@@ -113,11 +113,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		ampm: false,
 		analog: false,
 		seconds: false,
-		background: 'light',
-		hands: 'modern',
-		face: 'none',
-		border: 'white',
-		shape: 'round',
 		timezone: 'auto',
 	},
 	unsplash: {

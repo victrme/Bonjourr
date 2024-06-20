@@ -350,7 +350,7 @@
 
 				<hr />
 
-				<div id="w_clockface" class="wrapper">
+				<div class="wrapper">
 					<label for="i_clockface" class="trn">Clock face</label>
 					<select id="i_clockface" class="">
 						<option value="none" class="trn">None</option>
@@ -364,7 +364,7 @@
 
 				<hr />
 
-				<div id="w_clockhands" class="wrapper">
+				<div class="wrapper">
 					<label for="i_clockhands" class="trn">Clock hands</label>
 					<select id="i_clockhands" class="">
 						<option value="modern" class="trn">Modern</option>
@@ -377,26 +377,60 @@
 
 				<hr />
 
-				<div id="w_clockbackground" class="wrapper">
-					<label for="i_clockbackground" class="trn">Clock background</label>
-					<select id="i_clockbackground" class="">
-						<option value="light" class="trn">Light</option>
-						<option value="dark" class="trn">Dark</option>
-						<option value="white" class="trn">White</option>
-						<option value="black" class="trn">Black</option>
-						<option value="none" class="trn">None</option>
-					</select>
+				<div class="wrapper">
+					<label for="i_clockbackground-opacity" class="trn">Clock background</label>
+
+					<div class="split-inputs split-range">
+						<input
+							id="i_clockbackground-opacity"
+							name="i_clockbackground-opacity"
+							type="range"
+							min="0"
+							max="1"
+							step=".05"
+							value=".1"
+							class="range"
+						/>
+
+						<button
+							id="i_clockbackground-shade"
+							class="input-btn shade-light"
+							aria-label="Clock background shade"
+							title="Clock background shade"
+						>
+							<span data-shade="light">☀</span>
+							<span data-shade="dark">☾</span>
+						</button>
+					</div>
 				</div>
 
 				<hr />
-				
-				<div id="w_clockborder" class="wrapper">
-					<label for="i_clockborder" class="trn">Clock border</label>
-					<select id="i_clockborder" class="">
-						<option value="white" class="trn">White</option>
-						<option value="black" class="trn">Black</option>
-						<option value="none" class="trn">None</option>
-					</select>
+
+				<div class="wrapper">
+					<label for="i_clockborder-opacity" class="trn">Clock border</label>
+
+					<div class="split-inputs split-range">
+						<input
+							id="i_clockborder-opacity"
+							name="i_clockborder-opacity"
+							type="range"
+							min="0"
+							max="1"
+							step=".05"
+							value=".1"
+							class="range"
+						/>
+
+						<button
+							id="i_clockborder-shade"
+							class="input-btn shade-light"
+							aria-label="Clock border shade"
+							title="Clock border shade"
+						>
+							<span data-shade="light">☀</span>
+							<span data-shade="dark">☾</span>
+						</button>
+					</div>
 				</div>
 			</div>
 
