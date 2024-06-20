@@ -88,7 +88,8 @@
 	pointer-events: all;
 }
 
-#credit-container.shown:hover .exif {
+#credit-container.shown:hover .exif,
+#credit-container.shown:hover .save {
 	opacity: 1;
 }
 
@@ -96,21 +97,44 @@
 	text-align: left;
 	font-size: 13px;
 	line-height: 18px;
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--credits-text-color);
 }
 
 #credit a {
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--credits-text-color);
 	text-decoration: none;
 }
 
 #credit a:hover {
-	color: rgba(255, 255, 255, 0.9333333333);
+	color: var(--credits-hover-color);
 }
 
-.exif {
+.exif,
+.save {
 	opacity: 0;
 	transition: opacity 0.4s;
+}
+
+.save {
+	--icon: url('../assets/interface/download.svg');
+
+	display: inline-block;
+	cursor: pointer;
+	margin-left: 6px;
+	width: 16px;
+	height: 15px;
+	background-color: var(--credits-text-color);
+	-webkit-mask-image: var(--icon);
+	mask-image: var(--icon);
+}
+
+.save:hover {
+	background-color: var(--credits-hover-color);
+}
+
+.save.loading {
+	pointer-events: none;
+	--icon: url('../assets/interface/loading.svg');
 }
 
 /* Show Settings */
