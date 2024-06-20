@@ -26,8 +26,8 @@ const defaultAnalogStyle: Sync.AnalogStyle = {
 	face: 'none',
 	hands: 'modern',
 	shape: 'round',
-	border: { alpha: 0.1, rgb: '255, 255, 255' },
-	background: { alpha: 0.1, rgb: '255, 255, 255' },
+	border: { alpha: 1, rgb: '255, 255, 255' },
+	background: { alpha: 0.2, rgb: '255, 255, 255' },
 }
 
 const oneInFive = Math.random() > 0.8 ? 1 : 0
@@ -151,11 +151,19 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	const isWhiteOpaque = style.background?.rgb?.includes('255, 255, 255') && (style?.background?.alpha ?? 10) > 0.5
 	const isTransparent = style.background?.alpha === 0
 
+	let faceNumbers = ['12', '3', '6', '9']
+	const lang = getLang()
+
+	if (lang === 'am') faceNumbers = ['Գ', 'Զ', 'Թ', 'ԺԲ']
+	else if (lang === 'ar') faceNumbers = ['٣', '٦', '٩', '١٢']
+	else if (lang === 'fa') faceNumbers = ['۳', '۶', '۹', '۱۲']
+	else if (lang.match(/zh_CN|zh_HK|jp/)) faceNumbers = ['三', '六', '九', '十二']
+
 	spans.forEach((span, i) => {
-		if (face === 'number') span.textContent = ['12', '3', '6', '9'][i]
-		else if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
+		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
 		else if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
-		else span.textContent = ['', '', '', ''][i]
+		else if (face === 'number') span.textContent = faceNumbers[i]
+		else span.textContent = ''
 	})
 
 	analog.dataset.face = face === 'swiss' || face === 'braun' ? face : ''
