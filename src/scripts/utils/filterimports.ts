@@ -132,7 +132,7 @@ function quotesJsonToCSV(data: Import): Import {
 
 function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage {
 	if (current?.linkgroups?.groups && imported?.linkgroups?.groups) {
-		current.linkgroups.groups = []
+		current.linkgroups.groups = ['']
 		current.linkgroups.pinned = []
 		current.linkgroups.synced = []
 	}

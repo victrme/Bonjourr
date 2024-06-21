@@ -142,6 +142,20 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
+export function addEventListenerFastClick<T extends Element>(element: T | null, callback: (e: Event) => void) {
+	let isPointerDown = false
+
+	element?.addEventListener('pointerdown', function (event) {
+		isPointerDown = true
+		callback(event)
+	})
+
+	element?.addEventListener('click', function (event) {
+		if (isPointerDown === false) callback(event)
+		isPointerDown = false
+	})
+}
+
 export function isEvery(freq = ''): freq is Frequency {
 	const every: Frequency[] = ['tabs', 'hour', 'day', 'period', 'pause']
 	return every.includes(freq as Frequency)
@@ -178,4 +192,8 @@ export function rgbToHex(r: number, g: number, b: number): string {
 function componentToHex(c: number): string {
 	let hex = c.toString(16)
 	return hex.length == 1 ? '0' + hex : hex
+}
+
+export function equalsCaseInsensitive(a: string, b: string) {
+	return a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
 }

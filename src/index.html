@@ -162,32 +162,37 @@
 		<main id="interface">
 			<div id="time">
 				<div id="time-container" data-hide="clock">
-					<h1 id="digital">
-						<span id="digital-hh-leading-zero">0</span><span id="digital-hh"></span
-						><span id="digital-hh-separator">:</span><span id="digital-mm"></span
-						><span id="digital-mm-separator">:</span><span id="digital-ss"></span><span id="digital-am-pm"></span
-						><span id="digital-number-width">0</span>
-					</h1>
+					<div id="clock-wrapper" class="clock-wrapper" data-index="0">
+						<h1 class="digital" data-hide="clock">
+							<span class="digital-hh-leading-zero">0</span><span class="digital-hh"></span
+							><span class="digital-hh-separator">:</span><span class="digital-mm"></span
+							><span class="digital-mm-separator">:</span><span class="digital-ss"></span
+							><span class="digital-am-pm"></span><span class="digital-number-width">0</span>
+						</h1>
 
-					<div id="analog">
-						<div id="analog-face">
-							<span>12</span>
-							<span>3</span>
-							<span>6</span>
-							<span>9</span>
+						<div class="analog" data-hide="clock">
+							<div class="analog-face">
+								<span>12</span>
+								<span>3</span>
+								<span>6</span>
+								<span>9</span>
+							</div>
+
+							<div class="analog-center"></div>
+							<span class="analog-hours"></span>
+							<span class="analog-minutes"></span>
+							<span class="analog-seconds"></span>
 						</div>
 
-						<div id="analog-center"></div>
-						<span id="analog-hours"></span>
-						<span id="analog-minutes"></span>
-						<span id="analog-seconds"></span>
+						<p class="clock-region">Paris</p>
+
+						<p class="clock-date" data-hide="date">
+							<span class="clock-date-aa"></span><span class="clock-date-aa-separator"></span
+							><span class="clock-date-bb"></span><span class="clock-date-bb-separator"></span
+							><span class="clock-date-cc"></span>
+						</p>
 					</div>
 				</div>
-
-				<p id="date" data-hide="date">
-					<span id="date-aa"></span><span id="date-aa-separator"></span><span id="date-bb"></span
-					><span id="date-bb-separator"></span><span id="date-cc"></span>
-				</p>
 			</div>
 
 			<div id="main" class="hidden">
@@ -270,9 +275,12 @@
 				<dialog id="bookmarks">
 					<div id="bookmarks-header">
 						<div id="bookmarks-intro">
-							Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group.
-							"Syncing" a folder ties its changes to your browser bookmarks. Learn more on
-							<a target="_blank" href="https://bonjourr.fr/docs/overview">our documentation</a>.
+							<span class="trn">
+								Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group.
+								"Syncing" a folder ties its changes to your browser bookmarks. Learn more on
+							</span>
+
+							<a class="trn" target="_blank" href="https://bonjourr.fr/docs/overview">our documentation</a>.
 						</div>
 
 						<div id="bookmarks-buttons">
@@ -318,7 +326,7 @@
 			</template>
 
 			<template id="link-elem-template">
-				<li class="link">
+				<li class="link link-elem">
 					<a rel="noreferrer noopener" draggable="false">
 						<div>
 							<img alt="" draggable="false" />
@@ -329,7 +337,7 @@
 			</template>
 
 			<template id="link-folder-template">
-				<li class="link folder" tabindex="0">
+				<li class="link link-folder" tabindex="0">
 					<div>
 						<img alt="" draggable="false" />
 						<img alt="" draggable="false" />

@@ -13,7 +13,7 @@ queueMicrotask(() => {
 export async function folderClick(event: MouseEvent) {
 	const li = getLiFromEvent(event)
 	const rightClick = event.button === 2
-	const inFolder = li?.classList.contains('folder')
+	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
 	if (!li || !inFolder || rightClick || isSelectAll) {
@@ -51,17 +51,10 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	async function changeToFolder() {
-		const sibling = linkgroup.nextElementSibling
-		const isLastGroup = sibling?.classList.contains('-group') === false
-
 		await initblocks(data)
 
 		if (linktitle) {
 			linktitle.textContent = folder?.title || tradThis('Folder')
-		}
-
-		if (isLastGroup) {
-			domlinkblocks.classList.remove('with-groups')
 		}
 	}
 

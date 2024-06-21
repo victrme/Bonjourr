@@ -1,4 +1,4 @@
-import { bundleLinks, getHTMLTemplate, randomString } from '../../utils'
+import { addEventListenerFastClick, bundleLinks, getHTMLTemplate, randomString } from '../../utils'
 import quickLinks, { validateLink } from '.'
 import { MAIN_API, PLATFORM } from '../../defaults'
 import { tradThis } from '../../utils/translations'
@@ -77,9 +77,9 @@ async function createBookmarksDialog() {
 		const closebutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_close')
 		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
-		applybutton?.addEventListener('click', () => importSelectedBookmarks(bookmarkFolders))
-		closebutton?.addEventListener('click', closeDialog)
-		bookmarksdom.addEventListener('click', closeDialog)
+		addEventListenerFastClick(applybutton, () => importSelectedBookmarks(bookmarkFolders))
+		addEventListenerFastClick(closebutton, closeDialog)
+		addEventListenerFastClick(bookmarksdom, closeDialog)
 
 		document.body.appendChild(bookmarksdom)
 	}
@@ -96,8 +96,8 @@ async function createBookmarksDialog() {
 		}
 
 		h2.textContent = list.title
-		selectButton?.addEventListener('click', () => toggleFolderSelect(folder))
-		syncButton?.addEventListener('click', () => toggleFolderSync(folder))
+		addEventListenerFastClick(selectButton, () => toggleFolderSelect(folder))
+		addEventListenerFastClick(syncButton, () => toggleFolderSync(folder))
 		folder.classList.toggle('used', list.used)
 		folder.dataset.title = list.title
 		container?.appendChild(folder)
@@ -130,8 +130,9 @@ async function createBookmarksDialog() {
 				.replace('www.', '')
 				.slice(0, -1)
 				.replace('/', '')
-			li_button.addEventListener('click', () => li.classList.toggle('selected'))
-			li_button.addEventListener('click', handleApplyButtonText)
+
+			addEventListenerFastClick(li_button, () => li.classList.toggle('selected'))
+			addEventListenerFastClick(li_button, handleApplyButtonText)
 
 			if (bookmark.used) {
 				li_button.setAttribute('disabled', '')
@@ -259,7 +260,7 @@ function toggleFolderSync(folder: HTMLElement) {
 		syncButton.textContent = tradThis('Sync with browser')
 		folder.classList.remove('synced')
 	} else {
-		syncButton.textContent = tradThis('Go back to regular links')
+		syncButton.textContent = tradThis('Back to regular links')
 		folder.classList.add('synced')
 	}
 }

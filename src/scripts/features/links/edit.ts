@@ -42,6 +42,7 @@ let editStates: EditStates
 export default async function openEditDialog(event: Event) {
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
+	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
 
@@ -56,8 +57,8 @@ export default async function openEditDialog(event: Event) {
 	}
 
 	const target: EditStates['target'] = {
-		link: classNames.some((cl) => cl.includes('link') && !cl.includes('folder')),
-		folder: classNames.some((cl) => cl.includes('link') && cl.includes('folder')),
+		link: classNames.some((cl) => cl.includes('link-elem')),
+		folder: classNames.some((cl) => cl.includes('link-folder')),
 		title: classNames.some((cl) => cl.includes('link-title')),
 		synced: classNames.some((cl) => cl.includes('synced')),
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
@@ -67,7 +68,14 @@ export default async function openEditDialog(event: Event) {
 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
-	editStates = { group, selectall, container, dragging, target, selected: getSelectedIds() }
+	editStates = {
+		group,
+		selectall,
+		container,
+		dragging,
+		target,
+		selected: getSelectedIds(),
+	}
 
 	const inputs = toggleEditInputs()
 	const folderTitle = container.folder && target.title
@@ -110,11 +118,11 @@ export default async function openEditDialog(event: Event) {
 			domurl.value = link?.url ?? ''
 			domicon.value = link?.icon ?? ''
 		}
+	}
 
-		if (!selectall) {
-			document.querySelector('.link.selected')?.classList.remove('selected')
-			li?.classList.add('selected')
-		}
+	if (!selectall) {
+		document.querySelectorAll('.link-title.selected, .link.selected')?.forEach((node) => node.classList.remove('selected'))
+		;(target.title ? linktitle : linkelem)?.classList.add('selected')
 	}
 
 	// Must be placed after "li?.classList.add('selected')"
@@ -405,7 +413,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 
 function closeEditDialog() {
 	if (domeditlink.open) {
-		document.querySelectorAll('.link.selected').forEach((block) => block?.classList.remove('selected'))
+		document.querySelectorAll('.link-title.selected, .link.selected').forEach((node) => node?.classList.remove('selected'))
 		domeditlink.removeAttribute('data-tab')
 		domeditlink.classList.remove('shown')
 		domeditlink.close()

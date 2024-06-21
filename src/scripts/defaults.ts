@@ -85,7 +85,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	pagewidth: 1600,
 	time: true,
 	main: true,
-	dateformat: 'eu',
+	dateformat: 'auto',
 	background_blur: 15,
 	background_bright: 0.8,
 	background_type: 'unsplash',
@@ -113,6 +113,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		ampm: false,
 		analog: false,
 		seconds: false,
+		worldclocks: false,
 		timezone: 'auto',
 	},
 	unsplash: {
@@ -165,6 +166,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		selection: 'single',
 		layouts: {},
 	},
+	worldclocks: [],
 }
 
 export const LOCAL_DEFAULT: Local.Storage = {

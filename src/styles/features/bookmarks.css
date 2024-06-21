@@ -25,7 +25,7 @@
 	background-color: #0006;
 }
 #bookmarks-header {
-	padding: 2em;
+	padding: 20px;
 	display: flex;
 	gap: 1em;
 	flex-direction: column;
@@ -44,19 +44,18 @@
 	margin: auto;
 }
 
-#bookmarks-buttons {
-	justify-content: center;
-}
-
 #bookmarks-buttons button {
 	width: fit-content;
+	margin: 0 1em;
 }
 
 #bmk_apply {
+	color: white;
 	background-color: var(--color-blue);
 }
 
 #bmk_apply:disabled {
+	color: inherit;
 	background-color: transparent;
 }
 
@@ -105,14 +104,19 @@
 
 .bookmarks-folder-title {
 	display: flex;
+	column-gap: 8px;
 	justify-content: space-between;
 	margin: 0 16px 24px 16px;
 }
 
+.bookmarks-folder-title button {
+	white-space: nowrap;
+}
+
 #bookmarks h2 {
+	margin: 0;
 	font-size: 20px;
 	text-transform: capitalize;
-	margin: 0;
 }
 
 #bookmarks ol {
@@ -127,18 +131,13 @@
 #bookmarks li {
 	border-radius: 1em;
 	border: 2px solid transparent;
-	transition: background-color 0.05s, border-color 0.05s;
 	user-select: none;
 	overflow: hidden;
 }
 
 #bookmarks li.selected {
 	border-color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
-}
-
-#bookmarks li.selected button:hover {
-	background-color: rgba(var(--blue), 0.15);
+	background-color: rgba(var(--blue), 0.25);
 }
 
 #bookmarks li button {
@@ -147,16 +146,15 @@
 	transition: background-color 0.05s;
 }
 
+#bookmarks li button:focus-visible,
 #bookmarks li button:hover {
 	color: var(--color-text);
-}
-
-[data-theme='light'] #bookmarks li button:hover {
-	background-color: #fff6;
-}
-
-[data-theme='dark'] #bookmarks li button:hover {
 	background-color: #fff2;
+}
+
+#bookmarks li.selected button:focus-visible,
+#bookmarks li.selected button:hover {
+	background-color: transparent;
 }
 
 #bookmarks li button p:last-child {
@@ -182,4 +180,45 @@
 	line-height: 1.5em;
 	font-size: 0.9em;
 	font-weight: bold;
+}
+
+/* Mobile */
+
+@media screen and (max-width: 600px) {
+	#bookmarks-container {
+		font-size: 14px;
+		padding: 8px;
+	}
+
+	#bookmarks-container #bookmarks {
+		width: 90%;
+		min-width: 0;
+	}
+
+	#bookmarks-container #bookmarks form div {
+		width: auto;
+	}
+
+	#bookmarks-header {
+		font-size: 14px;
+		text-align: left;
+	}
+
+	#bookmarks-buttons {
+		text-align: center;
+	}
+
+	.bookmarks-folder-title {
+		margin: 0 0 24px 0;
+		text-align: left;
+		align-items: center;
+	}
+
+	.bookmarks-folder-title h2 {
+		width: 100%;
+	}
+
+	.bookmarks-folder-title div {
+		text-align: right;
+	}
 }

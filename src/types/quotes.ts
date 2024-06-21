@@ -4,7 +4,7 @@ declare namespace Quotes {
 		content: string
 	}
 
-	type Types = 'classic' | 'kaamelott' | 'inspirobot' | 'user'
+	type Types = 'classic' | 'kaamelott' | 'inspirobot' | 'user' | 'url'
 
 	type Sync = {
 		on: boolean
@@ -13,6 +13,7 @@ declare namespace Quotes {
 		type: Types
 		frequency: Frequency
 		userlist?: string
+		url?: string
 	}
 
 	type UserInput = [string, string][]

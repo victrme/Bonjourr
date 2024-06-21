@@ -1,7 +1,9 @@
 import { getLinksInGroup } from './helpers'
 import { initblocks } from '.'
+import openEditDialog from './edit'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
+import startDrag from './drag'
 import storage from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
@@ -32,9 +34,8 @@ function createGroups(linkgroups: Sync.LinkGroups) {
 		button.textContent = group
 		button.dataset.group = group
 		button.classList.add('link-title')
-		button.classList.toggle('selected', group === selected)
+		button.classList.toggle('selected-group', group === selected)
 		button.classList.toggle('synced', synced.includes(group))
-		button.addEventListener('click', changeGroup)
 
 		if (isTopSite) {
 			button.textContent = tradThis('Most visited')
@@ -47,6 +48,10 @@ function createGroups(linkgroups: Sync.LinkGroups) {
 
 		if (isAddMore) {
 			button.classList.add('add-group')
+			button.addEventListener('click', openEditDialog)
+		} else {
+			button.addEventListener('click', changeGroup)
+			button.addEventListener('pointerdown', startDrag)
 		}
 
 		document.querySelector('#link-mini')?.appendChild(button)
@@ -59,7 +64,7 @@ function changeGroup(event: Event) {
 	const button = event.currentTarget as HTMLButtonElement
 	const transition = transitioner()
 
-	if (!!domlinkblocks.dataset.folderid || button.classList.contains('selected')) {
+	if (!!domlinkblocks.dataset.folderid || button.classList.contains('selected-group')) {
 		return
 	}
 
@@ -73,8 +78,8 @@ function changeGroup(event: Event) {
 		const data = await storage.sync.get()
 		const group = button.dataset.group ?? data.linkgroups.groups[0]
 
-		buttons?.forEach((div) => div.classList.remove('selected'))
-		button.classList.add('selected')
+		buttons?.forEach((div) => div.classList.remove('selected-group'))
+		button.classList.add('selected-group')
 		data.linkgroups.selected = group
 		storage.sync.set(data)
 		await initblocks(data)
@@ -165,6 +170,15 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 	storage.sync.clear()
 	initblocks(data)
 	initGroups(data)
+	return data
+}
+
+export function moveGroups(titles: string[], data: Sync.Storage) {
+	titles = titles.filter((name) => name !== '+')
+
+	data.linkgroups.groups = titles
+	initGroups(data)
+
 	return data
 }
 

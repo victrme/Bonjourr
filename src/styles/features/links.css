@@ -2,7 +2,6 @@
 
 #linkblocks {
 	--in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
-	max-width: var(--links-width);
 }
 
 #linkblocks.hidden {
@@ -63,11 +62,20 @@
 
 .link-group.hiding .link {
 	transform: scale(0.9);
-	filter: brightness(0.7);
 }
 
-.link:active {
-	filter: brightness(0.7);
+/* Overengineered brightness because filter disables backdrop with .link-folder */
+.link-elem:active,
+.link-folder:active img,
+.link-group.hiding .link-elem,
+.link-group.hiding .link-folder img {
+	filter: brightness(0.8);
+}
+
+.link-folder:active div,
+.link-group.hiding .link-folder div {
+	backdrop-filter: blur(1em) brightness(0.8);
+	-webkit-backdrop-filter: blur(1em) brightness(0.8);
 }
 
 .link-group.in-folder .link-list {
@@ -103,13 +111,15 @@
 
 .link-title {
 	display: none;
-	max-width: 32ch;
+	max-width: 26ch;
 	padding: 0.2em 1em;
-	font-size: 1em;
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+	text-overflow: ellipsis;
 	opacity: 0.7;
 	color: white;
-	text-align: center;
-	white-space: nowrap;
+	font-size: 1em;
 	border-radius: 8px;
 	border: 1px solid transparent;
 	background-color: transparent;
@@ -129,8 +139,21 @@
 	opacity: 1;
 }
 
+/* 	
+ * Annoying class naming overlap between edits and link groups "selected"
+ * Edit: selected
+ * Group: selected-group
+*/
+
+.link-title.selected,
+.link-title.selected.selected-group {
+	opacity: 1;
+	outline: 2px solid var(--color-blue);
+	background-color: rgba(var(--blue), 0.15);
+}
+
 .link-group.pinned .link-title,
-.link-title.selected {
+.link-title.selected-group {
 	opacity: 1;
 	cursor: initial;
 	border-color: #fff1;
@@ -145,13 +168,17 @@
 	-webkit-user-select: none;
 }
 
-/* Link list items */
+/* Link */
+
+.link,
+.link-title {
+	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
+}
 
 .link {
 	width: var(--block-size);
 	cursor: pointer;
 	touch-action: none;
-	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
 }
 
 .link div,
@@ -188,7 +215,7 @@
 	width: 100%;
 	padding-top: 0.4em;
 	line-height: 1.2em;
-	max-height: 3.8em;
+	max-height: 3.6em;
 	overflow: hidden;
 	word-wrap: break-word;
 }
@@ -238,9 +265,9 @@
 	outline: 0.3em solid var(--color-blue);
 }
 
-#linkblocks.inline .link.selected.folder,
+#linkblocks.inline .link-folder.selected,
 #linkblocks.inline .link.selected a,
-#linkblocks.text .link.selected.folder,
+#linkblocks.text .link-folder.selected,
 #linkblocks.text .link.selected a {
 	border-radius: 0.5em;
 	outline: 0.2em solid var(--color-blue);
@@ -262,7 +289,7 @@
 	}
 }
 
-.folder > div {
+.link-folder > div {
 	display: grid;
 	column-gap: 4px;
 	height: var(--icon-size);
@@ -273,11 +300,11 @@
 	-webkit-backdrop-filter: blur(1em);
 }
 
-.folder img[src] {
+.link-folder img[src] {
 	display: initial;
 }
 
-.folder img {
+.link-folder img {
 	display: none;
 	border-radius: 4px;
 	padding: 2px;
@@ -286,13 +313,13 @@
 	-webkit-user-select: none;
 }
 
-#linkblocks .folder > div,
-#linkblocks.backgrounds .folder > div {
+#linkblocks .link-folder > div,
+#linkblocks.backgrounds .link-folder > div {
 	background-color: #fff3;
 	border-color: #fff4;
 }
 
-#linkblocks.backgrounds .folder img {
+#linkblocks.backgrounds .link-folder img {
 	background-color: white;
 }
 
@@ -318,11 +345,11 @@
 	border-radius: 0.6em;
 }
 
-.large .folder div {
+.large .link-folder div {
 	padding: 5px;
 }
 
-.large .folder img {
+.large .link-folder img {
 	border-radius: 5px;
 	padding: 2px;
 	width: 100%;
@@ -433,16 +460,16 @@
 	justify-content: flex-start;
 }
 
-.inline .folder div {
+.inline .link-folder div {
 	display: block;
 	padding: 4px;
 }
 
-.inline .folder img {
+.inline .link-folder img {
 	box-sizing: border-box;
 }
 
-.inline .folder img:not(:first-child) {
+.inline .link-folder img:not(:first-child) {
 	display: none;
 }
 
@@ -464,7 +491,7 @@
 	transform: none;
 }
 
-.inline .folder,
+.inline .link-folder,
 .inline .link a {
 	display: flex;
 	flex-direction: row;
@@ -527,37 +554,38 @@
 
 /* Folder styles for medium and small */
 
-.medium .folder div,
-.small .folder div {
+.medium .link-folder div,
+.small .link-folder div {
 	position: relative;
 	display: block;
 }
 
-.medium .folder img,
-.small .folder img {
+.medium .link-folder img,
+.small .link-folder img {
 	position: absolute;
 	padding: 1px;
-	transform: scale(0.5) translate(-50%, -50%);
+	width: 50%;
+	height: 50%;
 }
 
-.medium .folder img:nth-child(1),
-.small .folder img:nth-child(1) {
+.medium .link-folder img:nth-child(1),
+.small .link-folder img:nth-child(1) {
 	top: 15%;
 	left: 15%;
 	z-index: 5;
 }
 
-.medium .folder img:nth-child(2),
-.small .folder img:nth-child(2) {
+.medium .link-folder img:nth-child(2),
+.small .link-folder img:nth-child(2) {
 	top: 30%;
 	left: 30%;
 	z-index: 4;
 }
 
-.medium .folder img:nth-child(3),
-.medium .folder img:nth-child(4),
-.small .folder img:nth-child(3),
-.small .folder img:nth-child(4) {
+.medium .link-folder img:nth-child(3),
+.medium .link-folder img:nth-child(4),
+.small .link-folder img:nth-child(3),
+.small .link-folder img:nth-child(4) {
 	display: none;
 }
 
@@ -578,11 +606,11 @@
 	background-color: #fff3;
 }
 
-.link.drop-target.folder img {
+.drop-target.link-folder img {
 	opacity: 0.5;
 }
 
-.large .link.drop-target.folder img {
+.large .drop-target.link-folder img {
 	transform: none;
 }
 
@@ -603,8 +631,9 @@
 	opacity: 0.5;
 }
 
-.link-group.dropping .link-list,
-.link-group.dragging .link-list {
+.in-drag#link-mini,
+.in-drag.link-group .link-list,
+.in-drag.link-group.in-folder .link-list {
 	padding: 0;
 	max-width: none;
 	will-change: transform;
@@ -612,16 +641,14 @@
 	height: calc(var(--drag-height) - 2px);
 }
 
-.link-group.dropping a,
-.link-group.dragging a,
-.link-group.dropping div,
-.link-group.dragging div {
+.in-drag a,
+.in-drag div {
 	user-select: none;
 	pointer-events: none;
 }
 
-.link-group.dropping .link,
-.link-group.dragging .link {
+.in-drag#link-mini .link-title,
+.in-drag .link {
 	pointer-events: none;
 	position: fixed;
 	top: 0;
@@ -629,8 +656,11 @@
 	z-index: 3;
 }
 
-.link-group.dropping .on,
-.link-group.dragging .on {
+.in-drag#link-mini .link-title {
+	border-color: #fff2;
+}
+
+.in-drag .on {
 	z-index: 4;
 	transition: none;
 	pointer-events: none;
@@ -641,19 +671,15 @@
 #link-mini {
 	position: relative;
 	display: none;
+	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
-	column-gap: 1em;
-	width: 100%;
+	width: max-content;
 	margin: auto;
-	padding-top: 1em;
-	padding-inline-start: 4em;
+	padding: 1em 1em 0em;
+	column-gap: 1em;
+	row-gap: 0.5em;
 	box-sizing: border-box;
-}
-
-.text-left #link-mini:has(.add-group.selected),
-.text-left #link-mini:hover {
-	padding-left: 0;
 }
 
 #link-mini .link-title {
@@ -661,14 +687,26 @@
 }
 
 #link-mini .add-group {
+	position: absolute;
 	visibility: hidden;
 	font-weight: bold;
 	width: 3em;
+	right: -3em;
 }
 
+#link-mini .add-group:hover,
 #link-mini .add-group.selected,
 #link-mini:hover .add-group {
 	visibility: visible;
+}
+
+#link-mini.in-drag .add-group {
+	visibility: hidden;
+}
+
+.link-group.in-folder + #link-mini {
+	/* hides link-mini when opening folder in bottom group */
+	display: none;
 }
 
 .with-groups #link-mini,

@@ -136,11 +136,11 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 				displayFont(font)
 				await waitForFontLoad(family)
 				familyForm.accept('i_customfont', family)
+				clock(undefined, {})
 			}
 
 			if (font.family === '') {
 				familyForm.warn(`Cannot load "${family}"`)
-				clock(undefined, {})
 				return data.font
 			}
 			break

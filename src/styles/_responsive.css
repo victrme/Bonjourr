@@ -120,6 +120,7 @@
 		max-height: 100px;
 	}
 
+	#pagewidth,
 	#grid-layout-wrapper {
 		display: none;
 	}
@@ -143,19 +144,6 @@
 	#credit p,
 	#credit span {
 		font-size: 11px;
-	}
-
-	#bookmarks_container {
-		font-size: 14px;
-	}
-
-	#bookmarks_container #bookmarks {
-		width: 90%;
-		min-width: 0;
-	}
-
-	#bookmarks_container #bookmarks form div {
-		width: auto;
 	}
 }
 
@@ -221,6 +209,10 @@
 	aside select {
 		min-height: 36px;
 		border-radius: 13px;
+	}
+
+	aside .switch:checked:hover {
+		background-color: var(--color-green);
 	}
 
 	#settings .tooltip {

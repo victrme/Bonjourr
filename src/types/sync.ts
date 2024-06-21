@@ -30,9 +30,10 @@ declare namespace Sync {
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
 		background_type: 'local' | 'unsplash'
-		dateformat: 'eu' | 'us' | 'cn'
+		dateformat: 'auto' | 'eu' | 'us' | 'cn'
 		clock: Clock
 		analogstyle?: AnalogStyle
+		worldclocks: WorldClocks
 		unsplash: Unsplash.Sync
 		weather: Weather.Sync
 		searchbar: Searchbar
@@ -78,6 +79,7 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
+		worldclocks: boolean
 		style?: 'round' | 'square' | 'transparent' // legacy value
 	}
 
@@ -88,6 +90,11 @@ declare namespace Sync {
 		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
 		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun' | 'apple'
 	}
+
+	type WorldClocks = {
+		region: string
+		timezone: string
+	}[]
 
 	type Searchbar = {
 		on: boolean
