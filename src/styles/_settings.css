@@ -565,7 +565,7 @@ aside .settings-title .tooltip {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	min-height: 26px;
+	min-height: 31px;
 	padding: 4px; /* for tabbing outline */
 }
 
@@ -765,6 +765,10 @@ aside .settings-title .tooltip {
 	display: flex;
 }
 
+#worldclocks_options .wrapper {
+	padding: 0 0 0 4px;
+}
+
 #worldclocks-list,
 #f_location {
 	width: 66%;
@@ -772,12 +776,13 @@ aside .settings-title .tooltip {
 
 #worldclocks-list .split-inputs {
 	width: 100%;
+	padding: 2px;
+	box-sizing: border-box;
 }
 
 #worldclocks-list input,
 #worldclocks-list select {
 	width: 100%;
-	margin-bottom: 4px;
 }
 
 #i_ccode {
