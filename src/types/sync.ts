@@ -80,7 +80,9 @@ declare namespace Sync {
 		timezone: string
 		size: number
 		worldclocks: boolean
-		style?: 'round' | 'square' | 'transparent' // legacy value
+		// old <20.0
+		face?: 'none' | 'number' | 'roman' | 'marks'
+		style?: 'round' | 'square' | 'transparent'
 	}
 
 	type AnalogStyle = {

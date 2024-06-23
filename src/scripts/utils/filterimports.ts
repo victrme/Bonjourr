@@ -217,26 +217,28 @@ function improvedWeather(data: Import): Import {
 	return data
 }
 
-// 
-
 function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Data {
-	if (data?.clock) {
+	if (data.clock?.style) {
+		data.analogstyle = {
+			background: { rgb: '#fff', alpha: 0.2 },
+			border: { rgb: '#fff', alpha: 1 },
+			face: data?.clock?.face || 'none',
+			shape: 'round',
+			hands: 'modern',
+		}
+
 		if (data.clock.style === 'round' || data.clock.style === 'square') {
-			data.clock.shape = data.clock.style
-			data.clock.background = 'light'
-			data.clock.border = 'white'
+			data.analogstyle.shape = data.clock.style
 		}
 
 		if (data.clock.style === 'transparent') {
-			data.clock.background = 'none'
-			data.clock.border = 'none'
+			data.analogstyle.background = { rgb: '#fff', alpha: 0 }
+			data.analogstyle.border = { rgb: '#fff', alpha: 0 }
 		}
 	}
 
 	return data
 }
-
-//
 
 function removeLinkDuplicates(curr: Sync.Storage, imported: Import): Sync.Storage {
 	const currentLinks = bundleLinks(curr)
