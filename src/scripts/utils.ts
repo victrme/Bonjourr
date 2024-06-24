@@ -220,3 +220,7 @@ export function hexColorFromSplitRange(id: string): string {
 
 	return color + alpha
 }
+
+export function opacityFromHex(hex: string) {
+	return parseInt(hex.slice(4), 16)
+}

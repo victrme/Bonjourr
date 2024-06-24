@@ -940,17 +940,16 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_notesopacity" class="trn">Opacity</label>
-				<input
-					id="i_notesopacity"
-					type="range"
-					name="i_notesopacity"
-					min="0"
-					max="1"
-					step=".05"
-					value=".1"
-					class="range"
-				/>
+				<label for="i_notes-opacity" class="trn">Background</label>
+
+				<div id="notes-background-range" class="split-inputs split-range">
+					<input id="i_notes-opacity" name="i_notes-opacity" class="range" type="range" min="0" max="15" step="1" />
+
+					<button id="i_notes-shade" title="Notes shade" class="input-btn">
+						<span data-value="light">☀</span>
+						<span data-value="dark">☾</span>
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1033,8 +1032,16 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_sbopacity" class="trn">Opacity</label>
-				<input id="i_sbopacity" type="range" name="i_sbopacity" min="0" max="1" step=".05" value=".1" class="range" />
+				<label for="i_sb-opacity" class="trn">Background</label>
+
+				<div id="sb-background-range" class="split-inputs split-range">
+					<input id="i_sb-opacity" name="i_sb-opacity" class="range" type="range" min="0" max="15" step="1" />
+
+					<button id="i_sb-shade" title="Search bar shade" class="input-btn">
+						<span data-value="light">☀</span>
+						<span data-value="dark">☾</span>
+					</button>
+				</div>
 			</div>
 		</div>
 	</div>

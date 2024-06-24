@@ -116,6 +116,13 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		worldclocks: false,
 		timezone: 'auto',
 	},
+	analogstyle: {
+		face: 'none',
+		hands: 'modern',
+		shape: 'round',
+		border: '#ffff',
+		background: '#fff2',
+	},
 	unsplash: {
 		every: 'hour',
 		collection: '',

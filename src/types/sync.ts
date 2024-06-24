@@ -80,7 +80,7 @@ declare namespace Sync {
 		timezone: string
 		size: number
 		worldclocks: boolean
-		// old <20.0
+		// <20.0
 		face?: 'none' | 'number' | 'roman' | 'marks'
 		style?: 'round' | 'square' | 'transparent'
 	}
@@ -101,12 +101,14 @@ declare namespace Sync {
 	type Searchbar = {
 		on: boolean
 		width?: number
-		opacity: number
 		newtab: boolean
 		engine: string
 		request: string
 		suggestions: boolean
 		placeholder: string
+		background?: string
+		// <20.0
+		opacity?: number
 	}
 
 	type Font = {
@@ -115,17 +117,19 @@ declare namespace Sync {
 		weight: string
 		weightlist: string[]
 		system?: boolean
-		// <1.19
+		// <19.0
 		url?: string
 		availWeights?: string[]
 	}
 
 	type Notes = {
 		on: boolean
+		align: string
 		text?: string
 		width?: number
-		opacity: number
-		align: string
+		background?: string
+		// <20.0
+		opacity?: number
 	}
 
 	type Move = {

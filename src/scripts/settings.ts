@@ -23,7 +23,7 @@ import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-import { getHTMLTemplate, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
+import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
 
@@ -113,11 +113,12 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_greeting', data.greeting ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
 	setInput('i_noteswidth', data.notes?.width || 50)
-	setInput('i_notesopacity', data.notes?.opacity.toString() || 0.1)
+	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
 	setInput('i_notesalign', data.notes?.align || 'left')
 	setInput('i_sbengine', data.searchbar?.engine || 'google')
 	setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
-	setInput('i_sbopacity', data.searchbar?.opacity ?? 0.1)
+	setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
+	setInput('i_sb-shade', opacityFromHex(data.searchbar?.background ?? '#fff2'))
 	setInput('i_sbwidth', data.searchbar?.width ?? 30)
 	setInput('i_sbrequest', data.searchbar?.request || '')
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
@@ -127,8 +128,8 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_clockface', data.analogstyle?.face || 'none')
 	setInput('i_clockhands', data.analogstyle?.hands || 'none')
 	setInput('i_clockshape', data.analogstyle?.shape || 'round')
-	setInput('i_analog-border-opacity', parseInt((data.analogstyle?.border ?? '#ffff').slice(4), 16))
-	setInput('i_analog-background-opacity', parseInt((data.analogstyle?.border ?? '#fff2').slice(4), 16))
+	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
+	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.border ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_collection', data.unsplash?.collection ?? '')
@@ -538,8 +539,12 @@ function initOptionsEvents() {
 		notes(undefined, { width: this.value })
 	})
 
-	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
-		notes(undefined, { opacity: this.value })
+	paramId('i_notes-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		notes(undefined, { background: true })
+	})
+
+	paramId('i_notes-shade').addEventListener('click', function (this: HTMLInputElement) {
+		notes(undefined, { background: true })
 	})
 
 	// Searchbar
@@ -552,8 +557,12 @@ function initOptionsEvents() {
 		searchbar(undefined, { engine: this.value })
 	})
 
-	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
-		searchbar(undefined, { opacity: this.value })
+	paramId('i_sb-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		searchbar(undefined, { background: true })
+	})
+
+	paramId('i_sb-shade').addEventListener('click', function (this: HTMLInputElement) {
+		searchbar(undefined, { background: true })
 	})
 
 	paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement) {
