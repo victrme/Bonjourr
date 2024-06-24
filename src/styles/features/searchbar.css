@@ -18,15 +18,15 @@
 #sb_container.opaque #searchbar,
 #sb_container.opaque #sb-suggestions,
 #sb_container.opaque button {
-	color: #3a3b3c;
+	color: #333;
 }
 
 #sb_container.opaque #searchbar::placeholder {
-	color: rgba(58, 59, 60, 0.3333333333);
+	color: #3334;
 }
 
 #sb_container.opaque hr {
-	border-color: rgba(58, 59, 60, 0.3333333333);
+	border-color: #3334;
 }
 
 #sb_container.opaque .default-search-icon {
@@ -35,12 +35,12 @@
 }
 
 #sb_container.opaque #sb_submit {
-	background-color: rgba(34, 34, 34, 0.1019607843);
+	background-color: rgba(34, 34, 34, 0.1);
 }
 
 #sb_container hr {
 	margin: 0.6em 0;
-	border-right: 1px solid rgba(255, 255, 255, 0.2666666667);
+	border-right: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 #searchbar-wrapper {
@@ -48,7 +48,7 @@
 	align-items: center;
 	width: 100%;
 	border-radius: 10px;
-	background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
+	background-color: var(--searchbar-background);
 	border: 1px solid rgba(255, 255, 255, 0.075);
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
@@ -124,7 +124,7 @@
 	-webkit-backdrop-filter: blur(2em);
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	border: 1px solid rgba(255, 255, 255, 0.075);
-	background-color: rgba(255, 255, 255, var(--searchbar-background-alpha));
+	background-color: var(--searchbar-background);
 	z-index: 4;
 }
 

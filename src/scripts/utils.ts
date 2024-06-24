@@ -197,3 +197,30 @@ function componentToHex(c: number): string {
 export function equalsCaseInsensitive(a: string, b: string) {
 	return a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
 }
+
+export function getSplitRangeData(id: string): { range?: string; button?: string } {
+	const wrapper = document.querySelector<HTMLInputElement>(`#${id.replace('#', '')}`)
+	const range = wrapper?.querySelector<HTMLInputElement>('input')
+	const button = wrapper?.querySelector<HTMLElement>('button')
+	const span = wrapper?.querySelectorAll<HTMLElement>('span')
+	const isButtonOn = button?.classList?.contains('on')
+
+	return {
+		range: range?.value,
+		button: span?.[isButtonOn ? 1 : 0].dataset.value,
+	}
+}
+
+export function hexColorFromSplitRange(id: string): string {
+	const { range, button } = getSplitRangeData(id)
+
+	const opacity = parseInt(range ?? '0')
+	const color = button === 'dark' ? '#000' : '#fff'
+	const alpha = opacity.toString(16)
+
+	return color + alpha
+}
+
+export function opacityFromHex(hex: string) {
+	return parseInt(hex.slice(4), 16)
+}

@@ -30,8 +30,10 @@ declare namespace Sync {
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
 		background_type: 'local' | 'unsplash'
-		dateformat: 'eu' | 'us' | 'cn'
+		dateformat: 'auto' | 'eu' | 'us' | 'cn'
 		clock: Clock
+		analogstyle?: AnalogStyle
+		worldclocks: WorldClocks
 		unsplash: Unsplash.Sync
 		weather: Weather.Sync
 		searchbar: Searchbar
@@ -77,19 +79,36 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
-		style: 'round' | 'square' | 'transparent'
-		face: 'none' | 'number' | 'roman' | 'marks'
+		worldclocks: boolean
+		// <20.0
+		face?: 'none' | 'number' | 'roman' | 'marks'
+		style?: 'round' | 'square' | 'transparent'
 	}
+
+	type AnalogStyle = {
+		border: string
+		background: string
+		shape: 'round' | 'square' | 'rectangle'
+		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
+		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun' | 'apple'
+	}
+
+	type WorldClocks = {
+		region: string
+		timezone: string
+	}[]
 
 	type Searchbar = {
 		on: boolean
 		width?: number
-		opacity: number
 		newtab: boolean
 		engine: string
 		request: string
 		suggestions: boolean
 		placeholder: string
+		background?: string
+		// <20.0
+		opacity?: number
 	}
 
 	type Font = {
@@ -98,17 +117,19 @@ declare namespace Sync {
 		weight: string
 		weightlist: string[]
 		system?: boolean
-		// <1.19
+		// <19.0
 		url?: string
 		availWeights?: string[]
 	}
 
 	type Notes = {
 		on: boolean
+		align: string
 		text?: string
 		width?: number
-		opacity: number
-		align: string
+		background?: string
+		// <20.0
+		opacity?: number
 	}
 
 	type Move = {

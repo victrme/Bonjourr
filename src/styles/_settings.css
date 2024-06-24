@@ -388,7 +388,7 @@ aside form.valid button {
 }
 
 #time_options.shown {
-	max-height: 470px;
+	max-height: 860px;
 }
 
 #main_options.shown {
@@ -399,6 +399,11 @@ aside form.valid button {
 	max-height: 460px;
 }
 
+#analog_options.shown {
+	max-height: 280px;
+}
+
+#worldclocks_options.shown,
 #notes_options.shown {
 	max-height: 180px;
 }
@@ -406,11 +411,11 @@ aside form.valid button {
 #location_options.shown,
 #digital_options.shown,
 #weather_provider.shown,
-#searchbar_request.shown {
+#searchbar_request.shown,
+#worldclocks-list .dropdown.shown {
 	max-height: 60px;
 }
 
-#analog_options.shown,
 #unsplash_options.shown,
 #quotes_url.shown {
 	max-height: 110px;
@@ -438,7 +443,7 @@ aside form.valid button {
 }
 
 .all .as_timedate {
-	max-height: 300px;
+	max-height: 360px;
 }
 
 .all .as_searchbar {
@@ -450,7 +455,7 @@ aside form.valid button {
 }
 
 .all .as_clocktype {
-	max-height: 130px;
+	max-height: 300px;
 }
 
 .all .as_fonts {
@@ -563,7 +568,7 @@ aside .settings-title .tooltip {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	min-height: 26px;
+	min-height: 31px;
 	padding: 4px; /* for tabbing outline */
 }
 
@@ -584,6 +589,31 @@ aside .settings-title .tooltip {
 	display: flex;
 	width: 155px;
 	column-gap: 4px;
+}
+
+.split-range {
+	height: 31px;
+	align-items: center;
+}
+
+.split-inputs input {
+	width: 100%;
+}
+
+.split-range button {
+	height: 31px;
+	width: 40px;
+	font-size: 20px;
+	background-color: transparent;
+}
+
+.split-range button:not(.on) span:last-child,
+.split-range button.on span:first-child {
+	display: none;
+}
+
+.split-range span {
+	display: initial;
 }
 
 .freq_wrap select {
@@ -763,14 +793,24 @@ aside .settings-title .tooltip {
 	display: flex;
 }
 
-#clockoptions.digital #w_clockface,
-#clockoptions.analog #w_ampm {
-	max-height: 0;
-	opacity: 0;
+#worldclocks_options .wrapper {
+	padding: 0 0 0 4px;
 }
 
+#worldclocks-list,
 #f_location {
 	width: 66%;
+}
+
+#worldclocks-list .split-inputs {
+	width: 100%;
+	padding: 2px;
+	box-sizing: border-box;
+}
+
+#worldclocks-list input,
+#worldclocks-list select {
+	width: 100%;
 }
 
 #i_ccode {

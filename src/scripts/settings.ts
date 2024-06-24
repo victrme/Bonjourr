@@ -23,7 +23,7 @@ import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-import { getHTMLTemplate, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
+import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
 
@@ -113,19 +113,23 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_greeting', data.greeting ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
 	setInput('i_noteswidth', data.notes?.width || 50)
-	setInput('i_notesopacity', data.notes?.opacity.toString() || 0.1)
+	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
 	setInput('i_notesalign', data.notes?.align || 'left')
 	setInput('i_sbengine', data.searchbar?.engine || 'google')
 	setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
-	setInput('i_sbopacity', data.searchbar?.opacity ?? 0.1)
+	setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
+	setInput('i_sb-shade', opacityFromHex(data.searchbar?.background ?? '#fff2'))
 	setInput('i_sbwidth', data.searchbar?.width ?? 30)
 	setInput('i_sbrequest', data.searchbar?.request || '')
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
 	setInput('i_qttype', data.quotes?.type || 'classic')
 	setInput('i_qtlist', userQuotes ?? '')
 	setInput('i_qturl', data.quotes?.url ?? '')
-	setInput('i_clockface', data.clock?.face || 'none')
-	setInput('i_clockstyle', data.clock?.style || 'round')
+	setInput('i_clockface', data.analogstyle?.face || 'none')
+	setInput('i_clockhands', data.analogstyle?.hands || 'none')
+	setInput('i_clockshape', data.analogstyle?.shape || 'round')
+	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
+	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.border ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_collection', data.unsplash?.collection ?? '')
@@ -146,6 +150,9 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_linkgroups', data?.linkgroups?.on || false)
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_time', data.time)
+	setCheckbox('i_analog', data.clock?.analog ?? false)
+	setCheckbox('i_seconds', data.clock?.seconds ?? false)
+	setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
 	setCheckbox('i_main', data.main)
 	setCheckbox('i_greethide', !data.hide?.greetings)
 	setCheckbox('i_notes', data.notes?.on ?? false)
@@ -155,8 +162,6 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
-	setCheckbox('i_seconds', data.clock?.seconds ?? false)
-	setCheckbox('i_analog', data.clock?.analog ?? false)
 
 	// Input translation
 	translatePlaceholders()
@@ -184,6 +189,7 @@ function initOptionsValues(data: Sync.Storage) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
 	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
@@ -200,7 +206,6 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// Link show title
 	paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
-
 	paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
 
 	// Time & main hide elems
@@ -211,6 +216,10 @@ function initOptionsValues(data: Sync.Storage) {
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
 	})()
+
+	// Analog shade buttons
+	paramId('i_analog-background-shade').classList.toggle('on', data?.analogstyle?.background?.includes('#000'))
+	paramId('i_analog-border-shade').classList.toggle('on', data?.analogstyle?.border?.includes('#000'))
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
@@ -232,6 +241,27 @@ function initOptionsValues(data: Sync.Storage) {
 			input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
 		})
 	})
+
+	// Add massive timezones to <select>
+
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select, i) => {
+		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
+		const optgroups = template.querySelectorAll('optgroup')
+
+		optgroups.forEach((group) => {
+			select.appendChild(group)
+		})
+	})
+
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
+		select.value = data?.worldclocks?.[i]?.timezone ?? ['Europe/Paris', 'America/New_York', 'Asia/Tokyo'][i]
+	})
+
+	document.querySelectorAll<HTMLSelectElement>('input[name="worldclock-city"]').forEach((input, i) => {
+		input.value = data?.worldclocks?.[i]?.region ?? ''
+	})
+
+	paramId('i_timezone').value = data.clock.timezone
 }
 
 function initOptionsEvents() {
@@ -375,12 +405,45 @@ function initOptionsEvents() {
 		clock(undefined, { seconds: this.checked })
 	})
 
+	paramId('i_worldclocks').addEventListener('change', function (this: HTMLInputElement) {
+		paramId('worldclocks_options')?.classList.toggle('shown', this.checked)
+		clock(undefined, { worldclocks: this.checked })
+	})
+
+	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input, i) => {
+		input.addEventListener('input', () => clock(undefined, { world: { index: i, region: input.value } }))
+	})
+
+	document.querySelectorAll<HTMLInputElement>('select[name="worldclock-timezone"]')?.forEach((select, i) => {
+		select.addEventListener('change', () => clock(undefined, { world: { index: i, timezone: select.value } }))
+	})
+
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
 		clock(undefined, { face: this.value })
 	})
 
-	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { style: this.value })
+	paramId('i_clockhands').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { hands: this.value })
+	})
+
+	paramId('i_analog-border-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { border: 'opacity' })
+	})
+
+	paramId('i_analog-background-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { background: 'opacity' })
+	})
+
+	paramId('i_analog-border-shade').addEventListener('click', function (this: HTMLInputElement) {
+		clock(undefined, { border: 'shade' })
+	})
+
+	paramId('i_analog-background-shade').addEventListener('click', function (this: HTMLInputElement) {
+		clock(undefined, { background: 'shade' })
+	})
+
+	paramId('i_clockshape').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { shape: this.value })
 	})
 
 	paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
@@ -476,8 +539,12 @@ function initOptionsEvents() {
 		notes(undefined, { width: this.value })
 	})
 
-	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
-		notes(undefined, { opacity: this.value })
+	paramId('i_notes-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		notes(undefined, { background: true })
+	})
+
+	paramId('i_notes-shade').addEventListener('click', function (this: HTMLInputElement) {
+		notes(undefined, { background: true })
 	})
 
 	// Searchbar
@@ -490,8 +557,12 @@ function initOptionsEvents() {
 		searchbar(undefined, { engine: this.value })
 	})
 
-	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
-		searchbar(undefined, { opacity: this.value })
+	paramId('i_sb-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		searchbar(undefined, { background: true })
+	})
+
+	paramId('i_sb-shade').addEventListener('click', function (this: HTMLInputElement) {
+		searchbar(undefined, { background: true })
 	})
 
 	paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement) {
@@ -688,6 +759,10 @@ function initOptionsEvents() {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
+	})
+
+	document.querySelectorAll<HTMLButtonElement>('.split-range button')?.forEach((button) => {
+		button.addEventListener('click', () => button.classList.toggle('on'))
 	})
 }
 

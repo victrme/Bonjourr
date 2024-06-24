@@ -14,6 +14,8 @@ export default async function hideElements(hide: Sync.Hide = {}, options?: { isE
 	}
 
 	for (const [key, val] of Object.entries(hide)) {
-		document.querySelector(`[data-hide="${key}"]`)?.classList.toggle('he_hidden', val)
+		document.querySelectorAll(`[data-hide="${key}"]`).forEach((element) => {
+			element?.classList.toggle('he_hidden', val)
+		})
 	}
 }

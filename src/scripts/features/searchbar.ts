@@ -1,4 +1,4 @@
-import { apiWebSocket, stringMaxSize } from '../utils'
+import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
 import { SEARCHBAR_ENGINES } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import { tradThis } from '../utils/translations'
@@ -8,12 +8,12 @@ import parse from '../utils/parse'
 
 type SearchbarUpdate = {
 	engine?: string
-	opacity?: string
 	newtab?: boolean
 	width?: string
 	suggestions?: boolean
 	placeholder?: string
 	request?: HTMLInputElement
+	background?: true
 }
 
 type Suggestions = {
@@ -39,9 +39,9 @@ const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', v
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
 const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
 const setWidth = (value = 30) => document.documentElement.style.setProperty('--searchbar-width', value.toString() + 'em')
-const setOpacity = (value = 0.1) => {
-	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
-	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
+const setBackground = (value = '#fff2') => {
+	document.documentElement.style.setProperty('--searchbar-background', value)
+	document.getElementById('sb_container')?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
 export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
@@ -58,7 +58,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 		setNewtab(init?.newtab)
 		setPlaceholder(init?.placeholder)
 		setSuggestions(init?.suggestions)
-		setOpacity(init?.opacity)
+		setBackground(init?.background)
 
 		dombuttons?.addEventListener('click', focusSearchbar)
 		emptyButton?.addEventListener('click', removeInputText)
@@ -70,7 +70,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 	}
 }
 
-async function updateSearchbar({ engine, newtab, opacity, placeholder, request, suggestions, width }: SearchbarUpdate) {
+async function updateSearchbar({ engine, newtab, background, placeholder, request, suggestions, width }: SearchbarUpdate) {
 	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
@@ -93,11 +93,6 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 		setNewtab(newtab)
 	}
 
-	if (opacity !== undefined) {
-		searchbar.opacity = parseFloat(opacity)
-		setOpacity(searchbar.opacity)
-	}
-
 	if (width !== undefined) {
 		searchbar.width = parseInt(width)
 		setWidth(searchbar.width)
@@ -106,6 +101,11 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 	if (placeholder !== undefined) {
 		searchbar.placeholder = placeholder
 		setPlaceholder(placeholder)
+	}
+
+	if (background) {
+		searchbar.background = hexColorFromSplitRange('sb-background-range')
+		setBackground(searchbar.background)
 	}
 
 	if (request) {

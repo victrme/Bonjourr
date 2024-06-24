@@ -10,24 +10,32 @@
 	display: none;
 }
 
-#time.seconds #digital-mm-separator,
-#time.seconds #digital-ss {
+#time.seconds .digital-mm-separator,
+#time.seconds .digital-ss {
 	display: inline;
 }
 
-#time.seconds #analog-seconds {
+#time.seconds .analog-seconds {
 	display: block;
 }
 
-#time.analog #digital {
+#time.is-analog .digital {
 	display: none;
 }
 
-#time.analog #analog {
+#time.is-analog .analog {
 	display: inline-block;
 }
 
-#digital {
+#time-container {
+	display: inline-flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 4em;
+}
+
+.digital {
 	margin: 0;
 	margin-bottom: 0.1em;
 	margin-inline-start: calc(var(--seconds-margin-offset) / 2);
@@ -37,63 +45,73 @@
 	font-weight: var(--font-weight-clock);
 }
 
-#digital span {
+.digital span {
 	text-align: left;
 }
 
-#digital-hh,
-#digital-mm,
-#digital-hh-separator {
+.digital-hh,
+.digital-mm,
+.digital-hh-separator {
 	display: inline-block;
 }
 
-#digital-hh-leading-zero,
-#digital-mm-separator,
-#digital-ss {
+.digital-hh-leading-zero,
+.digital-mm-separator,
+.digital-ss {
 	display: none;
 }
 
-#digital.zero #digital-hh-leading-zero {
+.digital.zero .digital-hh-leading-zero {
 	display: inline-block;
 }
 
-#digital-number-width {
+.digital-number-width {
 	position: absolute;
 	z-index: -1;
 	opacity: 0;
 }
 
-#time.seconds #digital-ss {
+#time.seconds .digital-ss {
 	display: inline-block;
 	width: var(--seconds-width);
 }
 
-#analog {
+.analog {
 	display: none;
 	position: relative;
 	width: calc(var(--clock-size) * 8);
 	height: calc(var(--clock-size) * 8);
-	border-radius: 100%;
-	border: calc(var(--clock-size) * 0.2) solid white;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-	background-color: rgba(255, 255, 255, 0.2);
+	border: calc(var(--clock-size) * 0.2) solid;
+	border-color: var(--analog-border);
+	background-color: var(--analog-background);
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
+	/* box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); */
 }
 
-#analog.transparent {
-	box-shadow: none;
+/* shape */
+#time[data-shape='round'] .analog {
+	border-radius: 100%;
+}
+
+#time[data-shape='square'] .analog {
+	border-radius: calc(var(--clock-size) * 0.4);
+}
+
+#time[data-shape='rectangle'] .analog {
+	border-radius: calc(var(--clock-size) * 1.5);
+	height: calc(var(--clock-size) * 9.5);
+}
+
+/* background */
+#time.transparent .analog {
+	box-shadow: unset;
 	backdrop-filter: none;
 	-webkit-backdrop-filter: none;
-	border-color: transparent;
-	background-color: transparent;
 }
 
-#analog.square {
-	border-radius: calc(var(--clock-size) * 0.2);
-}
-
-#analog-center {
+/* center */
+.analog-center {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -105,9 +123,10 @@
 	z-index: 5;
 }
 
-#analog-minutes,
-#analog-hours,
-#analog-seconds {
+/* hands */
+.analog-minutes,
+.analog-hours,
+.analog-seconds {
 	transform: rotate(var(--deg));
 	position: absolute;
 	display: block;
@@ -120,26 +139,289 @@
 	transform-origin: bottom center;
 	background-color: white;
 	will-change: transform;
+	left: 0;
+	right: 0;
+	margin: auto;
 }
 
-#analog-hours {
-	height: 30%;
+.analog-hours {
+	height: calc(var(--clock-size) * 2.4);
 }
 
-#analog-minutes {
-	height: 45%;
+.analog-minutes {
+	height: calc(var(--clock-size) * 3.6);
 }
 
-#analog-seconds {
+.analog-seconds {
 	display: none;
-	height: 45%;
+	height: calc(var(--clock-size) * 3.6);
 	opacity: 0.8;
-	background-color: red;
+	background-color: #e30713;
 	width: calc(var(--clock-size) * 0.1);
-	margin-left: calc(var(--clock-size) * -0.05);
 }
 
-#analog-face {
+/* swiss hands */
+#time[data-hands='swiss-hands'] .analog-center {
+	display: none;
+}
+
+#time[data-hands='swiss-hands'].seconds .analog-center {
+	display: block;
+	background-color: #e30713;
+	width: calc(var(--clock-size) * 0.3);
+	height: calc(var(--clock-size) * 0.3);
+}
+
+#time[data-hands='swiss-hands'] .analog-hours {
+	height: 30%;
+	width: calc(var(--clock-size) * 0.35);
+	border-radius: 0;
+}
+
+/* bit that pokes out */
+#time[data-hands='swiss-hands'] .analog-hours:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: white;
+	width: calc(var(--clock-size) * 0.35);
+	height: calc(var(--clock-size) * 1.2);
+	bottom: calc(var(--clock-size) * -1.2);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#time[data-hands='swiss-hands'] .analog-minutes {
+	height: calc(var(--clock-size) * 3.69);
+	width: calc(var(--clock-size) * 0.25);
+	border-radius: 0;
+}
+
+/* bit that pokes out */
+#time[data-hands='swiss-hands'] .analog-minutes:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: white;
+	width: calc(var(--clock-size) * 0.25);
+	height: calc(var(--clock-size) * 1.2);
+	bottom: calc(var(--clock-size) * -1.2);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#time[data-hands='swiss-hands'] .analog-seconds {
+	height: calc(var(--clock-size) * 2.8);
+	border-radius: 0;
+	opacity: 1;
+}
+
+/* bit that pokes out */
+#time[data-hands='swiss-hands'] .analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: #e30713;
+	width: calc(var(--clock-size) * 0.1);
+	height: calc(var(--clock-size) * 1.2);
+	bottom: calc(var(--clock-size) * -1.2);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+/* circle at the end */
+#time[data-hands='swiss-hands'] .analog-seconds:before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: calc(var(--clock-size) * 0.65);
+	height: calc(var(--clock-size) * 0.65);
+	background-color: #e30713;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 100%;
+}
+
+/* braun hands */
+#time[data-hands='braun'].seconds .analog-center {
+	background-color: #f9b603;
+	width: calc(var(--clock-size) * 0.5);
+	height: calc(var(--clock-size) * 0.5);
+}
+
+#time[data-hands='braun'].seconds .analog-seconds {
+	background-color: #f9b603;
+	opacity: 1;
+	height: calc(var(--clock-size) * 3.5);
+}
+
+/* bit that pokes out */
+#time[data-hands='braun'] .analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	border-radius: 0 0 10px 10px;
+	background-color: #f9b603;
+	width: calc(var(--clock-size) * 0.3);
+	height: calc(var(--clock-size) * 0.75);
+	bottom: calc(var(--clock-size) * -0.75);
+	left: 50%;
+	transform: translateX(-50%);
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+#time[data-hands='braun'] .analog-hours {
+	width: calc(var(--clock-size) * 0.3);
+	height: calc(var(--clock-size) * 2.58);
+}
+
+#time[data-hands='braun'] .analog-minutes {
+	height: calc(var(--clock-size) * 3.33);
+}
+
+/* classic hands */
+#time[data-hands='classic'] .analog-hours,
+#time[data-hands='classic'] .analog-minutes {
+	background-color: transparent;
+	position: absolute;
+	background-position: center;
+	background-repeat: no-repeat;
+	box-shadow: unset;
+	filter: invert(1);
+	opacity: 1;
+}
+
+#time[data-hands='classic'].white-opaque .analog-hours,
+#time[data-hands='classic'].white-opaque .analog-minutes {
+	filter: unset;
+}
+
+#time[data-hands='classic'] .analog-hours {
+	background-image: url('../../assets/interface/classic_hours.svg');
+	height: calc(var(--clock-size) * 2.35);
+	width: calc(var(--clock-size) * 1.5);
+}
+
+#time[data-hands='classic'] .analog-minutes {
+	background-image: url('../../assets/interface/classic_minutes.svg');
+	height: calc(var(--clock-size) * 3.4);
+	width: calc(var(--clock-size) * 1.2);
+}
+
+#time[data-hands='classic'] .analog-seconds,
+#time[data-hands='classic'].seconds .analog-center {
+	background-color: #cdaa35;
+	opacity: 1;
+}
+
+#time[data-hands='classic'] .analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: #cdaa35;
+	width: calc(var(--clock-size) * 0.08);
+	height: calc(var(--clock-size) * 0.9);
+	bottom: calc(var(--clock-size) * -0.9);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+/* Apple Watch hands */
+#time[data-hands='apple'] .analog-hours,
+#time[data-hands='apple'] .analog-minutes {
+	height: calc(var(--clock-size) * 0.7);
+	width: calc(var(--clock-size) * 0.1);
+	border-radius: 0;
+}
+
+#time[data-hands='apple'] .analog-hours:before,
+#time[data-hands='apple'] .analog-minutes:before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: calc(var(--clock-size) * 0.3);
+	background-color: white;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: 8px;
+}
+
+#time[data-hands='apple'] .analog-hours:before {
+	height: calc(var(--clock-size) * 1.4);
+	top: calc(var(--clock-size) * -1.35);
+}
+
+#time[data-hands='apple'] .analog-minutes:before {
+	height: calc(var(--clock-size) * 2.5);
+	top: calc(var(--clock-size) * -2.48);
+}
+
+#time[data-hands='apple'].white-opaque .analog-hours:before,
+#time[data-hands='apple'].white-opaque .analog-minutes:before {
+	background-color: black;
+}
+
+#time[data-hands='apple'].seconds .analog-seconds {
+	background-color: #f06142;
+	width: calc(var(--clock-size) * 0.08);
+	opacity: 1;
+	z-index: 1;
+}
+
+/* bit that pokes out */
+#time[data-hands='apple'] .analog-seconds:after {
+	content: '';
+	display: block;
+	position: absolute;
+	background-color: #f06142;
+	width: calc(var(--clock-size) * 0.08);
+	height: calc(var(--clock-size) * 0.9);
+	bottom: calc(var(--clock-size) * -0.9);
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+#time[data-hands='apple'].seconds .analog-center {
+	background-color: #f06142;
+}
+
+#time[data-hands='apple'].seconds .analog-center:before {
+	content: '';
+	width: calc(var(--clock-size) * 0.17);
+	height: calc(var(--clock-size) * 0.17);
+	background-color: black;
+	position: absolute;
+	display: block;
+	border-radius: 100%;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+#time[data-hands='apple'].seconds.white-opaque .analog-center:before {
+	background-color: white;
+}
+
+/* white circle at the base of the hands */
+#time[data-hands='apple'] .analog:after {
+	content: '';
+	width: calc(var(--clock-size) * 0.45);
+	height: calc(var(--clock-size) * 0.45);
+	background-color: white;
+	position: absolute;
+	display: block;
+	border-radius: 100%;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+#time[data-hands='apple'].white-opaque .analog:after {
+	background-color: black;
+}
+
+/* faces */
+.analog-face {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -148,7 +430,7 @@
 	--padding: 0.75em;
 }
 
-#analog-face span {
+.analog-face span {
 	position: absolute;
 	display: block;
 	opacity: 0.6;
@@ -158,44 +440,79 @@
 	text-align: center;
 }
 
-#analog-face span:nth-child(1) {
+#time[data-face='swiss'] .analog-face,
+#time[data-face='braun'] .analog-face {
+	background-size: 95%;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+#time[data-face='swiss'] .analog-face {
+	background-image: url('../../assets/interface/swiss-railway-white.svg');
+}
+
+#time[data-face='braun'] .analog-face {
+	background-image: url('../../assets/interface/braun-white.svg');
+}
+
+#time[data-face='swiss'].white-opaque .analog-face {
+	background-image: url('../../assets/interface/swiss-railway-black.svg');
+}
+
+#time[data-face='braun'].white-opaque .analog-face {
+	background-image: url('../../assets/interface/braun-black.svg');
+}
+
+#time.white-opaque:not([data-hands='classic']) .analog .analog-minutes,
+#time.white-opaque:not([data-hands='classic']) .analog .analog-hours,
+#time.white-opaque[data-hands='modern'] .analog-center,
+#time.white-opaque .analog .analog-minutes:after,
+#time.white-opaque .analog .analog-hours:after {
+	background-color: rgba(0, 0, 0, 0.9);
+}
+
+#time.white-opaque .analog-face span {
+	color: black;
+	opacity: 0.9;
+}
+
+.analog-face span:nth-child(1) {
 	left: var(--center);
 	top: var(--padding);
 }
 
-#analog-face span:nth-child(2) {
+.analog-face span:nth-child(2) {
 	top: var(--center);
 	right: var(--padding);
 }
 
-#analog-face span:nth-child(3) {
+.analog-face span:nth-child(3) {
 	left: var(--center);
 	bottom: var(--padding);
 }
 
-#analog-face span:nth-child(4) {
+.analog-face span:nth-child(4) {
 	top: var(--center);
 	left: var(--padding);
 }
 
-#date {
+#time p {
 	font-size: 1.5em;
-	margin-top: 0.5em;
 }
 
-#time.analog #date {
+#time.analog .clock-date {
 	margin-top: 1em;
 }
 
-#time-container.he_hidden ~ #date {
+#time-container.he_hidden ~ .clock-date {
 	margin-top: 0;
 }
 
-#date-aa-separator::after,
-#date-bb-separator::after {
+.clock-date-aa-separator::after,
+.clock-date-bb-separator::after {
 	content: ' ';
 }
 
-#date.us #date-aa-separator::after {
+.clock-date.us .clock-date-aa-separator::after {
 	content: ', ';
 }
