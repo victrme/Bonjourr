@@ -607,6 +607,15 @@ aside .settings-title .tooltip {
 	background-color: transparent;
 }
 
+.split-range button:not(.on) span:last-child,
+.split-range button.on span:first-child {
+	display: none;
+}
+
+.split-range span {
+	display: initial;
+}
+
 .freq_wrap select {
 	width: 100%;
 }
@@ -786,16 +795,6 @@ aside .settings-title .tooltip {
 
 #worldclocks_options .wrapper {
 	padding: 0 0 0 4px;
-}
-
-.shade-dark span,
-.shade-light span {
-	display: none;
-}
-
-.shade-dark span[data-shade='dark'],
-.shade-light span[data-shade='light'] {
-	display: initial;
 }
 
 #worldclocks-list,

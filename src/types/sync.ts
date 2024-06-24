@@ -86,8 +86,8 @@ declare namespace Sync {
 	}
 
 	type AnalogStyle = {
-		border: { rgb: string; alpha: number }
-		background: { rgb: string; alpha: number }
+		border: string
+		background: string
 		shape: 'round' | 'square' | 'rectangle'
 		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
 		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun' | 'apple'

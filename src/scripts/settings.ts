@@ -127,8 +127,8 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_clockface', data.analogstyle?.face || 'none')
 	setInput('i_clockhands', data.analogstyle?.hands || 'none')
 	setInput('i_clockshape', data.analogstyle?.shape || 'round')
-	setInput('i_clockborder-opacity', data.analogstyle?.border?.alpha ?? 1)
-	setInput('i_clockbackground-opacity', data.analogstyle?.background?.alpha ?? 0.2)
+	setInput('i_analog-border-opacity', parseInt((data.analogstyle?.border ?? '#ffff').slice(4), 16))
+	setInput('i_analog-background-opacity', parseInt((data.analogstyle?.border ?? '#fff2').slice(4), 16))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_collection', data.unsplash?.collection ?? '')
@@ -217,10 +217,8 @@ function initOptionsValues(data: Sync.Storage) {
 	})()
 
 	// Analog shade buttons
-	paramId('i_clockbackground-shade').classList.toggle('shade-light', data?.analogstyle?.background?.rgb !== '0, 0, 0')
-	paramId('i_clockbackground-shade').classList.toggle('shade-dark', data?.analogstyle?.background?.rgb === '0, 0, 0')
-	paramId('i_clockborder-shade').classList.toggle('shade-light', data?.analogstyle?.border?.rgb !== '0, 0, 0')
-	paramId('i_clockborder-shade').classList.toggle('shade-dark', data?.analogstyle?.border?.rgb === '0, 0, 0')
+	paramId('i_analog-background-shade').classList.toggle('on', data?.analogstyle?.background?.includes('#000'))
+	paramId('i_analog-border-shade').classList.toggle('on', data?.analogstyle?.border?.includes('#000'))
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
@@ -427,20 +425,20 @@ function initOptionsEvents() {
 		clock(undefined, { hands: this.value })
 	})
 
-	paramId('i_clockborder-opacity').addEventListener('input', function (this: HTMLInputElement) {
-		clock(undefined, { border: { opacity: parseFloat(this.value) } })
+	paramId('i_analog-border-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { border: 'opacity' })
 	})
 
-	paramId('i_clockbackground-opacity').addEventListener('input', function (this: HTMLInputElement) {
-		clock(undefined, { background: { opacity: parseFloat(this.value) } })
+	paramId('i_analog-background-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { background: 'opacity' })
 	})
 
-	paramId('i_clockborder-shade').addEventListener('click', function (this: HTMLInputElement) {
-		clock(undefined, { border: { shade: this.classList.contains('shade-light') ? 'light' : 'dark' } })
+	paramId('i_analog-border-shade').addEventListener('click', function (this: HTMLInputElement) {
+		clock(undefined, { border: 'shade' })
 	})
 
-	paramId('i_clockbackground-shade').addEventListener('click', function (this: HTMLInputElement) {
-		clock(undefined, { background: { shade: this.classList.contains('shade-light') ? 'light' : 'dark' } })
+	paramId('i_analog-background-shade').addEventListener('click', function (this: HTMLInputElement) {
+		clock(undefined, { background: 'shade' })
 	})
 
 	paramId('i_clockshape').addEventListener('change', function (this: HTMLInputElement) {
@@ -752,6 +750,10 @@ function initOptionsEvents() {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
+	})
+
+	document.querySelectorAll<HTMLButtonElement>('.split-range button')?.forEach((button) => {
+		button.addEventListener('click', () => button.classList.toggle('on'))
 	})
 }
 

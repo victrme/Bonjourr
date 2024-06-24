@@ -378,28 +378,22 @@
 				<hr />
 
 				<div class="wrapper">
-					<label for="i_clockbackground-opacity" class="trn">Clock background</label>
+					<label for="i_analog-background-opacity" class="trn">Clock background</label>
 
-					<div class="split-inputs split-range">
+					<div id="analog-background-range" class="split-inputs split-range">
 						<input
-							id="i_clockbackground-opacity"
-							name="i_clockbackground-opacity"
+							id="i_analog-background-opacity"
+							name="i_analog-background-opacity"
+							class="range"
 							type="range"
 							min="0"
-							max="1"
-							step=".05"
-							value=".1"
-							class="range"
+							max="15"
+							step="1"
 						/>
 
-						<button
-							id="i_clockbackground-shade"
-							class="input-btn shade-light"
-							aria-label="Clock background shade"
-							title="Clock background shade"
-						>
-							<span data-shade="light">☀</span>
-							<span data-shade="dark">☾</span>
+						<button id="i_analog-background-shade" title="Clock background shade" class="input-btn">
+							<span data-value="light">☀</span>
+							<span data-value="dark">☾</span>
 						</button>
 					</div>
 				</div>
@@ -407,28 +401,22 @@
 				<hr />
 
 				<div class="wrapper">
-					<label for="i_clockborder-opacity" class="trn">Clock border</label>
+					<label for="i_analog-border-opacity" class="trn">Clock border</label>
 
-					<div class="split-inputs split-range">
+					<div id="analog-border-range" class="split-inputs split-range">
 						<input
-							id="i_clockborder-opacity"
-							name="i_clockborder-opacity"
+							id="i_analog-border-opacity"
+							name="i_analog-border-opacity"
+							class="range"
 							type="range"
 							min="0"
-							max="1"
-							step=".05"
-							value="1"
-							class="range"
+							max="15"
+							step="1"
 						/>
 
-						<button
-							id="i_clockborder-shade"
-							class="input-btn shade-light"
-							aria-label="Clock border shade"
-							title="Clock border shade"
-						>
-							<span data-shade="light">☀</span>
-							<span data-shade="dark">☾</span>
+						<button id="i_analog-border-shade" title="Clock border shade" class="input-btn">
+							<span data-value="light">☀</span>
+							<span data-value="dark">☾</span>
 						</button>
 					</div>
 				</div>

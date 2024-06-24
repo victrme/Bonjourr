@@ -1,3 +1,4 @@
+import { hexColorFromSplitRange } from '../utils'
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
@@ -17,8 +18,8 @@ type ClockUpdate = {
 	face?: string
 	hands?: string
 	size?: number
-	border?: { opacity?: number; shade?: 'light' | 'dark' }
-	background?: { opacity?: number; shade?: 'light' | 'dark' }
+	border?: 'opacity' | 'shade'
+	background?: 'opacity' | 'shade'
 	worldclocks?: boolean
 	world?: { index: number; region?: string; timezone?: string }
 }
@@ -29,8 +30,8 @@ const defaultAnalogStyle: Sync.AnalogStyle = {
 	face: 'none',
 	hands: 'modern',
 	shape: 'round',
-	border: { alpha: 1, rgb: '255, 255, 255' },
-	background: { alpha: 0.2, rgb: '255, 255, 255' },
+	border: '#ffff',
+	background: '#fff2',
 }
 
 const defaultTimezones = ['Europe/Paris', 'America/New_York', 'Asia/Tokyo']
@@ -112,36 +113,14 @@ async function clockUpdate(update: ClockUpdate) {
 		worldclocks: update.worldclocks ?? data.clock.worldclocks,
 	}
 
-	// const option = update.background ? 'background' : 'border'
+	if (update.background || update.border) {
+		const isOpacity = update.background === 'opacity' || update.border === 'opacity'
+		const option = !!update.background ? 'background' : 'border'
 
-	if (update.background?.opacity !== undefined) {
-		analogstyle.background.alpha = update.background?.opacity
-		eventDebounce({ analogstyle })
-		analogStyle(analogstyle)
-		return
-	}
+		analogstyle[option] = hexColorFromSplitRange(`#analog-${option}-range`)
 
-	if (update.border?.opacity !== undefined) {
-		analogstyle.border.alpha = update.border?.opacity
-		eventDebounce({ analogstyle })
-		analogStyle(analogstyle)
-		return
-	}
+		isOpacity ? eventDebounce({ analogstyle }) : storage.sync.set({ analogstyle })
 
-	if (update.background?.shade) {
-		const rgb = update.background?.shade === 'light' ? '0, 0, 0' : '255, 255, 255'
-		toggleShadeButtons('background')
-		analogstyle.background.rgb = rgb
-		storage.sync.set({ analogstyle })
-		analogStyle(analogstyle)
-		return
-	}
-
-	if (update.border?.shade) {
-		const rgb = update.border?.shade === 'light' ? '0, 0, 0' : '255, 255, 255'
-		toggleShadeButtons('border')
-		analogstyle.border.rgb = rgb
-		storage.sync.set({ analogstyle })
 		analogStyle(analogstyle)
 		return
 	}
@@ -168,8 +147,9 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	const time = document.getElementById('time') as HTMLElement
 	const spans = document.querySelectorAll<HTMLSpanElement>('.analog span')
 
-	const isWhiteOpaque = style.background?.rgb?.includes('255, 255, 255') && (style?.background?.alpha ?? 10) > 0.5
-	const isTransparent = style.background?.alpha === 0
+	const backgroundAlpha = parseInt(style.background.slice(4), 16)
+	const isWhiteOpaque = style.background?.includes('fff') && backgroundAlpha > 7
+	const isTransparent = backgroundAlpha === 0
 
 	let faceNumbers = ['12', '3', '6', '9']
 	const lang = getLang()
@@ -193,18 +173,12 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	time.classList.toggle('transparent', isTransparent)
 	time.classList.toggle('white-opaque', isWhiteOpaque)
 
-	time.style.setProperty('--analog-border', `rgba(${style.border.rgb}, ${style.border.alpha})`)
-	time.style.setProperty('--analog-background', `rgba(${style.background.rgb}, ${style.background.alpha})`)
+	time.style.setProperty('--analog-border', style.border)
+	time.style.setProperty('--analog-background', style.background)
 }
 
 function clockSize(size = 1) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
-}
-
-function toggleShadeButtons(option: 'background' | 'border') {
-	const button = document.querySelector<HTMLButtonElement>(`#i_clock${option}-shade`)
-	button?.classList.toggle('shade-light')
-	button?.classList.toggle('shade-dark')
 }
 
 //	Clock
@@ -472,18 +446,6 @@ function zonedDate(timezone: string = 'auto'): Date {
 	const zonedDate = new Date(intl.format(date))
 
 	return zonedDate
-}
-
-function createHexColorFromSettings(option: 'background' | 'border'): string {
-	const domopacity = document.querySelector<HTMLInputElement>(`#i_clock${option}-opacity`)
-	const domshade = document.querySelector<HTMLButtonElement>(`#i_clock${option}-shade`)
-
-	const opacity = parseInt(domopacity?.value ?? '0')
-	const shade = domshade?.classList.contains('shade-light') ? 'light' : 'dark'
-	const color = shade === 'dark' ? '#000' : '#fff'
-	const alpha = opacity.toString(16)
-
-	return color + alpha
 }
 
 function fixunits(val: number) {
