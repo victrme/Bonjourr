@@ -34,13 +34,9 @@
 	opacity: 0.7;
 }
 
-#sb_container.opaque #sb_submit {
-	background-color: rgba(34, 34, 34, 0.1);
-}
-
 #sb_container hr {
 	margin: 0.6em 0;
-	border-right: 1px solid rgba(255, 255, 255, 0.3);
+	border-right: 1px solid #fff3;
 }
 
 #searchbar-wrapper {
@@ -49,7 +45,7 @@
 	width: 100%;
 	border-radius: 10px;
 	background-color: var(--searchbar-background);
-	border: 1px solid rgba(255, 255, 255, 0.075);
+	border: 1px solid #fff1;
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
 }
@@ -58,24 +54,24 @@
 	width: 100%;
 	height: 2.5em;
 	color: #fff;
-	padding-inline: 1em;
+	padding-inline-start: 1em;
 	font-size: 1.3em;
 	font-family: inherit;
 	font-weight: inherit;
 	text-overflow: ellipsis;
 	border: none;
+	border-radius: 0.5em;
 	background-color: transparent;
 }
 
 #searchbar::placeholder {
 	transition: opacity 0.2s;
 	text-transform: none;
-	color: rgba(255, 255, 255, 0.6);
+	color: #fff8;
 }
 
 #sb-buttons {
 	display: none;
-	column-gap: 0.8em;
 }
 
 #sb-buttons.shown {
@@ -85,24 +81,18 @@
 #sb-buttons button {
 	color: #fff;
 	font-size: inherit;
+	padding: 0.3em 1.5em;
 	border-radius: 0.5em;
 	background-color: transparent;
-	transition: opacity 0.2s, filter 0.1s, transform 0.1s;
+	transition: opacity 0.2s;
 }
 
 #sb-buttons button:hover {
-	filter: brightness(0.9);
+	filter: brightness(0.8);
 }
 
 #sb-buttons button:active {
-	filter: brightness(0.8);
-	transform: scale(0.94);
-}
-
-#sb-buttons #sb_submit {
-	margin: 0.3em 0.5em;
-	padding: 0.3em 1em;
-	background-color: rgba(255, 255, 255, 0.2666666667);
+	filter: brightness(0.8) opacity(0.6);
 }
 
 #sb-buttons #sb_submit img {
@@ -123,7 +113,7 @@
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-	border: 1px solid rgba(255, 255, 255, 0.075);
+	border: 1px solid #fff1;
 	background-color: var(--searchbar-background);
 	z-index: 4;
 }
@@ -138,7 +128,7 @@
 	align-items: center;
 	margin: 0;
 	padding: 0.4em 1em 0.4em 0.6em;
-	border-radius: 4px;
+	border-radius: 0.4em;
 	column-gap: 0.6em;
 	border: 1px solid transparent;
 	cursor: pointer;
@@ -151,8 +141,8 @@
 }
 
 #sb-suggestions li[aria-selected='true'] {
-	border-color: #2c7be5;
-	background-color: rgba(44, 123, 229, 0.3);
+	border-color: var(--color-blue);
+	background-color: rgba(var(--blue), 0.3);
 }
 
 #sb-suggestions img {
