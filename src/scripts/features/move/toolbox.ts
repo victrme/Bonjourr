@@ -36,6 +36,10 @@ export function toolboxEvents() {
 		updateMoveElement({ span: 'row' })
 	})
 
+	document.querySelector<HTMLButtonElement>('#b_resetlayout')?.addEventListener('click', () => {
+		updateMoveElement({ reset: true })
+	})
+
 	moverdom?.addEventListener('mousedown', startDrag)
 	moverdom?.addEventListener('mouseup', removeDrag)
 	moverdom?.addEventListener('mouseleave', removeDrag)

@@ -267,8 +267,8 @@ function initOptionsValues(data: Sync.Storage) {
 function initOptionsEvents() {
 	// General
 
-	paramId('i_showall').addEventListener('change', function () {
-		showall(this.checked, true)
+	paramId('i_showall').onclickdown(function (_, target) {
+		showall(target.checked, true)
 	})
 
 	paramId('i_lang').addEventListener('change', function () {
@@ -280,7 +280,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_favicon').addEventListener('change', function () {
-		paramId('i_favicon').blur()
+		this.blur()
 	})
 
 	paramId('i_tabtitle').addEventListener('input', function () {
@@ -288,21 +288,21 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_tabtitle').addEventListener('change', function () {
-		paramId('i_tabtitle').blur()
+		this.blur()
 	})
 
 	paramId('i_dark').addEventListener('change', function () {
 		darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
 	})
 
-	paramId('i_settingshide').addEventListener('change', function () {
-		hideElements({ settingsicon: this.checked }, { isEvent: true })
+	paramId('i_settingshide').onclickdown(function (_, target) {
+		hideElements({ settingsicon: target.checked }, { isEvent: true })
 	})
 
 	// Quick links
 
-	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['quicklinks', this.checked] })
+	paramId('i_quicklinks').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['quicklinks', target.checked] })
 	})
 
 	paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent) {
@@ -322,31 +322,31 @@ function initOptionsEvents() {
 		this.classList.remove('valid')
 	})
 
-	paramId('i_linkgroups').addEventListener('change', function (this) {
-		quickLinks(undefined, { groups: this.checked })
+	paramId('i_linkgroups').onclickdown(function (_, target) {
+		quickLinks(undefined, { groups: target.checked })
 	})
 
-	paramId('i_linknewtab').addEventListener('change', function (this) {
-		quickLinks(undefined, { newtab: this.checked })
+	paramId('i_linknewtab').onclickdown(function (_, target) {
+		quickLinks(undefined, { newtab: target.checked })
 	})
 
 	paramId('i_linkstyle').addEventListener('change', function (this) {
 		quickLinks(undefined, { styles: { style: this.value } })
 	})
 
-	paramId('b_showtitles').addEventListener('click', function (this) {
-		quickLinks(undefined, { styles: { titles: !this.classList.contains('on') } })
+	paramId('b_showtitles').onclickdown(function (_, target) {
+		quickLinks(undefined, { styles: { titles: !target.classList.contains('on') } })
 	})
 
-	paramId('b_showbackgrounds').addEventListener('click', function (this) {
-		quickLinks(undefined, { styles: { backgrounds: !this.classList.contains('on') } })
+	paramId('b_showbackgrounds').onclickdown(function (_, target) {
+		quickLinks(undefined, { styles: { backgrounds: !target.classList.contains('on') } })
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {
 		quickLinks(undefined, { row: this.value })
 	})
 
-	paramId('b_importbookmarks').addEventListener('click', linksImport)
+	paramId('b_importbookmarks').onclickdown(linksImport)
 
 	// Backgrounds
 
@@ -358,8 +358,8 @@ function initOptionsEvents() {
 		updateBackgroundOption({ freq: this.value })
 	})
 
-	paramId('i_refresh').addEventListener('click', function (this: HTMLInputElement) {
-		updateBackgroundOption({ refresh: this.children[0] as HTMLSpanElement })
+	paramId('i_refresh').onclickdown(function (_, target) {
+		updateBackgroundOption({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
 	paramId('f_collection').addEventListener('submit', function (this, event) {
@@ -375,11 +375,11 @@ function initOptionsEvents() {
 		localBackgrounds({ newfile: this.files })
 	})
 
-	paramId('b_thumbnail-more').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('b_thumbnail-more').onclickdown(function () {
 		localBackgrounds({ showing: 'more' })
 	})
 
-	paramId('b_thumbnail-all').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('b_thumbnail-all').onclickdown(function () {
 		localBackgrounds({ showing: 'all' })
 	})
 
@@ -393,21 +393,21 @@ function initOptionsEvents() {
 
 	// Time and date
 
-	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['time', this.checked] })
+	paramId('i_time').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['time', target.checked] })
 	})
 
-	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { analog: this.checked })
+	paramId('i_analog').onclickdown(function (_, target) {
+		clock(undefined, { analog: target.checked })
 	})
 
-	paramId('i_seconds').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { seconds: this.checked })
+	paramId('i_seconds').onclickdown(function (_, target) {
+		clock(undefined, { seconds: target.checked })
 	})
 
-	paramId('i_worldclocks').addEventListener('change', function (this: HTMLInputElement) {
-		paramId('worldclocks_options')?.classList.toggle('shown', this.checked)
-		clock(undefined, { worldclocks: this.checked })
+	paramId('i_worldclocks').onclickdown(function (_, target) {
+		paramId('worldclocks_options')?.classList.toggle('shown', target.checked)
+		clock(undefined, { worldclocks: target.checked })
 	})
 
 	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input, i) => {
@@ -450,8 +450,8 @@ function initOptionsEvents() {
 		clock(undefined, { size: parseFloat(this.value) })
 	})
 
-	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { ampm: this.checked })
+	paramId('i_ampm').onclickdown(function (_, target) {
+		clock(undefined, { ampm: target.checked })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
@@ -468,11 +468,11 @@ function initOptionsEvents() {
 
 	// Weather
 
-	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['main', this.checked] })
+	paramId('i_main').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['main', target.checked] })
 	})
 
-	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement, event) {
+	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		weather(undefined, { geol: this?.value })
 	})
 
@@ -513,8 +513,8 @@ function initOptionsEvents() {
 		weather(undefined, { unhide: true })
 	})
 
-	paramId('i_greethide').addEventListener('change', function () {
-		hideElements({ greetings: !this.checked }, { isEvent: true })
+	paramId('i_greethide').onclickdown(function (_, target) {
+		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 
 	paramId('i_greeting').addEventListener('input', function () {
@@ -527,8 +527,8 @@ function initOptionsEvents() {
 
 	// Notes
 
-	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['notes', this.checked] })
+	paramId('i_notes').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['notes', target.checked] })
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
@@ -543,14 +543,14 @@ function initOptionsEvents() {
 		notes(undefined, { background: true })
 	})
 
-	paramId('i_notes-shade').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('i_notes-shade').onclickdown(function () {
 		notes(undefined, { background: true })
 	})
 
 	// Searchbar
 
-	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['searchbar', this.checked] })
+	paramId('i_sb').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['searchbar', target.checked] })
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -561,7 +561,7 @@ function initOptionsEvents() {
 		searchbar(undefined, { background: true })
 	})
 
-	paramId('i_sb-shade').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('i_sb-shade').onclickdown(function () {
 		searchbar(undefined, { background: true })
 	})
 
@@ -573,12 +573,12 @@ function initOptionsEvents() {
 		searchbar(undefined, { request: this })
 	})
 
-	paramId('i_sbnewtab').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(undefined, { newtab: this.checked })
+	paramId('i_sbnewtab').onclickdown(function (_, target) {
+		searchbar(undefined, { newtab: target.checked })
 	})
 
-	paramId('i_sbsuggestions').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(undefined, { suggestions: this.checked })
+	paramId('i_sbsuggestions').onclickdown(function (_, target) {
+		searchbar(undefined, { suggestions: target.checked })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('keyup', function () {
@@ -591,8 +591,8 @@ function initOptionsEvents() {
 
 	// Quotes
 
-	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['quotes', this.checked] })
+	paramId('i_quotes').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['quotes', target.checked] })
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
@@ -603,14 +603,14 @@ function initOptionsEvents() {
 		quotes(undefined, { type: this.value })
 	})
 
-	paramId('i_qtrefresh').addEventListener('click', function () {
-		inputThrottle(this)
-		turnRefreshButton(this.children[0] as HTMLSpanElement, true)
+	paramId('i_qtrefresh').onclickdown(function (_, target) {
+		inputThrottle(target)
+		turnRefreshButton(target.children[0] as HTMLSpanElement, true)
 		quotes(undefined, { refresh: true })
 	})
 
-	paramId('i_qtauthor').addEventListener('change', function () {
-		quotes(undefined, { author: this.checked })
+	paramId('i_qtauthor').onclickdown(function (_, target) {
+		quotes(undefined, { author: target.checked })
 	})
 
 	paramId('i_qtlist').addEventListener('change', function () {
@@ -648,16 +648,12 @@ function initOptionsEvents() {
 
 	// Page layout
 
-	paramId('b_editmove').addEventListener('click', function () {
+	paramId('b_editmove').onclickdown(function () {
 		moveElements(undefined, { toggle: true })
 	})
 
-	paramId('b_resetlayout').addEventListener('click', function () {
-		moveElements(undefined, { reset: true })
-	})
-
 	for (const button of paramId('grid-layout').querySelectorAll<HTMLButtonElement>('button')) {
-		button.addEventListener('click', () => {
+		button.onclickdown(function () {
 			moveElements(undefined, { layout: button.dataset.layout || '' })
 		})
 	}
@@ -755,14 +751,14 @@ function initOptionsEvents() {
 	})
 
 	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
-		elem.addEventListener('click', function () {
+		elem.onclickdown(function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
 	})
 
 	document.querySelectorAll<HTMLButtonElement>('.split-range button')?.forEach((button) => {
-		button.addEventListener('click', () => button.classList.toggle('on'))
+		button.onclickdown(() => button.classList.toggle('on'))
 	})
 }
 
