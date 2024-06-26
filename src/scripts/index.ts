@@ -21,6 +21,7 @@ import filterImports from './utils/filterimports'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 import storage from './storage'
+import 'clickdown'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 

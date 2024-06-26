@@ -1,4 +1,4 @@
-import { addEventListenerFastClick, bundleLinks, getHTMLTemplate, randomString } from '../../utils'
+import { bundleLinks, getHTMLTemplate, randomString } from '../../utils'
 import quickLinks, { validateLink } from '.'
 import { MAIN_API, PLATFORM } from '../../defaults'
 import { tradThis } from '../../utils/translations'
@@ -77,9 +77,9 @@ async function createBookmarksDialog() {
 		const closebutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_close')
 		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
-		addEventListenerFastClick(applybutton, () => importSelectedBookmarks(bookmarkFolders))
-		addEventListenerFastClick(closebutton, closeDialog)
-		addEventListenerFastClick(bookmarksdom, closeDialog)
+		applybutton?.onclickdown(() => importSelectedBookmarks(bookmarkFolders))
+		closebutton?.onclickdown(closeDialog)
+		bookmarksdom?.onclickdown(closeDialog)
 
 		document.body.appendChild(bookmarksdom)
 	}
@@ -96,8 +96,8 @@ async function createBookmarksDialog() {
 		}
 
 		h2.textContent = list.title
-		addEventListenerFastClick(selectButton, () => toggleFolderSelect(folder))
-		addEventListenerFastClick(syncButton, () => toggleFolderSync(folder))
+		selectButton?.onclickdown(() => toggleFolderSelect(folder))
+		syncButton?.onclickdown(() => toggleFolderSync(folder))
 		folder.classList.toggle('used', list.used)
 		folder.dataset.title = list.title
 		container?.appendChild(folder)
@@ -131,8 +131,8 @@ async function createBookmarksDialog() {
 				.slice(0, -1)
 				.replace('/', '')
 
-			addEventListenerFastClick(li_button, () => li.classList.toggle('selected'))
-			addEventListenerFastClick(li_button, handleApplyButtonText)
+			li_button?.onclickdown(() => li.classList.toggle('selected'))
+			li_button?.onclickdown(handleApplyButtonText)
 
 			if (bookmark.used) {
 				li_button.setAttribute('disabled', '')

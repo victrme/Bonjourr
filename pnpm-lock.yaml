@@ -11,6 +11,9 @@ importers:
       '@victr/deepmerge':
         specifier: ^1.3.2
         version: 1.3.2
+      clickdown:
+        specifier: ^1.0.2
+        version: 1.0.2
       idb-keyval:
         specifier: ^6.2.1
         version: 6.2.1
@@ -189,6 +192,9 @@ packages:
   '@victr/deepmerge@1.3.2':
     resolution: {integrity: sha512-32/Yb0uvqDK+aFb7QbtHbHKmoPseGKcoRMN5aFyHN+CGAzqzQQ/iQYSSHu+x9KVMPG3J0lB3gQo/ngXzzPN3sg==}
 
+  clickdown@1.0.2:
+    resolution: {integrity: sha512-GBBnjE0NytZP47T0bWGPzx5Z98fT+NcYjOTixGFYgF9kLLBifZW8XQzQ0d2CMzpkhP2bkqXVYguptkGN/TWo2w==}
+
   esbuild@0.21.4:
     resolution: {integrity: sha512-sFMcNNrj+Q0ZDolrp5pDhH0nRPN9hLIM3fRPwgbLYJeSHHgnXSnbV3xYgSVuOeLWH9c73VwmEverVzupIv5xuA==}
     engines: {node: '>=12'}
@@ -294,6 +300,8 @@ snapshots:
   '@types/har-format@1.2.15': {}
 
   '@victr/deepmerge@1.3.2': {}
+
+  clickdown@1.0.2: {}
 
   esbuild@0.21.4:
     optionalDependencies:
