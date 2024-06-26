@@ -65,11 +65,6 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 async function clockUpdate(update: ClockUpdate) {
 	const data = await storage.sync.get()
 	const analogstyle = data.analogstyle ?? structuredClone(defaultAnalogStyle)
-	let clock = data?.clock
-
-	if (!data.clock || data.dateformat === undefined || data.greeting === undefined) {
-		return
-	}
 
 	if (update.analog !== undefined) {
 		document.getElementById('analog_options')?.classList.toggle('shown', update.analog)
@@ -89,6 +84,30 @@ async function clockUpdate(update: ClockUpdate) {
 		greetings(zonedDate(update.timezone), data.greeting)
 	}
 
+	if (isHands(update.hands)) {
+		analogstyle.hands = update.hands
+	}
+
+	if (isShape(update.shape)) {
+		analogstyle.shape = update.shape
+	}
+
+	if (isFace(update.face)) {
+		analogstyle.face = update.face
+	}
+
+	if (update.background || update.border) {
+		const option = !!update.background ? 'background' : 'border'
+
+		analogstyle[option] = hexColorFromSplitRange(`#analog-${option}-range`)
+		analogStyle(analogstyle)
+
+		if (update?.[option] === 'opacity') eventDebounce({ analogstyle })
+		if (update?.[option] === 'shade') storage.sync.set({ analogstyle })
+
+		return
+	}
+
 	if (update.world !== undefined) {
 		const index = update.world.index
 		const baseclock = { region: defaultRegions[index], timezone: defaultTimezones[index] }
@@ -99,12 +118,10 @@ async function clockUpdate(update: ClockUpdate) {
 		if (timezone !== undefined) worldclock.timezone = timezone
 
 		data.worldclocks[index] = worldclock
-
 		toggleWorldClocksOptions()
 	}
 
 	data.clock = {
-		...clock,
 		ampm: update.ampm ?? data.clock.ampm,
 		size: update.size ?? data.clock.size,
 		analog: update.analog ?? data.clock.analog,
@@ -112,22 +129,6 @@ async function clockUpdate(update: ClockUpdate) {
 		timezone: update.timezone ?? data.clock.timezone,
 		worldclocks: update.worldclocks ?? data.clock.worldclocks,
 	}
-
-	if (update.background || update.border) {
-		const isOpacity = update.background === 'opacity' || update.border === 'opacity'
-		const option = !!update.background ? 'background' : 'border'
-
-		analogstyle[option] = hexColorFromSplitRange(`#analog-${option}-range`)
-
-		isOpacity ? eventDebounce({ analogstyle }) : storage.sync.set({ analogstyle })
-
-		analogStyle(analogstyle)
-		return
-	}
-
-	if (isHands(update.hands)) analogstyle.hands = update.hands
-	if (isShape(update.shape)) analogstyle.shape = update.shape
-	if (isFace(update.face)) analogstyle.face = update.face
 
 	storage.sync.set({
 		clock: data.clock,
@@ -193,11 +194,11 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 		}
 	})
 
-	if (clock.seconds) {
+	const clocks: Sync.WorldClocks = []
+
+	if (clock.seconds && !clock.analog) {
 		setSecondsWidthInCh()
 	}
-
-	const clocks: Sync.WorldClocks = []
 
 	if (clock.worldclocks) {
 		clocks.push(...world.filter(({ region }) => region))

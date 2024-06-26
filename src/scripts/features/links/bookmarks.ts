@@ -77,7 +77,7 @@ async function createBookmarksDialog() {
 		const closebutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_close')
 		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
-		applybutton?.onclickdown(() => importSelectedBookmarks(bookmarkFolders))
+		applybutton?.onclickdown(importSelectedBookmarks)
 		closebutton?.onclickdown(closeDialog)
 		bookmarksdom?.onclickdown(closeDialog)
 
@@ -149,7 +149,8 @@ async function createBookmarksDialog() {
 	setTimeout(() => bookmarksdom.classList.add('shown'))
 }
 
-function importSelectedBookmarks(folders: BookmarksFolder[]) {
+function importSelectedBookmarks() {
+	const folders = browserBookmarkFolders
 	const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
 	const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder li.selected')
 	const selectedFolders = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
@@ -172,7 +173,7 @@ function importSelectedBookmarks(folders: BookmarksFolder[]) {
 			})
 		}
 
-		if (isFolderSynced) {
+		if (isFolderSynced && folder.title !== 'topsites') {
 			return
 		}
 

@@ -118,7 +118,6 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_sbengine', data.searchbar?.engine || 'google')
 	setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
 	setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
-	setInput('i_sb-shade', opacityFromHex(data.searchbar?.background ?? '#fff2'))
 	setInput('i_sbwidth', data.searchbar?.width ?? 30)
 	setInput('i_sbrequest', data.searchbar?.request || '')
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
@@ -129,7 +128,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_clockhands', data.analogstyle?.hands || 'none')
 	setInput('i_clockshape', data.analogstyle?.shape || 'round')
 	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
-	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.border ?? '#fff2'))
+	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_collection', data.unsplash?.collection ?? '')
@@ -162,6 +161,11 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
+
+	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
+	paramId('i_analogbackground-shade')?.classList.toggle('on', (data.analogstyle?.background ?? '#fff').includes('#000'))
+	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
+	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 
 	// Input translation
 	translatePlaceholders()
