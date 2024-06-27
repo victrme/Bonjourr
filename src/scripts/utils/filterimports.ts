@@ -220,8 +220,8 @@ function improvedWeather(data: Import): Import {
 function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Data {
 	if (data.clock?.style) {
 		data.analogstyle = {
-			background: { rgb: '#fff', alpha: 0.2 },
-			border: { rgb: '#fff', alpha: 1 },
+			background: '#fff2',
+			border: '#ffff',
 			face: data?.clock?.face || 'none',
 			shape: 'round',
 			hands: 'modern',
@@ -232,8 +232,8 @@ function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Dat
 		}
 
 		if (data.clock.style === 'transparent') {
-			data.analogstyle.background = { rgb: '#fff', alpha: 0 }
-			data.analogstyle.border = { rgb: '#fff', alpha: 0 }
+			data.analogstyle.background = '#fff0'
+			data.analogstyle.border = '#fff0'
 		}
 	}
 

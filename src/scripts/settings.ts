@@ -163,7 +163,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
 
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
-	paramId('i_analogbackground-shade')?.classList.toggle('on', (data.analogstyle?.background ?? '#fff').includes('#000'))
+	paramId('i_analog-background-shade')?.classList.toggle('on', (data.analogstyle?.background ?? '#fff').includes('#000'))
 	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
 	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 
@@ -220,10 +220,6 @@ function initOptionsValues(data: Sync.Storage) {
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
 	})()
-
-	// Analog shade buttons
-	paramId('i_analog-background-shade').classList.toggle('on', data?.analogstyle?.background?.includes('#000'))
-	paramId('i_analog-border-shade').classList.toggle('on', data?.analogstyle?.border?.includes('#000'))
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
@@ -438,11 +434,11 @@ function initOptionsEvents() {
 		clock(undefined, { background: 'opacity' })
 	})
 
-	paramId('i_analog-border-shade').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('i_analog-border-shade').onclickdown(function () {
 		clock(undefined, { border: 'shade' })
 	})
 
-	paramId('i_analog-background-shade').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('i_analog-background-shade').onclickdown(function () {
 		clock(undefined, { background: 'shade' })
 	})
 
@@ -655,12 +651,6 @@ function initOptionsEvents() {
 	paramId('b_editmove').onclickdown(function () {
 		moveElements(undefined, { toggle: true })
 	})
-
-	for (const button of paramId('grid-layout').querySelectorAll<HTMLButtonElement>('button')) {
-		button.onclickdown(function () {
-			moveElements(undefined, { layout: button.dataset.layout || '' })
-		})
-	}
 
 	paramId('i_pagewidth').addEventListener('input', function () {
 		pageControl({ width: parseInt(this.value) }, true)

@@ -163,6 +163,10 @@ function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
 }
 
 function layoutChange(data: Sync.Storage, column: string) {
+	if (column === data.move.selection) {
+		return
+	}
+
 	// Only update selection if coming from user
 	if (column === 'single' || column === 'double' || column === 'triple') {
 		data.move.selection = column

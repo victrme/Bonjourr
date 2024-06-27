@@ -8,37 +8,50 @@ let firstPos = { x: 0, y: 0 }
 let moverPos = { x: 0, y: 0 }
 
 export function toolboxEvents() {
-	Object.entries(elements).forEach(([key, elem]) => {
-		elem?.addEventListener('click', () => updateMoveElement({ select: key }))
+	const elementEntries = Object.entries(elements)
+	const moverBtns = document.querySelectorAll<HTMLElement>('#grid-mover button')
+	const layoutBtns = document.querySelectorAll<HTMLElement>('#grid-layout button')
+	const boxAlignBtns = document.querySelectorAll<HTMLElement>('#box-alignment-mover button')
+	const textAlignBtns = document.querySelectorAll<HTMLElement>('#text-alignment-mover button')
+	const spanColsBtn = document.querySelector<HTMLElement>('#grid-span-cols')
+	const spanRowsBtn = document.querySelector<HTMLElement>('#grid-span-rows')
+	const resetBtn = document.querySelector<HTMLElement>('#b_resetlayout')
+	const closeBtn = document.querySelector<HTMLElement>('#close-mover')
+
+	elementEntries.forEach(([key, element]) => {
+		element?.onclickdown(() => {
+			updateMoveElement({ select: key })
+		})
 	})
 
-	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((btn) => {
-		btn.addEventListener('click', () => updateMoveElement({ grid: { x: btn.dataset.col, y: btn.dataset.row } }))
+	moverBtns.forEach((button) => {
+		button.onclickdown(() => {
+			updateMoveElement({ grid: { x: button.dataset.col, y: button.dataset.row } })
+		})
 	})
 
-	document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button').forEach((btn) => {
-		btn.addEventListener('click', () => updateMoveElement({ box: btn.dataset.align }))
+	layoutBtns.forEach((button) => {
+		button.onclickdown(() => {
+			updateMoveElement({ layout: button.dataset.layout || '' })
+		})
 	})
 
-	document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button').forEach((btn) => {
-		btn.addEventListener('click', () => updateMoveElement({ text: btn.dataset.align }))
+	boxAlignBtns.forEach((button) => {
+		button.onclickdown(() => {
+			updateMoveElement({ box: button.dataset.align })
+		})
 	})
 
-	document.querySelector<HTMLButtonElement>('#close-mover')?.addEventListener('click', () => {
-		updateMoveElement({ toggle: true })
+	textAlignBtns.forEach((button) => {
+		button.onclickdown(() => {
+			updateMoveElement({ text: button.dataset.align })
+		})
 	})
 
-	document.querySelector<HTMLButtonElement>('#grid-span-cols')?.addEventListener('click', () => {
-		updateMoveElement({ span: 'col' })
-	})
-
-	document.querySelector<HTMLButtonElement>('#grid-span-rows')?.addEventListener('click', () => {
-		updateMoveElement({ span: 'row' })
-	})
-
-	document.querySelector<HTMLButtonElement>('#b_resetlayout')?.addEventListener('click', () => {
-		updateMoveElement({ reset: true })
-	})
+	spanColsBtn?.onclickdown(() => updateMoveElement({ span: 'col' }))
+	spanRowsBtn?.onclickdown(() => updateMoveElement({ span: 'row' }))
+	closeBtn?.addEventListener('click', () => updateMoveElement({ toggle: true }))
+	resetBtn?.addEventListener('click', () => updateMoveElement({ reset: true }))
 
 	moverdom?.addEventListener('mousedown', startDrag)
 	moverdom?.addEventListener('mouseup', removeDrag)

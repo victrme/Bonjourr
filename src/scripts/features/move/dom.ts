@@ -37,7 +37,7 @@ export function addOverlay(id: Widgets) {
 	button.className = 'move-overlay'
 	dominterface?.appendChild(button)
 
-	button.addEventListener('click', () => {
+	button.onclickdown(() => {
 		moveElements(undefined, { select: id })
 	})
 }
