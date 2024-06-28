@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr · Pàgina d'inici minimalista",
+		"description": "nom de l'extensió"
+	},
+	"extensionDesc": {
+		"message": "Millora la teva navegació web amb Bonjourr, una pàgina d'inici bonica, personalitzable i lleugera.",
+		"description": "descripció de l'extensió"
+	}
+}
