@@ -37,6 +37,11 @@ export async function settingsPreload() {
 		template.innerHTML = outerHtml
 	}
 
+	if (IS_MOBILE) {
+		settingsInit()
+		return
+	}
+
 	domshowsettings?.addEventListener('mouseenter', triggerSettingsInit)
 	domshowsettings?.addEventListener('pointerdown', triggerSettingsInit)
 	document.body.addEventListener('keydown', triggerSettingsInit)
