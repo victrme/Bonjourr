@@ -13,7 +13,7 @@
 	color: #222;
 }
 
-#notes_container.opaque #pocket-editor .line.sel {
+#notes_container.opaque #pocket-editor [data-selected] {
 	color: #222;
 	background-color: rgba(34, 34, 34, 0.1333333333);
 }
@@ -43,7 +43,7 @@
 	-webkit-backdrop-filter: blur(2em);
 }
 
-#pocket-editor .line.sel {
+#pocket-editor [data-selected] {
 	color: #fff;
 	background-color: rgba(255, 255, 255, 0.1333333333);
 }
@@ -53,9 +53,9 @@
 	opacity: 0.5;
 }
 
-#pocket-editor .line:first-child h1,
-#pocket-editor .line:first-child h2,
-#pocket-editor .line:first-child h3 {
+#pocket-editor > div:first-child h1,
+#pocket-editor > div:first-child h2,
+#pocket-editor > div:first-child h3 {
 	margin-top: 0;
 }
 

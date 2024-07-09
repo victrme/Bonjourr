@@ -2,7 +2,7 @@ import { hexColorFromSplitRange, opacityFromHex } from '../utils'
 import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
-import pocketEditor from 'pocket-editor'
+import PocketEditor from 'pocket-editor'
 import langList from '../langs'
 import storage from '../storage'
 
@@ -69,7 +69,7 @@ function initNotes(init: Sync.Notes) {
 
 	init.text = init.text ?? translateNotesText()
 
-	pocketEditor('notes_container', init.text).oninput((content) => {
+	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput((content) => {
 		updateNotes({ text: content })
 	})
 }

@@ -18,8 +18,8 @@ importers:
         specifier: ^6.2.1
         version: 6.2.1
       pocket-editor:
-        specifier: ^1.11.2
-        version: 1.11.2
+        specifier: ^2.2.0
+        version: 2.2.0
       prism-code-editor:
         specifier: ^3.3.1
         version: 3.3.1
@@ -203,8 +203,9 @@ packages:
   idb-keyval@6.2.1:
     resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
 
-  pocket-editor@1.11.2:
-    resolution: {integrity: sha512-jlu7M21SrryzksZw+SQhbRJyBqZTmfxx3HRDFvAHRBtd1JO3WwL7EhJ96pkLZiChGZ+yaCPgH23p35tyayNJ0g==}
+  pocket-editor@2.2.0:
+    resolution: {integrity: sha512-PqTC4Yw7gR0r2hDxTDWFQWmYG4AlQsu3wXa5zabEL4Wfi+I0EAXROgH59Dgg80Auq7ByiledydVbBnismZLmjA==}
+    engines: {pnpm: '>=7'}
 
   prism-code-editor@3.3.1:
     resolution: {integrity: sha512-OFfXi1GgoeOwUAeC4K3iRZty0tSbuC3hin+UeYhGPWddsMUWGu8FqxENCr+R+ODC2PUkfU05EnS6qRjV9TvfMg==}
@@ -331,7 +332,7 @@ snapshots:
 
   idb-keyval@6.2.1: {}
 
-  pocket-editor@1.11.2: {}
+  pocket-editor@2.2.0: {}
 
   prism-code-editor@3.3.1: {}
 
