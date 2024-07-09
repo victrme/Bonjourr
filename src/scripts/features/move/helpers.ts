@@ -8,6 +8,8 @@ type Defaults = {
 	triple: Sync.MoveLayout
 }
 
+const MOVE_WIDGETS = ['time', 'main', 'quicklinks', 'notes', 'quotes', 'searchbar']
+
 export const elements = <const>{
 	time: document.getElementById('time'),
 	main: document.getElementById('main'),
@@ -57,12 +59,26 @@ export function getLayout(move: Sync.Move | Sync.Storage, selection?: Sync.MoveS
 
 //	Grid
 
-export function gridParse(area = ''): Grid {
-	let splitchar = BROWSER === 'safari' ? `\"` : "'"
-	let rows = area.split(splitchar).filter((a) => a.length > 1)
-	let grid = rows.map((r) => r.split(' '))
+function gridValidate(grid: Grid): boolean {
+	const cells = grid.flat()
+	const cellsAreWidgets = cells.every((val) => val === '.' || MOVE_WIDGETS.includes(val))
+	return cellsAreWidgets
+}
 
-	return grid
+export function gridParse(area = ''): Grid {
+	const stringToGrid = (split: string): string[][] => {
+		let rows = area.split(split).filter((a) => a.length > 1)
+		let grid = rows.map((r) => r.split(' '))
+		return grid
+	}
+
+	const result = stringToGrid("'")
+
+	if (gridValidate(result)) {
+		return result
+	} else {
+		return stringToGrid(`\"`)
+	}
 }
 
 export function gridStringify(grid: Grid) {
