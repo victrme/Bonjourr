@@ -1,7 +1,7 @@
 import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
+import { getLang, tradThis } from '../utils/translations'
 import { SEARCHBAR_ENGINES } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
-import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 import parse from '../utils/parse'
@@ -392,7 +392,7 @@ async function handleUserInput(e: Event) {
 	if (domcontainer?.dataset.suggestions === 'true' && socket && socket.readyState === socket.OPEN) {
 		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg')
 		const query = encodeURIComponent(value ?? '')
-		socket.send(JSON.stringify({ q: query, with: engine }))
+		socket.send(JSON.stringify({ q: query, with: engine, lang: getLang() }))
 	}
 }
 
