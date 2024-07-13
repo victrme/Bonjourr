@@ -56,6 +56,7 @@ const DEFAULT_LANG = (() => {
 })()
 
 export const SEARCHBAR_ENGINES = <const>[
+	'default',
 	'google',
 	'ddg',
 	'startpage',
@@ -140,7 +141,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		opacity: 0.1,
 		newtab: false,
 		suggestions: true,
-		engine: 'google',
+		engine: 'default',
 		request: '',
 		placeholder: '',
 	},

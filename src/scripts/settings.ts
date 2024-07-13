@@ -477,6 +477,7 @@ function initOptionsEvents() {
 
 	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
 		moveElements(undefined, { widget: ['searchbar', this.checked] })
+		chrome.permissions.request({ permissions: ['search'] })
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -1017,6 +1018,10 @@ async function paramsImport(toImport: Partial<Sync.Storage>) {
 			if (correctSubset === false) {
 				toImport.font.family = ''
 			}
+		}
+
+		if (toImport?.searchbar?.on) {
+			chrome.permissions.request({ permissions: ['search'] })
 		}
 
 		data = filterImports(data, toImport)

@@ -444,7 +444,7 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_searchbar {
-	max-height: 180px;
+	max-height: 300px;
 }
 
 .all .as_weather {

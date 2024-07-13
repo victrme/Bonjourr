@@ -137,6 +137,7 @@ function isValidURL(string: string): boolean {
 
 function createSearchURL(val: string): string {
 	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
+		default: '',
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
 		startpage: 'https://www.startpage.com/do/search?query=%s',
@@ -162,24 +163,33 @@ function createSearchURL(val: string): string {
 }
 
 function submitSearch(e: Event) {
-	if (!domsearchbar) return
+	e.preventDefault()
 
-	const target = domcontainer?.dataset.newtab === 'true' ? '_blank' : '_self'
-	const val = domsearchbar.value
-	let url = ''
+	const engine = domcontainer?.dataset.engine ?? 'default'
+	const newtab = domcontainer?.dataset.newtab === 'true'
+	const val = domsearchbar?.value
 
-	if (isValidURL(val)) {
-		url = val.startsWith('http') ? val : 'https://' + val
-	} else {
-		url = createSearchURL(val)
+	if (!val) {
+		return
 	}
 
 	if (socket) {
 		socket.close()
 	}
 
-	window.open(url, target)
-	e.preventDefault()
+	if (engine !== 'default') {
+		const domainURL = val.startsWith('http') ? val : 'https://' + val
+		const searchURL = createSearchURL(val)
+		const url = isValidURL(val) ? domainURL : searchURL
+		const target = newtab ? '_blank' : '_self'
+
+		return window.open(url, target)
+	}
+
+	chrome.search.query({
+		disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
+		text: val,
+	})
 }
 
 //
