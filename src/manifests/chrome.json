@@ -28,5 +28,5 @@
 	},
 
 	"permissions": ["storage"],
-	"optional_permissions": ["bookmarks", "topSites"]
+	"optional_permissions": ["bookmarks", "search", "topSites"]
 }

@@ -48,7 +48,7 @@ Here's a list of things you can do to help us out:
 -   Give us feedback (positive and negative!) on how you use Bonjourr
 -   Suggest new features or improvements of the existing ones
 -   Create new [CSS snippets](https://bonjourr.fr/docs/styles) or [custom profiles](https://bonjourr.fr/docs/profiles)
--   [Translate](https://bonjourr.fr/docs/help/#translations) to a new language, or complete an existing one
+-   [Translate](https://bonjourr.fr/docs/contribute/#translate) to a new language, or complete an existing one
 -   Contribute to [our website](https://github.com/morceaudebois/bonjourr.fr)
 -   Add new quotes (especially non english/french) to [the API](https://github.com/victrme/i18n-quotes)
 -   Suggest new [Unsplash photos](https://bonjourr.fr/docs/overview/#backgrounds)
@@ -115,7 +115,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
 -   **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
--   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
+-   **🇬🇷 Modern Greek translation** · [tseli0s](https://github.com/tseli0s) · [trlef19](https://github.com/trlef19)
 -   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
@@ -188,18 +188,27 @@ pnpm online
 
 ### Using Docker
 
+
+
 Prerequisites:
 
 -   [Docker](https://docs.docker.com/get-started)
 
-Build and run the container
+#### Docker CLI
 
 ```bash
 # Build the container image
-docker build -t bonjourr .
+docker build -t bonjourr/bonjourr .
 
 # Run the container on local port 8080
-docker run --rm -p "8080:80/tcp" -it bonjourr
+docker run --rm -p "8080:80/tcp" -it bonjourr/bonjourr
+
+# Go to http://127.0.0.1:8080/
 ```
 
--   Go to http://127.0.0.1:8080/
+#### Docker Desktop
+
+- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Search for `bonjourr/bonjourr` Hub image
+- Run a new container with `8080` as host port
+- Go to http://127.0.0.1:8080/

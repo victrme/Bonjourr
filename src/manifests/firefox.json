@@ -34,7 +34,7 @@
 	},
 
 	"permissions": ["storage"],
-	"optional_permissions": ["bookmarks", "topSites"],
+	"optional_permissions": ["bookmarks", "topSites", "search"],
 
 	"browser_specific_settings": {
 		"gecko": {

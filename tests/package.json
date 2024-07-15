@@ -9,7 +9,7 @@
 		"build": "npx gulp buildtest"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.41.2",
-		"wrangler": "^3.28.2"
+		"@playwright/test": "^1.44.1",
+		"wrangler": "^3.61.0"
 	}
 }

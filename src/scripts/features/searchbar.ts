@@ -1,6 +1,6 @@
 import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
+import { BROWSER, EXTENSION, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
 import { getLang, tradThis } from '../utils/translations'
-import { SEARCHBAR_ENGINES } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
@@ -137,6 +137,7 @@ function isValidURL(string: string): boolean {
 
 function createSearchURL(val: string): string {
 	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
+		default: '',
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
 		startpage: 'https://www.startpage.com/do/search?query=%s',
@@ -162,24 +163,34 @@ function createSearchURL(val: string): string {
 }
 
 function submitSearch(e: Event) {
-	if (!domsearchbar) return
+	e.preventDefault()
 
-	const target = domcontainer?.dataset.newtab === 'true' ? '_blank' : '_self'
-	const val = domsearchbar.value
-	let url = ''
+	const engine = domcontainer?.dataset.engine ?? 'default'
+	const newtab = domcontainer?.dataset.newtab === 'true'
+	const val = domsearchbar?.value
 
-	if (isValidURL(val)) {
-		url = val.startsWith('http') ? val : 'https://' + val
-	} else {
-		url = createSearchURL(val)
+	if (!val) {
+		return
 	}
 
 	if (socket) {
 		socket.close()
 	}
 
-	window.open(url, target)
-	e.preventDefault()
+	if (PLATFORM === 'online' || BROWSER === 'safari' || engine !== 'default') {
+		const domainURL = val.startsWith('http') ? val : 'https://' + val
+		const searchURL = createSearchURL(val)
+		const url = isValidURL(val) ? domainURL : searchURL
+		const target = newtab ? '_blank' : '_self'
+
+		return window.open(url, target)
+	}
+
+	//@ts-expect-error
+	EXTENSION.search.query({
+		disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
+		text: val,
+	})
 }
 
 //

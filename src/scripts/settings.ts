@@ -26,6 +26,7 @@ import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
+import getPermissions from './utils/permissions'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -556,6 +557,7 @@ function initOptionsEvents() {
 
 	paramId('i_sb').onclickdown(function (_, target) {
 		moveElements(undefined, { widget: ['searchbar', target.checked] })
+		getPermissions('search')
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -1048,6 +1050,10 @@ async function importSettings(imported: Partial<Sync.Storage>) {
 			if (correctSubset === false) {
 				imported.font.family = ''
 			}
+		}
+
+		if (imported?.searchbar?.on) {
+			getPermissions('search')
 		}
 
 		data = filterImports(data, imported)

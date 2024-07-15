@@ -1,6 +1,7 @@
 import { bundleLinks, getHTMLTemplate, randomString } from '../../utils'
 import quickLinks, { validateLink } from '.'
 import { MAIN_API, PLATFORM } from '../../defaults'
+import getPermissions from '../../utils/permissions'
 import { tradThis } from '../../utils/translations'
 import { isLink } from './helpers'
 import storage from '../../storage'
@@ -36,7 +37,7 @@ export default async function linksImport() {
 
 export async function initBookmarkSync(data: Sync.Storage) {
 	let treenode = await getBookmarkTree()
-	const permission = treenode ? true : await getPermissions()
+	const permission = treenode ? true : await getPermissions('bookmarks', 'topSites')
 
 	if (!permission) {
 		return
@@ -267,12 +268,6 @@ function toggleFolderSync(folder: HTMLElement) {
 }
 
 // webext stuff
-
-async function getPermissions(): Promise<boolean> {
-	const namespace = PLATFORM === 'firefox' ? browser : chrome
-	const permission = await namespace.permissions.request({ permissions: ['bookmarks', 'topSites'] })
-	return permission
-}
 
 async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 	const namespace = PLATFORM === 'firefox' ? browser : chrome
