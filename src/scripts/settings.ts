@@ -29,6 +29,7 @@ import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } 
 // import 'prism-code-editor/prism/languages/json'
 
 import type { Langs } from '../types/langs'
+import getPermissions from './utils/permissions'
 
 export async function settingsPreload() {
 	const innerHtml = await (await fetch('settings.html')).text()
@@ -477,7 +478,7 @@ function initOptionsEvents() {
 
 	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
 		moveElements(undefined, { widget: ['searchbar', this.checked] })
-		chrome.permissions.request({ permissions: ['search'] })
+		getPermissions('search')
 	})
 
 	paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
@@ -1021,7 +1022,7 @@ async function paramsImport(toImport: Partial<Sync.Storage>) {
 		}
 
 		if (toImport?.searchbar?.on) {
-			chrome.permissions.request({ permissions: ['search'] })
+			getPermissions('search')
 		}
 
 		data = filterImports(data, toImport)

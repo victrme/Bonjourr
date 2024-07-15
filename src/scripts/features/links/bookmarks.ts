@@ -1,5 +1,6 @@
 import { getHTMLTemplate, randomString } from '../../utils'
 import onSettingsLoad from '../../utils/onsettingsload'
+import getPermissions from '../../utils/permissions'
 import { tradThis } from '../../utils/translations'
 import { PLATFORM } from '../../defaults'
 import quickLinks from '.'
@@ -33,7 +34,7 @@ export default async function linksImport() {
 	let treenode = await getBookmarkTree()
 
 	if (!treenode) {
-		if (await getPermissions()) {
+		if (await getPermissions('bookmarks')) {
 			treenode = await getBookmarkTree()
 		}
 	}
@@ -80,7 +81,7 @@ export async function syncNewBookmarks(init?: number, update?: boolean) {
 
 async function updateSyncBookmarks(update: boolean) {
 	const i_syncbookmarks = document.getElementById('#i_syncbookmarks') as HTMLInputElement
-	const permission = await getPermissions()
+	const permission = await getPermissions('bookmarks')
 
 	if (!permission) {
 		i_syncbookmarks.checked = false
@@ -192,12 +193,6 @@ function addBookmarksFolderToDOM() {
 			ol.appendChild(li)
 		}
 	}
-}
-
-async function getPermissions(): Promise<boolean> {
-	const namespace = PLATFORM === 'firefox' ? browser : chrome
-	const permission = await namespace.permissions.request({ permissions: ['bookmarks'] })
-	return permission
 }
 
 async function getBookmarkTree(): Promise<chrome.bookmarks.BookmarkTreeNode[] | undefined> {
