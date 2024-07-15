@@ -42,6 +42,8 @@ export const BROWSER =
 		? 'safari'
 		: 'other'
 
+export const EXTENSION = PLATFORM === 'firefox' ? browser : chrome
+
 export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
 	: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)

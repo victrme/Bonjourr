@@ -1,5 +1,5 @@
+import { BROWSER, EXTENSION, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
 import { apiWebSocket, stringMaxSize } from '../utils'
-import { SEARCHBAR_ENGINES } from '../defaults'
 import { eventDebounce } from '../utils/debounce'
 import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
@@ -177,7 +177,7 @@ function submitSearch(e: Event) {
 		socket.close()
 	}
 
-	if (engine !== 'default') {
+	if (PLATFORM === 'online' || BROWSER === 'safari' || engine !== 'default') {
 		const domainURL = val.startsWith('http') ? val : 'https://' + val
 		const searchURL = createSearchURL(val)
 		const url = isValidURL(val) ? domainURL : searchURL
@@ -186,7 +186,8 @@ function submitSearch(e: Event) {
 		return window.open(url, target)
 	}
 
-	chrome.search.query({
+	//@ts-expect-error
+	EXTENSION.search.query({
 		disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
 		text: val,
 	})
