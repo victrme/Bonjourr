@@ -26,6 +26,7 @@ export default {
 	fa: 'فارسی',
 	zh_CN: '简体中文',
 	zh_HK: '繁體中文',
+	zh_TW: '正體中文',
 	jp: '日本語',
 	id: 'Indonesia',
 	vi: 'Tiếng Việt',
@@ -49,4 +50,5 @@ export const subsets = {
 	jp: 'japanese',
 	zh_CN: 'chinese-simplified',
 	zh_HK: 'chinese-traditional',
+	zh_TW: 'chinese-traditional',
 }
