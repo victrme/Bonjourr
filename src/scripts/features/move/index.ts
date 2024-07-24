@@ -57,7 +57,10 @@ export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 
 		setAllAligns(items)
 		setGridAreas(gridStringify(grid))
-		onSettingsLoad(toolboxEvents)
+		onSettingsLoad(() => {
+			toolboxEvents()
+			showSpanButtons(init.selection)
+		})
 	}
 }
 
@@ -299,7 +302,11 @@ function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
 	const layout = getLayout(move)
 	const gridWithSpan = spansInGridArea(layout.grid, widget, { toggle: dir })
 
-	move.layouts[move.selection] = { items: layout.items, grid: gridWithSpan }
+	move.layouts[move.selection] = {
+		items: layout.items,
+		grid: gridWithSpan,
+	}
+
 	storage.sync.set({ move: move })
 
 	setGridAreas(gridWithSpan)

@@ -210,3 +210,13 @@ export function hexColorFromSplitRange(id: string): string {
 export function opacityFromHex(hex: string) {
 	return parseInt(hex.slice(4), 16)
 }
+
+export function toggleDisabled(element: Element | null, force?: boolean) {
+	if (element) {
+		if (force === undefined) {
+			force = typeof element.getAttribute('disabled') === 'string'
+		}
+
+		force ? element.setAttribute('disabled', '') : element.removeAttribute('disabled')
+	}
+}

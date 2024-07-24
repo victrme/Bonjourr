@@ -1,4 +1,4 @@
-import { bundleLinks, getHTMLTemplate, randomString } from '../../utils'
+import { bundleLinks, getHTMLTemplate, randomString, toggleDisabled } from '../../utils'
 import quickLinks, { validateLink } from '.'
 import { MAIN_API, PLATFORM } from '../../defaults'
 import getPermissions from '../../utils/permissions'
@@ -204,12 +204,9 @@ function handleApplyButtonText() {
 	const applybutton = document.getElementById('bmk_apply') as HTMLElement
 	const links = document.querySelectorAll('#bookmarks li.selected')
 	const folders = document.querySelectorAll('#bookmarks .bookmarks-folder.selected')
+	const emptySelection = links.length === 0 && folders.length === 0
 
-	if (links.length === 0 && folders.length === 0) {
-		applybutton.setAttribute('disabled', '')
-	} else {
-		applybutton.removeAttribute('disabled')
-	}
+	toggleDisabled(applybutton, emptySelection)
 }
 
 function closeDialog(event: Event) {

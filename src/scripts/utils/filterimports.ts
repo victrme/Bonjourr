@@ -262,6 +262,17 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 
 	if (imported.move) {
 		current.move = imported.move
+
+		const layout = current.move.layouts[current.move.selection]
+		const grid = layout?.grid.flat().join(' ') ?? ''
+
+		current.time = grid.includes('time')
+		current.main = grid.includes('main')
+		current.quicklinks = grid.includes('quicklinks')
+		if (current.notes) current.notes.on = grid.includes('notes')
+		if (current.quotes) current.quotes.on = grid.includes('quotes')
+		if (current.searchbar) current.searchbar.on = grid.includes('searchbar')
+
 		return current
 	}
 

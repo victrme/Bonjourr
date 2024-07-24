@@ -1,5 +1,3 @@
-import { BROWSER } from '../../defaults'
-
 type Grid = string[][]
 
 type Defaults = {
@@ -194,8 +192,8 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 	}
 
 	if (toggle) {
-		if (toggle === 'col') col = hasDuplicateInArray(col) ? removeSpans(col) : addSpans(col)
-		if (toggle === 'row') row = hasDuplicateInArray(row) ? removeSpans(row) : addSpans(row)
+		if (toggle === 'col') col = hasDuplicateInArray(col, id) ? removeSpans(col) : addSpans(col)
+		if (toggle === 'row') row = hasDuplicateInArray(row, id) ? removeSpans(row) : addSpans(row)
 	}
 
 	grid.forEach((_, i) => (grid[i][x] = col[i])) // Row changes

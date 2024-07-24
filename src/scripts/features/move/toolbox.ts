@@ -1,5 +1,6 @@
 import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers'
 import { updateMoveElement } from '.'
+import { toggleDisabled } from '../../utils'
 import { tradThis } from '../../utils/translations'
 
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
@@ -138,9 +139,9 @@ export function gridButtons(id: Widgets) {
 	})
 
 	// link button to correct limit, apply disable attr
-	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((b) => {
-		const c = parseInt(b.dataset.col || '0')
-		const r = parseInt(b.dataset.row || '0')
+	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {
+		const c = parseInt(button.dataset.col || '0')
+		const r = parseInt(button.dataset.row || '0')
 		let limit = false
 
 		if (r === -1) limit = top
@@ -148,30 +149,36 @@ export function gridButtons(id: Widgets) {
 		if (c === -1) limit = left
 		if (c === 1) limit = right
 
-		limit ? b?.setAttribute('disabled', '') : b?.removeAttribute('disabled')
+		toggleDisabled(button, limit)
 	})
 }
 
 export function spanButtons(id: Widgets) {
-	const grid = gridParse(document.documentElement?.style.getPropertyValue('--grid') || '')
-	if (grid.length === 0) return
+	const gridstring = document.documentElement?.style.getPropertyValue('--grid') || ''
+	const grid = gridParse(gridstring)
+
+	if (grid.length === 0) {
+		return
+	}
+
+	const applyStates = (dir: 'col' | 'row', state: boolean) => {
+		const dirButton = document.querySelector(`#grid-span-${dir}s`)
+		const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
+
+		toggleDisabled(otherButton, state)
+
+		dirButton?.classList.toggle('selected', state)
+	}
 
 	const [posCol, posRow] = gridFind(grid, id)[0]
 	let col = grid.map((g) => g[posCol])
 	let row = [...grid[posRow]]
 
-	applyStates('col', hasDuplicateInArray(col, id))
-	applyStates('row', hasDuplicateInArray(row, id))
+	const hasColumnDuplicates = hasDuplicateInArray(col, id)
+	const hasRowDuplicates = hasDuplicateInArray(row, id)
 
-	function applyStates(dir: 'col' | 'row', state: boolean) {
-		const dirButton = document.querySelector(`#grid-span-${dir}s`)
-		const otherButton = document.querySelector(`#grid-span-${dir === 'col' ? 'rows' : 'cols'}`)
-
-		if (state) otherButton?.setAttribute('disabled', '')
-		else otherButton?.removeAttribute('disabled')
-
-		dirButton?.classList.toggle('selected', state)
-	}
+	applyStates('col', hasColumnDuplicates)
+	applyStates('row', hasRowDuplicates)
 }
 
 export function alignButtons(align?: Sync.MoveAlign) {
