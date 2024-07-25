@@ -1,14 +1,14 @@
-var startupStorage = {}
+var startupStorage
 var startupBookmarks
 var startupTopsites
 
 chrome.storage.sync.get(null, (sync) => {
-	startupStorage.sync = sync
+	startupStorage = { ...startupStorage, sync: sync }
 	document.dispatchEvent(new Event('webextstorage'))
 })
 
 chrome.storage.local.get(null, (local) => {
-	startupStorage.local = local
+	startupStorage = { ...startupStorage, local: local }
 	document.dispatchEvent(new Event('webextstorage'))
 })
 

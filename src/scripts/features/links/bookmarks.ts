@@ -1,6 +1,6 @@
 import { bundleLinks, getHTMLTemplate, randomString, toggleDisabled } from '../../utils'
+import { EXTENSION, MAIN_API, PLATFORM } from '../../defaults'
 import quickLinks, { validateLink } from '.'
-import { MAIN_API, PLATFORM } from '../../defaults'
 import getPermissions from '../../utils/permissions'
 import { tradThis } from '../../utils/translations'
 import { isLink } from './helpers'
@@ -37,7 +37,7 @@ export default async function linksImport() {
 
 export async function initBookmarkSync(data: Sync.Storage) {
 	let treenode = await getBookmarkTree()
-	const permission = treenode ? true : await getPermissions('bookmarks', 'topSites')
+	const permission = treenode ? true : await getPermissions('topSites', 'bookmarks')
 
 	if (!permission) {
 		return
@@ -267,16 +267,8 @@ function toggleFolderSync(folder: HTMLElement) {
 // webext stuff
 
 async function getBookmarkTree(): Promise<Treenode[] | undefined> {
-	const namespace = PLATFORM === 'firefox' ? browser : chrome
-
-	if (!namespace.bookmarks) {
-		return
-	}
-
-	//@ts-expect-error
-	const treenode = (startupBookmarks as Treenode[]) ?? (await namespace.bookmarks.getTree())
-	//@ts-expect-error
-	const topsites = (startupTopsites as chrome.topSites.MostVisitedURL[]) ?? (await namespace.topSites.get())
+	const treenode = window.startupBookmarks ?? (await EXTENSION.bookmarks.getTree())
+	const topsites = window.startupTopsites ?? (await EXTENSION.topSites.get())
 
 	if (PLATFORM === 'chrome') {
 		treenode[0].children?.push({

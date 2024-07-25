@@ -213,7 +213,6 @@ function webext(): Storage {
 		const sync = verifyDataAsSync(store.sync)
 		const local = verifyDataAsLocal(store.local)
 
-		//@ts-expect-error
 		startupStorage = undefined
 
 		return { sync, local }
