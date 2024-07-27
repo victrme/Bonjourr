@@ -1,15 +1,15 @@
-var startupStorage
+var startupStorage = {}
 var startupBookmarks
 var startupTopsites
 
 chrome.storage.sync.get(null, (sync) => {
-	startupStorage = { ...startupStorage, sync: sync }
-	document.dispatchEvent(new Event('webextstorage'))
+	startupStorage.sync = sync
+	document.dispatchEvent(new CustomEvent('webextstorage', {detail: "sync"}))
 })
 
 chrome.storage.local.get(null, (local) => {
-	startupStorage = { ...startupStorage, local: local }
-	document.dispatchEvent(new Event('webextstorage'))
+	startupStorage.local = local
+	document.dispatchEvent(new CustomEvent('webextstorage', {detail: "local"}))
 })
 
 chrome.bookmarks?.getTree().then((bookmarks) => {
