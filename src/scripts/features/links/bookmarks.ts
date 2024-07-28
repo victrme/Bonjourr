@@ -267,8 +267,12 @@ function toggleFolderSync(folder: HTMLElement) {
 // webext stuff
 
 async function getBookmarkTree(): Promise<Treenode[] | undefined> {
-	const treenode = window.startupBookmarks ?? (await EXTENSION.bookmarks.getTree())
-	const topsites = window.startupTopsites ?? (await EXTENSION.topSites.get())
+	const treenode = window.startupBookmarks ?? (await EXTENSION.bookmarks?.getTree())
+	const topsites = window.startupTopsites ?? (await EXTENSION.topSites?.get())
+
+	if (!treenode || !topsites) {
+		return
+	}
 
 	if (PLATFORM === 'chrome') {
 		treenode[0].children?.push({
