@@ -18,15 +18,15 @@ importers:
         specifier: ^6.2.1
         version: 6.2.1
       pocket-editor:
-        specifier: ^2.2.1
-        version: 2.2.1
+        specifier: ^2.2.2
+        version: 2.2.2
       prism-code-editor:
-        specifier: ^3.3.2
-        version: 3.3.2
+        specifier: 3.4.0-beta.1
+        version: 3.4.0-beta.1
     devDependencies:
       '@types/chrome':
-        specifier: ^0.0.268
-        version: 0.0.268
+        specifier: ^0.0.269
+        version: 0.0.269
       esbuild:
         specifier: ^0.23.0
         version: 0.23.0
@@ -183,8 +183,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@types/chrome@0.0.268':
-    resolution: {integrity: sha512-7N1QH9buudSJ7sI8Pe4mBHJr5oZ48s0hcanI9w3wgijAlv1OZNUZve9JR4x42dn5lJ5Sm87V1JNfnoh10EnQlA==}
+  '@types/chrome@0.0.269':
+    resolution: {integrity: sha512-vF7x8YywnhXX2F06njQ/OE7a3Qeful43C5GUOsUksXWk89WoSFUU3iLeZW8lDpVO9atm8iZIEiLQTRC3H7NOXQ==}
 
   '@types/filesystem@0.0.36':
     resolution: {integrity: sha512-vPDXOZuannb9FZdxgHnqSwAG/jvdGM8Wq+6N4D/d80z+D4HWH+bItqsZaVRQykAn6WEVeEkLm2oQigyHtgb0RA==}
@@ -209,12 +209,12 @@ packages:
   idb-keyval@6.2.1:
     resolution: {integrity: sha512-8Sb3veuYCyrZL+VBt9LJfZjLUPWVvqn8tG28VqYNFCo43KHcKuq+b4EiXGeuaLAQWL2YmyDgMp2aSpH9JHsEQg==}
 
-  pocket-editor@2.2.1:
-    resolution: {integrity: sha512-wLPUa4DLFaoRuAzKTi9BvZslewdW45h+mtYJ09BVtxMcEQPPQ+lyFwiLklkvJiAGU1457v4GU5L9QCVpZJN+bw==}
+  pocket-editor@2.2.2:
+    resolution: {integrity: sha512-uBgUfisrWRSQ6K3Wx+GE78t7zW6t9oHuH5Kc/KOb0YrX/N51zvaOx0vbqfvb7xup86DL2T2KxpuLaqyWxN38yg==}
     engines: {pnpm: '>=7'}
 
-  prism-code-editor@3.3.2:
-    resolution: {integrity: sha512-olqOGwUo0e6isTLazpIM9RZRgrI2h/hOG9w+V2/SGPM00E6ZQmHm6MgISsSiXhXmTaENEWCARX/BLcWg595Y7g==}
+  prism-code-editor@3.4.0-beta.1:
+    resolution: {integrity: sha512-QH6v2vYzZtpVqIHyFePk2repRQbD47C1eoZ5GXk9Ifvy1cLbhOidjO2nnXiuVjrzBBxpUhUzJjFuRAOs5iAyHQ==}
 
   user-agent-data-types@0.4.2:
     resolution: {integrity: sha512-jXep3kO/dGNmDOkbDa8ccp4QArgxR4I76m3QVcJ1aOF0B9toc+YtSXtX5gLdDTZXyWlpQYQrABr6L1L2GZOghw==}
@@ -296,7 +296,7 @@ snapshots:
   '@esbuild/win32-x64@0.23.0':
     optional: true
 
-  '@types/chrome@0.0.268':
+  '@types/chrome@0.0.269':
     dependencies:
       '@types/filesystem': 0.0.36
       '@types/har-format': 1.2.15
@@ -342,9 +342,9 @@ snapshots:
 
   idb-keyval@6.2.1: {}
 
-  pocket-editor@2.2.1: {}
+  pocket-editor@2.2.2: {}
 
-  prism-code-editor@3.3.2: {}
+  prism-code-editor@3.4.0-beta.1: {}
 
   user-agent-data-types@0.4.2: {}
 
