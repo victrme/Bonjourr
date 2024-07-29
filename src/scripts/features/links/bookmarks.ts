@@ -78,9 +78,9 @@ async function createBookmarksDialog() {
 		const closebutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_close')
 		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
+		bookmarksdom?.addEventListener('click', closeDialog)
 		applybutton?.onclickdown(importSelectedBookmarks)
 		closebutton?.onclickdown(closeDialog)
-		bookmarksdom?.onclickdown(closeDialog)
 
 		document.body.appendChild(bookmarksdom)
 	}

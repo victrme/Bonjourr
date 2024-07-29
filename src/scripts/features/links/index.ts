@@ -569,22 +569,15 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 
 	if (styles.style && isLinkStyle(style)) {
 		const wasText = domlinkblocks?.className.includes('text')
-		const links = getLinksInGroup(data)
 
 		domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
 		domlinkblocks.classList.add(style)
 
-		for (const link of links) {
-			const block = document.getElementById(link._id) as HTMLLIElement
-			const span = block.querySelector(`span`) as HTMLElement
-			span.textContent = createTitle(link)
-		}
-
 		data.linkstyle = style
 		storage.sync.set({ linkstyle: style })
 
+		// remove from DOM to re-draw icons
 		if (wasText) {
-			// remove from DOM to re-draw icons
 			document.querySelectorAll('#link-list li')?.forEach((el) => {
 				el.remove()
 			})
