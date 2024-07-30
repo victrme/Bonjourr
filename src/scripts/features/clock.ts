@@ -158,7 +158,7 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	if (lang === 'am') faceNumbers = ['Գ', 'Զ', 'Թ', 'ԺԲ']
 	else if (lang === 'ar') faceNumbers = ['٣', '٦', '٩', '١٢']
 	else if (lang === 'fa') faceNumbers = ['۳', '۶', '۹', '۱۲']
-	else if (lang.match(/zh_CN|zh_HK|jp/)) faceNumbers = ['三', '六', '九', '十二']
+	else if (lang.match(/zh-CN|zh-HK|ja/)) faceNumbers = ['三', '六', '九', '十二']
 
 	spans.forEach((span, i) => {
 		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
@@ -310,10 +310,6 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat) {
 	const cc = wrapper.querySelector('.clock-date-cc') as HTMLElement
 
 	let lang = getLang().replaceAll('_', '-')
-
-	if (lang === 'jp') lang = 'ja-JP'
-	if (lang === 'gr') lang = 'el'
-	if (lang === 'cz') lang = 'cs-CZ'
 
 	const day = new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(date)
 	const month = new Intl.DateTimeFormat(lang, { month: 'long' }).format(date)

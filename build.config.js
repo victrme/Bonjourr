@@ -328,14 +328,6 @@ async function updateTranslations() {
 async function translateFile(lang, enDict, supportedLangs) {
 	let sanitizedLang = lang
 
-	if (lang === 'gr') sanitizedLang = 'el'
-	if (lang === 'jp') sanitizedLang = 'ja'
-	if (lang === 'zh_CN') sanitizedLang = 'zh'
-	if (lang === 'zh_HK') sanitizedLang = 'zh'
-	if (lang === 'es_ES') sanitizedLang = 'es'
-	if (lang === 'pt_BR') sanitizedLang = 'pt-BR'
-	if (lang === 'pt_PT') sanitizedLang = 'pt-PT'
-
 	const supported = supportedLangs.includes(sanitizedLang)
 	const translations = readFileSync(`./_locales/${lang}/translations.json`, 'utf8')
 	const newDict = {}

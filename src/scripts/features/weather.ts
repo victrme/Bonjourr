@@ -267,14 +267,6 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	let lang = getLang()
 	let queries = ''
 
-	// Openweathermap country code for traditional chinese is tw, greek is el
-	if (lang === 'zh_HK') lang = 'zh_TW'
-	if (lang === 'pt_PT') lang = 'pt'
-	if (lang === 'es_ES') lang = 'es'
-	if (lang === 'gr') lang = 'el'
-	if (lang === 'jp') lang = 'ja'
-	if (lang === 'nb') lang = 'no'
-
 	queries += '?units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
 

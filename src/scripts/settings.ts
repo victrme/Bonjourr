@@ -27,6 +27,7 @@ import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefr
 
 import type { Langs } from '../types/langs'
 import getPermissions from './utils/permissions'
+import { changeGroupTitle } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -799,6 +800,7 @@ async function switchLangs(nextLang: Langs) {
 
 	data.lang = nextLang
 	clock(data)
+	changeGroupTitle({ old: '', new: '' }, data)
 	weather({ sync: data, lastWeather: local.lastWeather })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)

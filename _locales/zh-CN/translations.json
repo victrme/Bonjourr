@@ -1,5 +1,5 @@
 {
-	"lang": "zh_CN",
+	"lang": "zh-CN",
 	"New tab": "新标签页",
 	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "喜欢使用 Bonjourr 吗？您可以评论或捐赠，以支持我们的发展！😇",
 	"Review": "评论",
@@ -166,7 +166,7 @@
 	"google": "https://www.google.com.hk/search?q=%s",
 	"duckduckgo": "https://duckduckgo.com/?q=%s&kl=cn-zh",
 	"startpage": "https://www.startpage.com/do/search?query=%s&language=cn-zh",
-	"qwant": "https://www.qwant.com/?q=%s&locale=zh_CN",
+	"qwant": "https://www.qwant.com/?q=%s&locale=zh-CN",
 	"yahoo": "https://hk.search.yahoo.com/search?q=%s",
 	"bing": "https://www.bing.com/search?q=%s&cc=",
 	"URL request": "URL 请求",
