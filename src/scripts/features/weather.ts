@@ -183,19 +183,10 @@ async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	const date = new Date()
 	const now = date.getTime()
 
-	// forecast is day old or we're above sunset time
-	// [ xxxxxxxxxxx | ------ sunset xxxx | ----------- ]
-	const forecast = new Date((lastWeather?.forecasted_timestamp ?? 0) * 1000)
-	const forecastFromPreviousDay = forecast.getDate() !== date.getDate() && forecast.getTime() < now
-	const forecastFromToday = forecast.getDate() === date.getDate()
-	const aboveSunset = date.getHours() > getSunsetHour()
-	const isForecastOld = forecastFromPreviousDay || (forecastFromToday && aboveSunset)
-
-	const isCurrentOnly = isForecastOld === false
 	const isAnHourLater = Math.floor(now / 1000) > (lastWeather?.timestamp ?? 0) + 3600
 
-	if (navigator.onLine && (isAnHourLater || isForecastOld)) {
-		const newWeather = await request(data, lastWeather, isCurrentOnly)
+	if (navigator.onLine && isAnHourLater) {
+		const newWeather = await request(data, lastWeather)
 
 		if (newWeather) {
 			lastWeather = newWeather
@@ -256,7 +247,7 @@ function handleGeolOption(data: Weather) {
 	}
 }
 
-async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: boolean): Promise<LastWeather | undefined> {
+async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
 	if (!navigator.onLine) return lastWeather
 
 	//
@@ -265,9 +256,9 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
 	let coords = await getGeolocation(data.geolocation)
 	let lang = getLang()
-	let queries = ''
+	let queries = '?provider=accuweather'
 
-	queries += '?units=' + (data.unit ?? 'metric')
+	queries += '&units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
 
 	if (data.geolocation === 'off' && isKeepingCity && lastWeather?.approximation) {
@@ -284,67 +275,18 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 		queries += ',' + (data.ccode ?? 'FR')
 	}
 
-	//
-	// Fetch data
+	const response = await apiFetch('/weather/' + queries)
+	const onecall: Weather.Onecall | undefined = await response?.json()
+	const isRateLimited = response?.status === 429
 
-	let response: Response | undefined
-	let onecall: Weather.API.Onecall | undefined
-	let current: Weather.API.Current | undefined
-
-	if (queries.includes('&lat') && lang === 'en') {
-		try {
-			const masterurl = `https://openweathermap.org/data/2.5/onecall${queries}&appid=439d4b804bc8187953eb36d2a8c26a02`
-			response = await fetch(masterurl, { signal: AbortSignal.timeout(2000) })
-
-			if (response.status === 200) {
-				onecall = await response.json()
-			}
-		} catch (_) {
-			console.log('Default key not available right now')
-		}
-	}
-
-	if (!onecall) {
-		const endpoint = currentOnly ? '/weather/current/' : '/weather/'
-		const response = await apiFetch(endpoint + queries)
-
-		try {
-			if (response?.status === 200) {
-				if (!!currentOnly) current = (await response?.json()) as Weather.API.Current
-				if (!currentOnly) onecall = (await response?.json()) as Weather.API.Onecall
-			}
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
-	// 429 is rate limited
-	if (response?.status === 429 && lastWeather) {
+	if (isRateLimited && lastWeather) {
 		lastWeather.timestamp = Date.now() - 1800000 // -30min
 		return lastWeather
 	}
 
-	if (!onecall && current) {
-		onecall = {
-			lat: current.coord.lat,
-			lon: current.coord.lon,
-			current: {
-				dt: Math.floor(new Date().getTime() / 1000),
-				feels_like: current.main.feels_like,
-				sunrise: current.sys.sunrise,
-				sunset: current.sys.sunset,
-				temp: current.main.temp,
-				weather: current.weather,
-			},
-		}
-	}
-
 	if (!onecall) {
 		return lastWeather
 	}
-
-	//
-	// Parse result
 
 	const { temp, feels_like, sunrise, sunset } = onecall.current
 	const { description, id } = onecall.current.weather[0]
