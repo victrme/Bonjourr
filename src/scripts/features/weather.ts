@@ -324,6 +324,7 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 		sunrise,
 		sunset,
 		temp,
+		link: onecall.link ?? '',
 		approximation: {
 			ccode: isKeepingCity ? lastWeather?.approximation?.ccode : onecall?.ccode,
 			city: isKeepingCity ? lastWeather?.approximation?.city : onecall?.city,
@@ -425,7 +426,8 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		}
 
 		const URLs = {
-			msnw: 'https://www.msn.com/en-us/weather/forecast/',
+			accu: lastWeather.link ?? 'https://www.accuweather.com/',
+			msnw: tradThis('https://www.msn.com/en-xl/weather/forecast/'),
 			yhw: 'https://www.yahoo.com/news/weather/',
 			windy: 'https://www.windy.com/',
 			custom: data.provider ?? '',
@@ -478,7 +480,7 @@ function isForecast(str = ''): str is Weather.Forecast {
 }
 
 function isMoreinfo(str = ''): str is Weather.MoreInfo {
-	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'custom']
+	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'accu', 'custom']
 	return moreinfos.includes(str as Weather.MoreInfo)
 }
 

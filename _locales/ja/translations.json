@@ -146,6 +146,7 @@
 	"Feels like": "体感での温度",
 	"Both": "両方",
 	"Detailed weather": "天気の詳細",
+	"https://www.msn.com/en-xl/weather/forecast/": "https://www.msn.com/ja-jp/weather/forecast",
 	"Click on the weather widget to get detailed weather reports.": "天気予報ウィジェットをクリックすると、詳細な天気予報が表示されます。",
 	"Custom provider": "カスタムサービス",
 	"Provider URL": "カスタムサービスのURL",

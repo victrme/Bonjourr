@@ -22,6 +22,7 @@ declare namespace Weather {
 		icon_id: number
 		description: string
 		timestamp: number
+		link: string
 		approximation?: Pick<Weather.Onecall, 'ccode' | 'city' | 'lat' | 'lon'>
 	}
 
@@ -33,9 +34,10 @@ declare namespace Weather {
 
 	type Temperature = 'actual' | 'feelslike' | 'both'
 
-	type MoreInfo = 'none' | 'msnw' | 'yhw' | 'windy' | 'custom'
+	type MoreInfo = 'none' | 'msnw' | 'yhw' | 'windy' | 'accu' | 'custom'
 
 	interface Onecall {
+		link?: string
 		city?: string
 		ccode?: string
 		lat: number

@@ -146,6 +146,7 @@
 	"Feels like": "Tuntuu kuin",
 	"Both": "Kummatkin",
 	"Detailed weather": "Yksityiskohtainen sää",
+	"https://www.msn.com/en-xl/weather/forecast/": "https://www.msn.com/fi-fi/saa/ennuste",
 	"Click on the weather widget to get detailed weather reports.": "Napsauta sääwidgettiä saadaksesi yksityiskohtaiset säätiedotukset.",
 	"Custom provider": "Mukautettu palveluntarjoaja",
 	"Provider URL": "Palveluntarjoajan URL-osoite",

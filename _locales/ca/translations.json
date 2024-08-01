@@ -4,7 +4,6 @@
 	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "T'agrada utilitzar Bonjourr? Considera donar-nos una ressenya o fer una donació, això ens ajudaria molt! 😇",
 	"Review": "Ressenya",
 	"Donate": "Donar",
-
 	"Good morning": "Bon dia",
 	"Good afternoon": "Bona tarda",
 	"Good evening": "Bona nit",
@@ -18,7 +17,6 @@
 	"Default group": "Grup per defecte",
 	"Folder": "Carpeta",
 	"Photo by <name>": "Foto de <name>",
-
 	"Editing": "Editant",
 	"No selection": "Sense selecció",
 	"Grid position": "Posició de la graella",
@@ -49,7 +47,6 @@
 	"Back to regular links": "Tornar als enllaços regulars",
 	"Most visited": "Més visitats",
 	"Import selection": "Importar selecció",
-
 	"General": "General",
 	"Show all settings": "Mostrar tots els ajustos",
 	"Enabled": "Activat",
@@ -62,7 +59,6 @@
 	"New tab title": "Títol de nova pestanya",
 	"The icon and title that appear on your tab. You can put any emoji.": "La icona i el títol que apareixen a la teva pestanya. Pots posar qualsevol emoji.",
 	"Hide settings icon": "Amagar icona d'ajustos",
-
 	"Background": "Fons",
 	"Background type": "Tipus de fons",
 	"Default": "Per defecte",
@@ -150,6 +146,7 @@
 	"Feels like": "Sensació tèrmica",
 	"Both": "Ambdues",
 	"Detailed weather": "Temps detallat",
+	"https://www.msn.com/en-xl/weather/forecast/": "https://www.msn.com/en-xl/weather/forecast",
 	"Click on the weather widget to get detailed weather reports.": "Fes clic al widget del temps per obtenir informes meteorològics detallats.",
 	"Custom provider": "Proveïdor personalitzat",
 	"Provider URL": "URL del proveïdor",
@@ -164,7 +161,6 @@
 	"Center": "Centre",
 	"Right": "Dreta",
 	"Width": "Amplada",
-
 	"Search bar": "Barra de cerca",
 	"Suggestions": "Suggeriments",
 	"Search engine": "Motor de cerca",
@@ -191,7 +187,6 @@
 	"Weight": "Pes",
 	"Size": "Mida",
 	"Shadow": "Ombra",
-
 	"Page layout": "Disseny de pàgina",
 	"Customise how and where widgets appear.": "Personalitza com i on apareixen els widgets.",
 	"Open the toolbox and select a widget to modify on the page.": "Obre la caixa d'eines i selecciona un widget per modificar a la pàgina.",
@@ -201,18 +196,15 @@
 	"Layout columns": "Columnes de disseny",
 	"Page width": "Amplada de pàgina",
 	"Page gap": "Espai entre pàgines",
-
 	"Custom Style": "Estil personalitzat",
 	"Make cool things happen with CSS. ": "Fes que passin coses interessants amb CSS. ",
 	"Check out our ": "Mira els nostres ",
 	"CSS snippets.": "fragments de CSS.",
 	"Type in your custom CSS": "Escriu el teu CSS personalitzat",
-
 	"Updates": "Actualitzacions",
 	"Announcements": "Anuncis",
 	"Major updates": "Actualitzacions importants",
 	"All updates": "Totes les actualitzacions",
-
 	"Settings management": "Gestió dels ajustos",
 	"Transfer your settings between multiple instances of Bonjourr.": "Transfereix els teus ajustos entre múltiples instàncies de Bonjourr.",
 	"Settings file": "Arxiu d'ajustos",
@@ -224,7 +216,6 @@
 	"Are you sure?": "N'estàs segur?",
 	"I am sure": "N'estic segur",
 	"No, go back": "No, torna enrere",
-
 	"Made in France with ❤️": "Fet a França amb ❤️",
 	"by": "per",
 	"Consider": "Considera",
