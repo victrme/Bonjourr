@@ -280,7 +280,7 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	const isRateLimited = response?.status === 429
 
 	if (isRateLimited && lastWeather) {
-		lastWeather.timestamp = Date.now() - 1800000 // -30min
+		lastWeather.timestamp = Date.now() - 3000000 // 45min
 		return lastWeather
 	}
 
