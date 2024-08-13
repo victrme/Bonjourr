@@ -13,11 +13,11 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.2.0'
-const ANNOUNCEMENT_VERSION = '19.2.0'
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.0.0'
+const ANNOUNCEMENT_VERSION = '20.0.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: 'New this update: syntax highlighted CSS editor, search bar width option and made some settings more user friendly!',
+	en: 'In this update: Groups and "Most visited" links, analog clock styling, and more... available on iOS !',
 }
 
 const ANNOUNCEMENT_BTN_TRNS = {
