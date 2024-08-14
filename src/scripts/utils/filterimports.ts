@@ -1,5 +1,5 @@
-import { addGridWidget, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers'
-import { randomString, bundleLinks } from '../utils'
+import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from '../features/move/helpers'
+import { randomString, bundleLinks, countryCodeToLanguageCode } from '../utils'
 import { MAIN_API, SYNC_DEFAULT } from '../defaults'
 import { deepmergeAll } from '@victr/deepmerge'
 import { oldJSONToCSV } from '../features/quotes'
@@ -26,9 +26,10 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	// Lastest version transform
 
 	current = analogClockOptions(current) // 20.0
-	current = linkTabsToGroups(current, target) // 20.0
+	current = linkTabsToGroups(current, target) // ..
 	current = convertOldCSSSelectors(current) // ..
 	current = linkParentsToString(current) // ..
+	current = toISOLanguageCode(current) // ..
 
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
@@ -42,8 +43,6 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 
 	return current
 }
-
-// Version sensitive
 
 function hideArrayToObject(data: Import): Import {
 	if (Array.isArray(data.hide)) {
@@ -127,6 +126,11 @@ function quotesJsonToCSV(data: Import): Import {
 	if (Array.isArray(data?.quotes?.userlist)) {
 		data.quotes.userlist = oldJSONToCSV(data.quotes.userlist)
 	}
+	return data
+}
+
+function toISOLanguageCode(data: Sync.Storage): Sync.Storage {
+	data.lang = countryCodeToLanguageCode(data.lang ?? 'en')
 	return data
 }
 
@@ -264,14 +268,15 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 		current.move = imported.move
 
 		const layout = current.move.layouts[current.move.selection]
-		const grid = layout?.grid.flat().join(' ') ?? ''
+		const grid = layout?.grid ?? defaultLayouts[current.move.selection].grid
+		const area = grid.flat().join(' ')
 
-		current.time = grid.includes('time')
-		current.main = grid.includes('main')
-		current.quicklinks = grid.includes('quicklinks')
-		if (current.notes) current.notes.on = grid.includes('notes')
-		if (current.quotes) current.quotes.on = grid.includes('quotes')
-		if (current.searchbar) current.searchbar.on = grid.includes('searchbar')
+		current.time = area.includes('time')
+		current.main = area.includes('main')
+		current.quicklinks = area.includes('quicklinks')
+		if (current.notes) current.notes.on = area.includes('notes')
+		if (current.quotes) current.quotes.on = area.includes('quotes')
+		if (current.searchbar) current.searchbar.on = area.includes('searchbar')
 
 		return current
 	}

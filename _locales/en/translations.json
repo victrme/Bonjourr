@@ -3,6 +3,7 @@
 	"New tab": "New tab",
 
 	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇",
+	"Read the release notes": "Read the release notes",
 	"Review": "Review",
 	"Donate": "Donate",
 
@@ -42,6 +43,7 @@
 	"Delete folder": "Delete folder",
 	"Delete selected": "Delete selected",
 	"Remove from folder": "Remove from folder",
+	"Refresh icon": "Refresh icon",
 	"Apply changes": "Apply changes",
 
 	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on",
@@ -156,6 +158,7 @@
 	"Feels like": "Feels like",
 	"Both": "Both",
 	"Detailed weather": "Detailed weather",
+	"https://www.msn.com/en-xl/weather/forecast/": "https://www.msn.com/en-xl/weather/forecast/",
 	"Click on the weather widget to get detailed weather reports.": "Click on the weather widget to get detailed weather reports.",
 	"Custom provider": "Custom provider",
 	"Provider URL": "Provider URL",

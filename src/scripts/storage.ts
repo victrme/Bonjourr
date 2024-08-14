@@ -199,22 +199,21 @@ function webext(): Storage {
 		// that is created in file `webext-storage.js`
 
 		//@ts-expect-error
-		const store: AllStorage = startupStorage
+		const store: AllStorage = window.startupStorage
 		const isReady = (): boolean => 'sync' in store && 'local' in store
 
 		if (!isReady()) {
 			await new Promise((resolve) => {
-				document.addEventListener('webextstorage', function () {
-					isReady() ? resolve(true) : ''
+				document.addEventListener('webextstorage', function (event: CustomEventInit) {
+					if (event.detail === 'sync') store.sync = (window.startupStorage as any).sync
+					if (event.detail === 'local') store.local = (window.startupStorage as any).local
+					if (isReady()) resolve(true)
 				})
 			})
 		}
 
 		const sync = verifyDataAsSync(store.sync)
 		const local = verifyDataAsLocal(store.local)
-
-		//@ts-expect-error
-		startupStorage = undefined
 
 		return { sync, local }
 	}

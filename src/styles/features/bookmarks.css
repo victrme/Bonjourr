@@ -40,7 +40,8 @@
 }
 
 #bookmarks-intro {
-	max-width: 600px;
+	max-width: 550px;
+	text-align: left;
 	margin: auto;
 }
 

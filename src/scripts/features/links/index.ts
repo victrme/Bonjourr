@@ -67,6 +67,7 @@ type LinksUpdate = {
 	moveOutFolder?: { ids: string[]; group: string }
 	deleteGroup?: string
 	deleteLinks?: string[]
+	refreshIcons?: string[]
 	groupTitle?: { old: string; new: string }
 	styles?: { style?: string; titles?: boolean; backgrounds?: boolean }
 }
@@ -107,12 +108,12 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 
 	initGroups(init, !!init)
 	initRows(init.linksrow, init.linkstyle)
-	initblocks(init)
+	initblocks(init, true)
 }
 
 // Initialisation
 
-export async function initblocks(data: Sync): Promise<true> {
+export async function initblocks(data: Sync, isInit?: true): Promise<true> {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
@@ -209,7 +210,7 @@ export async function initblocks(data: Sync): Promise<true> {
 		}
 	}
 
-	queueMicrotask(createIcons)
+	createIcons(isInit)
 	displayInterface('links')
 
 	return true
@@ -251,7 +252,14 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	span.textContent = createTitle(link)
 
 	if (style !== 'text') {
-		initIconList.push([img, link.icon ?? getDefaultIcon(link.url)])
+		const iconurl = link.icon ?? ''
+		const refresh = new Date(parseInt(iconurl))?.getTime()
+		const isDefaultRefreshed = Number.isInteger(refresh)
+		const isUserDefined = !isDefaultRefreshed && !!link.icon
+
+		const icon = isUserDefined ? link.icon! : getDefaultIcon(link.url, refresh)
+
+		initIconList.push([img, icon])
 	}
 
 	if (openInNewtab) {
@@ -265,7 +273,9 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	return li
 }
 
-function createIcons() {
+function createIcons(isInit?: true) {
+	const loadingTimeout = isInit ? 400 : 0
+
 	for (const [img, url] of initIconList) {
 		img.src = url
 	}
@@ -282,7 +292,7 @@ function createIcons() {
 		}
 
 		initIconList = []
-	}, 100)
+	}, loadingTimeout)
 }
 
 function initRows(row: number, style: string) {
@@ -360,6 +370,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.groupTitle) data = changeGroupTitle(update.groupTitle, data)
 	if (update.groups !== undefined) data = toggleGroups(update.groups, data)
 	if (update.newtab !== undefined) setOpenInNewTab(update.newtab)
+	if (update.refreshIcons) data = refreshIcons(update.refreshIcons, data)
 	if (update.styles) setLinkStyle(update.styles)
 	if (update.row) setRows(update.row)
 
@@ -539,6 +550,21 @@ function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 	return data
 }
 
+function refreshIcons(ids: string[], data: Sync): Sync {
+	for (const id of ids) {
+		const link = data[id] as Links.Elem
+
+		if (link._id) {
+			link.icon = Date.now().toString()
+			data[id] = link
+		}
+	}
+
+	initblocks(data)
+
+	return data
+}
+
 function setOpenInNewTab(newtab: boolean) {
 	const anchors = document.querySelectorAll<HTMLAnchorElement>('.link a')
 
@@ -569,22 +595,15 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 
 	if (styles.style && isLinkStyle(style)) {
 		const wasText = domlinkblocks?.className.includes('text')
-		const links = getLinksInGroup(data)
 
 		domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
 		domlinkblocks.classList.add(style)
 
-		for (const link of links) {
-			const block = document.getElementById(link._id) as HTMLLIElement
-			const span = block.querySelector(`span`) as HTMLElement
-			span.textContent = createTitle(link)
-		}
-
 		data.linkstyle = style
 		storage.sync.set({ linkstyle: style })
 
+		// remove from DOM to re-draw icons
 		if (wasText) {
-			// remove from DOM to re-draw icons
 			document.querySelectorAll('#link-list li')?.forEach((el) => {
 				el.remove()
 			})

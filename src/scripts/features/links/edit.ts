@@ -114,9 +114,10 @@ export default async function openEditDialog(event: Event) {
 
 		domtitle.value = link?.title ?? ''
 
-		if (!link?.folder) {
-			domurl.value = link?.url ?? ''
-			domicon.value = link?.icon ?? ''
+		if (link && !link.folder) {
+			const icon = link.icon ?? ''
+			domurl.value = link.url ?? ''
+			domicon.value = Number.isNaN(parseInt(icon)) ? icon : ''
 		}
 	}
 
@@ -164,10 +165,10 @@ function toggleEditInputs(): string[] {
 	if (container.group) {
 		if (target.synced && target.title) inputs = ['unpin', 'delete']
 		else if (target.synced && target.link) inputs = ['synced']
-		else if (selectall) inputs = ['delete', 'add']
+		else if (selectall) inputs = ['delete', 'refresh', 'add']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
 		else if (target.folder) inputs = ['title', 'delete', 'apply']
-		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply']
+		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply']
 		else inputs = ['title', 'url', 'add']
 	}
 
@@ -276,6 +277,10 @@ async function submitChanges(event: SubmitEvent) {
 
 	if (change === 'edit-apply') {
 		applyLinkChanges('button')
+	}
+
+	if (change === 'edit-refresh') {
+		quickLinks(undefined, { refreshIcons: selected })
 	}
 
 	if (change === 'edit-inputs') {

@@ -13,15 +13,40 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v19.2.0'
-const ANNOUNCEMENT_VERSION = '19.2.0'
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.0.0'
+const ANNOUNCEMENT_VERSION = '20.0.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: 'New this update: syntax highlighted CSS editor, search bar width option and made some settings more user friendly!',
-}
-
-const ANNOUNCEMENT_BTN_TRNS = {
-	en: 'Read the release notes',
+	en: 'In this update: Groups and "Most visited" links, analog clock styling, and more... available on iOS!',
+	fr: 'Dans cette mise à jour : Groupes et liens "Les plus visités", style d\'horloge analogique, et plus... disponible sur iOS !',
+	de: 'In diesem Update: Gruppen und "Meistbesuchte" Links, Analoguhr-Styling und mehr... verfügbar auf iOS!',
+	it: 'In questo aggiornamento: Gruppi e link "Più visitati", stile orologio analogico e altro... disponibile su iOS!',
+	es: 'En esta actualización: Grupos y enlaces "Más visitados", estilo de reloj analógico y más... ¡disponible en iOS!',
+	'pt-BR': 'Nesta atualização: Grupos e links "Mais visitados", estilo de relógio analógico e mais... disponível no iOS!',
+	'pt-PT': 'Nesta atualização: Grupos e ligações "Mais visitadas", estilo de relógio analógico e mais... disponível no iOS!',
+	nl: 'In deze update: Groepen en "Meest bezochte" links, analoge klokstijl en meer... beschikbaar op iOS!',
+	da: 'I denne opdatering: Grupper og "Mest besøgte" links, analog ur-styling og mere... tilgængelig på iOS!',
+	sv: 'I denna uppdatering: Grupper och "Mest besökta" länkar, analog klocka-styling och mer... tillgängligt på iOS!',
+	nb: 'I denne oppdateringen: Grupper og "Mest besøkte" lenker, analog klokkestil og mer... tilgjengelig på iOS!',
+	fi: 'Tässä päivityksessä: Ryhmät ja "Eniten vieraillut" linkit, analogisen kellon tyyli ja muuta... saatavilla iOS:lle!',
+	pl: 'W tej aktualizacji: Grupy i linki "Najczęściej odwiedzane", styl zegara analogowego i więcej... dostępne na iOS!',
+	cs: 'V této aktualizaci: Skupiny a odkazy "Nejnavštěvovanější", styl analogových hodin a další... k dispozici na iOS!',
+	sk: 'V tejto aktualizácii: Skupiny a odkazy "Najnavštevovanejšie", štýl analógových hodín a ďalšie... dostupné na iOS!',
+	hu: 'Ebben a frissítésben: Csoportok és "Leggyakrabban látogatott" linkek, analóg óra stílus és még több... elérhető iOS-en!',
+	ro: 'În această actualizare: Grupuri și linkuri "Cele mai vizitate", stilizare ceas analogic și mai multe... disponibil pe iOS!',
+	el: 'Σε αυτήν την ενημέρωση: Ομάδες και σύνδεσμοι "Πιο επισκέψιμοι", στυλ αναλογικού ρολογιού και άλλα... διαθέσιμα στο iOS!',
+	sr: 'У овом ажурирању: Групе и везе "Најпосећеније", стил аналогног сата и још тога... доступно на iOS-у!',
+	'sr-YU': 'U ovom ažuriranju: Grupe i veze "Najposećenije", stil analognog sata i još toga... dostupno na iOS-u!',
+	uk: 'У цьому оновленні: Групи та посилання "Найбільш відвідувані", стиль аналогового годинника та інше... доступно на iOS!',
+	ru: 'В этом обновлении: Группы и ссылки "Часто посещаемые", стиль аналоговых часов и многое другое... доступно на iOS!',
+	tr: 'Bu güncellemede: Gruplar ve "En çok ziyaret edilen" bağlantılar, analog saat stili ve daha fazlası... iOS\'ta mevcut!',
+	ar: 'في هذا التحديث: المجموعات وروابط "الأكثر زيارة"، وتصميم الساعة التناظرية، والمزيد... متاح على نظام iOS!',
+	fa: 'در این به‌روزرسانی: گروه‌ها و پیوندهای "پربازدیدترین"، سبک ساعت آنالوگ و موارد دیگر... در دسترس برای iOS!',
+	'zh-CN': '本次更新：群组和"最常访问"链接、模拟时钟样式等...适用于iOS！',
+	'zh-HK': '本次更新：群組和「最常瀏覽」連結、類比時鐘樣式等...適用於iOS！',
+	ja: 'このアップデート：グループと「よく訪れるサイト」リンク、アナログ時計のスタイリング、その他... iOSで利用可能！',
+	id: 'Dalam pembaruan ini: Grup dan tautan "Paling sering dikunjungi", gaya jam analog, dan lainnya... tersedia di iOS!',
+	vi: 'Trong bản cập nhật này: Nhóm và liên kết "Được truy cập nhiều nhất", kiểu đồng hồ kim và hơn thế nữa... có sẵn trên iOS!',
 }
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
@@ -96,7 +121,7 @@ function displayPopup(type: 'review' | 'announce') {
 	if (type === 'announce') {
 		const lang = getLang() as keyof typeof ANNOUNCEMENT_TRNS
 		const description = ANNOUNCEMENT_TRNS[lang] ?? ANNOUNCEMENT_TRNS.en
-		const buttontext = ANNOUNCEMENT_BTN_TRNS[lang] ?? ANNOUNCEMENT_BTN_TRNS.en
+		const buttontext = tradThis('Read the release notes')
 		desc.textContent = description
 		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, buttontext))
 	}

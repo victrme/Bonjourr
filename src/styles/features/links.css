@@ -30,6 +30,10 @@
 	justify-content: start;
 }
 
+.text-left #link-mini {
+	text-align: left;
+}
+
 .text-left .link-group {
 	align-items: start;
 }
@@ -37,6 +41,10 @@
 .text-right #link-mini,
 .text-right .link-list {
 	justify-content: end;
+}
+
+.text-right #link-mini {
+	text-align: right;
 }
 
 .text-right .link-group {
@@ -669,13 +677,17 @@
 /* Link mini (at the bottom) */
 
 #link-mini {
-	position: relative;
 	display: none;
+	width: 100%;
+	padding-top: 1em;
+}
+
+#link-mini > div {
+	position: relative;
+	display: inline-flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
-	width: 100%;
-	padding-top: 1em;
 	column-gap: 1em;
 	row-gap: 0.5em;
 	box-sizing: border-box;
@@ -690,7 +702,7 @@
 	visibility: hidden;
 	font-weight: bold;
 	width: 3em;
-	right: -3em;
+	right: -4em;
 }
 
 #link-mini .add-group:hover,
@@ -710,5 +722,5 @@
 
 .with-groups #link-mini,
 .in-folder #link-mini {
-	display: flex;
+	display: block;
 }

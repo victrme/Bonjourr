@@ -27,6 +27,7 @@ import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefr
 
 import type { Langs } from '../types/langs'
 import getPermissions from './utils/permissions'
+import { changeGroupTitle } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -656,7 +657,9 @@ function initOptionsEvents() {
 	// Page layout
 
 	paramId('b_editmove').onclickdown(function () {
-		moveElements(undefined, { toggle: true })
+		moveElements(undefined, {
+			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
+		})
 	})
 
 	paramId('i_pagewidth').addEventListener('input', function () {
@@ -799,6 +802,7 @@ async function switchLangs(nextLang: Langs) {
 
 	data.lang = nextLang
 	clock(data)
+	changeGroupTitle({ old: '', new: '' }, data)
 	weather({ sync: data, lastWeather: local.lastWeather })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)

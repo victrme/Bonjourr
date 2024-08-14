@@ -220,3 +220,13 @@ export function toggleDisabled(element: Element | null, force?: boolean) {
 		force ? element.setAttribute('disabled', '') : element.removeAttribute('disabled')
 	}
 }
+
+export function countryCodeToLanguageCode(lang: string): string {
+	if (lang === 'gr') lang = 'el'
+	if (lang === 'jp') lang = 'ja'
+	if (lang === 'cz') lang = 'cs'
+
+	lang = lang.replace('_', '-')
+
+	return lang
+}

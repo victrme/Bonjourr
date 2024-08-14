@@ -1,9 +1,12 @@
 import storage from '../storage'
+import { countryCodeToLanguageCode } from '../utils'
 
 let trns: Local.Translations | undefined
 let currentTrnsLang = 'en'
 
 export async function setTranslationCache(lang: string, local?: Local.Storage) {
+	lang = countryCodeToLanguageCode(lang)
+
 	if (lang === 'en') {
 		storage.local.remove('translations')
 		trns = undefined
