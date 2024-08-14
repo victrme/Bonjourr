@@ -54,7 +54,7 @@ function createGroups(linkgroups: Sync.LinkGroups) {
 			button.addEventListener('pointerdown', startDrag)
 		}
 
-		document.querySelector('#link-mini')?.appendChild(button)
+		document.querySelector('#link-mini div')?.appendChild(button)
 	}
 
 	domlinkblocks?.classList.toggle('with-groups', linkgroups.on)

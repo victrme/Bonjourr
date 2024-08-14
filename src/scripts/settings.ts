@@ -657,7 +657,9 @@ function initOptionsEvents() {
 	// Page layout
 
 	paramId('b_editmove').onclickdown(function () {
-		moveElements(undefined, { toggle: true })
+		moveElements(undefined, {
+			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
+		})
 	})
 
 	paramId('i_pagewidth').addEventListener('input', function () {

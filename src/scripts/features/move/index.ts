@@ -25,7 +25,7 @@ type UpdateMove = {
 	widget?: [Widgets, boolean]
 	span?: 'col' | 'row'
 	reset?: true
-	toggle?: true
+	toggle?: boolean
 	box?: string
 	text?: string
 	layout?: string
@@ -75,11 +75,11 @@ export async function updateMoveElement(event: UpdateMove) {
 	if (event.span) toggleGridSpans(data.move, event.span)
 	if (event.layout) layoutChange(data, event.layout)
 	if (event.reset) layoutReset(data)
-	if (event.toggle) toggleMoveStatus(data)
 	if (event.widget) toggleWidget(data, event.widget)
 	if (event.select) elementSelection(data.move, event.select)
 	if (event.box !== undefined) alignChange(data.move, event.box, 'box')
 	if (event.text !== undefined) alignChange(data.move, event.text, 'text')
+	if (event.toggle !== undefined) toggleMoveStatus(data, event.toggle)
 	if (event.overlay !== undefined) pageWidthOverlay(data.move, event.overlay)
 }
 
@@ -207,12 +207,6 @@ function layoutChange(data: Sync.Storage, column: string) {
 		toggleWidgetInSettings(list)
 		toggleWidgetOnInterface(list)
 
-		// Toggle overlays if we are editing
-		if (dominterface?.classList.contains('move-edit')) {
-			removeOverlay()
-			widgetsInGrid.forEach((id) => addOverlay(id))
-		}
-
 		if (widget) {
 			gridButtons(widget)
 			alignButtons(layout.items[widget])
@@ -275,22 +269,29 @@ function elementSelection(move: Sync.Move, select: string) {
 	document.getElementById('element-mover')?.classList.add('active')
 }
 
-function toggleMoveStatus(data: Sync.Storage) {
+function toggleMoveStatus(data: Sync.Storage, force?: boolean) {
+	const mover = document.getElementById('element-mover') as HTMLElement
 	const b_editmove = document.getElementById('b_editmove') as HTMLButtonElement
 	const isEditing = dominterface?.classList.contains('move-edit')
+	const hasOverlay = document.querySelector('.move-overlay') === null
 
-	if (isEditing) {
+	const state = force ?? !isEditing
+
+	if (!state) {
 		b_editmove.textContent = tradThis('Open')
+		dominterface?.classList.remove('move-edit')
+		mover.classList.add('hidden')
 		removeOverlay()
-	} else {
+	}
+	//
+	else if (hasOverlay) {
 		b_editmove.textContent = tradThis('Close')
+		dominterface?.classList.add('move-edit')
+		mover.classList.remove('hidden')
 		getWidgetsStorage(data).forEach((id) => addOverlay(id))
 	}
 
-	const mover = document.getElementById('element-mover')
-	mover?.classList.toggle('hidden')
 	mover?.classList.remove('active')
-	dominterface?.classList.toggle('move-edit')
 	removeSelection()
 }
 

@@ -33,8 +33,11 @@ export function toolboxEvents() {
 	})
 
 	layoutBtns.forEach((button) => {
-		button.onclickdown(() => {
-			updateMoveElement({ layout: button.dataset.layout || '' })
+		button.addEventListener('click', () => {
+			updateMoveElement({
+				layout: button.dataset.layout || '',
+				toggle: true,
+			})
 		})
 	})
 
@@ -52,7 +55,7 @@ export function toolboxEvents() {
 
 	spanColsBtn?.onclickdown(() => updateMoveElement({ span: 'col' }))
 	spanRowsBtn?.onclickdown(() => updateMoveElement({ span: 'row' }))
-	closeBtn?.addEventListener('click', () => updateMoveElement({ toggle: true }))
+	closeBtn?.addEventListener('click', () => updateMoveElement({ toggle: false }))
 	resetBtn?.addEventListener('click', () => updateMoveElement({ reset: true }))
 
 	moverdom?.addEventListener('mousedown', startDrag)
