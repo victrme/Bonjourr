@@ -335,8 +335,9 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 }
 
 function displayWeather(data: Weather, lastWeather: LastWeather) {
-	const useSinograms = getLang().includes('zh') || getLang().includes('jp')
-	const current = document.getElementById('current')
+	const useSinograms = getLang().includes('zh') || getLang().includes('ja')
+	const currentDesc = document.getElementById('current-desc')
+	const currentTemp = document.getElementById('current-temp')
 	const tempContainer = document.getElementById('tempContainer')
 	const weatherdom = document.getElementById('weather')
 	const dot = useSinograms ? '。' : '. '
@@ -358,8 +359,9 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		tempReport = tempReport.replace('<temp1>', actual.toString())
 		tempReport = tempReport.replace('<temp2>', feels.toString())
 
-		if (current && iconText) {
-			current.textContent = weatherReport + dot + tempReport
+		if (currentDesc && currentTemp && iconText) {
+			currentDesc.textContent = weatherReport + dot
+			currentTemp.textContent = tempReport
 			iconText.textContent = `${maintemp}°`
 		}
 	}

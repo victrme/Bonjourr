@@ -20,10 +20,7 @@ export function toolboxEvents() {
 	const closeBtn = document.querySelector<HTMLElement>('#close-mover')
 
 	elementEntries.forEach(([key, element]) => {
-		element?.onclickdown((event) => {
-			updateMoveElement({ select: key })
-			event.stopPropagation()
-		})
+		element?.onclickdown(() => updateMoveElement({ select: key }), { propagate: false })
 	})
 
 	moverBtns.forEach((button) => {
