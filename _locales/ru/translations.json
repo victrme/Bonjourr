@@ -132,7 +132,7 @@
 	"Name": "Имя",
 	"Weather": "Погода",
 	"Geolocation": "Геолокация",
-	"Off": "Никакой",
+	"Manual": "Руководство",
 	"Approximate": "Приблизительный",
 	"Precise": "Точный",
 	"City not found": "Город не найден",

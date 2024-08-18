@@ -132,7 +132,7 @@
 	"Name": "姓名",
 	"Weather": "天气",
 	"Geolocation": "使用我的位置",
-	"Off": "无",
+	"Manual": "手动的",
 	"Approximate": "粗略",
 	"Precise": "精确",
 	"City not found": "城市未找到",

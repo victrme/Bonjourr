@@ -142,7 +142,7 @@
 	"Name": "Name",
 	"Weather": "Weather",
 	"Geolocation": "Geolocation",
-	"Off": "Off",
+	"Manual": "Manual",
 	"Approximate": "Approximate",
 	"Precise": "Precise",
 	"City not found": "City not found",

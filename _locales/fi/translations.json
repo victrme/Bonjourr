@@ -132,7 +132,7 @@
 	"Name": "Nimi",
 	"Weather": "Sää",
 	"Geolocation": "Maantieteellinen sijainti",
-	"Off": "Ei mikään",
+	"Manual": "Manuaalinen",
 	"Approximate": "Noin",
 	"Precise": "Tarkka",
 	"City not found": "Kaupunkia ei löydetty",

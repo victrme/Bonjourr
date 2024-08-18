@@ -132,7 +132,7 @@
 	"Name": "Име",
 	"Weather": "Прогноза",
 	"Geolocation": "Геолокација",
-	"Off": "Ниједан",
+	"Manual": "Мануал",
 	"Approximate": "Приближно",
 	"Precise": "Тачан",
 	"City not found": "Место није пронађено",

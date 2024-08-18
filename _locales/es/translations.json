@@ -132,7 +132,7 @@
 	"Name": "Nombre",
 	"Weather": "Clima",
 	"Geolocation": "Geolocalización",
-	"Off": "Ninguna",
+	"Manual": "Manual",
 	"Approximate": "Aproximada",
 	"Precise": "Precisa",
 	"City not found": "Ciudad no encontrada",

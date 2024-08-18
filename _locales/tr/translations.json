@@ -132,7 +132,7 @@
 	"Name": "İsim",
 	"Weather": "Hava durumu",
 	"Geolocation": "Coğrafi konum",
-	"Off": "Hiçbiri",
+	"Manual": "Manuel",
 	"Approximate": "Yaklaşık",
 	"Precise": "Kesin",
 	"City not found": "Şehir bulunamadı",

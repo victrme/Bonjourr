@@ -132,7 +132,7 @@
 	"Name": "名称",
 	"Weather": "天気",
 	"Geolocation": "位置情報",
-	"Off": "オフ",
+	"Manual": "マニュアル",
 	"Approximate": "近似",
 	"Precise": "精確",
 	"City not found": "都市が見つかりません",
