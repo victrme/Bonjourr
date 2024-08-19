@@ -777,6 +777,7 @@ function translatePlaceholders() {
 		['i_importtext', 'or paste as text'],
 		['i_addlink-title', 'Title'],
 		['i_addlink-url', 'example.com'],
+		['i_qtlist', 'Author, Your quote.\nAuthor, Your second quote.'],
 	]
 
 	for (const [id, text] of cases) {
