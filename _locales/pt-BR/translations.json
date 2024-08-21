@@ -13,7 +13,7 @@
 	"It is currently <temp1>°": "Atualmente faz <temp1>°",
 	"It is currently <temp1>° and feels like <temp2>°": "Atualmente faz <temp1>° com sensação térmica de <temp2>°",
 	"It currently feels like <temp2>°": "A Sensação térmica é de <temp2>°",
-	"with a high of <temp1>° today": "com máxima é de <temp1>° hoje",
+	"with a high of <temp1>° today": "com máxima de <temp1>° hoje",
 	"with a high of <temp1>° tomorrow": "com máxima de <temp1>° amanhã",
 	"Default group": "Default group",
 	"Folder": "Pasta",
