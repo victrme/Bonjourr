@@ -120,7 +120,7 @@
 
 	display: inline-block;
 	cursor: pointer;
-	margin-left: 6px;
+	margin-left: 10px;
 	width: 16px;
 	height: 15px;
 	background-color: var(--credits-text-color);

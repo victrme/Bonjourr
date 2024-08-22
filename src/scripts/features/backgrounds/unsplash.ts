@@ -375,6 +375,7 @@ async function preloadImage(src: string) {
 function appendSaveLink(domcredit: HTMLElement, image: Unsplash.Image) {
 	const domsave = document.createElement('a')
 	domsave.className = 'save'
+	domsave.title = 'Download the current background to your computer'
 	domsave.onclick = () => saveImage(domsave, image)
 
 	domcredit.appendChild(domsave)
