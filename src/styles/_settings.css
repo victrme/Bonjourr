@@ -107,6 +107,15 @@ aside .input-btn {
 	transition: .2s background-color;
 }
 
+aside .input-btn.icon-only span {
+	display: flex;
+	justify-content: center;
+}
+
+aside .input-btn.icon-only span svg {
+	height: 18px;
+}
+
 aside .input-btn.icon-only:hover {
 	background-color: var(--color-input);
 }
@@ -456,7 +465,7 @@ aside form.valid button {
 }
 
 .all .as_weather {
-	max-height: 330px;
+	max-height: 345px;
 }
 
 .all .as_clocktype {

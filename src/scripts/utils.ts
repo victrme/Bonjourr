@@ -188,12 +188,12 @@ export function getSplitRangeData(id: string): { range?: string; button?: string
 	const wrapper = document.querySelector<HTMLInputElement>(`#${id.replace('#', '')}`)
 	const range = wrapper?.querySelector<HTMLInputElement>('input')
 	const button = wrapper?.querySelector<HTMLElement>('button')
-	const span = wrapper?.querySelectorAll<HTMLElement>('span')
+	const svg = wrapper?.querySelectorAll<HTMLElement>('svg')
 	const isButtonOn = button?.classList?.contains('on')
 
 	return {
 		range: range?.value,
-		button: span?.[isButtonOn ? 1 : 0].dataset.value,
+		button: svg?.[isButtonOn ? 1 : 0].dataset.value,
 	}
 }
 
