@@ -65,9 +65,16 @@
 }
 
 #editlink button {
+	flex-direction: row;
+	align-items: center;
 	width: 100%;
 	padding: 4px 12px;
 	font-weight: 400;
+	gap: .5em;
+}
+
+#editlink button svg {
+	height: 18px;
 }
 
 /* Active buttons and inputs */
@@ -80,7 +87,7 @@
 
 #editlink hr.on,
 #editlink button.on {
-	display: block;
+	display: flex;
 }
 
 #editlink label.on {

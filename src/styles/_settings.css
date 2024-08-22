@@ -104,6 +104,11 @@ aside .input-btn {
 	text-decoration: none;
 	color: var(--color-text);
 	background-color: var(--color-input);
+	transition: .2s background-color;
+}
+
+aside .input-btn.icon-only:hover {
+	background-color: var(--color-input);
 }
 
 aside textarea,
@@ -690,6 +695,12 @@ aside .settings-title .tooltip {
 
 .refresh-btn {
 	padding: 0 10px;
+	display: flex;
+	align-items: center;
+}
+
+.refresh-btn svg {
+	height: 18px;
 }
 
 #local_options label {

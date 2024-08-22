@@ -62,13 +62,49 @@
 				<hr />
 
 				<button type="submit" class="trn" id="edit-inputs">Submit from inputs</button>
-				<button type="submit" class="btn-red" id="edit-delete">Delete something</button>
-				<button type="submit" class="trn" id="edit-refresh">Refresh icon</button>
-				<button type="submit" class="trn" id="edit-add">Add something</button>
+				<button type="submit" class="btn-red" id="edit-delete">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round"
+							d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+					</svg>
+					
+					<span class="trn">Delete something</span>
+				</button>
+
+				<button type="submit" id="edit-refresh">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round"
+							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+					</svg>
+
+					<span class="trn">Refresh icon</span>
+				</button>
+
+				<button type="submit" id="edit-add">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+						class="size-6">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+					</svg>
+
+					<span class="trn">Add something</span>
+				</button>
 				<button type="submit" class="trn" id="edit-pin">Pin group</button>
 				<button type="submit" class="trn" id="edit-unpin">Unpin group</button>
-				<button type="submit" class="trn" id="edit-unfolder">Remove from folder</button>
-				<button type="submit" class="trn" id="edit-apply">Apply changes</button>
+				<button type="submit" id="edit-unfolder">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+						class="size-6">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+					</svg>
+
+					<span class="trn">Remove from folder</span>
+				</button>
+				<button type="submit" id="edit-apply">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round"
+							d="M3 3v18h18V6l-3-3H3ZM7.5 3v6h9V3M6 21v-9h12v9M14.25 5.25v1.5" />
+					</svg>
+					<span class="trn">Apply changes</span>
+				</button>
 				<button type="submit" class="trn" id="edit-synced">Synced links cannot be modified</button>
 			</form>
 		</dialog>
@@ -379,11 +415,10 @@
 						<h1 class="trn">Ok so... this is embarassing 😅</h1>
 
 						<p class="trn">
-							Opera does not allow extensions to modify its new tab. While there is no official statement, we
-							believe this is because ads on their speed dial is a good revenue source for them.
+							Opera does not allow extensions to modify its new tab. While there is no official statement, we believe this is because ads on their speed dial is a good revenue source for them.
 						</p>
 
-						<h2 class="trn">What to do from here ?</h2>
+						<h2 class="trn">What to do from here?</h2>
 
 						<ul>
 							<li class="trn">Remove Bonjourr and use Opera speed dial</li>
@@ -391,7 +426,7 @@
 							<li>
 								<span class="trn">Follow </span
 								><a href="https://bonjourr.fr/docs#opera" class="trn">this tutorial on our documentation</a
-								><span class="trn">. Bonjourr, or any homepage, should somewhat work !</span>
+								><span class="trn">. Bonjourr, or any homepage, should somewhat work!</span>
 							</li>
 						</ul>
 					</div>

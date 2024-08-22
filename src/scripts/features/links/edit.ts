@@ -140,8 +140,8 @@ export default async function openEditDialog(event: Event) {
 }
 
 function toggleEditInputs(): string[] {
-	const deleteButton = document.querySelector<HTMLButtonElement>('#edit-delete')
-	const addButton = document.querySelector<HTMLButtonElement>('#edit-add')
+	const deleteButtonTxt = document.querySelector<HTMLButtonElement>('#edit-delete span')
+	const addButtonTxt = document.querySelector<HTMLButtonElement>('#edit-add span')
 	const { container, target, selectall } = editStates
 	let inputs: string[] = []
 
@@ -186,17 +186,17 @@ function toggleEditInputs(): string[] {
 	const hasLabels = inputs.includes('title') || inputs.includes('url') || inputs.includes('icon')
 	domeditlink.querySelector('hr')?.classList.toggle('on', hasLabels)
 
-	if (deleteButton) {
-		if (selectall) deleteButton.textContent = tradThis('Delete selected')
-		else if (target.folder) deleteButton.textContent = tradThis('Delete folder')
-		else if (target.link) deleteButton.textContent = tradThis('Delete link')
-		else if (target.title) deleteButton.textContent = tradThis('Delete group')
+	if (deleteButtonTxt) {
+		if (selectall) deleteButtonTxt.textContent = tradThis('Delete selected')
+		else if (target.folder) deleteButtonTxt.textContent = tradThis('Delete folder')
+		else if (target.link) deleteButtonTxt.textContent = tradThis('Delete link')
+		else if (target.title) deleteButtonTxt.textContent = tradThis('Delete group')
 	}
 
-	if (addButton) {
-		if (selectall) addButton.textContent = tradThis('Create new folder')
-		else if (target.title) addButton.textContent = tradThis('Add new group')
-		else addButton.textContent = tradThis('Add new link')
+	if (addButtonTxt) {
+		if (selectall) addButtonTxt.textContent = tradThis('Create new folder')
+		else if (target.title) addButtonTxt.textContent = tradThis('Add new group')
+		else addButtonTxt.textContent = tradThis('Add new link')
 	}
 
 	return inputs
