@@ -17,7 +17,7 @@ const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.0
 const ANNOUNCEMENT_VERSION = '20.0.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: 'In this update: Groups and "Most visited" links, analog clock styling, and more... available on iOS!',
+	en: '<b>Bonjourr just got a major update! ✨</b> Discover the new quick links features, fancy analog clocks and much more. ',
 	fr: 'Dans cette mise à jour : Groupes et liens "Les plus visités", style d\'horloge analogique, et plus... disponible sur iOS !',
 	de: 'In diesem Update: Gruppen und "Meistbesuchte" Links, Analoguhr-Styling und mehr... verfügbar auf iOS!',
 	it: 'In questo aggiornamento: Gruppi e link "Più visitati", stile orologio analogico e altro... disponibile su iOS!',
@@ -121,8 +121,8 @@ function displayPopup(type: 'review' | 'announce') {
 	if (type === 'announce') {
 		const lang = getLang() as keyof typeof ANNOUNCEMENT_TRNS
 		const description = ANNOUNCEMENT_TRNS[lang] ?? ANNOUNCEMENT_TRNS.en
-		const buttontext = tradThis('Read the release notes')
-		desc.textContent = description
+		const buttontext = tradThis('Read the release notes') + ' 📝'
+		desc.innerHTML = description
 		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, buttontext))
 	}
 

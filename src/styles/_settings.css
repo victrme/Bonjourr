@@ -114,9 +114,11 @@ aside .input-btn.icon-only span {
 
 aside .input-btn.icon-only span svg {
 	height: 18px;
+	flex-shrink: 0;
 }
 
-aside .input-btn.icon-only:hover {
+aside .input-btn.icon-only:hover,
+aside .input-btn.icon-only:active {
 	background-color: var(--color-input);
 }
 
@@ -512,6 +514,13 @@ aside form.valid button {
 	margin: auto;
 	border-radius: 4px;
 	background-color: var(--color-focused);
+	transition: width 0.15s cubic-bezier(.215, .61, .355, 1),
+			background-color 0.15s cubic-bezier(.215, .61, .355, 1);
+}
+
+#mobile-drag-zone:active div {
+	width: 75px;
+	background-color: var(--color-border);
 }
 
 .settings-title {

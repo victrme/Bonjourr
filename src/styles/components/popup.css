@@ -76,6 +76,7 @@
 }
 
 #popup_desc {
+	line-height: 1.4em;
 	transition: color 0.1s;
 }
 

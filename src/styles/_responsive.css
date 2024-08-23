@@ -41,6 +41,9 @@
 
 	#interface {
 		padding-bottom: 77px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
 	}
 
 	body #interface.pushed {
@@ -126,7 +129,7 @@
 	}
 
 	#settings-footer {
-		padding-bottom: 25vh;
+		padding-bottom: 10vh;
 	}
 
 	#credit-container {
@@ -184,6 +187,20 @@
 		font-size: 2em;
 	}
 
+	#notes_container #pocket-editor {
+		line-height: 1.7em;
+	}
+
+	#notes_container #pocket-editor input[type=checkbox] {
+		width: calc(var(--font-size) * 1.6);
+		height: calc(var(--font-size) * 1.6);
+	}
+
+	[data-pocket-editor] [data-todo] p {
+		display: flex;
+		align-items: center;
+	}
+
 	aside,
 	button,
 	select,
@@ -209,6 +226,10 @@
 	aside select {
 		min-height: 36px;
 		border-radius: 13px;
+	}
+
+	aside .input-btn.icon-only:hover {
+		background-color: initial;
 	}
 
 	aside .switch:checked:hover {
