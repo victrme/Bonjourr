@@ -504,6 +504,10 @@
 	margin-top: 1em;
 }
 
+.clock-region {
+	margin-top: .5em;
+}
+
 #time-container.he_hidden ~ .clock-date {
 	margin-top: 0;
 }
