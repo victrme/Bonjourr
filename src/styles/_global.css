@@ -186,6 +186,7 @@ body.potato #element-mover {
 }
 
 body .he_hidden,
+body #time .analog.he_hidden,
 body #tempContainer.he_hidden {
 	display: none;
 }

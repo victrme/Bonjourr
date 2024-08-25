@@ -146,7 +146,7 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	const { face, shape, hands } = style
 
 	const time = document.getElementById('time') as HTMLElement
-	const spans = document.querySelectorAll<HTMLSpanElement>('.analog span')
+	const spans = document.querySelectorAll<HTMLSpanElement>('.analog .analog-face span')
 
 	const backgroundAlpha = parseInt(style.background.slice(4), 16)
 	const isWhiteOpaque = style.background?.includes('fff') && backgroundAlpha > 7
@@ -161,9 +161,9 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	else if (lang.match(/zh-CN|zh-HK|ja/)) faceNumbers = ['三', '六', '九', '十二']
 
 	spans.forEach((span, i) => {
-		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i]
-		else if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i]
-		else if (face === 'number') span.textContent = faceNumbers[i]
+		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i % 4]
+		else if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i % 4]
+		else if (face === 'number') span.textContent = faceNumbers[i % 4]
 		else span.textContent = ''
 	})
 

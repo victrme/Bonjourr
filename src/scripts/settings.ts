@@ -353,7 +353,10 @@ function initOptionsEvents() {
 		quickLinks(undefined, { row: this.value })
 	})
 
-	paramId('b_importbookmarks').onclickdown(linksImport)
+	paramId('b_importbookmarks').onclickdown(async function () {
+		await getPermissions('topSites', 'bookmarks')
+		linksImport()
+	})
 
 	// Backgrounds
 
