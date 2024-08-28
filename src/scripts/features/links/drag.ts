@@ -21,7 +21,6 @@ type Dropzone = Coords & {
 }
 
 const groups: Map<string, Group> = new Map()
-const blocks: Map<string, HTMLElement> = new Map()
 const minis: Map<string, HTMLElement> = new Map()
 const dropzones: Map<string, Dropzone> = new Map()
 let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
@@ -29,11 +28,9 @@ let lastdropAreas: DropArea[] = ['']
 let draggedId = ''
 let targetId = ''
 let targetGroup = ''
-let ids: string[] = []
-let initids: string[] = []
 let idsMap: Map<string, string[]> = new Map()
 let initidsMap: Map<string, string[]> = new Map()
-let coords: Coords[] = []
+let coordsMap: Map<string, Coords[]> = new Map()
 let dragContainers: NodeListOf<HTMLElement>
 let dragChangeParentTimeout = 0
 let dragAnimationFrame = 0
@@ -58,12 +55,11 @@ export default function startDrag(event: PointerEvent) {
 		return
 	}
 
-	ids = []
-	coords = []
-	initids = []
 	lastdropAreas = []
-	blocks.clear()
 	dropzones.clear()
+	groups.clear()
+	idsMap.clear()
+	initidsMap.clear()
 
 	//
 
@@ -109,12 +105,10 @@ export default function startDrag(event: PointerEvent) {
 	// }
 	// END RANT
 
-	const setBlocksAndDropzones = (elements: NodeListOf<HTMLElement>, type: DragType) => {
+	const setDropzones = (elements: NodeListOf<HTMLElement>, type: DragType) => {
 		for (const element of elements) {
 			const rect = element.getBoundingClientRect()
 			const id = getId(element, type)
-
-			blocks.set(id, element)
 
 			dropzones.set(id, {
 				x: rect.x,
@@ -137,8 +131,8 @@ export default function startDrag(event: PointerEvent) {
 		groups.set(id, val)
 	}
 
-	setBlocksAndDropzones(domlinklinks, 'link')
-	setBlocksAndDropzones(domlinkgroups, 'group')
+	setDropzones(domlinklinks, 'link')
+	setDropzones(domlinkgroups, 'group')
 
 	for (const container of Object.values(dragContainers)) {
 		const elements = container.querySelectorAll<HTMLElement>(tagName)
@@ -147,6 +141,7 @@ export default function startDrag(event: PointerEvent) {
 		const groupId = container?.dataset?.group ?? ''
 
 		const groupLinkList = []
+		const groupLinkCoords = []
 
 		for (const element of elements) {
 			const id = getId(element, type)
@@ -155,10 +150,8 @@ export default function startDrag(event: PointerEvent) {
 			x = x - rect?.x
 			y = y - rect?.y
 
-			ids.push(id)
-			initids.push(id)
-			coords.push({ x, y, w, h })
 			groupLinkList.push(id)
+			groupLinkCoords.push({ x, y, w, h })
 
 			// Only disable transitions for a few frames
 			element.style.transition = 'none'
@@ -177,6 +170,7 @@ export default function startDrag(event: PointerEvent) {
 
 		idsMap.set(groupId, groupLinkList)
 		initidsMap.set(groupId, groupLinkList)
+		coordsMap.set(groupId, groupLinkCoords)
 
 		container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
 		container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
@@ -287,7 +281,6 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	const movesFromCenter = last === 'center' && (curr === 'left' || curr === 'right')
 	const movesAcrossArea = curr !== secondlast
 	const staysInCenter = last === curr && curr === 'center'
-	const idAtCurrentArea = ids[initids.indexOf(id)]
 
 	if (staysInCenter) {
 		// applyDragChangeParent(type === 'link' ? idAtCurrentArea : id, type)
@@ -304,8 +297,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 
 function applyDragMoveBlocks(id: string) {
 	const targetGroup = groupFromLinkId(id)
-	const lastGroup = groupFromLinkId(id)
-	const targetGroupIds = idsMap.get(targetGroup) ?? []
+	const draggedGroup = groupFromLinkId(draggedId)
 	const targetGroupInitids = initidsMap.get(targetGroup) ?? []
 	const targetIndex = targetGroupInitids.indexOf(id)
 
@@ -318,13 +310,22 @@ function applyDragMoveBlocks(id: string) {
 	lastIndex = targetIndex
 
 	// move dragged element to target position in array
-	ids.splice(ids.indexOf(draggedId), 1)
-	ids.splice(targetIndex, 0, draggedId)
+	for (const [group, ids] of idsMap) {
+		if (group === draggedGroup) ids.splice(ids.indexOf(draggedId), 1)
+		if (group === targetGroup) ids.splice(targetIndex, 0, draggedId)
+		idsMap.set(group, ids)
+	}
 
 	// move all clones to new position
-	for (let i = 0; i < ids.length; i++) {
-		if (ids[i] !== draggedId) {
-			deplaceElem(blocks.get(ids[i]), coords[i].x, coords[i].y)
+	for (const [group, ids] of idsMap) {
+		for (let i = 0; i < ids.length; i++) {
+			const element = groups.get(group)?.blocks.get(ids[i])
+			const coords = coordsMap.get(group)
+
+			if (ids[i] !== draggedId && element && coords) {
+				console.log(coords)
+				deplaceElem(element, coords[i].x, coords[i].y)
+			}
 		}
 	}
 }
@@ -373,10 +374,15 @@ function endDrag(event: Event) {
 
 	const path = event.composedPath() as Element[]
 	const type = dropzones.get(draggedId)?.type
-	const group = domlinkgroup?.dataset.group ?? ''
-	const newIndex = ids.indexOf(draggedId)
-	const block = blocks.get(draggedId)
-	const coord = coords[newIndex]
+
+	const group = groups.get(targetGroup)
+	const blocks = group?.blocks
+	const index = idsMap.get(targetGroup)?.indexOf(draggedId) ?? -1
+	const coord = coordsMap.get(targetGroup)?.[index]
+
+	if (!group || !blocks || !coord) {
+		throw Error('No group found when dropping')
+	}
 
 	const isDroppable = !!document.querySelector('.drop-source')
 	const outOfFolder = !path[0]?.classList.contains('link-list') && domlinkgroup?.classList.contains('in-folder')
@@ -394,7 +400,7 @@ function endDrag(event: Event) {
 	if (outOfFolder || toFolder || toTab) {
 		blocks.get(draggedId)?.classList.add('removed')
 	} else {
-		deplaceElem(block, coord.x, coord.y)
+		deplaceElem(blocks.get(draggedId), coord.x, coord.y)
 	}
 
 	setTimeout(() => {
@@ -404,27 +410,42 @@ function endDrag(event: Event) {
 		const concatFolders = toFolder && (targetIsFolder || draggedIsFolder)
 
 		if (type === 'mini') {
-			linksUpdate({ moveGroups: ids })
-		}
-		//
-		else if (createFolder) {
-			linksUpdate({ addFolder: { ids: [targetId, draggedId], group } })
-		}
-		//
-		else if (concatFolders) {
-			linksUpdate({ moveToFolder: { source: draggedId, target: targetId, group } })
-		}
-		//
-		else if (toTab) {
-			linksUpdate({ moveToGroup: { ids: [draggedId], target: targetId } })
-		}
-		//
-		else if (outOfFolder) {
-			linksUpdate({ moveOutFolder: { ids: [draggedId], group } })
-		}
-		//
-		else {
-			linksUpdate({ moveLinks: ids })
+			// linksUpdate({
+			// 	moveGroups: [],
+			// })
+		} else if (createFolder) {
+			linksUpdate({
+				addFolder: {
+					ids: [targetId, draggedId],
+					group: targetGroup,
+				},
+			})
+		} else if (concatFolders) {
+			linksUpdate({
+				moveToFolder: {
+					source: draggedId,
+					target: targetId,
+					group: targetGroup,
+				},
+			})
+		} else if (toTab) {
+			linksUpdate({
+				moveToGroup: {
+					ids: [draggedId],
+					target: targetId,
+				},
+			})
+		} else if (outOfFolder) {
+			linksUpdate({
+				moveOutFolder: {
+					ids: [draggedId],
+					group: targetGroup,
+				},
+			})
+		} else {
+			linksUpdate({
+				moveLinks: [...idsMap.values()],
+			})
 		}
 
 		// Yield to functions above to avoid flickering
@@ -451,7 +472,8 @@ function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
 }
 
 function deplaceDraggedElem() {
-	const block = blocks.get(draggedId)
+	const group = groups.get(groupFromLinkId(draggedId))
+	const block = group?.blocks.get(draggedId)
 
 	if (block) {
 		block.style.transform = `translate(${dx}px, ${dy}px)`
