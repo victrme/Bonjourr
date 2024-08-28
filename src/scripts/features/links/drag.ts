@@ -8,10 +8,19 @@ type Coords = {
 	h: number
 }
 
+type DropType = 'mini' | 'link' | 'group'
+
 type DropArea = 'left' | 'right' | 'center' | ''
 
+type Dropzones = Map<string, Coords>
+
 const blocks: Map<string, HTMLElement> = new Map()
-const dropzones: Map<string, Coords & { type: 'group' | 'link' }> = new Map()
+const dropzones: Record<DropType, Dropzones> = {
+	group: new Map(),
+	link: new Map(),
+	mini: new Map(),
+}
+
 let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
 let lastdropAreas: DropArea[] = ['']
 let draggedId = ''
@@ -26,12 +35,13 @@ let dragAnimationFrame = 0
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let domlinklinks: NodeListOf<HTMLLIElement>
 let domlinktitles: NodeListOf<HTMLButtonElement>
+let domlinkgroups: NodeListOf<HTMLDivElement>
 let domlinkgroup: HTMLDivElement
 
 export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as HTMLElement[]
-	const type = path.some((element) => element?.className?.includes('link-title')) ? 'group' : 'link'
-	const isGroup = type === 'group'
+	const type = path.some((element) => element?.className?.includes('link-title')) ? 'mini' : 'link'
+	const isMini = type === 'mini'
 
 	if (event.button > 0) {
 		return
@@ -47,30 +57,30 @@ export default function startDrag(event: PointerEvent) {
 	initids = []
 	lastdropAreas = []
 	blocks.clear()
-	dropzones.clear()
+	dropzones.group.clear()
+	dropzones.link.clear()
+	dropzones.mini.clear()
 
 	//
 
 	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
+	domlinkgroups = document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group')
 	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
 	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
-	dragContainers = document.querySelectorAll<HTMLElement>(isGroup ? '#link-mini' : '.link-group')
+	dragContainers = document.querySelectorAll<HTMLElement>(isMini ? '#link-mini' : '.link-group')
 
-	const getId = (element?: HTMLElement, isGroup?: boolean) => {
-		return (isGroup ? element?.dataset.group : element?.id) ?? ''
-	}
-
-	const tagName = isGroup ? 'BUTTON' : 'LI'
+	const tagName = isMini ? 'BUTTON' : 'LI'
 	const target = path.find((node) => node.tagName === tagName)
 	const pos = getPosFromEvent(event)
 
-	draggedId = getId(target, isGroup)
+	draggedId = findIdFromElement(target)
 
 	// START RANT
 	// HOW DO I CENTER THE DRAGGED GROUP ON THE CURSOR
 	// AFTER UPDATING THEIR WIDTH ????????????????????
 	let groupSizeOffsets: Map<string, number> = new Map()
-	if (isGroup) {
+
+	if (isMini) {
 		const beforeMap: Map<string, number> = new Map()
 
 		for (const group of domlinktitles) {
@@ -88,30 +98,32 @@ export default function startDrag(event: PointerEvent) {
 	}
 	// END RANT
 
-	for (const element of [...domlinktitles, ...domlinklinks]) {
-		const isGroup = element.tagName === 'BUTTON'
+	for (const element of [...domlinkgroups, ...domlinktitles, ...domlinklinks]) {
+		const type = findTypeFromElement(element)
 		const rect = element.getBoundingClientRect()
-		const id = getId(element, isGroup)
+		const id = findIdFromElement(element)
 
-		blocks.set(id, element)
+		if (type !== 'group') {
+			blocks.set(id, element)
+		}
 
-		dropzones.set(id, {
+		dropzones[type].set(id, {
 			x: rect.x,
 			y: rect.y,
 			h: rect.height,
 			w: rect.width,
-			type: isGroup ? 'group' : 'link',
 		})
 	}
 
 	for (const container of Object.values(dragContainers)) {
 		const elements = container.querySelectorAll<HTMLElement>(tagName)
-		const wrapper = isGroup ? container : container.querySelector('.link-list')!
+		const wrapper = isMini ? container : container.querySelector('.link-list')!
 		const rect = wrapper?.getBoundingClientRect()
 
 		for (const element of elements) {
-			const id = getId(element, isGroup)
-			let { x, y, w, h } = dropzones.get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
+			const type = findTypeFromElement(element)
+			const id = findIdFromElement(element, type)
+			let { x, y, w, h } = dropzones[type].get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
 
 			x = x - rect?.x
 			y = y - rect?.y
@@ -153,11 +165,11 @@ export default function startDrag(event: PointerEvent) {
 	}
 }
 
-function beforeStartDrag(event: PointerEvent, type: 'group' | 'link') {
+function beforeStartDrag(event: PointerEvent, type: 'mini' | 'link') {
 	// Prevent drag move event if user slips on click
 	// By only starting drag if pointer moves more than 10px deadzone
 
-	const target = type === 'group' ? getTitleFromEvent(event) : getLiFromEvent(event)
+	const target = type === 'mini' ? getTitleFromEvent(event) : getLiFromEvent(event)
 	cox = event.offsetX
 	coy = event.offsetY
 
@@ -220,7 +232,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	const idAtCurrentArea = ids[initids.indexOf(id)]
 
 	if (staysInCenter) {
-		applyDragChangeParent(type === 'group' ? id : idAtCurrentArea, type)
+		applyDragChangeParent(type === 'mini' ? id : idAtCurrentArea, type)
 	}
 
 	if (movesFromCenter && movesAcrossArea) {
@@ -255,7 +267,12 @@ function applyDragMoveBlocks(id: string) {
 	}
 }
 
-function applyDragChangeParent(id: string, type: 'group' | 'link') {
+function applyDragChangeParent(id: string, type: DropType) {
+	if (type === 'group') {
+		console.log(id)
+		return
+	}
+
 	const propertyValue = getComputedStyle(domlinkblocks).getPropertyValue('--drop-delay')
 	const dropDelay = parseInt(propertyValue || '120')
 
@@ -269,7 +286,7 @@ function applyDragChangeParent(id: string, type: 'group' | 'link') {
 			return
 		}
 
-		if (type === 'group') {
+		if (type === 'mini') {
 			const selectedGroup = document.querySelector<HTMLElement>('#link-mini .link-title.selected-group')
 			const selection = selectedGroup?.dataset.group ?? id
 
@@ -296,7 +313,7 @@ function endDrag(event: Event) {
 	document.documentElement.removeEventListener('touchend', endDrag)
 
 	const path = event.composedPath() as Element[]
-	const type = dropzones.get(draggedId)?.type
+	const type = findTypeFromElement(blocks.get(draggedId))
 	const group = domlinkgroup?.dataset.group ?? ''
 	const newIndex = ids.indexOf(draggedId)
 	const block = blocks.get(draggedId)
@@ -327,7 +344,7 @@ function endDrag(event: Event) {
 		const createFolder = toFolder && !targetIsFolder && !draggedIsFolder
 		const concatFolders = toFolder && (targetIsFolder || draggedIsFolder)
 
-		if (type === 'group') {
+		if (type === 'mini') {
 			linksUpdate({ moveGroups: ids })
 		}
 		//
@@ -383,38 +400,58 @@ function deplaceDraggedElem() {
 	}
 }
 
-function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 'group' | 'link'] | undefined {
-	for (const [id, zone] of dropzones) {
-		// Detect 20% left edge of dropzones ( left + corner )
-		const ll = zone.x
-		const lr = zone.x + zone.w * 0.2
-		const lt = zone.y
-		const lb = zone.y + zone.h
-		const isInLeftEdge = x > ll && x < lr && y > lt && y < lb
+function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, DropType] | undefined {
+	const findArea = (zones: Dropzones) => {
+		for (const [id, zone] of zones) {
+			// Detect 20% left edge of dropzones ( left + corner )
+			const ll = zone.x
+			const lr = zone.x + zone.w * 0.2
+			const lt = zone.y
+			const lb = zone.y + zone.h
+			const isInLeftEdge = x > ll && x < lr && y > lt && y < lb
 
-		// Detect 20% right edge of dropzones ( right + corner )
-		const rl = zone.x + zone.w * 0.8
-		const rr = zone.x + zone.w
-		const rt = zone.y + 0
-		const rb = zone.y + zone.h
-		const isInRightEdge = x > rl && x < rr && y > rt && y < rb
+			// Detect 20% right edge of dropzones ( right + corner )
+			const rl = zone.x + zone.w * 0.8
+			const rr = zone.x + zone.w
+			const rt = zone.y + 0
+			const rb = zone.y + zone.h
+			const isInRightEdge = x > rl && x < rr && y > rt && y < rb
 
-		// Detect 80% center of dropzones ( center + corner )
-		const cl = zone.x + zone.w * 0.2
-		const cr = zone.x + zone.w * 0.8
-		const ct = zone.y
-		const cb = zone.y + zone.h
-		const isInCenter = x > cl && x < cr && y > ct && y < cb
+			// Detect 80% center of dropzones ( center + corner )
+			const cl = zone.x + zone.w * 0.2
+			const cr = zone.x + zone.w * 0.8
+			const ct = zone.y
+			const cb = zone.y + zone.h
+			const isInCenter = x > cl && x < cr && y > ct && y < cb
 
-		let area: DropArea = ''
+			let area: DropArea = ''
 
-		if (isInLeftEdge) area = 'left'
-		if (isInRightEdge) area = 'right'
-		if (isInCenter) area = 'center'
+			if (isInLeftEdge) area = 'left'
+			if (isInRightEdge) area = 'right'
+			if (isInCenter) area = 'center'
 
-		if (area) {
-			return [area, id, zone.type]
+			if (area) {
+				return { area, id }
+			}
 		}
+	}
+
+	// moche pcq cerveau qui brûle
+	// <!> doit etre dans l'ordre "link", "mini", "group"
+
+	const linkarea = findArea(dropzones.link)
+	if (linkarea) {
+		return [linkarea.area, linkarea.id, 'link']
+	}
+
+	const miniarea = findArea(dropzones.mini)
+	if (miniarea) {
+		return [miniarea.area, miniarea.id, 'mini']
+	}
+
+	const grouparea = findArea(dropzones.group)
+	if (grouparea) {
+		return [grouparea.area, grouparea.id, 'group']
 	}
 }
 
@@ -432,4 +469,22 @@ function getPosFromEvent(event: TouchEvent | PointerEvent) {
 	}
 
 	return { x: 0, y: 0 }
+}
+
+function findTypeFromElement(element?: HTMLElement): 'link' | 'mini' | 'group' {
+	if (element?.classList.contains('link')) return 'link'
+	if (element?.classList.contains('link-title')) return 'mini'
+	if (element?.classList.contains('link-group')) return 'group'
+
+	throw 'No valid type found for specified element'
+}
+
+function findIdFromElement(element?: HTMLElement, type?: 'link' | 'mini' | 'group'): string {
+	type = type ?? findTypeFromElement(element)
+
+	if (type === 'link') return element?.id ?? ''
+	if (type === 'mini') return element?.dataset.group ?? ''
+	if (type === 'group') return element?.dataset.group ?? ''
+
+	throw 'No valid type found for specified element'
 }
