@@ -44,6 +44,8 @@
 	"Delete selected": "Delete selected",
 	"Remove from folder": "Remove from folder",
 	"Refresh icon": "Refresh icon",
+	"Pin group": "Pin group",
+	"Unpin group": "Unpin group",
 	"Apply changes": "Apply changes",
 
 	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on",
@@ -145,6 +147,7 @@
 	"Manual": "Manual",
 	"Approximate": "Approximate",
 	"Precise": "Precise",
+	"Location": "Location",
 	"City not found": "City not found",
 	"Unit": "Unit",
 	"Celsius": "Celsius",
@@ -225,6 +228,7 @@
 	"Announcements": "Announcements",
 	"Major updates": "Major updates",
 	"All updates": "All updates",
+	"Decide when to get notified about Bonjourr updates.": "Decide when to get notified about Bonjourr updates.",
 
 	"Settings management": "Settings management",
 	"Transfer your settings between multiple instances of Bonjourr.": "Transfer your settings between multiple instances of Bonjourr.",
