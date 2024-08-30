@@ -60,7 +60,7 @@ type LinksUpdate = {
 	addLinks?: AddLinks
 	addGroups?: AddGroups
 	addFolder?: { ids: string[]; group?: string }
-	moveLinks?: string[]
+	moveLinks?: string[][]
 	moveGroups?: string[]
 	moveToFolder?: MoveToFolder
 	moveToGroup?: MoveToGroup
@@ -530,10 +530,12 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 	return data
 }
 
-function moveLinks(ids: string[], data: Sync): Sync {
-	ids.forEach((id, i) => {
-		;(data[id] as Link).order = i
-	})
+function moveLinks(groupIds: string[][], data: Sync): Sync {
+	for (const ids of groupIds) {
+		ids.forEach((id, i) => {
+			;(data[id] as Link).order = i
+		})
+	}
 
 	initblocks(data)
 	return data
