@@ -614,6 +614,7 @@
 	background-color: #fff3;
 }
 
+.drop-target.link-group,
 .drop-target.link-folder img {
 	opacity: 0.5;
 }

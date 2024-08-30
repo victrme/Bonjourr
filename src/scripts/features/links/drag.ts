@@ -15,6 +15,7 @@ type DropArea = 'left' | 'right' | 'center' | ''
 type Dropzones = Map<string, Coords>
 
 const blocks: Map<string, HTMLElement> = new Map()
+const groups: Map<string, HTMLElement> = new Map()
 const dropzones: Record<DropType, Dropzones> = {
 	group: new Map(),
 	link: new Map(),
@@ -23,8 +24,10 @@ const dropzones: Record<DropType, Dropzones> = {
 
 let [dx, dy, cox, coy, lastIndex] = [0, 0, 0, 0, 0, 0]
 let lastdropAreas: DropArea[] = ['']
+let draggedGroup = ''
 let draggedId = ''
 let targetId = ''
+let targetGroup = ''
 let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
@@ -74,6 +77,8 @@ export default function startDrag(event: PointerEvent) {
 	const pos = getPosFromEvent(event)
 
 	draggedId = findIdFromElement(target)
+	draggedGroup = findIdFromElement(domlinkgroup)
+	targetGroup = draggedGroup
 
 	// START RANT
 	// HOW DO I CENTER THE DRAGGED GROUP ON THE CURSOR
@@ -105,6 +110,8 @@ export default function startDrag(event: PointerEvent) {
 
 		if (type !== 'group') {
 			blocks.set(id, element)
+		} else {
+			groups.set(id, element)
 		}
 
 		dropzones[type].set(id, {
@@ -214,8 +221,24 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	const last = lastdropAreas[lastdropAreas.length - 1]
 	const secondlast = lastdropAreas[lastdropAreas.length - 2]
 	const staysOutsideCenter = curr === last && curr !== 'center'
+	const isDifferentGroup = targetGroup !== draggedGroup
 
-	if (staysOutsideCenter) {
+	if (type === 'group') {
+		targetGroup = id
+
+		if (isDifferentGroup) {
+			applyDragChangeParent(id, 'group')
+		}
+
+		if (targetGroup === draggedGroup) {
+			blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+			groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+		}
+
+		return
+	}
+
+	if (staysOutsideCenter || isDifferentGroup) {
 		return
 	}
 
@@ -268,13 +291,8 @@ function applyDragMoveBlocks(id: string) {
 }
 
 function applyDragChangeParent(id: string, type: DropType) {
-	if (type === 'group') {
-		console.log(id)
-		return
-	}
-
 	const propertyValue = getComputedStyle(domlinkblocks).getPropertyValue('--drop-delay')
-	const dropDelay = parseInt(propertyValue || '120')
+	const dropDelay = type === 'group' ? 0 : parseInt(propertyValue || '120')
 
 	clearTimeout(dragChangeParentTimeout)
 
@@ -297,9 +315,15 @@ function applyDragChangeParent(id: string, type: DropType) {
 
 		targetId = id
 
+		groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
 		blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
 		blocks.get(draggedId)?.classList.toggle('drop-source', true)
-		blocks.get(id)?.classList.toggle('drop-target', true)
+
+		if (type === 'group') {
+			groups.get(id)?.classList.toggle('drop-target', true)
+		} else {
+			blocks.get(id)?.classList.toggle('drop-target', true)
+		}
 	}, dropDelay)
 }
 
@@ -337,6 +361,8 @@ function endDrag(event: Event) {
 	} else {
 		deplaceElem(block, coord.x, coord.y)
 	}
+
+	groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
 
 	setTimeout(() => {
 		const targetIsFolder = blocks.get(targetId)?.classList.contains('link-folder')
