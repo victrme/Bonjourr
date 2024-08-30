@@ -30,6 +30,7 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	current = convertOldCSSSelectors(current) // ..
 	current = linkParentsToString(current) // ..
 	current = toISOLanguageCode(current) // ..
+	current = removeGroupDuplicate(current) // ..
 
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
@@ -135,12 +136,6 @@ function toISOLanguageCode(data: Sync.Storage): Sync.Storage {
 }
 
 function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage {
-	if (current?.linkgroups?.groups && imported?.linkgroups?.groups) {
-		current.linkgroups.groups = ['']
-		current.linkgroups.pinned = []
-		current.linkgroups.synced = []
-	}
-
 	if (imported.linktabs) {
 		current.linkgroups = {
 			on: imported.linktabs.active,
@@ -149,6 +144,16 @@ function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage
 			synced: [],
 			pinned: [],
 		}
+	}
+
+	return current
+}
+
+function removeGroupDuplicate(current: Sync.Storage): Sync.Storage {
+	if (current.linkgroups) {
+		current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
+		current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
+		current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
 	}
 
 	return current

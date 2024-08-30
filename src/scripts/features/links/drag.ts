@@ -1,9 +1,6 @@
 import { getLiFromEvent, getTitleFromEvent } from './helpers'
 import { linksUpdate } from '.'
 
-type DragType = 'group' | 'link' | 'mini'
-type DropArea = 'left' | 'right' | 'center' | ''
-
 type Coords = {
 	x: number
 	y: number
@@ -58,6 +55,9 @@ export default function startDrag(event: PointerEvent) {
 		return
 	}
 
+	ids = []
+	coords = []
+	initids = []
 	lastdropAreas = []
 	blocks.clear()
 	dropzones.group.clear()
@@ -88,38 +88,20 @@ export default function startDrag(event: PointerEvent) {
 	if (isMini) {
 		const beforeMap: Map<string, number> = new Map()
 
-	// if (isMini) {
-	// 	const beforeMap: Map<string, number> = new Map()
+		for (const group of domlinktitles) {
+			beforeMap.set(group.dataset.group ?? '', group.getBoundingClientRect().x)
+			group.style.width = '12ch'
+		}
 
-	// 	for (const group of domlinktitles) {
-	// 		beforeMap.set(group.dataset.group ?? '', group.getBoundingClientRect().x)
-	// 		group.style.width = '12ch'
-	// 	}
+		for (const group of domlinktitles) {
+			const id = group.dataset.group ?? ''
+			const before = beforeMap.get(id) ?? 0
+			const after = group.getBoundingClientRect().x
 
-	// 	for (const group of domlinktitles) {
-	// 		const id = group.dataset.group ?? ''
-	// 		const before = beforeMap.get(id) ?? 0
-	// 		const after = group.getBoundingClientRect().x
-
-	// 		groupSizeOffsets.set(id, after - before)
-	// 	}
-	// }
-	// END RANT
-
-	const setDropzones = (elements: NodeListOf<HTMLElement>, type: DragType) => {
-		for (const element of elements) {
-			const rect = element.getBoundingClientRect()
-			const id = getId(element, type)
-
-			dropzones.set(id, {
-				x: rect.x,
-				y: rect.y,
-				h: rect.height,
-				w: rect.width,
-				type: type,
-			})
+			groupSizeOffsets.set(id, after - before)
 		}
 	}
+	// END RANT
 
 	for (const element of [...domlinkgroups, ...domlinktitles, ...domlinklinks]) {
 		const type = findTypeFromElement(element)
@@ -140,17 +122,10 @@ export default function startDrag(event: PointerEvent) {
 		})
 	}
 
-	setDropzones(domlinklinks, 'link')
-	setDropzones(domlinkgroups, 'group')
-
 	for (const container of Object.values(dragContainers)) {
 		const elements = container.querySelectorAll<HTMLElement>(tagName)
 		const wrapper = isMini ? container : container.querySelector('.link-list')!
 		const rect = wrapper?.getBoundingClientRect()
-		const groupId = container?.dataset?.group ?? ''
-
-		const groupLinkList = []
-		const groupLinkCoords = []
 
 		for (const element of elements) {
 			const type = findTypeFromElement(element)
@@ -160,8 +135,9 @@ export default function startDrag(event: PointerEvent) {
 			x = x - rect?.x
 			y = y - rect?.y
 
-			groupLinkList.push(id)
-			groupLinkCoords.push({ x, y, w, h })
+			ids.push(id)
+			initids.push(id)
+			coords.push({ x, y, w, h })
 
 			// Only disable transitions for a few frames
 			element.style.transition = 'none'
@@ -177,10 +153,6 @@ export default function startDrag(event: PointerEvent) {
 				element.classList.add('on')
 			}
 		}
-
-		idsMap.set(groupId, groupLinkList)
-		initidsMap.set(groupId, groupLinkList)
-		coordsMap.set(groupId, groupLinkCoords)
 
 		container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
 		container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
@@ -198,8 +170,6 @@ export default function startDrag(event: PointerEvent) {
 		document.documentElement.addEventListener('pointerup', endDrag)
 		document.documentElement.addEventListener('pointerleave', endDrag)
 	}
-
-	console.log(idsMap)
 }
 
 function beforeStartDrag(event: PointerEvent, type: 'mini' | 'link') {
@@ -272,40 +242,17 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 		return
 	}
 
-	if (isChangingGroup) {
-		targetGroup = id
-		lastdropAreas.push('')
-		clearTimeout(dragChangeParentTimeout)
-
-		groups.forEach((group) => {
-			group.blocks.forEach((block) => {
-				block.classList.remove('drop-target', 'drop-source')
-			})
-		})
-		return
-	}
-
 	if (curr === '') {
 		lastdropAreas.push('')
 		clearTimeout(dragChangeParentTimeout)
-
-		groups.forEach((group) => {
-			group.blocks.forEach((block) => {
-				block.classList.remove('drop-target', 'drop-source')
-			})
-		})
-
+		blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
 		return
 	}
 
-	if (type !== 'link') {
-		return
-	}
-
-	const groupId = groupFromLinkId(id)
 	const movesFromCenter = last === 'center' && (curr === 'left' || curr === 'right')
 	const movesAcrossArea = curr !== secondlast
 	const staysInCenter = last === curr && curr === 'center'
+	const idAtCurrentArea = ids[initids.indexOf(id)]
 
 	if (staysInCenter) {
 		applyDragChangeParent(type === 'mini' ? id : idAtCurrentArea, type)
@@ -321,10 +268,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 }
 
 function applyDragMoveBlocks(id: string) {
-	const targetGroup = groupFromLinkId(id)
-	const draggedGroup = groupFromLinkId(draggedId)
-	const targetGroupInitids = initidsMap.get(targetGroup) ?? []
-	const targetIndex = targetGroupInitids.indexOf(id)
+	const targetIndex = initids.indexOf(id)
 
 	if (lastIndex === targetIndex) {
 		return
@@ -335,22 +279,13 @@ function applyDragMoveBlocks(id: string) {
 	lastIndex = targetIndex
 
 	// move dragged element to target position in array
-	for (const [group, ids] of idsMap) {
-		if (group === draggedGroup) ids.splice(ids.indexOf(draggedId), 1)
-		if (group === targetGroup) ids.splice(targetIndex, 0, draggedId)
-		idsMap.set(group, ids)
-	}
+	ids.splice(ids.indexOf(draggedId), 1)
+	ids.splice(targetIndex, 0, draggedId)
 
 	// move all clones to new position
-	for (const [group, ids] of idsMap) {
-		for (let i = 0; i < ids.length; i++) {
-			const element = groups.get(group)?.blocks.get(ids[i])
-			const coords = coordsMap.get(group)
-
-			if (ids[i] !== draggedId && element && coords) {
-				console.log(coords)
-				deplaceElem(element, coords[i].x, coords[i].y)
-			}
+	for (let i = 0; i < ids.length; i++) {
+		if (ids[i] !== draggedId) {
+			deplaceElem(blocks.get(ids[i]), coords[i].x, coords[i].y)
 		}
 	}
 }
@@ -424,7 +359,7 @@ function endDrag(event: Event) {
 	if (outOfFolder || toFolder || toTab) {
 		blocks.get(draggedId)?.classList.add('removed')
 	} else {
-		deplaceElem(blocks.get(draggedId), coord.x, coord.y)
+		deplaceElem(block, coord.x, coord.y)
 	}
 
 	groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
@@ -483,8 +418,7 @@ function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
 }
 
 function deplaceDraggedElem() {
-	const group = groups.get(groupFromLinkId(draggedId))
-	const block = group?.blocks.get(draggedId)
+	const block = blocks.get(draggedId)
 
 	if (block) {
 		block.style.transform = `translate(${dx}px, ${dy}px)`
