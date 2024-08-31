@@ -171,16 +171,16 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<label for="i_bgfile" class="input-file">
-			<input id="i_bgfile" type="file" name="background_file" multiple accept="image/*" />
-			<span class="trn">Upload background here</span>
-		</label>
+		<div class="wrapper">
+			<span class="trn">Add backgrounds</span>
+			<button id="b_background-upload" class="param-btn trn">Select files</button>
+			<input id="background-upload" type="file" name="background_file" multiple accept="image/*" />
+		</div>
 
-		<div id="fileContainer"></div>
+		<div id="thumbnails-container"></div>
 
 		<div id="thumbnail-show-buttons">
-			<button class="inline-btn" id="b_thumbnail-more" aria-label="Show 9 more backgrounds">Show more</button>
-			<button class="inline-btn" id="b_thumbnail-all" aria-label="Show all backgrounds">Show all</button>
+			<button class="param-btn trn" id="b_thumbnail-all" aria-label="Show all backgrounds">Show all</button>
 		</div>
 	</div>
 

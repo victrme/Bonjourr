@@ -191,7 +191,7 @@
 		line-height: 1.7em;
 	}
 
-	#notes_container #pocket-editor input[type=checkbox] {
+	#notes_container #pocket-editor input[type='checkbox'] {
 		width: calc(var(--font-size) * 1.6);
 		height: calc(var(--font-size) * 1.6);
 	}

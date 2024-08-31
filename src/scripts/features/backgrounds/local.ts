@@ -62,22 +62,20 @@ async function initLocalBackgrounds() {
 	}
 
 	displayCustomBackground(await getBlob(selected, 'background'))
-	onSettingsLoad(() => initSettingsOptions())
+	onSettingsLoad(() => handleSettingsOptions())
 }
 
-async function initSettingsOptions() {
+async function handleSettingsOptions() {
 	const loadedThumbIds = [...document.querySelectorAll<Element>('.thumbnail')].map((el) => el.id)
 	const i_freq = document.getElementById('i_freq') as HTMLSelectElement
 	const images = await localImages.get()
 	let ids = images.ids
 
-	addThumbnailsToDom(ids, images.selected)
-
 	if (i_freq) {
 		i_freq.value = images.freq
 	}
 
-	if (IS_MOBILE && ids.length > 9) {
+	if (ids.length > 9) {
 		ids = ids.slice(0, 9)
 		document.getElementById('thumbnail-show-buttons')?.classList.add('shown')
 	}
@@ -85,6 +83,9 @@ async function initSettingsOptions() {
 	if (loadedThumbIds.length > 0) {
 		ids = ids.filter((id) => loadedThumbIds.includes(id) === false)
 	}
+
+	// <!> must stay at the end (ids mutation)
+	addThumbnailsToDom(ids, images.selected)
 }
 
 //
@@ -110,7 +111,7 @@ async function updateLocalBackgrounds(event: UpdateLocal) {
 }
 
 async function addNewImage(filelist: FileList) {
-	const fileContainer = document.getElementById('fileContainer')
+	const thumbnailsContainer = document.getElementById('thumbnails-container')
 	let { ids, selected } = await localImages.get()
 	let blobs: { [key: string]: Blobs } = {}
 	let newIds: string[] = []
@@ -134,7 +135,7 @@ async function addNewImage(filelist: FileList) {
 			background: file,
 		}
 
-		fileContainer?.appendChild(createThumbnail(thumbnail, id, false))
+		thumbnailsContainer?.appendChild(createThumbnail(thumbnail, id, false))
 
 		await idb.set(id, blobs[id])
 	}
@@ -153,8 +154,8 @@ async function refreshCustom(button: HTMLSpanElement) {
 }
 
 async function updateThumbnailAmount(showing?: string) {
-	const fileContainer = document.getElementById('fileContainer') as HTMLElement
-	const thumbsAmount = fileContainer?.childElementCount || 0
+	const thumbnailsContainer = document.getElementById('thumbnails-container') as HTMLElement
+	const thumbsAmount = thumbnailsContainer?.childElementCount || 0
 	const images = await localImages.get()
 	const ids: string[] = []
 
@@ -318,7 +319,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 }
 
 async function addThumbnailsToDom(ids: string[], selected?: string) {
-	const fileContainer = document.getElementById('fileContainer') as HTMLElement
+	const thumbnailsContainer = document.getElementById('thumbnails-container') as HTMLElement
 	const fragment = document.createDocumentFragment()
 	const idsToAdd = ids.filter((id) => !document.getElementById(id))
 
@@ -328,7 +329,7 @@ async function addThumbnailsToDom(ids: string[], selected?: string) {
 		fragment.appendChild(createThumbnail(blob, id, isSelected))
 	}
 
-	fileContainer.appendChild(fragment)
+	thumbnailsContainer.appendChild(fragment)
 }
 
 //

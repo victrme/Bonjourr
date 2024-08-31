@@ -381,12 +381,12 @@ function initOptionsEvents() {
 
 	// Custom backgrounds
 
-	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds({ newfile: this.files })
+	paramId('b_background-upload').onclickdown(function (this: HTMLInputElement) {
+		paramId('background-upload')?.click()
 	})
 
-	paramId('b_thumbnail-more').onclickdown(function () {
-		localBackgrounds({ showing: 'more' })
+	paramId('background-upload').addEventListener('change', function (this: HTMLInputElement) {
+		localBackgrounds({ newfile: this.files })
 	})
 
 	paramId('b_thumbnail-all').onclickdown(function () {
