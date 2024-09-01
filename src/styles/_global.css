@@ -185,6 +185,15 @@ body.potato #element-mover {
 	background-color: var(--color-param);
 }
 
+body.blurred .analog,
+body.blurred .link-title,
+body.blurred .move-overlay,
+body.blurred #pocket-editor,
+body.blurred .link-folder > div {
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
 body .he_hidden,
 body #time .analog.he_hidden,
 body #tempContainer.he_hidden {

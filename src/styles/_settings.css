@@ -739,9 +739,9 @@ aside .settings-title .tooltip {
 
 /* instead of padding on #thumbnails-container */
 /* because buggy when container is empty */
-#thumbnails-container button:nth-child(1),
-#thumbnails-container button:nth-child(2),
-#thumbnails-container button:nth-child(3) {
+#thumbnails-container .thumbnail:nth-child(1),
+#thumbnails-container .thumbnail:nth-child(2),
+#thumbnails-container .thumbnail:nth-child(3) {
 	margin-top: 10px;
 }
 
@@ -755,7 +755,7 @@ aside .settings-title .tooltip {
 	outline: 3px solid transparent;
 	outline-offset: -3px;
 	background-color: var(--color-input);
-	transition: opacity 0.1s, filter 0.1s, outline 0.1s;
+	transition: opacity 0.05s, filter 0.05s, outline 0.05s;
 }
 
 .thumbnail.hiding {
@@ -800,7 +800,7 @@ aside .settings-title .tooltip {
 	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
-	transition: opacity 0.1s, background-color 0.1s;
+	transition: opacity 0.05s, background-color 0.05s;
 }
 
 .b_removethumb span {

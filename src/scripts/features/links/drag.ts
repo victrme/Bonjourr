@@ -77,7 +77,7 @@ export default function startDrag(event: PointerEvent) {
 	const pos = getPosFromEvent(event)
 
 	draggedId = findIdFromElement(target)
-	draggedGroup = findIdFromElement(domlinkgroup)
+	draggedGroup = findIdFromElement(isMini ? target : domlinkgroup)
 	targetGroup = draggedGroup
 
 	// START RANT

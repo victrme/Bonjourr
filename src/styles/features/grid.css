@@ -5,7 +5,7 @@
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
 	outline: 0.4em solid transparent;
-	transition: background-color 0.2s var(--out-cubic);
+	transition: background-color 0.05s var(--out-cubic);
 	z-index: -1;
 }
 

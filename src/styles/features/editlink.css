@@ -7,7 +7,7 @@
 	padding: 6px;
 	margin: 0;
 	z-index: 4;
-	transition: opacity 0.1s;
+	transition: opacity 0.05s;
 }
 
 #editlink.shown {
@@ -48,7 +48,6 @@
 	border-radius: 8px;
 	box-sizing: border-box;
 	background-color: transparent;
-	transition: background-color 0.1s, opacity 0.1s;
 }
 
 #editlink input::placeholder {
@@ -70,7 +69,7 @@
 	width: 100%;
 	padding: 4px 12px;
 	font-weight: 400;
-	gap: .5em;
+	gap: 0.5em;
 }
 
 #editlink button svg {

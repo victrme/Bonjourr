@@ -112,7 +112,7 @@
 	border: 1px solid transparent;
 	border-radius: 1em;
 	z-index: 2;
-	transition: opacity 0.3s var(--out-cubic);
+	transition: opacity 0.05s var(--out-cubic);
 }
 
 /* Link titles */
@@ -132,6 +132,7 @@
 	border: 1px solid transparent;
 	background-color: transparent;
 	cursor: pointer;
+	transition: transform 0.2s var(--in-out-bounce);
 }
 
 .link-group .link-title {
@@ -178,9 +179,8 @@
 
 /* Link */
 
-.link,
-.link-title {
-	transition: transform 0.2s var(--in-out-bounce), opacity 0.2s var(--in-out-bounce), filter 0.06s;
+.link {
+	transition: transform 0.2s var(--in-out-bounce), opacity 0.1s var(--in-out-bounce), filter 0.06s;
 }
 
 .link {

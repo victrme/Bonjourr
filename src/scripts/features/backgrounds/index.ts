@@ -1,6 +1,6 @@
 import unsplashBackgrounds from './unsplash'
 import localBackgrounds from './local'
-import { rgbToHex} from '../../utils'
+import { rgbToHex } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
 import { BROWSER } from '../../defaults'
 
@@ -40,9 +40,9 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 export function imgBackground(url: string, color?: string) {
 	let img = new Image()
 
-	// Set the crossOrigin attribute to handle CORS when average color needed 
-	if (!color) img.crossOrigin = "Anonymous" 
-	
+	// Set the crossOrigin attribute to handle CORS when average color needed
+	if (!color) img.crossOrigin = 'Anonymous'
+
 	img.onload = () => {
 		const bgoverlay = document.getElementById('background_overlay') as HTMLDivElement
 		const bgfirst = document.getElementById('background') as HTMLDivElement
@@ -75,6 +75,10 @@ export function backgroundFilter({ blur, brightness, isEvent }: FilterOptions) {
 
 	if (hasblur) document.documentElement.style.setProperty('--background-blur', blur.toString() + 'px')
 	if (hasbright) document.documentElement.style.setProperty('--background-brightness', brightness.toString())
+
+	if (hasblur) {
+		document.body.classList.toggle('blurred', blur > 16)
+	}
 
 	if (isEvent && hasblur) eventDebounce({ background_blur: blur })
 	if (isEvent && hasbright) eventDebounce({ background_bright: brightness })
@@ -115,8 +119,10 @@ export function getAverageColor(img: HTMLImageElement) {
 		let imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height)
 		let data = imageData?.data
 
-		let r = 0, g = 0, b = 0;
-		let count = 0;
+		let r = 0,
+			g = 0,
+			b = 0
+		let count = 0
 
 		// Loop through the image data and sum the color values
 		if (data) {
@@ -140,7 +146,6 @@ export function getAverageColor(img: HTMLImageElement) {
 		console.error('Error accessing image data:', error)
 	}
 }
-
 
 function backgroundFreq() {
 	//

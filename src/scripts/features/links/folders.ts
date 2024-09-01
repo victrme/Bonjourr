@@ -42,7 +42,7 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	transition.first(hide)
 	transition.then(changeToFolder)
 	transition.finally(show)
-	transition.transition(200)
+	transition.transition(40)
 
 	function hide() {
 		linkgroup.dataset.folder = li?.id
@@ -73,7 +73,7 @@ async function closeFolder() {
 	transition.first(hide)
 	transition.then(changeToTab)
 	transition.finally(show)
-	transition.transition(200)
+	transition.transition(40)
 
 	function hide() {
 		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach((group) => {
