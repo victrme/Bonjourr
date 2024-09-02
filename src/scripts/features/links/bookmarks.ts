@@ -90,7 +90,7 @@ async function createBookmarksDialog() {
 		const selectButton = folder.querySelector('.b_bookmarks-folder-select')
 		const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
 		const ol = folder.querySelector('ol')
-		const h2 = folder.querySelector('h2')
+		const h2 = folder.querySelector('.bookmarks-folder-title-content')
 
 		if (!ol || !h2) {
 			continue
@@ -107,7 +107,7 @@ async function createBookmarksDialog() {
 			h2.textContent = tradThis('Most visited')
 			folder.classList.add('synced')
 			syncButton.setAttribute('disabled', '')
-			syncButton.textContent = tradThis('Always synced')
+			syncButton.remove()
 		}
 
 		for (const bookmark of list.bookmarks) {
@@ -198,6 +198,7 @@ function importSelectedBookmarks() {
 
 	bookmarksdom?.classList.remove('shown')
 	bookmarksdom?.close()
+	closeDialog()
 }
 
 function handleApplyButtonText() {
@@ -209,59 +210,44 @@ function handleApplyButtonText() {
 	toggleDisabled(applybutton, emptySelection)
 }
 
-function closeDialog(event: Event) {
-	const path = event.composedPath() as Element[]
+function closeDialog(event?: Event) {
+	const path = (event?.composedPath() ?? []) as Element[]
 	const id = path[0]?.id ?? ''
 
-	if (id === 'bookmarks' || id === 'bmk_close') {
+	if (!event || id === 'bookmarks' || id === 'bmk_close') {
 		const bookmarksdom = document.querySelector<HTMLDialogElement>('#bookmarks')
 
 		bookmarksdom?.close()
 		bookmarksdom?.classList.remove('shown')
+		bookmarksdom?.querySelectorAll('.selected')?.forEach((node) => node.classList.remove('selected'))
 	}
 }
 
 function toggleFolderSelect(folder: HTMLElement) {
 	const selectButton = folder.querySelector('.b_bookmarks-folder-select')
 	const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
-	const syncCheckbox = syncButton?.querySelector('input[type="checkbox"]') as HTMLInputElement
-	const isTopSites = folder.querySelector('h2')?.textContent === tradThis('Most visited')
 
-	if (!selectButton || !syncButton || !syncCheckbox) {
+	if (!selectButton) {
 		return
 	}
 
 	if (folder.classList.contains('selected')) {
-		selectButton.textContent = tradThis('Select this group')
-		folder.classList.remove('selected', 'synced')
+		folder.classList.remove('selected')
 		syncButton?.classList.remove('selected')
 		syncButton?.setAttribute('disabled', '')
-		syncCheckbox.checked = false
 	} else {
-		selectButton.textContent = tradThis('Unselect this group')
 		folder.classList.add('selected')
 		folder.querySelectorAll('li').forEach((li) => li?.classList.remove('selected'))
-
-		if (!isTopSites) {
-			syncButton?.removeAttribute('disabled')
-		}
+		syncButton?.removeAttribute('disabled')
 	}
 
 	handleApplyButtonText()
 }
 
 function toggleFolderSync(folder: HTMLElement) {
-	const syncCheckbox = folder.querySelector('.b_bookmarks-folder-sync input[type="checkbox"]') as HTMLInputElement
-
-	if (!syncCheckbox) {
-		return
-	}
-
 	if (folder.classList.contains('synced')) {
-		syncCheckbox.checked = false
 		folder.classList.remove('synced')
 	} else {
-		syncCheckbox.checked = true
 		folder.classList.add('synced')
 	}
 }

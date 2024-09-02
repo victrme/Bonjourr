@@ -97,6 +97,10 @@
 	pointer-events: none;
 }
 
+.bookmarks-folder.selected li {
+	opacity: 0.3;
+}
+
 .bookmarks-folder.used {
 	user-select: none;
 	pointer-events: none;
@@ -112,6 +116,14 @@
 
 .bookmarks-folder-title button {
 	white-space: nowrap;
+}
+
+.bookmarks-folder-title-synced {
+	display: none;
+}
+
+.synced .bookmarks-folder-title-synced {
+	display: inline;
 }
 
 #bookmarks h2 {
@@ -145,6 +157,16 @@
 	width: 100%;
 	padding: 5px;
 	transition: background-color 0.05s;
+}
+
+.selected .b_bookmarks-folder-select,
+.synced .b_bookmarks-folder-sync {
+	background-color: #fff2;
+}
+
+.b_bookmarks-folder-select:hover,
+.b_bookmarks-folder-sync:hover {
+	background-color: #fff4;
 }
 
 #bookmarks li button:focus-visible,
