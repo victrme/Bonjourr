@@ -43,7 +43,7 @@
 	"Pin group": "このグループをピン留めする",
 	"Unpin group": "グループのピンを外す",
 	"Apply changes": "適用する",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Bonjourrに追加するブックマークをブラウザから選択します。フォルダを選択するとグループが作成されます。フォルダを \"同期 \"することで、その変更がブラウザのブックマークに結び付けられます。詳しくは",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "同期されたグループはブラウザのブックマークに合わせて自動的に更新されます。詳細については、",
 	"Select group": "グループを選択",
 	"Synced with browser": "ブラウザと同期",
 	"Most visited": "最多訪問者数",

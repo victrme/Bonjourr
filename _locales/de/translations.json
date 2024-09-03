@@ -43,7 +43,7 @@
 	"Pin group": "Diese Gruppe anpinnen",
 	"Unpin group": "Gruppe lösen",
 	"Apply changes": "Änderungen übernehmen",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Wählen Sie Lesezeichen aus Ihrem Browser aus, um sie zu Bonjourr hinzuzufügen. Wenn Sie einen Ordner auswählen, wird eine Gruppe erstellt. Durch das \"Synchronisieren\" eines Ordners werden seine Änderungen mit Ihren Browser-Lesezeichen verknüpft. Erfahren Sie mehr unter",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Synchronisierte Gruppen werden automatisch aktualisiert, um mit Ihren Browser-Lesezeichen übereinzustimmen. Erfahren Sie mehr auf",
 	"Select group": "Gruppe auswählen",
 	"Synced with browser": "Mit Browser synchronisiert",
 	"Most visited": "Meist besucht",

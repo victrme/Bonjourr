@@ -43,7 +43,7 @@
 	"Pin group": "固定該群組",
 	"Unpin group": "取消固定群組",
 	"Apply changes": "套用變更",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "從瀏覽器中選擇要新增到 Bonjourr 的書籤。選擇資料夾將創建一個群組。\"同步\"資料夾會將其變更與瀏覽器書籤綁定。了解更多",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "同步群組會自動更新以符合您的瀏覽器書籤。了解更多關於",
 	"Select group": "選擇群組",
 	"Synced with browser": "與瀏覽器同步",
 	"Most visited": "最常造訪",

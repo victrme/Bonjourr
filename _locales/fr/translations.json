@@ -43,7 +43,7 @@
 	"Pin group": "Épingler le groupe",
 	"Unpin group": "Détacher le groupe",
 	"Apply changes": "Enregistrer",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Sélectionnez les signets de votre navigateur à ajouter à Bonjourr. La sélection d'un dossier crée un groupe. \"La synchronisation d'un dossier lie ses modifications aux signets de votre navigateur. Pour en savoir plus",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Les groupes synchronisés sont automatiquement mis à jour pour correspondre aux favoris de votre navigateur. En savoir plus sur",
 	"Select group": "Sélectionner un groupe",
 	"Synced with browser": "Synchronisé avec le navigateur",
 	"Most visited": "Les plus visités",

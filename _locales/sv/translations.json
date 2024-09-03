@@ -43,7 +43,7 @@
 	"Pin group": "Fäst den här gruppen",
 	"Unpin group": "Lossa grupp",
 	"Apply changes": "Applicera förändringar",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Välj bokmärken från din webbläsare för att lägga till Bonjourr. Om du väljer en mapp skapas en grupp. \"Synkronisering\" av en mapp knyter dess ändringar till dina webbläsares bokmärken. Läs mer på",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Synkroniserade grupper uppdateras automatiskt för att matcha dina webbläsares bokmärken. Läs mer om",
 	"Select group": "Välj grupp",
 	"Synced with browser": "Synkroniserad med webbläsare",
 	"Most visited": "Mest besökta",

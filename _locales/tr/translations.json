@@ -43,7 +43,7 @@
 	"Pin group": "Bu grubu sabitle",
 	"Unpin group": "Grubu sabitle",
 	"Apply changes": "Değişiklikleri uygula",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Bonjourr'a eklemek için tarayıcınızdan yer imlerini seçin. Bir klasör seçmek bir grup oluşturacaktır. Bir klasörü \"senkronize etmek\", değişikliklerini tarayıcı yer imlerinize bağlar. Daha fazla bilgi için",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Senkronize gruplar tarayıcınızın yer imleriyle eşleşecek şekilde otomatik olarak güncellenir. Daha fazla bilgi edinin",
 	"Select group": "Grup seçin",
 	"Synced with browser": "Tarayıcı ile senkronize",
 	"Most visited": "En çok ziyaret edilenler",

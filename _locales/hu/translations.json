@@ -43,7 +43,7 @@
 	"Pin group": "A csoport rögzítése",
 	"Unpin group": "Csoport rögzítésének feloldása",
 	"Apply changes": "Módosítások alkalmazása",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Válassza ki a Bonjourr-hoz hozzáadandó könyvjelzőket a böngészőjéből. Egy mappa kiválasztásával létrehozhat egy csoportot. Egy mappa \"szinkronizálása\" a mappa módosításait a böngésző könyvjelzőihez köti. További információ a",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "A szinkronizált csoportok automatikusan frissülnek, hogy megfeleljenek a böngésző könyvjelzőinek. Tudjon meg többet erről",
 	"Select group": "Csoport kiválasztása",
 	"Synced with browser": "Szinkronizálva a böngészővel",
 	"Most visited": "Leglátogatottabb",

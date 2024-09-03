@@ -26,9 +26,11 @@
 }
 #bookmarks-header {
 	padding: 20px;
+	padding-inline-start: 60px;
 	display: flex;
-	gap: 1em;
-	flex-direction: column;
+	gap: 2em;
+	align-items: center;
+	justify-content: space-between;
 }
 
 [data-theme='dark'] #bookmarks-header {
@@ -40,14 +42,19 @@
 }
 
 #bookmarks-intro {
-	max-width: 550px;
+	max-width: 400px;
 	text-align: left;
-	margin: auto;
+}
+
+#bookmarks-buttons {
+	width: min-content;
+	text-align: right;
 }
 
 #bookmarks-buttons button {
+	white-space: nowrap;
 	width: fit-content;
-	margin: 0 1em;
+	margin: 2px 1em;
 }
 
 #bmk_apply {
@@ -223,11 +230,15 @@
 	}
 
 	#bookmarks-header {
+		gap: 1em;
 		font-size: 14px;
 		text-align: left;
+		flex-direction: column;
+		padding-inline-start: 20px;
 	}
 
 	#bookmarks-buttons {
+		width: auto;
 		text-align: center;
 	}
 

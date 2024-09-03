@@ -43,7 +43,7 @@
 	"Pin group": "Kiinnitä tämä ryhmä",
 	"Unpin group": "Irrota ryhmä",
 	"Apply changes": "Ota muutokset käyttöön",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Valitse selaimestasi kirjanmerkit lisättäväksi Bonjourriin. Kansion valitseminen luo ryhmän. Kansion \"synkronointi\" sitoo sen muutokset selaimesi kirjanmerkkeihin. Lisätietoja osoitteessa",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Synkronoidut ryhmät päivitetään automaattisesti vastaamaan selaimesi kirjanmerkkejä. Lisätietoja aiheesta",
 	"Select group": "Valitse ryhmä",
 	"Synced with browser": "Synkronoitu selaimen kanssa",
 	"Most visited": "Eniten vieraillut",

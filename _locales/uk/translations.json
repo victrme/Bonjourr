@@ -43,7 +43,7 @@
 	"Pin group": "Закріпити цю групу",
 	"Unpin group": "Відкріпити групу",
 	"Apply changes": "Зберегти зміни",
-	"Select bookmarks from your browser to add to Bonjourr. Selecting a folder will create a group. \"Syncing\" a folder ties its changes to your browser bookmarks. Learn more on": "Виберіть закладки з вашого браузера, щоб додати їх до Bonjourr. Вибравши папку, ви створите групу. \"Синхронізація\" папки прив'язує її зміни до закладок вашого браузера. Дізнайтеся більше на",
+	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Синхронізовані групи автоматично оновлюються відповідно до закладок браузера. Дізнайтеся більше на",
 	"Select group": "Виберіть групу",
 	"Synced with browser": "Синхронізовано з браузером",
 	"Most visited": "Найбільш відвідувані",
