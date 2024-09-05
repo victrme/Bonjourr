@@ -454,7 +454,7 @@ function isFace(str?: string): str is Sync.AnalogStyle['face'] {
 }
 
 function isHands(str?: string): str is Sync.AnalogStyle['hands'] {
-	return ['modern', 'swiss-hands', 'classic', 'braun', 'apple'].includes(str ?? '')
+	return ['modern', 'swiss', 'classic', 'braun', 'apple'].includes(str ?? '')
 }
 
 function isShape(str?: string): str is Sync.AnalogStyle['shape'] {

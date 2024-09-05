@@ -90,7 +90,7 @@ declare namespace Sync {
 		background: string
 		shape: 'round' | 'square' | 'rectangle'
 		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
-		hands: 'modern' | 'swiss-hands' | 'classic' | 'braun' | 'apple'
+		hands: 'modern' | 'swiss' | 'classic' | 'braun' | 'apple'
 	}
 
 	type WorldClocks = {

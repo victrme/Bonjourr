@@ -161,25 +161,25 @@
 }
 
 /* swiss hands */
-#time[data-hands='swiss-hands'] .analog-center {
+#time[data-hands='swiss'] .analog-center {
 	display: none;
 }
 
-#time[data-hands='swiss-hands'].seconds .analog-center {
+#time[data-hands='swiss'].seconds .analog-center {
 	display: block;
 	background-color: #e30713;
 	width: calc(var(--clock-size) * 0.3);
 	height: calc(var(--clock-size) * 0.3);
 }
 
-#time[data-hands='swiss-hands'] .analog-hours {
+#time[data-hands='swiss'] .analog-hours {
 	height: 30%;
 	width: calc(var(--clock-size) * 0.35);
 	border-radius: 0;
 }
 
 /* bit that pokes out */
-#time[data-hands='swiss-hands'] .analog-hours:after {
+#time[data-hands='swiss'] .analog-hours:after {
 	content: '';
 	display: block;
 	position: absolute;
@@ -191,14 +191,14 @@
 	transform: translateX(-50%);
 }
 
-#time[data-hands='swiss-hands'] .analog-minutes {
+#time[data-hands='swiss'] .analog-minutes {
 	height: calc(var(--clock-size) * 3.69);
 	width: calc(var(--clock-size) * 0.25);
 	border-radius: 0;
 }
 
 /* bit that pokes out */
-#time[data-hands='swiss-hands'] .analog-minutes:after {
+#time[data-hands='swiss'] .analog-minutes:after {
 	content: '';
 	display: block;
 	position: absolute;
@@ -210,14 +210,14 @@
 	transform: translateX(-50%);
 }
 
-#time[data-hands='swiss-hands'] .analog-seconds {
+#time[data-hands='swiss'] .analog-seconds {
 	height: calc(var(--clock-size) * 2.8);
 	border-radius: 0;
 	opacity: 1;
 }
 
 /* bit that pokes out */
-#time[data-hands='swiss-hands'] .analog-seconds:after {
+#time[data-hands='swiss'] .analog-seconds:after {
 	content: '';
 	display: block;
 	position: absolute;
@@ -230,7 +230,7 @@
 }
 
 /* circle at the end */
-#time[data-hands='swiss-hands'] .analog-seconds:before {
+#time[data-hands='swiss'] .analog-seconds:before {
 	content: '';
 	display: block;
 	position: absolute;
@@ -505,7 +505,7 @@
 }
 
 .clock-region {
-	margin-top: .5em;
+	margin-top: 0.5em;
 }
 
 #time-container.he_hidden ~ .clock-date {
