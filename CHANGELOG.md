@@ -34,6 +34,9 @@
 -   Translations:
     -   Added Norwegian translation, thanks @FIameCaster
     -   Added Catalan translation, thanks Umbert
+    -   Added Taiwanese Chinese with Claude
+    -   Hungarian & German update, thanks @GyDavid22 and @Scalamando
+    -   Slovak translation overall, thanks @Svec-Tomas
 
 $~~~~~~~~~~~$
 
