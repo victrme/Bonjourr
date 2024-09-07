@@ -16,17 +16,15 @@
 	--font-weight: 400;
 	--font-size: 1em;
 	--clock-size: 6em;
-	--red: 254, 59, 49;
-	--color-red: rgb(var(--red));
+	--red: 230, 75, 67;
+	--blue: 41, 144, 255;
+	--color-red: #e64b43;
 	--color-green: #2ed058;
+	--color-blue: #2990ff;
 	--out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
-	--credits-text-color: rgba(255, 255, 255, 0.6);
-	--credits-hover-color: rgba(255, 255, 255, 0.9333333333);
 }
 
 [data-theme='light'] {
-	--blue: 41, 144, 255;
-	--color-blue: rgb(var(--blue));
 	--color-text: #222222;
 	--color-param: #ffffff;
 	--color-settings: #f2f2f7;
@@ -46,8 +44,6 @@
 }
 
 [data-theme='dark'] {
-	--blue: 41, 144, 255;
-	--color-blue: rgb(var(--blue));
 	--color-text: #eeeeee;
 	--color-light-text: #929294;
 	--color-param: #1c1c1e;

@@ -203,18 +203,19 @@ function userActionsEvents() {
 		}
 
 		const open = isOpen()
-		const path = (event.composedPath() as Element[]) ?? [document.body]
+		const composedPath = (event.composedPath() as Element[]) ?? [document.body]
+		const path = composedPath.filter((node) => node?.className?.includes)
 		const pathIds = path.map((el) => (el as HTMLElement).id)
 
 		const on = {
-			link: path.some((el) => el?.classList?.contains('link')),
+			link: path.some((el) => el.classList.contains('link')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
-			linkfolder: path.some((el) => el?.className?.includes('folder')),
-			folder: path.some((el) => el?.className?.includes('in-folder')),
+			linkfolder: path.some((el) => el.className.includes('folder')),
+			folder: path.some((el) => el.className.includes('in-folder')),
 			interface: pathIds.includes('interface'),
 			editlink: pathIds.includes('editlink'),
-			settings: path.some((el) => el?.id === 'settings'),
-			showsettings: path.some((el) => el?.id === 'show-settings'),
+			settings: path.some((el) => el.id === 'settings'),
+			showsettings: path.some((el) => el.id === 'show-settings'),
 		}
 
 		if (document.body.classList.contains('tabbing')) {

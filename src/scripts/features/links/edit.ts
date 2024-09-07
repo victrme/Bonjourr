@@ -163,7 +163,7 @@ function toggleEditInputs(): string[] {
 	}
 
 	if (container.group) {
-		if (target.synced) inputs = ['synced']
+		if (target.synced && !target.title) inputs = ['synced']
 		else if (target.synced && target.title) inputs = ['unpin', 'delete']
 		else if (selectall) inputs = ['delete', 'refresh', 'add']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']

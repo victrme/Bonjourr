@@ -168,11 +168,15 @@
 
 .selected .b_bookmarks-folder-select,
 .synced .b_bookmarks-folder-sync {
+	color: var(--color-text);
 	background-color: #fff2;
 }
 
+.b_bookmarks-folder-select:focus-visible,
+.b_bookmarks-folder-sync:focus-visible,
 .b_bookmarks-folder-select:hover,
 .b_bookmarks-folder-sync:hover {
+	color: var(--color-text);
 	background-color: #fff4;
 }
 

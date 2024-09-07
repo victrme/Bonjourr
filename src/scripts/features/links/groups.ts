@@ -173,10 +173,10 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 	return data
 }
 
-export function moveGroups(titles: string[], data: Sync.Storage) {
-	titles = titles.filter((name) => name !== '+')
+export function moveGroups(mini: string[], data: Sync.Storage) {
+	mini = mini.filter((name) => name !== '+')
 
-	data.linkgroups.groups = titles
+	data.linkgroups.groups = data.linkgroups.pinned.concat(mini)
 	initGroups(data)
 
 	return data
@@ -190,7 +190,8 @@ export async function togglePinGroup(group: string, action: 'pin' | 'unpin') {
 	if (action === 'unpin') data.linkgroups.pinned = pinned.filter((pinned) => pinned !== group)
 
 	if (group === data.linkgroups.selected) {
-		data.linkgroups.selected = groups[0]
+		const unpinned = groups.filter((id) => pinned.includes(id) === false)
+		data.linkgroups.selected = unpinned[0]
 	}
 
 	storage.sync.set(data)

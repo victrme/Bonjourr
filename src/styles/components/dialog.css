@@ -49,5 +49,5 @@ dialog button:hover {
 dialog button.btn-red:focus-visible,
 dialog button.btn-red:hover {
 	color: white;
-	background-color: #e64b43;
+	background-color: var(--color-red);
 }

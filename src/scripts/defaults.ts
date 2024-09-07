@@ -126,6 +126,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		border: '#ffff',
 		background: '#fff2',
 	},
+	worldclocks: [],
 	unsplash: {
 		every: 'hour',
 		collection: '',
@@ -176,7 +177,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		selection: 'single',
 		layouts: {},
 	},
-	worldclocks: [],
 }
 
 export const LOCAL_DEFAULT: Local.Storage = {

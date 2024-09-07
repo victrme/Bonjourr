@@ -104,7 +104,6 @@ aside .input-btn {
 	text-decoration: none;
 	color: var(--color-text);
 	background-color: var(--color-input);
-	transition: 0.2s background-color;
 }
 
 aside .input-btn.icon-only span {
@@ -983,7 +982,7 @@ aside .settings-title .tooltip {
 	overflow-y: auto;
 	opacity: unset;
 	cursor: inherit;
-	min-height: 200px;
+	min-height: 300px;
 }
 
 #file-import,

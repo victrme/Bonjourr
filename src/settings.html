@@ -1411,42 +1411,42 @@
 		<div>
 			<button
 				id="b_file-load"
-				class="param-btn trn"
+				class="param-btn"
 				title="Import an existing settings file"
 				aria-label="Import an existing settings file"
 			>
-				Import
+				<span class="trn">Import</span>
 			</button>
 			<button
 				id="b_file-save"
-				class="param-btn trn"
+				class="param-btn"
 				title="Export a new settings file"
 				aria-label="Export a new settings file"
 			>
-				Export
+				<span class="trn">Export</span>
 			</button>
 		</div>
 	</div>
 
 	<hr />
 
-	<textarea id="settings-data"></textarea>
+	<textarea id="settings-data" spellcheck="false"></textarea>
 
 	<div id="settings-changes">
 		<button
 			id="b_settings-copy"
-			class="param-btn trn"
+			class="param-btn"
 			title="Copy settings data to clipboard"
 			aria-label="Copy settings data to clipboard"
 		>
 			<span class="trn">Copy</span>
 		</button>
-		<button id="b_settings-cancel" class="param-btn btn-red trn" title="Cancel changes" aria-label="Cancel changes">
+		<button id="b_settings-cancel" class="param-btn btn-red" title="Cancel changes" aria-label="Cancel changes">
 			<span class="trn">Cancel</span>
 		</button>
 		<button
 			id="b_settings-apply"
-			class="param-btn trn"
+			class="param-btn"
 			title="Load Bonjourr with these settings"
 			aria-label="Load Bonjourr with these settings"
 			disabled

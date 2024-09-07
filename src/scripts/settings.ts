@@ -706,32 +706,32 @@ function initOptionsEvents() {
 		loadImportFile(this)
 	})
 
-	paramId('b_settings-copy').addEventListener('click', function (this) {
-		copySettings(this)
+	paramId('b_settings-copy').onclickdown(function (_, target) {
+		copySettings(target)
 	})
 
 	paramId('settings-data').addEventListener('input', function () {
 		toggleSettingsChangesButtons('input')
 	})
 
-	paramId('b_settings-cancel').addEventListener('click', function () {
+	paramId('b_settings-cancel').onclickdown(function () {
 		toggleSettingsChangesButtons('cancel')
 	})
 
-	paramId('b_settings-apply').addEventListener('click', function () {
+	paramId('b_settings-apply').onclickdown(function () {
 		const val = paramId('settings-data').value
 		importSettings(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
-	paramId('b_reset-first').addEventListener('click', function () {
+	paramId('b_reset-first').onclickdown(function () {
 		resetSettings('first')
 	})
 
-	paramId('b_reset-apply').addEventListener('click', function () {
+	paramId('b_reset-apply').onclickdown(function () {
 		resetSettings('yes')
 	})
 
-	paramId('b_reset-cancel').addEventListener('click', function () {
+	paramId('b_reset-cancel').onclickdown(function () {
 		resetSettings('no')
 	})
 
@@ -1126,7 +1126,12 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 
 	if (action === 'input') {
 		const current = orderedStringify(data)
-		const user = orderedStringify(JSON.parse(textarea.value) ?? {})
+		let user = ''
+
+		try {
+			user = orderedStringify(JSON.parse(textarea.value ?? '{}') as Sync.Storage)
+		} catch (_) {}
+
 		hasChanges = user.length > 2 && current !== user
 	}
 

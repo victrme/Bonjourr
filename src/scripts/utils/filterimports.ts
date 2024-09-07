@@ -31,6 +31,7 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	current = linkParentsToString(current) // ..
 	current = toISOLanguageCode(current) // ..
 	current = removeGroupDuplicate(current) // ..
+	current = removeWorldClocksDuplicate(current, target) // ..
 
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
@@ -144,6 +145,14 @@ function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage
 			synced: [],
 			pinned: [],
 		}
+	}
+
+	return current
+}
+
+function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync.Storage {
+	if (target.worldclocks && current.worldclocks) {
+		current.worldclocks = target.worldclocks
 	}
 
 	return current
@@ -344,6 +353,7 @@ function convertOldCSSSelectors<Data extends Sync.Storage | Import>(data: Data):
 			.replaceAll('#hours', '#analog-hours')
 			.replaceAll('#minutes', '#analog-minutes')
 			.replaceAll('#analogSeconds', '#analog-seconds')
+			.replaceAll('#creditContainer', '#credit-container')
 	}
 
 	return data
