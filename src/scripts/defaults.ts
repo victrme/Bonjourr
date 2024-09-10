@@ -31,7 +31,7 @@ export const PLATFORM =
 		: 'online'
 
 export const BROWSER =
-	window.navigator.userAgent.toLowerCase().indexOf('edg/' || 'edge') > -1
+	window.navigator.userAgent.toLowerCase().indexOf('edge') > -1
 		? 'edge'
 		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
 		? 'opera'

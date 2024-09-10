@@ -12,7 +12,7 @@ export default {
 	nl: 'Nederlandse',
 	da: 'Dansk',
 	sv: 'Svenska',
-	nb: 'Norsk',
+	// nb: 'Norsk',
 	fi: 'Suomi',
 	pl: 'Polski',
 	cs: 'Čeština',
