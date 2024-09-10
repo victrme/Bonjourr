@@ -1,5 +1,5 @@
 import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
-import { BROWSER, EXTENSION, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
+import { BROWSER, EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
 import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
@@ -135,7 +135,7 @@ function isValidURL(string: string): boolean {
 	}
 }
 
-function createSearchURL(val: string): string {
+function createSearchURL(val: string, engine: string): string {
 	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
 		default: '',
 		google: 'https://www.google.com/search?q=%s',
@@ -151,8 +151,7 @@ function createSearchURL(val: string): string {
 		custom: domcontainer?.dataset.request || '',
 	}
 
-	let searchURL = URLs.google
-	const engine = domcontainer?.dataset.engine || 'google'
+	let searchURL = ''
 
 	if (isValidEngine(engine)) {
 		const trad = tradThis(engine)
@@ -165,9 +164,10 @@ function createSearchURL(val: string): string {
 function submitSearch(e: Event) {
 	e.preventDefault()
 
-	const engine = domcontainer?.dataset.engine ?? 'default'
+	const canUseDefault = !IS_MOBILE && (PLATFORM === 'chrome' || PLATFORM === 'firefox')
 	const newtab = domcontainer?.dataset.newtab === 'true'
 	const val = domsearchbar?.value
+	let engine = domcontainer?.dataset.engine ?? 'default'
 
 	if (!val) {
 		return
@@ -177,20 +177,24 @@ function submitSearch(e: Event) {
 		socket.close()
 	}
 
-	if (PLATFORM === 'online' || BROWSER === 'safari' || engine !== 'default') {
-		const domainURL = val.startsWith('http') ? val : 'https://' + val
-		const searchURL = createSearchURL(val)
-		const url = isValidURL(val) ? domainURL : searchURL
-		const target = newtab ? '_blank' : '_self'
-
-		return window.open(url, target)
+	if (canUseDefault && engine === 'default') {
+		//@ts-expect-error
+		EXTENSION.search.query({
+			disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
+			text: val,
+		})
+		return
 	}
 
-	//@ts-expect-error
-	EXTENSION.search.query({
-		disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
-		text: val,
-	})
+	engine = engine.replace('default', 'google')
+
+	const domainURL = val.startsWith('http') ? val : 'https://' + val
+	const searchURL = createSearchURL(val, engine)
+	const url = isValidURL(val) ? domainURL : searchURL
+	const target = newtab ? '_blank' : '_self'
+
+	window.open(url, target)
+	return
 }
 
 //
@@ -401,7 +405,7 @@ async function handleUserInput(e: Event) {
 
 	// request suggestions
 	if (domcontainer?.dataset.suggestions === 'true' && socket && socket.readyState === socket.OPEN) {
-		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg')
+		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg').replace('default', 'google')
 		const query = encodeURIComponent(value ?? '')
 		socket.send(JSON.stringify({ q: query, with: engine, lang: getLang() }))
 	}

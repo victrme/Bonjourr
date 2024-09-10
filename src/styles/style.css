@@ -1,7 +1,6 @@
 @import '_global';
 @import '_settings';
 @import '_interface';
-@import '_responsive';
 
 @import 'components/popup';
 @import 'components/dialog';
@@ -17,3 +16,5 @@
 @import 'features/editlink';
 @import 'features/bookmarks';
 @import 'features/csseditor';
+
+@import '_responsive';

@@ -35,7 +35,7 @@
 }
 
 #sb_container hr {
-	margin: 0.6em 0;
+	margin: 0;
 	border-right: 1px solid #fff3;
 }
 
@@ -96,7 +96,7 @@
 }
 
 #sb-buttons #sb_submit img {
-	margin-top: 3px;
+	margin-top: 0.2em;
 	height: 1.2em;
 }
 

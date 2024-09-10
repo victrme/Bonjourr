@@ -55,13 +55,13 @@
 	}
 
 	#show-settings button {
-		height: 44px;
-		width: 44px;
+		height: 3.3em;
+		width: 3.3em;
 		border-radius: 10px;
 	}
 
 	#show-settings img {
-		width: 30px;
+		width: 2em;
 	}
 
 	aside {
@@ -176,15 +176,11 @@
 	}
 
 	#sb-buttons {
-		padding-right: 1em;
+		font-size: 1.6em;
 	}
 
-	#sb-buttons #sb_submit img {
-		height: 1.5em;
-	}
-
-	#sb-buttons #sb_empty {
-		font-size: 2em;
+	#sb-buttons button {
+		padding: 0 1em;
 	}
 
 	#notes_container #pocket-editor {
