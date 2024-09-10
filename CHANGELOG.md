@@ -31,6 +31,7 @@
     -   Faster interactions with settings options
     -   Fixed link edit dialog not working on RTL languages
     -   Fixed localization issue in search suggestions (#279)
+    -   Fixed search on Kiwi browser after 19.2.5 (#404)
 -   Translations:
     -   Added Norwegian translation, thanks @FIameCaster
     -   Added Catalan translation, thanks Umbert
