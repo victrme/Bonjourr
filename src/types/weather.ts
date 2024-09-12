@@ -49,7 +49,6 @@ declare namespace Weather {
 		| 'mist'
 
 	interface Onecall {
-		from: 'accuweather' | 'openweathermap'
 		link?: string
 		city?: string
 		ccode?: string

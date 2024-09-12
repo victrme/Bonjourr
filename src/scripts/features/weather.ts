@@ -250,9 +250,6 @@ function handleGeolOption(data: Weather) {
 async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
 	if (!navigator.onLine) return lastWeather
 
-	//
-	// Create queries
-
 	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
 	let coords = await getGeolocation(data.geolocation)
 	let lang = getLang()
@@ -367,11 +364,11 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	}
 
 	const handleWidget = () => {
-		let filename = 'fewclouds'
+		let condition = 'fewclouds'
 
-		for (const [condition, codes] of Object.entries(accuweatherConditions)) {
+		for (const [name, codes] of Object.entries(accuweatherConditions)) {
 			if (codes.includes(lastWeather.icon_id)) {
-				filename = condition
+				condition = name
 			}
 		}
 
@@ -379,14 +376,13 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 			return
 		}
 
-		const icon = document.getElementById('weather-icon') as HTMLImageElement
-
 		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime()
 		const daytime = now < sunrise || now > sunset ? 'night' : 'day'
-		const iconSrc = `src/assets/weather/${daytime}/${filename}.svg`
 
-		icon.src = iconSrc
+		const icon = document.getElementById('weather-icon') as HTMLImageElement
+		icon.dataset.daytime = daytime
+		icon.dataset.condition = condition
 	}
 
 	const handleForecastData = () => {
@@ -499,8 +495,8 @@ const openWeatherMapConditions: Record<Weather.Conditions, number[]> = {
 }
 
 const accuweatherConditions: Record<Weather.Conditions, number[]> = {
-	clearsky: [1, 2, 3, 33, 34, 35],
-	fewclouds: [4, 5, 36, 37],
+	clearsky: [1, 2, 33, 34],
+	fewclouds: [3, 4, 5, 35, 36, 37],
 	brokenclouds: [6, 7, 38],
 	overcastclouds: [8],
 	sunnyrain: [14, 17],
