@@ -367,26 +367,13 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	}
 
 	const handleWidget = () => {
-		let filename = 'lightrain'
-		const categorieIds: [number[], string][] = [
-			[[200, 201, 202, 210, 211, 212, 221, 230, 231, 232], 'thunderstorm'],
-			[[300, 301, 302, 310], 'lightdrizzle'],
-			[[312, 313, 314, 321], 'showerdrizzle'],
-			[[500, 501, 502, 503], 'lightrain'],
-			[[504, 520, 521, 522], 'showerrain'],
-			[[511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622], 'snow'],
-			[[701, 711, 721, 731, 741, 751, 761, 762, 771, 781], 'mist'],
-			[[800], 'clearsky'],
-			[[801], 'fewclouds'],
-			[[802], 'brokenclouds'],
-			[[803, 804], 'overcastclouds'],
-		]
+		let filename = 'fewclouds'
 
-		categorieIds.forEach((category) => {
-			if (category[0].includes(lastWeather.icon_id as never)) {
-				filename = category[1]
+		for (const [condition, codes] of Object.entries(accuweatherConditions)) {
+			if (codes.includes(lastWeather.icon_id)) {
+				filename = condition
 			}
-		})
+		}
 
 		if (!tempContainer) {
 			return
@@ -465,6 +452,8 @@ function handleForecastDisplay(forecast: string) {
 	}
 }
 
+// Helpers
+
 function getSunsetHour(): number {
 	const d = new Date()
 	d.setHours(Math.round(suntime().sunset / 60))
@@ -494,4 +483,30 @@ function isTemperature(str = ''): str is Weather.Temperature {
 function isGeolocation(str = ''): str is Weather.Geolocation {
 	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
 	return geol.includes(str as Weather.Geolocation)
+}
+
+const openWeatherMapConditions: Record<Weather.Conditions, number[]> = {
+	clearsky: [800],
+	fewclouds: [801],
+	brokenclouds: [802],
+	overcastclouds: [803, 804],
+	sunnyrain: [500, 501, 502, 503],
+	lightrain: [300, 301, 302, 310],
+	rain: [312, 313, 314, 321, 504, 520, 521, 522],
+	thunderstorm: [200, 201, 202, 210, 211, 212, 221, 230, 231, 232],
+	snow: [511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622],
+	mist: [701, 711, 721, 731, 741, 751, 761, 762, 771, 781],
+}
+
+const accuweatherConditions: Record<Weather.Conditions, number[]> = {
+	clearsky: [1, 2, 3, 33, 34, 35],
+	fewclouds: [4, 5, 36, 37],
+	brokenclouds: [6, 7, 38],
+	overcastclouds: [8],
+	sunnyrain: [14, 17],
+	lightrain: [12, 13, 39],
+	rain: [18, 19, 29, 40],
+	thunderstorm: [15, 16, 41, 42],
+	snow: [20, 21, 22, 23, 24, 25, 26, 43, 44],
+	mist: [11],
 }

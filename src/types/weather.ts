@@ -36,7 +36,20 @@ declare namespace Weather {
 
 	type MoreInfo = 'none' | 'msnw' | 'yhw' | 'windy' | 'accu' | 'custom'
 
+	type Conditions =
+		| 'clearsky'
+		| 'fewclouds'
+		| 'brokenclouds'
+		| 'overcastclouds'
+		| 'sunnyrain'
+		| 'lightrain'
+		| 'rain'
+		| 'thunderstorm'
+		| 'snow'
+		| 'mist'
+
 	interface Onecall {
+		from: 'accuweather' | 'openweathermap'
 		link?: string
 		city?: string
 		ccode?: string
