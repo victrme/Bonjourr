@@ -4,6 +4,10 @@
 	display: none;
 }
 
+.network-form input {
+	width: 100%;
+}
+
 /*
 	ICONS 
 */

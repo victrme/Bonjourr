@@ -179,7 +179,7 @@ function submitSearch(e: Event) {
 
 	if (canUseDefault && engine === 'default') {
 		//@ts-expect-error
-		EXTENSION.search.query({
+		EXTENSION?.search.query({
 			disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
 			text: val,
 		})

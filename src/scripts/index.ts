@@ -208,9 +208,10 @@ function userActionsEvents() {
 		const pathIds = path.map((el) => (el as HTMLElement).id)
 
 		const on = {
-			link: path.some((el) => el.classList.contains('link')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
+			link: path.some((el) => el.classList.contains('link')),
 			linkfolder: path.some((el) => el.className.includes('folder')),
+			addgroup: path.some((el) => el.className.includes('add-group')),
 			folder: path.some((el) => el.className.includes('in-folder')),
 			interface: pathIds.includes('interface'),
 			editlink: pathIds.includes('editlink'),
@@ -227,6 +228,10 @@ function userActionsEvents() {
 		}
 
 		if (open.contextmenu && !on.editlink) {
+			if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
+				return
+			}
+
 			document.dispatchEvent(new Event('close-edit'))
 			return
 		}

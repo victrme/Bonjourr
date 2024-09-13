@@ -43,7 +43,8 @@ export const BROWSER =
 		? 'safari'
 		: 'other'
 
-export const EXTENSION = PLATFORM === 'firefox' ? browser : chrome
+export const EXTENSION: typeof chrome | typeof browser | undefined =
+	PLATFORM === 'online' ? undefined : PLATFORM === 'firefox' ? browser : chrome
 
 export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
