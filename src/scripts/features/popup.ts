@@ -13,7 +13,7 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.0.0'
+const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjour-20-the-miscellaneous-update-L4L5127P2S'
 const ANNOUNCEMENT_VERSION = '20.0.0'
 
 const ANNOUNCEMENT_TRNS = {
