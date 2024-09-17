@@ -176,6 +176,7 @@ aside .switch {
 	-moz-appearance: none;
 	appearance: none;
 	overflow: visible;
+	transition: background-color 0.15s;
 }
 
 aside .switch:after {
