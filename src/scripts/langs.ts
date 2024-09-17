@@ -12,7 +12,7 @@ export default {
 	nl: 'Nederlandse',
 	da: 'Dansk',
 	sv: 'Svenska',
-	// nb: 'Norsk',
+	nb: 'Norsk',
 	fi: 'Suomi',
 	pl: 'Polski',
 	cs: 'Čeština',
@@ -20,6 +20,7 @@ export default {
 	hu: 'Magyar',
 	ro: 'Română',
 	el: 'Ελληνικά',
+	hy: 'հայկ',
 	sr: 'Српски (ћирилица)',
 	'sr-YU': 'Srpski (latinica)',
 	uk: 'Українська',
@@ -32,6 +33,7 @@ export default {
 	'zh-TW': '正體中文',
 	ja: '日本語',
 	id: 'Indonesia',
+	ca: 'Català',
 	vi: 'Tiếng Việt',
 }
 
@@ -54,4 +56,5 @@ export const subsets = {
 	'zh-CN': 'chinese-simplified',
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',
+	hy: 'armenian',
 }
