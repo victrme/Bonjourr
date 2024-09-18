@@ -170,15 +170,21 @@ function removeGroupDuplicate(current: Sync.Storage): Sync.Storage {
 
 function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Data {
 	const links = bundleLinks(data as Sync.Storage)
-	const groups = data?.linkgroups?.groups ?? []
+	const groups = data?.linkgroups?.groups ?? ['']
 
 	for (const link of links) {
-		if (link.parent === undefined || typeof link.parent !== 'number') {
+		if (typeof link.parent === 'string') {
 			continue
 		}
 
-		link.parent = groups[link.parent]
+		if (link.parent === undefined) {
+			link.parent = ''
+		} else {
+			link.parent = groups[link.parent]
+		}
+
 		data[link._id] = link
+		console.log(link.parent)
 	}
 
 	return data
