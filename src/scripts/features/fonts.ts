@@ -8,6 +8,7 @@ import { apiFetch } from '../utils'
 import { subsets } from '../langs'
 import networkForm from '../utils/networkform'
 import storage from '../storage'
+import clock from './clock'
 
 type Font = Sync.Font
 
@@ -135,6 +136,7 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 				displayFont(font)
 				await waitForFontLoad(family)
 				familyForm.accept('i_customfont', family)
+				clock(undefined, {})
 			}
 
 			if (font.family === '') {
@@ -145,6 +147,7 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 		}
 	}
 
+	clock(undefined, {})
 	setWeightSettings(font.weightlist)
 	i_weight.value = font.weight
 

@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '19.2.5'
+export const CURRENT_VERSION = '20.0.0'
 
 export const MAIN_API = 'https://api.bonjourr.fr'
 
@@ -9,16 +9,17 @@ export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https:/
 //@ts-expect-error
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV // defined by esbuild during build step
 
-export const SYSTEM_OS = window.navigator.appVersion.includes('Macintosh')
-	? 'mac'
-	: window.navigator.appVersion.includes('Windows')
-	? 'windows'
-	: window.navigator.userAgent.toLowerCase().includes('Android')
-	? 'android'
-	: ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
-	  (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
-	? 'ios'
-	: 'unknown'
+export const SYSTEM_OS =
+	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
+	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+		? 'ios'
+		: window.navigator.appVersion.includes('Macintosh')
+		? 'mac'
+		: window.navigator.appVersion.includes('Windows')
+		? 'windows'
+		: window.navigator.userAgent.toLowerCase().includes('Android')
+		? 'android'
+		: 'unknown'
 
 export const PLATFORM =
 	window.location.protocol === 'moz-extension:'
@@ -30,7 +31,7 @@ export const PLATFORM =
 		: 'online'
 
 export const BROWSER =
-	window.navigator.userAgent.toLowerCase().indexOf('edg/' || 'edge') > -1
+	window.navigator.userAgent.toLowerCase().indexOf('edge') > -1
 		? 'edge'
 		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
 		? 'opera'
@@ -42,7 +43,8 @@ export const BROWSER =
 		? 'safari'
 		: 'other'
 
-export const EXTENSION = PLATFORM === 'firefox' ? browser : chrome
+export const EXTENSION: typeof chrome | typeof browser | undefined =
+	PLATFORM === 'online' ? undefined : PLATFORM === 'firefox' ? browser : chrome
 
 export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
@@ -87,7 +89,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	pagewidth: 1600,
 	time: true,
 	main: true,
-	dateformat: 'eu',
+	dateformat: 'auto',
 	background_blur: 15,
 	background_bright: 0.8,
 	background_type: 'unsplash',
@@ -98,23 +100,34 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	review: 0,
 	css: '',
 	hide: {},
-	linkstyle: 'large',
+	linkstyle: 'medium',
+	linktitles: true,
+	linkbackgrounds: true,
 	linknewtab: false,
 	linksrow: 6,
-	linktabs: {
-		active: false,
-		selected: 0,
-		titles: [''],
+	linkgroups: {
+		on: false,
+		selected: '',
+		groups: [''],
+		pinned: [],
+		synced: [],
 	},
 	clock: {
 		size: 1,
 		ampm: false,
 		analog: false,
 		seconds: false,
-		face: 'none',
-		style: 'round',
+		worldclocks: false,
 		timezone: 'auto',
 	},
+	analogstyle: {
+		face: 'none',
+		hands: 'modern',
+		shape: 'round',
+		border: '#ffff',
+		background: '#fff2',
+	},
+	worldclocks: [],
 	unsplash: {
 		every: 'hour',
 		collection: '',
@@ -163,28 +176,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	},
 	move: {
 		selection: 'single',
-		layouts: {
-			single: {
-				grid: [['time'], ['main'], ['quicklinks']],
-				items: {},
-			},
-			double: {
-				grid: [
-					['time', '.'],
-					['main', '.'],
-					['quicklinks', '.'],
-				],
-				items: {},
-			},
-			triple: {
-				grid: [
-					['.', 'time', '.'],
-					['.', 'main', '.'],
-					['.', 'quicklinks', '.'],
-				],
-				items: {},
-			},
-		},
+		layouts: {},
 	},
 }
 

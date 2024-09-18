@@ -1,11 +1,11 @@
-import { PLATFORM, EXTENSION } from '../defaults'
+import { EXTENSION } from '../defaults'
 
 export default async function getPermissions(...args: string[]): Promise<boolean> {
-	if (PLATFORM === 'online') {
+	if (!EXTENSION) {
 		return true
 	}
 
-	return await EXTENSION.permissions.request({
+	return await EXTENSION?.permissions.request({
 		permissions: [...args] as browser.permissions.Permission[],
 	})
 }

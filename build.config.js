@@ -153,29 +153,48 @@ function html() {
 function styles() {
 	const [input, output] = paths.shared.styles
 
-	esbuild.buildSync({
-		entryPoints: [input],
-		outfile: output,
-		bundle: true,
-		minify: ENV_PROD,
-	})
+	try {
+		esbuild.buildSync({
+			entryPoints: [input],
+			outfile: output,
+			bundle: true,
+			minify: ENV_PROD,
+			loader: {
+				'.svg': 'dataurl',
+			},
+		})
+	} catch (_) {
+		if (ENV_PROD) {
+			throw ''
+		}
+
+		return
+	}
 }
 
 function scripts() {
 	const [input, output] = paths.shared.scripts
 
-	esbuild.buildSync({
-		entryPoints: [input],
-		outfile: output,
-		format: 'iife',
-		bundle: true,
-		sourcemap: ENV_DEV,
-		minifySyntax: ENV_PROD,
-		minifyWhitespace: ENV_PROD,
-		define: {
-			ENV: `"${env.toUpperCase()}"`,
-		},
-	})
+	try {
+		esbuild.buildSync({
+			entryPoints: [input],
+			outfile: output,
+			format: 'iife',
+			bundle: true,
+			sourcemap: ENV_DEV,
+			minifySyntax: ENV_PROD,
+			minifyWhitespace: ENV_PROD,
+			define: {
+				ENV: `"${env.toUpperCase()}"`,
+			},
+		})
+	} catch (_) {
+		if (ENV_PROD) {
+			throw ''
+		}
+
+		return
+	}
 
 	if (PLATFORM_ONLINE) copyFile(...paths.online.serviceworker)
 	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.background)
@@ -290,7 +309,7 @@ function copyDir(...args) {
 //	Auto translator tool
 
 async function updateTranslations() {
-	const supportedLangs = await fetchDeeplSupportedLangs()
+	// const supportedLangs = await fetchDeeplSupportedLangs()
 	const enDict = JSON.parse(readFileSync(`./_locales/en/translations.json`, 'utf8'))
 	const langs = readdirSync('./_locales/')
 	const translations = []
@@ -300,7 +319,7 @@ async function updateTranslations() {
 			continue
 		}
 
-		translations.push(translateFile(lang, enDict, supportedLangs))
+		translations.push(translateFile(lang, enDict, true))
 	}
 
 	await Promise.all(translations)
@@ -309,19 +328,19 @@ async function updateTranslations() {
 async function translateFile(lang, enDict, supportedLangs) {
 	let sanitizedLang = lang
 
-	if (lang === 'gr') sanitizedLang = 'el'
-	if (lang === 'jp') sanitizedLang = 'ja'
-	if (lang === 'zh_CN') sanitizedLang = 'zh'
-	if (lang === 'zh_HK') sanitizedLang = 'zh'
-	if (lang === 'es_ES') sanitizedLang = 'es'
-	if (lang === 'pt_BR') sanitizedLang = 'pt-BR'
-	if (lang === 'pt_PT') sanitizedLang = 'pt-PT'
-
-	const supported = supportedLangs.includes(sanitizedLang)
-	const langDict = JSON.parse(readFileSync(`./_locales/${lang}/translations.json`, 'utf8'))
+	const supported = true //supportedLangs.includes(sanitizedLang)
+	const translations = readFileSync(`./_locales/${lang}/translations.json`, 'utf8')
 	const newDict = {}
 	let removed = 0
 	let added = 0
+	let langDict
+
+	try {
+		langDict = JSON.parse(translations)
+	} catch (error) {
+		console.log(error)
+		return
+	}
 
 	// Remove keys not found in "english" translation file
 	for (const key of Object.keys(langDict)) {
@@ -339,7 +358,7 @@ async function translateFile(lang, enDict, supportedLangs) {
 
 		if (!trn) {
 			if (supported) {
-				newDict[key] = await fetchDeeplTranslation(key, sanitizedLang)
+				newDict[key] = await fetchCloudTranslation(key, sanitizedLang)
 			} else {
 				newDict[key] = key
 			}
@@ -366,32 +385,37 @@ async function translateFile(lang, enDict, supportedLangs) {
 	console.log(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}, translated: ${supported ? 'yes' : 'no'}]`)
 }
 
-async function fetchDeeplSupportedLangs() {
-	const auth = await getDeeplAuth()
-	const headers = { Authorization: auth, 'User-Agent': 'Bonjourr/19.2.0' }
-	const resp = await fetch('https://api-free.deepl.com/v2/languages?type=target', { headers })
-	const json = await resp.json()
-	return Object.values(json).map((val) => val.language.toLowerCase())
-}
+// async function fetchDeeplSupportedLangs() {
+// 	const auth = await getDeeplAuth()
+// 	const headers = { Authorization: auth, 'User-Agent': 'Bonjourr/19.2.0' }
+// 	const resp = await fetch(
+// 		'https://translation.googleapis.com/language/translate/v2',
+// 		{ headers }
+// 	)
+// 	const json = await resp.json()
+// 	return Object.values(json).map((val) => val.language.toLowerCase())
+// }
 
-async function fetchDeeplTranslation(text, lang) {
-	const formData = new FormData()
-	formData.append('source_lang', 'en')
-	formData.append('target_lang', lang)
-	formData.append('text', text)
+async function fetchCloudTranslation(text, lang) {
+	const body = {
+		q: text,
+		target: lang,
+		source: 'en',
+		format: 'text',
+	}
 
 	const options = {
 		method: 'POST',
-		body: formData,
-		headers: { 'User-Agent': 'Bonjourr/19.2.0', Authorization: await getDeeplAuth() },
+		body: JSON.stringify(body),
 	}
 
-	const resp = await fetch('https://api-free.deepl.com/v2/translate', options)
+	const url = `https://translation.googleapis.com/language/translate/v2?key=${await getAuthKey()}`
+	const resp = await fetch(url, options)
 	const json = await resp.json()
 
-	return json.translations[0]?.text
+	return json.data.translations[0]?.translatedText
 }
 
-async function getDeeplAuth() {
-	return `DeepL-Auth-Key ${await (await fetch('https://deepl.bonjourr.workers.dev/')).text()}`
+async function getAuthKey() {
+	return await (await fetch('https://cloud-translate.bonjourr.workers.dev/')).text()
 }

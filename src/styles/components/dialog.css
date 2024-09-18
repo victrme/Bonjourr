@@ -9,6 +9,8 @@ dialog {
 }
 
 dialog hr {
+	margin: 10px;
+	box-sizing: border-box;
 	border-color: var(--color-dialog-border);
 }
 
@@ -26,9 +28,12 @@ dialog button {
 dialog button:disabled {
 	opacity: 0.3;
 	cursor: default;
+	pointer-events: none;
 	background-color: transparent;
+	filter: grayscale(1);
 }
 
+dialog button.btn-red:disabled:hover,
 dialog button:disabled:hover {
 	color: inherit;
 	background-color: inherit;
@@ -37,11 +42,12 @@ dialog button:disabled:hover {
 dialog button:focus-visible,
 dialog button:hover {
 	color: white;
-	background-color: #2c7be5;
+	background-color: var(--color-blue);
+	/* background-color: #2c7be5; */
 }
 
-dialog button:focus-visible.btn-red,
-dialog button:hover.btn-red {
+dialog button.btn-red:focus-visible,
+dialog button.btn-red:hover {
 	color: white;
-	background-color: #e64b43;
+	background-color: var(--color-red);
 }

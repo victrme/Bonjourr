@@ -16,6 +16,7 @@ declare namespace Unsplash {
 	interface Image {
 		url: string
 		link: string
+		download_link: string
 		username: string
 		name: string
 		city: string | null
@@ -53,6 +54,7 @@ declare namespace Unsplash {
 		}
 		links: {
 			html: string
+			download: string
 		}
 		user: {
 			username: string

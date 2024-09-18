@@ -1,19 +1,19 @@
-import { BROWSER, EXTENSION, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
-import { apiWebSocket, stringMaxSize } from '../utils'
+import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
+import { BROWSER, EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
+import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
-import { tradThis } from '../utils/translations'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 import parse from '../utils/parse'
 
 type SearchbarUpdate = {
 	engine?: string
-	opacity?: string
 	newtab?: boolean
 	width?: string
 	suggestions?: boolean
 	placeholder?: string
 	request?: HTMLInputElement
+	background?: true
 }
 
 type Suggestions = {
@@ -39,9 +39,9 @@ const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', v
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
 const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
 const setWidth = (value = 30) => document.documentElement.style.setProperty('--searchbar-width', value.toString() + 'em')
-const setOpacity = (value = 0.1) => {
-	document.documentElement.style.setProperty('--searchbar-background-alpha', value.toString())
-	document.getElementById('sb_container')?.classList.toggle('opaque', value > 0.4)
+const setBackground = (value = '#fff2') => {
+	document.documentElement.style.setProperty('--searchbar-background', value)
+	document.getElementById('sb_container')?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
 export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
@@ -58,7 +58,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 		setNewtab(init?.newtab)
 		setPlaceholder(init?.placeholder)
 		setSuggestions(init?.suggestions)
-		setOpacity(init?.opacity)
+		setBackground(init?.background)
 
 		dombuttons?.addEventListener('click', focusSearchbar)
 		emptyButton?.addEventListener('click', removeInputText)
@@ -70,7 +70,7 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 	}
 }
 
-async function updateSearchbar({ engine, newtab, opacity, placeholder, request, suggestions, width }: SearchbarUpdate) {
+async function updateSearchbar({ engine, newtab, background, placeholder, request, suggestions, width }: SearchbarUpdate) {
 	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
@@ -93,11 +93,6 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 		setNewtab(newtab)
 	}
 
-	if (opacity !== undefined) {
-		searchbar.opacity = parseFloat(opacity)
-		setOpacity(searchbar.opacity)
-	}
-
 	if (width !== undefined) {
 		searchbar.width = parseInt(width)
 		setWidth(searchbar.width)
@@ -106,6 +101,11 @@ async function updateSearchbar({ engine, newtab, opacity, placeholder, request, 
 	if (placeholder !== undefined) {
 		searchbar.placeholder = placeholder
 		setPlaceholder(placeholder)
+	}
+
+	if (background) {
+		searchbar.background = hexColorFromSplitRange('sb-background-range')
+		setBackground(searchbar.background)
 	}
 
 	if (request) {
@@ -135,7 +135,7 @@ function isValidURL(string: string): boolean {
 	}
 }
 
-function createSearchURL(val: string): string {
+function createSearchURL(val: string, engine: string): string {
 	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
 		default: '',
 		google: 'https://www.google.com/search?q=%s',
@@ -151,8 +151,7 @@ function createSearchURL(val: string): string {
 		custom: domcontainer?.dataset.request || '',
 	}
 
-	let searchURL = URLs.google
-	const engine = domcontainer?.dataset.engine || 'google'
+	let searchURL = ''
 
 	if (isValidEngine(engine)) {
 		const trad = tradThis(engine)
@@ -165,9 +164,10 @@ function createSearchURL(val: string): string {
 function submitSearch(e: Event) {
 	e.preventDefault()
 
-	const engine = domcontainer?.dataset.engine ?? 'default'
+	const canUseDefault = !IS_MOBILE && (PLATFORM === 'chrome' || PLATFORM === 'firefox')
 	const newtab = domcontainer?.dataset.newtab === 'true'
 	const val = domsearchbar?.value
+	let engine = domcontainer?.dataset.engine ?? 'default'
 
 	if (!val) {
 		return
@@ -177,20 +177,24 @@ function submitSearch(e: Event) {
 		socket.close()
 	}
 
-	if (PLATFORM === 'online' || BROWSER === 'safari' || engine !== 'default') {
-		const domainURL = val.startsWith('http') ? val : 'https://' + val
-		const searchURL = createSearchURL(val)
-		const url = isValidURL(val) ? domainURL : searchURL
-		const target = newtab ? '_blank' : '_self'
-
-		return window.open(url, target)
+	if (canUseDefault && engine === 'default') {
+		//@ts-expect-error
+		EXTENSION?.search.query({
+			disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
+			text: val,
+		})
+		return
 	}
 
-	//@ts-expect-error
-	EXTENSION.search.query({
-		disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
-		text: val,
-	})
+	engine = engine.replace('default', 'google')
+
+	const domainURL = val.startsWith('http') ? val : 'https://' + val
+	const searchURL = createSearchURL(val, engine)
+	const url = isValidURL(val) ? domainURL : searchURL
+	const target = newtab ? '_blank' : '_self'
+
+	window.open(url, target)
+	return
 }
 
 //
@@ -401,9 +405,9 @@ async function handleUserInput(e: Event) {
 
 	// request suggestions
 	if (domcontainer?.dataset.suggestions === 'true' && socket && socket.readyState === socket.OPEN) {
-		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg')
+		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg').replace('default', 'google')
 		const query = encodeURIComponent(value ?? '')
-		socket.send(JSON.stringify({ q: query, with: engine }))
+		socket.send(JSON.stringify({ q: query, with: engine, lang: getLang() }))
 	}
 }
 

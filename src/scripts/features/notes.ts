@@ -1,7 +1,8 @@
+import { hexColorFromSplitRange, opacityFromHex } from '../utils'
 import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
-import pocketEditor from 'pocket-editor'
+import PocketEditor from 'pocket-editor'
 import langList from '../langs'
 import storage from '../storage'
 
@@ -9,7 +10,7 @@ type NotesEvent = {
 	text?: string
 	align?: string
 	width?: string
-	opacity?: string
+	background?: true
 }
 
 const container = document.getElementById('notes_container')
@@ -46,9 +47,9 @@ async function updateNotes(event: NotesEvent) {
 		handleWidth(notes.width)
 	}
 
-	if (event?.opacity !== undefined) {
-		notes.opacity = parseFloat(event.opacity)
-		handleOpacity(notes.opacity)
+	if (event?.background) {
+		notes.background = hexColorFromSplitRange('notes-background-range')
+		handleBackground(notes.background)
 	}
 
 	eventDebounce({ notes })
@@ -63,12 +64,12 @@ function initNotes(init: Sync.Notes) {
 
 	handleAlign(init.align)
 	handleWidth(init.width)
-	handleOpacity(init.opacity)
+	handleBackground(init.background)
 	handleToggle(init.on)
 
 	init.text = init.text ?? translateNotesText()
 
-	pocketEditor('notes_container', init.text).oninput((content) => {
+	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput((content) => {
 		updateNotes({ text: content })
 	})
 }
@@ -88,10 +89,10 @@ function handleWidth(value?: number) {
 	}
 }
 
-function handleOpacity(value: number) {
+function handleBackground(hex = '#fff2') {
 	if (container) {
-		container?.classList.toggle('opaque', value > 0.45)
-		document.documentElement.style.setProperty('--notes-background-alpha', value.toString())
+		container?.classList.toggle('opaque', hex.includes('#fff') && opacityFromHex(hex) > 7)
+		document.documentElement.style.setProperty('--notes-background', hex)
 	}
 }
 

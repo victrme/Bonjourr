@@ -1,4 +1,4 @@
-const CACHE_KEY = '19.2.5'
+const CACHE_KEY = '20.0.0'
 const API_URLS = ['unsplash.com', 'jsdelivr.net', 'api.bonjourr']
 
 //

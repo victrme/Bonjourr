@@ -3,13 +3,13 @@
 		opacity: 1;
 	}
 
-	#showSettings {
+	#show-settings {
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		user-select: none;
 	}
 
-	#showSettings:active {
+	#show-settings:active {
 		filter: brightness(0.5);
 	}
 }
@@ -41,6 +41,9 @@
 
 	#interface {
 		padding-bottom: 77px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
 	}
 
 	body #interface.pushed {
@@ -51,8 +54,18 @@
 		width: 90vw;
 	}
 
+	#show-settings button {
+		height: 3.3em;
+		width: 3.3em;
+		border-radius: 10px;
+	}
+
+	#show-settings img {
+		width: 2em;
+	}
+
 	aside {
-		top: 100lvh; /* kiwi browser fix as dvh doesn't work (?) */
+		top: 100dvh;
 		right: auto;
 		left: 0%;
 		bottom: -100dvh;
@@ -63,16 +76,28 @@
 		border-radius: 1em;
 	}
 
+	aside.shown {
+		transform: translateX(0) translateY(-75dvh);
+	}
+
+	#mobile-drag-zone {
+		display: block;
+	}
+
+	#mobile-drag-zone + .settings-title {
+		margin-top: 0;
+	}
+
 	@supports not (min-height: 100dvh) {
 		aside {
 			top: 100vh;
 			bottom: -100vh;
 			height: 100vh;
 		}
-	}
 
-	aside.shown {
-		transform: translateX(0) translateY(-75vh);
+		#mobile-drag-zone.shown {
+			transform: translateY(-75vh);
+		}
 	}
 
 	aside form > div {
@@ -98,23 +123,16 @@
 		max-height: 100px;
 	}
 
+	#pagewidth,
 	#grid-layout-wrapper {
 		display: none;
 	}
 
 	#settings-footer {
-		padding-bottom: 25vh;
+		padding-bottom: 10vh;
 	}
 
-	#mobile-drag-zone {
-		display: block;
-	}
-
-	#mobile-drag-zone + .settings-title {
-		margin-top: 1em;
-	}
-
-	#creditContainer {
+	#credit-container {
 		width: 100%;
 		padding-right: 7em;
 		padding-left: 1.5em;
@@ -129,23 +147,6 @@
 	#credit p,
 	#credit span {
 		font-size: 11px;
-	}
-
-	#popup {
-		display: none;
-	}
-
-	#bookmarks_container {
-		font-size: 14px;
-	}
-
-	#bookmarks_container #bookmarks {
-		width: 90%;
-		min-width: 0;
-	}
-
-	#bookmarks_container #bookmarks form div {
-		width: auto;
 	}
 }
 
@@ -175,14 +176,70 @@
 	}
 
 	#sb-buttons {
-		padding-right: 1em;
+		font-size: 1.6em;
 	}
 
-	#sb-buttons #sb_submit img {
-		height: 1.5em;
+	#sb-buttons button {
+		padding: 0 1em;
 	}
 
-	#sb-buttons #sb_empty {
-		font-size: 2em;
+	/* #notes_container #pocket-editor {
+		line-height: 1.7em;
+	} */
+
+	#notes_container #pocket-editor input[type='checkbox'] {
+		width: calc(var(--font-size) * 1.5);
+		height: calc(var(--font-size) * 1.5);
+	}
+
+	#link-mini .link-title.add-group {
+		visibility: visible;
+	}
+
+	[data-pocket-editor] [data-todo] p {
+		display: flex;
+		align-items: center;
+	}
+
+	aside,
+	button,
+	select,
+	option,
+	input,
+	#settings-footer {
+		font-size: 15px;
+	}
+
+	aside input[type='range']::-webkit-slider-thumb {
+		height: 25px;
+		width: 25px;
+		border-radius: 50px;
+	}
+
+	aside .wrapper {
+		padding: unset;
+		min-height: 38px;
+	}
+
+	aside input:not(.range, .switch),
+	aside .input-btn,
+	aside select {
+		min-height: 36px;
+		border-radius: 13px;
+	}
+
+	aside .input-btn.icon-only:hover {
+		background-color: initial;
+	}
+
+	aside .switch:checked:hover {
+		background-color: var(--color-green);
+	}
+
+	#settings .tooltip {
+		width: 25px;
+		height: 25px;
+		min-width: 25px;
+		font-size: 15px;
 	}
 }

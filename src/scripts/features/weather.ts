@@ -183,19 +183,10 @@ async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	const date = new Date()
 	const now = date.getTime()
 
-	// forecast is day old or we're above sunset time
-	// [ xxxxxxxxxxx | ------ sunset xxxx | ----------- ]
-	const forecast = new Date((lastWeather?.forecasted_timestamp ?? 0) * 1000)
-	const forecastFromPreviousDay = forecast.getDate() !== date.getDate() && forecast.getTime() < now
-	const forecastFromToday = forecast.getDate() === date.getDate()
-	const aboveSunset = date.getHours() > getSunsetHour()
-	const isForecastOld = forecastFromPreviousDay || (forecastFromToday && aboveSunset)
-
-	const isCurrentOnly = isForecastOld === false
 	const isAnHourLater = Math.floor(now / 1000) > (lastWeather?.timestamp ?? 0) + 3600
 
-	if (navigator.onLine && (isAnHourLater || isForecastOld)) {
-		const newWeather = await request(data, lastWeather, isCurrentOnly)
+	if (navigator.onLine && isAnHourLater) {
+		const newWeather = await request(data, lastWeather)
 
 		if (newWeather) {
 			lastWeather = newWeather
@@ -256,26 +247,15 @@ function handleGeolOption(data: Weather) {
 	}
 }
 
-async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: boolean): Promise<LastWeather | undefined> {
+async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
 	if (!navigator.onLine) return lastWeather
-
-	//
-	// Create queries
 
 	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
 	let coords = await getGeolocation(data.geolocation)
 	let lang = getLang()
-	let queries = ''
+	let queries = '?provider=accuweather'
 
-	// Openweathermap country code for traditional chinese is tw, greek is el
-	if (lang === 'zh_HK') lang = 'zh_TW'
-	if (lang === 'pt_PT') lang = 'pt'
-	if (lang === 'es_ES') lang = 'es'
-	if (lang === 'gr') lang = 'el'
-	if (lang === 'jp') lang = 'ja'
-	if (lang === 'nb') lang = 'no'
-
-	queries += '?units=' + (data.unit ?? 'metric')
+	queries += '&units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
 
 	if (data.geolocation === 'off' && isKeepingCity && lastWeather?.approximation) {
@@ -292,67 +272,18 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 		queries += ',' + (data.ccode ?? 'FR')
 	}
 
-	//
-	// Fetch data
+	const response = await apiFetch('/weather/' + queries)
+	const onecall: Weather.Onecall | undefined = await response?.json()
+	const isRateLimited = response?.status === 429
 
-	let response: Response | undefined
-	let onecall: Weather.API.Onecall | undefined
-	let current: Weather.API.Current | undefined
-
-	if (queries.includes('&lat') && lang === 'en') {
-		try {
-			const masterurl = `https://openweathermap.org/data/2.5/onecall${queries}&appid=439d4b804bc8187953eb36d2a8c26a02`
-			response = await fetch(masterurl, { signal: AbortSignal.timeout(2000) })
-
-			if (response.status === 200) {
-				onecall = await response.json()
-			}
-		} catch (_) {
-			console.log('Default key not available right now')
-		}
-	}
-
-	if (!onecall) {
-		const endpoint = currentOnly ? '/weather/current/' : '/weather/'
-		const response = await apiFetch(endpoint + queries)
-
-		try {
-			if (response?.status === 200) {
-				if (!!currentOnly) current = (await response?.json()) as Weather.API.Current
-				if (!currentOnly) onecall = (await response?.json()) as Weather.API.Onecall
-			}
-		} catch (error) {
-			console.log(error)
-		}
-	}
-
-	// 429 is rate limited
-	if (response?.status === 429 && lastWeather) {
-		lastWeather.timestamp = Date.now() - 1800000 // -30min
+	if (isRateLimited && lastWeather) {
+		lastWeather.timestamp = Date.now() - 3000000 // 45min
 		return lastWeather
-	}
-
-	if (!onecall && current) {
-		onecall = {
-			lat: current.coord.lat,
-			lon: current.coord.lon,
-			current: {
-				dt: Math.floor(new Date().getTime() / 1000),
-				feels_like: current.main.feels_like,
-				sunrise: current.sys.sunrise,
-				sunset: current.sys.sunset,
-				temp: current.main.temp,
-				weather: current.weather,
-			},
-		}
 	}
 
 	if (!onecall) {
 		return lastWeather
 	}
-
-	//
-	// Parse result
 
 	const { temp, feels_like, sunrise, sunset } = onecall.current
 	const { description, id } = onecall.current.weather[0]
@@ -390,6 +321,7 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 		sunrise,
 		sunset,
 		temp,
+		link: onecall.link ?? '',
 		approximation: {
 			ccode: isKeepingCity ? lastWeather?.approximation?.ccode : onecall?.ccode,
 			city: isKeepingCity ? lastWeather?.approximation?.city : onecall?.city,
@@ -400,8 +332,9 @@ async function request(data: Weather, lastWeather?: LastWeather, currentOnly?: b
 }
 
 function displayWeather(data: Weather, lastWeather: LastWeather) {
-	const useSinograms = getLang().includes('zh') || getLang().includes('jp')
-	const current = document.getElementById('current')
+	const useSinograms = getLang().includes('zh') || getLang().includes('ja')
+	const currentDesc = document.getElementById('current-desc')
+	const currentTemp = document.getElementById('current-temp')
 	const tempContainer = document.getElementById('tempContainer')
 	const weatherdom = document.getElementById('weather')
 	const dot = useSinograms ? '。' : '. '
@@ -423,46 +356,33 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		tempReport = tempReport.replace('<temp1>', actual.toString())
 		tempReport = tempReport.replace('<temp2>', feels.toString())
 
-		if (current && iconText) {
-			current.textContent = weatherReport + dot + tempReport
+		if (currentDesc && currentTemp && iconText) {
+			currentDesc.textContent = weatherReport + dot
+			currentTemp.textContent = tempReport
 			iconText.textContent = `${maintemp}°`
 		}
 	}
 
 	const handleWidget = () => {
-		let filename = 'lightrain'
-		const categorieIds: [number[], string][] = [
-			[[200, 201, 202, 210, 211, 212, 221, 230, 231, 232], 'thunderstorm'],
-			[[300, 301, 302, 310], 'lightdrizzle'],
-			[[312, 313, 314, 321], 'showerdrizzle'],
-			[[500, 501, 502, 503], 'lightrain'],
-			[[504, 520, 521, 522], 'showerrain'],
-			[[511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622], 'snow'],
-			[[701, 711, 721, 731, 741, 751, 761, 762, 771, 781], 'mist'],
-			[[800], 'clearsky'],
-			[[801], 'fewclouds'],
-			[[802], 'brokenclouds'],
-			[[803, 804], 'overcastclouds'],
-		]
+		let condition = 'fewclouds'
 
-		categorieIds.forEach((category) => {
-			if (category[0].includes(lastWeather.icon_id as never)) {
-				filename = category[1]
+		for (const [name, codes] of Object.entries(accuweatherConditions)) {
+			if (codes.includes(lastWeather.icon_id)) {
+				condition = name
 			}
-		})
+		}
 
 		if (!tempContainer) {
 			return
 		}
 
-		const icon = document.getElementById('weather-icon') as HTMLImageElement
-
 		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime()
 		const daytime = now < sunrise || now > sunset ? 'night' : 'day'
-		const iconSrc = `src/assets/weather/${daytime}/${filename}.svg`
 
-		icon.src = iconSrc
+		const icon = document.getElementById('weather-icon') as HTMLImageElement
+		icon.dataset.daytime = daytime
+		icon.dataset.condition = condition
 	}
 
 	const handleForecastData = () => {
@@ -491,7 +411,8 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		}
 
 		const URLs = {
-			msnw: 'https://www.msn.com/en-us/weather/forecast/',
+			accu: lastWeather.link ?? 'https://www.accuweather.com/',
+			msnw: tradThis('https://www.msn.com/en-xl/weather/forecast/'),
 			yhw: 'https://www.yahoo.com/news/weather/',
 			windy: 'https://www.windy.com/',
 			custom: data.provider ?? '',
@@ -527,6 +448,8 @@ function handleForecastDisplay(forecast: string) {
 	}
 }
 
+// Helpers
+
 function getSunsetHour(): number {
 	const d = new Date()
 	d.setHours(Math.round(suntime().sunset / 60))
@@ -544,7 +467,7 @@ function isForecast(str = ''): str is Weather.Forecast {
 }
 
 function isMoreinfo(str = ''): str is Weather.MoreInfo {
-	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'custom']
+	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'accu', 'custom']
 	return moreinfos.includes(str as Weather.MoreInfo)
 }
 
@@ -556,4 +479,30 @@ function isTemperature(str = ''): str is Weather.Temperature {
 function isGeolocation(str = ''): str is Weather.Geolocation {
 	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
 	return geol.includes(str as Weather.Geolocation)
+}
+
+const openWeatherMapConditions: Record<Weather.Conditions, number[]> = {
+	clearsky: [800],
+	fewclouds: [801],
+	brokenclouds: [802],
+	overcastclouds: [803, 804],
+	sunnyrain: [500, 501, 502, 503],
+	lightrain: [300, 301, 302, 310],
+	rain: [312, 313, 314, 321, 504, 520, 521, 522],
+	thunderstorm: [200, 201, 202, 210, 211, 212, 221, 230, 231, 232],
+	snow: [511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622],
+	mist: [701, 711, 721, 731, 741, 751, 761, 762, 771, 781],
+}
+
+const accuweatherConditions: Record<Weather.Conditions, number[]> = {
+	clearsky: [1, 2, 33, 34],
+	fewclouds: [3, 4, 5, 35, 36, 37],
+	brokenclouds: [6, 7, 38],
+	overcastclouds: [8],
+	sunnyrain: [14, 17],
+	lightrain: [12, 13, 39],
+	rain: [18, 19, 29, 40],
+	thunderstorm: [15, 16, 41, 42],
+	snow: [20, 21, 22, 23, 24, 25, 26, 43, 44],
+	mist: [11],
 }

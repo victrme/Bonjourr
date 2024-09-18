@@ -11,7 +11,7 @@ declare namespace Links {
 
 	interface Folder {
 		_id: string
-		parent?: number
+		parent?: string
 		folder: true
 		order: number
 		title: string

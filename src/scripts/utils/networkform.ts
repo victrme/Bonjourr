@@ -27,6 +27,8 @@ export default function networkForm(targetId: string) {
 		form?.addEventListener('input', () => {
 			if (form.classList.contains('warn')) {
 				form.classList.remove('warn')
+				button.removeAttribute('disabled')
+				button.title = ''
 			}
 		})
 	})

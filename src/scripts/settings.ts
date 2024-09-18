@@ -4,13 +4,13 @@ import quotes from './features/quotes'
 import weather from './features/weather'
 import searchbar from './features/searchbar'
 import quickLinks from './features/links'
+import linksImport from './features/links/bookmarks'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
-import linksImport, { syncNewBookmarks } from './features/links/bookmarks'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
@@ -22,16 +22,15 @@ import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { getHTMLTemplate, inputThrottle, stringMaxSize, turnRefreshButton } from './utils'
-import { SYSTEM_OS, IS_MOBILE, PLATFORM, BROWSER, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-
-// import { highlightText } from 'prism-code-editor/prism'
-// import 'prism-code-editor/prism/languages/json'
+import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
+import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
 import getPermissions from './utils/permissions'
+import { changeGroupTitle } from './features/links/groups'
 
 export async function settingsPreload() {
+	const domshowsettings = document.getElementById('show-settings')
 	const innerHtml = await (await fetch('settings.html')).text()
 	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
 	const template = document.querySelector<HTMLTemplateElement>('#settings-template')
@@ -39,12 +38,31 @@ export async function settingsPreload() {
 	if (template) {
 		template.innerHTML = outerHtml
 	}
+
+	if (IS_MOBILE) {
+		settingsInit()
+		return
+	}
+
+	domshowsettings?.addEventListener('mouseenter', triggerSettingsInit)
+	domshowsettings?.addEventListener('pointerdown', triggerSettingsInit)
+	document.body.addEventListener('keydown', triggerSettingsInit)
+
+	function triggerSettingsInit(event: Event) {
+		const keyboard = (event as KeyboardEvent)?.code === 'Escape'
+		const pointer = event?.type.includes('key') === false
+
+		if (keyboard || pointer) {
+			domshowsettings?.removeEventListener('mouseenter', triggerSettingsInit)
+			domshowsettings?.removeEventListener('pointerdown', triggerSettingsInit)
+			document.body.removeEventListener('keydown', triggerSettingsInit)
+			settingsInit()
+		}
+	}
 }
 
 export async function settingsInit() {
-	if (!!document.getElementById('settings')) {
-		return
-	}
+	if (document.getElementById('settings')) return
 
 	const data = await storage.sync.get()
 	const settingsDom = getHTMLTemplate<HTMLElement>('settings-template', '#settings')
@@ -53,28 +71,34 @@ export async function settingsInit() {
 
 	traduction(settingsDom, data.lang)
 	showall(data.showall, false)
-	updateExportJSON(data)
 	initOptionsValues(data)
 	initOptionsEvents()
+	updateSettingsJSON(data)
+	updateSettingsEvent()
 	settingsDrawerBar()
 	settingsFooter()
 	loadCallbacks()
 
-	queueMicrotask(() => document.dispatchEvent(new Event('settings')))
+	document.dispatchEvent(new Event('settings'))
+	document.addEventListener('toggle-settings', settingsToggle)
+}
 
-	// On settings changes, update export code
-	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
-	const storageUpdate = () => updateExportJSON()
-	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+function settingsToggle() {
+	const domsettings = document.getElementById('settings')
+	const domshowsettings = document.getElementById('show-settings')
+	const dominterface = document.getElementById('interface')
+	const domedit = document.getElementById('editlink')
+	const isClosed = domsettings?.classList.contains('shown') === false
 
-	if (PLATFORM === 'online') {
-		window.addEventListener('storage', storageUpdate)
-	} else {
-		chrome.storage.onChanged.addListener(storageUpdate)
-		window.addEventListener('beforeunload', removeListener, { once: true })
-	}
+	domsettings?.classList.toggle('init', false)
+	domsettings?.classList.toggle('shown', isClosed)
+	domedit?.classList.toggle('pushed', isClosed)
+	dominterface?.classList.toggle('pushed', isClosed)
+	domshowsettings?.classList.toggle('shown', isClosed)
 
-	document.addEventListener('toggle-settings', toggleSettingsMenu)
+	domsettings?.style.removeProperty('transform')
+	domsettings?.style.removeProperty('transition')
+	document.dispatchEvent(new Event('close-edit'))
 }
 
 function initOptionsValues(data: Sync.Storage) {
@@ -96,18 +120,22 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_greeting', data.greeting ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
 	setInput('i_noteswidth', data.notes?.width || 50)
-	setInput('i_notesopacity', data.notes?.opacity.toString() || 0.1)
+	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
 	setInput('i_notesalign', data.notes?.align || 'left')
 	setInput('i_sbengine', data.searchbar?.engine || 'google')
 	setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
-	setInput('i_sbopacity', data.searchbar?.opacity ?? 0.1)
+	setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
 	setInput('i_sbwidth', data.searchbar?.width ?? 30)
 	setInput('i_sbrequest', data.searchbar?.request || '')
 	setInput('i_qtfreq', data.quotes?.frequency || 'day')
 	setInput('i_qttype', data.quotes?.type || 'classic')
 	setInput('i_qtlist', userQuotes ?? '')
-	setInput('i_clockface', data.clock?.face || 'none')
-	setInput('i_clockstyle', data.clock?.style || 'round')
+	setInput('i_qturl', data.quotes?.url ?? '')
+	setInput('i_clockface', data.analogstyle?.face || 'none')
+	setInput('i_clockhands', data.analogstyle?.hands || 'none')
+	setInput('i_clockshape', data.analogstyle?.shape || 'round')
+	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
+	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_collection', data.unsplash?.collection ?? '')
@@ -125,10 +153,12 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_quicklinks', data.quicklinks)
-	setCheckbox('i_syncbookmarks', !!data.syncbookmarks)
-	setCheckbox('i_linktabs', data.linktabs.active)
+	setCheckbox('i_linkgroups', data?.linkgroups?.on || false)
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_time', data.time)
+	setCheckbox('i_analog', data.clock?.analog ?? false)
+	setCheckbox('i_seconds', data.clock?.seconds ?? false)
+	setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
 	setCheckbox('i_main', data.main)
 	setCheckbox('i_greethide', !data.hide?.greetings)
 	setCheckbox('i_notes', data.notes?.on ?? false)
@@ -138,8 +168,11 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
-	setCheckbox('i_seconds', data.clock?.seconds ?? false)
-	setCheckbox('i_analog', data.clock?.analog ?? false)
+
+	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
+	paramId('i_analog-background-shade')?.classList.toggle('on', (data.analogstyle?.background ?? '#fff').includes('#000'))
+	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
+	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 
 	// Input translation
 	translatePlaceholders()
@@ -163,26 +196,11 @@ function initOptionsValues(data: Sync.Storage) {
 	// must be init after children appening
 	setInput('i_lang', data.lang || 'en')
 
-	// No bookmarks import on safari || online
-	if (BROWSER === 'safari' || PLATFORM === 'online') {
-		paramId('importbookmarks')?.setAttribute('style', 'display: none')
-		paramId('syncbookmarks')?.setAttribute('style', 'display: none')
-	}
-
-	// Favicon doesn't work on Safari
-	if (BROWSER === 'safari') {
-		paramId('i_favicon').setAttribute('style', 'display: none')
-	}
-
-	// Export as file doesn't work on Safari extension
-	if (PLATFORM === 'safari') {
-		paramId('save_wrapper').setAttribute('style', 'display: none')
-	}
-
 	// Activate feature options
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
 	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
@@ -196,6 +214,10 @@ function initOptionsValues(data: Sync.Storage) {
 		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
 		b?.classList.toggle('selected', selectedLayout)
 	})
+
+	// Link show title
+	paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
+	paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
 
 	// Time & main hide elems
 	;(function initHideInputs() {
@@ -219,20 +241,41 @@ function initOptionsValues(data: Sync.Storage) {
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
+	paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
 
 	document.querySelectorAll<HTMLFormElement>('#settings form').forEach((form) => {
 		form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
 			input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
 		})
 	})
+
+	// Add massive timezones to <select>
+
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select, i) => {
+		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
+		const optgroups = template.querySelectorAll('optgroup')
+
+		optgroups.forEach((group) => {
+			select.appendChild(group)
+		})
+	})
+
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
+		select.value = data?.worldclocks?.[i]?.timezone ?? ['Europe/Paris', 'America/New_York', 'Asia/Tokyo'][i]
+	})
+
+	document.querySelectorAll<HTMLSelectElement>('input[name="worldclock-city"]').forEach((input, i) => {
+		input.value = data?.worldclocks?.[i]?.region ?? ''
+	})
+
+	paramId('i_timezone').value = data.clock.timezone
 }
 
 function initOptionsEvents() {
-	//
 	// General
 
-	paramId('i_showall').addEventListener('change', function () {
-		showall(this.checked, true)
+	paramId('i_showall').onclickdown(function (_, target) {
+		showall(target.checked, true)
 	})
 
 	paramId('i_lang').addEventListener('change', function () {
@@ -244,7 +287,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_favicon').addEventListener('change', function () {
-		paramId('i_favicon').blur()
+		this.blur()
 	})
 
 	paramId('i_tabtitle').addEventListener('input', function () {
@@ -252,61 +295,69 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_tabtitle').addEventListener('change', function () {
-		paramId('i_tabtitle').blur()
+		this.blur()
 	})
 
 	paramId('i_dark').addEventListener('change', function () {
 		darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
 	})
 
-	paramId('i_settingshide').addEventListener('change', function () {
-		hideElements({ settingsicon: this.checked }, { isEvent: true })
+	paramId('i_settingshide').onclickdown(function (_, target) {
+		hideElements({ settingsicon: target.checked }, { isEvent: true })
 	})
 
-	//
 	// Quick links
 
-	paramId('i_quicklinks').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['quicklinks', this.checked] })
+	paramId('i_quicklinks').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['quicklinks', target.checked] })
 	})
 
 	paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent) {
 		event.preventDefault()
 
 		quickLinks(undefined, {
-			addLink: {
-				title: paramId('i_addlink-title').value,
-				url: paramId('i_addlink-url').value,
-			},
+			addLinks: [
+				{
+					title: paramId('i_addlink-title').value,
+					url: paramId('i_addlink-url').value,
+				},
+			],
 		})
 
 		paramId('i_addlink-url').value = ''
 		paramId('i_addlink-title').value = ''
+		this.classList.remove('valid')
 	})
 
-	paramId('i_syncbookmarks').addEventListener('change', function (this) {
-		syncNewBookmarks(undefined, this.checked)
+	paramId('i_linkgroups').onclickdown(function (_, target) {
+		quickLinks(undefined, { groups: target.checked })
 	})
 
-	paramId('i_linktabs').addEventListener('change', function (this) {
-		quickLinks(undefined, { tab: this.checked })
-	})
-
-	paramId('i_linknewtab').addEventListener('change', function (this) {
-		quickLinks(undefined, { newtab: this.checked })
+	paramId('i_linknewtab').onclickdown(function (_, target) {
+		quickLinks(undefined, { newtab: target.checked })
 	})
 
 	paramId('i_linkstyle').addEventListener('change', function (this) {
-		quickLinks(undefined, { style: this.value })
+		quickLinks(undefined, { styles: { style: this.value } })
+	})
+
+	paramId('b_showtitles').onclickdown(function (_, target) {
+		quickLinks(undefined, { styles: { titles: !target.classList.contains('on') } })
+	})
+
+	paramId('b_showbackgrounds').onclickdown(function (_, target) {
+		quickLinks(undefined, { styles: { backgrounds: !target.classList.contains('on') } })
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {
 		quickLinks(undefined, { row: this.value })
 	})
 
-	paramId('b_importbookmarks').addEventListener('click', linksImport)
+	paramId('b_importbookmarks').onclickdown(async function () {
+		await getPermissions('topSites', 'bookmarks')
+		linksImport()
+	})
 
-	//
 	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
@@ -317,8 +368,8 @@ function initOptionsEvents() {
 		updateBackgroundOption({ freq: this.value })
 	})
 
-	paramId('i_refresh').addEventListener('click', function (this: HTMLInputElement) {
-		updateBackgroundOption({ refresh: this.children[0] as HTMLSpanElement })
+	paramId('i_refresh').onclickdown(function (_, target) {
+		updateBackgroundOption({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
 	paramId('f_collection').addEventListener('submit', function (this, event) {
@@ -328,18 +379,17 @@ function initOptionsEvents() {
 		})
 	})
 
-	//
 	// Custom backgrounds
 
-	paramId('i_bgfile').addEventListener('change', function (this: HTMLInputElement) {
+	paramId('b_background-upload').onclickdown(function (this: HTMLInputElement) {
+		paramId('background-upload')?.click()
+	})
+
+	paramId('background-upload').addEventListener('change', function (this: HTMLInputElement) {
 		localBackgrounds({ newfile: this.files })
 	})
 
-	paramId('b_thumbnail-more').addEventListener('click', function (this: HTMLInputElement) {
-		localBackgrounds({ showing: 'more' })
-	})
-
-	paramId('b_thumbnail-all').addEventListener('click', function (this: HTMLInputElement) {
+	paramId('b_thumbnail-all').onclickdown(function () {
 		localBackgrounds({ showing: 'all' })
 	})
 
@@ -351,35 +401,67 @@ function initOptionsEvents() {
 		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
 	})
 
-	//
 	// Time and date
 
-	paramId('i_time').addEventListener('change', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['time', this.checked] })
+	paramId('i_time').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['time', target.checked] })
 	})
 
-	paramId('i_analog').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { analog: this.checked })
+	paramId('i_analog').onclickdown(function (_, target) {
+		clock(undefined, { analog: target.checked })
 	})
 
-	paramId('i_seconds').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { seconds: this.checked })
+	paramId('i_seconds').onclickdown(function (_, target) {
+		clock(undefined, { seconds: target.checked })
+	})
+
+	paramId('i_worldclocks').onclickdown(function (_, target) {
+		paramId('worldclocks_options')?.classList.toggle('shown', target.checked)
+		clock(undefined, { worldclocks: target.checked })
+	})
+
+	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input, i) => {
+		input.addEventListener('input', () => clock(undefined, { world: { index: i, region: input.value } }))
+	})
+
+	document.querySelectorAll<HTMLInputElement>('select[name="worldclock-timezone"]')?.forEach((select, i) => {
+		select.addEventListener('change', () => clock(undefined, { world: { index: i, timezone: select.value } }))
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
 		clock(undefined, { face: this.value })
 	})
 
-	paramId('i_clockstyle').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { style: this.value })
+	paramId('i_clockhands').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { hands: this.value })
+	})
+
+	paramId('i_analog-border-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { border: 'opacity' })
+	})
+
+	paramId('i_analog-background-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { background: 'opacity' })
+	})
+
+	paramId('i_analog-border-shade').onclickdown(function () {
+		clock(undefined, { border: 'shade' })
+	})
+
+	paramId('i_analog-background-shade').onclickdown(function () {
+		clock(undefined, { background: 'shade' })
+	})
+
+	paramId('i_clockshape').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { shape: this.value })
 	})
 
 	paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
 		clock(undefined, { size: parseFloat(this.value) })
 	})
 
-	paramId('i_ampm').addEventListener('change', function (this: HTMLInputElement) {
-		clock(undefined, { ampm: this.checked })
+	paramId('i_ampm').onclickdown(function (_, target) {
+		clock(undefined, { ampm: target.checked })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
@@ -394,14 +476,13 @@ function initOptionsEvents() {
 		hideElements({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
 	})
 
-	//
 	// Weather
 
-	paramId('i_main').addEventListener('change', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['main', this.checked] })
+	paramId('i_main').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['main', target.checked] })
 	})
 
-	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement, event) {
+	paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
 		weather(undefined, { geol: this?.value })
 	})
 
@@ -442,8 +523,8 @@ function initOptionsEvents() {
 		weather(undefined, { unhide: true })
 	})
 
-	paramId('i_greethide').addEventListener('change', function () {
-		hideElements({ greetings: !this.checked }, { isEvent: true })
+	paramId('i_greethide').onclickdown(function (_, target) {
+		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 
 	paramId('i_greeting').addEventListener('input', function () {
@@ -454,11 +535,10 @@ function initOptionsEvents() {
 		paramId('i_greeting').blur()
 	})
 
-	//
 	// Notes
 
-	paramId('i_notes').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['notes', this.checked] })
+	paramId('i_notes').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['notes', target.checked] })
 	})
 
 	paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
@@ -469,15 +549,18 @@ function initOptionsEvents() {
 		notes(undefined, { width: this.value })
 	})
 
-	paramId('i_notesopacity').addEventListener('input', function (this: HTMLInputElement) {
-		notes(undefined, { opacity: this.value })
+	paramId('i_notes-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		notes(undefined, { background: true })
 	})
 
-	//
+	paramId('i_notes-shade').onclickdown(function () {
+		notes(undefined, { background: true })
+	})
+
 	// Searchbar
 
-	paramId('i_sb').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['searchbar', this.checked] })
+	paramId('i_sb').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['searchbar', target.checked] })
 		getPermissions('search')
 	})
 
@@ -485,8 +568,12 @@ function initOptionsEvents() {
 		searchbar(undefined, { engine: this.value })
 	})
 
-	paramId('i_sbopacity').addEventListener('input', function (this: HTMLInputElement) {
-		searchbar(undefined, { opacity: this.value })
+	paramId('i_sb-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		searchbar(undefined, { background: true })
+	})
+
+	paramId('i_sb-shade').onclickdown(function () {
+		searchbar(undefined, { background: true })
 	})
 
 	paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement) {
@@ -497,12 +584,12 @@ function initOptionsEvents() {
 		searchbar(undefined, { request: this })
 	})
 
-	paramId('i_sbnewtab').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(undefined, { newtab: this.checked })
+	paramId('i_sbnewtab').onclickdown(function (_, target) {
+		searchbar(undefined, { newtab: target.checked })
 	})
 
-	paramId('i_sbsuggestions').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(undefined, { suggestions: this.checked })
+	paramId('i_sbsuggestions').onclickdown(function (_, target) {
+		searchbar(undefined, { suggestions: target.checked })
 	})
 
 	paramId('i_sbplaceholder').addEventListener('keyup', function () {
@@ -513,11 +600,10 @@ function initOptionsEvents() {
 		paramId('i_sbplaceholder').blur()
 	})
 
-	//
 	// Quotes
 
-	paramId('i_quotes').addEventListener('click', function (this: HTMLInputElement) {
-		moveElements(undefined, { widget: ['quotes', this.checked] })
+	paramId('i_quotes').onclickdown(function (_, target) {
+		moveElements(undefined, { widget: ['quotes', target.checked] })
 	})
 
 	paramId('i_qtfreq').addEventListener('change', function () {
@@ -528,21 +614,26 @@ function initOptionsEvents() {
 		quotes(undefined, { type: this.value })
 	})
 
-	paramId('i_qtrefresh').addEventListener('click', function () {
-		inputThrottle(this)
-		turnRefreshButton(this.children[0] as HTMLSpanElement, true)
+	paramId('i_qtrefresh').onclickdown(function (_, target) {
+		inputThrottle(target)
+		turnRefreshButton(target.children[0] as HTMLSpanElement, true)
 		quotes(undefined, { refresh: true })
 	})
 
-	paramId('i_qtauthor').addEventListener('change', function () {
-		quotes(undefined, { author: this.checked })
+	paramId('i_qtauthor').onclickdown(function (_, target) {
+		quotes(undefined, { author: target.checked })
 	})
 
 	paramId('i_qtlist').addEventListener('change', function () {
 		quotes(undefined, { userlist: this.value })
 	})
 
-	//
+	paramId('f_qturl').addEventListener('submit', function (this, event: SubmitEvent) {
+		event.preventDefault()
+
+		quotes(undefined, { url: paramId('i_qturl').value })
+	})
+
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('pointerenter', function () {
@@ -566,22 +657,13 @@ function initOptionsEvents() {
 		textShadow(undefined, parseFloat(this.value))
 	})
 
-	//
 	// Page layout
 
-	paramId('b_editmove').addEventListener('click', function () {
-		moveElements(undefined, { toggle: true })
-	})
-
-	paramId('b_resetlayout').addEventListener('click', function () {
-		moveElements(undefined, { reset: true })
-	})
-
-	for (const button of paramId('grid-layout').querySelectorAll<HTMLButtonElement>('button')) {
-		button.addEventListener('click', () => {
-			moveElements(undefined, { layout: button.dataset.layout || '' })
+	paramId('b_editmove').onclickdown(function () {
+		moveElements(undefined, {
+			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
 		})
-	}
+	})
 
 	paramId('i_pagewidth').addEventListener('input', function () {
 		pageControl({ width: parseInt(this.value) }, true)
@@ -596,62 +678,67 @@ function initOptionsEvents() {
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
-	//
 	// Updates
 
 	paramId('i_announce').addEventListener('change', function (this) {
 		interfacePopup(undefined, { announcements: this.value })
 	})
 
-	//
 	// Settings managment
 
-	paramId('s_export').addEventListener('click', function () {
-		toggleSettingsManagement(false)
+	paramId('settings-managment').addEventListener('dragenter', function () {
+		paramId('settings-managment').classList.add('dragging-file')
 	})
 
-	paramId('s_import').addEventListener('click', function () {
-		toggleSettingsManagement(true)
+	paramId('file-import').addEventListener('dragleave', function () {
+		paramId('settings-managment').classList.remove('dragging-file')
 	})
 
-	paramId('b_exportfile').addEventListener('click', function () {
-		exportAsFile()
+	paramId('b_file-load').addEventListener('click', function (this) {
+		paramId('file-import')?.click()
 	})
 
-	paramId('b_exportcopy').addEventListener('click', function (this) {
-		copyImportText(this)
+	paramId('b_file-save').addEventListener('click', function () {
+		saveImportFile()
 	})
 
-	paramId('i_importfile').addEventListener('change', function (this) {
-		importAsFile(this)
+	paramId('file-import').addEventListener('change', function (this) {
+		loadImportFile(this)
 	})
 
-	paramId('i_importtext').addEventListener('keyup', function (this) {
-		importAsText(this.value)
+	paramId('b_settings-copy').onclickdown(function (_, target) {
+		copySettings(target)
 	})
 
-	paramId('b_resetconf').addEventListener('click', function () {
-		paramsReset('conf')
+	paramId('settings-data').addEventListener('input', function () {
+		toggleSettingsChangesButtons('input')
 	})
 
-	paramId('b_resetyes').addEventListener('click', function () {
-		paramsReset('yes')
+	paramId('b_settings-cancel').onclickdown(function () {
+		toggleSettingsChangesButtons('cancel')
 	})
 
-	paramId('b_resetno').addEventListener('click', function () {
-		paramsReset('no')
+	paramId('b_settings-apply').onclickdown(function () {
+		const val = paramId('settings-data').value
+		importSettings(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
-	paramId('b_importtext').addEventListener('click', function () {
-		const val = (document.getElementById('i_importtext') as HTMLInputElement).value
-		paramsImport(parse<Partial<Sync.Storage>>(val) ?? {})
+	paramId('b_reset-first').onclickdown(function () {
+		resetSettings('first')
 	})
 
-	//
+	paramId('b_reset-apply').onclickdown(function () {
+		resetSettings('yes')
+	})
+
+	paramId('b_reset-cancel').onclickdown(function () {
+		resetSettings('no')
+	})
+
 	// Other
 
-	// Reduces opacity to better see interface appearance changes
 	if (IS_MOBILE) {
+		// Reduces opacity to better see interface appearance changes
 		const touchHandler = (touch: boolean) => document.getElementById('settings')?.classList.toggle('see-through', touch)
 		document.querySelectorAll("input[type='range'").forEach((input: Element) => {
 			input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
@@ -671,34 +758,15 @@ function initOptionsEvents() {
 	})
 
 	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
-		elem.addEventListener('click', function () {
+		elem.onclickdown(function () {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
 	})
-}
 
-//
-//
-//
-
-function toggleSettingsMenu() {
-	const domsettings = document.getElementById('settings')
-	const domshowsettings = document.getElementById('showSettings')
-	const dominterface = document.getElementById('interface')
-	const domedit = document.getElementById('editlink')
-	const isClosed = domsettings?.classList.contains('shown') === false
-
-	domsettings?.classList.toggle('init', false)
-	domsettings?.classList.toggle('shown', isClosed)
-	domedit?.classList.toggle('pushed', isClosed)
-	dominterface?.classList.toggle('pushed', isClosed)
-	domshowsettings?.classList.toggle('shown', isClosed)
-
-	domsettings?.style.removeProperty('transform')
-	domsettings?.style.removeProperty('transition')
-	domsettings?.style.removeProperty('--translate-y')
-	document.dispatchEvent(new Event('close-edit'))
+	document.querySelectorAll<HTMLButtonElement>('.split-range button')?.forEach((button) => {
+		button.onclickdown(() => button.classList.toggle('on'))
+	})
 }
 
 function translatePlaceholders() {
@@ -712,6 +780,7 @@ function translatePlaceholders() {
 		['i_importtext', 'or paste as text'],
 		['i_addlink-title', 'Title'],
 		['i_addlink-url', 'example.com'],
+		['i_qtlist', 'Author, Your quote.\nAuthor, Your second quote.'],
 	]
 
 	for (const [id, text] of cases) {
@@ -737,6 +806,7 @@ async function switchLangs(nextLang: Langs) {
 
 	data.lang = nextLang
 	clock(data)
+	changeGroupTitle({ old: '', new: '' }, data)
 	weather({ sync: data, lastWeather: local.lastWeather })
 	quotes({ sync: data, local })
 	tabTitle(data.tabtitle)
@@ -770,7 +840,7 @@ async function selectBackgroundType(cat: string) {
 		if (!data.unsplash) return
 
 		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
-		document.getElementById('creditContainer')?.classList.toggle('shown', true)
+		document.getElementById('credit-container')?.classList.toggle('shown', true)
 		setTimeout(
 			() =>
 				unsplashBackgrounds({
@@ -787,7 +857,6 @@ async function selectBackgroundType(cat: string) {
 function settingsFooter() {
 	const one = document.querySelector<HTMLAnchorElement>('#signature-one')
 	const two = document.querySelector<HTMLAnchorElement>('#signature-two')
-	const donate = document.getElementById('donate')
 	const version = document.getElementById('version')
 	const rand = Math.random() > 0.5
 
@@ -801,15 +870,9 @@ function settingsFooter() {
 	if (version) {
 		version.textContent = SYNC_DEFAULT.about.version
 	}
-
-	if (SYSTEM_OS === 'ios' || PLATFORM === 'safari') {
-		donate?.remove()
-	}
 }
 
-//
 // 	Mobile settings drawer bar
-//
 
 function settingsDrawerBar() {
 	const drawerDragDebounce = debounce(() => {
@@ -821,7 +884,7 @@ function settingsDrawerBar() {
 		drawerDragDebounce()
 
 		// removes transition to prevent weird movement when changing to mobile styling
-		// /!\ this is dependent on toggleSettingsMenu() to remove inline styling /!\
+		// /!\ this is dependent on settingsToggle() to remove inline styling /!\
 		if (!document.getElementById('settings')?.style.transition) {
 			document.getElementById('settings')?.setAttribute('style', 'transition: none')
 		}
@@ -831,52 +894,47 @@ function settingsDrawerBar() {
 }
 
 function drawerDragEvents() {
+	const mobileDragZone = document.getElementById('mobile-drag-zone') as HTMLElement
 	const settingsDom = document.getElementById('settings') as HTMLElement
+	const dragZoneHeight = mobileDragZone.getBoundingClientRect().height
 	let settingsVh = -75
 	let firstPos = 0
 	let startTouchY = 0
 
-	const dragzone = settingsDom.querySelector('#mobile-drag-zone')
-	dragzone?.addEventListener('touchstart', dragStart, { passive: false })
-	dragzone?.addEventListener('mousedown', dragStart)
-	dragzone?.addEventListener('touchend', dragEnd, { passive: false })
-	dragzone?.addEventListener('mouseup', dragEnd)
-
-	document.body?.addEventListener('mouseleave', (e) => {
-		if (settingsDom?.classList.contains('shown') && window.innerWidth < 600) {
-			dragEnd(e)
-		}
-	})
+	mobileDragZone?.addEventListener('touchstart', dragStart, { passive: false })
+	mobileDragZone?.addEventListener('pointerdown', dragStart, { passive: false })
 
 	function dragStart(e: Event) {
 		e.preventDefault()
 
 		// Get mouse / touch y position
-		if (e.type === 'mousedown') startTouchY = (e as MouseEvent).clientY
+		if (e.type === 'pointerdown') startTouchY = (e as MouseEvent).clientY
 		if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
 
 		// First time dragging, sets maximum y pos at which to block
 		if (firstPos === 0) firstPos = startTouchY
 
-		// prevent scroll when dragging
-		settingsDom.style.overflow = `clip`
-
 		// Add mouse / touch moves events
 		window.addEventListener('touchmove', dragMove)
-		window.addEventListener('mousemove', dragMove)
+		window.addEventListener('pointermove', dragMove)
+		document.body.addEventListener('touchend', dragEnd)
+		document.body.addEventListener('pointerup', dragEnd)
 	}
 
 	function dragMove(e: Event) {
 		let clientY: number = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'mousemove') clientY = (e as MouseEvent).clientY
+		if (e.type === 'pointermove') clientY = (e as MouseEvent).clientY
 		if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
 
 		// element is below max height: move
 		if (clientY > 60) {
-			settingsVh = +(100 - (clientY / window.innerHeight) * 100).toFixed(2)
-			settingsDom.style.transform = `translateY(-${settingsVh}vh)`
+			const touchPosition = clientY - dragZoneHeight / 2
+			const inverseHeight = 100 - (touchPosition / window.innerHeight) * 100
+
+			settingsVh = +inverseHeight.toFixed(2)
+			settingsDom.style.transform = `translateY(-${settingsVh}dvh)`
 			settingsDom.style.transition = `transform .0s`
 		}
 	}
@@ -885,18 +943,18 @@ function drawerDragEvents() {
 		let clientY: number = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'mouseup' || e.type === 'mouseleave') clientY = (e as MouseEvent).clientY
+		if (e.type === 'pointerup') clientY = (e as MouseEvent).clientY
 		if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
 
-		// Remove move events
 		window.removeEventListener('touchmove', dragMove)
-		window.removeEventListener('mousemove', dragMove)
+		window.removeEventListener('pointermove', dragMove)
+		document.body.removeEventListener('touchend', dragEnd)
+		document.body.removeEventListener('pointerup', dragEnd)
 
-		// reset mouse / touch pos
 		startTouchY = 0
 
 		const footer = document.getElementById('settings-footer') as HTMLDivElement
-		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'vh'
+		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'dvh'
 
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')
@@ -904,30 +962,22 @@ function drawerDragEvents() {
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {
-			toggleSettingsMenu()
+			settingsToggle()
 		}
 	}
 }
 
-//
 //	Settings management
-//
 
-function toggleSettingsManagement(toggled: boolean) {
-	document.getElementById('export')?.classList.toggle('shown', !toggled)
-	document.getElementById('import')?.classList.toggle('shown', toggled)
-	document.querySelector('.importexport-tabs')?.classList.toggle('toggled', toggled)
-}
-
-async function copyImportText(target: HTMLElement) {
+async function copySettings(target: HTMLElement) {
 	try {
-		const pre = document.getElementById('export-data')
+		const pre = document.getElementById('settings-data')
 		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
 		target.textContent = tradThis('Copied')
 		setTimeout(() => {
-			const domimport = document.getElementById('b_exportcopy')
+			const domimport = document.getElementById('b_settings-copy')
 			if (domimport) {
-				domimport.textContent = tradThis('Copy text')
+				domimport.textContent = tradThis('Copy')
 			}
 		}, 1000)
 	} catch (err) {
@@ -935,8 +985,8 @@ async function copyImportText(target: HTMLElement) {
 	}
 }
 
-async function exportAsFile() {
-	const a = document.getElementById('downloadfile')
+async function saveImportFile() {
+	const a = document.getElementById('file-download')
 	if (!a) return
 
 	const date = new Date()
@@ -955,18 +1005,7 @@ async function exportAsFile() {
 	a.click()
 }
 
-function importAsText(string: string) {
-	const importtext = document.getElementById('b_importtext')
-
-	try {
-		parse(string)
-		importtext?.removeAttribute('disabled')
-	} catch (error) {
-		importtext?.setAttribute('disabled', '')
-	}
-}
-
-function importAsFile(target: HTMLInputElement) {
+function loadImportFile(target: HTMLInputElement) {
 	function decodeExportFile(str: string): Partial<Sync.Storage> {
 		let result = {}
 
@@ -1000,32 +1039,32 @@ function importAsFile(target: HTMLInputElement) {
 
 		// data has at least one valid key from default sync storage => import
 		if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
-			paramsImport(importData as Sync.Storage)
+			importSettings(importData as Sync.Storage)
 		}
 	}
 	reader.readAsText(file)
 }
 
-async function paramsImport(toImport: Partial<Sync.Storage>) {
+async function importSettings(imported: Partial<Sync.Storage>) {
 	try {
 		let data = await storage.sync.get()
 
 		// #308 - verify font subset before importing
-		if (toImport?.font?.system === false) {
-			const family = toImport?.font?.family
-			const lang = toImport?.lang
+		if (imported?.font?.system === false) {
+			const family = imported?.font?.family
+			const lang = imported?.lang
 			const correctSubset = await fontIsAvailableInSubset(lang, family)
 
 			if (correctSubset === false) {
-				toImport.font.family = ''
+				imported.font.family = ''
 			}
 		}
 
-		if (toImport?.searchbar?.on) {
+		if (imported?.searchbar?.on) {
 			getPermissions('search')
 		}
 
-		data = filterImports(data, toImport)
+		data = filterImports(data, imported)
 
 		storage.sync.clear()
 		storage.sync.set(data)
@@ -1035,7 +1074,7 @@ async function paramsImport(toImport: Partial<Sync.Storage>) {
 	}
 }
 
-function paramsReset(action: 'yes' | 'no' | 'conf') {
+function resetSettings(action: 'yes' | 'no' | 'first') {
 	if (action === 'yes') {
 		storage.sync.clear()
 		storage.local.clear()
@@ -1049,29 +1088,64 @@ function paramsReset(action: 'yes' | 'no' | 'conf') {
 		return
 	}
 
-	document.getElementById('reset_first')?.classList.toggle('shown', action === 'no')
-	document.getElementById('reset_conf')?.classList.toggle('shown', action === 'conf')
+	document.getElementById('reset-first')?.classList.toggle('shown', action === 'no')
+	document.getElementById('reset-conf')?.classList.toggle('shown', action === 'first')
 }
 
-export function updateExportJSON(data?: Sync.Storage) {
+export function updateSettingsJSON(data?: Sync.Storage) {
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
-		const pre = document.getElementById('export-data')
+		const pre = document.getElementById('settings-data')
 
 		if (pre) {
 			data.about.browser = PLATFORM
 			pre.textContent = orderedStringify(data)
-
-			// const parser = new DOMParser()
-			// const highlight = highlightText(orderedStringify(data), 'json')
-			// const doc = parser.parseFromString(highlight, 'text/html')
-			// const nodes = Object.values(doc.body.childNodes)
-
-			// for (const node of nodes) {
-			// 	pre.appendChild(node)
-			// }
 		}
+	}
+}
+
+function updateSettingsEvent() {
+	// On settings changes, update export code
+	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
+	const storageUpdate = () => updateSettingsJSON()
+	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
+
+	if (PLATFORM === 'online') {
+		window.addEventListener('storage', storageUpdate)
+	} else {
+		chrome.storage.onChanged.addListener(storageUpdate)
+		window.addEventListener('beforeunload', removeListener, { once: true })
+	}
+}
+
+async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
+	const textarea = paramId('settings-data')
+	const data = await storage.sync.get()
+	let hasChanges = false
+
+	if (action === 'input') {
+		const current = orderedStringify(data)
+		let user = ''
+
+		try {
+			user = orderedStringify(JSON.parse(textarea.value ?? '{}') as Sync.Storage)
+		} catch (_) {}
+
+		hasChanges = user.length > 2 && current !== user
+	}
+
+	if (action === 'cancel') {
+		textarea.value = orderedStringify(data)
+		hasChanges = false
+	}
+
+	if (hasChanges) {
+		paramId('settings-changes')?.classList.toggle('changes', true)
+		paramId('b_settings-apply')?.removeAttribute('disabled')
+	} else {
+		paramId('settings-changes')?.classList.remove('changes')
+		paramId('b_settings-apply')?.setAttribute('disabled', '')
 	}
 }
 
@@ -1083,9 +1157,7 @@ function fadeOut() {
 	setTimeout(() => location.reload(), 400)
 }
 
-//
 //	Helpers
-//
 
 function paramId(str: string) {
 	return document.getElementById(str) as HTMLInputElement

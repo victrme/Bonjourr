@@ -113,29 +113,12 @@ export const freqControl = {
 export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	// 1.13.0: Returns an array of found links in storage
 	let res: Links.Link[] = []
+
 	Object.entries(data).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Links.Link)
 	})
 
 	return res
-}
-
-export function linksDataMigration(data: Sync.Storage): Sync.Storage {
-	if (data?.linktabs) {
-		return data
-	}
-
-	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
-	const list = (bundleLinks(data) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-
-	list.forEach((link) => {
-		if (link.icon?.startsWith(notfoundicon)) {
-			link.icon = MAIN_API + '/favicon/blob/'
-			data[link._id] = link
-		}
-	})
-
-	return data
 }
 
 export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
@@ -169,4 +152,81 @@ export function getHTMLTemplate<T>(id: string, selector: string): T {
 	const template = document.getElementById(id) as HTMLTemplateElement
 	const clone = template?.content.cloneNode(true) as Element
 	return clone?.querySelector(selector) as T
+}
+
+// getting .composedPath equivalent of touch events
+export function getComposedPath(target: EventTarget | null): HTMLElement[] {
+	if (!target) {
+		return []
+	}
+
+	const path: HTMLElement[] = []
+	let node = target as HTMLElement | null
+
+	while (node) {
+		path.push(node)
+		node = node.parentElement
+	}
+
+	return path
+}
+
+export function rgbToHex(r: number, g: number, b: number): string {
+	return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
+}
+
+function componentToHex(c: number): string {
+	let hex = c.toString(16)
+	return hex.length == 1 ? '0' + hex : hex
+}
+
+export function equalsCaseInsensitive(a: string, b: string) {
+	return a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
+}
+
+export function getSplitRangeData(id: string): { range?: string; button?: string } {
+	const wrapper = document.querySelector<HTMLInputElement>(`#${id.replace('#', '')}`)
+	const range = wrapper?.querySelector<HTMLInputElement>('input')
+	const button = wrapper?.querySelector<HTMLElement>('button')
+	const span = wrapper?.querySelectorAll<HTMLElement>('span')
+	const isButtonOn = button?.classList?.contains('on')
+
+	return {
+		range: range?.value,
+		button: span?.[isButtonOn ? 1 : 0].dataset.value,
+	}
+}
+
+export function hexColorFromSplitRange(id: string): string {
+	const { range, button } = getSplitRangeData(id)
+
+	const opacity = parseInt(range ?? '0')
+	const color = button === 'dark' ? '#000' : '#fff'
+	const alpha = opacity.toString(16)
+
+	return color + alpha
+}
+
+export function opacityFromHex(hex: string) {
+	return parseInt(hex.slice(4), 16)
+}
+
+export function toggleDisabled(element: Element | null, force?: boolean) {
+	if (element) {
+		if (force === undefined) {
+			force = typeof element.getAttribute('disabled') === 'string'
+		}
+
+		force ? element.setAttribute('disabled', '') : element.removeAttribute('disabled')
+	}
+}
+
+export function countryCodeToLanguageCode(lang: string): string {
+	if (lang === 'gr') lang = 'el'
+	if (lang === 'jp') lang = 'ja'
+	if (lang === 'cz') lang = 'cs'
+
+	lang = lang.replace('_', '-')
+
+	return lang
 }

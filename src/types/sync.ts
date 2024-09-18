@@ -10,7 +10,10 @@ declare namespace Sync {
 		linksrow: number
 		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 		linknewtab: boolean
-		linktabs: LinkTabs
+		linktitles: boolean
+		linkbackgrounds: boolean
+		linktabs?: LinkTabsOld
+		linkgroups: LinkGroups
 		textShadow: number
 		cssHeight?: number
 		review: number
@@ -27,21 +30,16 @@ declare namespace Sync {
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
 		background_type: 'local' | 'unsplash'
-		dateformat: 'eu' | 'us' | 'cn'
+		dateformat: 'auto' | 'eu' | 'us' | 'cn'
 		clock: Clock
+		analogstyle?: AnalogStyle
+		worldclocks: WorldClocks
 		unsplash: Unsplash.Sync
 		weather: Weather.Sync
 		searchbar: Searchbar
 		quotes: Quotes.Sync
 		font: Font
-		move: {
-			selection: Move.Selection
-			layouts: {
-				single: Move.Layout
-				double: Move.Layout
-				triple: Move.Layout
-			}
-		}
+		move: Move
 		about: {
 			browser: string
 			version: string
@@ -49,10 +47,19 @@ declare namespace Sync {
 		[key: string]: Links.Link | unknown
 	}
 
-	type LinkTabs = {
+	type LinkTabsOld = {
 		active: boolean
 		selected: number
 		titles: string[]
+		pinned: number[]
+	}
+
+	type LinkGroups = {
+		on: boolean
+		selected: string
+		groups: string[]
+		pinned: string[]
+		synced: string[]
 	}
 
 	type HideOld = [[number, number], [number, number, number], [number], [number]]
@@ -72,19 +79,36 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
-		style: 'round' | 'square' | 'transparent'
-		face: 'none' | 'number' | 'roman' | 'marks'
+		worldclocks: boolean
+		// <20.0
+		face?: 'none' | 'number' | 'roman' | 'marks'
+		style?: 'round' | 'square' | 'transparent'
 	}
+
+	type AnalogStyle = {
+		border: string
+		background: string
+		shape: 'round' | 'square' | 'rectangle'
+		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
+		hands: 'modern' | 'swiss' | 'classic' | 'braun' | 'apple'
+	}
+
+	type WorldClocks = {
+		region: string
+		timezone: string
+	}[]
 
 	type Searchbar = {
 		on: boolean
 		width?: number
-		opacity: number
 		newtab: boolean
 		engine: string
 		request: string
 		suggestions: boolean
 		placeholder: string
+		background?: string
+		// <20.0
+		opacity?: number
 	}
 
 	type Font = {
@@ -93,33 +117,41 @@ declare namespace Sync {
 		weight: string
 		weightlist: string[]
 		system?: boolean
-		// <1.19
+		// <19.0
 		url?: string
 		availWeights?: string[]
 	}
 
 	type Notes = {
 		on: boolean
+		align: string
 		text?: string
 		width?: number
-		opacity: number
-		align: string
+		background?: string
+		// <20.0
+		opacity?: number
 	}
 
-	namespace Move {
-		interface Layout {
-			selected?: boolean
-			grid: string[][]
-			items: { [key in Key]?: Item }
+	type Move = {
+		selection: MoveSelection
+		layouts: {
+			single?: MoveLayout
+			double?: MoveLayout
+			triple?: MoveLayout
 		}
+	}
 
-		interface Item {
-			box: string
-			text: string
+	type MoveSelection = 'single' | 'double' | 'triple'
+
+	interface MoveLayout {
+		grid: string[][]
+		items: {
+			[key in Widgets]?: MoveAlign
 		}
+	}
 
-		type Selection = 'single' | 'double' | 'triple'
-
-		type Key = 'time' | 'main' | 'notes' | 'searchbar' | 'quicklinks' | 'quotes'
+	interface MoveAlign {
+		box: string
+		text: string
 	}
 }

@@ -1,3 +1,59 @@
+## 20.0.0
+
+-   iOS & iPadOS:
+    -   Friendlier settings menu drag
+    -   Improved inputs & buttons sizes
+    -   Edit link dialog opens on long press
+    -   Fixed most unwanted scrolling
+    -   Fixed background size on landscape
+-   Time and date:
+    -   Added detailed analog clock customization
+    -   Added world clocks with different timezones (#381)
+    -   Added automatic date format based on language (#299)
+    -   Improved timezone list with specific countries & cities
+    -   Fixed centering issue with digital clock with seconds enabled (#286)
+    -   Analog clock face numbers uses language alphabet
+-   Links:
+    -   Added "Most Visited" links in import
+    -   Added pinned groups feature (#288, #285)
+    -   Added "synced" groups: bookmarks managed by your browser
+    -   Added title and background toggles (#327)
+    -   Added link groups drag and drop rearrange
+    -   Renamed link "pages" to "groups"
+    -   Links import dialog overall
+    -   Improved padding and group sizes on small devices
+-   Other changes:
+    -   Added dark mode for search bar and notes
+    -   Added "save background" button in credit infos, (#317)
+    -   Added distant URL option for custom quotes, thanks @ChainsLunatic (#373)
+    -   Improved weather by switching to AccuWeather
+    -   Updated settings management UI
+    -   Faster interactions with settings options
+    -   Fixed link edit dialog not working on RTL languages
+    -   Fixed localization issue in search suggestions (#279)
+    -   Fixed search on Kiwi browser after 19.2.5 (#404)
+-   Translations:
+    -   Added Norwegian translation, thanks @FIameCaster
+    -   Added Catalan translation, thanks Umbert
+    -   Added Taiwanese Chinese with Claude
+    -   Hungarian & German update, thanks @GyDavid22 and @Scalamando
+    -   Slovak translation overall, thanks @Svec-Tomas
+
+$~~~~~~~~~~~$
+
+## 19.2.5
+
+-   Changes:
+    -   Default settings now use the browser's search engine
+    -   Moved search engine option to "all settings"
+    -   Improved accessibility and color schemes for CSS Editor
+-   Translations:
+    -   Danish updated by @FIameCaster
+    -   Simplified Chinese fixed by @angine04
+    -   Romanian updated by @driedpampas
+    -   Portuguese updated by @Blackspirits
+    -   German updated by @Scalamando, thanks everyone
+
 ## 19.2.4
 
 -   Improvements:
