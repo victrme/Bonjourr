@@ -30,11 +30,11 @@
 		"@victr/deepmerge": "^1.3.2",
 		"clickdown": "^1.2.2",
 		"idb-keyval": "^6.2.1",
-		"pocket-editor": "^2.2.2",
+		"pocket-editor": "^2.3.0",
 		"prism-code-editor": "3.4.0"
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.270",
+		"@types/chrome": "^0.0.271",
 		"esbuild": "^0.23.1",
 		"user-agent-data-types": "^0.4.2",
 		"web-ext-types": "^3.2.1"
