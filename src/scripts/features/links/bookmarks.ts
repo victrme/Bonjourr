@@ -2,7 +2,7 @@ import { bundleLinks, getHTMLTemplate, randomString, toggleDisabled } from '../.
 import { EXTENSION, MAIN_API, PLATFORM } from '../../defaults'
 import quickLinks, { validateLink } from '.'
 import getPermissions from '../../utils/permissions'
-import { tradThis } from '../../utils/translations'
+import { getLang, tradThis, traduction } from '../../utils/translations'
 import { isLink } from './helpers'
 import storage from '../../storage'
 
@@ -146,6 +146,8 @@ async function createBookmarksDialog() {
 
 	document.getElementById('bmk_apply')?.setAttribute('disabled', '')
 	document.dispatchEvent(new Event('toggle-settings'))
+	traduction(bookmarksdom, getLang())
+
 	bookmarksdom.showModal()
 	setTimeout(() => bookmarksdom.classList.add('shown'))
 }

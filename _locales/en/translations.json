@@ -49,8 +49,9 @@
 	"Apply changes": "Apply changes",
 
 	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Synchronized groups are automatically updated to match your browser bookmarks. Learn more on",
+	"our documentation": "our documentation",
 	"Select group": "Select group",
-	"Synced with browser": "Synced with browser",
+	"Sync with browser": "Sync with browser",
 	"Most visited": "Most visited",
 	"Import selection": "Import selection",
 
@@ -218,8 +219,8 @@
 	"Page gap": "Page gap",
 
 	"Custom Style": "Custom Style",
-	"Make cool things happen with CSS. ": "Make cool things happen with CSS. ",
-	"Check out our ": "Check out our ",
+	"Make cool things happen with CSS. ": "Make cool things happen with CSS.",
+	"Check out our ": "Check out our",
 	"CSS snippets.": "CSS snippets.",
 	"Type in your custom CSS": "Type in your custom CSS",
 

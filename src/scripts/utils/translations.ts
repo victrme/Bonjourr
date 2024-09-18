@@ -26,18 +26,18 @@ export async function setTranslationCache(lang: string, local?: Local.Storage) {
 	currentTrnsLang = lang
 }
 
-export function traduction(settingsDom: Element | null, lang = 'en') {
+export function traduction(scope: Element | null, lang = 'en') {
 	if (lang === 'en') {
 		return
 	}
 
 	if (trns) {
-		const dom = settingsDom ? settingsDom : document.body
+		const dom = scope ?? document.body
 		const tags = dom.querySelectorAll('.trn')
 		let text: string
 
 		for (const tag of tags) {
-			text = tag.textContent ?? ''
+			text = tag.textContent?.trim() ?? ''
 			tag.textContent = (trns[text] as string) ?? text
 		}
 	}
