@@ -369,12 +369,12 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.groupTitle) data = changeGroupTitle(update.groupTitle, data)
 	if (update.deleteGroup !== undefined) data = deleteGroup(update.deleteGroup, data)
 	if (update.groups !== undefined) data = toggleGroups(update.groups, data)
-	if (update.newtab !== undefined) setOpenInNewTab(update.newtab)
+	if (update.newtab !== undefined) data = setOpenInNewTab(update.newtab, data)
 	if (update.refreshIcons) data = refreshIcons(update.refreshIcons, data)
 	if (update.styles) setLinkStyle(update.styles)
 	if (update.row) setRows(update.row)
 
-	if (update.styles || update.row || update.newtab) {
+	if (update.styles || update.row) {
 		return
 	}
 
@@ -565,7 +565,7 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 	return data
 }
 
-function setOpenInNewTab(newtab: boolean) {
+function setOpenInNewTab(newtab: boolean, data: Sync.Storage): Sync.Storage {
 	const anchors = document.querySelectorAll<HTMLAnchorElement>('.link a')
 
 	for (const anchor of anchors) {
@@ -584,7 +584,9 @@ function setOpenInNewTab(newtab: boolean) {
 		}
 	}
 
-	storage.sync.set({ linknewtab: newtab })
+	data.linknewtab = newtab
+
+	return data
 }
 
 async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrounds?: boolean }) {
