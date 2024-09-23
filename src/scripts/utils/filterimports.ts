@@ -32,6 +32,7 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	current = toISOLanguageCode(current) // ..
 	current = removeGroupDuplicate(current) // ..
 	current = removeWorldClocksDuplicate(current, target) // ..
+	current = renameGroupsDefault(current) // 20.1
 
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
@@ -168,9 +169,31 @@ function removeGroupDuplicate(current: Sync.Storage): Sync.Storage {
 	return current
 }
 
+function renameGroupsDefault(current: Sync.Storage): Sync.Storage {
+	if (current.linkgroups) {
+		const { groups, pinned, synced, selected } = current.linkgroups
+		current.linkgroups.selected = selected === '' ? 'default' : selected
+		current.linkgroups.groups = groups.map((val) => (val === '' ? 'default' : val))
+		current.linkgroups.pinned = pinned.map((val) => (val === '' ? 'default' : val))
+		current.linkgroups.synced = synced.map((val) => (val === '' ? 'default' : val))
+	}
+
+	const links = bundleLinks(current)
+
+	for (const link of links) {
+		if (link?.parent === '') {
+			link.parent = 'default'
+		}
+
+		current[link._id] = link
+	}
+
+	return current
+}
+
 function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Data {
 	const links = bundleLinks(data as Sync.Storage)
-	const groups = data?.linkgroups?.groups ?? ['']
+	const groups = data?.linkgroups?.groups ?? ['default']
 
 	for (const link of links) {
 		if (typeof link.parent === 'string') {
@@ -178,7 +201,7 @@ function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Da
 		}
 
 		if (link.parent === undefined) {
-			link.parent = ''
+			link.parent = 'default'
 		} else {
 			link.parent = groups[link.parent]
 		}

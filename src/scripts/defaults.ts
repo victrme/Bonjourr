@@ -107,8 +107,8 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	linksrow: 6,
 	linkgroups: {
 		on: false,
-		selected: '',
-		groups: [''],
+		selected: 'default',
+		groups: ['default'],
 		pinned: [],
 		synced: [],
 	},

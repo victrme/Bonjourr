@@ -205,7 +205,7 @@ export async function initblocks(data: Sync, isInit?: true): Promise<true> {
 			linkgroup.classList.add('topsites-group')
 		}
 
-		if (group.title === '') {
+		if (group.title === 'default') {
 			linktitle.textContent = tradThis('Default group')
 		}
 	}
