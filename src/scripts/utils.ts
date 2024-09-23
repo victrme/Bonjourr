@@ -222,6 +222,7 @@ export function toggleDisabled(element: Element | null, force?: boolean) {
 }
 
 export function countryCodeToLanguageCode(lang: string): string {
+	if (lang.includes('ES')) lang = 'es'
 	if (lang === 'gr') lang = 'el'
 	if (lang === 'jp') lang = 'ja'
 	if (lang === 'cz') lang = 'cs'
