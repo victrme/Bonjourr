@@ -65,6 +65,8 @@
 	"Background type": "Тип фона",
 	"Default": "По умолчанию",
 	"Local file": "Локальный файл",
+	"Add backgrounds": "Добавить фоны",
+	"Select files": "Выбрать файлы",
 	"Frequency": "Частота обновления",
 	"Daylight": "Дневное время",
 	"Every tab": "Каждая вкладка",

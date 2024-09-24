@@ -1,12 +1,10 @@
 {
 	"lang": "pt_PT",
 	"New tab": "Novo separador",
-	
 	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Gostas de usar o Bonjourr? Considera fazer uma avaliação ou faz uma doação, isso ajudaria muito! 😇",
 	"Read the release notes": "Lê as notas de lançamento",
 	"Review": "Classificar",
 	"Donate": "Doar",
-	
 	"Good morning": "Bom dia",
 	"Good afternoon": "Boa tarde",
 	"Good evening": "Boa noite",
@@ -20,7 +18,6 @@
 	"Default group": "Grupo predefinido",
 	"Folder": "Pasta",
 	"Photo by <name>": "Foto de <name>",
-	
 	"Editing": "A editar",
 	"No selection": "Sem seleção",
 	"Grid position": "Posição da grelha",
@@ -31,7 +28,6 @@
 	"Text alignment": "Alinhamento do texto",
 	"Reset layout": "Repor esquema",
 	"Done": "Concluído",
-	
 	"Title": "Título",
 	"Link": "Link",
 	"Icon": "Ícone",
@@ -47,14 +43,12 @@
 	"Pin group": "Fixar este grupo",
 	"Unpin group": "Desafixar grupo",
 	"Apply changes": "Aplicar alterações",
-	
 	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Os grupos sincronizados são atualizados automaticamente para corresponderem aos favoritos do teu navegador. Sabe mais em",
 	"our documentation": "nossa documentação",
 	"Select group": "Selecionar grupo",
 	"Sync with browser": "Sincronizar com o navegador",
 	"Most visited": "Mais visitados",
 	"Import selection": "Importar seleção",
-	
 	"General": "Geral",
 	"Show all settings": "Mostrar todas as definições",
 	"Enabled": "Ativado",
@@ -67,24 +61,23 @@
 	"New tab title": "Titulo do novo separador",
 	"The icon and title that appear on your tab. You can put any emoji.": "O ícone e o título que aparecem no teu separador. Podes colocar qualquer emoji.",
 	"Hide settings icon": "Ocultar o ícone das definições",
-	
 	"Background": "Fundo",
 	"Background type": "Tipo de fundo",
 	"Default": "Predefinição",
 	"Local file": "Ficheiro local",
+	"Add backgrounds": "Adicionar fundos",
+	"Select files": "Selecionar arquivos",
 	"Frequency": "Frequência de atualização",
 	"Daylight": "Conforme a luz do dia",
 	"Every tab": "A cada separador",
 	"Every hour": "A cada hora",
 	"Every day": "Diariamente",
 	"Pause": "Pausar",
-	
 	"Show all": "Mostrar tudo",
 	"Unsplash collection": "Coleção do Unsplash",
 	"Type the collection ID from its URL, add more by separating them with a comma.": "Escreve a identificação da coleção a partir do URL, adiciona mais separando com uma vírgula.",
 	"Blur intensity": "Intensidade da desfocagem",
 	"Brightness": "Brilho",
-	
 	"Quick Links": "Links Rápidos",
 	"These are Bonjourr's bookmarks. ": "Estes são os favoritos do Bonjourr. ",
 	"Edit your Quick Links by right clicking the icon.": "Altera os teus links rápidos ao clicar com o botão direito do rato no ícone.",
@@ -103,7 +96,6 @@
 	"Small": "Pequeno",
 	"Inline": "Em linha",
 	"Text": "Texto",
-	
 	"Time & Date": "Hora e data",
 	"Analog clock": "Relógio analógico",
 	"Clock face": "Mostrador do relógio",
@@ -134,7 +126,6 @@
 	"Clock and date": "Relógio e data",
 	"Clock only": "Apenas relógio",
 	"Date only": "Apenas data",
-	
 	"Weather & Greetings": "Meteorologia e saudações",
 	"Greeting": "Saudação",
 	"Clock size": "Tamanho do relógio",
@@ -168,7 +159,6 @@
 	"Description and icon": "Descrição e ícone",
 	"Description only": "Apenas descrição",
 	"Icon only": "Apenas ícone",
-	
 	"Notes": "Notas",
 	"Edit this note": "Editar esta nota",
 	"With markdown titles, lists, and checkboxes": "Com títulos, listas e caixas de verificação em markdown",
@@ -177,7 +167,6 @@
 	"Center": "Centrar",
 	"Right": "À direita",
 	"Width": "Largura",
-	
 	"Search bar": "Barra de pesquisa",
 	"Suggestions": "Sugestões",
 	"Search engine": "Motores de pesquisa",
@@ -193,7 +182,6 @@
 	"Placeholder text": "Texto do marcador de posição",
 	"Search": "Pesquisar",
 	"Opacity": "Opacidade",
-	
 	"Quotes": "Citações",
 	"Always show author": "Mostrar sempre o autor",
 	"Quote type": "Tipo de citação",
@@ -201,13 +189,11 @@
 	"Custom": "Personalizado",
 	"Custom quotes": "Citações personalizadas",
 	"Author, Your quote.\nAuthor, Your second quote.": "Autor, sua citação.\nAutor, sua segunda citação.",
-	
 	"Fonts": "Personalizar tipo de letra",
 	"Font family": "Tipo de letra",
 	"Weight": "Espessura",
 	"Size": "Tamanho",
 	"Shadow": "Sombra",
-	
 	"Page layout": "Esquema da página",
 	"Customise how and where widgets appear.": "Personaliza como e onde os widgets aparecem.",
 	"Open the toolbox and select a widget to modify on the page.": "Abre a caixa de ferramentas e seleciona um widget para modificar na página.",
@@ -217,19 +203,16 @@
 	"Layout columns": "Colunas do esquema",
 	"Page width": "Largura da página",
 	"Page gap": "Espaçamento da página",
-	
 	"Custom Style": "Estilo personalizado",
 	"Make cool things happen with CSS. ": "Faz coisas fixes acontecerem com CSS. ",
 	"Check out our ": "Vê os nossos ",
 	"CSS snippets.": "Snippets de CSS.",
 	"Type in your custom CSS": "Escreve o teu CSS personalizado",
-	
 	"Updates": "Atualizações",
 	"Announcements": "Anúncios",
 	"Major updates": "Atualizações importantes",
 	"All updates": "Todas as atualizações",
 	"Decide when to get notified about Bonjourr updates.": "Decide quando queres ser notificado sobre as atualizações do Bonjourr.",
-	
 	"Settings management": "Definições",
 	"Transfer your settings between multiple instances of Bonjourr.": "Transfere as tuas definições entre múltiplas instâncias do Bonjourr.",
 	"Settings file": "Ficheiro de definições",
@@ -242,10 +225,9 @@
 	"Are you sure?": "Tens a certeza?",
 	"I am sure": "Tenho a certeza",
 	"No, go back": "Não, voltar atrás",
-	
 	"Made in France with ❤️": "Feito em França com ❤️",
 	"by": "por",
 	"Consider": "Considera",
 	"donating": "fazer uma doação",
 	"if you love Bonjourr": "se gostas do Bonjourr"
-}   
+}

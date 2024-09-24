@@ -65,6 +65,8 @@
 	"Background type": "背景のタイプ",
 	"Default": "デフォルト",
 	"Local file": "PCのファイル",
+	"Add backgrounds": "背景を追加する",
+	"Select files": "ファイルを選択",
 	"Frequency": "頻度",
 	"Daylight": "昼間",
 	"Every tab": "タブごとに",

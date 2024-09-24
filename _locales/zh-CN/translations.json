@@ -65,6 +65,8 @@
 	"Background type": "背景类型",
 	"Default": "默认",
 	"Local file": "本地文件",
+	"Add backgrounds": "添加背景",
+	"Select files": "选择文件",
 	"Frequency": "切换频率",
 	"Daylight": "白天",
 	"Every tab": "每次新建标签页",

@@ -65,6 +65,8 @@
 	"Background type": "Taustatyyppi",
 	"Default": "Oletus",
 	"Local file": "Paikallinen tiedosto",
+	"Add backgrounds": "Lisää taustat",
+	"Select files": "Valitse tiedostot",
 	"Frequency": "Taajuus",
 	"Daylight": "Päivänvalo",
 	"Every tab": "Jokainen välilehti",
