@@ -1079,8 +1079,8 @@ function resetSettings(action: 'yes' | 'no' | 'first') {
 		storage.sync.clear()
 		storage.local.clear()
 
-		setTimeout(() => {
-			storage.sync.set({ ...getSyncDefaults() })
+		setTimeout(async () => {
+			storage.sync.set({ ...(await getSyncDefaults()) })
 			storage.local.set({ ...LOCAL_DEFAULT })
 			fadeOut()
 		}, 50)
@@ -1098,7 +1098,7 @@ export function updateSettingsJSON(data?: Sync.Storage) {
 	function updateTextArea(data: Sync.Storage) {
 		const pre = document.getElementById('settings-data')
 
-		if (pre) {
+		if (pre && data.about) {
 			data.about.browser = PLATFORM
 			pre.textContent = orderedStringify(data)
 		}

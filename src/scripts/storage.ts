@@ -55,10 +55,11 @@ function verifyDataAsLocal(data: Keyval) {
 
 export async function getSyncDefaults(): Promise<Sync.Storage> {
 	try {
-		const json = await (await fetch('defaults.json')).json()
+		const json = await (await fetch('config.json')).json()
 		return verifyDataAsSync(json)
 	} catch (error) {
-		console.log('No defaults.json settings found')
+		//@ts-expect-error
+		console.log(error.stack)
 	}
 
 	return SYNC_DEFAULT
@@ -137,10 +138,15 @@ function online(): Storage {
 	}
 
 	const init = async () => {
+		const config = await getSyncDefaults()
 		const about = parse<Sync.Storage>(localStorage.bonjourr)?.about
 
+		if (!localStorage.bonjourr) {
+			online().sync.set(config)
+		}
+
 		if (!about) {
-			online().sync.set({ about: SYNC_DEFAULT.about })
+			online().sync.set({ about: config.about })
 		}
 
 		return {
@@ -210,6 +216,10 @@ function webext(): Storage {
 					if (isReady()) resolve(true)
 				})
 			})
+		}
+
+		if (Object.keys(store.sync)?.length === 0) {
+			store.sync = await getSyncDefaults()
 		}
 
 		const sync = verifyDataAsSync(store.sync)
