@@ -53,8 +53,8 @@ export const subsets = {
 	hu: 'latin-ext',
 	vi: 'latin-ext',
 	ja: 'japanese',
+	hy: 'armenian',
 	'zh-CN': 'chinese-simplified',
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',
-	hy: 'armenian',
 }
