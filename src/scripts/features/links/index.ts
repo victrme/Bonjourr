@@ -113,7 +113,7 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 
 // Initialisation
 
-export async function initblocks(data: Sync, isInit?: true): Promise<true> {
+export function initblocks(data: Sync, isInit?: true): true {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
@@ -655,8 +655,7 @@ export function validateLink(title: string, url: string, parent?: string): Links
 	const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
 	const noProtocol = !startsWithEither(['https://', 'http://'])
 	const isLocalhost = url.startsWith('localhost') || url.startsWith('127.0.0.1')
-
-	let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
+	const prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
 
 	url = prefix + url
 

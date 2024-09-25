@@ -33,7 +33,7 @@ export async function folderClick(event: MouseEvent) {
 	}
 }
 
-async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
+function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	const linkgroup = li.parentNode!.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
 	const folder = data[li.id] as Links.Folder

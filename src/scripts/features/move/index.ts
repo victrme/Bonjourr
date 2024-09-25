@@ -39,7 +39,6 @@ type UpdateMove = {
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 let widget: Widgets | undefined
-let smallWidth = false
 
 export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 	if (!init && !events) {
@@ -68,8 +67,6 @@ export async function updateMoveElement(event: UpdateMove) {
 	const data = await storage.sync.get()
 
 	if (!data.move) data.move = structuredClone(SYNC_DEFAULT.move)
-
-	if (smallWidth) data.move.selection = 'single'
 
 	if (event.grid) gridChange(data.move, event.grid)
 	if (event.span) toggleGridSpans(data.move, event.span)
@@ -125,7 +122,7 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 		const newRow = Math.min(Math.max(row + y, 0), grid.length - 1)
 		const newCol = Math.min(Math.max(col + x, 0), grid[0].length - 1)
 
-		let tempItem = grid[row][col]
+		const tempItem = grid[row][col]
 		grid[row][col] = grid[newRow][newCol]
 		grid[newRow][newCol] = tempItem
 	})

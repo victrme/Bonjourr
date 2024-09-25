@@ -120,7 +120,7 @@ export function changeGroupTitle(title: { old: string; new: string }, data: Sync
 }
 
 export function addGroup(groups: { title: string; sync?: boolean }[], data: Sync.Storage): Sync.Storage {
-	for (let { title, sync } of groups) {
+	for (const { title, sync } of groups) {
 		const isReserved = title === 'default' || title === '+'
 		const isAlreadyUsed = data.linkgroups.groups.includes(title)
 

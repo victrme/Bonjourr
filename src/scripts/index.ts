@@ -158,7 +158,7 @@ function userActionsEvents() {
 	document.addEventListener('keydown', keydownUserActions)
 	document.addEventListener('keyup', keydownUserActions)
 
-	async function keydownUserActions(event: KeyboardEvent) {
+	function keydownUserActions(event: KeyboardEvent) {
 		if (event.code === 'Escape') {
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
@@ -197,7 +197,7 @@ function userActionsEvents() {
 		}
 	}
 
-	async function clickUserActions(event: MouseEvent) {
+	function clickUserActions(event: MouseEvent) {
 		if (isMousingDownOnInput) {
 			return
 		}
@@ -381,7 +381,7 @@ function serviceWorker() {
 	})
 }
 
-async function setPotatoComputerMode() {
+function setPotatoComputerMode() {
 	if (BROWSER === 'firefox' || BROWSER === 'safari') {
 		// firefox fingerprinting protection disables webgl info, smh
 		// safari always have hardware acceleration, no need for potato

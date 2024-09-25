@@ -1,7 +1,7 @@
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
-import { changeGroupTitle, togglePinGroup } from './groups'
 import { getComposedPath, stringMaxSize } from '../../utils'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { togglePinGroup } from './groups'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import quickLinks from '.'
@@ -263,7 +263,7 @@ queueMicrotask(() => {
 			handleLongPress(event)
 		})
 
-		domlinkblocks?.addEventListener('touchend', function (event) {
+		domlinkblocks?.addEventListener('touchend', function () {
 			handleLongPress.cancel()
 		})
 
@@ -271,7 +271,7 @@ queueMicrotask(() => {
 	}
 })
 
-async function submitChanges(event: SubmitEvent) {
+function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
 	const { container, target, group, selected, selectall } = editStates
 
@@ -344,7 +344,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
-	let data = await storage.sync.get()
+	const data = await storage.sync.get()
 
 	if (editStates.target.addgroup) {
 		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })

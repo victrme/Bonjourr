@@ -37,6 +37,9 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
 
+	delete current.custom_every
+	delete current.custom_time
+	delete current.searchbar_newtab
 	delete current.searchbar_newtab
 	delete current.searchbar_engine
 	delete current.cssHeight
@@ -201,7 +204,7 @@ function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Da
 		}
 
 		if (link.parent === undefined) {
-			link.parent = 'default'
+			link.parent = groups[0]
 		} else {
 			link.parent = groups[link.parent]
 		}
@@ -255,9 +258,9 @@ function improvedWeather(data: Import): Import {
 		data.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
 
 		delete data.weather.location
-		//@ts-expect-error
+		//@ts-expect-error -> old types
 		delete data.weather.lastState
-		//@ts-expect-error
+		//@ts-expect-error -> old types
 		delete data.weather.lastCall
 	}
 
@@ -287,21 +290,21 @@ function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Dat
 	return data
 }
 
-function removeLinkDuplicates(curr: Sync.Storage, imported: Import): Sync.Storage {
-	const currentLinks = bundleLinks(curr)
-	const importedLink = bundleLinks(imported as Sync.Storage)
-	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))
+// function removeLinkDuplicates(curr: Sync.Storage, imported: Import): Sync.Storage {
+// 	const currentLinks = bundleLinks(curr)
+// 	const importedLink = bundleLinks(imported as Sync.Storage)
+// 	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))
 
-	for (let ii = 0; ii < currentLinks.length; ii++) {
-		const link = currentLinks[ii]
+// 	for (let ii = 0; ii < currentLinks.length; ii++) {
+// 		const link = currentLinks[ii]
 
-		if (!link.folder && link.url === importedURLs[ii]) {
-			delete curr[link._id]
-		}
-	}
+// 		if (!link.folder && link.url === importedURLs[ii]) {
+// 			delete curr[link._id]
+// 		}
+// 	}
 
-	return curr
-}
+// 	return curr
+// }
 
 function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storage {
 	// When import doesn't have move, other widgets can still be different
@@ -325,7 +328,7 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 	}
 
 	if (!imported.move) {
-		let importStates = {
+		const importStates = {
 			time: imported.time ?? current.time,
 			main: imported.main ?? current.main,
 			notes: imported.notes?.on ?? (current.notes?.on || false),
@@ -334,7 +337,7 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 			quicklinks: imported.quicklinks ?? current.quicklinks,
 		}
 
-		let diffWidgets = {
+		const diffWidgets = {
 			time: current.time !== importStates.time,
 			main: current.main !== importStates.main,
 			notes: current.notes?.on !== importStates.notes,

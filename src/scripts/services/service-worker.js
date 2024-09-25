@@ -14,7 +14,7 @@ self.addEventListener('activate', async () => {
 	}
 })
 
-self.addEventListener('fetch', async function (event) {
+self.addEventListener('fetch', function (event) {
 	const url = event.request.url
 	const isAPI = API_URLS.some((api) => url.includes(api))
 

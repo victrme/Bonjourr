@@ -65,7 +65,7 @@ export function syncBookmarks(group: string): Links.Link[] {
 
 // Bookmarks Dialog
 
-async function createBookmarksDialog() {
+function createBookmarksDialog() {
 	const bookmarkFolders = browserBookmarkFolders
 
 	let bookmarksdom = document.querySelector<HTMLDialogElement>('#bookmarks')

@@ -103,7 +103,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 		collectionForm.load()
 
-		let list = await requestNewList(unsplash.collection)
+		const list = await requestNewList(unsplash.collection)
 
 		if (!list || list.length === 0) {
 			collectionForm.warn(`Cannot get "${collection}"`)
@@ -367,7 +367,7 @@ async function preloadImage(src: string) {
 		await img.decode()
 		img.remove()
 		sessionStorage.removeItem('waitingForPreload')
-	} catch (error) {
+	} catch (_) {
 		console.warn('Could not decode image: ', src)
 	}
 }

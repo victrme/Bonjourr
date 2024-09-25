@@ -1,5 +1,5 @@
 import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
-import { BROWSER, EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
+import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
 import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import errorMessage from '../utils/errormessage'
@@ -136,7 +136,7 @@ function isValidURL(string: string): boolean {
 }
 
 function createSearchURL(val: string, engine: string): string {
-	const URLs: { [key in Sync.Searchbar['engine']]: string } = {
+	const URLs: Record<SearchEngines, string> = {
 		default: '',
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
@@ -178,8 +178,7 @@ function submitSearch(e: Event) {
 	}
 
 	if (canUseDefault && engine === 'default') {
-		//@ts-expect-error
-		EXTENSION?.search.query({
+		;(EXTENSION as typeof chrome)?.search.query({
 			disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
 			text: val,
 		})
@@ -319,7 +318,7 @@ function initSuggestions() {
 	createSuggestionSocket()
 }
 
-async function suggestions(results: Suggestions) {
+function suggestions(results: Suggestions) {
 	const input = domsearchbar as HTMLInputElement
 	const liList = domsuggestions?.querySelectorAll('li') ?? []
 
@@ -379,7 +378,7 @@ async function suggestions(results: Suggestions) {
 //	Searchbar Events
 //
 
-async function handleUserInput(e: Event) {
+function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
 	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
 
@@ -442,6 +441,6 @@ function searchbarShortcut(event: KeyboardEvent) {
 	}
 }
 
-function isValidEngine(s = ''): s is Sync.Searchbar['engine'] {
-	return SEARCHBAR_ENGINES.includes(s as any)
+function isValidEngine(str = ''): str is SearchEngines {
+	return SEARCHBAR_ENGINES.includes(str as SearchEngines)
 }

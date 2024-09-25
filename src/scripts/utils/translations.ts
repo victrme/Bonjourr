@@ -48,9 +48,9 @@ export function traduction(scope: Element | null, lang = 'en') {
 
 export async function toggleTraduction(lang: string) {
 	const tags = document.querySelectorAll('.trn')
+	const toggleDict: { [key: string]: string } = {}
+	const currentDict = { ...trns }
 	let newDict: Local.Translations | undefined
-	let toggleDict: { [key: string]: string } = {}
-	let currentDict = { ...trns }
 	let text: string
 
 	await setTranslationCache(lang)

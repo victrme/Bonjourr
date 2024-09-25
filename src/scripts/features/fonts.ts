@@ -45,7 +45,7 @@ const systemfont = (function () {
 	else return fonts.linux
 })()
 
-export default async function customFont(init?: Font, event?: CustomFontUpdate) {
+export default function customFont(init?: Font, event?: CustomFontUpdate) {
 	if (event) {
 		updateCustomFont(event)
 		return
@@ -233,7 +233,7 @@ function displayFont({ family, size, weight, system }: Font) {
 //	Settings options
 //
 
-async function initFontSettings(font?: Font) {
+function initFontSettings(font?: Font) {
 	const settings = document.getElementById('settings') as HTMLElement
 	const hasCustomWeights = font && font.weightlist.length > 0
 	const weights = hasCustomWeights ? font.weightlist : systemfont.weights
@@ -310,11 +310,11 @@ function systemFontChecker(family: string): boolean {
 	return hasLoadedFont
 }
 
-async function waitForFontLoad(family: string): Promise<Boolean> {
+function waitForFontLoad(family: string): Promise<boolean> {
 	return new Promise((resolve) => {
 		let limitcounter = 0
 		let hasLoadedFont = systemFontChecker(family)
-		let interval = setInterval(() => {
+		const interval = setInterval(() => {
 			if (hasLoadedFont || limitcounter === 100) {
 				clearInterval(interval)
 				return resolve(true)

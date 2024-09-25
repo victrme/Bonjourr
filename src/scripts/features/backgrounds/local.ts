@@ -113,8 +113,8 @@ async function updateLocalBackgrounds(event: UpdateLocal) {
 async function addNewImage(filelist: FileList) {
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 	let { ids, selected } = await localImages.get()
-	let blobs: { [key: string]: Blobs } = {}
-	let newIds: string[] = []
+	const blobs: { [key: string]: Blobs } = {}
+	const newIds: string[] = []
 
 	localIsLoading = true
 
@@ -147,7 +147,7 @@ async function addNewImage(filelist: FileList) {
 	selectThumbnail(selected)
 }
 
-async function refreshCustom(button: HTMLSpanElement) {
+function refreshCustom(button: HTMLSpanElement) {
 	localImages.update({ last: 0 })
 	turnRefreshButton(button, true)
 	setTimeout(() => localBackgrounds(), 100)

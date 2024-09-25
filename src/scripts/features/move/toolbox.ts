@@ -73,10 +73,10 @@ export function toolboxEvents() {
 	}
 
 	function moverDrag(event: MouseEvent | TouchEvent) {
-		let pos = (event as TouchEvent).touches ? (event as TouchEvent).touches[0] : (event as MouseEvent)
+		const pos = (event as TouchEvent).touches ? (event as TouchEvent).touches[0] : (event as MouseEvent)
 
-		let x = pos.clientX
-		let y = pos.clientY
+		const x = pos.clientX
+		const y = pos.clientY
 
 		// Set first position to calc offset
 		if (firstPos.x === 0 && firstPos.y === 0) {
@@ -172,8 +172,8 @@ export function spanButtons(id: Widgets) {
 	}
 
 	const [posCol, posRow] = gridFind(grid, id)[0]
-	let col = grid.map((g) => g[posCol])
-	let row = [...grid[posRow]]
+	const col = grid.map((g) => g[posCol])
+	const row = [...grid[posRow]]
 
 	const hasColumnDuplicates = hasDuplicateInArray(col, id)
 	const hasRowDuplicates = hasDuplicateInArray(row, id)

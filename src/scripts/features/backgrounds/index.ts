@@ -38,7 +38,7 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 //
 
 export function imgBackground(url: string, color?: string) {
-	let img = new Image()
+	const img = new Image()
 
 	// Set the crossOrigin attribute to handle CORS when average color needed
 	if (!color) img.crossOrigin = 'Anonymous'
@@ -100,13 +100,13 @@ export function updateBackgroundOption({ freq, refresh }: UpdateOptions) {
 export function getAverageColor(img: HTMLImageElement) {
 	try {
 		// Create a canvas element
-		let canvas = document.createElement('canvas')
-		let ctx = canvas.getContext('2d')
+		const canvas = document.createElement('canvas')
+		const ctx = canvas.getContext('2d')
 
 		const MAX_DIMENSION = 100 // resizing the image for better performance
 
 		// Calculate the scaling factor to maintain aspect ratio
-		let scale = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height)
+		const scale = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height)
 
 		// Set canvas dimensions to the scaled image dimensions
 		canvas.width = img.width * scale
@@ -116,8 +116,8 @@ export function getAverageColor(img: HTMLImageElement) {
 		ctx?.drawImage(img, 0, 0, canvas.width, canvas.height)
 
 		// Get the image data from the canvas
-		let imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height)
-		let data = imageData?.data
+		const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height)
+		const data = imageData?.data
 
 		let r = 0,
 			g = 0,
@@ -147,10 +147,10 @@ export function getAverageColor(img: HTMLImageElement) {
 	}
 }
 
-function backgroundFreq() {
-	//
-}
+// function backgroundFreq() {
+// 	//
+// }
 
-function refreshBackground() {
-	//
-}
+// function refreshBackground() {
+// 	//
+// }

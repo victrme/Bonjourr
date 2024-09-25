@@ -97,7 +97,7 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (update.background || update.border) {
-		const option = !!update.background ? 'background' : 'border'
+		const option = update.background ? 'background' : 'border'
 
 		analogstyle[option] = hexColorFromSplitRange(`#analog-${option}-range`)
 		analogStyle(analogstyle)
@@ -309,7 +309,7 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat) {
 	const bb = wrapper.querySelector('.clock-date-bb') as HTMLElement
 	const cc = wrapper.querySelector('.clock-date-cc') as HTMLElement
 
-	let lang = getLang().replaceAll('_', '-')
+	const lang = getLang().replaceAll('_', '-')
 
 	const day = new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(date)
 	const month = new Intl.DateTimeFormat(lang, { month: 'long' }).format(date)

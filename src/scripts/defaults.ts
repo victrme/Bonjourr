@@ -6,8 +6,8 @@ export const MAIN_API = 'https://api.bonjourr.fr'
 
 export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
 
-//@ts-expect-error
-export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV // defined by esbuild during build step
+//@ts-expect-error -> "ENV" is defined by esbuild during build step
+export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV
 
 export const SYSTEM_OS =
 	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||

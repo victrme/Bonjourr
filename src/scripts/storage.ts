@@ -58,7 +58,7 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 		const json = await (await fetch('config.json')).json()
 		return verifyDataAsSync(json)
 	} catch (error) {
-		//@ts-expect-error
+		//@ts-expect-error -> error.stack always gives error lol
 		console.log(error.stack)
 	}
 
@@ -204,15 +204,15 @@ function webext(): Storage {
 		// This waits for chrome.storage to be stored in a global variable
 		// that is created in file `webext-storage.js`
 
-		//@ts-expect-error
-		const store: AllStorage = window.startupStorage
+		//@ts-expect-error -> exists in webext-storage.js
+		const store: AllStorage = globalThis.startupStorage
 		const isReady = (): boolean => 'sync' in store && 'local' in store
 
 		if (!isReady()) {
 			await new Promise((resolve) => {
 				document.addEventListener('webextstorage', function (event: CustomEventInit) {
-					if (event.detail === 'sync') store.sync = (window.startupStorage as any).sync
-					if (event.detail === 'local') store.local = (window.startupStorage as any).local
+					if (event.detail === 'sync') store.sync = (window.startupStorage as AllStorage).sync
+					if (event.detail === 'local') store.local = (window.startupStorage as AllStorage).local
 					if (isReady()) resolve(true)
 				})
 			})

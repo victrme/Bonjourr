@@ -60,7 +60,7 @@ export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 }
 
 async function updatesWeather(update: WeatherUpdate) {
-	let { weather, hide } = await storage.sync.get(['weather', 'hide'])
+	const { weather, hide } = await storage.sync.get(['weather', 'hide'])
 	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
 	if (!weather || !hide) {
@@ -102,7 +102,7 @@ async function updatesWeather(update: WeatherUpdate) {
 	if (update.city) {
 		const i_city = document.getElementById('i_city') as HTMLInputElement
 		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-		let ccode = i_ccode.value
+		const ccode = i_ccode.value
 		let city = i_city.value
 
 		if (!navigator.onLine) {
@@ -252,8 +252,8 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 
 	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
 	let coords = await getGeolocation(data.geolocation)
-	let lang = getLang()
 	let queries = '?provider=accuweather'
+	const lang = getLang()
 
 	queries += '&units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + lang
@@ -481,18 +481,18 @@ function isGeolocation(str = ''): str is Weather.Geolocation {
 	return geol.includes(str as Weather.Geolocation)
 }
 
-const openWeatherMapConditions: Record<Weather.Conditions, number[]> = {
-	clearsky: [800],
-	fewclouds: [801],
-	brokenclouds: [802],
-	overcastclouds: [803, 804],
-	sunnyrain: [500, 501, 502, 503],
-	lightrain: [300, 301, 302, 310],
-	rain: [312, 313, 314, 321, 504, 520, 521, 522],
-	thunderstorm: [200, 201, 202, 210, 211, 212, 221, 230, 231, 232],
-	snow: [511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622],
-	mist: [701, 711, 721, 731, 741, 751, 761, 762, 771, 781],
-}
+// const openWeatherMapConditions: Record<Weather.Conditions, number[]> = {
+// 	clearsky: [800],
+// 	fewclouds: [801],
+// 	brokenclouds: [802],
+// 	overcastclouds: [803, 804],
+// 	sunnyrain: [500, 501, 502, 503],
+// 	lightrain: [300, 301, 302, 310],
+// 	rain: [312, 313, 314, 321, 504, 520, 521, 522],
+// 	thunderstorm: [200, 201, 202, 210, 211, 212, 221, 230, 231, 232],
+// 	snow: [511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622],
+// 	mist: [701, 711, 721, 731, 741, 751, 761, 762, 771, 781],
+// }
 
 const accuweatherConditions: Record<Weather.Conditions, number[]> = {
 	clearsky: [1, 2, 33, 34],

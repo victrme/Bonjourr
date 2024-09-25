@@ -65,8 +65,8 @@ function gridValidate(grid: Grid): boolean {
 
 export function gridParse(area = ''): Grid {
 	const stringToGrid = (split: string): string[][] => {
-		let rows = area.split(split).filter((a) => a.length > 1)
-		let grid = rows.map((r) => r.split(' '))
+		const rows = area.split(split).filter((a) => a.length > 1)
+		const grid = rows.map((r) => r.split(' '))
 		return grid
 	}
 
@@ -128,7 +128,7 @@ function getSpanDirection(grid: Grid, id: string): 'none' | 'columns' | 'rows' {
 export function isRowEmpty(grid: Grid, index: number) {
 	if (grid[index] === undefined) return false
 
-	let row = grid[index]
+	const row = grid[index]
 	let empty = true
 
 	row.forEach((cell) => {
@@ -142,8 +142,8 @@ export function isRowEmpty(grid: Grid, index: number) {
 
 export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
 	function addSpans(arr: string[]) {
-		let target = arr.indexOf(id)
-		let stopper = [false, false]
+		const target = arr.indexOf(id)
+		const stopper = [false, false]
 
 		function replaceWithId(a: string[], i: number, lim: number) {
 			// not stopping and elem exit
@@ -207,7 +207,7 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 export function getWidgetsStorage(data: Sync.Storage): Widgets[] {
 	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
 	// Time & main in first place ensures grid size is enough to add quotes & links
-	let displayed = {
+	const displayed = {
 		time: data.time,
 		main: data.main,
 		notes: !!data.notes?.on,

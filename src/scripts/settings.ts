@@ -187,7 +187,7 @@ function initOptionsValues(data: Sync.Storage) {
 	// inserts languages in select
 	const i_lang = paramId('i_lang')
 	Object.entries(langList).forEach(([code, title]) => {
-		let option = document.createElement('option')
+		const option = document.createElement('option')
 		option.value = code
 		option.text = title
 		i_lang.appendChild(option)
@@ -222,8 +222,8 @@ function initOptionsValues(data: Sync.Storage) {
 	// Time & main hide elems
 	;(function initHideInputs() {
 		const { clock, date, weatherdesc, weathericon } = data.hide || {}
-		let time = !clock && !date ? 'all' : clock ? 'clock' : 'date'
-		let weather = weatherdesc && weathericon ? 'disabled' : weatherdesc ? 'desc' : weathericon ? 'icon' : 'all'
+		const time = !clock && !date ? 'all' : clock ? 'clock' : 'date'
+		const weather = weatherdesc && weathericon ? 'disabled' : weatherdesc ? 'desc' : weathericon ? 'icon' : 'all'
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
 	})()
@@ -251,7 +251,7 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// Add massive timezones to <select>
 
-	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select, i) => {
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select) => {
 		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
 		const optgroups = template.querySelectorAll('optgroup')
 
@@ -517,8 +517,8 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement) {
-		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
-		let weathericon = this.value === 'disabled' || this.value === 'icon'
+		const weatherdesc = this.value === 'disabled' || this.value === 'desc'
+		const weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElements({ weatherdesc, weathericon }, { isEvent: true })
 		weather(undefined, { unhide: true })
 	})
@@ -1016,7 +1016,7 @@ function loadImportFile(target: HTMLInputElement) {
 			try {
 				// If base64 failed, parse raw string
 				result = parse<Partial<Sync.Storage>>(str) ?? {}
-			} catch (error) {
+			} catch (_) {
 				// If all failed, return empty object
 				result = {}
 			}
@@ -1130,7 +1130,9 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 
 		try {
 			user = orderedStringify(JSON.parse(textarea.value ?? '{}') as Sync.Storage)
-		} catch (_) {}
+		} catch (_) {
+			//
+		}
 
 		hasChanges = user.length > 2 && current !== user
 	}

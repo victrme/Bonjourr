@@ -1,0 +1,13 @@
+type SearchEngines =
+	| 'default'
+	| 'google'
+	| 'ddg'
+	| 'startpage'
+	| 'qwant'
+	| 'yahoo'
+	| 'bing'
+	| 'brave'
+	| 'ecosia'
+	| 'lilo'
+	| 'baidu'
+	| 'custom'
