@@ -230,13 +230,14 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 
 			if (isNextHour || firstStart) {
 				clockDate(domclock, date, dateformat)
-				greetings(date, greeting)
 			}
 
 			if (domregion) {
 				domregion.textContent = region
 			}
 		}
+
+		greetings(zonedDate(clock.timezone), greeting)
 	}
 }
 
