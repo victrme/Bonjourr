@@ -265,9 +265,13 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 	const mm = wrapper.querySelector('.digital-mm') as HTMLElement
 	const ss = wrapper.querySelector('.digital-ss') as HTMLElement
 
+	const am = date.getHours() < 13
 	const m = fixunits(date.getMinutes())
 	const s = fixunits(date.getSeconds())
 	let h = clock.ampm ? date.getHours() % 12 : date.getHours()
+
+	domclock?.classList.toggle('am', clock.ampm && am)
+	domclock?.classList.toggle('pm', clock.ampm && !am)
 
 	if (clock.ampm && h === 0) {
 		h = 12

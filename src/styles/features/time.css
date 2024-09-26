@@ -71,6 +71,23 @@
 	opacity: 0;
 }
 
+.digital-am-pm {
+	position: absolute;
+	left: -1.5em;
+	font-size: 0.5em;
+	line-height: 0.8em;
+	margin-top: 0.2em;
+}
+
+.digital-am-pm span {
+	display: block;
+}
+
+.pm .digital-am,
+.am .digital-pm {
+	display: none;
+}
+
 #time.seconds .digital-ss {
 	display: inline-block;
 	width: var(--seconds-width);
