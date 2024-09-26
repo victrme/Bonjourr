@@ -71,21 +71,27 @@
 	opacity: 0;
 }
 
-.digital-am-pm {
-	position: absolute;
-	left: -1.5em;
-	font-size: 0.5em;
+.digital-ampm {
+	margin: 0.2em;
+	font-size: 0.4em;
 	line-height: 0.8em;
-	margin-top: 0.2em;
+	vertical-align: top;
 }
 
-.digital-am-pm span {
-	display: block;
-}
-
-.pm .digital-am,
-.am .digital-pm {
+.digital-ampm,
+.digital-am,
+.digital-pm {
 	display: none;
+}
+
+[data-ampm] .digital-ampm,
+[data-ampm='am'] .digital-am,
+[data-ampm='pm'] .digital-pm {
+	display: inline-block;
+}
+
+[data-ampm] {
+	margin-inline-end: 0.5em;
 }
 
 #time.seconds .digital-ss {

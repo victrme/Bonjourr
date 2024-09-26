@@ -265,13 +265,16 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 	const mm = wrapper.querySelector('.digital-mm') as HTMLElement
 	const ss = wrapper.querySelector('.digital-ss') as HTMLElement
 
-	const am = date.getHours() < 13
 	const m = fixunits(date.getMinutes())
 	const s = fixunits(date.getSeconds())
 	let h = clock.ampm ? date.getHours() % 12 : date.getHours()
 
-	domclock?.classList.toggle('am', clock.ampm && am)
-	domclock?.classList.toggle('pm', clock.ampm && !am)
+	if (!domclock) {
+		return
+	}
+
+	if (!clock.ampm) delete domclock.dataset.ampm
+	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 13 ? 'am' : 'pm'
 
 	if (clock.ampm && h === 0) {
 		h = 12
@@ -281,10 +284,10 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 		// Avoid layout shifts by rounding width
 		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
 		const width = getSecondsWidthInCh(second).toFixed(1)
-		domclock?.style.setProperty('--seconds-width', `${width}ch`)
+		domclock.style.setProperty('--seconds-width', `${width}ch`)
 	}
 
-	domclock?.classList.toggle('zero', !clock.ampm && h < 10)
+	domclock.classList.toggle('zero', !clock.ampm && h < 10)
 
 	hh.textContent = h.toString()
 	mm.textContent = m.toString()
