@@ -72,6 +72,7 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (isDateFormat(update.dateformat)) {
+		data.dateformat = update.dateformat
 		storage.sync.set({ dateformat: update.dateformat })
 	}
 
@@ -134,6 +135,7 @@ async function clockUpdate(update: ClockUpdate) {
 		clock: data.clock,
 		worldclocks: data.worldclocks,
 		analogstyle: analogstyle,
+		dateformat: data.dateformat,
 	})
 
 	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat)
