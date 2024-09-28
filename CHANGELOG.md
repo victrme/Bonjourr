@@ -1,3 +1,21 @@
+## 20.1.0
+
+-   Added:
+    -   Added AM/PM on 12h digital clock option
+    -   Added Brave search suggestions (#447)
+    -   Can load a "config.json" file on startup (#172, #422)
+-   Fixes:
+    -   Displays hidden links added before version 1.18
+    -   Working "Open in new tab" option (#433)
+    -   Blank page with old Spanish configs (#432)
+    -   Inverted date format option (#455)
+    -   Renaming folder no longer adds empty links
+    -   Greetings follows main timezone option
+    -   Reduced folder padding on mobile
+-   Translations:
+    -   Portugese update by @Blackspirits
+    -   Armenian update by Hrant Hakobian
+
 ## 20.0.0
 
 -   iOS & iPadOS:
