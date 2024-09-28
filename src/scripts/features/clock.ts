@@ -34,8 +34,8 @@ const defaultAnalogStyle: Sync.AnalogStyle = {
 	background: '#fff2',
 }
 
-const defaultTimezones = ['Europe/Paris', 'America/New_York', 'Asia/Tokyo']
-const defaultRegions = ['Paris', 'New York', 'Tokyo']
+const defaultTimezones = ['Europe/Paris', 'America/New_York', 'Asia/Tokyo', 'Europe/Lisbon', 'America/Los_Angeles']
+const defaultRegions = ['Paris', 'New York', 'Tokyo', 'Lisbon', 'Los Angeles']
 const oneInFive = Math.random() > 0.8 ? 1 : 0
 let numberWidths = [1]
 let clockInterval: number
