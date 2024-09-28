@@ -24,6 +24,13 @@ type AddLinks = {
 	group?: string
 }[]
 
+type UpdateLink = {
+	id: string
+	url?: string
+	icon?: string
+	title: string
+}
+
 type AddGroups = {
 	title: string
 	sync?: boolean
@@ -60,6 +67,7 @@ type LinksUpdate = {
 	addLinks?: AddLinks
 	addGroups?: AddGroups
 	addFolder?: { ids: string[]; group?: string }
+	updateLink?: UpdateLink
 	moveLinks?: string[]
 	moveGroups?: string[]
 	moveToFolder?: MoveToFolder
@@ -365,6 +373,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.moveToGroup) data = moveToGroup(update.moveToGroup, data)
 	if (update.moveToFolder) data = moveToFolder(update.moveToFolder, data)
 	if (update.moveOutFolder) data = moveOutFolder(update.moveOutFolder, data)
+	if (update.updateLink) data = updateLink(update.updateLink, data)
 	if (update.deleteLinks) data = deleteLinks(update.deleteLinks, data)
 	if (update.groupTitle) data = changeGroupTitle(update.groupTitle, data)
 	if (update.deleteGroup !== undefined) data = deleteGroup(update.deleteGroup, data)
@@ -461,6 +470,40 @@ function addLinkFolder(ids: string[], title?: string, group?: string): Links.Fol
 			title: title,
 		},
 	]
+}
+
+function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
+	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
+	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
+	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
+	const link = data[id] as Links.Link
+
+	if (titledom && title !== undefined) {
+		link.title = stringMaxSize(title, 64)
+		titledom.textContent = link.title
+	}
+
+	if (!link.folder) {
+		if (icondom) {
+			const url = icon ? stringMaxSize(icon, 7500) : undefined ?? getDefaultIcon(link.url)
+			const img = document.createElement('img')
+
+			link.icon = url ? url : undefined
+
+			icondom.src = 'src/assets/interface/loading.svg'
+			img.onload = () => (icondom!.src = url)
+			img.src = url
+		}
+
+		if (titledom && urldom && url !== undefined) {
+			link.url = stringMaxSize(url, 512)
+			urldom.href = link.url
+			titledom.textContent = createTitle(link)
+		}
+	}
+
+	data[id] = link
+	return data
 }
 
 function moveToFolder({ target, source, group }: MoveToFolder, data: Sync): Sync {
