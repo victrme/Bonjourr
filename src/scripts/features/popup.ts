@@ -13,8 +13,8 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.1.0'
-const ANNOUNCEMENT_VERSION = '20.1.0'
+const ANNOUNCEMENT_URL = ''
+const ANNOUNCEMENT_VERSION = ''
 
 const ANNOUNCEMENT_TRNS = {
 	en: '<b>Version 20 fixes:</b> No more hidden links, open in new tab unstuck, and some Safari changes',
