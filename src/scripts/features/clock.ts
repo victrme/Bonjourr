@@ -9,6 +9,7 @@ import storage from '../storage'
 
 type ClockUpdate = {
 	ampm?: boolean
+	ampmlabel?: boolean
 	analog?: boolean
 	seconds?: boolean
 	dateformat?: string
@@ -128,6 +129,7 @@ async function clockUpdate(update: ClockUpdate) {
 		analog: update.analog ?? data.clock.analog,
 		seconds: update.seconds ?? data.clock.seconds,
 		timezone: update.timezone ?? data.clock.timezone,
+		ampmlabel: update.ampmlabel ?? data.clock.ampmlabel,
 		worldclocks: update.worldclocks ?? data.clock.worldclocks,
 	}
 
@@ -275,8 +277,11 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 		return
 	}
 
-	if (!clock.ampm) delete domclock.dataset.ampm
+	if (clock.ampmlabel) domclock.dataset.ampmLabel = ''
+	else delete domclock.dataset.ampmLabel
+
 	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 13 ? 'am' : 'pm'
+	else delete domclock.dataset.ampm
 
 	if (clock.ampm && h === 0) {
 		h = 12

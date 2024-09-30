@@ -84,13 +84,13 @@
 	display: none;
 }
 
-[data-ampm] .digital-ampm,
-[data-ampm='am'] .digital-am,
-[data-ampm='pm'] .digital-pm {
+[data-ampm-label][data-ampm] .digital-ampm,
+[data-ampm-label][data-ampm='am'] .digital-am,
+[data-ampm-label][data-ampm='pm'] .digital-pm {
 	display: inline-block;
 }
 
-[data-ampm] {
+[data-ampm-label][data-ampm] {
 	margin-inline-end: 0.5em;
 }
 

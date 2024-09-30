@@ -165,6 +165,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
+	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
@@ -200,6 +201,7 @@ function initOptionsValues(data: Sync.Storage) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
 	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
@@ -462,6 +464,10 @@ function initOptionsEvents() {
 
 	paramId('i_ampm').onclickdown(function (_, target) {
 		clock(undefined, { ampm: target.checked })
+	})
+
+	paramId('i_ampm-label').onclickdown(function (_, target) {
+		clock(undefined, { ampmlabel: target.checked })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
