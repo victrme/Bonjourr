@@ -28,11 +28,10 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	current = analogClockOptions(current) // 20.0
 	current = linkTabsToGroups(current, target) // ..
 	current = convertOldCSSSelectors(current) // ..
-	current = linkParentsToString(current) // ..
 	current = toISOLanguageCode(current) // ..
-	current = removeGroupDuplicate(current) // ..
+	current = validateLinkGroups(current) // ..
 	current = removeWorldClocksDuplicate(current, target) // ..
-	current = renameGroupsDefault(current) // 20.1
+	current = validateLinkGroups(current) // 20.1
 
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
@@ -141,7 +140,7 @@ function toISOLanguageCode(data: Sync.Storage): Sync.Storage {
 }
 
 function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage {
-	if (imported.linktabs) {
+	if (imported.linktabs && !imported.linkgroups) {
 		current.linkgroups = {
 			on: imported.linktabs.active,
 			selected: imported.linktabs.titles[imported.linktabs.selected],
@@ -162,58 +161,51 @@ function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync
 	return current
 }
 
-function removeGroupDuplicate(current: Sync.Storage): Sync.Storage {
+function validateLinkGroups(current: Sync.Storage): Sync.Storage {
 	if (current.linkgroups) {
-		current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
-		current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
-		current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
-	}
-
-	return current
-}
-
-function renameGroupsDefault(current: Sync.Storage): Sync.Storage {
-	if (current.linkgroups) {
+		const links = bundleLinks(current)
+		const linkparents = [...new Set(links.map((link) => link.parent))]
+		const parentGroups = linkparents.filter((p) => !p?.toString().startsWith('links'))
 		const { groups, pinned, synced, selected } = current.linkgroups
+
+		// Force enable if multiple groups are hidden
+		if (parentGroups.length > 1) {
+			current.linkgroups.on = true
+		}
+
+		// Add all groups found in links
+		for (const group of parentGroups) {
+			if (group) {
+				current.linkgroups.groups.push(group.toString())
+			}
+		}
+
+		// Transform default from old "" to new "default"
 		current.linkgroups.selected = selected === '' ? 'default' : selected
 		current.linkgroups.groups = groups.map((val) => (val === '' ? 'default' : val))
 		current.linkgroups.pinned = pinned.map((val) => (val === '' ? 'default' : val))
 		current.linkgroups.synced = synced.map((val) => (val === '' ? 'default' : val))
-	}
 
-	const links = bundleLinks(current)
-
-	for (const link of links) {
-		if (link?.parent === '') {
-			link.parent = 'default'
+		for (const link of links) {
+			if (link?.parent === '') {
+				link.parent = 'default'
+				current[link._id] = link
+			}
 		}
 
-		current[link._id] = link
+		// Remove duplicate groups
+		current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
+		current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
+		current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
+
+		// Unselect "default" if empty & groups exists
+		if (groups.length > 1 && parentGroups.includes('default') === false) {
+			const nodefault = current.linkgroups.groups.filter((group) => group !== 'default')
+			current.linkgroups.selected = nodefault[0]
+		}
 	}
 
 	return current
-}
-
-function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Data {
-	const links = bundleLinks(data as Sync.Storage)
-	const groups = data?.linkgroups?.groups ?? ['default']
-
-	for (const link of links) {
-		if (typeof link.parent === 'string') {
-			continue
-		}
-
-		if (link.parent === undefined) {
-			link.parent = groups[0]
-		} else {
-			link.parent = groups[link.parent]
-		}
-
-		data[link._id] = link
-		console.log(link.parent)
-	}
-
-	return data
 }
 
 function linksDataMigration(data: Import): Import {
