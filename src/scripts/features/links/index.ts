@@ -271,11 +271,7 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	}
 
 	if (openInNewtab) {
-		if (BROWSER === 'safari') {
-			anchor.onclick = handleSafariNewtab
-		} else {
-			anchor.target = '_blank'
-		}
+		anchor.target = '_blank'
 	}
 
 	return li
@@ -612,18 +608,10 @@ function setOpenInNewTab(newtab: boolean, data: Sync.Storage): Sync.Storage {
 	const anchors = document.querySelectorAll<HTMLAnchorElement>('.link a')
 
 	for (const anchor of anchors) {
-		if (BROWSER === 'safari') {
-			if (newtab) {
-				anchor.addEventListener('click', handleSafariNewtab)
-			} else {
-				anchor.removeEventListener('click', handleSafariNewtab)
-			}
+		if (newtab) {
+			anchor.setAttribute('target', '_blank')
 		} else {
-			if (newtab) {
-				anchor.setAttribute('target', '_blank')
-			} else {
-				anchor.removeAttribute('target')
-			}
+			anchor.removeAttribute('target')
 		}
 	}
 
@@ -680,12 +668,6 @@ function setRows(row: string) {
 	const val = parseInt(row ?? '6')
 	initRows(val, style)
 	eventDebounce({ linksrow: row })
-}
-
-function handleSafariNewtab(e: Event) {
-	const anchor = e.composedPath().filter((el) => (el as Element).tagName === 'A')[0]
-	window.open((anchor as HTMLAnchorElement)?.href)
-	e.preventDefault()
 }
 
 // Helpers
