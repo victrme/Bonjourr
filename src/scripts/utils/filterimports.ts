@@ -26,10 +26,8 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	// Lastest version transform
 
 	current = analogClockOptions(current) // 20.0
-	current = linkTabsToGroups(current, target) // ..
 	current = convertOldCSSSelectors(current) // ..
 	current = toISOLanguageCode(current) // ..
-	current = validateLinkGroups(current) // ..
 	current = removeWorldClocksDuplicate(current, target) // ..
 	current = validateLinkGroups(current) // 20.1
 
@@ -139,20 +137,6 @@ function toISOLanguageCode(data: Sync.Storage): Sync.Storage {
 	return data
 }
 
-function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage {
-	if (imported.linktabs && !imported.linkgroups) {
-		current.linkgroups = {
-			on: imported.linktabs.active,
-			selected: imported.linktabs.titles[imported.linktabs.selected],
-			groups: [...imported.linktabs.titles],
-			synced: [],
-			pinned: [],
-		}
-	}
-
-	return current
-}
-
 function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync.Storage {
 	if (target.worldclocks && current.worldclocks) {
 		current.worldclocks = target.worldclocks
@@ -162,47 +146,77 @@ function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync
 }
 
 function validateLinkGroups(current: Sync.Storage): Sync.Storage {
-	if (current.linkgroups) {
-		const links = bundleLinks(current)
-		const linkparents = [...new Set(links.map((link) => link.parent))]
-		const parentGroups = linkparents.filter((p) => !p?.toString().startsWith('links'))
-		const { groups, pinned, synced, selected } = current.linkgroups
+	// (1)
+	let links = bundleLinks(current)
+	let parents = [...new Set(links.map((link) => link.parent))]
+	let parentGroups = parents.filter((p) => !p?.toString().startsWith('links'))
+	const oldNumberParents = parents.filter((parent) => typeof parent === 'number')
 
-		// Force enable if multiple groups are hidden
-		if (parentGroups.length > 1) {
-			current.linkgroups.on = true
+	if (current.linktabs && oldNumberParents.length > 0) {
+		current.linkgroups = {
+			on: current.linktabs.active,
+			selected: current.linktabs.titles[current.linktabs.selected],
+			groups: [...current.linktabs.titles],
+			synced: [],
+			pinned: [],
 		}
-
-		// Add all groups found in links
-		for (const group of parentGroups) {
-			if (group) {
-				current.linkgroups.groups.push(group.toString())
-			}
-		}
-
-		// Transform default from old "" to new "default"
-		current.linkgroups.selected = selected === '' ? 'default' : selected
-		current.linkgroups.groups = groups.map((val) => (val === '' ? 'default' : val))
-		current.linkgroups.pinned = pinned.map((val) => (val === '' ? 'default' : val))
-		current.linkgroups.synced = synced.map((val) => (val === '' ? 'default' : val))
 
 		for (const link of links) {
-			if (link?.parent === '') {
-				link.parent = 'default'
-				current[link._id] = link
+			if (typeof link?.parent === 'number') {
+				link.parent = current.linkgroups.groups[link.parent]
 			}
-		}
 
-		// Remove duplicate groups
-		current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
-		current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
-		current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
-
-		// Unselect "default" if empty & groups exists
-		if (groups.length > 1 && parentGroups.includes('default') === false) {
-			const nodefault = current.linkgroups.groups.filter((group) => group !== 'default')
-			current.linkgroups.selected = nodefault[0]
+			current[link._id] = link
 		}
+	}
+
+	const { groups, pinned, synced, selected } = current.linkgroups
+
+	// Transform default from old "" or undefined to new "default"
+	current.linkgroups.selected = !selected ? 'default' : selected
+	current.linkgroups.groups = groups.map((val) => (!val ? 'default' : val))
+	current.linkgroups.pinned = pinned.map((val) => (!val ? 'default' : val))
+	current.linkgroups.synced = synced.map((val) => (!val ? 'default' : val))
+
+	for (const link of links) {
+		if (!link?.parent) {
+			link.parent = 'default'
+			current[link._id] = link
+		}
+	}
+
+	// (2)
+	links = bundleLinks(current)
+	parents = [...new Set(links.map((link) => link.parent))]
+	parentGroups = parents.filter((p) => !p?.toString().startsWith('links'))
+
+	// Add all groups found in links
+	for (const group of parentGroups) {
+		if (group) {
+			current.linkgroups.groups.push(group.toString())
+		}
+	}
+
+	// Remove duplicate groups
+	current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
+	current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
+	current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
+
+	// Force enable if multiple groups are hidden
+	if (current.linkgroups.groups.length > 1) {
+		current.linkgroups.on = true
+	}
+
+	// Unselect "default" if empty & groups/links exists
+	const parentNoDefault = current.linkgroups.groups.filter((group) => group !== 'default')
+	const defaultExists = current.linkgroups.groups.includes('default')
+	const defaultIsEmpty = parentGroups.includes('default') === false
+	const hasUserGroups = parentNoDefault.length > 0
+	const hasLinks = links.length > 0
+
+	if (defaultExists && defaultIsEmpty && hasUserGroups && hasLinks) {
+		current.linkgroups.groups = parentNoDefault
+		current.linkgroups.selected = parentNoDefault[0]
 	}
 
 	return current
@@ -254,6 +268,8 @@ function improvedWeather(data: Import): Import {
 		delete data.weather.lastState
 		//@ts-expect-error -> old types
 		delete data.weather.lastCall
+
+		delete data.weather.location
 	}
 
 	return data

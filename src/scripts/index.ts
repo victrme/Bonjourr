@@ -50,6 +50,11 @@ async function startup() {
 		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
+
+		// <!> do not move
+		// <!> must delete old keys before upgrading storage
+		await storage.sync.clear()
+
 		storage.sync.set(sync)
 	}
 

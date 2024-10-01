@@ -15,7 +15,7 @@ type Storage = {
 		get: (key?: string | string[]) => Promise<Sync.Storage>
 		set: (val: Keyval) => void
 		remove: (key: string) => void
-		clear: () => void
+		clear: () => Promise<void>
 	}
 	local: {
 		get: (key: string | string[]) => Promise<Local.Storage>
@@ -92,7 +92,7 @@ function online(): Storage {
 			localStorage.bonjourr = JSON.stringify(data ?? {})
 		},
 
-		clear: () => {
+		clear: async () => {
 			localStorage.removeItem('bonjourr')
 		},
 	}
@@ -177,8 +177,8 @@ function webext(): Storage {
 			chrome.storage.sync.remove(key)
 		},
 
-		clear: () => {
-			chrome.storage.sync.clear()
+		clear: async () => {
+			await chrome.storage.sync.clear()
 		},
 	}
 
@@ -188,7 +188,8 @@ function webext(): Storage {
 		},
 
 		get: async (key: string | string[]) => {
-			return (await chrome.storage.local.get(key ?? null)) as Local.Storage
+			const local = await chrome.storage.local.get(key ?? null)
+			return local as Local.Storage
 		},
 
 		remove: (key: string) => {
