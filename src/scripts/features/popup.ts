@@ -13,11 +13,11 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = ''
-const ANNOUNCEMENT_VERSION = ''
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.1.2'
+const ANNOUNCEMENT_VERSION = '20.1.2'
 
 const ANNOUNCEMENT_TRNS = {
-	en: '<b>Version 20 fixes:</b> No more hidden links, open in new tab unstuck, and some Safari changes',
+	en: '<b>Version 20 fixes (bis):</b> All links are now working as normal !',
 	// fr: '<b>Bonjourr vient de recevoir une mise à jour majeure ! ✨</b> Découvrez les nouvelles fonctionnalités de liens rapides, des horloges analogiques élégantes et bien plus encore. ',
 	// de: '<b>Bonjourr hat ein großes Update erhalten! ✨</b> Entdecken Sie die neuen Schnellverknüpfungsfunktionen, stilvolle Analoguhren und vieles mehr. ',
 	// it: '<b>Bonjourr ha appena ricevuto un grande aggiornamento! ✨</b> Scopri le nuove funzionalità di collegamenti rapidi, eleganti orologi analogici e molto altro. ',
