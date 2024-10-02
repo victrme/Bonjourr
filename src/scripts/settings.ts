@@ -9,6 +9,7 @@ import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
+import { githubGistSync } from './features/synchronization'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
@@ -691,6 +692,11 @@ function initOptionsEvents() {
 	})
 
 	// Settings managment
+
+	paramId('f_github-sync').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		githubGistSync(paramId('i_github-sync').value)
+	})
 
 	paramId('settings-managment').addEventListener('dragenter', function () {
 		paramId('settings-managment').classList.add('dragging-file')

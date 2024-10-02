@@ -1419,6 +1419,60 @@
 	<input id="file-import" type="file" name="file-import" accept="application/json, text/plain" />
 
 	<div class="wrapper">
+		<span>
+			<label for="i_synctype" class="trn">Settings synchronization</label>
+		</span>
+
+		<select id="i_synctype">
+			<option class="trn" value="browser">Browser</option>
+			<option class="trn" value="github">Github Gist</option>
+			<option class="trn" value="url">Distant URL</option>
+			<option class="trn" value="off">Disabled</option>
+		</select>
+	</div>
+
+	<hr />
+
+	<div class="wrapper">
+		<span>
+			<label for="i_syncfreq" class="trn">Sync frequency</label>
+		</span>
+
+		<select id="i_syncfreq">
+			<option class="trn" value="changes">On every changes</option>
+			<option class="trn" value="start">On browser start</option>
+			<option class="trn" value="manual">Manually</option>
+		</select>
+	</div>
+
+	<hr />
+
+	<div class="wrapper" id="github-sync">
+		<span>
+			<span class="trn">Sync with Github</span>
+			<!-- <button class="tooltip tttab" title="Tips on tab appearance" aria-label="Tips on tab appearance">?</button> -->
+		</span>
+
+		<form id="f_github-sync" class="network-form">
+			<input
+				type="text"
+				name="github-sync"
+				id="i_github-sync"
+				maxlength="93"
+				placeholder="github_pat_11AIGSKXA0Ih7kWtCDHwp6"
+				aria-label="Synchronization using Github"
+				autocomplete="github-token"
+			/>
+			<button type="submit" id="b_github-sync">
+				<span>✓</span>
+				<i></i>
+			</button>
+		</form>
+	</div>
+
+	<hr />
+
+	<div class="wrapper">
 		<span class="trn">Settings file</span>
 		<div>
 			<button
