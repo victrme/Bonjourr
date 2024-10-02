@@ -20,7 +20,7 @@ export default {
 	hu: 'Magyar',
 	ro: 'Română',
 	el: 'Ελληνικά',
-	hy: 'հայկ',
+	hy: 'Հայերեն',
 	sr: 'Српски (ћирилица)',
 	'sr-YU': 'Srpski (latinica)',
 	uk: 'Українська',
