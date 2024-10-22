@@ -1322,66 +1322,94 @@
 
 <div class="as as_page dropdown">
 	<div class="settings-title">
-		<h2 class="trn">Page layout</h2>
-
-		<button class="tooltip ttgrid" title="Tips on page grid layout" aria-label="Tips on page grid layout">?</button>
-
-		<p class="tooltiptext dropdown ttgrid">
-			<span class="trn">Customise how and where widgets appear.</span>
-			<span class="trn instructions">Open the toolbox and select a widget to modify on the page.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener">Learn more</a>
-		</p>
+		<h2 class="trn">Move</h2>
 	</div>
 
 	<div class="param">
 		<div class="wrapper">
-			<label for="b_editmove" class="trn">Open layout toolbox</label>
-			<button id="b_editmove" class="param-btn trn">Open</button>
-		</div>
-
-		<div id="grid-layout-wrapper">
-			<hr />
-
-			<div class="wrapper">
-				<span class="trn">Layout columns</span>
-				<div class="wrapper">
-					<div id="grid-layout" class="mover">
-						<button data-layout="single" aria-label="Single column layout" title="Single column layout"></button>
-						<button data-layout="double" aria-label="Double column layout" title="Double column layout">
-							<span></span>
-						</button>
-						<button data-layout="triple" aria-label="Triple column layout" title="Triple column layout">
-							<span></span>
-							<span></span>
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="pagewidth">
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_pagewidth" class="trn">Page width</label>
-				<input
-					id="i_pagewidth"
-					type="range"
-					name="page_width"
-					min="600"
-					max="2200"
-					value="1600"
-					step="100"
-					class="range"
-				/>
-			</div>
+			<label for="b_editmove" class="trn">Unlock widget</label>
+			<button id="b_editmove" class="param-btn trn">Unlock</button>
 		</div>
 
 		<hr />
 
-		<div class="wrapper">
-			<label for="i_pagegap" class="trn">Page gap</label>
-			<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
+		<p>Click on "Unlock" to allow widgets to move, then select a widget.</p>
+
+		<div id="move_options" class="dropdown shown" style="opacity: 0.5; filter: grayscale(1); pointer-events: none">
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Position</span>
+				<div>
+					<button class="param-btn">↑</button>
+					<button class="param-btn">↓</button>
+					<button class="param-btn">←</button>
+					<button class="param-btn">→</button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Box align</span>
+				<div class="wrapper">
+					<button class="param-btn">↑</button>
+					<button class="param-btn">↕</button>
+					<button class="param-btn">↓</button>
+
+					<div>&nbsp;&nbsp;</div>
+
+					<button class="param-btn">←</button>
+					<button class="param-btn">↔</button>
+					<button class="param-btn">→</button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Text align</span>
+				<div>
+					<button class="param-btn">[x..]</button>
+					<button class="param-btn">[.x.]</button>
+					<button class="param-btn">[..x]</button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Fill</span>
+				<div>
+					<button class="param-btn">Fill column</button>
+					<button class="param-btn">Fill row</button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pagegap" class="trn">Gap</label>
+				<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
+			</div>
+
+			<div id="pagewidth">
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_pagewidth" class="trn">Width</label>
+					<input
+						id="i_pagewidth"
+						type="range"
+						name="page_width"
+						min="600"
+						max="2200"
+						value="1600"
+						step="100"
+						class="range"
+					/>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

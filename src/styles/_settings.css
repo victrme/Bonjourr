@@ -447,6 +447,10 @@ aside form.valid button {
 	max-height: 450px;
 }
 
+#move_options.shown {
+	max-height: 540px;
+}
+
 .all .as_visuals {
 	max-height: 220px;
 }
@@ -480,7 +484,7 @@ aside form.valid button {
 }
 
 .all .as_page {
-	max-height: 400px;
+	max-height: 560px;
 }
 
 .all .as_css {
