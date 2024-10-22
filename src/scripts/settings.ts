@@ -263,7 +263,8 @@ function initOptionsValues(data: Sync.Storage) {
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
-		select.value = data?.worldclocks?.[i]?.timezone ?? ['Europe/Paris', 'America/New_York', 'Asia/Tokyo', 'Europe/Lisbon', 'America/Los_Angeles'][i]
+		const zones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
+		select.value = data?.worldclocks?.[i]?.timezone ?? zones[i]
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('input[name="worldclock-city"]').forEach((input, i) => {
