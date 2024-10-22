@@ -1326,20 +1326,28 @@
 	</div>
 
 	<div class="param">
-		<p style="padding: 8px 4px">Click on "Edit" to allow widgets to move, then select a widget on the page.</p>
-
-		<hr />
-
 		<div class="wrapper">
-			<label for="b_editmove" class="trn">Edit widgets</label>
-			<button id="b_editmove" class="param-btn trn">Edit</button>
+			<span style="padding: 8px 4px">Click on "Unlock" to allow widgets to move, then select a widget on the page.</span>
+
+			<button id="b_movetips" class="input-btn">&times;</button>
 		</div>
 
 		<hr />
 
 		<div class="wrapper">
-			<label for="b_detachmove" class="trn">Detach options</label>
-			<button id="b_detachmove" class="param-btn trn">Detach</button>
+			<label for="b_editmove" class="trn">Widgets</label>
+
+			<div>
+				<button id="b_editmove" class="param-btn trn">Unlock</button>
+				<button id="b_reset-pos" class="param-btn btn-red">Reset</button>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="b_detach-move" class="trn">Detach options</label>
+			<button id="b_detach-move" class="param-btn trn">Detach</button>
 		</div>
 
 		<!-- style="opacity: .3; filter: grayscale(1); pointer-events: none" -->
@@ -1499,32 +1507,21 @@
 				<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
 			</div>
 
-			<div id="pagewidth">
-				<hr />
+			<hr />
 
-				<div class="wrapper">
-					<label for="i_pagewidth" class="trn">Minimum width</label>
-					<input
-						id="i_pagewidth"
-						type="range"
-						name="page_width"
-						min="600"
-						max="2200"
-						value="1600"
-						step="100"
-						class="range"
-					/>
-				</div>
+			<div class="wrapper">
+				<label for="i_pagewidth" class="trn">Minimum width</label>
+				<input
+					id="i_pagewidth"
+					type="range"
+					name="page_width"
+					min="600"
+					max="2200"
+					value="1600"
+					step="100"
+					class="range"
+				/>
 			</div>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<label for="b_reset-pos" class="trn">Reset position</label>
-			<button id="b_reset-pos" class="param-btn btn-red">
-				<span class="trn">Reset</span>
-			</button>
 		</div>
 	</div>
 </div>
