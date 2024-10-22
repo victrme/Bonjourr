@@ -1326,53 +1326,159 @@
 	</div>
 
 	<div class="param">
+		<p style="padding: 8px 4px">Click on "Edit" to allow widgets to move, then select a widget on the page.</p>
+
+		<hr />
+
 		<div class="wrapper">
-			<label for="b_editmove" class="trn">Unlock widget</label>
-			<button id="b_editmove" class="param-btn trn">Unlock</button>
+			<label for="b_editmove" class="trn">Edit widgets</label>
+			<button id="b_editmove" class="param-btn trn">Edit</button>
 		</div>
 
 		<hr />
 
-		<p>Click on "Unlock" to allow widgets to move, then select a widget.</p>
+		<div class="wrapper">
+			<label for="b_detachmove" class="trn">Detach options</label>
+			<button id="b_detachmove" class="param-btn trn">Detach</button>
+		</div>
 
-		<div id="move_options" class="dropdown shown" style="opacity: 0.5; filter: grayscale(1); pointer-events: none">
+		<!-- style="opacity: .3; filter: grayscale(1); pointer-events: none" -->
+		<div id="move_options" class="dropdown shown" style="opacity: 0.3; filter: grayscale(1); pointer-events: none">
 			<hr />
 
 			<div class="wrapper">
 				<span class="trn">Position</span>
 				<div>
-					<button class="param-btn">↑</button>
-					<button class="param-btn">↓</button>
-					<button class="param-btn">←</button>
-					<button class="param-btn">→</button>
+					<button class="input-btn">
+						<img src="src/assets/move/arrow-up.svg" alt="" draggable="false" height="22" style="padding-top: 2px" />
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/arrow-down.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/arrow-left.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/arrow-right.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
 				</div>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Box align</span>
-				<div class="wrapper">
-					<button class="param-btn">↑</button>
-					<button class="param-btn">↕</button>
-					<button class="param-btn">↓</button>
+				<span class="trn">Box alignment</span>
+				<div style="display: flex; gap: 4px">
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-top.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-middle.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-bottom.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
 
-					<div>&nbsp;&nbsp;</div>
+					<span>&nbsp;</span>
 
-					<button class="param-btn">←</button>
-					<button class="param-btn">↔</button>
-					<button class="param-btn">→</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-left.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-center.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-right.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
 				</div>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Text align</span>
+				<span class="trn">Text alignment</span>
 				<div>
-					<button class="param-btn">[x..]</button>
-					<button class="param-btn">[.x.]</button>
-					<button class="param-btn">[..x]</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-left.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-center.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-right.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
 				</div>
 			</div>
 
@@ -1389,7 +1495,7 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_pagegap" class="trn">Gap</label>
+				<label for="i_pagegap" class="trn">Box margin</label>
 				<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
 			</div>
 
@@ -1397,7 +1503,7 @@
 				<hr />
 
 				<div class="wrapper">
-					<label for="i_pagewidth" class="trn">Width</label>
+					<label for="i_pagewidth" class="trn">Minimum width</label>
 					<input
 						id="i_pagewidth"
 						type="range"
@@ -1410,6 +1516,15 @@
 					/>
 				</div>
 			</div>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="b_reset-pos" class="trn">Reset position</label>
+			<button id="b_reset-pos" class="param-btn btn-red">
+				<span class="trn">Reset</span>
+			</button>
 		</div>
 	</div>
 </div>

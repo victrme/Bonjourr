@@ -155,4 +155,19 @@ declare namespace Sync {
 		box: string
 		text: string
 	}
+
+	// 21
+
+	type SimpleMove = {
+		grid: string[][]
+		items: Record<Widgets, SimpleMoveWidget>
+	}
+
+	type SimpleMoveWidget = {
+		box_v?: 'top' | 'middle' | 'bottom'
+		box_h?: 'left' | 'center' | 'right'
+		text?: 'left' | 'center' | 'right'
+		gap?: number
+		minwidth?: 'auto' | number
+	}
 }
