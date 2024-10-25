@@ -398,7 +398,7 @@ function handleUserInput(e: Event) {
 		return
 	}
 
-	if (domsuggestions?.childElementCount === 0) {
+	if (domcontainer?.dataset.suggestions === 'true' && domsuggestions?.childElementCount === 0) {
 		initSuggestions()
 	}
 
