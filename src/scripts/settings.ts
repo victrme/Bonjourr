@@ -69,6 +69,8 @@ export async function settingsInit() {
 
 	document.body.appendChild(settingsDom)
 
+	translateAriaLabels()
+	translatePlaceholders()
 	traduction(settingsDom, data.lang)
 	showall(data.showall, false)
 	initOptionsValues(data)
@@ -795,6 +797,15 @@ function translatePlaceholders() {
 	}
 }
 
+function translateAriaLabels() {
+	for (const element of document.querySelectorAll('[title]')) {
+		const title = element.getAttribute('title') ?? ''
+
+		element.setAttribute('title', tradThis(title))
+		element.setAttribute('aria-label', tradThis(title))
+	}
+}
+
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
@@ -821,6 +832,7 @@ async function switchLangs(nextLang: Langs) {
 	customFont(undefined, { lang: true })
 	settingsFooter()
 	translatePlaceholders()
+	translateAriaLabels()
 }
 
 function showall(val: boolean, event: boolean) {
