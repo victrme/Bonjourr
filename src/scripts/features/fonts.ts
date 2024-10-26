@@ -140,7 +140,7 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 			}
 
 			if (font.family === '') {
-				familyForm.warn(`Cannot load "${family}"`)
+				familyForm.warn(tradThis('Cannot load this font'))
 				return data.font
 			}
 			break
