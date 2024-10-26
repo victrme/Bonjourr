@@ -315,7 +315,7 @@ async function updateTranslations() {
 	const translations = []
 
 	for (const lang of langs) {
-		if (lang === 'en') {
+		if (lang === 'en' || lang === '.DS_Store') {
 			continue
 		}
 
