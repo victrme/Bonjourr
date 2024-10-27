@@ -2,6 +2,17 @@
 	<div></div>
 </div>
 
+<div id="settings-notifications">
+	<div class="settings-title"></div>
+
+	<div class="param" id="accept-permissions">
+		<div class="wrapper">
+			<label for="b_accept-permissions" class="trn">Synchronized links require the user to accept permissions</label>
+			<button id="b_accept-permissions" class="param-btn trn">Ask permission</button>
+		</div>
+	</div>
+</div>
+
 <div class="settings-title">
 	<h2 class="trn">General</h2>
 </div>
@@ -552,7 +563,20 @@
 								type="text"
 								name="worldclock-city"
 								maxlength="24"
-								placeholder="New York"
+								placeholder="São Paulo"
+								aria-label="Add city"
+							/>
+							<select name="worldclock-timezone">
+								<!-- timezone template -->
+							</select>
+						</div>
+
+						<div class="worldclocks-item split-inputs dropdown">
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Los Angeles"
 								aria-label="Add city"
 							/>
 							<select name="worldclock-timezone">
@@ -566,6 +590,19 @@
 								name="worldclock-city"
 								maxlength="24"
 								placeholder="Tokyo"
+								aria-label="Add city"
+							/>
+							<select name="worldclock-timezone">
+								<!-- timezone template -->
+							</select>
+						</div>
+
+						<div class="worldclocks-item split-inputs dropdown">
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Kolkata"
 								aria-label="Add city"
 							/>
 							<select name="worldclock-timezone">
@@ -1156,6 +1193,8 @@
 						<option value="classic" class="trn">Classic</option>
 						<option value="inspirobot">Inspirobot</option>
 						<option value="kaamelott">Kaamelott</option>
+						<option value="stoic">Stoic</option>
+						<option value="hitokoto">Hitokoto</option>
 						<option value="user" class="trn">Custom</option>
 						<option value="url">URL</option>
 					</select>
@@ -1673,7 +1712,7 @@
 			<option value="Europe/Warsaw">Europe/Warsaw</option>
 			<option value="Europe/Zurich">Europe/Zurich</option>
 		</optgroup>
-		<optgroup label="East Asia">
+		<optgroup label="West Asia">
 			<option value="Asia/Almaty">Asia/Almaty</option>
 			<option value="Asia/Ashgabat">Asia/Ashgabat</option>
 			<option value="Asia/Baku">Asia/Baku</option>
@@ -1693,7 +1732,7 @@
 			<option value="Asia/Tehran">Asia/Tehran</option>
 			<option value="Asia/Yerevan">Asia/Yerevan</option>
 		</optgroup>
-		<optgroup label="Central and west Asia">
+		<optgroup label="Central and east Asia">
 			<option value="Asia/Bangkok">Asia/Bangkok</option>
 			<option value="Asia/Bishkek">Asia/Bishkek</option>
 			<option value="Asia/Choibalsan">Asia/Choibalsan</option>

@@ -1,8 +1,9 @@
 import { bundleLinks, getHTMLTemplate, randomString, toggleDisabled } from '../../utils'
+import { getLang, tradThis, traduction } from '../../utils/translations'
 import { EXTENSION, MAIN_API, PLATFORM } from '../../defaults'
 import quickLinks, { validateLink } from '.'
+import { settingsNotifications } from '../../utils/notifications'
 import getPermissions from '../../utils/permissions'
-import { getLang, tradThis, traduction } from '../../utils/translations'
 import { isLink } from './helpers'
 import storage from '../../storage'
 
@@ -37,7 +38,15 @@ export default async function linksImport() {
 
 export async function initBookmarkSync(data: Sync.Storage) {
 	let treenode = await getBookmarkTree()
-	const permission = treenode ? true : await getPermissions('topSites', 'bookmarks')
+	let permission = !!treenode
+
+	if (!permission) {
+		try {
+			permission = await getPermissions('topSites', 'bookmarks')
+		} catch (error) {
+			settingsNotifications({ 'accept-permissions': true })
+		}
+	}
 
 	if (!permission) {
 		return

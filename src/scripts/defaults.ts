@@ -164,7 +164,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	quotes: {
 		on: false,
 		author: false,
-		type: 'classic',
+		type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
 		frequency: 'day',
 		last: 1650516688,
 	},

@@ -1,8 +1,8 @@
 {
 	"lang": "ar",
 	"New tab": "صفحة جديدة",
-	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "عجبك إستخدامك لـ بونجورر؟ إذاً قم المساعدة بتقييم ونشر رأيك، سيسعدنا ذلك كثيراً! 😇",
-	"Read the release notes": "اقرأ ملاحظات الإصدار",
+	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "هل أحببتم بونجور؟ إذاً عليكم بالمساندة سواء عبر طرح رأيك في التقييم أو الدعم المادي فسيساعدنا ذلك كثيراً! 😇",
+	"Read the release notes": "ما الجديد في الإصدار الجديد",
 	"Review": "مراجعة",
 	"Donate": "تبرع",
 	"Good morning": "صباح الخير",
@@ -15,7 +15,7 @@
 	"It currently feels like <temp2>°": "يبدو الأمر حاليًا وكأنه <temp2>°",
 	"with a high of <temp1>° today": "مع درجة حرارة قصوى <temp1>° اليوم",
 	"with a high of <temp1>° tomorrow": "مع درجة حرارة عظمى <temp1>° غدًا",
-	"Default group": "Default group",
+	"Default group": "المجموعة الافتراضية",
 	"Folder": "مجلد",
 	"Photo by <name>": "<name> الصورة بواسطة",
 	"Editing": "تحرير",
@@ -32,26 +32,28 @@
 	"Link": "الرابط",
 	"Icon": "الأيقونة",
 	"Add new link": "إضافة رابط جديد",
-	"Add new group": "Add new group",
+	"Add new group": "أضف مجموعة جديدة",
 	"Create new folder": "إنشاء مجلد جديد",
 	"Delete link": "حذف الرابط",
-	"Delete group": "Delete group",
+	"Delete group": "حذف المجموعة",
 	"Delete folder": "حذف المجلد",
-	"Delete selected": "Delete selected",
+	"Delete selected": "حذف المختار",
 	"Remove from folder": "إزالة من المجلد",
-	"Refresh icon": "Refresh icon",
+	"Refresh icon": "أيقونة التحديث",
 	"Pin group": "قم بتثبيت هذه المجموعة",
 	"Unpin group": "إلغاء تثبيت المجموعة",
 	"Apply changes": "تطبيق التغييرات",
 	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "يتم تحديث المجموعات المتزامنة تلقائيًا لتتوافق مع إشاراتك المرجعية في المتصفح. تعرف على المزيد على",
 	"our documentation": "وثائقنا",
-	"Select group": "Select group",
+	"Select group": "إختر مجموعة",
 	"Sync with browser": "المزامنة مع المتصفح",
-	"Most visited": "Most visited",
-	"Import selection": "Import selection",
+	"Most visited": "الأكثر زيارة",
+	"Import selection": "إستيراد المختار",
+	"Synchronized links require the user to accept permissions": "تتطلب الروابط المتزامنة من المستخدم قبول الأذونات",
+	"Ask permission": "اطلب الإذن",
 	"General": "عام",
 	"Show all settings": "عرض جميع الإعدادات",
-	"Enabled": "Enabled",
+	"Enabled": "متاح",
 	"Disabled": "معطل",
 	"Language": "اللغة",
 	"Dark mode": "الوضع الليلي",
@@ -59,6 +61,7 @@
 	"System": "النظام",
 	"New tab icon": "أيقونة العلامة التبويبية الجديدة",
 	"New tab title": "عنوان العلامة التبويبية الجديدة",
+	"Tips on tab appearance": "نصائح حول مظهر علامة التبويب",
 	"The icon and title that appear on your tab. You can put any emoji.": "الأيقونة والعنوان اللذين يظهران على علامتك التبويبية. يمكنك وضع أي رمز تعبيري.",
 	"Hide settings icon": "إخفاء أيقونة الإعدادات",
 	"Background": "الخلفية",
@@ -73,12 +76,15 @@
 	"Every hour": "كل ساعة",
 	"Every day": "كل يوم",
 	"Pause": "إيقاف مؤقت",
+	"Next background": "الخلفية التالية",
 	"Show all": "إظهار الكل",
 	"Unsplash collection": "مجموعة Unsplash",
+	"Tips on Unsplash collections": "نصائح حول مجموعات Unsplash",
 	"Type the collection ID from its URL, add more by separating them with a comma.": "اكتب معرف المجموعة من عنوان URL الخاص بها، وأضف المزيد عن طريق فصلها بفاصلة.",
 	"Blur intensity": "كثافة الضباب",
 	"Brightness": "السطوع",
 	"Quick Links": "الروابط السريعة",
+	"Tips on Quick Links": "نصائح حول الروابط السريعة",
 	"These are Bonjourr's bookmarks. ": "هذه هي الإشارات المرجعية لـ Bonjourr. ",
 	"Edit your Quick Links by right clicking the icon.": "قم بتحرير الروابط السريعة الخاصة بك بالنقر بزر الماوس الأيمن على الرمز.",
 	"Edit your Quick Links by long-pressing the icon.": "قم بتحرير الروابط السريعة الخاصة بك بالضغط المطول على الرمز.",
@@ -86,7 +92,7 @@
 	"Enable": "تفعيل",
 	"Add link": "إضافة رابط",
 	"Import bookmarks": "استيراد الإشارات المرجعية",
-	"Show groups": "Show groups",
+	"Show groups": "عرض المجموعة",
 	"Organize your links even more with pages. Right click next to a page to add another.": "قم بتنظيم روابطك بشكل أفضل مع الصفحات. انقر بزر الماوس الأيمن بجوار صفحة لإضافة أخرى.",
 	"Open in new tab": "فتح في علامة تبويب جديدة",
 	"Links per row": "الروابط في الصف الواحد",
@@ -95,24 +101,28 @@
 	"Medium": "متوسط",
 	"Small": "صغير",
 	"Inline": "في السطر",
-	"Text": "نص",
+	"Text": "النص",
+	"Toggle link titles": "تبديل عناوين الروابط",
+	"Toggle link backgrounds": "تبديل خلفيات الروابط",
 	"Time & Date": "الوقت والتاريخ",
 	"Analog clock": "الساعة التناظرية",
 	"Clock face": "وجه الساعة",
 	"None": "لا شيء",
 	"Numbers": "أرقام",
 	"Romans": "أرقام رومانية",
-	"Swiss railway": "Swiss railway",
+	"Swiss railway": "نظام قطارات سويسرا",
 	"Marks": "علامات",
-	"Clock shape": "Clock shape",
+	"Clock shape": "شكل الساعة",
 	"Round": "مستدير",
 	"Square": "مربع",
-	"Rectangle": "Rectangle",
+	"Rectangle": "مستطيل",
 	"Transparent": "شفاف",
-	"Clock hands": "Clock hands",
-	"Modern": "Modern",
-	"Clock background": "Clock background",
-	"Clock border": "Clock border",
+	"Clock hands": "أذرع الساعة",
+	"Modern": "عصري",
+	"Clock background": "خلفية الساعة",
+	"Clock background shade": "ظل خلفية الساعة",
+	"Clock border": "حدود الساعة",
+	"Clock border shade": "ظلة حدود الساعة",
 	"12-Hour Time": "نظام الساعة بالأرقام",
 	"Show am/pm": "عرض صباحا/مساءا",
 	"Show seconds": "عرض الثواني",
@@ -120,8 +130,8 @@
 	"Day date month": "يوم التاريخ شهر",
 	"Day, month date": "يوم، شهر التاريخ",
 	"Month date day": "شهر التاريخ يوم",
-	"World clocks": "World clocks",
-	"Regions": "Regions",
+	"World clocks": "مواقيت العالم",
+	"Regions": "المناطق",
 	"Time zone": "المنطقة الزمنية",
 	"Show": "عرض",
 	"Clock and date": "الساعة والتاريخ",
@@ -140,7 +150,9 @@
 	"Approximate": "تقريبي",
 	"Precise": "دقيق",
 	"Location": "موقع المدينة",
-	"City not found": "المدينة غير موجودة",
+	"Cannot find correct city": "لا يمكن العثور على المدينة الصحيحة",
+	"No internet connection": "لا يوجد اتصال بالإنترنت",
+	"Cannot reach weather service": "لا يمكن الوصول إلى خدمة الطقس",
 	"Unit": "الوحدة",
 	"Celsius": "درجة مئوية",
 	"Fahrenheit": "فهرنهايت",
@@ -153,6 +165,7 @@
 	"Feels like": "يشعر بمثل",
 	"Both": "الكل",
 	"Detailed weather": "تفاصيل الطقس",
+	"What is detailed weather?": "ما هو الطقس التفصيلي؟",
 	"https://www.msn.com/en-xl/weather/forecast/": "https://www.msn.com/ar-ae/weather/forecast",
 	"Click on the weather widget to get detailed weather reports.": "انقر فوق عنصر طقس للحصول على تقارير طقس مفصلة.",
 	"Custom provider": "مزود مخصص",
@@ -168,6 +181,7 @@
 	"Center": "المركز",
 	"Right": "اليمين",
 	"Width": "العرض",
+	"Notes shade": "ملاحظات الظل",
 	"Search bar": "شريط البحث",
 	"Suggestions": "الاقتراحات",
 	"Search engine": "محرك البحث",
@@ -183,19 +197,24 @@
 	"Placeholder text": "نص العنصر النائب",
 	"Search": "بحث",
 	"Opacity": "الشفافية",
+	"Search bar shade": "ظل شريط البحث",
 	"Quotes": "اقتباسات",
 	"Always show author": "عرض الكاتب دائماً",
 	"Quote type": "نوع الاقتباس",
 	"Classic": "كلاسيكي",
 	"Custom": "مخصص",
 	"Custom quotes": "اقتباسات مخصصة",
+	"Fetch failed, please check console for more information": "فشل الجلب، يرجى التحقق من وحدة التحكم للحصول على مزيد من المعلومات",
 	"Author, Your quote.\nAuthor, Your second quote.": "المؤلف، اقتباسك الثاني.\nالمؤلف، اقتباسك الثاني.",
+	"Next quote": "الاقتباس التالي",
 	"Fonts": "الخطوط",
 	"Font family": "عائلة الخط",
+	"Cannot load this font": "لا يمكن تحميل هذا الخط",
 	"Weight": "الوزن",
 	"Size": "الحجم",
 	"Shadow": "الظل",
 	"Page layout": "تخطيط الصفحة",
+	"Tips on page grid layout": "نصائح حول تخطيط شبكة الصفحة",
 	"Customise how and where widgets appear.": "تخصيص مظهر الودجات ومكان ظهورها.",
 	"Open the toolbox and select a widget to modify on the page.": "افتح صندوق الأدوات وحدد ودجيت لتعديلها على الصفحة.",
 	"Open layout toolbox": "افتح صندوق الأدوات لتخطيط الصفحة",
@@ -204,7 +223,11 @@
 	"Layout columns": "أعمدة التخطيط",
 	"Page width": "عرض الصفحة",
 	"Page gap": "فجوة الصفحة",
+	"Single column layout": "تخطيط العمود الواحد",
+	"Double column layout": "تخطيط العمود المزدوج",
+	"Triple column layout": "تخطيط الأعمدة الثلاثية",
 	"Custom Style": "نمط مخصص",
+	"Tips on Custom styles": "نصائح حول الأنماط المخصصة",
 	"Make cool things happen with CSS. ": "اجعل الأمور تبدو رائعة باستخدام CSS. ",
 	"Check out our ": "تحقق من ",
 	"CSS snippets.": "مقتطفات CSS.",
@@ -213,22 +236,33 @@
 	"Announcements": "الإعلانات",
 	"Major updates": "التغييرات الرئيسية",
 	"All updates": "الكل",
+	"What are announcements?": "ما هي الإعلانات؟",
 	"Decide when to get notified about Bonjourr updates.": "قرر متى تريد الحصول على إشعارات حول تحديثات Bonjourr.",
 	"Settings management": "إدارة الإعدادات",
+	"Tips on imports & exports": "نصائح حول الواردات والصادرات",
 	"Transfer your settings between multiple instances of Bonjourr.": "نقل إعداداتك بين العديد من نسخ Bonjourr.",
-	"Settings file": "Settings file",
+	"Settings file": "ملف التضبيط",
+	"Import an existing settings file": "استيراد ملف الإعدادات الموجود",
 	"Import": "استيراد",
+	"Export a new settings file": "تصدير ملف إعدادات جديد",
 	"Export": "تصدير",
-	"Copy": "Copy",
+	"Copy settings data to clipboard": "نسخ بيانات الإعدادات إلى الحافظة",
+	"Copy": "نسخ",
 	"Copied": "تم النسخ",
-	"Reset all settings": "Reset all settings",
+	"Cancel changes": "إلغاء التغييرات",
+	"Load Bonjourr with these settings": "قم بتحميل Bonjourr بهذه الإعدادات",
+	"Reset all settings": "إعادة الضبط المصنعي",
 	"Reset": "إعادة ضبط",
 	"Are you sure?": "هل أنت متأكد ؟",
 	"I am sure": "أنا متأكد",
 	"No, go back": "لا، عد للوراء",
+	"Bonjourr's website": "موقع Bonjourr",
+	"Check out our Twitter": "قم بزيارة حسابنا على تويتر",
+	"Bonjourr's GitHub repository": "مستودع Bonjourr على GitHub",
+	"Bonjourr's documentation": "توثيقات Bonjourr",
 	"Made in France with ❤️": "صنع في فرنسا من القلب ❤️ | تُرجمت في البحرين أيضاً من القلب ❤️",
 	"by": "بواسطة",
 	"Consider": "النظر",
 	"donating": "التبرع",
-	"if you love Bonjourr": "إذا كنت تحب Bonjourr"
+	"if you love Bonjourr": "إذا كنت تحب Bonjourr وتود الدعم"
 }

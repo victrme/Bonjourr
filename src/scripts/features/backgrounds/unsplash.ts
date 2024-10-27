@@ -87,7 +87,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		const isFullURL = collection.includes('https://unsplash.com/') && collection.includes('/collections/')
 
 		if (!navigator.onLine) {
-			return collectionForm.warn('No internet connection')
+			return collectionForm.warn(tradThis('No internet connection'))
 		}
 
 		if (isFullURL) {

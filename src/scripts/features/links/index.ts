@@ -481,7 +481,7 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 
 	if (!link.folder) {
 		if (icondom) {
-			const url = icon ? stringMaxSize(icon, 7500) : undefined ?? getDefaultIcon(link.url)
+			const url = (icon ? stringMaxSize(icon, 7500) : undefined) ?? getDefaultIcon(link.url)
 			const img = document.createElement('img')
 
 			link.icon = url ? url : undefined

@@ -29,7 +29,8 @@
 	},
 
 	"background": {
-		"scripts": ["src/scripts/background.js"]
+		"scripts": ["src/scripts/background.js"],
+		"persistent": false
 	},
 
 	"permissions": ["storage"]

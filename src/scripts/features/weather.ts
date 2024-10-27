@@ -106,7 +106,7 @@ async function updatesWeather(update: WeatherUpdate) {
 		let city = i_city.value
 
 		if (!navigator.onLine) {
-			locationForm.warn('No internet connection')
+			locationForm.warn(tradThis('No internet connection'))
 			return false
 		}
 
@@ -124,12 +124,12 @@ async function updatesWeather(update: WeatherUpdate) {
 		const foundCityIsDifferent = newCity !== '' && newCity !== city
 
 		if (!newWeather) {
-			locationForm.warn('Cannot reach weather service')
+			locationForm.warn(tradThis('Cannot reach weather service'))
 			return
 		}
 
 		if (foundCityIsDifferent) {
-			locationForm.warn('Cannot find correct city')
+			locationForm.warn(tradThis('Cannot find correct city'))
 			return
 		}
 

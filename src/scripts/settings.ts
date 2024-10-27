@@ -22,13 +22,14 @@ import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
+import { settingsNotifications } from './utils/notifications'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
 import getPermissions from './utils/permissions'
-import { changeGroupTitle } from './features/links/groups'
+import { changeGroupTitle, initGroups } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -70,6 +71,8 @@ export async function settingsInit() {
 
 	document.body.appendChild(settingsDom)
 
+	translateAriaLabels()
+	translatePlaceholders()
 	traduction(settingsDom, data.lang)
 	showall(data.showall, false)
 	initOptionsValues(data)
@@ -264,7 +267,8 @@ function initOptionsValues(data: Sync.Storage) {
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
-		select.value = data?.worldclocks?.[i]?.timezone ?? ['Europe/Paris', 'America/New_York', 'Asia/Tokyo'][i]
+		const zones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
+		select.value = data?.worldclocks?.[i]?.timezone ?? zones[i]
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('input[name="worldclock-city"]').forEach((input, i) => {
@@ -275,6 +279,16 @@ function initOptionsValues(data: Sync.Storage) {
 }
 
 function initOptionsEvents() {
+	paramId('b_accept-permissions').onclickdown(async function () {
+		await getPermissions('topSites', 'bookmarks')
+
+		const data = await storage.sync.get()
+		quickLinks(data)
+		setTimeout(() => initGroups(data), 10)
+
+		settingsNotifications({ 'accept-permissions': false })
+	})
+
 	// General
 
 	paramId('i_showall').onclickdown(function (_, target) {
@@ -800,6 +814,15 @@ function translatePlaceholders() {
 	}
 }
 
+function translateAriaLabels() {
+	for (const element of document.querySelectorAll('[title]')) {
+		const title = element.getAttribute('title') ?? ''
+
+		element.setAttribute('title', tradThis(title))
+		element.setAttribute('aria-label', tradThis(title))
+	}
+}
+
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
@@ -826,6 +849,7 @@ async function switchLangs(nextLang: Langs) {
 	customFont(undefined, { lang: true })
 	settingsFooter()
 	translatePlaceholders()
+	translateAriaLabels()
 }
 
 function showall(val: boolean, event: boolean) {
