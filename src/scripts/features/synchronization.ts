@@ -1,5 +1,11 @@
 import storage from '../storage'
 
+interface SyncUpdate {
+	type: string
+}
+
+type SyncType = 'auto' | 'gist' | 'url' | 'none'
+
 export async function githubGistSync(token: string) {
 	const data = await storage.sync.get()
 
@@ -22,3 +28,9 @@ export async function githubGistSync(token: string) {
 		},
 	})
 }
+
+export default function synchronization(init: undefined, update: SyncUpdate) {
+	updateSyncOption(update)
+}
+
+function updateSyncOption(update: SyncUpdate) {}

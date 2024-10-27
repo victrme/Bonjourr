@@ -75,6 +75,12 @@ aside .param-btn {
 	background-color: rgba(var(--blue), 0.15);
 }
 
+aside .param-btn img,
+aside .param-btn span {
+	display: inline;
+	vertical-align: middle;
+}
+
 aside .param-btn:hover {
 	background-color: rgba(var(--blue), 0.25);
 }

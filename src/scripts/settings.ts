@@ -9,7 +9,7 @@ import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
-import { githubGistSync } from './features/synchronization'
+import synchronization, { githubGistSync } from './features/synchronization'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
@@ -703,6 +703,12 @@ function initOptionsEvents() {
 
 	paramId('i_announce').addEventListener('change', function (this) {
 		interfacePopup(undefined, { announcements: this.value })
+	})
+
+	// Sync
+
+	paramId('i_syncfreq').addEventListener('change', function (this) {
+		synchronization(undefined, { type: this.value })
 	})
 
 	// Settings managment

@@ -1459,15 +1459,66 @@
 
 	<div class="wrapper">
 		<span>
-			<label for="i_synctype" class="trn">Settings synchronization</label>
+			<label for="i_synctype" class="trn">Synchronization</label>
 		</span>
 
 		<select id="i_synctype">
-			<option class="trn" value="browser">Browser</option>
-			<option class="trn" value="github">Github Gist</option>
+			<option class="trn" value="auto">Auto</option>
+			<option class="trn" value="gist">Github Gist</option>
 			<option class="trn" value="url">Distant URL</option>
-			<option class="trn" value="off">Disabled</option>
+			<option class="trn" value="off">None</option>
 		</select>
+	</div>
+
+	<hr />
+
+	<div class="wrapper" id="github-sync">
+		<span>
+			<span class="trn">Github Gist token</span>
+			<button class="tooltip ttgist" title="How to sync with Github Gist" aria-label="How to sync with Github Gist">
+				?
+			</button>
+		</span>
+
+		<form id="f_github-sync" class="network-form">
+			<input
+				type="text"
+				name="github-sync"
+				id="i_github-sync"
+				maxlength="93"
+				placeholder="github_pat_11AIGSKXA0Ih7kWtCDHwp6"
+				aria-label="Synchronization using Github Gist"
+				autocomplete="github-token"
+			/>
+			<button type="submit" id="b_github-sync">
+				<span>✓</span>
+				<i></i>
+			</button>
+		</form>
+	</div>
+
+	<hr />
+
+	<div class="wrapper" id="url-sync">
+		<span>
+			<span class="trn">Distant URL</span>
+		</span>
+
+		<form id="f_url-sync" class="network-form">
+			<input
+				type="text"
+				name="url-sync"
+				id="i_url-sync"
+				maxlength="256"
+				placeholder="https://pastebin.com/y7XhhiDs"
+				aria-label="Synchronization using a distant URL"
+				autocomplete="url-sync"
+			/>
+			<button type="submit" id="b_url-sync">
+				<span>✓</span>
+				<i></i>
+			</button>
+		</form>
 	</div>
 
 	<hr />
@@ -1486,27 +1537,21 @@
 
 	<hr />
 
-	<div class="wrapper" id="github-sync">
+	<div class="wrapper">
 		<span>
-			<span class="trn">Sync with Github</span>
-			<!-- <button class="tooltip tttab" title="Tips on tab appearance" aria-label="Tips on tab appearance">?</button> -->
+			<label for="i_synctype" class="trn">Manual sync</label>
 		</span>
 
-		<form id="f_github-sync" class="network-form">
-			<input
-				type="text"
-				name="github-sync"
-				id="i_github-sync"
-				maxlength="93"
-				placeholder="github_pat_11AIGSKXA0Ih7kWtCDHwp6"
-				aria-label="Synchronization using Github"
-				autocomplete="github-token"
-			/>
-			<button type="submit" id="b_github-sync">
-				<span>✓</span>
-				<i></i>
+		<div id="manual-sync">
+			<button class="param-btn trn">
+				<img src="src/assets/labels/download.svg" height="16" alt="" />
+				<span class="trn">Download</span>
 			</button>
-		</form>
+			<button class="param-btn">
+				<img src="src/assets/labels/upload.svg" height="16" alt="" />
+				<span class="trn">Upload</span>
+			</button>
+		</div>
 	</div>
 
 	<hr />

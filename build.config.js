@@ -32,6 +32,7 @@ const paths = {
 		assets: {
 			interface: ['src/assets/interface', `release/${platform}/src/assets/interface`],
 			weather: ['src/assets/weather', `release/${platform}/src/assets/weather`],
+			labels: ['src/assets/labels', `release/${platform}/src/assets/labels`],
 			favicons: {
 				ico: ['src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`],
 				128: ['src/assets/favicon-128x128.png', `release/${platform}/src/assets/favicon-128x128.png`],
@@ -204,6 +205,7 @@ function scripts() {
 function assets() {
 	copyDir(...paths.shared.assets.interface)
 	copyDir(...paths.shared.assets.weather)
+	copyDir(...paths.shared.assets.labels)
 	copyFile(...paths.shared.assets.favicons.ico)
 	copyFile(...paths.shared.assets.favicons[128])
 	copyFile(...paths.shared.assets.favicons[512])
