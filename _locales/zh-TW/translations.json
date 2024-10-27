@@ -49,6 +49,8 @@
 	"Sync with browser": "與瀏覽器同步",
 	"Most visited": "最常造訪",
 	"Import selection": "匯入選擇",
+	"Synchronized links require the user to accept permissions": "同步連結需要使用者接受權限",
+	"Ask permission": "請求許可",
 	"General": "一般",
 	"Show all settings": "顯示所有設定",
 	"Enabled": "已啟用",

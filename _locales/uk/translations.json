@@ -49,6 +49,8 @@
 	"Sync with browser": "Синхронізація з браузером",
 	"Most visited": "Найбільш відвідувані",
 	"Import selection": "Вибір імпорту",
+	"Synchronized links require the user to accept permissions": "Для синхронізованих посилань користувач повинен прийняти дозволи",
+	"Ask permission": "Запитуйте дозволу",
 	"General": "Загальні",
 	"Show all settings": "Показати всі налаштування",
 	"Enabled": "Увімкнено",

@@ -49,6 +49,8 @@
 	"Sync with browser": "与浏览器同步",
 	"Most visited": "访问次数最多",
 	"Import selection": "进口选择",
+	"Synchronized links require the user to accept permissions": "同步链接需要用户接受权限",
+	"Ask permission": "征求许可",
 	"General": "通用",
 	"Show all settings": "显示所有设置",
 	"Enabled": "已启用",

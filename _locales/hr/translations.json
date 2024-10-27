@@ -49,6 +49,8 @@
 	"Sync with browser": "Sinkroniziraj s preglednikom",
 	"Most visited": "Najposjećenije",
 	"Import selection": "Uvezi odabir",
+	"Synchronized links require the user to accept permissions": "Sinkronizirane veze zahtijevaju od korisnika da prihvati dozvole",
+	"Ask permission": "Pitaj dopuštenje",
 	"General": "Općenito",
 	"Show all settings": "Prikaži sve postavke",
 	"Enabled": "Omogućeno",

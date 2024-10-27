@@ -49,6 +49,8 @@
 	"Sync with browser": "Synkroniser med nettleser",
 	"Most visited": "Mest besøkt",
 	"Import selection": "Importvalg",
+	"Synchronized links require the user to accept permissions": "Synkroniserte lenker krever at brukeren godtar tillatelser",
+	"Ask permission": "Spør om tillatelse",
 	"General": "Generelt",
 	"Show all settings": "Vis alle innstillinger",
 	"Enabled": "Aktivert",

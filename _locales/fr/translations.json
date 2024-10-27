@@ -49,6 +49,8 @@
 	"Sync with browser": "Synchroniser avec le navigateur",
 	"Most visited": "Les plus visités",
 	"Import selection": "Importer la selection",
+	"Synchronized links require the user to accept permissions": "Les liens synchronisés nécessitent que l'utilisateur accepte les autorisations",
+	"Ask permission": "Demander la permission",
 	"General": "Général",
 	"Show all settings": "Afficher tous les réglages",
 	"Enabled": "Activé",

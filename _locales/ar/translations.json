@@ -49,6 +49,8 @@
 	"Sync with browser": "المزامنة مع المتصفح",
 	"Most visited": "الأكثر زيارة",
 	"Import selection": "إستيراد المختار",
+	"Synchronized links require the user to accept permissions": "تتطلب الروابط المتزامنة من المستخدم قبول الأذونات",
+	"Ask permission": "اطلب الإذن",
 	"General": "عام",
 	"Show all settings": "عرض جميع الإعدادات",
 	"Enabled": "متاح",

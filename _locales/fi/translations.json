@@ -49,6 +49,8 @@
 	"Sync with browser": "Synkronoi selaimen kanssa",
 	"Most visited": "Eniten vieraillut",
 	"Import selection": "Tuo valinta",
+	"Synchronized links require the user to accept permissions": "Synkronoidut linkit edellyttävät, että käyttäjä hyväksyy käyttöoikeudet",
+	"Ask permission": "Pyydä lupa",
 	"General": "Yleinen",
 	"Show all settings": "Näytä kaikki asetukset",
 	"Enabled": "Käytössä",

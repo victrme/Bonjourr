@@ -21,13 +21,14 @@ import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
+import { settingsNotifications } from './utils/notifications'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
 import getPermissions from './utils/permissions'
-import { changeGroupTitle } from './features/links/groups'
+import { changeGroupTitle, initGroups } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -277,6 +278,16 @@ function initOptionsValues(data: Sync.Storage) {
 }
 
 function initOptionsEvents() {
+	paramId('b_accept-permissions').onclickdown(async function () {
+		await getPermissions('topSites', 'bookmarks')
+
+		const data = await storage.sync.get()
+		quickLinks(data)
+		setTimeout(() => initGroups(data), 10)
+
+		settingsNotifications({ 'accept-permissions': false })
+	})
+
 	// General
 
 	paramId('i_showall').onclickdown(function (_, target) {

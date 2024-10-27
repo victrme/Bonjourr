@@ -49,6 +49,8 @@
 	"Sync with browser": "Synchroniseren met browser",
 	"Most visited": "Meest bezocht",
 	"Import selection": "Selectie importeren",
+	"Synchronized links require the user to accept permissions": "Gesynchroniseerde links vereisen dat de gebruiker toestemmingen accepteert",
+	"Ask permission": "Vraag toestemming",
 	"General": "Algemeen",
 	"Show all settings": "Toon alle instellingen",
 	"Enabled": "Ingeschakeld",

@@ -71,6 +71,7 @@ aside .param-btn {
 	color: var(--color-blue);
 	border: none;
 	border-radius: 1em;
+	white-space: nowrap;
 	background-color: rgba(var(--blue), 0.15);
 }
 
@@ -521,6 +522,30 @@ aside form.valid button {
 #mobile-drag-zone:active div {
 	width: 75px;
 	background-color: var(--color-border);
+}
+
+#settings-notifications {
+	margin-top: 2.2em;
+}
+
+#settings-notifications .param,
+#settings-notifications {
+	position: absolute;
+	visibility: hidden;
+}
+
+#settings-notifications .param.shown,
+#settings-notifications.shown {
+	position: static;
+	visibility: visible;
+}
+
+#settings-notifications .param {
+	margin-bottom: 1em;
+}
+
+#settings-notifications label {
+	padding-inline-end: 1em;
 }
 
 .settings-title {

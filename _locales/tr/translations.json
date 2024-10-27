@@ -49,6 +49,8 @@
 	"Sync with browser": "Tarayıcıyla senkronize et",
 	"Most visited": "En çok ziyaret edilenler",
 	"Import selection": "İçe aktarma seçimi",
+	"Synchronized links require the user to accept permissions": "Eşzamanlı bağlantılar, kullanıcının izinleri kabul etmesini gerektirir",
+	"Ask permission": "İzin isteyin",
 	"General": "Genel",
 	"Show all settings": "Tüm ayarları göster",
 	"Enabled": "Etkin",

@@ -49,6 +49,8 @@
 	"Sync with browser": "Szinkronizálás böngészővel",
 	"Most visited": "Leglátogatottabb",
 	"Import selection": "Importálás kiválasztása",
+	"Synchronized links require the user to accept permissions": "A szinkronizált hivatkozásokhoz a felhasználónak engedélyeket kell elfogadnia",
+	"Ask permission": "Kérjen engedélyt",
 	"General": "Általános",
 	"Show all settings": "Minden beállítás megjelenítése",
 	"Enabled": "Engedélyezve",

@@ -49,6 +49,8 @@
 	"Sync with browser": "ブラウザと同期",
 	"Most visited": "最多訪問者数",
 	"Import selection": "インポート選択",
+	"Synchronized links require the user to accept permissions": "同期リンクにはユーザーの許可が必要です",
+	"Ask permission": "許可を求める",
 	"General": "一般",
 	"Show all settings": "すべての設定を開く",
 	"Enabled": "有効",

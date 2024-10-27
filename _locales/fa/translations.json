@@ -49,6 +49,8 @@
 	"Sync with browser": "همگام سازی با مرورگر",
 	"Most visited": "Most visited",
 	"Import selection": "Import selection",
+	"Synchronized links require the user to accept permissions": "پیوندهای همگام سازی شده نیاز به پذیرش مجوز از کاربر دارند",
+	"Ask permission": "اجازه بخواهید",
 	"General": "عمومی",
 	"Show all settings": "نمایش همه‌ی تنظیمات",
 	"Enabled": "Enabled",

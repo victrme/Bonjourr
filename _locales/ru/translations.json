@@ -49,6 +49,8 @@
 	"Sync with browser": "Синхронизация с браузером",
 	"Most visited": "Самые посещаемые",
 	"Import selection": "Выбор импорта",
+	"Synchronized links require the user to accept permissions": "Синхронизированные ссылки требуют от пользователя принятия разрешений.",
+	"Ask permission": "Спросить разрешения",
 	"General": "Основные",
 	"Show all settings": "Показать все настройки",
 	"Enabled": "Включено",

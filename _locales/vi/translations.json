@@ -49,6 +49,8 @@
 	"Sync with browser": "Đồng bộ với trình duyệt",
 	"Most visited": "Most visited",
 	"Import selection": "Import selection",
+	"Synchronized links require the user to accept permissions": "Liên kết đồng bộ yêu cầu người dùng chấp nhận quyền",
+	"Ask permission": "Xin phép",
 	"General": "Cài đặt chung",
 	"Show all settings": "Hiện mọi cài đặt",
 	"Enabled": "Enabled",

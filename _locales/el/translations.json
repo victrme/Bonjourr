@@ -49,6 +49,8 @@
 	"Sync with browser": "Συγχρονισμός με το πρόγραμμα περιήγησης",
 	"Most visited": "Οι περισσότεροι επισκέπτες",
 	"Import selection": "Επιλογή εισαγωγής",
+	"Synchronized links require the user to accept permissions": "Οι συγχρονισμένοι σύνδεσμοι απαιτούν από τον χρήστη να αποδεχτεί τα δικαιώματα",
+	"Ask permission": "Ζητήστε άδεια",
 	"General": "Γενικά",
 	"Show all settings": "Δείξε όλες τις ρυθμίσεις",
 	"Enabled": "Ενεργοποιημένο",

@@ -55,6 +55,9 @@
 	"Most visited": "Most visited",
 	"Import selection": "Import selection",
 
+	"Synchronized links require the user to accept permissions": "Synchronized links require the user to accept permissions",
+	"Ask permission": "Ask permission",
+
 	"General": "General",
 	"Show all settings": "Show all settings",
 	"Enabled": "Enabled",

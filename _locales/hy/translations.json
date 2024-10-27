@@ -49,6 +49,8 @@
 	"Sync with browser": "Համաժամեցեք բրաուզերի հետ",
 	"Most visited": "Ամենաշատ այցելվողները",
 	"Import selection": "Ներմուծման ընտրություն",
+	"Synchronized links require the user to accept permissions": "Համաժամեցված հղումները պահանջում են օգտվողից ընդունել թույլտվությունները",
+	"Ask permission": "Թույլտվություն խնդրեք",
 	"General": "Ընդհանուր",
 	"Show all settings": "Ցուց տալ բոլոր կայանքները",
 	"Enabled": "Միացված",

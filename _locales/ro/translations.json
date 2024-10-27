@@ -49,6 +49,8 @@
 	"Sync with browser": "Sincronizare cu browserul",
 	"Most visited": "Cele mai vizitate",
 	"Import selection": "Selecție de import",
+	"Synchronized links require the user to accept permissions": "Legăturile sincronizate necesită ca utilizatorul să accepte permisiuni",
+	"Ask permission": "Cere permisiunea",
 	"General": "General",
 	"Show all settings": "Afișează toate setările",
 	"Enabled": "Activat",

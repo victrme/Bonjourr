@@ -49,6 +49,8 @@
 	"Sync with browser": "Synchronizácia s prehliadačom",
 	"Most visited": "Najviac navštevované",
 	"Import selection": "Importovať výber",
+	"Synchronized links require the user to accept permissions": "Synchronizované odkazy vyžadujú, aby používateľ prijal povolenia",
+	"Ask permission": "Požiadajte o povolenie",
 	"General": "Všeobecné",
 	"Show all settings": "Zobraziť všetky nastavenia",
 	"Enabled": "Zapnuté",
