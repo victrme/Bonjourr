@@ -8,8 +8,8 @@ import linksImport from './features/links/bookmarks'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
+import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
-import synchronization, { githubGistSync } from './features/synchronization'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
@@ -153,6 +153,10 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
+	setInput('i_synctype', data.settingssync?.type ?? 'auto')
+	setInput('i_syncfreq', data.settingssync?.freq ?? 'changes')
+	setInput('i_gistsync', data.settingssync?.gist ?? '')
+	setInput('i_urlsync', data.settingssync?.url ?? '')
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -708,15 +712,32 @@ function initOptionsEvents() {
 	// Sync
 
 	paramId('i_syncfreq').addEventListener('change', function (this) {
+		synchronization(undefined, { freq: this.value })
+	})
+
+	paramId('i_synctype').addEventListener('change', function (this) {
 		synchronization(undefined, { type: this.value })
 	})
 
-	// Settings managment
-
-	paramId('f_github-sync').addEventListener('submit', function (this, event) {
+	paramId('f_gistsync').addEventListener('submit', function (this, event) {
 		event.preventDefault()
-		githubGistSync(paramId('i_github-sync').value)
+		synchronization(undefined, { gist: paramId('i_gistsync').value })
 	})
+
+	paramId('f_urlsync').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		synchronization(undefined, { url: paramId('i_urlsync').value })
+	})
+
+	paramId('b_upsync').onclickdown(function () {
+		synchronization(undefined, { up: true })
+	})
+
+	paramId('b_downsync').onclickdown(function () {
+		synchronization(undefined, { down: true })
+	})
+
+	// Settings managment
 
 	paramId('settings-managment').addEventListener('dragenter', function () {
 		paramId('settings-managment').classList.add('dragging-file')

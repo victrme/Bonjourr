@@ -22,6 +22,7 @@ import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 import storage from './storage'
 import 'clickdown'
+import synchronization from './features/synchronization'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -62,6 +63,7 @@ async function startup() {
 
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
+	synchronization(sync.settingssync)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: sync, lastWeather: local.lastWeather })
 	customFont(sync.font)

@@ -1,12 +1,113 @@
+import { SYNC_DEFAULT } from '../defaults'
+import onSettingsLoad from '../utils/onsettingsload'
 import storage from '../storage'
 
+type SyncType = Sync.SettingsSync['type']
+type SyncFreq = Sync.SettingsSync['freq']
+
 interface SyncUpdate {
-	type: string
+	type?: string
+	freq?: string
+	url?: string
+	gist?: string
+	down?: true
+	up?: true
 }
 
-type SyncType = 'auto' | 'gist' | 'url' | 'none'
+export default function synchronization(init?: Sync.SettingsSync, update?: SyncUpdate) {
+	if (init) {
+		controlSync(init)
+		onSettingsLoad(() => toggleSyncSettingsOption(init.type))
+	}
 
-export async function githubGistSync(token: string) {
+	if (update) {
+		updateSyncOption(update)
+	}
+}
+
+async function updateSyncOption(update: SyncUpdate) {
+	const data = await storage.sync.get()
+	const sync = data.settingssync ?? { ...SYNC_DEFAULT.settingssync }
+
+	if (update.down) {
+		controlSync(sync)
+		return
+	}
+
+	if (update.up) {
+		controlSync(sync)
+		return
+	}
+
+	if (update.gist === '') {
+		sync.gist = undefined
+	}
+
+	if (update.url === '') {
+		sync.url = undefined
+	}
+
+	if (update.gist !== undefined) {
+		if (await isGistTokenValid(update.gist)) {
+			sync.gist = update.gist
+		} else {
+			console.log('Error !!!!')
+		}
+	}
+
+	if (update.url !== undefined) {
+		const config = await getConfigFromUrl(update.url)
+
+		if (config) {
+			sync.url = update.url
+		}
+	}
+
+	if (update.type && isSyncType(update.type)) {
+		toggleSyncSettingsOption(update.type)
+		sync.type = update.type
+	}
+
+	if (update.freq && isSyncFreq(update.freq)) {
+		sync.freq = update.freq
+	}
+
+	storage.sync.set({ settingssync: sync })
+}
+
+function controlSync(sync: Sync.SettingsSync) {
+	console.log('Did something')
+
+	// ...
+}
+
+function toggleSyncSettingsOption(type: SyncType) {
+	document.getElementById('sync-freq')?.classList.toggle('shown', type !== 'auto')
+	document.getElementById('manual-sync')?.classList.toggle('shown', type !== 'auto')
+	document.getElementById('gist-sync')?.classList.toggle('shown', type === 'gist')
+	document.getElementById('url-sync')?.classList.toggle('shown', type === 'url')
+
+	if (type !== 'gist') document.getElementById('b_upsync')?.setAttribute('disabled', '')
+	if (type === 'gist') document.getElementById('b_upsync')?.removeAttribute('disabled')
+}
+
+async function getConfigFromUrl(url: string): Promise<Sync.Storage | undefined> {
+	console.log('Got config, thanks !!!')
+
+	// ...
+
+	return SYNC_DEFAULT
+}
+
+async function isGistTokenValid(token: string): Promise<boolean> {
+	console.log('Is perfectly valid !!!')
+
+	// ...
+
+	return true
+}
+
+async function githubGistSync(token: string) {
 	const data = await storage.sync.get()
 
 	fetch('https://api.github.com/gists', {
@@ -29,8 +130,12 @@ export async function githubGistSync(token: string) {
 	})
 }
 
-export default function synchronization(init: undefined, update: SyncUpdate) {
-	updateSyncOption(update)
+// Type check
+
+function isSyncType(val: string): val is SyncType {
+	return ['auto', 'gist', 'url'].includes(val)
 }
 
-function updateSyncOption(update: SyncUpdate) {}
+function isSyncFreq(val: string): val is SyncFreq {
+	return ['changes', 'start', 'manual'].includes(val)
+}

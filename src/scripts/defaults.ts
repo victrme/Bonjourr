@@ -175,6 +175,11 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
+	settingssync: {
+		type: 'auto',
+		freq: 'changes',
+		last: 0,
+	},
 	move: {
 		selection: 'single',
 		layouts: {},

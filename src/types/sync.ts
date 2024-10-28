@@ -17,6 +17,7 @@ declare namespace Sync {
 		textShadow: number
 		cssHeight?: number
 		review: number
+		settingssync: SettingsSync
 		announcements: 'all' | 'major' | 'off'
 		reviewPopup?: number | string
 		background_blur: number
@@ -45,6 +46,14 @@ declare namespace Sync {
 			version: string
 		}
 		[key: string]: Links.Link | unknown
+	}
+
+	type SettingsSync = {
+		type: 'auto' | 'gist' | 'url'
+		freq: 'changes' | 'start' | 'manual'
+		gist?: string
+		url?: string
+		last: number
 	}
 
 	type LinkTabsOld = {

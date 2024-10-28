@@ -431,6 +431,10 @@ aside form.valid button {
 	max-height: 200px;
 }
 
+#gist-sync.shown,
+#url-sync.shown,
+#sync-freq.shown,
+#manual-sync.shown,
 #ampm_label.shown,
 #location_options.shown,
 #weather_provider.shown,
