@@ -49,7 +49,7 @@ declare namespace Sync {
 	}
 
 	type SettingsSync = {
-		type: 'auto' | 'gist' | 'url'
+		type: 'auto' | 'gist' | 'url' | 'off'
 		freq: 'changes' | 'start' | 'manual'
 		gist?: string
 		url?: string

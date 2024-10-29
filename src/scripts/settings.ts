@@ -153,7 +153,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
-	setInput('i_synctype', data.settingssync?.type ?? 'auto')
+	setInput('i_synctype', data.settingssync?.type ?? PLATFORM == 'online' ? 'off' : 'auto')
 	setInput('i_syncfreq', data.settingssync?.freq ?? 'changes')
 	setInput('i_gistsync', data.settingssync?.gist ?? '')
 	setInput('i_urlsync', data.settingssync?.url ?? '')

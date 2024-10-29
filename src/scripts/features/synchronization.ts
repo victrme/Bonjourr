@@ -1,6 +1,6 @@
 import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
-import storage from '../storage'
+import storage, { migrateWebExtStorageTo } from '../storage'
 
 type SyncType = Sync.SettingsSync['type']
 type SyncFreq = Sync.SettingsSync['freq']
@@ -65,6 +65,10 @@ async function updateSyncOption(update: SyncUpdate) {
 
 	if (update.type && isSyncType(update.type)) {
 		toggleSyncSettingsOption(update.type)
+
+		if (update.type === 'off') await migrateWebExtStorageTo('local')
+		if (update.type === 'auto') await migrateWebExtStorageTo('sync')
+
 		sync.type = update.type
 	}
 
@@ -82,8 +86,8 @@ function controlSync(sync: Sync.SettingsSync) {
 }
 
 function toggleSyncSettingsOption(type: SyncType) {
-	document.getElementById('sync-freq')?.classList.toggle('shown', type !== 'auto')
-	document.getElementById('manual-sync')?.classList.toggle('shown', type !== 'auto')
+	document.getElementById('sync-freq')?.classList.toggle('shown', !(type === 'auto' || type === 'off'))
+	document.getElementById('manual-sync')?.classList.toggle('shown', !(type === 'auto' || type === 'off'))
 	document.getElementById('gist-sync')?.classList.toggle('shown', type === 'gist')
 	document.getElementById('url-sync')?.classList.toggle('shown', type === 'url')
 
@@ -133,7 +137,7 @@ async function githubGistSync(token: string) {
 // Type check
 
 function isSyncType(val: string): val is SyncType {
-	return ['auto', 'gist', 'url'].includes(val)
+	return ['auto', 'gist', 'url', 'off'].includes(val)
 }
 
 function isSyncFreq(val: string): val is SyncFreq {

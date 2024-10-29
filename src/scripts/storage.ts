@@ -53,7 +53,7 @@ async function syncGet(key?: string | string[]): Promise<Sync.Storage> {
 		}
 
 		case 'webext-local': {
-			const data = await chrome.storage.local.get('sync')
+			const data = (await chrome.storage.local.get('sync')).sync
 			return verifyDataAsSync(data)
 		}
 
@@ -71,10 +71,9 @@ async function syncSet(keyval: Record<string, unknown>, cb = () => {}) {
 		}
 
 		case 'webext-local': {
-			const data = await chrome.storage.local.get('sync')
-
-			for (const [k, v] of Object.entries(keyval)) {
-				data[k] = v
+			const data = {
+				...(await chrome.storage.local.get('sync')).sync,
+				...keyval,
 			}
 
 			chrome.storage.local.set({ sync: data })
@@ -106,7 +105,7 @@ async function syncRemove(key: string) {
 		}
 
 		case 'webext-local': {
-			const data = await chrome.storage.local.get('sync')
+			const data = (await chrome.storage.local.get('sync')).sync
 			await chrome.storage.local.remove('sync')
 			delete data[key]
 			chrome.storage.local.set({ sync: data })
@@ -263,16 +262,23 @@ async function init(): Promise<AllStorage> {
 			// This waits for chrome.storage to be stored in a global variable
 			// that is created in file `webext-storage.js`
 
-			//@ts-expect-error -> exists in webext-storage.js
-			const store: AllStorage = globalThis.startupStorage
-			const isReady = (): boolean => 'sync' in store && 'local' in store
+			const store: AllStorage = {
+				//@ts-expect-error -> exists in webext-storage.js
+				local: globalThis.startupStorage?.local,
+				//@ts-expect-error -> exists in webext-storage.js
+				sync: globalThis.startupStorage?.local?.sync,
+			}
+
+			const isReady = (): boolean => !!store.sync && !!store.local
 
 			if (!isReady()) {
 				await new Promise((resolve) => {
 					document.addEventListener('webextstorage', function (event: CustomEventInit) {
-						const startupLocal = (window.startupStorage as AllStorage).local
-						if (event.detail === 'sync' && startupLocal.sync) store.sync = startupLocal.sync
-						if (event.detail === 'local') store.local = startupLocal
+						if (event.detail === 'local') {
+							store.sync = (window.startupStorage as AllStorage).local?.sync ?? ({} as Sync.Storage)
+							store.local = (window.startupStorage as AllStorage).local
+						}
+
 						if (isReady()) resolve(true)
 					})
 				})
@@ -311,9 +317,42 @@ async function init(): Promise<AllStorage> {
 //	Helpers  //
 // --------- //
 
+export async function migrateWebExtStorageTo(to: 'local' | 'sync') {
+	if (PLATFORM === 'online') {
+		return
+	}
+
+	if (to === 'local') {
+		const data = await chrome.storage.sync.get()
+		await chrome.storage.sync.clear()
+		await chrome.storage.local.set({ sync: data })
+		localStorage.setItem('WEBEXT_LOCAL', 'yes')
+	}
+
+	if (to === 'sync') {
+		const local = await chrome.storage.local.get()
+		const data = local?.sync ?? (await getSyncDefaults())
+		await chrome.storage.local.remove('sync')
+		await chrome.storage.sync.set(data)
+		localStorage.removeItem('WEBEXT_LOCAL')
+	}
+}
+
+export async function getSyncDefaults(): Promise<Sync.Storage> {
+	try {
+		const json = await (await fetch('config.json')).json()
+		return verifyDataAsSync(json)
+	} catch (error) {
+		//@ts-expect-error -> error.stack always gives error lol
+		console.log(error.stack)
+	}
+
+	return SYNC_DEFAULT
+}
+
 function storageType(): StorageType {
 	if (PLATFORM !== 'online') {
-		if (localStorage.storageType === 'webext-local') {
+		if (localStorage.getItem('WEBEXT_LOCAL')) {
 			return 'webext-local'
 		} else {
 			return 'webext-sync'
@@ -348,16 +387,4 @@ function verifyDataAsLocal(data: Record<string, unknown>) {
 	}
 
 	return data as Local.Storage
-}
-
-export async function getSyncDefaults(): Promise<Sync.Storage> {
-	try {
-		const json = await (await fetch('config.json')).json()
-		return verifyDataAsSync(json)
-	} catch (error) {
-		//@ts-expect-error -> error.stack always gives error lol
-		console.log(error.stack)
-	}
-
-	return SYNC_DEFAULT
 }
