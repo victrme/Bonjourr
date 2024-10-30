@@ -878,6 +878,10 @@ aside .settings-title .tooltip {
 	width: 66%;
 }
 
+#i_city {
+	text-transform: capitalize;
+}
+
 #quotes_userlist .wrapper {
 	flex-wrap: wrap;
 }
