@@ -1,6 +1,8 @@
 import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
 import storage, { migrateWebExtStorageTo } from '../storage'
+import networkForm from '../utils/networkform'
+import parse from '../utils/parse'
 
 type SyncType = Sync.SettingsSync['type']
 type SyncFreq = Sync.SettingsSync['freq']
@@ -14,10 +16,13 @@ interface SyncUpdate {
 	up?: true
 }
 
+const gistsyncform = networkForm('f_gistsync')
+const urlsyncform = networkForm('f_urlsync')
+
 export default function synchronization(init?: Sync.SettingsSync, update?: SyncUpdate) {
 	if (init) {
 		controlSync(init)
-		onSettingsLoad(() => toggleSyncSettingsOption(init.type))
+		onSettingsLoad(() => toggleSyncSettingsOption(init))
 	}
 
 	if (update) {
@@ -30,42 +35,53 @@ async function updateSyncOption(update: SyncUpdate) {
 	const sync = data.settingssync ?? { ...SYNC_DEFAULT.settingssync }
 
 	if (update.down) {
-		controlSync(sync)
+		controlSync(sync, 'down')
 		return
 	}
 
 	if (update.up) {
-		controlSync(sync)
+		controlSync(sync, 'up')
 		return
 	}
 
 	if (update.gist === '') {
-		sync.gist = undefined
+		storage.local.remove('gist')
+		return
 	}
 
 	if (update.url === '') {
 		sync.url = undefined
 	}
 
-	if (update.gist !== undefined) {
-		if (await isGistTokenValid(update.gist)) {
-			sync.gist = update.gist
-		} else {
-			console.log('Error !!!!')
+	if (update.gist) {
+		gistsyncform.load()
+
+		const isValid = await isGistTokenValid(update.gist)
+
+		if (isValid === false) {
+			gistsyncform.warn('Error !!!!')
 		}
+
+		document.getElementById('gist-sync')?.classList.remove('shown')
+		gistsyncform.accept('i_gistsync', update.gist)
+		sync.gistid = await createGist(update.gist)
+		storage.local.set({ gist: update.gist })
 	}
 
-	if (update.url !== undefined) {
+	if (update.url) {
+		urlsyncform.load()
+
 		const config = await getConfigFromUrl(update.url)
 
 		if (config) {
+			urlsyncform.accept('i_urlsync', update.url)
 			sync.url = update.url
+		} else {
+			urlsyncform.warn('Cannot get JSON')
 		}
 	}
 
 	if (update.type && isSyncType(update.type)) {
-		toggleSyncSettingsOption(update.type)
-
 		if (update.type === 'off') await migrateWebExtStorageTo('local')
 		if (update.type === 'auto') await migrateWebExtStorageTo('sync')
 
@@ -76,62 +92,114 @@ async function updateSyncOption(update: SyncUpdate) {
 		sync.freq = update.freq
 	}
 
+	toggleSyncSettingsOption(sync)
 	storage.sync.set({ settingssync: sync })
 }
 
-function controlSync(sync: Sync.SettingsSync) {
+async function controlSync(sync: Sync.SettingsSync, force?: 'up' | 'down') {
 	console.log('Did something')
 
-	// ...
+	if (force === 'down' && sync.type === 'gist') {
+		//
+		if (sync.gistid) {
+			const token = (await storage.local.get('gist'))?.gist ?? ''
+			const config = await retrieveGist(token, sync.gistid)
+			console.log(config)
+		}
+	}
 }
 
-function toggleSyncSettingsOption(type: SyncType) {
-	document.getElementById('sync-freq')?.classList.toggle('shown', !(type === 'auto' || type === 'off'))
-	document.getElementById('manual-sync')?.classList.toggle('shown', !(type === 'auto' || type === 'off'))
-	document.getElementById('gist-sync')?.classList.toggle('shown', type === 'gist')
-	document.getElementById('url-sync')?.classList.toggle('shown', type === 'url')
+async function toggleSyncSettingsOption(sync: Sync.SettingsSync) {
+	const { type, freq } = sync
 
 	if (type !== 'gist') document.getElementById('b_upsync')?.setAttribute('disabled', '')
 	if (type === 'gist') document.getElementById('b_upsync')?.removeAttribute('disabled')
+
+	document.getElementById('sync-freq')?.classList.toggle('shown', !(type === 'auto' || type === 'off'))
+	document.getElementById('manual-sync')?.classList.toggle('shown', freq === 'manual')
+	document.getElementById('url-sync')?.classList.toggle('shown', type === 'url')
+
+	if (type === 'gist') {
+		const token = (await storage.local.get('gist')).gist
+		const gistid = (await storage.sync.get('settingssync')).settingssync.gistid
+		const isValid = !!token && !!gistid && !!(await retrieveGist(token, gistid))
+
+		document.getElementById('gist-sync')?.classList.toggle('shown', isValid === false)
+	}
 }
+
+// Distant URL
 
 async function getConfigFromUrl(url: string): Promise<Sync.Storage | undefined> {
 	console.log('Got config, thanks !!!')
 
-	// ...
+	// try {
+	// 	const resp = await fetch(url)
 
-	return SYNC_DEFAULT
+	// 	console.log(resp)
+
+	// 	if (json) {
+	// 		// ...
+	// 		// verify json
+
+	// 		return json
+	// 	}
+	// } catch (error) {
+	// 	console.warn(error)
+	// }
+
+	return
 }
 
-async function isGistTokenValid(token: string): Promise<boolean> {
-	console.log('Is perfectly valid !!!')
+// Github Gist
 
-	// ...
+async function isGistTokenValid(token?: string): Promise<boolean> {
+	if (!token) {
+		return false
+	}
 
-	return true
+	const ISODate = new Date()?.toISOString()
+	const resp = await fetch(`https://api.github.com/gists?since=${ISODate}`, { headers: gistHeaders(token) })
+
+	return resp.status === 200
 }
 
-async function githubGistSync(token: string) {
+async function retrieveGist(token: string, id: string): Promise<Sync.Storage | undefined> {
+	type GistGet = { files: { content: string }[] }
+
+	const req = await fetch(`https://api.github.com/gists/${id}`, { headers: gistHeaders(token) })
+
+	if (req.status === 200) {
+		const gist = (await req.json()) as GistGet
+		const content = Object.values(gist?.files ?? {})[0]?.content ?? ''
+		return parse(content)
+	}
+}
+
+async function createGist(token: string): Promise<string> {
 	const data = await storage.sync.get()
 
-	fetch('https://api.github.com/gists', {
+	const files = { 'bonjourr-export.json': { content: JSON.stringify(data, undefined, 2) } }
+	const description = 'File automatically generated by Bonjourr. Learn more on https://bonjourr.fr/docs/overview/#sync'
+
+	const sent = await fetch('https://api.github.com/gists', {
+		body: JSON.stringify({ files, description, public: false }),
+		headers: gistHeaders(token),
 		method: 'POST',
-		body: JSON.stringify({
-			files: {
-				'bonjourr-export.json': {
-					content: JSON.stringify(data),
-				},
-			},
-			description:
-				'File automatically generated by Bonjourr when using the option "Settings Synchronization > Github Gist"',
-			public: false,
-		}),
-		headers: {
-			Authorization: `Bearer ${token}`,
-			Accept: 'application/vnd.github+json',
-			'X-GitHub-Api-Version': '2022-11-28',
-		},
 	})
+
+	const gist = await sent.json()
+	const id = gist.id
+
+	return id
+}
+
+function gistHeaders(token: string) {
+	return {
+		Authorization: `Bearer ${token}`,
+		Accept: 'application/vnd.github+json',
+		'X-GitHub-Api-Version': '2022-11-28',
+	}
 }
 
 // Type check
@@ -141,5 +209,5 @@ function isSyncType(val: string): val is SyncType {
 }
 
 function isSyncFreq(val: string): val is SyncFreq {
-	return ['changes', 'start', 'manual'].includes(val)
+	return ['newtabs', 'start', 'manual'].includes(val)
 }

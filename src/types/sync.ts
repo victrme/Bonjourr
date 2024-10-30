@@ -50,10 +50,10 @@ declare namespace Sync {
 
 	type SettingsSync = {
 		type: 'auto' | 'gist' | 'url' | 'off'
-		freq: 'changes' | 'start' | 'manual'
-		gist?: string
+		freq: 'newtabs' | 'start' | 'manual'
 		url?: string
 		last: number
+		gistid?: string
 	}
 
 	type LinkTabsOld = {

@@ -11,6 +11,7 @@ declare namespace Local {
 		lastWeather?: Weather.Local
 		operaExplained?: true
 		sync?: Sync.Storage
+		gist?: string
 	}
 
 	type Translations = {

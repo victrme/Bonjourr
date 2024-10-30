@@ -176,8 +176,8 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	settingssync: {
-		type: 'auto',
-		freq: 'changes',
+		type: PLATFORM === 'online' ? 'off' : 'auto',
+		freq: 'start',
 		last: 0,
 	},
 	move: {
