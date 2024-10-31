@@ -30,7 +30,7 @@
 	},
 
 	"background": {
-		"scripts": ["src/scripts/background.js"]
+		"scripts": ["src/scripts/service-worker.js"]
 	},
 
 	"permissions": ["storage"],

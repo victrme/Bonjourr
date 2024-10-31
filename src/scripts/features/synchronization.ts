@@ -1,6 +1,6 @@
 import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
-import storage, { migrateWebExtStorageTo } from '../storage'
+import storage, { getSyncDefaults, migrateWebExtStorageTo } from '../storage'
 import networkForm from '../utils/networkform'
 import parse from '../utils/parse'
 
@@ -19,10 +19,9 @@ interface SyncUpdate {
 const gistsyncform = networkForm('f_gistsync')
 const urlsyncform = networkForm('f_urlsync')
 
-export default function synchronization(init?: Sync.SettingsSync, update?: SyncUpdate) {
+export default async function synchronization(init?: Sync.Storage, update?: SyncUpdate): Promise<undefined> {
 	if (init) {
-		controlSync(init)
-		onSettingsLoad(() => toggleSyncSettingsOption(init))
+		onSettingsLoad(() => toggleSyncSettingsOption(init.settingssync))
 	}
 
 	if (update) {
@@ -32,10 +31,15 @@ export default function synchronization(init?: Sync.SettingsSync, update?: SyncU
 
 async function updateSyncOption(update: SyncUpdate) {
 	const data = await storage.sync.get()
+	const local = await storage.local.get('gist')
 	const sync = data.settingssync ?? { ...SYNC_DEFAULT.settingssync }
 
 	if (update.down) {
-		controlSync(sync, 'down')
+		if (sync.type === 'gist') {
+			// control sync with gist
+			// replace storage
+			// reload page
+		}
 		return
 	}
 
@@ -63,7 +67,8 @@ async function updateSyncOption(update: SyncUpdate) {
 		}
 
 		document.getElementById('gist-sync')?.classList.remove('shown')
-		gistsyncform.accept('i_gistsync', update.gist)
+		gistsyncform.accept()
+
 		sync.gistid = await createGist(update.gist)
 		storage.local.set({ gist: update.gist })
 	}
@@ -96,16 +101,26 @@ async function updateSyncOption(update: SyncUpdate) {
 	storage.sync.set({ settingssync: sync })
 }
 
-async function controlSync(sync: Sync.SettingsSync, force?: 'up' | 'down') {
+async function controlSync(sync: Sync.SettingsSync, gisttoken?: string): Promise<Sync.Storage | undefined> {
+	const { gistid, freq, last, type } = sync
+	const now = new Date().getTime()
+
+	if (freq === 'manual') {
+		return
+	}
+	if (freq === 'start') {
+		// ah ouais probleme
+	}
+	if (freq === 'newtabs') {
+		// do nothing
+	}
+
 	console.log('Did something')
 
-	if (force === 'down' && sync.type === 'gist') {
-		//
-		if (sync.gistid) {
-			const token = (await storage.local.get('gist'))?.gist ?? ''
-			const config = await retrieveGist(token, sync.gistid)
-			console.log(config)
-		}
+	if (sync.type === 'gist' && sync.gistid) {
+		const token = gisttoken ?? (await storage.local.get('gist'))?.gist ?? ''
+		const newdata = await retrieveGist(token, sync.gistid)
+		return newdata
 	}
 }
 
@@ -152,6 +167,10 @@ async function getConfigFromUrl(url: string): Promise<Sync.Storage | undefined> 
 }
 
 // Github Gist
+
+export async function syncWithGist(token: string, id: string, last = 0): Promise<Sync.Storage> {
+	return getSyncDefaults()
+}
 
 async function isGistTokenValid(token?: string): Promise<boolean> {
 	if (!token) {

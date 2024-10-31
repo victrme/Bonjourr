@@ -43,7 +43,7 @@ const paths = {
 	extension: {
 		manifest: [`src/manifests/${platform}.json`, `release/${platform}/manifest.json`],
 		scripts: {
-			background: ['src/scripts/services/background.js', `release/${platform}/src/scripts/background.js`],
+			serviceworker: ['src/scripts/services/service-worker.js', `release/${platform}/src/scripts/service-worker.js`],
 			storage: ['src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`],
 		},
 	},
@@ -198,7 +198,7 @@ function scripts() {
 	}
 
 	if (PLATFORM_ONLINE) copyFile(...paths.online.serviceworker)
-	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.background)
+	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.serviceworker)
 	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.storage)
 }
 

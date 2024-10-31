@@ -63,7 +63,6 @@ async function startup() {
 
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
-	synchronization(sync.settingssync)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
 	weather({ sync: sync, lastWeather: local.lastWeather })
 	customFont(sync.font)
