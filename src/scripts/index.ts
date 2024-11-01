@@ -60,7 +60,7 @@ async function startup() {
 	}
 
 	await setTranslationCache(sync.lang, local)
-
+	synchronization(sync)
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)

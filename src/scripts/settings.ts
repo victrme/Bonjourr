@@ -1138,15 +1138,7 @@ async function importSettings(imported: Partial<Sync.Storage>) {
 
 function resetSettings(action: 'yes' | 'no' | 'first') {
 	if (action === 'yes') {
-		storage.sync.clear()
-		storage.local.clear()
-
-		setTimeout(async () => {
-			storage.sync.set({ ...(await getSyncDefaults()) })
-			storage.local.set({ ...LOCAL_DEFAULT })
-			fadeOut()
-		}, 50)
-
+		storage.clearall().then(fadeOut)
 		return
 	}
 

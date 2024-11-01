@@ -1,6 +1,3 @@
-const CACHE_KEY = '20.1.2'
-const API_URLS = ['unsplash.com', 'jsdelivr.net', 'api.bonjourr']
-
 //	Extensions
 
 function createNewTab() {
@@ -9,15 +6,50 @@ function createNewTab() {
 }
 
 function handleInstalled(details) {
-	if (details.reason === 'install') createNewTab()
-	console.log(details)
+	if (details.reason === 'install') {
+		createNewTab()
+	}
 }
 
 chrome.action.onClicked.addListener(createNewTab)
 chrome.runtime.onInstalled.addListener(handleInstalled)
 chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
 
+chrome.tabs.onCreated.addListener(async function () {
+	const promises = await Promise.all([
+		chrome.storage.sync.get(),
+		chrome.storage.local.get(),
+		chrome.bookmarks?.getTree(),
+		chrome.topSites?.get(),
+	])
+
+	chrome.runtime.onMessage.addListener(function ({ type }) {
+		if (type === 'PAGE_READY') {
+			chrome.runtime.sendMessage({
+				type: 'STARTUP_STORAGE',
+				content: {
+					sync: promises[0],
+					local: promises[1],
+					bookmarks: promises[2],
+					topSites: promises[3],
+				},
+			})
+		}
+	})
+})
+
+chrome.runtime.onStartup.addListener(() => {
+	chrome.runtime.onMessage.addListener(function ({ type }) {
+		if (type === 'PAGE_READY') {
+			chrome.runtime.sendMessage({ content: 'BROWSER_START' })
+		}
+	})
+})
+
 // Web
+
+const CACHE_KEY = '20.1.2'
+const API_URLS = ['unsplash.com', 'jsdelivr.net', 'api.bonjourr']
 
 if (!chrome) {
 	self.addEventListener('activate', async () => {
