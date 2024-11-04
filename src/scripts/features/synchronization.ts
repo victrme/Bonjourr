@@ -1,7 +1,6 @@
-import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
-import storage, { getSyncDefaults, migrateWebExtStorageTo } from '../storage'
 import networkForm from '../utils/networkform'
+import storage from '../storage'
 import parse from '../utils/parse'
 
 type SyncType = Sync.SettingsSync['type']
@@ -19,7 +18,7 @@ interface SyncUpdate {
 const gistsyncform = networkForm('f_gistsync')
 const urlsyncform = networkForm('f_urlsync')
 
-export default async function synchronization(init?: Sync.Storage, update?: SyncUpdate): Promise<undefined> {
+export default function synchronization(init?: Sync.Storage, update?: SyncUpdate) {
 	if (init) {
 		onSettingsLoad(() => toggleSyncSettingsOption(init.settingssync))
 	}
@@ -32,7 +31,7 @@ export default async function synchronization(init?: Sync.Storage, update?: Sync
 async function updateSyncOption(update: SyncUpdate) {
 	const data = await storage.sync.get()
 	const local = await storage.local.get('gist')
-	const sync = data.settingssync ?? { ...SYNC_DEFAULT.settingssync }
+	const sync = data.settingssync
 
 	if (update.down) {
 		if (sync.type === 'gist') {
@@ -87,10 +86,27 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 
 	if (update.type && isSyncType(update.type)) {
-		if (update.type === 'off') await migrateWebExtStorageTo('local')
-		if (update.type === 'auto') await migrateWebExtStorageTo('sync')
+		const fromAutoToOthers = sync.type === 'auto' && update.type !== 'auto'
+		const toAuto = sync.type !== 'auto' && update.type === 'auto'
 
 		sync.type = update.type
+
+		// <!> Set & return here because
+		// <!> awaits in if() doesn't have priority
+
+		if (fromAutoToOthers) {
+			await chrome.storage.sync.clear()
+			await chrome.storage.local.set({ sync: data })
+			sessionStorage.setItem('WEBEXT_LOCAL', 'yes')
+			return
+		}
+
+		if (toAuto) {
+			await chrome.storage.local.remove('sync')
+			await chrome.storage.sync.set(data)
+			sessionStorage.removeItem('WEBEXT_LOCAL')
+			return
+		}
 	}
 
 	if (update.freq && isSyncFreq(update.freq)) {
@@ -167,10 +183,6 @@ async function getConfigFromUrl(url: string): Promise<Sync.Storage | undefined> 
 }
 
 // Github Gist
-
-export async function syncWithGist(token: string, id: string, last = 0): Promise<Sync.Storage> {
-	return getSyncDefaults()
-}
 
 async function isGistTokenValid(token?: string): Promise<boolean> {
 	if (!token) {

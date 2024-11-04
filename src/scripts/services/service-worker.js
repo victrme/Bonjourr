@@ -1,7 +1,16 @@
+if (!!chrome?.storage) {
+	chrome.action.onClicked.addListener(createNewTab)
+	chrome.runtime.onInstalled.addListener(handleInstalled)
+	chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
+} else {
+	self.addEventListener('activate', updateCache)
+	self.addEventListener('fetch', retrieveCache)
+}
+
 const CACHE_KEY = '20.1.2'
 const API_URLS = ['unsplash.com', 'jsdelivr.net', 'api.bonjourr']
 
-//	Extensions
+// Web Extension
 
 function createNewTab() {
 	const url = chrome.runtime.getURL('index.html')
@@ -9,48 +18,43 @@ function createNewTab() {
 }
 
 function handleInstalled(details) {
-	if (details.reason === 'install') createNewTab()
-	console.log(details)
+	if (details.reason === 'install') {
+		createNewTab()
+	}
 }
 
-chrome.action.onClicked.addListener(createNewTab)
-chrome.runtime.onInstalled.addListener(handleInstalled)
-chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
+// Progressive Web App
 
-// Web
+async function updateCache() {
+	const keys = await caches.keys()
 
-if (!chrome) {
-	self.addEventListener('activate', async () => {
-		const keys = await caches.keys()
-
-		for (const key of keys) {
-			if (CACHE_KEY !== key) {
-				await caches.delete(key)
-			}
+	for (const key of keys) {
+		if (CACHE_KEY !== key) {
+			await caches.delete(key)
 		}
-	})
+	}
+}
 
-	self.addEventListener('fetch', function (event) {
-		const url = event.request.url
-		const isAPI = API_URLS.some((api) => url.includes(api))
+function retrieveCache(event) {
+	const isAPI = API_URLS.some((api) => url.includes(api))
+	const url = event.request.url
 
-		event.respondWith(
-			(async () => {
-				if (isAPI) {
-					return fetch(event.request)
-				}
-
-				const cachedResponse = await caches.match(event.request)
-
-				if (cachedResponse) {
-					return cachedResponse
-				}
-
-				const cache = await caches.open(CACHE_KEY)
-				cache.add(event.request.url)
-
+	event.respondWith(
+		(async () => {
+			if (isAPI) {
 				return fetch(event.request)
-			})()
-		)
-	})
+			}
+
+			const cachedResponse = await caches.match(event.request)
+
+			if (cachedResponse) {
+				return cachedResponse
+			}
+
+			const cache = await caches.open(CACHE_KEY)
+			cache.add(event.request.url)
+
+			return fetch(event.request)
+		})()
+	)
 }

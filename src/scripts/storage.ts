@@ -22,6 +22,7 @@ interface Storage {
 		clear: () => void
 	}
 	init: () => Promise<AllStorage>
+	clearall: () => Promise<void>
 }
 
 const storage: Storage = {
@@ -38,6 +39,7 @@ const storage: Storage = {
 		clear: localClear,
 	},
 	init: init,
+	clearall: clearall,
 }
 
 export default storage
@@ -63,10 +65,10 @@ async function syncGet(key?: string | string[]): Promise<Sync.Storage> {
 	}
 }
 
-async function syncSet(keyval: Record<string, unknown>, cb = () => {}) {
+async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 	switch (storageType()) {
 		case 'webext-sync': {
-			chrome.storage.sync.set(keyval, cb)
+			chrome.storage.sync.set(keyval, fn)
 			return
 		}
 
@@ -76,7 +78,7 @@ async function syncSet(keyval: Record<string, unknown>, cb = () => {}) {
 				...keyval,
 			}
 
-			chrome.storage.local.set({ sync: data })
+			chrome.storage.local.set({ sync: data }, fn)
 			return
 		}
 
@@ -211,9 +213,9 @@ async function localClear() {
 		}
 
 		case 'webext-local': {
-			const sync = chrome.storage.local.get('sync')
+			const sync = (await chrome.storage.local.get('sync')).sync
 			await chrome.storage.local.clear()
-			await chrome.storage.local.set({ sync })
+			await chrome.storage.local.set({ sync: sync })
 			return
 		}
 
@@ -229,114 +231,143 @@ async function localClear() {
 // ----------- //
 
 async function init(): Promise<AllStorage> {
+	//@ts-expect-error -> exists in webext-storage.js
+	const store: AllStorage = globalThis.startupStorage
+
+	//@ts-expect-error -> don't worry about it
+	globalThis.pageReady = true
+
+	switch (storageType()) {
+		case 'webext-sync':
+			return await webextSyncInit()
+
+		case 'webext-local':
+			return await webextLocalInit()
+
+		case 'localstorage':
+			return await localStorageInit()
+	}
+
+	// Browser fn
+
+	async function localStorageInit(): Promise<AllStorage> {
+		const about = parse<Sync.Storage>(localStorage.bonjourr)?.about
+
+		if (!localStorage.bonjourr) {
+			const config = await getSyncDefaults()
+			syncSet(config)
+		}
+
+		if (!about) {
+			syncSet({ about: structuredClone(SYNC_DEFAULT.about) })
+		}
+
+		return {
+			sync: verifyDataAsSync(await syncGet()),
+			local: verifyDataAsLocal(await localGet()),
+		}
+	}
+
+	// Extension fn
+
+	async function webextSyncInit(): Promise<AllStorage> {
+		if (!webextStoreReady()) {
+			await new Promise((resolve) => {
+				document.addEventListener('webextstorage', function (event: CustomEventInit) {
+					if (event.detail === 'sync') store.sync = (globalThis.startupStorage as AllStorage).sync
+					if (event.detail === 'local') store.local = (globalThis.startupStorage as AllStorage).local
+					if (webextStoreReady()) resolve(true)
+				})
+			})
+		}
+
+		return await webextStoreFinalize()
+	}
+
+	async function webextLocalInit(): Promise<AllStorage> {
+		if (!webextStoreReady()) {
+			await new Promise((resolve) => {
+				document.addEventListener('webextstorage', function (event: CustomEventInit) {
+					if (event.detail === 'local') {
+						const local = (globalThis.startupStorage as AllStorage).local
+						const sync = ((globalThis.startupStorage as AllStorage).local?.sync ?? {}) as Sync.Storage
+
+						store.sync = sync
+						store.local = local
+						delete store.local.sync
+
+						resolve(true)
+					}
+				})
+			})
+		} else {
+			const sync = (globalThis.startupStorage as AllStorage).local?.sync ?? {}
+			store.sync = sync as Sync.Storage
+			delete store.local.sync
+		}
+
+		return await webextStoreFinalize()
+	}
+
+	async function webextStoreFinalize(): Promise<AllStorage> {
+		if (Object.keys(store.sync)?.length === 0) {
+			store.sync = await getSyncDefaults()
+		}
+
+		const sync = verifyDataAsSync(store.sync)
+		const local = verifyDataAsLocal(store.local)
+
+		//@ts-expect-error -> exists in webext-storage.js
+		delete globalThis.startupStorage
+
+		return { sync, local }
+	}
+
+	// This waits for chrome.storage to be stored in a global variable
+	// that is created in file `webext-storage.js`
+	function webextStoreReady(): boolean {
+		return 'sync' in store && 'local' in store
+	}
+}
+
+//	Clear all data  //
+// ---------------- //
+
+async function clearall() {
+	sessionStorage.clear()
+	localStorage.clear()
+
+	//@ts-expect-error
+	delete globalThis.startupStorage
+
 	switch (storageType()) {
 		case 'webext-sync': {
-			// This waits for chrome.storage to be stored in a global variable
-			// that is created in file `webext-storage.js`
+			await chrome.storage.sync.clear()
+			await chrome.storage.local.clear()
 
-			//@ts-expect-error -> exists in webext-storage.js
-			const store: AllStorage = globalThis.startupStorage
-			const isReady = (): boolean => 'sync' in store && 'local' in store
+			chrome.storage.sync.set(SYNC_DEFAULT)
+			chrome.storage.local.set(LOCAL_DEFAULT)
 
-			if (!isReady()) {
-				await new Promise((resolve) => {
-					document.addEventListener('webextstorage', function (event: CustomEventInit) {
-						if (event.detail === 'sync') store.sync = (window.startupStorage as AllStorage).sync
-						if (event.detail === 'local') store.local = (window.startupStorage as AllStorage).local
-						if (isReady()) resolve(true)
-					})
-				})
-			}
-
-			if (Object.keys(store.sync)?.length === 0) {
-				store.sync = await getSyncDefaults()
-			}
-
-			const sync = verifyDataAsSync(store.sync)
-			const local = verifyDataAsLocal(store.local)
-
-			return { sync, local }
+			return
 		}
 
 		case 'webext-local': {
-			// This waits for chrome.storage to be stored in a global variable
-			// that is created in file `webext-storage.js`
+			await chrome.storage.sync.clear()
+			await chrome.storage.local.clear()
 
-			const store: AllStorage = {
-				//@ts-expect-error -> exists in webext-storage.js
-				local: globalThis.startupStorage?.local,
-				//@ts-expect-error -> exists in webext-storage.js
-				sync: globalThis.startupStorage?.local?.sync,
-			}
+			chrome.storage.local.set({
+				...LOCAL_DEFAULT,
+				sync: SYNC_DEFAULT,
+			})
 
-			const isReady = (): boolean => !!store.sync && !!store.local
-
-			if (!isReady()) {
-				await new Promise((resolve) => {
-					document.addEventListener('webextstorage', function (event: CustomEventInit) {
-						if (event.detail === 'local') {
-							store.sync = (window.startupStorage as AllStorage).local?.sync ?? ({} as Sync.Storage)
-							store.local = (window.startupStorage as AllStorage).local
-						}
-
-						if (isReady()) resolve(true)
-					})
-				})
-			}
-
-			if (Object.keys(store.sync)?.length === 0) {
-				store.sync = await getSyncDefaults()
-			}
-
-			const sync = verifyDataAsSync(store.sync)
-			const local = verifyDataAsLocal(store.local)
-
-			return { sync, local }
-		}
-
-		case 'localstorage': {
-			const config = await getSyncDefaults()
-			const about = parse<Sync.Storage>(localStorage.bonjourr)?.about
-
-			if (!localStorage.bonjourr) {
-				syncSet(config)
-			}
-
-			if (!about) {
-				syncSet({ about: config.about })
-			}
-
-			return {
-				sync: verifyDataAsSync(await syncGet()),
-				local: verifyDataAsLocal(await localGet()),
-			}
+			sessionStorage.WEBEXT_LOCAL = 'yes'
+			return
 		}
 	}
 }
 
 //	Helpers  //
 // --------- //
-
-export async function migrateWebExtStorageTo(to: 'local' | 'sync') {
-	if (PLATFORM === 'online') {
-		return
-	}
-
-	if (to === 'local') {
-		const data = await chrome.storage.sync.get()
-		await chrome.storage.sync.clear()
-		await chrome.storage.local.set({ sync: data })
-		localStorage.setItem('WEBEXT_LOCAL', 'yes')
-	}
-
-	if (to === 'sync') {
-		const local = await chrome.storage.local.get()
-		const data = local?.sync ?? (await getSyncDefaults())
-		await chrome.storage.local.remove('sync')
-		await chrome.storage.sync.set(data)
-		localStorage.removeItem('WEBEXT_LOCAL')
-	}
-}
 
 export async function getSyncDefaults(): Promise<Sync.Storage> {
 	try {
@@ -352,10 +383,14 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 
 function storageType(): StorageType {
 	if (PLATFORM !== 'online') {
-		if (localStorage.getItem('WEBEXT_LOCAL')) {
-			return 'webext-local'
-		} else {
+		const { local, sync } = (globalThis.startupStorage as AllStorage) ?? {}
+		const fromStartupStorage = sync?.settingssync?.type ?? local?.sync?.settingssync?.type
+		const type = sessionStorage.getItem('WEBEXT_LOCAL') ?? fromStartupStorage ?? 'auto'
+
+		if (type === 'auto') {
 			return 'webext-sync'
+		} else {
+			return 'webext-local'
 		}
 	}
 

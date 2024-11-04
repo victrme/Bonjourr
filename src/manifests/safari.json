@@ -29,8 +29,7 @@
 	},
 
 	"background": {
-		"service_worker": "src/scripts/service-worker.js",
-		"type": "module"
+		"service_worker": "src/scripts/service-worker.js"
 	},
 
 	"permissions": ["storage"]
