@@ -2,20 +2,26 @@ globalThis.startupStorage = {}
 globalThis.startupBookmarks = undefined
 globalThis.startupTopsites = undefined
 
-chrome.runtime.onMessage.addListener(({ type, content }) => {
-	if (type === 'BROWSER_START') {
-		globalThis.browserStart = true
-	}
+chrome.storage.sync.get().then(function (data) {
+	globalThis.startupStorage.sync = data
 
-	if (type === 'STARTUP_STORAGE') {
-		globalThis.startupStorage.sync = content.sync
-		globalThis.startupStorage.local = content.local
-		globalThis.startupBookmarks = content.bookmarks
-		globalThis.startupTopsites = content.topsites
-
-		// document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'sync' }))
-		// document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'local' }))
+	if (globalThis.pageReady) {
+		document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'sync' }))
 	}
 })
 
-chrome.runtime.sendMessage({ type: 'PAGE_READY' })
+chrome.storage.local.get().then(function (data) {
+	globalThis.startupStorage.local = data
+
+	if (globalThis.pageReady) {
+		document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'local' }))
+	}
+})
+
+chrome.bookmarks?.getTree().then(function (data) {
+	globalThis.startupBookmarks = data
+})
+
+chrome.topSites?.get().then(function (data) {
+	globalThis.startupTopsites = data
+})

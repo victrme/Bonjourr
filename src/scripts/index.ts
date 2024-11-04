@@ -22,7 +22,6 @@ import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 import storage from './storage'
 import 'clickdown'
-import synchronization from './features/synchronization'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -31,9 +30,7 @@ const features: FeaturesToWait[] = ['clock', 'links']
 let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
-//
 //	Startup
-//
 
 try {
 	startup()
@@ -60,7 +57,7 @@ async function startup() {
 	}
 
 	await setTranslationCache(sync.lang, local)
-	synchronization(sync)
+	// synchronization(sync)
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
