@@ -232,7 +232,7 @@ async function localClear() {
 
 async function init(): Promise<AllStorage> {
 	//@ts-expect-error -> exists in webext-storage.js
-	const store: AllStorage = globalThis.startupStorage
+	const store: AllStorage = globalThis.startupStorage ?? {}
 
 	//@ts-expect-error -> don't worry about it
 	globalThis.pageReady = true
@@ -251,21 +251,10 @@ async function init(): Promise<AllStorage> {
 	// Browser fn
 
 	async function localStorageInit(): Promise<AllStorage> {
-		const about = parse<Sync.Storage>(localStorage.bonjourr)?.about
+		store.sync = await syncGet()
+		store.local = await localGet()
 
-		if (!localStorage.bonjourr) {
-			const config = await getSyncDefaults()
-			syncSet(config)
-		}
-
-		if (!about) {
-			syncSet({ about: structuredClone(SYNC_DEFAULT.about) })
-		}
-
-		return {
-			sync: verifyDataAsSync(await syncGet()),
-			local: verifyDataAsLocal(await localGet()),
-		}
+		return await finalizeStorageInit()
 	}
 
 	// Extension fn
@@ -281,7 +270,7 @@ async function init(): Promise<AllStorage> {
 			})
 		}
 
-		return await webextStoreFinalize()
+		return await finalizeStorageInit()
 	}
 
 	async function webextLocalInit(): Promise<AllStorage> {
@@ -306,12 +295,22 @@ async function init(): Promise<AllStorage> {
 			delete store.local.sync
 		}
 
-		return await webextStoreFinalize()
+		return await finalizeStorageInit()
 	}
 
-	async function webextStoreFinalize(): Promise<AllStorage> {
+	async function finalizeStorageInit(): Promise<AllStorage> {
 		if (Object.keys(store.sync)?.length === 0) {
 			store.sync = await getSyncDefaults()
+		}
+		//
+		else if (store.sync.settingssync?.type === 'gist') {
+			console.log('Update with github')
+			// ...
+		}
+		//
+		else if (store.sync.settingssync?.type === 'url') {
+			console.log('Update with distant URL')
+			// ...
 		}
 
 		const sync = verifyDataAsSync(store.sync)
@@ -385,12 +384,13 @@ function storageType(): StorageType {
 	if (PLATFORM !== 'online') {
 		const { local, sync } = (globalThis.startupStorage as AllStorage) ?? {}
 		const fromStartupStorage = sync?.settingssync?.type ?? local?.sync?.settingssync?.type
-		const type = sessionStorage.getItem('WEBEXT_LOCAL') ?? fromStartupStorage ?? 'auto'
+		const fromSession = sessionStorage.getItem('WEBEXT_LOCAL') === 'yes' ? 'off' : undefined
+		const type = fromSession ?? fromStartupStorage ?? 'auto'
 
-		if (type === 'auto') {
-			return 'webext-sync'
-		} else {
+		if (type === 'off') {
 			return 'webext-local'
+		} else {
+			return 'webext-sync'
 		}
 	}
 

@@ -10,8 +10,9 @@ declare namespace Local {
 		translations?: Translations
 		lastWeather?: Weather.Local
 		operaExplained?: true
+		gistToken?: string
+		pastebinToken?: string
 		sync?: Sync.Storage
-		gist?: string
 	}
 
 	type Translations = {

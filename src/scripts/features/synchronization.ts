@@ -86,22 +86,22 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 
 	if (update.type && isSyncType(update.type)) {
-		const fromAutoToOthers = sync.type === 'auto' && update.type !== 'auto'
-		const toAuto = sync.type !== 'auto' && update.type === 'auto'
+		const toLocal = sync.type !== 'off' && update.type === 'off'
+		const toSync = sync.type === 'off' && update.type !== 'off'
 
 		sync.type = update.type
 
 		// <!> Set & return here because
 		// <!> awaits in if() doesn't have priority
 
-		if (fromAutoToOthers) {
+		if (toLocal) {
 			await chrome.storage.sync.clear()
 			await chrome.storage.local.set({ sync: data })
 			sessionStorage.setItem('WEBEXT_LOCAL', 'yes')
 			return
 		}
 
-		if (toAuto) {
+		if (toSync) {
 			await chrome.storage.local.remove('sync')
 			await chrome.storage.sync.set(data)
 			sessionStorage.removeItem('WEBEXT_LOCAL')
@@ -117,7 +117,10 @@ async function updateSyncOption(update: SyncUpdate) {
 	storage.sync.set({ settingssync: sync })
 }
 
-async function controlSync(sync: Sync.SettingsSync, gisttoken?: string): Promise<Sync.Storage | undefined> {
+async function controlSync(
+	sync: Sync.SettingsSync,
+	{ gistToken, pastebinToken }: Partial<Local.Storage>
+): Promise<Sync.Storage | undefined> {
 	const { gistid, freq, last, type } = sync
 	const now = new Date().getTime()
 
@@ -134,8 +137,7 @@ async function controlSync(sync: Sync.SettingsSync, gisttoken?: string): Promise
 	console.log('Did something')
 
 	if (sync.type === 'gist' && sync.gistid) {
-		const token = gisttoken ?? (await storage.local.get('gist'))?.gist ?? ''
-		const newdata = await retrieveGist(token, sync.gistid)
+		const newdata = await retrieveGist(gistToken ?? '', sync.gistid)
 		return newdata
 	}
 }
@@ -151,7 +153,7 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync) {
 	document.getElementById('url-sync')?.classList.toggle('shown', type === 'url')
 
 	if (type === 'gist') {
-		const token = (await storage.local.get('gist')).gist
+		const token = (await storage.local.get('gist')).gistToken
 		const gistid = (await storage.sync.get('settingssync')).settingssync.gistid
 		const isValid = !!token && !!gistid && !!(await retrieveGist(token, gistid))
 
