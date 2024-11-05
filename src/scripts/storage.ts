@@ -1,4 +1,5 @@
 import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
+import { controlSync } from './features/synchronization'
 import parse from './utils/parse'
 
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
@@ -303,15 +304,18 @@ async function init(): Promise<AllStorage> {
 			store.sync = await getSyncDefaults()
 		}
 		//
-		else if (store.sync.settingssync?.type === 'gist') {
-			console.log('Update with github')
-			// ...
-		}
+		// else if (store.sync.settingssync?.type === 'gist') {
+		// 	// ...
+
+		// 	console.log('Update with github')
+		// 	const cloud = await controlSync(store.sync.settingssync, { gistToken: store.local.gistToken })
+		// 	console.log(cloud)
+		// }
 		//
-		else if (store.sync.settingssync?.type === 'url') {
-			console.log('Update with distant URL')
-			// ...
-		}
+		// else if (store.sync.settingssync?.type === 'url') {
+		// 	console.log('Update with distant URL')
+		// 	// ...
+		// }
 
 		const sync = verifyDataAsSync(store.sync)
 		const local = verifyDataAsLocal(store.local)

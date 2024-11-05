@@ -177,8 +177,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	},
 	settingssync: {
 		type: PLATFORM === 'online' ? 'off' : 'auto',
-		freq: 'start',
-		last: 0,
+		freq: 'manual',
 	},
 	move: {
 		selection: 'single',

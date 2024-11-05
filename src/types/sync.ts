@@ -52,7 +52,7 @@ declare namespace Sync {
 		type: 'auto' | 'gist' | 'url' | 'off'
 		freq: 'newtabs' | 'start' | 'manual'
 		url?: string
-		last: number
+		last?: string
 		gistid?: string
 	}
 

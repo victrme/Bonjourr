@@ -154,7 +154,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
-	setInput('i_syncfreq', data.settingssync?.freq ?? 'changes')
+	// setInput('i_syncfreq', data.settingssync?.freq ?? 'changes')
 	setInput('i_urlsync', data.settingssync?.url ?? '')
 
 	setCheckbox('i_showall', data.showall)
@@ -710,9 +710,9 @@ function initOptionsEvents() {
 
 	// Sync
 
-	paramId('i_syncfreq').addEventListener('change', function (this) {
-		synchronization(undefined, { freq: this.value })
-	})
+	// paramId('i_syncfreq').addEventListener('change', function (this) {
+	// 	synchronization(undefined, { freq: this.value })
+	// })
 
 	paramId('i_synctype').addEventListener('change', function (this) {
 		synchronization(undefined, { type: this.value })
@@ -720,7 +720,7 @@ function initOptionsEvents() {
 
 	paramId('f_gistsync').addEventListener('submit', function (this, event) {
 		event.preventDefault()
-		synchronization(undefined, { gist: paramId('i_gistsync').value })
+		synchronization(undefined, { gistToken: paramId('i_gistsync').value })
 	})
 
 	paramId('f_urlsync').addEventListener('submit', function (this, event) {
