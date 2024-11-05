@@ -2,6 +2,7 @@ import onSettingsLoad from '../utils/onsettingsload'
 import networkForm from '../utils/networkform'
 import storage from '../storage'
 import parse from '../utils/parse'
+import { apiFetch } from '../utils'
 
 type SyncType = Sync.SettingsSync['type']
 type SyncFreq = Sync.SettingsSync['freq']
@@ -108,6 +109,7 @@ async function updateSyncOption(update: SyncUpdate) {
 		if (config) {
 			urlsyncform.accept('i_urlsync', update.url)
 			sync.url = update.url
+			console.log(config)
 		} else {
 			urlsyncform.warn('Cannot get JSON')
 		}
@@ -194,24 +196,27 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync) {
 // Distant URL
 
 async function getConfigFromUrl(url: string): Promise<Sync.Storage | undefined> {
-	console.log('Got config, thanks !!!')
+	let config: Sync.Storage | undefined = undefined
 
-	// try {
-	// 	const resp = await fetch(url)
+	try {
+		const resp = await fetch(url)
+		const text = await resp.text()
+		config = parse(text)
+	} catch (_) {
+		console.log('Failed to get data, CORS ?')
 
-	// 	console.log(resp)
+		try {
+			const resp = await apiFetch('/proxy?query=' + url)
+			const text = await resp?.text()
+			config = parse(text)
+		} catch (_) {
+			console.log('Failed to get data with proxy, Bad request')
+		}
+	}
 
-	// 	if (json) {
-	// 		// ...
-	// 		// verify json
-
-	// 		return json
-	// 	}
-	// } catch (error) {
-	// 	console.warn(error)
-	// }
-
-	return
+	if (config?.about) {
+		return config
+	}
 }
 
 // Github Gist
