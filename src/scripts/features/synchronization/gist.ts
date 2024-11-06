@@ -1,7 +1,6 @@
 import { tradThis } from '../../utils/translations'
-import parse from '../../utils/parse'
 
-export async function retrieveGist(token: string, id: string): Promise<Sync.Storage | undefined> {
+export async function retrieveGist(token: string, id: string): Promise<Sync.Storage> {
 	type GistGet = { files: { content: string }[] }
 
 	if (!token) {
@@ -15,8 +14,15 @@ export async function retrieveGist(token: string, id: string): Promise<Sync.Stor
 	if (req.status === 200) {
 		const gist = (await req.json()) as GistGet
 		const content = Object.values(gist?.files ?? {})[0]?.content ?? ''
-		return parse(content)
+
+		try {
+			return JSON.parse(content)
+		} catch (_) {
+			throw new Error(GIST_ERROR.JSON)
+		}
 	}
+
+	throw new Error(GIST_ERROR.OTHER)
 }
 
 export async function sendGist(token: string, id: string | undefined, data: Sync.Storage): Promise<Sync.Storage> {
@@ -109,5 +115,6 @@ const GIST_ERROR = {
 	TOKEN: tradThis('Invalid authentification token'),
 	NOGIST: tradThis('Cannot find bonjourr file in gists'),
 	NOCONN: tradThis('Cannot access Github servers right now'),
+	JSON: tradThis('Response is not valid JSON'),
 	OTHER: tradThis('Some Github Gist error happend'),
 }

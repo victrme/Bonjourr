@@ -1,9 +1,9 @@
 import { retrieveGist, sendGist, isGistTokenValid } from './gist'
+import { receiveFromURL } from './url'
 import onSettingsLoad from '../../utils/onsettingsload'
-import { apiFetch } from '../../utils'
 import networkForm from '../../utils/networkform'
+import { fadeOut } from '../../utils'
 import storage from '../../storage'
-import parse from '../../utils/parse'
 
 type SyncType = Sync.SettingsSync['type']
 type SyncFreq = Sync.SettingsSync['freq']
@@ -37,29 +37,49 @@ async function updateSyncOption(update: SyncUpdate) {
 
 	if (update.down) {
 		if (sync.type === 'gist') {
-			const id = sync.gistid ?? ''
-			const token = local.gistToken ?? ''
-			const response = await retrieveGist(token, id)
+			gistsyncform.load()
 
-			if (response) {
-				storage.sync.set(response)
-				setTimeout(() => window.location.reload(), 100)
+			try {
+				const id = sync.gistid ?? ''
+				const token = local.gistToken ?? ''
+				const update = await retrieveGist(token, id)
+
+				storage.sync.set(update)
+				fadeOut()
+			} catch (err) {
+				gistsyncform.warn(err as string)
 			}
 		}
 
-		return
+		if (sync.type === 'url') {
+			urlsyncform.load()
+
+			try {
+				const update = await receiveFromURL(sync.url)
+
+				storage.sync.set(update)
+				fadeOut()
+			} catch (err) {
+				urlsyncform.warn(err as string)
+			}
+		}
 	}
 
 	if (update.up) {
 		if (sync.type === 'gist') {
-			const id = sync.gistid ?? ''
-			const token = local?.gistToken ?? ''
-			const updatedData = await sendGist(token, id, data)
+			gistsyncform.load()
 
-			storage.sync.set(updatedData)
+			try {
+				const id = sync.gistid ?? ''
+				const token = local?.gistToken ?? ''
+				const update = await sendGist(token, id, data)
+
+				storage.sync.set(update)
+				gistsyncform.accept()
+			} catch (error) {
+				gistsyncform.warn(error as string)
+			}
 		}
-
-		return
 	}
 
 	if (update.gistToken === '') {
@@ -69,24 +89,24 @@ async function updateSyncOption(update: SyncUpdate) {
 
 	if (update.url === '') {
 		sync.url = undefined
+		storage.sync.set({ settingssync: sync })
 	}
 
 	if (update.gistToken) {
 		gistsyncform.load()
 
 		if (await isGistTokenValid(update.gistToken)) {
-			const updatedData = await sendGist(update.gistToken, sync.gistid, data)
+			const { settingssync } = await sendGist(update.gistToken, sync.gistid, data)
 
-			sync.gistid = updatedData.settingssync.gistid
-			sync.last = updatedData.settingssync.last
+			sync.gistid = settingssync.gistid
+			sync.last = settingssync.last
 
-			document.getElementById('gist-sync')?.classList.remove('shown')
 			gistsyncform.accept()
+			toggleSyncSettingsOption(sync)
 
+			storage.sync.set({ settingssync: sync })
 			storage.local.set({ gistToken: update.gistToken })
-		}
-		//
-		else {
+		} else {
 			gistsyncform.warn('Error !!!!')
 		}
 	}
@@ -94,14 +114,15 @@ async function updateSyncOption(update: SyncUpdate) {
 	if (update.url) {
 		urlsyncform.load()
 
-		const config = await getConfigFromUrl(update.url)
-
-		if (config) {
+		try {
+			await receiveFromURL(update.url)
 			urlsyncform.accept('i_urlsync', update.url)
+
 			sync.url = update.url
-			console.log(config)
-		} else {
-			urlsyncform.warn('Cannot get JSON')
+			toggleSyncSettingsOption(sync)
+			storage.sync.set({ settingssync: sync })
+		} catch (error) {
+			urlsyncform.warn(error as string)
 		}
 	}
 
@@ -110,6 +131,7 @@ async function updateSyncOption(update: SyncUpdate) {
 		const toSync = sync.type === 'off' && update.type !== 'off'
 
 		sync.type = update.type
+		toggleSyncSettingsOption(sync)
 
 		// <!> Set & return here because
 		// <!> awaits in if() doesn't have priority
@@ -118,23 +140,14 @@ async function updateSyncOption(update: SyncUpdate) {
 			await chrome.storage.sync.clear()
 			await chrome.storage.local.set({ sync: data })
 			sessionStorage.setItem('WEBEXT_LOCAL', 'yes')
-			toggleSyncSettingsOption(sync)
-			return
 		}
 
 		if (toSync) {
 			await chrome.storage.local.remove('sync')
 			await chrome.storage.sync.set(data)
 			sessionStorage.removeItem('WEBEXT_LOCAL')
-			toggleSyncSettingsOption(sync)
-			return
 		}
 	}
-
-	data.settingssync = sync
-
-	toggleSyncSettingsOption(sync)
-	storage.sync.set(data)
 }
 
 async function toggleSyncSettingsOption(sync: Sync.SettingsSync) {
@@ -167,32 +180,6 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync) {
 			document.getElementById('gist-sync')?.classList.remove('shown')
 			break
 		}
-	}
-}
-
-// Distant URL
-
-async function getConfigFromUrl(url: string): Promise<Sync.Storage | undefined> {
-	let config: Sync.Storage | undefined = undefined
-
-	try {
-		const resp = await fetch(url)
-		const text = await resp.text()
-		config = parse(text)
-	} catch (_) {
-		console.log('Failed to get data, CORS ?')
-
-		try {
-			const resp = await apiFetch('/proxy?query=' + url)
-			const text = await resp?.text()
-			config = parse(text)
-		} catch (_) {
-			console.log('Failed to get data with proxy, Bad request')
-		}
-	}
-
-	if (config?.about) {
-		return config
 	}
 }
 

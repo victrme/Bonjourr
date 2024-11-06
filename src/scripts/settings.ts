@@ -11,25 +11,25 @@ import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
-import storage, { getSyncDefaults } from './storage'
+import { changeGroupTitle, initGroups } from './features/links/groups'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
+import storage from './storage'
 import langList from './langs'
 import parse from './utils/parse'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
+import getPermissions from './utils/permissions'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { settingsNotifications } from './utils/notifications'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
+import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
+import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
-import getPermissions from './utils/permissions'
-import { changeGroupTitle, initGroups } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -1203,14 +1203,6 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 		paramId('settings-changes')?.classList.remove('changes')
 		paramId('b_settings-apply')?.setAttribute('disabled', '')
 	}
-}
-
-function fadeOut() {
-	const dominterface = document.getElementById('interface') as HTMLElement
-	dominterface.click()
-	dominterface.style.transition = 'opacity .4s'
-	setTimeout(() => (dominterface.style.opacity = '0'))
-	setTimeout(() => location.reload(), 400)
 }
 
 //	Helpers
