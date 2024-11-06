@@ -10,7 +10,6 @@ import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
 import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
-import { BROWSER } from '../../defaults'
 import storage from '../../storage'
 
 type Link = Links.Link
