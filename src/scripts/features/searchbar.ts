@@ -138,7 +138,7 @@ function isValidURL(string: string): boolean {
 function createSearchURL(val: string, engine: string): string {
 	const URLs: Record<SearchEngines, string> = {
 		default: '',
-		google: 'https://www.google.com/search?q=%s',
+		google: 'https://www.google.com/search?udm=14&q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
 		startpage: 'https://www.startpage.com/do/search?query=%s',
 		qwant: 'https://www.qwant.com/?q=%s',
