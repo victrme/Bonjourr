@@ -250,18 +250,15 @@ function handleGeolOption(data: Weather) {
 }
 
 async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
-	if (!navigator.onLine) return lastWeather
+	if (!navigator.onLine) {
+		return lastWeather
+	}
 
-	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
 	let coords = await getGeolocation(data.geolocation)
 	let queries = '?provider=auto&data=simple'
 
 	queries += '&units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + getLang()
-
-	if (data.geolocation === 'off' && isKeepingCity && lastWeather?.approximation) {
-		coords = { lat: lastWeather.approximation.lat, lon: lastWeather.approximation.lon }
-	}
 
 	if (coords) {
 		queries += '&lat=' + coords.lat
@@ -270,7 +267,7 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 
 	if (data.geolocation === 'off' && !coords) {
 		queries += '&q=' + encodeURI(data.city ?? 'Paris')
-		queries += ',' + (data.ccode ?? 'FR')
+		queries += ' ' + (data.ccode ?? 'FR')
 	}
 
 	const response = await apiFetch('/weather/' + queries)
@@ -332,8 +329,8 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 		temp,
 		link: json.meta.url ?? '',
 		approximation: {
-			ccode: isKeepingCity ? lastWeather?.approximation?.ccode : json?.geo?.country,
-			city: isKeepingCity ? lastWeather?.approximation?.city : json?.geo?.city,
+			ccode: json?.geo?.country,
+			city: json?.geo?.city,
 			lat: json?.geo?.lat,
 			lon: json?.geo?.lon,
 		},
@@ -375,19 +372,13 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	const handleWidget = () => {
 		let condition = lastWeather.icon_id
 
-		// for (const [name, codes] of Object.entries(accuweatherConditions)) {
-		// 	if (codes.includes(lastWeather.icon_id)) {
-		// 		condition = name
-		// 	}
-		// }
-
 		if (!tempContainer) {
 			return
 		}
 
 		const now = minutator(new Date())
 		const { sunrise, sunset } = suntime()
-		const daytime = now < sunrise || now > sunset ? 'night' : 'day'
+		const daytime = now < sunrise || now > sunset + 80 ? 'night' : 'day'
 
 		const icon = document.getElementById('weather-icon') as HTMLImageElement
 		icon.dataset.daytime = daytime
