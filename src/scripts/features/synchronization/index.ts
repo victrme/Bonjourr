@@ -12,6 +12,7 @@ interface SyncUpdate {
 	type?: string
 	freq?: string
 	url?: string
+	status?: string
 	gistToken?: string
 	down?: true
 	up?: true
@@ -79,6 +80,13 @@ async function updateSyncOption(update: SyncUpdate) {
 			} catch (error) {
 				gistsyncform.warn(error as string)
 			}
+		}
+	}
+
+	if (update.status) {
+		if (update.status === 'gist') {
+			document.getElementById('gist-sync-status')?.classList.toggle('shown')
+			return
 		}
 	}
 

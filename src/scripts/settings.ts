@@ -710,10 +710,6 @@ function initOptionsEvents() {
 
 	// Sync
 
-	// paramId('i_syncfreq').addEventListener('change', function (this) {
-	// 	synchronization(undefined, { freq: this.value })
-	// })
-
 	paramId('i_synctype').addEventListener('change', function (this) {
 		synchronization(undefined, { type: this.value })
 	})
@@ -726,6 +722,10 @@ function initOptionsEvents() {
 	paramId('f_urlsync').addEventListener('submit', function (this, event) {
 		event.preventDefault()
 		synchronization(undefined, { url: paramId('i_urlsync').value })
+	})
+
+	paramId('b_giststatus').onclickdown(function () {
+		synchronization(undefined, { status: 'gist' })
 	})
 
 	paramId('b_upsync').onclickdown(function () {

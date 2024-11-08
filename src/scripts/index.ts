@@ -372,7 +372,7 @@ function onlineAndMobile() {
 }
 
 function serviceWorker() {
-	if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
+	if (PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
 		return
 	}
 
