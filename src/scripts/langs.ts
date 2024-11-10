@@ -36,6 +36,7 @@ export default {
 	id: 'Indonesia',
 	ca: 'Català',
 	vi: 'Tiếng Việt',
+	ko: '한국어',
 }
 
 // uses basic latin characters if not included
@@ -59,4 +60,5 @@ export const subsets = {
 	'zh-CN': 'chinese-simplified',
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',
+	ko: 'korean',
 }
