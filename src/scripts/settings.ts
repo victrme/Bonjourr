@@ -9,7 +9,7 @@ import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
-import unsplashBackgrounds from './features/backgrounds/unsplash'
+import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
 import storage, { getSyncDefaults } from './storage'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
@@ -237,11 +237,9 @@ function initOptionsValues(data: Sync.Storage) {
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
-	// Unsplash collection placeholder
-	if (data?.unsplash?.collection) {
-		const coll = data?.unsplash?.collection
-		paramId('i_collection')?.setAttribute('placeholder', coll ? coll : '2nVzlQADDIE')
-	}
+	// Unsplash collection
+	paramId('i_collection')?.setAttribute('value', data?.unsplash?.collection ?? '')
+	paramId('i_collection')?.setAttribute('placeholder', data?.unsplash?.collection || bonjourrCollections[data?.unsplash?.lastCollec ?? 'day'])
 
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
