@@ -260,14 +260,13 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	queries += '&units=' + (data.unit ?? 'metric')
 	queries += '&lang=' + getLang()
 
-	if (coords) {
+	if (coords && coords.lat && coords.lon) {
 		queries += '&lat=' + coords.lat
 		queries += '&lon=' + coords.lon
 	}
 
 	if (data.geolocation === 'off' && !coords) {
-		queries += '&q=' + encodeURI(data.city ?? 'Paris')
-		queries += ' ' + (data.ccode ?? 'FR')
+		queries += '&q=' + encodeURIComponent(`${data.city ?? 'Paris'} ${data.ccode ?? 'FR'}`)
 	}
 
 	const response = await apiFetch('/weather/' + queries)
@@ -377,8 +376,8 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		}
 
 		const now = minutator(new Date())
-		const { sunrise, sunset } = suntime()
-		const daytime = now < sunrise || now > sunset + 80 ? 'night' : 'day'
+		const { sunrise, sunset, dusk } = suntime()
+		const daytime = now < sunrise || now > sunset + dusk ? 'night' : 'day'
 
 		const icon = document.getElementById('weather-icon') as HTMLImageElement
 		icon.dataset.daytime = daytime
