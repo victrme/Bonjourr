@@ -1,4 +1,4 @@
-const CACHE_KEY = '20.0.0'
+const CACHE_KEY = '20.2.1'
 const API_URLS = ['unsplash.com', 'jsdelivr.net', 'api.bonjourr']
 
 //
@@ -14,7 +14,7 @@ self.addEventListener('activate', async () => {
 	}
 })
 
-self.addEventListener('fetch', async function (event) {
+self.addEventListener('fetch', function (event) {
 	const url = event.request.url
 	const isAPI = API_URLS.some((api) => url.includes(api))
 

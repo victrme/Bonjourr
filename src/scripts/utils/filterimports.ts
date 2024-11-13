@@ -26,16 +26,17 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	// Lastest version transform
 
 	current = analogClockOptions(current) // 20.0
-	current = linkTabsToGroups(current, target) // ..
 	current = convertOldCSSSelectors(current) // ..
-	current = linkParentsToString(current) // ..
 	current = toISOLanguageCode(current) // ..
-	current = removeGroupDuplicate(current) // ..
 	current = removeWorldClocksDuplicate(current, target) // ..
+	current = validateLinkGroups(current) // 20.1
 
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
 
+	delete current.custom_every
+	delete current.custom_time
+	delete current.searchbar_newtab
 	delete current.searchbar_newtab
 	delete current.searchbar_engine
 	delete current.cssHeight
@@ -136,20 +137,6 @@ function toISOLanguageCode(data: Sync.Storage): Sync.Storage {
 	return data
 }
 
-function linkTabsToGroups(current: Sync.Storage, imported: Import): Sync.Storage {
-	if (imported.linktabs) {
-		current.linkgroups = {
-			on: imported.linktabs.active,
-			selected: imported.linktabs.titles[imported.linktabs.selected],
-			groups: [...imported.linktabs.titles],
-			synced: [],
-			pinned: [],
-		}
-	}
-
-	return current
-}
-
 function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync.Storage {
 	if (target.worldclocks && current.worldclocks) {
 		current.worldclocks = target.worldclocks
@@ -158,30 +145,81 @@ function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync
 	return current
 }
 
-function removeGroupDuplicate(current: Sync.Storage): Sync.Storage {
-	if (current.linkgroups) {
-		current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
-		current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
-		current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
+function validateLinkGroups(current: Sync.Storage): Sync.Storage {
+	// (1)
+	let links = bundleLinks(current)
+	let parents = [...new Set(links.map((link) => link.parent))]
+	let parentGroups = parents.filter((p) => !p?.toString().startsWith('links'))
+	const oldNumberParents = parents.filter((parent) => typeof parent === 'number')
+
+	if (current.linktabs && oldNumberParents.length > 0) {
+		current.linkgroups = {
+			on: current.linktabs.active,
+			selected: current.linktabs.titles[current.linktabs.selected],
+			groups: [...current.linktabs.titles],
+			synced: [],
+			pinned: [],
+		}
+
+		for (const link of links) {
+			if (typeof link?.parent === 'number') {
+				link.parent = current.linkgroups.groups[link.parent]
+			}
+
+			current[link._id] = link
+		}
+	}
+
+	const { groups, pinned, synced, selected } = current.linkgroups
+
+	// Transform default from old "" or undefined to new "default"
+	current.linkgroups.selected = !selected ? 'default' : selected
+	current.linkgroups.groups = groups.map((val) => (!val ? 'default' : val))
+	current.linkgroups.pinned = pinned.map((val) => (!val ? 'default' : val))
+	current.linkgroups.synced = synced.map((val) => (!val ? 'default' : val))
+
+	for (const link of links) {
+		if (!link?.parent) {
+			link.parent = 'default'
+			current[link._id] = link
+		}
+	}
+
+	// (2)
+	links = bundleLinks(current)
+	parents = [...new Set(links.map((link) => link.parent))]
+	parentGroups = parents.filter((p) => !p?.toString().startsWith('links'))
+
+	// Add all groups found in links
+	for (const group of parentGroups) {
+		if (group) {
+			current.linkgroups.groups.push(group.toString())
+		}
+	}
+
+	// Remove duplicate groups
+	current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
+	current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
+	current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
+
+	// Force enable if multiple groups are hidden
+	if (current.linkgroups.groups.length > 1) {
+		current.linkgroups.on = true
+	}
+
+	// Unselect "default" if empty & groups/links exists
+	const parentNoDefault = current.linkgroups.groups.filter((group) => group !== 'default')
+	const defaultExists = current.linkgroups.groups.includes('default')
+	const defaultIsEmpty = parentGroups.includes('default') === false
+	const hasUserGroups = parentNoDefault.length > 0
+	const hasLinks = links.length > 0
+
+	if (defaultExists && defaultIsEmpty && hasUserGroups && hasLinks) {
+		current.linkgroups.groups = parentNoDefault
+		current.linkgroups.selected = parentNoDefault[0]
 	}
 
 	return current
-}
-
-function linkParentsToString<Data extends Sync.Storage | Import>(data: Data): Data {
-	const links = bundleLinks(data as Sync.Storage)
-	const groups = data?.linkgroups?.groups ?? []
-
-	for (const link of links) {
-		if (link.parent === undefined || typeof link.parent !== 'number') {
-			continue
-		}
-
-		link.parent = groups[link.parent]
-		data[link._id] = link
-	}
-
-	return data
 }
 
 function linksDataMigration(data: Import): Import {
@@ -226,10 +264,12 @@ function improvedWeather(data: Import): Import {
 		data.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
 
 		delete data.weather.location
-		//@ts-expect-error
+		//@ts-expect-error -> old types
 		delete data.weather.lastState
-		//@ts-expect-error
+		//@ts-expect-error -> old types
 		delete data.weather.lastCall
+
+		delete data.weather.location
 	}
 
 	return data
@@ -258,21 +298,21 @@ function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Dat
 	return data
 }
 
-function removeLinkDuplicates(curr: Sync.Storage, imported: Import): Sync.Storage {
-	const currentLinks = bundleLinks(curr)
-	const importedLink = bundleLinks(imported as Sync.Storage)
-	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))
+// function removeLinkDuplicates(curr: Sync.Storage, imported: Import): Sync.Storage {
+// 	const currentLinks = bundleLinks(curr)
+// 	const importedLink = bundleLinks(imported as Sync.Storage)
+// 	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))
 
-	for (let ii = 0; ii < currentLinks.length; ii++) {
-		const link = currentLinks[ii]
+// 	for (let ii = 0; ii < currentLinks.length; ii++) {
+// 		const link = currentLinks[ii]
 
-		if (!link.folder && link.url === importedURLs[ii]) {
-			delete curr[link._id]
-		}
-	}
+// 		if (!link.folder && link.url === importedURLs[ii]) {
+// 			delete curr[link._id]
+// 		}
+// 	}
 
-	return curr
-}
+// 	return curr
+// }
 
 function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storage {
 	// When import doesn't have move, other widgets can still be different
@@ -296,7 +336,7 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 	}
 
 	if (!imported.move) {
-		let importStates = {
+		const importStates = {
 			time: imported.time ?? current.time,
 			main: imported.main ?? current.main,
 			notes: imported.notes?.on ?? (current.notes?.on || false),
@@ -305,7 +345,7 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 			quicklinks: imported.quicklinks ?? current.quicklinks,
 		}
 
-		let diffWidgets = {
+		const diffWidgets = {
 			time: current.time !== importStates.time,
 			main: current.main !== importStates.main,
 			notes: current.notes?.on !== importStates.notes,

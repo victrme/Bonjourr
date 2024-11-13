@@ -1,6 +1,6 @@
 {
 	"name": "bonjourr",
-	"version": "20.0.0",
+	"version": "20.2.1",
 	"description": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
 	"author": "Victor Azevedo (https://victr.me)",
 	"license": "ISC",
@@ -23,8 +23,7 @@
 		"lint": "npx prettier --check .",
 		"format": "npx prettier ./_locales/**/translations.json --write --log-level silent",
 		"translate": "node build.config.js translate && pnpm format",
-		"test": "pnpm --filter tests test",
-		"online:dev": ""
+		"test": "pnpm --filter tests test"
 	},
 	"dependencies": {
 		"@victr/deepmerge": "^1.3.2",
@@ -34,8 +33,8 @@
 		"prism-code-editor": "3.4.0"
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.271",
-		"esbuild": "^0.23.1",
+		"@types/chrome": "^0.0.272",
+		"esbuild": "^0.24.0",
 		"user-agent-data-types": "^0.4.2",
 		"web-ext-types": "^3.2.1"
 	},

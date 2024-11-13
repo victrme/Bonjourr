@@ -43,6 +43,7 @@
 	line-height: 1em;
 	font-weight: 200;
 	font-weight: var(--font-weight-clock);
+	direction: ltr;
 }
 
 .digital span {
@@ -69,6 +70,29 @@
 	position: absolute;
 	z-index: -1;
 	opacity: 0;
+}
+
+.digital-ampm {
+	margin: 0.2em;
+	font-size: 0.4em;
+	line-height: 0.8em;
+	vertical-align: top;
+}
+
+.digital-ampm,
+.digital-am,
+.digital-pm {
+	display: none;
+}
+
+[data-ampm-label][data-ampm] .digital-ampm,
+[data-ampm-label][data-ampm='am'] .digital-am,
+[data-ampm-label][data-ampm='pm'] .digital-pm {
+	display: inline-block;
+}
+
+[data-ampm-label][data-ampm] {
+	margin-inline-end: 0.5em;
 }
 
 #time.seconds .digital-ss {

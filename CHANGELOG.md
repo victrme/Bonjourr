@@ -1,3 +1,53 @@
+## 20.2.1
+
+-   Fixes:
+    -   Bad encoding with spaces in weather city
+    -   RTL on digital clock (#483)
+-   Changes:
+    -   Add dusk to suntime
+    -   Simplified page column option
+
+## 20.2.0
+
+-   Added:
+    -   Stoïc and Hitokoto quotes (#401, #470)
+    -   Two more world clocks (#453)
+    -   "udm=14" to Google search (#404)
+    -   CTRL + Right click on links opens default context menu
+-   Fixes:
+    -   Asia timezone labels mixed up (#477)
+    -   Removed buggy export button on Safari (#400)
+    -   Changing font size also updating fontface
+    -   Weather city name is now sanitized before comparing user input
+    -   Permissions breaking firefox page on synced devices (#434)
+-   Translations:
+    -   Added Croatian language, thanks Gustighost!
+    -   Taiwanese Chinese correction by @jrthsr700tmax
+    -   Ukrainian update by @Veydzher
+    -   Portugese update by @Blackspirits
+    -   Arabic update by @aldoyh
+    -   Armenian update by Hrant Hakobian
+    -   Russian translation fix by @TripleA150
+    -   Translated option titles and placeholders (#439)
+
+## 20.1.0
+
+-   Added:
+    -   Added AM/PM on 12h digital clock option
+    -   Added Brave search suggestions (#447)
+    -   Can load a "config.json" file on startup (#172, #422)
+-   Fixes:
+    -   Displays hidden links added before version 1.18
+    -   Working "Open in new tab" option (#433)
+    -   Blank page with old Spanish configs (#432)
+    -   Inverted date format option (#455)
+    -   Renaming folder no longer adds empty links
+    -   Greetings follows main timezone option
+    -   Reduced folder padding on mobile
+-   Translations:
+    -   Portugese update by @Blackspirits
+    -   Armenian update by Hrant Hakobian
+
 ## 20.0.0
 
 -   iOS & iPadOS:

@@ -112,7 +112,7 @@ export const freqControl = {
 
 export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	// 1.13.0: Returns an array of found links in storage
-	let res: Links.Link[] = []
+	const res: Links.Link[] = []
 
 	Object.entries(data).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Links.Link)
@@ -176,7 +176,7 @@ export function rgbToHex(r: number, g: number, b: number): string {
 }
 
 function componentToHex(c: number): string {
-	let hex = c.toString(16)
+	const hex = c.toString(16)
 	return hex.length == 1 ? '0' + hex : hex
 }
 
@@ -222,6 +222,7 @@ export function toggleDisabled(element: Element | null, force?: boolean) {
 }
 
 export function countryCodeToLanguageCode(lang: string): string {
+	if (lang.includes('ES')) lang = 'es'
 	if (lang === 'gr') lang = 'el'
 	if (lang === 'jp') lang = 'ja'
 	if (lang === 'cz') lang = 'cs'

@@ -24,7 +24,7 @@ function createGroups(linkgroups: Sync.LinkGroups) {
 	for (const group of [...groups, '+']) {
 		const button = document.createElement('button')
 		const isTopSite = group === 'topsites'
-		const isDefault = group === ''
+		const isDefault = group === 'default'
 		const isAddMore = group === '+'
 
 		if (pinned.includes(group)) {
@@ -120,8 +120,8 @@ export function changeGroupTitle(title: { old: string; new: string }, data: Sync
 }
 
 export function addGroup(groups: { title: string; sync?: boolean }[], data: Sync.Storage): Sync.Storage {
-	for (let { title, sync } of groups) {
-		const isReserved = title === '' || title === '+'
+	for (const { title, sync } of groups) {
+		const isReserved = title === 'default' || title === '+'
 		const isAlreadyUsed = data.linkgroups.groups.includes(title)
 
 		if (isReserved || isAlreadyUsed) {

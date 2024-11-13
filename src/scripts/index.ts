@@ -50,6 +50,11 @@ async function startup() {
 		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
+
+		// <!> do not move
+		// <!> must delete old keys before upgrading storage
+		await storage.sync.clear()
+
 		storage.sync.set(sync)
 	}
 
@@ -104,7 +109,11 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 
 function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 	data.translations = undefined
+	data.lastWeather = undefined
+
 	storage.local.remove('translations')
+	storage.local.remove('lastWeather')
+
 	return data
 }
 
@@ -158,7 +167,7 @@ function userActionsEvents() {
 	document.addEventListener('keydown', keydownUserActions)
 	document.addEventListener('keyup', keydownUserActions)
 
-	async function keydownUserActions(event: KeyboardEvent) {
+	function keydownUserActions(event: KeyboardEvent) {
 		if (event.code === 'Escape') {
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
@@ -197,7 +206,7 @@ function userActionsEvents() {
 		}
 	}
 
-	async function clickUserActions(event: MouseEvent) {
+	function clickUserActions(event: MouseEvent) {
 		if (isMousingDownOnInput) {
 			return
 		}
@@ -381,7 +390,7 @@ function serviceWorker() {
 	})
 }
 
-async function setPotatoComputerMode() {
+function setPotatoComputerMode() {
 	if (BROWSER === 'firefox' || BROWSER === 'safari') {
 		// firefox fingerprinting protection disables webgl info, smh
 		// safari always have hardware acceleration, no need for potato

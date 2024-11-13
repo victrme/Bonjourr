@@ -27,12 +27,27 @@
 		overflow-y: auto;
 	}
 
+	.not-mobile {
+		display: none;
+	}
+
 	#editlink {
 		max-width: 80%;
 	}
 
 	#link-list {
 		padding: 2em;
+	}
+
+	#linkblocks.medium,
+	#linkblocks.large {
+		--folder-padding: 1.5em 1em;
+	}
+
+	#linkblocks.text,
+	#linkblocks.inline,
+	#linkblocks.small {
+		--folder-padding: 1.5em;
 	}
 
 	#element-mover {

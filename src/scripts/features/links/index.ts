@@ -24,6 +24,13 @@ type AddLinks = {
 	group?: string
 }[]
 
+type UpdateLink = {
+	id: string
+	url?: string
+	icon?: string
+	title: string
+}
+
 type AddGroups = {
 	title: string
 	sync?: boolean
@@ -60,6 +67,7 @@ type LinksUpdate = {
 	addLinks?: AddLinks
 	addGroups?: AddGroups
 	addFolder?: { ids: string[]; group?: string }
+	updateLink?: UpdateLink
 	moveLinks?: string[]
 	moveGroups?: string[]
 	moveToFolder?: MoveToFolder
@@ -113,7 +121,7 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 
 // Initialisation
 
-export async function initblocks(data: Sync, isInit?: true): Promise<true> {
+export function initblocks(data: Sync, isInit?: true): true {
 	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
@@ -205,7 +213,7 @@ export async function initblocks(data: Sync, isInit?: true): Promise<true> {
 			linkgroup.classList.add('topsites-group')
 		}
 
-		if (group.title === '') {
+		if (group.title === 'default') {
 			linktitle.textContent = tradThis('Default group')
 		}
 	}
@@ -263,11 +271,7 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 	}
 
 	if (openInNewtab) {
-		if (BROWSER === 'safari') {
-			anchor.onclick = handleSafariNewtab
-		} else {
-			anchor.target = '_blank'
-		}
+		anchor.target = '_blank'
 	}
 
 	return li
@@ -365,16 +369,17 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.moveToGroup) data = moveToGroup(update.moveToGroup, data)
 	if (update.moveToFolder) data = moveToFolder(update.moveToFolder, data)
 	if (update.moveOutFolder) data = moveOutFolder(update.moveOutFolder, data)
+	if (update.updateLink) data = updateLink(update.updateLink, data)
 	if (update.deleteLinks) data = deleteLinks(update.deleteLinks, data)
 	if (update.groupTitle) data = changeGroupTitle(update.groupTitle, data)
 	if (update.deleteGroup !== undefined) data = deleteGroup(update.deleteGroup, data)
 	if (update.groups !== undefined) data = toggleGroups(update.groups, data)
-	if (update.newtab !== undefined) setOpenInNewTab(update.newtab)
+	if (update.newtab !== undefined) data = setOpenInNewTab(update.newtab, data)
 	if (update.refreshIcons) data = refreshIcons(update.refreshIcons, data)
 	if (update.styles) setLinkStyle(update.styles)
 	if (update.row) setRows(update.row)
 
-	if (update.styles || update.row || update.newtab) {
+	if (update.styles || update.row) {
 		return
 	}
 
@@ -461,6 +466,40 @@ function addLinkFolder(ids: string[], title?: string, group?: string): Links.Fol
 			title: title,
 		},
 	]
+}
+
+function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
+	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
+	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
+	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
+	const link = data[id] as Links.Link
+
+	if (titledom && title !== undefined) {
+		link.title = stringMaxSize(title, 64)
+		titledom.textContent = link.title
+	}
+
+	if (!link.folder) {
+		if (icondom) {
+			const url = (icon ? stringMaxSize(icon, 7500) : undefined) ?? getDefaultIcon(link.url)
+			const img = document.createElement('img')
+
+			link.icon = url ? url : undefined
+
+			icondom.src = 'src/assets/interface/loading.svg'
+			img.onload = () => (icondom!.src = url)
+			img.src = url
+		}
+
+		if (titledom && urldom && url !== undefined) {
+			link.url = stringMaxSize(url, 512)
+			urldom.href = link.url
+			titledom.textContent = createTitle(link)
+		}
+	}
+
+	data[id] = link
+	return data
 }
 
 function moveToFolder({ target, source, group }: MoveToFolder, data: Sync): Sync {
@@ -565,26 +604,20 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 	return data
 }
 
-function setOpenInNewTab(newtab: boolean) {
+function setOpenInNewTab(newtab: boolean, data: Sync.Storage): Sync.Storage {
 	const anchors = document.querySelectorAll<HTMLAnchorElement>('.link a')
 
 	for (const anchor of anchors) {
-		if (BROWSER === 'safari') {
-			if (newtab) {
-				anchor.addEventListener('click', handleSafariNewtab)
-			} else {
-				anchor.removeEventListener('click', handleSafariNewtab)
-			}
+		if (newtab) {
+			anchor.setAttribute('target', '_blank')
 		} else {
-			if (newtab) {
-				anchor.setAttribute('target', '_blank')
-			} else {
-				anchor.removeAttribute('target')
-			}
+			anchor.removeAttribute('target')
 		}
 	}
 
-	storage.sync.set({ linknewtab: newtab })
+	data.linknewtab = newtab
+
+	return data
 }
 
 async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrounds?: boolean }) {
@@ -637,12 +670,6 @@ function setRows(row: string) {
 	eventDebounce({ linksrow: row })
 }
 
-function handleSafariNewtab(e: Event) {
-	const anchor = e.composedPath().filter((el) => (el as Element).tagName === 'A')[0]
-	window.open((anchor as HTMLAnchorElement)?.href)
-	e.preventDefault()
-}
-
 // Helpers
 
 export function validateLink(title: string, url: string, parent?: string): Links.Elem {
@@ -653,8 +680,7 @@ export function validateLink(title: string, url: string, parent?: string): Links
 	const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
 	const noProtocol = !startsWithEither(['https://', 'http://'])
 	const isLocalhost = url.startsWith('localhost') || url.startsWith('127.0.0.1')
-
-	let prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
+	const prefix = isConfig ? '#' : isLocalhost ? 'http://' : noProtocol ? 'https://' : ''
 
 	url = prefix + url
 

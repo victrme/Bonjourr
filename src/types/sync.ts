@@ -79,6 +79,7 @@ declare namespace Sync {
 		seconds: boolean
 		timezone: string
 		size: number
+		ampmlabel: boolean
 		worldclocks: boolean
 		// <20.0
 		face?: 'none' | 'number' | 'roman' | 'marks'

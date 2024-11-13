@@ -21,13 +21,14 @@ import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
+import { settingsNotifications } from './utils/notifications'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
 import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
 import getPermissions from './utils/permissions'
-import { changeGroupTitle } from './features/links/groups'
+import { changeGroupTitle, initGroups } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -69,6 +70,8 @@ export async function settingsInit() {
 
 	document.body.appendChild(settingsDom)
 
+	translateAriaLabels()
+	translatePlaceholders()
 	traduction(settingsDom, data.lang)
 	showall(data.showall, false)
 	initOptionsValues(data)
@@ -165,6 +168,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
+	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
@@ -187,7 +191,7 @@ function initOptionsValues(data: Sync.Storage) {
 	// inserts languages in select
 	const i_lang = paramId('i_lang')
 	Object.entries(langList).forEach(([code, title]) => {
-		let option = document.createElement('option')
+		const option = document.createElement('option')
 		option.value = code
 		option.text = title
 		i_lang.appendChild(option)
@@ -200,6 +204,7 @@ function initOptionsValues(data: Sync.Storage) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
 	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
@@ -222,8 +227,8 @@ function initOptionsValues(data: Sync.Storage) {
 	// Time & main hide elems
 	;(function initHideInputs() {
 		const { clock, date, weatherdesc, weathericon } = data.hide || {}
-		let time = !clock && !date ? 'all' : clock ? 'clock' : 'date'
-		let weather = weatherdesc && weathericon ? 'disabled' : weatherdesc ? 'desc' : weathericon ? 'icon' : 'all'
+		const time = !clock && !date ? 'all' : clock ? 'clock' : 'date'
+		const weather = weatherdesc && weathericon ? 'disabled' : weatherdesc ? 'desc' : weathericon ? 'icon' : 'all'
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
 	})()
@@ -251,7 +256,7 @@ function initOptionsValues(data: Sync.Storage) {
 
 	// Add massive timezones to <select>
 
-	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select, i) => {
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select) => {
 		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
 		const optgroups = template.querySelectorAll('optgroup')
 
@@ -261,7 +266,8 @@ function initOptionsValues(data: Sync.Storage) {
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
-		select.value = data?.worldclocks?.[i]?.timezone ?? ['Europe/Paris', 'America/New_York', 'Asia/Tokyo'][i]
+		const zones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
+		select.value = data?.worldclocks?.[i]?.timezone ?? zones[i]
 	})
 
 	document.querySelectorAll<HTMLSelectElement>('input[name="worldclock-city"]').forEach((input, i) => {
@@ -272,6 +278,16 @@ function initOptionsValues(data: Sync.Storage) {
 }
 
 function initOptionsEvents() {
+	paramId('b_accept-permissions').onclickdown(async function () {
+		await getPermissions('topSites', 'bookmarks')
+
+		const data = await storage.sync.get()
+		quickLinks(data)
+		setTimeout(() => initGroups(data), 10)
+
+		settingsNotifications({ 'accept-permissions': false })
+	})
+
 	// General
 
 	paramId('i_showall').onclickdown(function (_, target) {
@@ -464,6 +480,10 @@ function initOptionsEvents() {
 		clock(undefined, { ampm: target.checked })
 	})
 
+	paramId('i_ampm-label').onclickdown(function (_, target) {
+		clock(undefined, { ampmlabel: target.checked })
+	})
+
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
 		clock(undefined, { timezone: this.value })
 	})
@@ -517,8 +537,8 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement) {
-		let weatherdesc = this.value === 'disabled' || this.value === 'desc'
-		let weathericon = this.value === 'disabled' || this.value === 'icon'
+		const weatherdesc = this.value === 'disabled' || this.value === 'desc'
+		const weathericon = this.value === 'disabled' || this.value === 'icon'
 		hideElements({ weatherdesc, weathericon }, { isEvent: true })
 		weather(undefined, { unhide: true })
 	})
@@ -665,6 +685,10 @@ function initOptionsEvents() {
 		})
 	})
 
+	paramId('i_pagecolumns').addEventListener('change', function () {
+		moveElements(undefined, { layout: this.value, toggle: true })
+	})
+
 	paramId('i_pagewidth').addEventListener('input', function () {
 		pageControl({ width: parseInt(this.value) }, true)
 	})
@@ -788,6 +812,15 @@ function translatePlaceholders() {
 	}
 }
 
+function translateAriaLabels() {
+	for (const element of document.querySelectorAll('[title]')) {
+		const title = element.getAttribute('title') ?? ''
+
+		element.setAttribute('title', tradThis(title))
+		element.setAttribute('aria-label', tradThis(title))
+	}
+}
+
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
@@ -814,6 +847,7 @@ async function switchLangs(nextLang: Langs) {
 	customFont(undefined, { lang: true })
 	settingsFooter()
 	translatePlaceholders()
+	translateAriaLabels()
 }
 
 function showall(val: boolean, event: boolean) {
@@ -1016,7 +1050,7 @@ function loadImportFile(target: HTMLInputElement) {
 			try {
 				// If base64 failed, parse raw string
 				result = parse<Partial<Sync.Storage>>(str) ?? {}
-			} catch (error) {
+			} catch (_) {
 				// If all failed, return empty object
 				result = {}
 			}
@@ -1079,8 +1113,8 @@ function resetSettings(action: 'yes' | 'no' | 'first') {
 		storage.sync.clear()
 		storage.local.clear()
 
-		setTimeout(() => {
-			storage.sync.set({ ...getSyncDefaults() })
+		setTimeout(async () => {
+			storage.sync.set({ ...(await getSyncDefaults()) })
 			storage.local.set({ ...LOCAL_DEFAULT })
 			fadeOut()
 		}, 50)
@@ -1098,7 +1132,7 @@ export function updateSettingsJSON(data?: Sync.Storage) {
 	function updateTextArea(data: Sync.Storage) {
 		const pre = document.getElementById('settings-data')
 
-		if (pre) {
+		if (pre && data.about) {
 			data.about.browser = PLATFORM
 			pre.textContent = orderedStringify(data)
 		}
@@ -1130,7 +1164,9 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 
 		try {
 			user = orderedStringify(JSON.parse(textarea.value ?? '{}') as Sync.Storage)
-		} catch (_) {}
+		} catch (_) {
+			//
+		}
 
 		hasChanges = user.length > 2 && current !== user
 	}

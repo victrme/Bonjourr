@@ -60,7 +60,7 @@ export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 }
 
 async function updatesWeather(update: WeatherUpdate) {
-	let { weather, hide } = await storage.sync.get(['weather', 'hide'])
+	const { weather, hide } = await storage.sync.get(['weather', 'hide'])
 	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
 	if (!weather || !hide) {
@@ -102,11 +102,11 @@ async function updatesWeather(update: WeatherUpdate) {
 	if (update.city) {
 		const i_city = document.getElementById('i_city') as HTMLInputElement
 		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-		let ccode = i_ccode.value
+		const ccode = i_ccode.value
 		let city = i_city.value
 
 		if (!navigator.onLine) {
-			locationForm.warn('No internet connection')
+			locationForm.warn(tradThis('No internet connection'))
 			return false
 		}
 
@@ -121,15 +121,17 @@ async function updatesWeather(update: WeatherUpdate) {
 		const currentWeather = { ...weather, ccode, city }
 		const newWeather = await request(currentWeather, lastWeather)
 		const newCity = newWeather?.approximation?.city
-		const foundCityIsDifferent = newCity !== '' && newCity !== city
+
+		const sanitizeName = (str = '') => str?.toLowerCase().replaceAll('-', ' ')
+		const foundCityIsDifferent = newCity !== '' && sanitizeName(newCity) !== sanitizeName(city)
 
 		if (!newWeather) {
-			locationForm.warn('Cannot reach weather service')
+			locationForm.warn(tradThis('Cannot reach weather service'))
 			return
 		}
 
 		if (foundCityIsDifferent) {
-			locationForm.warn('Cannot find correct city')
+			locationForm.warn(tradThis('Cannot find correct city'))
 			return
 		}
 
@@ -248,32 +250,27 @@ function handleGeolOption(data: Weather) {
 }
 
 async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
-	if (!navigator.onLine) return lastWeather
-
-	const isKeepingCity = data.geolocation === 'off' && lastWeather?.approximation?.city === data.city
-	let coords = await getGeolocation(data.geolocation)
-	let lang = getLang()
-	let queries = '?provider=accuweather'
-
-	queries += '&units=' + (data.unit ?? 'metric')
-	queries += '&lang=' + lang
-
-	if (data.geolocation === 'off' && isKeepingCity && lastWeather?.approximation) {
-		coords = { lat: lastWeather.approximation.lat, lon: lastWeather.approximation.lon }
+	if (!navigator.onLine) {
+		return lastWeather
 	}
 
-	if (coords) {
+	let coords = await getGeolocation(data.geolocation)
+	let queries = '?provider=auto&data=simple'
+
+	queries += '&units=' + (data.unit ?? 'metric')
+	queries += '&lang=' + getLang()
+
+	if (coords && coords.lat && coords.lon) {
 		queries += '&lat=' + coords.lat
 		queries += '&lon=' + coords.lon
 	}
 
 	if (data.geolocation === 'off' && !coords) {
-		queries += '&q=' + encodeURI(data.city ?? 'Paris')
-		queries += ',' + (data.ccode ?? 'FR')
+		queries += '&q=' + encodeURIComponent(`${data.city ?? 'Paris'} ${data.ccode ?? 'FR'}`)
 	}
 
 	const response = await apiFetch('/weather/' + queries)
-	const onecall: Weather.Onecall | undefined = await response?.json()
+	const json: Weather.SimpleWeather = await response?.json()
 	const isRateLimited = response?.status === 429
 
 	if (isRateLimited && lastWeather) {
@@ -281,52 +278,60 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 		return lastWeather
 	}
 
-	if (!onecall) {
+	if (!json) {
 		return lastWeather
 	}
 
-	const { temp, feels_like, sunrise, sunset } = onecall.current
-	const { description, id } = onecall.current.weather[0]
+	let [sunset, sunrise] = [0, 0]
+	const { temp, feels } = json.now
+	const { description, icon } = json.now
+
 	let forecasted_high = lastWeather?.forecasted_high ?? -273.15
 	let forecasted_timestamp = lastWeather?.forecasted_timestamp ?? 0
 
-	if (onecall.hourly) {
+	if (json.daily) {
+		const [today, tomorrow] = json.daily
 		const date = new Date()
-		const alltemps: number[] = []
 
 		if (date.getHours() > getSunsetHour()) {
-			date.setDate(date.getDate() + 1)
+			forecasted_high = tomorrow.high
+			forecasted_timestamp = new Date(tomorrow.time).getTime()
+		} else {
+			forecasted_high = today.high
+			forecasted_timestamp = new Date(today.time).getTime()
 		}
-
-		for (const item of onecall.hourly) {
-			if (new Date(item.dt * 1000).getDate() === date.getDate()) {
-				alltemps.push(item.temp)
-			}
-		}
-
-		date.setHours(0, 0, 0, 0)
-		forecasted_timestamp = Math.floor(date.getTime() / 1000)
-		forecasted_high = Math.round(Math.max(...alltemps))
 	}
 
-	suntime(sunrise, sunset)
+	if (json.sun) {
+		const [rh, rm] = json.sun.rise
+		const [sh, sm] = json.sun.set
+		const date = new Date()
+
+		date.setHours(rh, rm, 0, 0)
+		sunrise = date.getTime()
+
+		date.setHours(sh, sm, 0, 0)
+		sunset = date.getTime()
+
+		suntime(sunrise, sunset)
+	}
 
 	return {
-		timestamp: Math.floor(new Date().getTime() / 1000),
+		timestamp: new Date().getTime(),
 		forecasted_timestamp,
 		forecasted_high,
 		description,
-		feels_like,
-		icon_id: id,
+		feels_like: feels,
+		icon_id: icon,
 		sunrise,
 		sunset,
 		temp,
-		link: onecall.link ?? '',
+		link: json.meta.url ?? '',
 		approximation: {
-			ccode: isKeepingCity ? lastWeather?.approximation?.ccode : onecall?.ccode,
-			city: isKeepingCity ? lastWeather?.approximation?.city : onecall?.city,
-			lat: onecall.lat,
-			lon: onecall.lon,
+			ccode: json?.geo?.country,
+			city: json?.geo?.city,
+			lat: json?.geo?.lat,
+			lon: json?.geo?.lon,
 		},
 	}
 }
@@ -364,21 +369,15 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	}
 
 	const handleWidget = () => {
-		let condition = 'fewclouds'
-
-		for (const [name, codes] of Object.entries(accuweatherConditions)) {
-			if (codes.includes(lastWeather.icon_id)) {
-				condition = name
-			}
-		}
+		let condition = lastWeather.icon_id
 
 		if (!tempContainer) {
 			return
 		}
 
 		const now = minutator(new Date())
-		const { sunrise, sunset } = suntime()
-		const daytime = now < sunrise || now > sunset ? 'night' : 'day'
+		const { sunrise, sunset, dusk } = suntime()
+		const daytime = now < sunrise || now > sunset + dusk ? 'night' : 'day'
 
 		const icon = document.getElementById('weather-icon') as HTMLImageElement
 		icon.dataset.daytime = daytime
@@ -479,30 +478,4 @@ function isTemperature(str = ''): str is Weather.Temperature {
 function isGeolocation(str = ''): str is Weather.Geolocation {
 	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
 	return geol.includes(str as Weather.Geolocation)
-}
-
-const openWeatherMapConditions: Record<Weather.Conditions, number[]> = {
-	clearsky: [800],
-	fewclouds: [801],
-	brokenclouds: [802],
-	overcastclouds: [803, 804],
-	sunnyrain: [500, 501, 502, 503],
-	lightrain: [300, 301, 302, 310],
-	rain: [312, 313, 314, 321, 504, 520, 521, 522],
-	thunderstorm: [200, 201, 202, 210, 211, 212, 221, 230, 231, 232],
-	snow: [511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622],
-	mist: [701, 711, 721, 731, 741, 751, 761, 762, 771, 781],
-}
-
-const accuweatherConditions: Record<Weather.Conditions, number[]> = {
-	clearsky: [1, 2, 33, 34],
-	fewclouds: [3, 4, 5, 35, 36, 37],
-	brokenclouds: [6, 7, 38],
-	overcastclouds: [8],
-	sunnyrain: [14, 17],
-	lightrain: [12, 13, 39],
-	rain: [18, 19, 29, 40],
-	thunderstorm: [15, 16, 41, 42],
-	snow: [20, 21, 22, 23, 24, 25, 26, 43, 44],
-	mist: [11],
 }

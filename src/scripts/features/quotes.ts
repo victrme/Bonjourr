@@ -3,6 +3,7 @@ import { displayInterface } from '../index'
 import networkForm from '../utils/networkform'
 import storage from '../storage'
 import parse from '../utils/parse'
+import { tradThis } from '../utils/translations'
 
 type Quote = Quotes.Item
 
@@ -37,8 +38,8 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	const { lang, quotes } = init.sync
 	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
 
+	const selection = init.local?.userQuoteSelection ?? 0
 	let list = init.local?.quotesCache ?? []
-	let selection = init.local?.userQuoteSelection ?? 0
 	let quote: Quote = list[0]
 
 	if (quotes.type === 'user') {
@@ -130,7 +131,7 @@ async function updateQuotesData(data: Sync.Storage) {
 			list = await fetchQuotes(data.lang, data.quotes.type, data.quotes.url)
 			form.accept()
 		} catch (error) {
-			form.warn('Fetch failed, please check console for further information')
+			form.warn(tradThis('Fetch failed, please check console for more information'))
 			console.warn(error)
 		}
 
@@ -311,7 +312,7 @@ function csvToQuotes(csv: string): Quote[] {
 }
 
 function isQuotesType(type = ''): type is Quotes.Types {
-	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'user', 'url']
+	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'user', 'url']
 	return types.includes(type as Quotes.Types)
 }
 

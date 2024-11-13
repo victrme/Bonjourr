@@ -19,11 +19,16 @@ declare namespace Weather {
 		feels_like: number
 		sunrise: number
 		sunset: number
-		icon_id: number
+		icon_id: string
 		description: string
 		timestamp: number
 		link: string
-		approximation?: Pick<Weather.Onecall, 'ccode' | 'city' | 'lat' | 'lon'>
+		approximation?: {
+			ccode?: SimpleWeather['geo']['country']
+			city?: SimpleWeather['geo']['city']
+			lat: SimpleWeather['geo']['lat']
+			lon: SimpleWeather['geo']['lon']
+		}
 	}
 
 	type Geolocation = 'precise' | 'approximate' | 'off'
@@ -48,35 +53,32 @@ declare namespace Weather {
 		| 'snow'
 		| 'mist'
 
-	interface Onecall {
-		link?: string
-		city?: string
-		ccode?: string
-		lat: number
-		lon: number
-		current: {
-			dt: number
-			sunrise: number
-			sunset: number
-			temp: number
-			feels_like: number
-			weather: {
-				id: number
-				main: string
-				description: string
-				icon: string
-			}[]
+	interface SimpleWeather {
+		meta: {
+			url: string
+			lang: string
+			provider: 'accuweather' | 'foreca'
 		}
-		hourly?: {
-			dt: number
+		geo: {
+			lat: number
+			lon: number
+			city: string
+			country: string
+		}
+		now: {
+			icon: string
 			temp: number
-			feels_like: number
-			weather: {
-				id: number
-				main: string
-				description: string
-				icon: string
-			}[]
+			feels: number
+			description: string
+		}
+		sun: {
+			rise: [number, number]
+			set: [number, number]
+		}
+		daily: {
+			time: string
+			high: number
+			low: number
 		}[]
 	}
 }

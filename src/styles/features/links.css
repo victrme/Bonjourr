@@ -191,9 +191,9 @@
 
 .link div,
 .link img {
-	transition-duration: 0.1s;
+	transition-duration: 0.05s;
 	transition-timing-function: var(--out-cubic);
-	transition-property: transform, box-shadow, border-color;
+	transition-property: transform, box-shadow, border-color, background-color;
 }
 
 .link div {

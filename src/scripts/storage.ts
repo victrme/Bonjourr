@@ -15,7 +15,7 @@ type Storage = {
 		get: (key?: string | string[]) => Promise<Sync.Storage>
 		set: (val: Keyval) => void
 		remove: (key: string) => void
-		clear: () => void
+		clear: () => Promise<void>
 	}
 	local: {
 		get: (key: string | string[]) => Promise<Local.Storage>
@@ -55,10 +55,11 @@ function verifyDataAsLocal(data: Keyval) {
 
 export async function getSyncDefaults(): Promise<Sync.Storage> {
 	try {
-		const json = await (await fetch('defaults.json')).json()
+		const json = await (await fetch('config.json')).json()
 		return verifyDataAsSync(json)
 	} catch (error) {
-		console.log('No defaults.json settings found')
+		//@ts-expect-error -> error.stack always gives error lol
+		console.log(error.stack)
 	}
 
 	return SYNC_DEFAULT
@@ -91,7 +92,7 @@ function online(): Storage {
 			localStorage.bonjourr = JSON.stringify(data ?? {})
 		},
 
-		clear: () => {
+		clear: async () => {
 			localStorage.removeItem('bonjourr')
 		},
 	}
@@ -137,10 +138,15 @@ function online(): Storage {
 	}
 
 	const init = async () => {
+		const config = await getSyncDefaults()
 		const about = parse<Sync.Storage>(localStorage.bonjourr)?.about
 
+		if (!localStorage.bonjourr) {
+			online().sync.set(config)
+		}
+
 		if (!about) {
-			online().sync.set({ about: SYNC_DEFAULT.about })
+			online().sync.set({ about: config.about })
 		}
 
 		return {
@@ -171,8 +177,8 @@ function webext(): Storage {
 			chrome.storage.sync.remove(key)
 		},
 
-		clear: () => {
-			chrome.storage.sync.clear()
+		clear: async () => {
+			await chrome.storage.sync.clear()
 		},
 	}
 
@@ -182,7 +188,8 @@ function webext(): Storage {
 		},
 
 		get: async (key: string | string[]) => {
-			return (await chrome.storage.local.get(key ?? null)) as Local.Storage
+			const local = await chrome.storage.local.get(key ?? null)
+			return local as Local.Storage
 		},
 
 		remove: (key: string) => {
@@ -198,18 +205,22 @@ function webext(): Storage {
 		// This waits for chrome.storage to be stored in a global variable
 		// that is created in file `webext-storage.js`
 
-		//@ts-expect-error
-		const store: AllStorage = window.startupStorage
+		//@ts-expect-error -> exists in webext-storage.js
+		const store: AllStorage = globalThis.startupStorage
 		const isReady = (): boolean => 'sync' in store && 'local' in store
 
 		if (!isReady()) {
 			await new Promise((resolve) => {
 				document.addEventListener('webextstorage', function (event: CustomEventInit) {
-					if (event.detail === 'sync') store.sync = (window.startupStorage as any).sync
-					if (event.detail === 'local') store.local = (window.startupStorage as any).local
+					if (event.detail === 'sync') store.sync = (window.startupStorage as AllStorage).sync
+					if (event.detail === 'local') store.local = (window.startupStorage as AllStorage).local
 					if (isReady()) resolve(true)
 				})
 			})
+		}
+
+		if (Object.keys(store.sync)?.length === 0) {
+			store.sync = await getSyncDefaults()
 		}
 
 		const sync = verifyDataAsSync(store.sync)

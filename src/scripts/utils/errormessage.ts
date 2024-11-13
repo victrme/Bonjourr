@@ -19,7 +19,7 @@ export default async function errorMessage(error: unknown) {
 			})
 
 			return lines.join('\n')
-		} catch (error) {
+		} catch (_) {
 			return 'No error stack found'
 		}
 	}
@@ -90,7 +90,7 @@ export default async function errorMessage(error: unknown) {
 		const data = await storage.sync.get()
 		document.querySelector('#error')?.remove()
 		displayMessage(JSON.stringify(data, null, 4))
-	} catch (e) {
+	} catch (_) {
 		displayMessage('')
 	}
 }

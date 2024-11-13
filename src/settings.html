@@ -2,6 +2,17 @@
 	<div></div>
 </div>
 
+<div id="settings-notifications">
+	<div class="settings-title"></div>
+
+	<div class="param" id="accept-permissions">
+		<div class="wrapper">
+			<label for="b_accept-permissions" class="trn">Synchronized links require the user to accept permissions</label>
+			<button id="b_accept-permissions" class="param-btn trn">Ask permission</button>
+		</div>
+	</div>
+</div>
+
 <div class="settings-title">
 	<h2 class="trn">General</h2>
 </div>
@@ -284,11 +295,13 @@
 				>
 			</p>
 
-			<hr />
+			<div class="not-safari">
+				<hr />
 
-			<div class="linknewtab wrapper">
-				<label for="i_linknewtab" class="trn">Open in new tab</label>
-				<input id="i_linknewtab" class="switch" type="checkbox" />
+				<div class="linknewtab wrapper">
+					<label for="i_linknewtab" class="trn">Open in new tab</label>
+					<input id="i_linknewtab" class="switch" type="checkbox" />
+				</div>
 			</div>
 
 			<hr />
@@ -477,6 +490,15 @@
 					<label for="i_ampm" class="trn">12-Hour Time</label>
 					<input id="i_ampm" class="switch" type="checkbox" />
 				</div>
+
+				<div id="ampm_label" class="dropdown">
+					<hr />
+
+					<div id="w_ampm-label" class="wrapper">
+						<label for="i_ampm-label" class="trn">Show am/pm</label>
+						<input id="i_ampm-label" class="switch" type="checkbox" />
+					</div>
+				</div>
 			</div>
 
 			<hr />
@@ -541,7 +563,20 @@
 								type="text"
 								name="worldclock-city"
 								maxlength="24"
-								placeholder="New York"
+								placeholder="São Paulo"
+								aria-label="Add city"
+							/>
+							<select name="worldclock-timezone">
+								<!-- timezone template -->
+							</select>
+						</div>
+
+						<div class="worldclocks-item split-inputs dropdown">
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Los Angeles"
 								aria-label="Add city"
 							/>
 							<select name="worldclock-timezone">
@@ -555,6 +590,19 @@
 								name="worldclock-city"
 								maxlength="24"
 								placeholder="Tokyo"
+								aria-label="Add city"
+							/>
+							<select name="worldclock-timezone">
+								<!-- timezone template -->
+							</select>
+						</div>
+
+						<div class="worldclocks-item split-inputs dropdown">
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Kolkata"
 								aria-label="Add city"
 							/>
 							<select name="worldclock-timezone">
@@ -1145,6 +1193,8 @@
 						<option value="classic" class="trn">Classic</option>
 						<option value="inspirobot">Inspirobot</option>
 						<option value="kaamelott">Kaamelott</option>
+						<option value="stoic">Stoic</option>
+						<option value="hitokoto">Hitokoto</option>
 						<option value="user" class="trn">Custom</option>
 						<option value="url">URL</option>
 					</select>
@@ -1300,27 +1350,18 @@
 			<button id="b_editmove" class="param-btn trn">Open</button>
 		</div>
 
-		<div id="grid-layout-wrapper">
+		<div class="not-mobile">
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Layout columns</span>
-				<div class="wrapper">
-					<div id="grid-layout" class="mover">
-						<button data-layout="single" aria-label="Single column layout" title="Single column layout"></button>
-						<button data-layout="double" aria-label="Double column layout" title="Double column layout">
-							<span></span>
-						</button>
-						<button data-layout="triple" aria-label="Triple column layout" title="Triple column layout">
-							<span></span>
-							<span></span>
-						</button>
-					</div>
-				</div>
+				<span class="trn">Page columns</span>
+				<select id="i_pagecolumns">
+					<option class="trn" value="single">Single</option>
+					<option class="trn" value="double">Double</option>
+					<option class="trn" value="triple">Triple</option>
+				</select>
 			</div>
-		</div>
 
-		<div id="pagewidth">
 			<hr />
 
 			<div class="wrapper">
@@ -1420,7 +1461,7 @@
 			</button>
 			<button
 				id="b_file-save"
-				class="param-btn"
+				class="param-btn not-safari"
 				title="Export a new settings file"
 				aria-label="Export a new settings file"
 			>
@@ -1555,7 +1596,7 @@
 			<option value="-5">EST -5</option>
 			<option value="-4">AST -4</option>
 			<option value="-3">CLST -3</option>
-			<option value="0">GMT</option>
+			<option value="+0">GMT</option>
 			<option value="+1">CET +1</option>
 			<option value="+2">EET +2</option>
 			<option value="+3">MSK +3</option>
@@ -1608,7 +1649,7 @@
 			<option value="Europe/Warsaw">Europe/Warsaw</option>
 			<option value="Europe/Zurich">Europe/Zurich</option>
 		</optgroup>
-		<optgroup label="East Asia">
+		<optgroup label="West Asia">
 			<option value="Asia/Almaty">Asia/Almaty</option>
 			<option value="Asia/Ashgabat">Asia/Ashgabat</option>
 			<option value="Asia/Baku">Asia/Baku</option>
@@ -1628,7 +1669,7 @@
 			<option value="Asia/Tehran">Asia/Tehran</option>
 			<option value="Asia/Yerevan">Asia/Yerevan</option>
 		</optgroup>
-		<optgroup label="Central and west Asia">
+		<optgroup label="Central and east Asia">
 			<option value="Asia/Bangkok">Asia/Bangkok</option>
 			<option value="Asia/Bishkek">Asia/Bishkek</option>
 			<option value="Asia/Choibalsan">Asia/Choibalsan</option>

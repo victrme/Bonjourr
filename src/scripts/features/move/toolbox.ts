@@ -11,7 +11,6 @@ let moverPos = { x: 0, y: 0 }
 export function toolboxEvents() {
 	const elementEntries = Object.entries(elements)
 	const moverBtns = document.querySelectorAll<HTMLElement>('#grid-mover button')
-	const layoutBtns = document.querySelectorAll<HTMLElement>('#grid-layout button')
 	const boxAlignBtns = document.querySelectorAll<HTMLElement>('#box-alignment-mover button')
 	const textAlignBtns = document.querySelectorAll<HTMLElement>('#text-alignment-mover button')
 	const spanColsBtn = document.querySelector<HTMLElement>('#grid-span-cols')
@@ -26,15 +25,6 @@ export function toolboxEvents() {
 	moverBtns.forEach((button) => {
 		button.onclickdown(() => {
 			updateMoveElement({ grid: { x: button.dataset.col, y: button.dataset.row } })
-		})
-	})
-
-	layoutBtns.forEach((button) => {
-		button.addEventListener('click', () => {
-			updateMoveElement({
-				layout: button.dataset.layout || '',
-				toggle: true,
-			})
 		})
 	})
 
@@ -73,10 +63,10 @@ export function toolboxEvents() {
 	}
 
 	function moverDrag(event: MouseEvent | TouchEvent) {
-		let pos = (event as TouchEvent).touches ? (event as TouchEvent).touches[0] : (event as MouseEvent)
+		const pos = (event as TouchEvent).touches ? (event as TouchEvent).touches[0] : (event as MouseEvent)
 
-		let x = pos.clientX
-		let y = pos.clientY
+		const x = pos.clientX
+		const y = pos.clientY
 
 		// Set first position to calc offset
 		if (firstPos.x === 0 && firstPos.y === 0) {
@@ -172,8 +162,8 @@ export function spanButtons(id: Widgets) {
 	}
 
 	const [posCol, posRow] = gridFind(grid, id)[0]
-	let col = grid.map((g) => g[posCol])
-	let row = [...grid[posRow]]
+	const col = grid.map((g) => g[posCol])
+	const row = [...grid[posRow]]
 
 	const hasColumnDuplicates = hasDuplicateInArray(col, id)
 	const hasRowDuplicates = hasDuplicateInArray(row, id)

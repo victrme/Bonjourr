@@ -11,7 +11,7 @@ import {
 	getLayout,
 } from './helpers'
 
-export default async function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
+export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
 	if (!widget) return
 
 	const [id, on] = widget

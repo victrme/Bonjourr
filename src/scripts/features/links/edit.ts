@@ -1,7 +1,7 @@
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
-import { changeGroupTitle, togglePinGroup } from './groups'
 import { getComposedPath, stringMaxSize } from '../../utils'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { togglePinGroup } from './groups'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
 import quickLinks from '.'
@@ -46,7 +46,10 @@ export default async function openEditDialog(event: Event) {
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
 
-	if (event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE') {
+	const ctrlRightClick = !!(event as PointerEvent).ctrlKey && event.type === 'contextmenu'
+	const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
+
+	if (ctrlRightClick || pressingE) {
 		return
 	}
 
@@ -106,7 +109,7 @@ export default async function openEditDialog(event: Event) {
 		if (onlyOneTitleLeft) document.getElementById('edit-delete')?.setAttribute('disabled', '')
 	}
 
-	if (target.link) {
+	if (target.folder || target.link) {
 		const pathLis = path.filter((el) => el.tagName === 'LI')
 		const li = pathLis[0]
 		const id = li?.id
@@ -263,7 +266,7 @@ queueMicrotask(() => {
 			handleLongPress(event)
 		})
 
-		domlinkblocks?.addEventListener('touchend', function (event) {
+		domlinkblocks?.addEventListener('touchend', function () {
 			handleLongPress.cancel()
 		})
 
@@ -271,7 +274,7 @@ queueMicrotask(() => {
 	}
 })
 
-async function submitChanges(event: SubmitEvent) {
+function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
 	const { container, target, group, selected, selectall } = editStates
 
@@ -340,11 +343,10 @@ async function submitChanges(event: SubmitEvent) {
 	setTimeout(closeEditDialog)
 }
 
-async function applyLinkChanges(origin: 'inputs' | 'button') {
+function applyLinkChanges(origin: 'inputs' | 'button') {
 	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
-	let data = await storage.sync.get()
 
 	if (editStates.target.addgroup) {
 		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })
@@ -358,7 +360,7 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 		return
 	}
 	//
-	else if (editStates.container.group && !editStates.target.link) {
+	else if (editStates.container.group && !editStates.target.link && !editStates.target.folder) {
 		quickLinks(undefined, { addLinks: [{ group: editStates.group, title: domtitle.value, url: domurl.value }] })
 		closeEditDialog()
 		return
@@ -372,48 +374,14 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 		inputs.forEach((node) => node.blur())
 	}
 
-	const link = data[id] as Links.Link
-
-	const title = {
-		val: document.querySelector<HTMLInputElement>('#e-title')?.value,
-		dom: document.querySelector<HTMLSpanElement>(`#${id} span`),
-	}
-
-	const url = {
-		val: document.querySelector<HTMLInputElement>('#e-url')?.value,
-		dom: document.querySelector<HTMLAnchorElement>(`#${id} a`),
-	}
-
-	const icon = {
-		val: document.querySelector<HTMLInputElement>('#e-icon')?.value,
-		dom: document.querySelector<HTMLImageElement>(`#${id} img`),
-	}
-
-	if (title.dom && title.val !== undefined) {
-		link.title = stringMaxSize(title.val, 64)
-		title.dom.textContent = link.title
-	}
-
-	if (!link.folder) {
-		if (icon.dom) {
-			const url = icon.val ? stringMaxSize(icon.val, 7500) : undefined ?? getDefaultIcon(link.url)
-			const img = document.createElement('img')
-
-			link.icon = url ? url : undefined
-
-			icon.dom.src = 'src/assets/interface/loading.svg'
-			img.onload = () => (icon.dom!.src = url)
-			img.src = url
-		}
-
-		if (title.dom && url.dom && url.val !== undefined) {
-			link.url = stringMaxSize(url.val, 512)
-			url.dom.href = link.url
-			title.dom.textContent = createTitle(link)
-		}
-	}
-
-	storage.sync.set({ [id]: link })
+	quickLinks(undefined, {
+		updateLink: {
+			id: id,
+			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
+			icon: document.querySelector<HTMLInputElement>('#e-icon')?.value,
+			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
+		},
+	})
 }
 
 function closeEditDialog() {

@@ -9,6 +9,7 @@ import storage from '../storage'
 
 type ClockUpdate = {
 	ampm?: boolean
+	ampmlabel?: boolean
 	analog?: boolean
 	seconds?: boolean
 	dateformat?: string
@@ -34,8 +35,8 @@ const defaultAnalogStyle: Sync.AnalogStyle = {
 	background: '#fff2',
 }
 
-const defaultTimezones = ['Europe/Paris', 'America/New_York', 'Asia/Tokyo']
-const defaultRegions = ['Paris', 'New York', 'Tokyo']
+const defaultTimezones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
+const defaultRegions = ['Paris', 'New York', 'Tokyo', 'Lisbon', 'Los Angeles']
 const oneInFive = Math.random() > 0.8 ? 1 : 0
 let numberWidths = [1]
 let clockInterval: number
@@ -72,6 +73,7 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (isDateFormat(update.dateformat)) {
+		data.dateformat = update.dateformat
 		storage.sync.set({ dateformat: update.dateformat })
 	}
 
@@ -97,7 +99,7 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (update.background || update.border) {
-		const option = !!update.background ? 'background' : 'border'
+		const option = update.background ? 'background' : 'border'
 
 		analogstyle[option] = hexColorFromSplitRange(`#analog-${option}-range`)
 		analogStyle(analogstyle)
@@ -127,6 +129,7 @@ async function clockUpdate(update: ClockUpdate) {
 		analog: update.analog ?? data.clock.analog,
 		seconds: update.seconds ?? data.clock.seconds,
 		timezone: update.timezone ?? data.clock.timezone,
+		ampmlabel: update.ampmlabel ?? data.clock.ampmlabel,
 		worldclocks: update.worldclocks ?? data.clock.worldclocks,
 	}
 
@@ -134,6 +137,7 @@ async function clockUpdate(update: ClockUpdate) {
 		clock: data.clock,
 		worldclocks: data.worldclocks,
 		analogstyle: analogstyle,
+		dateformat: data.dateformat,
 	})
 
 	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat)
@@ -230,13 +234,14 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 
 			if (isNextHour || firstStart) {
 				clockDate(domclock, date, dateformat)
-				greetings(date, greeting)
 			}
 
 			if (domregion) {
 				domregion.textContent = region
 			}
 		}
+
+		greetings(zonedDate(clock.timezone), greeting)
 	}
 }
 
@@ -268,6 +273,16 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 	const s = fixunits(date.getSeconds())
 	let h = clock.ampm ? date.getHours() % 12 : date.getHours()
 
+	if (!domclock) {
+		return
+	}
+
+	if (clock.ampmlabel) domclock.dataset.ampmLabel = ''
+	else delete domclock.dataset.ampmLabel
+
+	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 13 ? 'am' : 'pm'
+	else delete domclock.dataset.ampm
+
 	if (clock.ampm && h === 0) {
 		h = 12
 	}
@@ -276,10 +291,10 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 		// Avoid layout shifts by rounding width
 		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
 		const width = getSecondsWidthInCh(second).toFixed(1)
-		domclock?.style.setProperty('--seconds-width', `${width}ch`)
+		domclock.style.setProperty('--seconds-width', `${width}ch`)
 	}
 
-	domclock?.classList.toggle('zero', !clock.ampm && h < 10)
+	domclock.classList.toggle('zero', !clock.ampm && h < 10)
 
 	hh.textContent = h.toString()
 	mm.textContent = m.toString()
@@ -309,7 +324,7 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat) {
 	const bb = wrapper.querySelector('.clock-date-bb') as HTMLElement
 	const cc = wrapper.querySelector('.clock-date-cc') as HTMLElement
 
-	let lang = getLang().replaceAll('_', '-')
+	const lang = getLang().replaceAll('_', '-')
 
 	const day = new Intl.DateTimeFormat(lang, { day: 'numeric' }).format(date)
 	const month = new Intl.DateTimeFormat(lang, { month: 'long' }).format(date)
