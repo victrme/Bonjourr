@@ -1,3 +1,12 @@
+## 20.2.1
+
+-   Fixes:
+    -   Bad encoding with spaces in weather city
+    -   RTL on digital clock (#483)
+-   Changes:
+    -   Add dusk to suntime
+    -   Simplified page column option
+
 ## 20.2.0
 
 -   Added:
