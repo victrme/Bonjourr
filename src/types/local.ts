@@ -10,6 +10,7 @@ declare namespace Local {
 		translations?: Translations
 		lastWeather?: Weather.Local
 		operaExplained?: true
+		gistId?: string
 		gistToken?: string
 		pastebinToken?: string
 		sync?: Sync.Storage

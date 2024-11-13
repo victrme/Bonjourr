@@ -1462,6 +1462,28 @@
 		<hr />
 
 		<div class="wrapper">
+			<span class="trn">Authentification token</span>
+
+			<form id="f_gistsync" class="network-form">
+				<input
+					type="text"
+					name="gistsync"
+					id="i_gistsync"
+					maxlength="93"
+					placeholder="github_pat_XX000X00X0X0X0"
+					aria-label="Synchronization using Github Gist"
+					autocomplete="github-token"
+				/>
+				<button type="submit" id="b_gistsync">
+					<span>✓</span>
+					<i></i>
+				</button>
+			</form>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
 			<span class="trn">Github Gist</span>
 
 			<div id="gist-sync-actions">
@@ -1473,14 +1495,14 @@
 					<img src="src/assets/labels/upload.svg" height="16" alt="" />
 					<span class="trn">Send</span>
 				</button>
-				<button id="b_giststatus" class="param-btn">
+				<!-- <button id="b_giststatus" class="param-btn">
 					<img src="src/assets/labels/info.svg" height="16" alt="" />
 					<span class="trn">Status</span>
-				</button>
+				</button> -->
 			</div>
 		</div>
 
-		<div id="gist-sync-status" class="sync-status dropdown">
+		<!-- <div id="gist-sync-status" class="sync-status dropdown">
 			<p>
 				<span class="status-icon status-valid"></span>
 				<span class="trn">Authentification token</span>
@@ -1511,49 +1533,10 @@
 				<span class="status-icon status-none"></span>
 				<span class="trn">Saved config is %age% old</span>
 			</p>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<span class="trn">Authentification token</span>
-
-			<form id="f_gistsync" class="network-form">
-				<input
-					type="text"
-					name="gistsync"
-					id="i_gistsync"
-					maxlength="93"
-					placeholder="github_pat_XX000X00X0X0X0"
-					aria-label="Synchronization using Github Gist"
-					autocomplete="github-token"
-				/>
-				<button type="submit" id="b_gistsync">
-					<span>✓</span>
-					<i></i>
-				</button>
-			</form>
-		</div>
+		</div> -->
 	</div>
 
 	<div id="url-sync" class="dropdown">
-		<hr />
-
-		<div class="wrapper">
-			<span class="trn">Distant URL</span>
-
-			<div id="url-sync-actions">
-				<button id="b_downsync" class="param-btn">
-					<img src="src/assets/labels/download.svg" height="16" alt="" />
-					<span class="trn">Get</span>
-				</button>
-				<button id="b_downsync" class="param-btn">
-					<img src="src/assets/labels/info.svg" height="16" alt="" />
-					<span class="trn">Status</span>
-				</button>
-			</div>
-		</div>
-
 		<hr />
 
 		<div class="wrapper">
@@ -1574,6 +1557,23 @@
 					<i></i>
 				</button>
 			</form>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<span class="trn">Distant URL</span>
+
+			<div id="url-sync-actions">
+				<button id="b_downsync" class="param-btn">
+					<img src="src/assets/labels/download.svg" height="16" alt="" />
+					<span class="trn">Get</span>
+				</button>
+				<!-- <button id="b_downsync" class="param-btn">
+					<img src="src/assets/labels/info.svg" height="16" alt="" />
+					<span class="trn">Status</span>
+				</button> -->
+			</div>
 		</div>
 	</div>
 

@@ -1,4 +1,4 @@
-import { retrieveGist, sendGist, isGistTokenValid } from './gist'
+import { retrieveGist, sendGist, isGistTokenValid, findGistId } from './gist'
 import { receiveFromURL } from './url'
 import onSettingsLoad from '../../utils/onsettingsload'
 import networkForm from '../../utils/networkform'
@@ -33,7 +33,7 @@ export default function synchronization(init?: Sync.Storage, update?: SyncUpdate
 
 async function updateSyncOption(update: SyncUpdate) {
 	const data = await storage.sync.get()
-	const local = await storage.local.get(['gistToken', 'pastebinToken'])
+	const local = await storage.local.get(['gistId', 'gistToken'])
 	const sync = data.settingssync
 
 	if (update.down) {
@@ -41,7 +41,7 @@ async function updateSyncOption(update: SyncUpdate) {
 			gistsyncform.load()
 
 			try {
-				const id = sync.gistid ?? ''
+				const id = local.gistId ?? ''
 				const token = local.gistToken ?? ''
 				const update = await retrieveGist(token, id)
 
@@ -71,12 +71,11 @@ async function updateSyncOption(update: SyncUpdate) {
 			gistsyncform.load()
 
 			try {
-				const id = sync.gistid ?? ''
-				const token = local?.gistToken ?? ''
-				const update = await sendGist(token, id, data)
+				const token = local.gistToken ?? ''
+				const id = await sendGist(token, local.gistId, data)
 
-				storage.sync.set(update)
 				gistsyncform.accept()
+				storage.local.set({ gistId: id })
 			} catch (error) {
 				gistsyncform.warn(error as string)
 			}
@@ -103,19 +102,15 @@ async function updateSyncOption(update: SyncUpdate) {
 	if (update.gistToken) {
 		gistsyncform.load()
 
-		if (await isGistTokenValid(update.gistToken)) {
-			const { settingssync } = await sendGist(update.gistToken, sync.gistid, data)
-
-			sync.gistid = settingssync.gistid
-			sync.last = settingssync.last
+		try {
+			local.gistToken = update.gistToken
+			local.gistId = await findGistId(local.gistToken)
 
 			gistsyncform.accept()
-			toggleSyncSettingsOption(sync)
-
-			storage.sync.set({ settingssync: sync })
-			storage.local.set({ gistToken: update.gistToken })
-		} else {
-			gistsyncform.warn('Error !!!!')
+			storage.local.set(local)
+			toggleSyncSettingsOption(sync, local)
+		} catch (error) {
+			gistsyncform.warn(error as string)
 		}
 	}
 
@@ -135,8 +130,8 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 
 	if (update.type && isSyncType(update.type)) {
-		const toLocal = sync.type !== 'off' && update.type === 'off'
-		const toSync = sync.type === 'off' && update.type !== 'off'
+		const toLocal = update.type === 'off'
+		const toSync = update.type !== 'off'
 
 		sync.type = update.type
 		toggleSyncSettingsOption(sync)
@@ -158,24 +153,25 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 }
 
-async function toggleSyncSettingsOption(sync: Sync.SettingsSync) {
+async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.Storage) {
 	switch (sync.type) {
 		case 'off':
 		case 'auto': {
 			document.getElementById('url-sync')?.classList.remove('shown')
 			document.getElementById('sync-freq')?.classList.remove('shown')
 			document.getElementById('gist-sync')?.classList.remove('shown')
-			document.getElementById('manual-sync')?.classList.remove('shown')
 			break
 		}
 
 		case 'gist': {
-			const token = (await storage.local.get('gistToken')).gistToken
-			const gistid = (await storage.sync.get('settingssync')).settingssync.gistid
-			const isValid = !!token && !!gistid && !!(await retrieveGist(token, gistid))
+			const token = local?.gistToken ?? (await storage.local.get('gistToken'))?.gistToken
+			const i_gistsync = document.querySelector<HTMLInputElement>('#i_gistsync')
+
+			if (i_gistsync && token) {
+				i_gistsync.value = token
+			}
 
 			document.getElementById('gist-sync')?.classList.add('shown')
-			document.getElementById('manual-sync')?.classList.toggle('shown', isValid === true)
 			document.getElementById('b_upsync')?.removeAttribute('disabled')
 			document.getElementById('url-sync')?.classList.remove('shown')
 			break
@@ -184,7 +180,6 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync) {
 		case 'url': {
 			document.getElementById('b_upsync')?.setAttribute('disabled', '')
 			document.getElementById('url-sync')?.classList.add('shown')
-			document.getElementById('manual-sync')?.classList.add('shown')
 			document.getElementById('gist-sync')?.classList.remove('shown')
 			break
 		}

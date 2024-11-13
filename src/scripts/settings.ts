@@ -155,7 +155,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
 	// setInput('i_syncfreq', data.settingssync?.freq ?? 'changes')
-	setInput('i_urlsync', data.settingssync?.url ?? '')
+	// setInput('i_urlsync', data.settingssync?.url ?? '')
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -728,9 +728,9 @@ function initOptionsEvents() {
 		synchronization(undefined, { url: paramId('i_urlsync').value })
 	})
 
-	paramId('b_giststatus').onclickdown(function () {
-		synchronization(undefined, { status: 'gist' })
-	})
+	// paramId('b_giststatus').onclickdown(function () {
+	// 	synchronization(undefined, { status: 'gist' })
+	// })
 
 	paramId('b_upsync').onclickdown(function () {
 		synchronization(undefined, { up: true })

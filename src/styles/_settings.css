@@ -431,9 +431,6 @@ aside form.valid button {
 	max-height: 200px;
 }
 
-#url-sync.shown,
-#sync-freq.shown,
-#manual-sync.shown,
 #ampm_label.shown,
 #location_options.shown,
 #weather_provider.shown,
@@ -448,13 +445,14 @@ aside form.valid button {
 	max-height: 120px;
 }
 
+#url-sync.shown,
 #gist-sync.shown {
-	max-height: 400px;
-}
-
-#gist-sync-status.shown {
 	max-height: 120px;
 }
+
+/* #gist-sync-status.shown {
+	max-height: 120px;
+} */
 
 #searchbar_options.shown {
 	max-height: 420px;
@@ -1075,7 +1073,6 @@ aside .settings-title .tooltip {
 	color: var(--color-light-text);
 	margin-left: 8px;
 	padding: 4px 0px 4px 8px;
-	border-left: 2px solid var(--color-border);
 	overflow: hidden;
 	max-height: 0;
 }
