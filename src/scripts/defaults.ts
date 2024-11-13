@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '20.1.2'
+export const CURRENT_VERSION = '20.2.1'
 
 export const MAIN_API = 'https://api.bonjourr.fr'
 
@@ -30,18 +30,17 @@ export const PLATFORM =
 		? 'safari'
 		: 'online'
 
-export const BROWSER =
-	window.navigator.userAgent.toLowerCase().indexOf('edge') > -1
-		? 'edge'
-		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
-		? 'opera'
-		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
-		? 'chrome'
-		: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
-		? 'firefox'
-		: window.navigator.userAgent.toLowerCase().indexOf('safari') > -1
-		? 'safari'
-		: 'other'
+export const BROWSER = window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
+	? 'edge'
+	: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+	? 'opera'
+	: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
+	? 'chrome'
+	: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
+	? 'firefox'
+	: window.navigator.userAgent.toLowerCase().indexOf('safari') > -1
+	? 'safari'
+	: 'other'
 
 export const EXTENSION: typeof chrome | typeof browser | undefined =
 	PLATFORM === 'online' ? undefined : PLATFORM === 'firefox' ? browser : chrome

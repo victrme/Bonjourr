@@ -43,6 +43,7 @@
 	line-height: 1em;
 	font-weight: 200;
 	font-weight: var(--font-weight-clock);
+	direction: ltr;
 }
 
 .digital span {

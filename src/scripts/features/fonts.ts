@@ -89,7 +89,7 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
 
 	if (size) {
 		data.font.size = size
-		displayFont(data.font)
+		setFontSize(size)
 	}
 
 	if (lang) {
@@ -224,9 +224,13 @@ function displayFont({ family, size, weight, system }: Font) {
 	}
 
 	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
-	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
 	document.documentElement.style.setProperty('--font-weight', weight)
 	document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight)
+	setFontSize(size)
+}
+
+function setFontSize(size: string) {
+	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
 }
 
 //

@@ -11,7 +11,6 @@ let moverPos = { x: 0, y: 0 }
 export function toolboxEvents() {
 	const elementEntries = Object.entries(elements)
 	const moverBtns = document.querySelectorAll<HTMLElement>('#grid-mover button')
-	const layoutBtns = document.querySelectorAll<HTMLElement>('#grid-layout button')
 	const boxAlignBtns = document.querySelectorAll<HTMLElement>('#box-alignment-mover button')
 	const textAlignBtns = document.querySelectorAll<HTMLElement>('#text-alignment-mover button')
 	const spanColsBtn = document.querySelector<HTMLElement>('#grid-span-cols')
@@ -26,15 +25,6 @@ export function toolboxEvents() {
 	moverBtns.forEach((button) => {
 		button.onclickdown(() => {
 			updateMoveElement({ grid: { x: button.dataset.col, y: button.dataset.row } })
-		})
-	})
-
-	layoutBtns.forEach((button) => {
-		button.addEventListener('click', () => {
-			updateMoveElement({
-				layout: button.dataset.layout || '',
-				toggle: true,
-			})
 		})
 	})
 

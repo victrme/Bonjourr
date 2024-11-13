@@ -7,7 +7,7 @@ if (!!chrome?.storage) {
 	self.addEventListener('fetch', retrieveCache)
 }
 
-const CACHE_KEY = '20.1.2'
+const CACHE_KEY = '20.2.1'
 const API_URLS = ['unsplash.com', 'jsdelivr.net', 'api.bonjourr']
 
 // Web Extension

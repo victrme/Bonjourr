@@ -569,7 +569,7 @@ aside form.valid button {
 	display: grid;
 	place-items: baseline;
 	grid-template-columns: 1fr min-content;
-	margin: 2.2em 1.8em 1.2em;
+	margin: 32px 26px 0px 26px;
 	color: var(--color-light-text);
 }
 
@@ -624,9 +624,14 @@ aside .settings-title .tooltip {
 }
 
 .param {
+	margin-top: 18px;
 	padding: 10px 16px;
 	border-radius: 10px;
 	background-color: var(--color-param);
+}
+
+.param + .param {
+	margin-top: 12px;
 }
 
 .wrapper {
@@ -893,6 +898,10 @@ aside .settings-title .tooltip {
 
 #i_ccode {
 	width: 66%;
+}
+
+#i_city {
+	text-transform: capitalize;
 }
 
 #quotes_userlist .wrapper {
