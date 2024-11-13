@@ -1350,27 +1350,18 @@
 			<button id="b_editmove" class="param-btn trn">Open</button>
 		</div>
 
-		<div id="grid-layout-wrapper">
+		<div class="not-mobile">
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Layout columns</span>
-				<div class="wrapper">
-					<div id="grid-layout" class="mover">
-						<button data-layout="single" aria-label="Single column layout" title="Single column layout"></button>
-						<button data-layout="double" aria-label="Double column layout" title="Double column layout">
-							<span></span>
-						</button>
-						<button data-layout="triple" aria-label="Triple column layout" title="Triple column layout">
-							<span></span>
-							<span></span>
-						</button>
-					</div>
-				</div>
+				<span class="trn">Page columns</span>
+				<select id="i_pagecolumns">
+					<option class="trn" value="single">Single</option>
+					<option class="trn" value="double">Double</option>
+					<option class="trn" value="triple">Triple</option>
+				</select>
 			</div>
-		</div>
 
-		<div id="pagewidth">
 			<hr />
 
 			<div class="wrapper">

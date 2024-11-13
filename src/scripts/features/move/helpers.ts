@@ -32,9 +32,9 @@ export const defaultLayouts: Defaults = {
 	},
 	triple: {
 		grid: [
-			['.', 'time', '.'],
-			['.', 'main', '.'],
-			['.', 'quicklinks', '.'],
+			['time', '.', '.'],
+			['main', '.', '.'],
+			['quicklinks', '.', '.'],
 		],
 		items: {},
 	},

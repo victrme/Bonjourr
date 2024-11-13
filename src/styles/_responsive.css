@@ -27,6 +27,10 @@
 		overflow-y: auto;
 	}
 
+	.not-mobile {
+		display: none;
+	}
+
 	#editlink {
 		max-width: 80%;
 	}

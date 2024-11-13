@@ -685,6 +685,10 @@ function initOptionsEvents() {
 		})
 	})
 
+	paramId('i_pagecolumns').addEventListener('change', function () {
+		moveElements(undefined, { layout: this.value, toggle: true })
+	})
+
 	paramId('i_pagewidth').addEventListener('input', function () {
 		pageControl({ width: parseInt(this.value) }, true)
 	})
