@@ -142,6 +142,14 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
+export function fadeOut() {
+	const dominterface = document.getElementById('interface') as HTMLElement
+	dominterface.click()
+	dominterface.style.transition = 'opacity .4s'
+	setTimeout(() => (dominterface.style.opacity = '0'))
+	setTimeout(() => location.reload(), 400)
+}
+
 export function isEvery(freq = ''): freq is Frequency {
 	const every: Frequency[] = ['tabs', 'hour', 'day', 'period', 'pause']
 	return every.includes(freq as Frequency)

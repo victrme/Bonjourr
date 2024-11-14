@@ -1445,6 +1445,152 @@
 </div>
 
 <div class="param" id="settings-managment">
+	<div class="wrapper">
+		<span>
+			<label for="i_synctype" class="trn">Synchronization type</label>
+		</span>
+
+		<select id="i_synctype">
+			<option class="trn not-online" value="auto" selected>Auto</option>
+			<option class="trn" value="gist">Github Gist</option>
+			<option class="trn" value="url">Distant URL</option>
+			<option class="trn" value="off">Disabled</option>
+		</select>
+	</div>
+
+	<div id="gist-sync" class="dropdown">
+		<hr />
+
+		<div class="wrapper">
+			<span class="trn">Authentification token</span>
+
+			<form id="f_gistsync" class="network-form">
+				<input
+					type="text"
+					name="gistsync"
+					id="i_gistsync"
+					maxlength="93"
+					placeholder="github_pat_XX000X00X0X0X0"
+					aria-label="Synchronization using Github Gist"
+					autocomplete="github-token"
+				/>
+				<button type="submit" id="b_gistsync">
+					<span>✓</span>
+					<i></i>
+				</button>
+			</form>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<span class="trn">Github Gist</span>
+
+			<div id="gist-sync-actions">
+				<button id="b_gistdown" class="param-btn">
+					<img src="src/assets/labels/download.svg" height="16" alt="" />
+					<span class="trn">Get</span>
+				</button>
+				<button id="b_gistup" class="param-btn">
+					<img src="src/assets/labels/upload.svg" height="16" alt="" />
+					<span class="trn">Send</span>
+				</button>
+				<!-- <button id="b_giststatus" class="param-btn">
+					<img src="src/assets/labels/info.svg" height="16" alt="" />
+					<span class="trn">Status</span>
+				</button> -->
+			</div>
+		</div>
+
+		<!-- <div id="gist-sync-status" class="sync-status dropdown">
+			<p>
+				<span class="status-icon status-valid"></span>
+				<span class="trn">Authentification token</span>
+			</p>
+			<div>
+				<p>Token is not working because of this reason. Follow instructions <a href="://">on this link</a>.</p>
+			</div>
+			<p>
+				<span class="status-icon status-valid"></span>
+				<span class="trn">Gist file</span>
+			</p>
+			<div>
+				<p>File name must be "bonjourr-export.json". Follow instructions <a href="://">on this link</a>.</p>
+			</div>
+			<p>
+				<span class="status-icon status-valid"></span>
+				<span class="trn">File content</span>
+			</p>
+			<div>
+				<p>If it looks like valid JSON, a " or , might be missing somewhere.</p>
+			</div>
+
+			<p class="sync-status-time">
+				<span class="status-icon status-none"></span>
+				<span class="trn">Last sync %time% ago</span>
+			</p>
+			<p class="sync-status-time">
+				<span class="status-icon status-none"></span>
+				<span class="trn">Saved config is %age% old</span>
+			</p>
+		</div> -->
+	</div>
+
+	<div id="url-sync" class="dropdown">
+		<hr />
+
+		<div class="wrapper">
+			<span class="trn">URL</span>
+
+			<form id="f_urlsync" class="network-form">
+				<input
+					type="text"
+					name="i_urlsync"
+					id="i_urlsync"
+					maxlength="256"
+					placeholder="https://pastebin.com/raw/y7XhhiDs"
+					aria-label="Synchronization using a distant URL"
+					autocomplete="urlsync"
+				/>
+				<button type="submit" id="b_urlsync">
+					<span>✓</span>
+					<i></i>
+				</button>
+			</form>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<span class="trn">Distant URL</span>
+
+			<div id="url-sync-actions">
+				<button id="b_urldown" class="param-btn">
+					<img src="src/assets/labels/download.svg" height="16" alt="" />
+					<span class="trn">Get</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- <div id="sync-freq" class="dropdown">
+		<hr />
+
+		<div class="wrapper">
+			<span>
+				<label for="i_syncfreq" class="trn">Updates</label>
+			</span>
+
+			<select id="i_syncfreq">
+				<option class="trn" value="newtabs">On new tabs</option>
+				<option class="trn" value="start">On browser start</option>
+				<option class="trn" value="manual">Manually</option>
+			</select>
+		</div>
+	</div> -->
+
+	<hr />
+
 	<a id="file-download" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
 	<input id="file-import" type="file" name="file-import" accept="application/json, text/plain" />
 

@@ -2,20 +2,26 @@ globalThis.startupStorage = {}
 globalThis.startupBookmarks = undefined
 globalThis.startupTopsites = undefined
 
-chrome.storage.sync.get(null, (sync) => {
-	globalThis.startupStorage.sync = sync
-	document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'sync' }))
+chrome.storage.sync.get().then(function (data) {
+	globalThis.startupStorage.sync = data
+
+	if (globalThis.pageReady) {
+		document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'sync' }))
+	}
 })
 
-chrome.storage.local.get(null, (local) => {
-	globalThis.startupStorage.local = local
-	document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'local' }))
+chrome.storage.local.get().then(function (data) {
+	globalThis.startupStorage.local = data
+
+	if (globalThis.pageReady) {
+		document.dispatchEvent(new CustomEvent('webextstorage', { detail: 'local' }))
+	}
 })
 
-chrome.bookmarks?.getTree().then((bookmarks) => {
-	globalThis.startupBookmarks = bookmarks
+chrome.bookmarks?.getTree().then(function (data) {
+	globalThis.startupBookmarks = data
 })
 
-chrome.topSites?.get().then((topsites) => {
-	globalThis.startupTopsites = topsites
+chrome.topSites?.get().then(function (data) {
+	globalThis.startupTopsites = data
 })

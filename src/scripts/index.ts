@@ -10,6 +10,7 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
+import synchronization from './features/synchronization'
 import { settingsPreload } from './settings'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
@@ -30,9 +31,7 @@ const features: FeaturesToWait[] = ['clock', 'links']
 let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
-//
 //	Startup
-//
 
 try {
 	startup()
@@ -59,7 +58,6 @@ async function startup() {
 	}
 
 	await setTranslationCache(sync.lang, local)
-
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
@@ -78,6 +76,7 @@ async function startup() {
 	hideElements(sync.hide)
 	initBackground(sync, local)
 	quickLinks(sync)
+	synchronization(sync)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
@@ -377,7 +376,7 @@ function onlineAndMobile() {
 }
 
 function serviceWorker() {
-	if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
+	if (PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
 		return
 	}
 

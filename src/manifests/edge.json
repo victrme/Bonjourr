@@ -23,8 +23,7 @@
 	"offline_enabled": true,
 
 	"background": {
-		"service_worker": "src/scripts/background.js",
-		"type": "module"
+		"service_worker": "src/scripts/service-worker.js"
 	},
 
 	"permissions": ["storage"],

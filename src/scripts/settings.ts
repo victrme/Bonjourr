@@ -8,27 +8,28 @@ import linksImport from './features/links/bookmarks'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
+import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds from './features/backgrounds/unsplash'
-import storage, { getSyncDefaults } from './storage'
+import { changeGroupTitle, initGroups } from './features/links/groups'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
+import storage from './storage'
 import langList from './langs'
 import parse from './utils/parse'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
+import getPermissions from './utils/permissions'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { settingsNotifications } from './utils/notifications'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
+import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
+import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
-import getPermissions from './utils/permissions'
-import { changeGroupTitle, initGroups } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -152,6 +153,9 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
+	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
+	// setInput('i_syncfreq', data.settingssync?.freq ?? 'changes')
+	// setInput('i_urlsync', data.settingssync?.url ?? '')
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -708,6 +712,34 @@ function initOptionsEvents() {
 		interfacePopup(undefined, { announcements: this.value })
 	})
 
+	// Sync
+
+	paramId('i_synctype').addEventListener('change', function (this) {
+		synchronization(undefined, { type: this.value })
+	})
+
+	paramId('f_gistsync').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		synchronization(undefined, { gistToken: paramId('i_gistsync').value })
+	})
+
+	paramId('f_urlsync').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		synchronization(undefined, { url: paramId('i_urlsync').value })
+	})
+
+	paramId('b_gistup').onclickdown(function () {
+		synchronization(undefined, { up: true })
+	})
+
+	paramId('b_gistdown').onclickdown(function () {
+		synchronization(undefined, { down: true })
+	})
+
+	paramId('b_urldown').onclickdown(function () {
+		synchronization(undefined, { down: true })
+	})
+
 	// Settings managment
 
 	paramId('settings-managment').addEventListener('dragenter', function () {
@@ -865,6 +897,8 @@ async function selectBackgroundType(cat: string) {
 	if (cat === 'local') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
 		setTimeout(() => localBackgrounds(), 100)
+
+		storage.sync.set({ background_type: 'local' })
 	}
 
 	if (cat === 'unsplash') {
@@ -883,9 +917,9 @@ async function selectBackgroundType(cat: string) {
 				}),
 			100
 		)
-	}
 
-	storage.sync.set({ background_type: cat })
+		storage.sync.set({ background_type: 'unsplash' })
+	}
 }
 
 function settingsFooter() {
@@ -1110,15 +1144,7 @@ async function importSettings(imported: Partial<Sync.Storage>) {
 
 function resetSettings(action: 'yes' | 'no' | 'first') {
 	if (action === 'yes') {
-		storage.sync.clear()
-		storage.local.clear()
-
-		setTimeout(async () => {
-			storage.sync.set({ ...(await getSyncDefaults()) })
-			storage.local.set({ ...LOCAL_DEFAULT })
-			fadeOut()
-		}, 50)
-
+		storage.clearall().then(fadeOut)
 		return
 	}
 
@@ -1183,14 +1209,6 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 		paramId('settings-changes')?.classList.remove('changes')
 		paramId('b_settings-apply')?.setAttribute('disabled', '')
 	}
-}
-
-function fadeOut() {
-	const dominterface = document.getElementById('interface') as HTMLElement
-	dominterface.click()
-	dominterface.style.transition = 'opacity .4s'
-	setTimeout(() => (dominterface.style.opacity = '0'))
-	setTimeout(() => location.reload(), 400)
 }
 
 //	Helpers

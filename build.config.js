@@ -32,6 +32,7 @@ const paths = {
 		assets: {
 			interface: ['src/assets/interface', `release/${platform}/src/assets/interface`],
 			weather: ['src/assets/weather', `release/${platform}/src/assets/weather`],
+			labels: ['src/assets/labels', `release/${platform}/src/assets/labels`],
 			favicons: {
 				ico: ['src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`],
 				128: ['src/assets/favicon-128x128.png', `release/${platform}/src/assets/favicon-128x128.png`],
@@ -42,7 +43,7 @@ const paths = {
 	extension: {
 		manifest: [`src/manifests/${platform}.json`, `release/${platform}/manifest.json`],
 		scripts: {
-			background: ['src/scripts/services/background.js', `release/${platform}/src/scripts/background.js`],
+			serviceworker: ['src/scripts/services/service-worker.js', `release/${platform}/src/scripts/service-worker.js`],
 			storage: ['src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`],
 		},
 	},
@@ -197,13 +198,14 @@ function scripts() {
 	}
 
 	if (PLATFORM_ONLINE) copyFile(...paths.online.serviceworker)
-	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.background)
+	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.serviceworker)
 	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.storage)
 }
 
 function assets() {
 	copyDir(...paths.shared.assets.interface)
 	copyDir(...paths.shared.assets.weather)
+	copyDir(...paths.shared.assets.labels)
 	copyFile(...paths.shared.assets.favicons.ico)
 	copyFile(...paths.shared.assets.favicons[128])
 	copyFile(...paths.shared.assets.favicons[512])
