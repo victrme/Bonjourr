@@ -1,5 +1,4 @@
 import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
-import { controlSync } from './features/synchronization'
 import parse from './utils/parse'
 
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
@@ -12,13 +11,13 @@ interface AllStorage {
 interface Storage {
 	sync: {
 		get: (key?: string | string[]) => Promise<Sync.Storage>
-		set: (val: Record<string, unknown>) => void
+		set: (val: Partial<Sync.Storage>) => void
 		remove: (key: string) => void
 		clear: () => Promise<void>
 	}
 	local: {
 		get: (key: string | string[]) => Promise<Local.Storage>
-		set: (val: Record<string, unknown>) => void
+		set: (val: Partial<Local.Storage>) => void
 		remove: (key: string) => void
 		clear: () => void
 	}

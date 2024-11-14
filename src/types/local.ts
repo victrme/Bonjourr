@@ -12,6 +12,7 @@ declare namespace Local {
 		operaExplained?: true
 		gistId?: string
 		gistToken?: string
+		distantUrl?: string
 		pastebinToken?: string
 		sync?: Sync.Storage
 	}

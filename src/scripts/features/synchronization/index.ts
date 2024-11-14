@@ -33,7 +33,7 @@ export default function synchronization(init?: Sync.Storage, update?: SyncUpdate
 
 async function updateSyncOption(update: SyncUpdate) {
 	const data = await storage.sync.get()
-	const local = await storage.local.get(['gistId', 'gistToken'])
+	const local = await storage.local.get(['gistId', 'gistToken', 'distantUrl'])
 	const sync = data.settingssync
 
 	if (update.down) {
@@ -56,8 +56,7 @@ async function updateSyncOption(update: SyncUpdate) {
 			urlsyncform.load()
 
 			try {
-				const update = await receiveFromURL(sync.url)
-
+				const update = await receiveFromURL(local.distantUrl)
 				storage.sync.set(update)
 				fadeOut()
 			} catch (err) {
@@ -95,8 +94,8 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 
 	if (update.url === '') {
-		sync.url = undefined
-		storage.sync.set({ settingssync: sync })
+		local.distantUrl = undefined
+		storage.local.set({ distantUrl: undefined })
 	}
 
 	if (update.gistToken) {
@@ -121,9 +120,9 @@ async function updateSyncOption(update: SyncUpdate) {
 			await receiveFromURL(update.url)
 			urlsyncform.accept('i_urlsync', update.url)
 
-			sync.url = update.url
+			local.distantUrl = update.url
 			toggleSyncSettingsOption(sync)
-			storage.sync.set({ settingssync: sync })
+			storage.local.set({ distantUrl: update.url })
 		} catch (error) {
 			urlsyncform.warn(error as string)
 		}
@@ -154,6 +153,17 @@ async function updateSyncOption(update: SyncUpdate) {
 }
 
 async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.Storage) {
+	const { gistToken, distantUrl } = local ?? (await storage.local.get(['gistToken', 'distantUrl']))
+	const i_gistsync = document.querySelector<HTMLInputElement>('#i_gistsync')
+	const i_urlsync = document.querySelector<HTMLInputElement>('#i_urlsync')
+
+	if (i_gistsync && gistToken) {
+		i_gistsync.value = gistToken
+	}
+	if (i_urlsync && distantUrl) {
+		i_urlsync.value = distantUrl
+	}
+
 	switch (sync.type) {
 		case 'off':
 		case 'auto': {
@@ -164,21 +174,12 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 		}
 
 		case 'gist': {
-			const token = local?.gistToken ?? (await storage.local.get('gistToken'))?.gistToken
-			const i_gistsync = document.querySelector<HTMLInputElement>('#i_gistsync')
-
-			if (i_gistsync && token) {
-				i_gistsync.value = token
-			}
-
 			document.getElementById('gist-sync')?.classList.add('shown')
-			document.getElementById('b_upsync')?.removeAttribute('disabled')
 			document.getElementById('url-sync')?.classList.remove('shown')
 			break
 		}
 
 		case 'url': {
-			document.getElementById('b_upsync')?.setAttribute('disabled', '')
 			document.getElementById('url-sync')?.classList.add('shown')
 			document.getElementById('gist-sync')?.classList.remove('shown')
 			break

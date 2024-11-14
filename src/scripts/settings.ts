@@ -728,15 +728,15 @@ function initOptionsEvents() {
 		synchronization(undefined, { url: paramId('i_urlsync').value })
 	})
 
-	// paramId('b_giststatus').onclickdown(function () {
-	// 	synchronization(undefined, { status: 'gist' })
-	// })
-
-	paramId('b_upsync').onclickdown(function () {
+	paramId('b_gistup').onclickdown(function () {
 		synchronization(undefined, { up: true })
 	})
 
-	paramId('b_downsync').onclickdown(function () {
+	paramId('b_gistdown').onclickdown(function () {
+		synchronization(undefined, { down: true })
+	})
+
+	paramId('b_urldown').onclickdown(function () {
 		synchronization(undefined, { down: true })
 	})
 
@@ -897,6 +897,8 @@ async function selectBackgroundType(cat: string) {
 	if (cat === 'local') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
 		setTimeout(() => localBackgrounds(), 100)
+
+		storage.sync.set({ background_type: 'local' })
 	}
 
 	if (cat === 'unsplash') {
@@ -915,9 +917,9 @@ async function selectBackgroundType(cat: string) {
 				}),
 			100
 		)
-	}
 
-	storage.sync.set({ background_type: cat })
+		storage.sync.set({ background_type: 'unsplash' })
+	}
 }
 
 function settingsFooter() {
