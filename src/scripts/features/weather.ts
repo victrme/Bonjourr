@@ -27,6 +27,7 @@ type WeatherUpdate = {
 	unhide?: true
 }
 
+let firstStart = true
 let pollingInterval = 0
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')
@@ -433,7 +434,12 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	handleDescription()
 	handleForecastData()
 
-	weatherdom?.classList.remove('wait')
+	
+	if (firstStart) {
+		firstStart = false
+		weatherdom?.classList.remove('wait')
+		setTimeout(() => weatherdom?.classList.remove('init'), 1200)
+	}
 }
 
 function handleForecastDisplay(forecast: string) {
