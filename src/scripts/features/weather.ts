@@ -1,5 +1,5 @@
-import { stringMaxSize, apiFetch, minutator } from '../utils'
-import { tradThis, getLang } from '../utils/translations'
+import { apiFetch, minutator, stringMaxSize } from '../utils'
+import { getLang, tradThis } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
 import networkForm from '../utils/networkform'
 import suntime from '../utils/suntime'
@@ -182,10 +182,9 @@ async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 		return
 	}
 
-	const date = new Date()
-	const now = date.getTime()
-
-	const isAnHourLater = Math.floor(now / 1000) > (lastWeather?.timestamp ?? 0) + 3600
+	const now = new Date().getTime()
+	const last = lastWeather?.timestamp ?? 0
+	const isAnHourLater = now > last + 3600
 
 	if (navigator.onLine && isAnHourLater) {
 		const newWeather = await request(data, lastWeather)
@@ -266,17 +265,15 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	}
 
 	if (data.geolocation === 'off' && !coords) {
-		queries += '&q=' + encodeURIComponent(`${data.city ?? 'Paris'} ${data.ccode ?? 'FR'}`)
+		const city = data.city ?? 'Paris'
+		const country = data.ccode ?? 'FR'
+		const query = encodeURIComponent(`${city} ${country}`)
+
+		queries += '&q=' + query
 	}
 
 	const response = await apiFetch('/weather/' + queries)
 	const json: Weather.SimpleWeather = await response?.json()
-	const isRateLimited = response?.status === 429
-
-	if (isRateLimited && lastWeather) {
-		lastWeather.timestamp = Date.now() - 3000000 // 45min
-		return lastWeather
-	}
 
 	if (!json) {
 		return lastWeather
@@ -351,9 +348,15 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const maintemp = data.temperature === 'feelslike' ? feels : actual
 		let tempReport = ''
 
-		if (data.temperature === 'actual') tempReport = tradThis('It is currently <temp1>°')
-		if (data.temperature === 'feelslike') tempReport = tradThis('It currently feels like <temp2>°')
-		if (data.temperature === 'both') tempReport = tradThis('It is currently <temp1>° and feels like <temp2>°')
+		if (data.temperature === 'actual') {
+			tempReport = tradThis('It is currently <temp1>°')
+		}
+		if (data.temperature === 'feelslike') {
+			tempReport = tradThis('It currently feels like <temp2>°')
+		}
+		if (data.temperature === 'both') {
+			tempReport = tradThis('It is currently <temp1>° and feels like <temp2>°')
+		}
 
 		const iconText = tempContainer?.querySelector('p')
 		const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
@@ -390,7 +393,9 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 		let string = ''
 
 		if (day === 'today') string = tradThis('with a high of <temp1>° today')
-		if (day === 'tomorrow') string = tradThis('with a high of <temp1>° tomorrow')
+		if (day === 'tomorrow') {
+			string = tradThis('with a high of <temp1>° tomorrow')
+		}
 
 		string = string.replace('<temp1>', lastWeather.forecasted_high.toString())
 		string = string + dot
