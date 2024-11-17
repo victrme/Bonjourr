@@ -1,3 +1,7 @@
+## 20.2.2
+
+-   Fix weather cache using old timestamp convention
+
 ## 20.2.1
 
 -   Fixes:
