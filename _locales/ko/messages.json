@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr · 미니멀리스트 시작 페이지",
+		"description": "extension name"
+	},
+	"extensionDesc": {
+		"message": "Bonjourr로 웹 브라우징 경험을 개선해 보세요. 멋지게 꾸밀 수 있는 가벼운 시작 페이지입니다.",
+		"description": "extension description"
+	}
+}
