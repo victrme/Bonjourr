@@ -4,9 +4,9 @@ import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
+import getVnCalendar from '../dependencies/vietnamese-calendar'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
-import getVnCalendar from '../utils/vietnamese-calendar'
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -360,12 +360,11 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, tim
 		cc.textContent = weekday
 	}
 
-    if (lang === 'vi' &&
-        (timezone === 'auto' || timezone === 'Asia/Ho_Chi_Minh')) {
-        secondary.textContent = getVnCalendar(date)
-    } else {
-        secondary.textContent = ''
-    }
+	if (lang === 'vi' && (timezone === 'auto' || timezone === 'Asia/Ho_Chi_Minh')) {
+		secondary.textContent = getVnCalendar(date)
+	} else {
+		secondary.textContent = ''
+	}
 }
 
 //	Greetings
