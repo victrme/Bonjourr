@@ -105,20 +105,21 @@ export async function findGistId(token?: string): Promise<string | undefined> {
 	return file?.id
 }
 
-export async function isGistTokenValid(token?: string): Promise<true> {
+export async function isGistTokenValid(token = ''): Promise<boolean> {
 	if (!token) {
-		throw new Error(GIST_ERROR.TOKEN)
+		return false
 	}
 
-	const ISODate = new Date()?.toISOString()
-	const resp = await fetch(`https://api.github.com/gists?since=${ISODate}`, {
-		headers: gistHeaders(token),
-	})
+	try {
+		const ISODate = new Date()?.toISOString()
+		const resp = await fetch(`https://api.github.com/gists?since=${ISODate}`, {
+			headers: gistHeaders(token),
+		})
 
-	if (resp.status === 401) throw new Error(GIST_ERROR.TOKEN)
-	if (resp.status >= 300) throw new Error(GIST_ERROR.OTHER)
-
-	return true
+		return resp.status === 200
+	} catch (_) {
+		return false
+	}
 }
 
 function isGistIdValid(id?: string): boolean {

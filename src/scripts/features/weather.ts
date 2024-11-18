@@ -185,7 +185,7 @@ async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 
 	const now = new Date().getTime()
 	const last = lastWeather?.timestamp ?? 0
-	const isAnHourLater = now > last + 3600
+	const isAnHourLater = now > last + 3600000
 
 	if (navigator.onLine && isAnHourLater) {
 		const newWeather = await request(data, lastWeather)
@@ -434,11 +434,10 @@ function displayWeather(data: Weather, lastWeather: LastWeather) {
 	handleDescription()
 	handleForecastData()
 
-	
 	if (firstStart) {
 		firstStart = false
 		weatherdom?.classList.remove('wait')
-		setTimeout(() => weatherdom?.classList.remove('init'), 1200)
+		setTimeout(() => weatherdom?.classList.remove('init'), 900)
 	}
 }
 

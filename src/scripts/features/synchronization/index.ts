@@ -1,5 +1,5 @@
-import { retrieveGist, sendGist, isGistTokenValid, findGistId } from './gist'
-import { receiveFromURL } from './url'
+import { retrieveGist, sendGist, findGistId, isGistTokenValid } from './gist'
+import { isDistantUrlValid, receiveFromURL } from './url'
 import onSettingsLoad from '../../utils/onsettingsload'
 import networkForm from '../../utils/networkform'
 import { fadeOut } from '../../utils'
@@ -23,7 +23,11 @@ const urlsyncform = networkForm('f_urlsync')
 
 export default function synchronization(init?: Sync.Storage, update?: SyncUpdate) {
 	if (init) {
-		onSettingsLoad(() => toggleSyncSettingsOption(init.settingssync))
+		onSettingsLoad(async function () {
+			const local = await storage.local.get(['gistToken', 'distantUrl'])
+			const sync = init.settingssync
+			toggleSyncSettingsOption(sync, local)
+		})
 	}
 
 	if (update) {
@@ -81,21 +85,25 @@ async function updateSyncOption(update: SyncUpdate) {
 		}
 	}
 
-	if (update.status) {
-		if (update.status === 'gist') {
-			document.getElementById('gist-sync-status')?.classList.toggle('shown')
-			return
-		}
-	}
+	// if (update.status) {
+	// 	if (update.status === 'gist') {
+	// 		document.getElementById('gist-sync-status')?.classList.toggle('shown')
+	// 		return
+	// 	}
+	// }
 
 	if (update.gistToken === '') {
-		storage.local.remove('gist')
+		local.gistToken = ''
+		storage.local.remove('gistToken')
+		toggleSyncSettingsOption(sync, local)
 		return
 	}
 
 	if (update.url === '') {
-		local.distantUrl = undefined
-		storage.local.set({ distantUrl: undefined })
+		local.distantUrl = ''
+		storage.local.remove('distantUrl')
+		toggleSyncSettingsOption(sync, local)
+		return
 	}
 
 	if (update.gistToken) {
@@ -121,8 +129,8 @@ async function updateSyncOption(update: SyncUpdate) {
 			urlsyncform.accept('i_urlsync', update.url)
 
 			local.distantUrl = update.url
-			toggleSyncSettingsOption(sync)
 			storage.local.set({ distantUrl: update.url })
+			toggleSyncSettingsOption(sync, local)
 		} catch (error) {
 			urlsyncform.warn(error as string)
 		}
@@ -133,7 +141,7 @@ async function updateSyncOption(update: SyncUpdate) {
 		const toSync = update.type !== 'off'
 
 		sync.type = update.type
-		toggleSyncSettingsOption(sync)
+		toggleSyncSettingsOption(sync, local)
 
 		// <!> Set & return here because
 		// <!> awaits in if() doesn't have priority
@@ -153,9 +161,18 @@ async function updateSyncOption(update: SyncUpdate) {
 }
 
 async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.Storage) {
-	const { gistToken, distantUrl } = local ?? (await storage.local.get(['gistToken', 'distantUrl']))
+	const gistToken = local?.gistToken
+	const distantUrl = local?.distantUrl
+
 	const i_gistsync = document.querySelector<HTMLInputElement>('#i_gistsync')
 	const i_urlsync = document.querySelector<HTMLInputElement>('#i_urlsync')
+	const b_gistdown = document.querySelector<HTMLInputElement>('#b_gistdown')
+	const b_gistup = document.querySelector<HTMLInputElement>('#b_gistup')
+	const b_urldown = document.querySelector<HTMLInputElement>('#b_urldown')
+
+	b_gistdown?.setAttribute('disabled', '')
+	b_urldown?.setAttribute('disabled', '')
+	b_gistup?.setAttribute('disabled', '')
 
 	if (i_gistsync && gistToken) {
 		i_gistsync.value = gistToken
@@ -176,12 +193,23 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 		case 'gist': {
 			document.getElementById('gist-sync')?.classList.add('shown')
 			document.getElementById('url-sync')?.classList.remove('shown')
+
+			if (await isGistTokenValid(gistToken)) {
+				b_gistdown?.removeAttribute('disabled')
+				b_gistup?.removeAttribute('disabled')
+			}
+
 			break
 		}
 
 		case 'url': {
 			document.getElementById('url-sync')?.classList.add('shown')
 			document.getElementById('gist-sync')?.classList.remove('shown')
+
+			if (await isDistantUrlValid(distantUrl)) {
+				b_urldown?.removeAttribute('disabled')
+			}
+
 			break
 		}
 	}

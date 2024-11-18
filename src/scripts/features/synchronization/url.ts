@@ -27,6 +27,15 @@ export async function receiveFromURL(url = ''): Promise<Sync.Storage> {
 	}
 }
 
+export async function isDistantUrlValid(url = ''): Promise<boolean> {
+	try {
+		await receiveFromURL(url)
+		return true
+	} catch (_) {
+		return false
+	}
+}
+
 const DISTANT_ERROR = {
 	URL: tradThis('Not a valid URL'),
 	FAIL: tradThis('Cannot access resource right now'),
