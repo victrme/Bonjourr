@@ -435,6 +435,7 @@ aside form.valid button {
 
 #digital_options.shown,
 #unsplash_options.shown,
+#wallhaven_options.shown,
 #quotes_url.shown {
 	max-height: 120px;
 }
@@ -456,7 +457,7 @@ aside form.valid button {
 	max-height: 360px;
 }
 
-.all .as_collection {
+.all .as_collection, .all .as_parameters {
 	max-height: 130px;
 }
 

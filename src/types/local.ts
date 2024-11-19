@@ -7,6 +7,7 @@ declare namespace Local {
 		userQuoteSelection: number
 		quotesCache: Quotes.Item[]
 		unsplashCache: Unsplash.Local
+		wallhavenCache: Wallhaven.Local
 		translations?: Translations
 		lastWeather?: Weather.Local
 		operaExplained?: true

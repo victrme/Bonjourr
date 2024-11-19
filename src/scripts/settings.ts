@@ -10,6 +10,7 @@ import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import localBackgrounds from './features/backgrounds/local'
 import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
+import wallhavenBackgrounds, { bonjourrParams } from './features/backgrounds/wallhaven'
 import storage, { getSyncDefaults } from './storage'
 import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
@@ -113,7 +114,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
 	setInput('i_type', data.background_type || 'unsplash')
-	setInput('i_freq', data.unsplash?.every)
+	setInput('i_freq', data[data.background_type]?.every)
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
@@ -236,10 +237,15 @@ function initOptionsValues(data: Sync.Storage) {
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
+	paramId('wallhaven_options')?.classList.toggle('shown', data.background_type === 'wallhaven')
 
 	// Unsplash collection
 	paramId('i_collection')?.setAttribute('value', data?.unsplash?.collection ?? '')
 	paramId('i_collection')?.setAttribute('placeholder', data?.unsplash?.collection || bonjourrCollections[data?.unsplash?.lastCollec ?? 'day'])
+
+	// Wallhaven parameters
+	paramId('i_parameters')?.setAttribute('value', data?.wallhaven?.parameters ?? '')
+	paramId('i_parameters')?.setAttribute('placeholder', data?.wallhaven?.parameters || bonjourrParams[data?.wallhaven?.lastParams ?? 'day'])
 
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
@@ -392,6 +398,14 @@ function initOptionsEvents() {
 			collection: stringMaxSize(paramId('i_collection').value, 256),
 		})
 	})
+
+    paramId('f_parameters').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		wallhavenBackgrounds(undefined, {
+			parameters: stringMaxSize(paramId('i_parameters').value, 256),
+		})
+	})
+
 
 	// Custom backgrounds
 
@@ -859,6 +873,7 @@ function showall(val: boolean, event: boolean) {
 async function selectBackgroundType(cat: string) {
 	document.getElementById('local_options')?.classList.toggle('shown', cat === 'local')
 	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
+	document.getElementById('wallhaven_options')?.classList.toggle('shown', cat === 'wallhaven')
 
 	if (cat === 'local') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
@@ -878,6 +893,24 @@ async function selectBackgroundType(cat: string) {
 				unsplashBackgrounds({
 					unsplash: data.unsplash,
 					cache: local.unsplashCache,
+				}),
+			100
+		)
+	}
+
+	if (cat === 'wallhaven') {
+		const data = await storage.sync.get()
+		const local = await storage.local.get('wallhavenCache')
+
+		if (!data.wallhaven) return
+
+		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.wallhaven.every || 'hour'
+		document.getElementById('credit-container')?.classList.toggle('shown', true)
+		setTimeout(
+			() =>
+				wallhavenBackgrounds({
+					wallhaven: data.wallhaven,
+					cache: local.wallhavenCache,
 				}),
 			100
 		)

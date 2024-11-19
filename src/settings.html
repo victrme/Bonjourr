@@ -96,6 +96,7 @@
 		<label for="i_type" class="trn">Background type</label>
 		<select id="i_type">
 			<option value="unsplash" class="trn">Unsplash</option>
+			<option value="wallhaven" class="trn">Wallhaven</option>
 			<option value="local" class="trn">Local file</option>
 		</select>
 	</div>
@@ -171,6 +172,55 @@
 				<a
 					class="trn"
 					href="https://bonjourr.fr/docs/overview/#custom-unsplash-collection"
+					rel="noreferrer noopener"
+					target="_blank"
+					>Learn more</a
+				>
+			</p>
+		</div>
+	</div>
+
+	<div id="wallhaven_options" class="dropdown shown">
+		<div class="as as_parameters dropdown">
+			<hr />
+
+			<div class="wrapper">
+				<span>
+					<label for="i_parameters" class="trn">Wallhaven parameters</label>
+					<button
+						class="tooltip ttparams"
+						title="Tips on Wallhaven parameters"
+						aria-label="Tips on Wallhaven parameters"
+					>
+						?
+					</button>
+				</span>
+
+				<form id="f_parameters" class="network-form">
+					<input
+						type="text"
+						name="parameters"
+						id="i_parameters"
+						autocomplete="off"
+						placeholder="daylight"
+						maxlength="256"
+						spellcheck="false"
+						autocomplete="off"
+						autocorrect="off"
+						autocapitalize="off"
+					/>
+					<button type="submit" id="b_parameters">
+						<span>✓</span>
+						<i></i>
+					</button>
+				</form>
+			</div>
+
+			<p class="tooltiptext dropdown ttparams">
+				<span class="trn">Type the full search URL, or keywords.</span>
+				<a
+					class="trn"
+					href="https://bonjourr.fr/docs/overview/#custom-wallhaven-parameters"
 					rel="noreferrer noopener"
 					target="_blank"
 					>Learn more</a

@@ -1,4 +1,5 @@
 import unsplashBackgrounds from './unsplash'
+import wallhavenBackgrounds from './wallhaven'
 import localBackgrounds from './local'
 import { rgbToHex } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
@@ -30,7 +31,13 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
 	}
 
-	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+	if (type === 'local') {
+        localBackgrounds()
+    } else if (type === 'unsplash') {
+        unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+    } else if (type === 'wallhaven') {
+        wallhavenBackgrounds({ wallhaven: data.wallhaven, cache: local.wallhavenCache })
+    }
 }
 
 //
@@ -86,14 +93,26 @@ export function backgroundFilter({ blur, brightness, isEvent }: FilterOptions) {
 
 export function updateBackgroundOption({ freq, refresh }: UpdateOptions) {
 	const i_type = document.getElementById('i_type') as HTMLInputElement
-	const isLocal = i_type.value === 'local'
+	const type = i_type.value || 'unsplash'
 
 	if (freq !== undefined) {
-		isLocal ? localBackgrounds({ freq }) : unsplashBackgrounds(undefined, { every: freq })
+		if (type === 'local') {
+            localBackgrounds({ freq })
+        } else if (type === 'unsplash') {
+            unsplashBackgrounds(undefined, { every: freq })
+        } else if (type === 'wallhaven') {
+            wallhavenBackgrounds(undefined, { every: freq })
+        }
 	}
 
 	if (refresh) {
-		isLocal ? localBackgrounds({ refresh }) : unsplashBackgrounds(undefined, { refresh })
+		if (type === 'local') {
+            localBackgrounds({ refresh })
+        } else if (type === 'unsplash') {
+            unsplashBackgrounds(undefined, { refresh })
+        } else if (type === 'wallhaven') {
+            wallhavenBackgrounds(undefined, { refresh })
+        }
 	}
 }
 

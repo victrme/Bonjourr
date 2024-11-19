@@ -135,6 +135,13 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		pausedImage: undefined,
 		time: undefined,
 	},
+    wallhaven: {
+        every: 'hour',
+        parameters: '',
+        lastParams: 'day',
+        pausedImage: undefined,
+        time: undefined,
+    },
 	weather: {
 		ccode: undefined,
 		city: undefined,
@@ -193,4 +200,11 @@ export const LOCAL_DEFAULT: Local.Storage = {
 		night: [],
 		user: [],
 	},
+    wallhavenCache: {
+        noon: [],
+        day: [],
+        evening: [],
+        night: [],
+        user: [],
+    },
 }
