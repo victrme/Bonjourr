@@ -17,10 +17,8 @@ export default function networkForm(targetId: string) {
 		button = form?.querySelector('button:last-of-type') as HTMLButtonElement
 
 		form.querySelectorAll('input').forEach((input) => {
-			input?.addEventListener('blur', () => {
-				if (input.value === '') {
-					form.classList.remove('valid')
-				}
+			input?.addEventListener('input', () => {
+				form.classList.toggle('valid', form.checkValidity() && input.value !== input.getAttribute('value'))
 			})
 		})
 
@@ -54,10 +52,12 @@ export default function networkForm(targetId: string) {
 	}
 
 	function accept(inputId?: string, value?: string) {
-		if (inputId && value) {
+		if (inputId && form.checkValidity()) {
 			form.classList.remove('valid')
-			form.querySelectorAll('input').forEach((input) => (input.value = ''))
-			document.getElementById(inputId)?.setAttribute('placeholder', value)
+
+			let input = document.getElementById(inputId)
+			input.setAttribute('value', input.value)
+			input.setAttribute('placeholder', value)
 		}
 
 		setTimeout(() => resetForm(), 200)
