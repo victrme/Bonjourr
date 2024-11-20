@@ -14,7 +14,7 @@ declare namespace Local {
 		gistToken?: string
 		distantUrl?: string
 		pastebinToken?: string
-		sync?: Sync.Storage
+		syncStorage?: Sync.Storage
 	}
 
 	type Translations = {

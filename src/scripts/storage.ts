@@ -16,9 +16,9 @@ interface Storage {
 		clear: () => Promise<void>
 	}
 	local: {
-		get: (key: string | string[]) => Promise<Local.Storage>
+		get: (key: keyof Local.Storage | (keyof Local.Storage)[]) => Promise<Local.Storage>
 		set: (val: Partial<Local.Storage>) => void
-		remove: (key: string) => void
+		remove: (key: keyof Local.Storage) => void
 		clear: () => void
 	}
 	init: () => Promise<AllStorage>
@@ -55,7 +55,7 @@ async function syncGet(key?: string | string[]): Promise<Sync.Storage> {
 		}
 
 		case 'webext-local': {
-			const data = (await chrome.storage.local.get('sync')).sync
+			const data = (await chrome.storage.local.get('syncStorage')).syncStorage
 			return verifyDataAsSync(data)
 		}
 
@@ -74,11 +74,11 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 
 		case 'webext-local': {
 			const data = {
-				...(await chrome.storage.local.get('sync')).sync,
+				...(await chrome.storage.local.get('syncStorage')).syncStorage,
 				...keyval,
 			}
 
-			chrome.storage.local.set({ sync: data }, fn)
+			chrome.storage.local.set({ syncStorage: data }, fn)
 			return
 		}
 
@@ -107,10 +107,10 @@ async function syncRemove(key: string) {
 		}
 
 		case 'webext-local': {
-			const data = (await chrome.storage.local.get('sync')).sync
-			await chrome.storage.local.remove('sync')
+			const data = (await chrome.storage.local.get('syncStorage')).syncStorage
+			await chrome.storage.local.remove('syncStorage')
 			delete data[key]
-			chrome.storage.local.set({ sync: data })
+			chrome.storage.local.set({ syncStorage: data })
 		}
 
 		case 'localstorage': {
@@ -128,7 +128,7 @@ async function syncClear() {
 		}
 
 		case 'webext-local': {
-			await chrome.storage.local.remove('sync')
+			await chrome.storage.local.remove('syncStorage')
 			return
 		}
 
@@ -213,9 +213,9 @@ async function localClear() {
 		}
 
 		case 'webext-local': {
-			const sync = (await chrome.storage.local.get('sync')).sync
+			const sync = (await chrome.storage.local.get('syncStorage')).syncStorage
 			await chrome.storage.local.clear()
-			await chrome.storage.local.set({ sync: sync })
+			await chrome.storage.local.set({ syncStorage: sync })
 			return
 		}
 
@@ -279,20 +279,20 @@ async function init(): Promise<AllStorage> {
 				document.addEventListener('webextstorage', function (event: CustomEventInit) {
 					if (event.detail === 'local') {
 						const local = (globalThis.startupStorage as AllStorage).local
-						const sync = ((globalThis.startupStorage as AllStorage).local?.sync ?? {}) as Sync.Storage
+						const sync = ((globalThis.startupStorage as AllStorage).local?.syncStorage ?? {}) as Sync.Storage
 
 						store.sync = sync
 						store.local = local
-						delete store.local.sync
+						delete store.local.syncStorage
 
 						resolve(true)
 					}
 				})
 			})
 		} else {
-			const sync = (globalThis.startupStorage as AllStorage).local?.sync ?? {}
+			const sync = (globalThis.startupStorage as AllStorage).local?.syncStorage ?? {}
 			store.sync = sync as Sync.Storage
-			delete store.local.sync
+			delete store.local.syncStorage
 		}
 
 		return await finalizeStorageInit()
@@ -359,7 +359,7 @@ async function clearall() {
 
 			chrome.storage.local.set({
 				...LOCAL_DEFAULT,
-				sync: SYNC_DEFAULT,
+				syncStorage: SYNC_DEFAULT,
 			})
 
 			sessionStorage.WEBEXT_LOCAL = 'yes'
@@ -386,7 +386,7 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 function storageType(): StorageType {
 	if (PLATFORM !== 'online') {
 		const { local, sync } = (globalThis.startupStorage as AllStorage) ?? {}
-		const fromStartupStorage = sync?.settingssync?.type ?? local?.sync?.settingssync?.type
+		const fromStartupStorage = sync?.settingssync?.type ?? local?.syncStorage?.settingssync?.type
 		const fromSession = sessionStorage.getItem('WEBEXT_LOCAL') === 'yes' ? 'off' : undefined
 		const type = fromSession ?? fromStartupStorage ?? 'auto'
 
