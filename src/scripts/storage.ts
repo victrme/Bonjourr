@@ -16,7 +16,7 @@ interface Storage {
 		clear: () => Promise<void>
 	}
 	local: {
-		get: (key: keyof Local.Storage | (keyof Local.Storage)[]) => Promise<Local.Storage>
+		get: (key?: keyof Local.Storage | (keyof Local.Storage)[]) => Promise<Local.Storage>
 		set: (val: Partial<Local.Storage>) => void
 		remove: (key: keyof Local.Storage) => void
 		clear: () => void

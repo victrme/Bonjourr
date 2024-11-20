@@ -345,9 +345,6 @@ label.input-file input[type='file'].dragover ~ span {
 }
 
 aside form {
-	display: flex;
-	position: relative;
-	align-items: center;
 	width: 155px;
 }
 
@@ -359,7 +356,7 @@ aside form > div {
 
 aside form button {
 	height: 31px;
-	width: 100%;
+	width: 31px;
 	padding: 0;
 	opacity: 0;
 	max-width: 0;
@@ -374,15 +371,22 @@ aside form button:disabled {
 }
 
 aside form button span {
-	justify-content: center;
+	display: block;
+	width: 31px;
 }
 
 aside form.valid button {
 	opacity: 1;
-	pointer-events: all;
-	max-width: 26px;
-	margin-left: 4px;
+	max-width: 31px;
 	visibility: visible;
+}
+
+aside form.valid span::after {
+	content: '✓';
+}
+
+aside form.valid.remove span::after {
+	content: '×';
 }
 
 @media (hover: hover) {
@@ -447,7 +451,7 @@ aside form.valid button {
 
 #url-sync.shown,
 #gist-sync.shown {
-	max-height: 120px;
+	max-height: 160px;
 }
 
 /* #gist-sync-status.shown {
@@ -640,7 +644,7 @@ aside .settings-title .tooltip {
 	padding: 4px; /* for tabbing outline */
 }
 
-.wrapper span {
+.wrapper > span {
 	display: flex;
 	align-items: center;
 }

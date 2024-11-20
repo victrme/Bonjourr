@@ -147,22 +147,23 @@
 				</span>
 
 				<form id="f_collection" class="network-form">
-					<input
-						type="text"
-						name="collection"
-						id="i_collection"
-						autocomplete="off"
-						placeholder="o8uX55RbBPs"
-						maxlength="256"
-						spellcheck="false"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-					/>
-					<button type="submit" id="b_collection">
-						<span>✓</span>
-						<i></i>
-					</button>
+					<div>
+						<input
+							type="text"
+							name="collection"
+							id="i_collection"
+							autocomplete="off"
+							maxlength="256"
+							spellcheck="false"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+						/>
+						<button type="submit" id="b_collection">
+							<span></span>
+						</button>
+					</div>
+					<small class="network-form-warning"></small>
 				</form>
 			</div>
 
@@ -261,11 +262,11 @@
 						spellcheck="false"
 						required="true"
 					/>
-				</div>
 
-				<button type="submit" id="i_addlink">
-					<span>✓</span>
-				</button>
+					<button type="submit" id="i_addlink">
+						<span></span>
+					</button>
+				</div>
 			</form>
 		</div>
 
@@ -657,14 +658,17 @@
 			<label for="i_geol" class="trn">Geolocation</label>
 
 			<form id="f_geol" class="network-form">
-				<select id="i_geol">
-					<option value="off" class="trn">Manual</option>
-					<option value="approximate" class="trn">Approximate</option>
-					<option value="precise" class="trn">Precise</option>
-				</select>
-				<button type="submit">
-					<i></i>
-				</button>
+				<div>
+					<select id="i_geol">
+						<option value="off" class="trn">Manual</option>
+						<option value="approximate" class="trn">Approximate</option>
+						<option value="precise" class="trn">Precise</option>
+					</select>
+					<button type="submit">
+						<span></span>
+					</button>
+				</div>
+				<small class="network-form-warning"></small>
 			</form>
 		</div>
 
@@ -676,7 +680,7 @@
 
 				<form id="f_location" class="network-form">
 					<div>
-						<select id="i_ccode" aria-label="Location">
+						<select id="i_ccode" aria-label="Location" required>
 							<option value="AF">Afghanistan</option>
 							<option value="AL">Albania</option>
 							<option value="DZ">Algeria</option>
@@ -872,19 +876,19 @@
 							id="i_city"
 							type="text"
 							name="city"
-							placeholder="City"
 							autocomplete="off"
 							minlength="2"
 							maxlength="64"
 							spellcheck="false"
 							aria-label="Location"
+							required
 						/>
-					</div>
 
-					<button type="submit" id="b_submitlocation">
-						<i></i>
-						<span>✓</span>
-					</button>
+						<button type="submit" id="b_submitlocation">
+							<span></span>
+						</button>
+					</div>
+					<small class="network-form-warning"></small>
 				</form>
 			</div>
 		</div>
@@ -895,13 +899,16 @@
 			<label for="i_units" class="trn">Unit</label>
 
 			<form id="f_units" class="network-form">
-				<select id="i_units">
-					<option value="metric" class="trn">Celsius</option>
-					<option value="imperial" class="trn">Fahrenheit</option>
-				</select>
-				<button type="submit">
-					<i></i>
-				</button>
+				<div>
+					<select id="i_units">
+						<option value="metric" class="trn">Celsius</option>
+						<option value="imperial" class="trn">Fahrenheit</option>
+					</select>
+					<button type="submit">
+						<span></span>
+					</button>
+				</div>
+				<small class="network-form-warning"></small>
 			</form>
 		</div>
 
@@ -1189,18 +1196,21 @@
 				<label for="i_qttype" class="trn">Quote type</label>
 
 				<form id="f_qttype" class="network-form">
-					<select id="i_qttype">
-						<option value="classic" class="trn">Classic</option>
-						<option value="inspirobot">Inspirobot</option>
-						<option value="kaamelott">Kaamelott</option>
-						<option value="stoic">Stoic</option>
-						<option value="hitokoto">Hitokoto</option>
-						<option value="user" class="trn">Custom</option>
-						<option value="url">URL</option>
-					</select>
-					<button type="submit">
-						<i></i>
-					</button>
+					<div>
+						<select id="i_qttype">
+							<option value="classic" class="trn">Classic</option>
+							<option value="inspirobot">Inspirobot</option>
+							<option value="kaamelott">Kaamelott</option>
+							<option value="stoic">Stoic</option>
+							<option value="hitokoto">Hitokoto</option>
+							<option value="user" class="trn">Custom</option>
+							<option value="url">URL</option>
+						</select>
+						<button type="submit">
+							<span></span>
+						</button>
+					</div>
+					<small class="network-form-warning"></small>
 				</form>
 			</div>
 
@@ -1226,22 +1236,24 @@
 					<label for="i_qturl">URL</label>
 
 					<form id="f_qturl" class="network-form">
-						<input
-							id="i_qturl"
-							type="url"
-							name="qturl"
-							minlength="3"
-							maxlength="512"
-							placeholder="https://example.com/quotes.csv"
-							autocomplete="off"
-							autocorrect="off"
-							autocapitalize="off"
-							spellcheck="false"
-						/>
-						<button type="submit">
-							<i></i>
-							<span>✓</span>
-						</button>
+						<div>
+							<input
+								id="i_qturl"
+								type="url"
+								name="qturl"
+								minlength="3"
+								maxlength="512"
+								placeholder="https://example.com/quotes.csv"
+								autocomplete="off"
+								autocorrect="off"
+								autocapitalize="off"
+								spellcheck="false"
+							/>
+							<button type="submit">
+								<span></span>
+							</button>
+						</div>
+						<small class="network-form-warning"></small>
 					</form>
 				</div>
 			</div>
@@ -1288,13 +1300,15 @@
 			<label for="i_customfont" class="trn">Font family</label>
 
 			<form id="f_customfont" class="network-form">
-				<input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" placeholder="" />
-				<datalist id="dl_fontfamily"></datalist>
+				<div>
+					<input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" />
+					<datalist id="dl_fontfamily"></datalist>
 
-				<button type="submit">
-					<i></i>
-					<span>✓</span>
-				</button>
+					<button type="submit">
+						<span></span>
+					</button>
+				</div>
+				<small class="network-form-warning"></small>
 			</form>
 		</div>
 
@@ -1465,19 +1479,20 @@
 			<span class="trn">Authentification token</span>
 
 			<form id="f_gistsync" class="network-form">
-				<input
-					type="text"
-					name="gistsync"
-					id="i_gistsync"
-					maxlength="93"
-					placeholder="github_pat_XX000X00X0X0X0"
-					aria-label="Synchronization using Github Gist"
-					autocomplete="github-token"
-				/>
-				<button type="submit" id="b_gistsync">
-					<span>✓</span>
-					<i></i>
-				</button>
+				<div>
+					<input
+						type="text"
+						name="gistsync"
+						id="i_gistsync"
+						maxlength="93"
+						aria-label="Synchronization using Github Gist"
+						autocomplete="github-token"
+					/>
+					<button type="submit" id="b_gistsync">
+						<span></span>
+					</button>
+				</div>
+				<small class="network-form-warning"></small>
 			</form>
 		</div>
 
@@ -1543,19 +1558,20 @@
 			<span class="trn">URL</span>
 
 			<form id="f_urlsync" class="network-form">
-				<input
-					type="text"
-					name="i_urlsync"
-					id="i_urlsync"
-					maxlength="256"
-					placeholder="https://pastebin.com/raw/y7XhhiDs"
-					aria-label="Synchronization using a distant URL"
-					autocomplete="urlsync"
-				/>
-				<button type="submit" id="b_urlsync">
-					<span>✓</span>
-					<i></i>
-				</button>
+				<div>
+					<input
+						type="text"
+						name="i_urlsync"
+						id="i_urlsync"
+						maxlength="256"
+						aria-label="Synchronization using a distant URL"
+						autocomplete="urlsync"
+					/>
+					<button type="submit" id="b_urlsync">
+						<span></span>
+					</button>
+				</div>
+				<small class="network-form-warning"></small>
 			</form>
 		</div>
 

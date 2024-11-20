@@ -10,10 +10,10 @@ import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
-import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
 import { changeGroupTitle, initGroups } from './features/links/groups'
-import customFont, { fontIsAvailableInSubset } from './features/fonts'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
+import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
+import customFont, { fontIsAvailableInSubset, systemfont } from './features/fonts'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
 import storage from './storage'
@@ -66,18 +66,19 @@ export async function settingsPreload() {
 export async function settingsInit() {
 	if (document.getElementById('settings')) return
 
-	const data = await storage.sync.get()
+	const sync = await storage.sync.get()
+	const local = await storage.local.get()
 	const settingsDom = getHTMLTemplate<HTMLElement>('settings-template', '#settings')
 
 	document.body.appendChild(settingsDom)
 
 	translateAriaLabels()
 	translatePlaceholders()
-	traduction(settingsDom, data.lang)
-	showall(data.showall, false)
-	initOptionsValues(data)
+	traduction(settingsDom, sync.lang)
+	showall(sync.showall, false)
+	initOptionsValues(sync, local)
 	initOptionsEvents()
-	updateSettingsJSON(data)
+	updateSettingsJSON(sync)
 	updateSettingsEvent()
 	settingsDrawerBar()
 	settingsFooter()
@@ -105,9 +106,10 @@ function settingsToggle() {
 	document.dispatchEvent(new Event('close-edit'))
 }
 
-function initOptionsValues(data: Sync.Storage) {
+function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	const domsettings = document.getElementById('settings') as HTMLElement
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
+	const unsplashCollec = data?.unsplash?.lastCollec === 'user' ? 'day' : data?.unsplash?.lastCollec
 
 	setInput('i_blur', data.background_blur ?? 15)
 	setInput('i_bright', data.background_bright ?? 0.8)
@@ -142,7 +144,6 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
-	setInput('i_collection', data.unsplash?.collection ?? '')
 	setInput('i_geol', data.weather?.geolocation || 'approximate')
 	setInput('i_ccode', data.weather?.ccode || 'US')
 	setInput('i_units', data.weather?.unit ?? 'metric')
@@ -154,8 +155,13 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
-	// setInput('i_syncfreq', data.settingssync?.freq ?? 'changes')
-	// setInput('i_urlsync', data.settingssync?.url ?? '')
+
+	setFormInput('i_collection', bonjourrCollections[unsplashCollec], data.unsplash?.collection)
+	setFormInput('i_ccode', local.lastWeather?.approximation?.ccode ?? 'FR', data.weather.ccode)
+	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
+	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
+	setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
+	setFormInput('i_urlsync', 'https://pastebin.com/raw/y7XhhiDs', local?.distantUrl)
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -240,11 +246,6 @@ function initOptionsValues(data: Sync.Storage) {
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
-
-	// Unsplash collection
-	const collection = data?.unsplash?.lastCollec === 'user' ? 'day' : data?.unsplash?.lastCollec
-	paramId('i_collection')?.setAttribute('value', data?.unsplash?.collection ?? '')
-	paramId('i_collection')?.setAttribute('placeholder', data?.unsplash?.collection ?? bonjourrCollections[collection])
 
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
@@ -1224,4 +1225,15 @@ function setCheckbox(id: string, cat: boolean) {
 function setInput(id: string, val: string | number) {
 	const input = paramId(id) as HTMLInputElement
 	input.value = typeof val === 'string' ? val : val?.toString()
+}
+
+function setFormInput(id: string, defaults: string, value?: string) {
+	const input = paramId(id) as HTMLInputElement
+
+	if (value) {
+		input.value = value
+		input.setAttribute('placeholder', value)
+	} else {
+		input.setAttribute('placeholder', defaults)
+	}
 }
