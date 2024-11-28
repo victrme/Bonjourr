@@ -2,6 +2,7 @@ import { apiFetch, minutator, stringMaxSize } from '../utils'
 import { getLang, tradThis } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
 import networkForm from '../utils/networkform'
+import debounce from '../utils/debounce'
 import suntime from '../utils/suntime'
 import storage from '../storage'
 
@@ -25,6 +26,7 @@ type WeatherUpdate = {
 	city?: true
 	temp?: string
 	unhide?: true
+	suggestions?: true
 }
 
 let firstStart = true
@@ -32,6 +34,8 @@ let pollingInterval = 0
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')
 const geolForm = networkForm('f_geol')
+
+const suggestionsDebounce = debounce(fillLocationSuggestions, 600)
 
 export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (update) {
@@ -100,10 +104,13 @@ async function updatesWeather(update: WeatherUpdate) {
 		}
 	}
 
+	if (update.suggestions) {
+		prepareLocationSuggestion()
+		suggestionsDebounce()
+	}
+
 	if (update.city) {
 		const i_city = document.getElementById('i_city') as HTMLInputElement
-		const i_ccode = document.getElementById('i_ccode') as HTMLInputElement
-		const ccode = i_ccode.value
 		let city = i_city.value
 
 		if (!navigator.onLine) {
@@ -119,26 +126,25 @@ async function updatesWeather(update: WeatherUpdate) {
 		locationForm.load()
 
 		// don't mutate weather data before confirming that the city exists
-		const currentWeather = { ...weather, ccode, city }
+		const currentWeather = { ...weather, city }
 		const newWeather = await request(currentWeather, lastWeather)
 		const newCity = newWeather?.approximation?.city
 
 		const sanitizeName = (str = '') => str?.toLowerCase().replaceAll('-', ' ')
-		const foundCityIsDifferent = newCity !== '' && sanitizeName(newCity) !== sanitizeName(city)
+		const foundCityIsSame = newCity === '' || sanitizeName(city).includes(sanitizeName(newCity))
 
 		if (!newWeather) {
 			locationForm.warn(tradThis('Cannot reach weather service'))
 			return
 		}
 
-		if (foundCityIsDifferent) {
+		if (!foundCityIsSame) {
 			locationForm.warn(tradThis('Cannot find correct city'))
 			return
 		}
 
 		if (newWeather) {
 			lastWeather = newWeather
-			weather.ccode = (lastWeather.approximation?.ccode || i_ccode.value) ?? 'FR'
 			weather.city = (lastWeather.approximation?.city || city) ?? 'Paris'
 
 			locationForm.accept('i_city', weather.city ?? tradThis('City'))
@@ -203,7 +209,6 @@ async function initWeather(data: Weather) {
 	const currentWeather = await request(data)
 
 	if (currentWeather) {
-		data.ccode = currentWeather.approximation?.ccode ?? 'FR'
 		data.city = currentWeather.approximation?.city ?? tradThis('City')
 
 		storage.sync.set({ weather: data })
@@ -239,13 +244,52 @@ async function getGeolocation(type: Weather['geolocation']): Promise<Coords | un
 function handleGeolOption(data: Weather) {
 	const i_city = document.querySelector<HTMLInputElement>('#i_city')
 	const i_geol = document.querySelector<HTMLInputElement>('#i_geol')
-	const i_ccode = document.querySelector<HTMLInputElement>('#i_ccode')
 
-	if (i_ccode && i_city && i_geol) {
+	if (i_city && i_geol) {
 		i_geol.value = data?.geolocation ?? false
-		i_ccode.value = data.ccode ?? 'FR'
 		i_city.setAttribute('placeholder', data.city ?? 'Paris')
 		document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
+	}
+}
+
+function prepareLocationSuggestion() {
+	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+
+	for (const node of dl_cityfound?.childNodes ?? []) {
+		node.remove()
+	}
+}
+
+async function fillLocationSuggestions() {
+	type MeteoGeo = {
+		name: string
+		detail: string
+	}[]
+
+	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+	const i_city = document.getElementById('i_city') as HTMLInputElement
+	const city = i_city.value
+
+	if (city === '') {
+		return
+	}
+
+	const base = 'https://racle-meteo.victr.workers.dev/'
+	const params = '?provider=accuweather&data=simple&geo=true&query='
+	const q = encodeURIComponent(`${city}`)
+	const resp = await fetch(base + params + q)
+
+	if (resp.status === 200) {
+		const json = (await resp.json()) as MeteoGeo
+
+		for (const { detail } of json) {
+			const option = document.createElement('option')
+			option.value = detail
+			option.textContent = detail
+			dl_cityfound?.appendChild(option)
+		}
+
+		console.log('show')
 	}
 }
 
@@ -267,8 +311,7 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 
 	if (data.geolocation === 'off' && !coords) {
 		const city = data.city ?? 'Paris'
-		const country = data.ccode ?? 'FR'
-		const query = encodeURIComponent(`${city} ${country}`)
+		const query = encodeURIComponent(city)
 
 		queries += '&q=' + query
 	}

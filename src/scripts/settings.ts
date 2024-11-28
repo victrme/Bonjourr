@@ -145,7 +145,6 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_geol', data.weather?.geolocation || 'approximate')
-	setInput('i_ccode', data.weather?.ccode || 'US')
 	setInput('i_units', data.weather?.unit ?? 'metric')
 	setInput('i_forecast', data.weather?.forecast || 'auto')
 	setInput('i_temp', data.weather?.temperature || 'actual')
@@ -157,7 +156,6 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
 
 	setFormInput('i_collection', bonjourrCollections[unsplashCollec], data.unsplash?.collection)
-	setFormInput('i_ccode', local.lastWeather?.approximation?.ccode ?? 'FR', data.weather.ccode)
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
 	setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
@@ -511,6 +509,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_city').addEventListener('input', function (this: HTMLInputElement) {
+		weather(undefined, { suggestions: true })
 		document.getElementById('f_location')?.classList.toggle('valid', this.value.length > 2)
 	})
 

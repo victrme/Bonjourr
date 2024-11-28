@@ -882,8 +882,7 @@ aside .settings-title .tooltip {
 	padding: 0 0 0 4px;
 }
 
-#worldclocks-list,
-#f_location {
+#worldclocks-list {
 	width: 66%;
 }
 
@@ -896,10 +895,6 @@ aside .settings-title .tooltip {
 #worldclocks-list input,
 #worldclocks-list select {
 	width: 100%;
-}
-
-#i_ccode {
-	width: 66%;
 }
 
 #i_city {
