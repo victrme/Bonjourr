@@ -10,7 +10,15 @@ type Weather = Weather.Sync
 
 type LastWeather = Weather.Local
 
-type Coords = { lat: number; lon: number }
+type Coords = {
+	lat: number
+	lon: number
+}
+
+type MeteoGeo = {
+	name: string
+	detail: string
+}[]
 
 type WeatherInit = {
 	sync: Sync.Storage
@@ -105,7 +113,7 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (update.suggestions) {
-		prepareLocationSuggestion()
+		document.querySelector('#dl_cityfound')?.childNodes.forEach((node) => node.remove())
 		suggestionsDebounce()
 	}
 
@@ -252,32 +260,25 @@ function handleGeolOption(data: Weather) {
 	}
 }
 
-function prepareLocationSuggestion() {
-	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
-
-	for (const node of dl_cityfound?.childNodes ?? []) {
-		node.remove()
-	}
-}
-
 async function fillLocationSuggestions() {
-	type MeteoGeo = {
-		name: string
-		detail: string
-	}[]
-
 	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
 	const i_city = document.getElementById('i_city') as HTMLInputElement
 	const city = i_city.value
 
 	if (city === '') {
+		dl_cityfound?.childNodes.forEach((node) => node.remove())
 		return
 	}
 
-	const base = 'https://racle-meteo.victr.workers.dev/'
-	const params = '?provider=accuweather&data=simple&geo=true&query='
-	const q = encodeURIComponent(`${city}`)
-	const resp = await fetch(base + params + q)
+	const url = new URL('https://racle-meteo.victr.workers.dev/')
+	url.searchParams.set('provider', 'accuweather')
+	url.searchParams.set('data', 'simple')
+	url.searchParams.set('geo', 'true')
+	url.searchParams.set('query', encodeURIComponent(city))
+
+	const resp = await fetch(url)
+
+	dl_cityfound?.childNodes.forEach((node) => node.remove())
 
 	if (resp.status === 200) {
 		const json = (await resp.json()) as MeteoGeo
@@ -288,8 +289,6 @@ async function fillLocationSuggestions() {
 			option.textContent = detail
 			dl_cityfound?.appendChild(option)
 		}
-
-		console.log('show')
 	}
 }
 
