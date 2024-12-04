@@ -49,6 +49,10 @@ async function updateSyncOption(update: SyncUpdate) {
 				const token = local.gistToken ?? ''
 				const update = await retrieveGist(token, id)
 
+				if (update?.settingssync?.type) {
+					update.settingssync.type = 'gist'
+				}
+
 				storage.sync.set(update)
 				fadeOut()
 			} catch (err) {
@@ -137,26 +141,9 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 
 	if (update.type && isSyncType(update.type)) {
-		const toLocal = update.type !== 'auto'
-		const toSync = update.type === 'auto'
-
 		sync.type = update.type
+		storage.type.set(update.type, data)
 		toggleSyncSettingsOption(sync, local)
-
-		// <!> Set & return here because
-		// <!> awaits in if() doesn't have priority
-
-		if (toLocal) {
-			await chrome.storage.sync.clear()
-			await chrome.storage.local.set({ syncStorage: data })
-			sessionStorage.setItem('WEBEXT_LOCAL', 'yes')
-		}
-
-		if (toSync) {
-			await chrome.storage.local.remove('syncStorage')
-			await chrome.storage.sync.set(data)
-			sessionStorage.removeItem('WEBEXT_LOCAL')
-		}
 	}
 }
 

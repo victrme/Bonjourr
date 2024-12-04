@@ -1,7 +1,9 @@
-if (!!chrome?.storage) {
-	chrome.action.onClicked.addListener(createNewTab)
-	chrome.runtime.onInstalled.addListener(handleInstalled)
-	chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
+if (globalThis.chrome) {
+	if (chrome.storage) {
+		chrome.action.onClicked.addListener(createNewTab)
+		chrome.runtime.onInstalled.addListener(handleInstalled)
+		chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
+	}
 } else {
 	self.addEventListener('activate', updateCache)
 	self.addEventListener('fetch', retrieveCache)
@@ -36,8 +38,8 @@ async function updateCache() {
 }
 
 function retrieveCache(event) {
-	const isAPI = API_URLS.some((api) => url.includes(api))
 	const url = event.request.url
+	const isAPI = API_URLS.some((api) => url.includes(api))
 
 	event.respondWith(
 		(async () => {

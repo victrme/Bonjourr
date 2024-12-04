@@ -1,6 +1,9 @@
-globalThis.startupStorage = {}
-globalThis.startupBookmarks = undefined
-globalThis.startupTopsites = undefined
+globalThis.startupBookmarks
+globalThis.startupTopsites
+globalThis.startupStorage = {
+	sync: undefined,
+	local: undefined,
+}
 
 chrome.storage.sync.get().then(function (data) {
 	globalThis.startupStorage.sync = data
