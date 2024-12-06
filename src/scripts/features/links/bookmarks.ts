@@ -1,6 +1,6 @@
 import { bundleLinks, getHTMLTemplate, randomString, toggleDisabled } from '../../utils'
 import { getLang, tradThis, traduction } from '../../utils/translations'
-import { EXTENSION, MAIN_API, PLATFORM } from '../../defaults'
+import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults'
 import quickLinks, { validateLink } from '.'
 import { settingsNotifications } from '../../utils/notifications'
 import getPermissions from '../../utils/permissions'
@@ -132,7 +132,7 @@ function createBookmarksDialog() {
 
 			const url = new URL(bookmark.url)
 
-			li_img.src = `${MAIN_API}/favicon/blob/${url.origin}`
+			li_img.src = `${API_DOMAIN}/favicon/blob/${url.origin}`
 			li_title.textContent = bookmark.title
 			li_url.textContent = url.href
 				.replace(url.protocol, '')

@@ -1,4 +1,4 @@
-import { apiFetch, minutator, stringMaxSize } from '../utils'
+import { weatherFetch, minutator, stringMaxSize } from '../utils'
 import { getLang, tradThis } from '../utils/translations'
 import onSettingsLoad from '../utils/onsettingsload'
 import networkForm from '../utils/networkform'
@@ -298,24 +298,24 @@ async function request(data: Weather, lastWeather?: LastWeather): Promise<LastWe
 	}
 
 	let coords = await getGeolocation(data.geolocation)
-	let queries = '?provider=auto&data=simple'
+	let query = '?provider=auto&data=simple'
 
-	queries += '&units=' + (data.unit ?? 'metric')
-	queries += '&lang=' + getLang()
+	query += '&units=' + (data.unit ?? 'metric')
+	query += '&lang=' + getLang()
 
 	if (coords && coords.lat && coords.lon) {
-		queries += '&lat=' + coords.lat
-		queries += '&lon=' + coords.lon
+		query += '&lat=' + coords.lat
+		query += '&lon=' + coords.lon
 	}
 
 	if (data.geolocation === 'off' && !coords) {
 		const city = data.city ?? 'Paris'
-		const query = encodeURIComponent(city)
+		const q = encodeURIComponent(city)
 
-		queries += '&q=' + query
+		query += '&q=' + q
 	}
 
-	const response = await apiFetch('/weather/' + queries)
+	const response = await weatherFetch(query)
 	const json: Weather.SimpleWeather = await response?.json()
 
 	if (!json) {

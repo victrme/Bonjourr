@@ -1,6 +1,6 @@
 import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from '../features/move/helpers'
 import { randomString, bundleLinks, countryCodeToLanguageCode } from '../utils'
-import { MAIN_API, SYNC_DEFAULT } from '../defaults'
+import { API_DOMAIN, SYNC_DEFAULT } from '../defaults'
 import { deepmergeAll } from '@victr/deepmerge'
 import { oldJSONToCSV } from '../features/quotes'
 
@@ -232,7 +232,7 @@ function linksDataMigration(data: Import): Import {
 
 	list.forEach((link) => {
 		if (link.icon?.startsWith(notfoundicon)) {
-			link.icon = MAIN_API + '/favicon/blob/'
+			link.icon = API_DOMAIN + '/favicon/blob/'
 			data[link._id] = link
 		}
 	})

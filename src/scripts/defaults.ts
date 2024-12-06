@@ -2,11 +2,9 @@ import langList from './langs'
 
 export const CURRENT_VERSION = '20.2.2'
 
-export const MAIN_API = 'https://api.bonjourr.fr'
+export const API_DOMAIN = 'https://services.bonjourr.fr'
 
-export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
-
-//@ts-expect-error -> "ENV" is defined by esbuild during build step
+//@ts-expect-error: "ENV" is defined by esbuild during build step
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV
 
 export const SYSTEM_OS =
