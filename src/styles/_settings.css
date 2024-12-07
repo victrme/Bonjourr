@@ -423,13 +423,13 @@ aside form.valid.remove span::after {
 	border-radius: 25px;
 	background-color: var(--color-param);
 	color: var(--color-text);
-	border: 1px solid #e3e3ea;
+	border: 1px solid #e3e3e3;
 	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 	background-image:
 			linear-gradient(to left, 
 				rgba(255, 255, 255, 0) 0%, 
-				rgba(255, 255, 255, 1) 75%, 
-				rgba(255, 255, 255, 1) 100%),
+				var(--color-param) 75%, 
+				var(--color-param) 100%),
 			url('https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
 	background-size: 70%;
 	background-repeat: no-repeat;
@@ -439,6 +439,10 @@ aside form.valid.remove span::after {
 	top: 0;
 	transition: all cubic-bezier(0.175, 0.885, 0.32, 1.275) .6s;
 	scale: 1;
+}
+
+[data-theme='dark'] .supporters-notification {
+	border-color: #363636;
 }
 
 .supporters-notification:hover {
@@ -460,6 +464,7 @@ aside form.valid.remove span::after {
 	width: 30px;
 	height: 30px;
 	position: absolute;
+	box-shadow: rgba(43, 43, 49, 0.3) 0px 5px 9px 0px;
 	backdrop-filter: blur(4em);
 	-webkit-backdrop-filter: blur(4em);
 	background-color: var(--color-dialog);
@@ -474,6 +479,11 @@ aside form.valid.remove span::after {
 
 .supporters-notification .close svg {
 	width: 22px;
+	stroke: #5f5f5f;
+}
+
+[data-theme='dark'] .supporters-notification .close svg {
+	stroke: #fff;
 }
 
 .supporters-notification .content {
