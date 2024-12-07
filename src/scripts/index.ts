@@ -1,7 +1,7 @@
 import notes from './features/notes'
 import clock from './features/clock'
 import quotes from './features/quotes'
-import weather from './features/weather'
+import weather from './features/weather/index'
 import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
@@ -14,7 +14,7 @@ import synchronization from './features/synchronization'
 import { settingsPreload } from './settings'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
 import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
@@ -44,6 +44,11 @@ try {
 async function startup() {
 	let { sync, local } = await storage.init()
 	const OLD_VERSION = sync?.about?.version
+
+	if (!sync || !local) {
+		errorMessage('Storage failed 😥')
+		return
+	}
 
 	if (OLD_VERSION !== CURRENT_VERSION) {
 		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
