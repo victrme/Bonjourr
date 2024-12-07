@@ -25,6 +25,7 @@ import getPermissions from './utils/permissions'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { settingsNotifications } from './utils/notifications'
+import { supportersNotifications } from './utils/supporters'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
 import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
@@ -289,6 +290,8 @@ function initOptionsEvents() {
 
 		settingsNotifications({ 'accept-permissions': false })
 	})
+
+	supportersNotifications({ 'what': false })
 
 	// General
 

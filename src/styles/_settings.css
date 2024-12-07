@@ -417,6 +417,7 @@ aside form.valid.remove span::after {
 
 .supporters-notification {
 	position: relative;
+	cursor: pointer;
 	padding: 1.75em;
 	margin-top: 18px;
 	border-radius: 25px;
@@ -424,7 +425,6 @@ aside form.valid.remove span::after {
 	color: var(--color-text);
 	border: 1px solid #e3e3ea;
 	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-	background-image: url('https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
 	background-image:
 			linear-gradient(to left, 
 				rgba(255, 255, 255, 0) 0%, 
@@ -436,22 +436,26 @@ aside form.valid.remove span::after {
 	background-position: right center;
 	overflow: hidden;
 	z-index: 0;
+	top: 0;
+	transition: all cubic-bezier(0.175, 0.885, 0.32, 1.275) .6s;
+	scale: 1;
 }
 
-/* .supporters-notification:after {
-	content: "";
-	z-index: 1;
-	background:
-			linear-gradient(to right, white, transparent);
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-} */
+.supporters-notification:hover {
+	scale: 1.025;
+}
+
+.supporters-notification.removed {
+	/* valeur hauteur de la boîte + margin à calculée en JS sur version finale */
+	margin-bottom: -171px;
+	top: -171px;
+	scale: .6;
+	box-shadow: rgba(100, 100, 111, 0) 0px 7px 29px 0px;
+}
 
 .supporters-notification .close {
 	z-index: 2;
+	cursor: default;
 	border-radius: 100%;
 	width: 30px;
 	height: 30px;
