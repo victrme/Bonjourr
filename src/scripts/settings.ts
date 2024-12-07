@@ -508,9 +508,8 @@ function initOptionsEvents() {
 		weather(undefined, { geol: this?.value })
 	})
 
-	paramId('i_city').addEventListener('input', function (this: HTMLInputElement) {
-		weather(undefined, { suggestions: true })
-		document.getElementById('f_location')?.classList.toggle('valid', this.value.length > 2)
+	paramId('i_city').addEventListener('input', function (this: HTMLInputElement, event: Event) {
+		weather(undefined, { suggestions: event })
 	})
 
 	paramId('f_location').addEventListener('submit', function (this, event: SubmitEvent) {

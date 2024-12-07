@@ -134,7 +134,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		time: undefined,
 	},
 	weather: {
-		ccode: undefined,
 		city: undefined,
 		unit: 'metric',
 		provider: '',

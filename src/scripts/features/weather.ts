@@ -34,7 +34,7 @@ type WeatherUpdate = {
 	city?: true
 	temp?: string
 	unhide?: true
-	suggestions?: true
+	suggestions?: Event
 }
 
 let firstStart = true
@@ -58,6 +58,10 @@ export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (init) {
 		onSettingsLoad(() => {
 			handleGeolOption(init.sync.weather)
+			const city = document.querySelector('#i_city')
+			city?.addEventListener('change', function () {
+				city.classList.remove('typing')
+			})
 		})
 
 		queueMicrotask(() => {
@@ -113,13 +117,26 @@ async function updatesWeather(update: WeatherUpdate) {
 	}
 
 	if (update.suggestions) {
-		document.querySelector('#dl_cityfound')?.childNodes.forEach((node) => node.remove())
-		suggestionsDebounce()
+		const f_location = document.querySelector<HTMLFormElement>('#f_location')
+		const i_city = document.querySelector<HTMLInputElement>('#i_city')
+		const event = update.suggestions as InputEvent
+
+		if (!f_location || !i_city) {
+			return
+		}
+
+		if (event.data !== undefined) {
+			f_location?.classList.toggle('valid', i_city.value.length > 2)
+			removeLocationSuggestions()
+			suggestionsDebounce()
+		}
 	}
 
 	if (update.city) {
 		const i_city = document.getElementById('i_city') as HTMLInputElement
 		let city = i_city.value
+
+		removeLocationSuggestions()
 
 		if (!navigator.onLine) {
 			locationForm.warn(tradThis('No internet connection'))
@@ -153,10 +170,8 @@ async function updatesWeather(update: WeatherUpdate) {
 
 		if (newWeather) {
 			lastWeather = newWeather
-			weather.city = (lastWeather.approximation?.city || city) ?? 'Paris'
-
-			locationForm.accept('i_city', weather.city ?? tradThis('City'))
-			i_city.dispatchEvent(new KeyboardEvent('input'))
+			weather.city = city ?? 'Paris'
+			locationForm.accept('i_city', weather.city)
 		}
 	}
 
@@ -260,17 +275,22 @@ function handleGeolOption(data: Weather) {
 	}
 }
 
+function removeLocationSuggestions() {
+	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+	dl_cityfound?.childNodes.forEach((node) => node.remove())
+}
+
 async function fillLocationSuggestions() {
 	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
 	const i_city = document.getElementById('i_city') as HTMLInputElement
 	const city = i_city.value
 
 	if (city === '') {
-		dl_cityfound?.childNodes.forEach((node) => node.remove())
+		removeLocationSuggestions()
 		return
 	}
 
-	const url = new URL('https://racle-meteo.victr.workers.dev/')
+	const url = new URL('https://weather.bonjourr.fr/')
 	url.searchParams.set('provider', 'accuweather')
 	url.searchParams.set('data', 'simple')
 	url.searchParams.set('geo', 'true')
@@ -278,7 +298,7 @@ async function fillLocationSuggestions() {
 
 	const resp = await fetch(url)
 
-	dl_cityfound?.childNodes.forEach((node) => node.remove())
+	removeLocationSuggestions()
 
 	if (resp.status === 200) {
 		const json = (await resp.json()) as MeteoGeo
