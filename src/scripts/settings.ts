@@ -726,6 +726,11 @@ function initOptionsEvents() {
 		synchronization(undefined, { url: paramId('i_urlsync').value })
 	})
 
+	paramId('b_storage-persist').onclickdown(async function () {
+		const persists = await navigator.storage.persist()
+		synchronization(undefined, { firefoxPersist: persists })
+	})
+
 	paramId('b_gistup').onclickdown(function () {
 		synchronization(undefined, { up: true })
 	})

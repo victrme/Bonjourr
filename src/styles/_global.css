@@ -62,6 +62,11 @@
 	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
 }
 
+[data-browser='edge'] .firefox-only,
+[data-browser='other'] .firefox-only,
+[data-browser='opera'] .firefox-only,
+[data-browser='chrome'] .firefox-only,
+[data-browser='safari'] .firefox-only,
 [data-platform='safari'] .not-safari,
 [data-platform='online'] .not-online {
 	display: none;

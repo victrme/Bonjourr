@@ -2,11 +2,12 @@ import { retrieveGist, sendGist, findGistId, isGistTokenValid } from './gist'
 import { isDistantUrlValid, receiveFromURL } from './url'
 import onSettingsLoad from '../../utils/onsettingsload'
 import networkForm from '../../utils/networkform'
+import { BROWSER } from '../../defaults'
 import { fadeOut } from '../../utils'
 import storage from '../../storage'
 
 type SyncType = Sync.SettingsSync['type']
-type SyncFreq = Sync.SettingsSync['freq']
+// type SyncFreq = Sync.SettingsSync['freq']
 
 interface SyncUpdate {
 	type?: string
@@ -14,6 +15,7 @@ interface SyncUpdate {
 	url?: string
 	status?: string
 	gistToken?: string
+	firefoxPersist?: boolean
 	down?: true
 	up?: true
 }
@@ -27,6 +29,7 @@ export default function synchronization(init?: Sync.Storage, update?: SyncUpdate
 			const local = await storage.local.get(['gistToken', 'distantUrl'])
 			const sync = init.settingssync
 			toggleSyncSettingsOption(sync, local)
+			setTimeout(() => handleStoragePersistence(sync.type), 200)
 		})
 	}
 
@@ -89,13 +92,6 @@ async function updateSyncOption(update: SyncUpdate) {
 		}
 	}
 
-	// if (update.status) {
-	// 	if (update.status === 'gist') {
-	// 		document.getElementById('gist-sync-status')?.classList.toggle('shown')
-	// 		return
-	// 	}
-	// }
-
 	if (update.gistToken === '') {
 		local.gistToken = ''
 		storage.local.remove('gistToken')
@@ -144,6 +140,24 @@ async function updateSyncOption(update: SyncUpdate) {
 		sync.type = update.type
 		storage.type.set(update.type, data)
 		toggleSyncSettingsOption(sync, local)
+		handleStoragePersistence(update.type)
+	}
+
+	if (update.firefoxPersist) {
+		localStorage.choseStoragePersistence = 'true'
+		toggleSyncSettingsOption(sync, local)
+	}
+}
+
+async function handleStoragePersistence(type: SyncType): Promise<boolean | undefined> {
+	const persisted = await navigator.storage.persisted()
+
+	if (type !== 'off') {
+		return
+	}
+
+	if (!persisted) {
+		await navigator.storage.persist()
 	}
 }
 
@@ -168,6 +182,9 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 		i_urlsync.value = distantUrl
 	}
 
+	const choseStoragePersistence = localStorage.choseStoragePersistence === 'true'
+	document.getElementById('disabled-sync')?.classList.toggle('shown', !choseStoragePersistence)
+
 	switch (sync.type) {
 		case 'off':
 		case 'auto': {
@@ -180,6 +197,7 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 		case 'gist': {
 			document.getElementById('gist-sync')?.classList.add('shown')
 			document.getElementById('url-sync')?.classList.remove('shown')
+			document.getElementById('disabled-sync')?.classList.remove('shown')
 
 			if (await isGistTokenValid(gistToken)) {
 				b_gistdown?.removeAttribute('disabled')
@@ -192,6 +210,7 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 		case 'url': {
 			document.getElementById('url-sync')?.classList.add('shown')
 			document.getElementById('gist-sync')?.classList.remove('shown')
+			document.getElementById('disabled-sync')?.classList.remove('shown')
 
 			if (await isDistantUrlValid(distantUrl)) {
 				b_urldown?.removeAttribute('disabled')
@@ -208,6 +227,6 @@ function isSyncType(val: string): val is SyncType {
 	return ['auto', 'gist', 'url', 'off'].includes(val)
 }
 
-function isSyncFreq(val: string): val is SyncFreq {
-	return ['newtabs', 'start', 'manual'].includes(val)
-}
+// function isSyncFreq(val: string): val is SyncFreq {
+// 	return ['newtabs', 'start', 'manual'].includes(val)
+// }

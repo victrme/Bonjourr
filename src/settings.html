@@ -1271,9 +1271,7 @@
 
 <div class="param" id="settings-managment">
 	<div class="wrapper">
-		<span>
-			<label for="i_synctype" class="trn">Synchronization type</label>
-		</span>
+		<label for="i_synctype" class="trn">Synchronization type</label>
 
 		<select id="i_synctype">
 			<option class="trn not-online" value="auto" selected>Auto</option>
@@ -1281,6 +1279,15 @@
 			<option class="trn" value="url">Distant URL</option>
 			<option class="trn" value="off">Disabled</option>
 		</select>
+	</div>
+
+	<div id="disabled-sync" class="dropdown firefox-only">
+		<hr />
+
+		<div class="wrapper">
+			<label for="b_storage-persist" class="trn">Persistent storage</label>
+			<button id="b_storage-persist" class="param-btn trn">Ask permission</button>
+		</div>
 	</div>
 
 	<div id="gist-sync" class="dropdown">

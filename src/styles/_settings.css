@@ -441,6 +441,7 @@ aside form.valid.remove span::after {
 }
 
 #ampm_label.shown,
+#disabled-sync.shown,
 #weather_provider.shown,
 #searchbar_request.shown,
 #worldclocks-list .dropdown.shown {
