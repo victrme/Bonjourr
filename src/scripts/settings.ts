@@ -278,6 +278,8 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	})
 
 	paramId('i_timezone').value = data.clock.timezone
+
+	supportersNotifications(data?.supporters as object);
 }
 
 function initOptionsEvents() {
@@ -290,8 +292,6 @@ function initOptionsEvents() {
 
 		settingsNotifications({ 'accept-permissions': false })
 	})
-
-	supportersNotifications({ 'what': false })
 
 	// General
 

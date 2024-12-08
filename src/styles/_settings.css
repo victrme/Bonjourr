@@ -415,7 +415,7 @@ aside form.valid.remove span::after {
 	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
 }
 
-.supporters-notification {
+#supporters-notif {
 	position: relative;
 	cursor: pointer;
 	padding: 1.75em;
@@ -441,15 +441,15 @@ aside form.valid.remove span::after {
 	scale: 1;
 }
 
-[data-theme='dark'] .supporters-notification {
+[data-theme='dark'] #supporters-notif {
 	border-color: #363636;
 }
 
-.supporters-notification:hover {
+#supporters-notif:hover {
 	scale: 1.025;
 }
 
-.supporters-notification.removed {
+#supporters-notif.removed {
 	/* valeur hauteur de la boîte + margin à calculée en JS sur version finale */
 	margin-bottom: -171px;
 	top: -171px;
@@ -457,7 +457,7 @@ aside form.valid.remove span::after {
 	box-shadow: rgba(100, 100, 111, 0) 0px 7px 29px 0px;
 }
 
-.supporters-notification .close {
+#supporters-notif #supporters-notif-close {
 	z-index: 2;
 	cursor: default;
 	border-radius: 100%;
@@ -477,26 +477,26 @@ aside form.valid.remove span::after {
 	align-items: center;
 }
 
-.supporters-notification .close svg {
+#supporters-notif #supporters-notif-close svg {
 	width: 22px;
 	stroke: #5f5f5f;
 }
 
-[data-theme='dark'] .supporters-notification .close svg {
+[data-theme='dark'] #supporters-notif #supporters-notif-close svg {
 	stroke: #fff;
 }
 
-.supporters-notification .content {
+#supporters-notif #supporters-notif-content {
 	z-index: 2;
 	position: relative;
 	width: 85%;
 }
 
-.supporters-notification h3 {
+#supporters-notif #supporters-notif-title {
 	line-height: 1.5em;
 }
 
-.supporters-notification .notif-button {
+#supporters-notif #supporters-notif-button {
 	border-radius: 100px;
 	background-color: rgba(var(--blue));
 	color: white;

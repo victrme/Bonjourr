@@ -94,6 +94,10 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	syncbookmarks: undefined,
 	textShadow: 0.2,
 	announcements: 'major',
+	supporters: {
+		wasClosed: 1,
+		storedMonth: new Date().getMonth() + 1,
+	},
 	review: 0,
 	css: '',
 	hide: {},
