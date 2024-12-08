@@ -1,17 +1,18 @@
-// I have no idea what I'm doing lol
-
+import { getLang, tradThis } from '../utils/translations'
 import onSettingsLoad from './onsettingsload'
 import storage from '../storage'
 
-export function supportersNotifications(supportersData?: { wasClosed?: number, storedMonth?: number }): void {
+const monthNames = [
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+];
+
+export function supportersNotifications(supportersData?: { wasClosed?: boolean, storedMonth?: number }): void {
     //
     onSettingsLoad(() => {
-        console.log(supportersData)
-
         const wasClosed = supportersData?.wasClosed
         const storedMonth = supportersData?.storedMonth
 
-        // extracts notification template from settings.html
+        // extracts notification template from index.html
         const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
         const doc = document.importNode(template.content, true)
         const supporters_notif = doc.getElementById('supporters-notif')
@@ -36,11 +37,14 @@ export function supportersNotifications(supportersData?: { wasClosed?: number, s
                 supporters: {
                     ...supportersData,
                     storedMonth: currentMonth,
-                    wasClosed: 0
+                    wasClosed: false
                 }
             })
         }
 
+        const titleText = tradThis(`This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`)
+
+        title.innerText = titleText
 
         // wanted to get the first .settings-title as a reference element instead
         // but it's not getting the right one for some reason
@@ -54,7 +58,7 @@ export function supportersNotifications(supportersData?: { wasClosed?: number, s
                 storage.sync.set({
                     supporters: {
                         ...supportersData,
-                        wasClosed: 1
+                        wasClosed: true
                     }
                 })
             })

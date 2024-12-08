@@ -95,7 +95,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	textShadow: 0.2,
 	announcements: 'major',
 	supporters: {
-		wasClosed: 1,
+		wasClosed: true,
 		storedMonth: new Date().getMonth() + 1,
 	},
 	review: 0,
