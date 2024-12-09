@@ -1,6 +1,7 @@
 import notes from './features/notes'
 import clock from './features/clock'
-import weather from './features/weather'
+import quotes from './features/quotes'
+import weather from './features/weather/index'
 import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
@@ -9,18 +10,19 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
-import { syncNewBookmarks } from './features/links/bookmarks'
-import quotes, { oldJSONToCSV } from './features/quotes'
-import { settingsInit, settingsPreload } from './settings'
+import synchronization from './features/synchronization'
+import { settingsPreload } from './settings'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, SYNC_DEFAULT, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { freqControl, linksDataMigration } from './utils'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
+import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
+import filterImports from './utils/filterimports'
 import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 import storage from './storage'
+import 'clickdown'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -29,9 +31,7 @@ const features: FeaturesToWait[] = ['clock', 'links']
 let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
-//
 //	Startup
-//
 
 try {
 	startup()
@@ -45,15 +45,24 @@ async function startup() {
 	let { sync, local } = await storage.init()
 	const OLD_VERSION = sync?.about?.version
 
+	if (!sync || !local) {
+		errorMessage('Storage failed 😥')
+		return
+	}
+
 	if (OLD_VERSION !== CURRENT_VERSION) {
 		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
+
+		// <!> do not move
+		// <!> must delete old keys before upgrading storage
+		await storage.sync.clear()
+
 		storage.sync.set(sync)
 	}
 
 	await setTranslationCache(sync.lang, local)
-
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
@@ -72,7 +81,7 @@ async function startup() {
 	hideElements(sync.hide)
 	initBackground(sync, local)
 	quickLinks(sync)
-	syncNewBookmarks(sync.syncbookmarks)
+	synchronization(sync)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
@@ -99,64 +108,15 @@ async function startup() {
 }
 
 function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
-	data.about = SYNC_DEFAULT.about
-
-	// 19.0.0
-
-	if (data.reviewPopup) {
-		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
-	}
-
-	if (Array.isArray(data?.quotes?.userlist)) {
-		const newuserlist = oldJSONToCSV(data?.quotes?.userlist as unknown as Quotes.UserInput)
-		data.quotes.userlist = newuserlist
-	}
-
-	if (!data.dateformat) {
-		data.dateformat = data.usdate ? 'us' : 'eu'
-	}
-
-	if (data?.css) {
-		data.css = data.css
-			.replaceAll('#clock', '#digital')
-			.replaceAll('#analogClock', '#analog')
-			.replaceAll('#center', '#analog-center')
-			.replaceAll('#hours', '#analog-hours')
-			.replaceAll('#minutes', '#analog-minutes')
-			.replaceAll('#analogSeconds', '#analog-seconds')
-	}
-
-	storage.sync.remove('reviewPopup')
-	storage.sync.remove('usdate')
-	delete data.reviewPopup
-	delete data.usdate
-
-	// 19.2.0
-
-	delete data.cssHeight
-	storage.sync.remove('cssHeight')
-
-	data = linksDataMigration(data)
-
-	// 20.0.0
-
-	if (data.linktabs) {
-		data.linkgroups = {
-			on: data.linktabs.active,
-			selected: data.linktabs.titles[data.linktabs.selected],
-			groups: [...data.linktabs.titles],
-			pinned: [],
-		}
-
-		delete data.linktabs
-	}
-
-	return data
+	return filterImports(data, data)
 }
 
 function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 	data.translations = undefined
+	data.lastWeather = undefined
+
 	storage.local.remove('translations')
+	storage.local.remove('lastWeather')
 
 	return data
 }
@@ -211,7 +171,7 @@ function userActionsEvents() {
 	document.addEventListener('keydown', keydownUserActions)
 	document.addEventListener('keyup', keydownUserActions)
 
-	async function keydownUserActions(event: KeyboardEvent) {
+	function keydownUserActions(event: KeyboardEvent) {
 		if (event.code === 'Escape') {
 			if (domsuggestions?.classList.contains('shown')) {
 				domsuggestions?.classList.remove('shown')
@@ -250,23 +210,26 @@ function userActionsEvents() {
 		}
 	}
 
-	async function clickUserActions(event: MouseEvent) {
+	function clickUserActions(event: MouseEvent) {
 		if (isMousingDownOnInput) {
 			return
 		}
 
 		const open = isOpen()
-		const path = (event.composedPath() as Element[]) ?? [document.body]
+		const composedPath = (event.composedPath() as Element[]) ?? [document.body]
+		const path = composedPath.filter((node) => node?.className?.includes)
 		const pathIds = path.map((el) => (el as HTMLElement).id)
 
 		const on = {
-			link: path.some((el) => el?.classList?.contains('block')),
 			body: (path[0] as HTMLElement).tagName === 'BODY',
-			linkfolder: path.some((el) => el?.className?.includes('folder')),
-			folder: path.some((el) => el?.className?.includes('in-folder')),
+			link: path.some((el) => el.classList.contains('link')),
+			linkfolder: path.some((el) => el.className.includes('folder')),
+			addgroup: path.some((el) => el.className.includes('add-group')),
+			folder: path.some((el) => el.className.includes('in-folder')),
 			interface: pathIds.includes('interface'),
-			settings: path.some((el) => el?.id === 'settings'),
-			showsettings: path.some((el) => el?.id === 'show-settings'),
+			editlink: pathIds.includes('editlink'),
+			settings: path.some((el) => el.id === 'settings'),
+			showsettings: path.some((el) => el.id === 'show-settings'),
 		}
 
 		if (document.body.classList.contains('tabbing')) {
@@ -277,8 +240,13 @@ function userActionsEvents() {
 			document.dispatchEvent(new Event('toggle-settings'))
 		}
 
-		if (open.contextmenu && on.settings) {
+		if (open.contextmenu && !on.editlink) {
+			if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
+				return
+			}
+
 			document.dispatchEvent(new Event('close-edit'))
+			return
 		}
 
 		if ((on.body || on.interface) === false) {
@@ -426,7 +394,7 @@ function serviceWorker() {
 	})
 }
 
-async function setPotatoComputerMode() {
+function setPotatoComputerMode() {
 	if (BROWSER === 'firefox' || BROWSER === 'safari') {
 		// firefox fingerprinting protection disables webgl info, smh
 		// safari always have hardware acceleration, no need for potato

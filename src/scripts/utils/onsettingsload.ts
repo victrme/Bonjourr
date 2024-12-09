@@ -1,7 +1,9 @@
-const callbackList: Function[] = []
+type Func = () => void
+
+const callbackList: Func[] = []
 let areSettingsLoaded = false
 
-export default function onSettingsLoad(callback: Function) {
+export default function onSettingsLoad(callback: Func) {
 	areSettingsLoaded ? callback() : callbackList.push(callback)
 }
 

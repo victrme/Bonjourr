@@ -1,15 +1,16 @@
-import { deleteGroup, addGroup, changeGroupTitle, togglePinGroup } from './groups'
 import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
 import { getComposedPath, stringMaxSize } from '../../utils'
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
-import { linksUpdate } from '.'
+import { togglePinGroup } from './groups'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
+import quickLinks from '.'
 import debounce from '../../utils/debounce'
 import storage from '../../storage'
 
 interface EditStates {
 	group: string
+	selected: string[]
 	selectall: boolean
 	dragging: boolean
 	container: {
@@ -21,8 +22,7 @@ interface EditStates {
 		link: boolean
 		folder: boolean
 		title: boolean
-		topsite: boolean
-		topsites: boolean
+		synced: boolean
 		addgroup: boolean
 	}
 }
@@ -42,11 +42,14 @@ let editStates: EditStates
 export default async function openEditDialog(event: Event) {
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
-	const selected = document.querySelectorAll('#linkblocks li.selected')
+	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
 
-	if (event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE') {
+	const ctrlRightClick = !!(event as PointerEvent).ctrlKey && event.type === 'contextmenu'
+	const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
+
+	if (ctrlRightClick || pressingE) {
 		return
 	}
 
@@ -57,11 +60,10 @@ export default async function openEditDialog(event: Event) {
 	}
 
 	const target: EditStates['target'] = {
-		link: classNames.some((cl) => cl.includes('block') && !cl.includes('folder')),
-		folder: classNames.some((cl) => cl.includes('block') && cl.includes('folder')),
+		link: classNames.some((cl) => cl.includes('link-elem')),
+		folder: classNames.some((cl) => cl.includes('link-folder')),
 		title: classNames.some((cl) => cl.includes('link-title')),
-		topsite: classNames.some((cl) => cl?.includes('topsites-group')),
-		topsites: classNames.some((cl) => cl.includes('topsites-title')),
+		synced: classNames.some((cl) => cl.includes('synced')),
 		addgroup: classNames.some((cl) => cl.includes('add-group')),
 	}
 
@@ -69,12 +71,18 @@ export default async function openEditDialog(event: Event) {
 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
-	editStates = { group, selectall, container, dragging, target }
+	editStates = {
+		group,
+		selectall,
+		container,
+		dragging,
+		target,
+		selected: getSelectedIds(),
+	}
 
 	const inputs = toggleEditInputs()
-
 	const folderTitle = container.folder && target.title
-	const noSelection = selectall && !selected[0]
+	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
 
 	if (noInputs || folderTitle || noSelection || dragging) {
@@ -101,7 +109,7 @@ export default async function openEditDialog(event: Event) {
 		if (onlyOneTitleLeft) document.getElementById('edit-delete')?.setAttribute('disabled', '')
 	}
 
-	if (target.link) {
+	if (target.folder || target.link) {
 		const pathLis = path.filter((el) => el.tagName === 'LI')
 		const li = pathLis[0]
 		const id = li?.id
@@ -109,16 +117,20 @@ export default async function openEditDialog(event: Event) {
 
 		domtitle.value = link?.title ?? ''
 
-		if (!link?.folder) {
-			domurl.value = link?.url ?? ''
-			domicon.value = link?.icon ?? ''
-		}
-
-		if (!selectall) {
-			document.querySelector('.block.selected')?.classList.remove('selected')
-			li?.classList.add('selected')
+		if (link && !link.folder) {
+			const icon = link.icon ?? ''
+			domurl.value = link.url ?? ''
+			domicon.value = Number.isNaN(parseInt(icon)) ? icon : ''
 		}
 	}
+
+	if (!selectall) {
+		document.querySelectorAll('.link-title.selected, .link.selected')?.forEach((node) => node.classList.remove('selected'))
+		;(target.title ? linktitle : linkelem)?.classList.add('selected')
+	}
+
+	// Must be placed after "li?.classList.add('selected')"
+	editStates.selected = getSelectedIds()
 
 	const contextmenuTransition = transitioner()
 	contextmenuTransition.first(() => domeditlink?.show())
@@ -131,8 +143,8 @@ export default async function openEditDialog(event: Event) {
 }
 
 function toggleEditInputs(): string[] {
-	const deleteButton = document.querySelector<HTMLButtonElement>('#edit-delete')
-	const addButton = document.querySelector<HTMLButtonElement>('#edit-add')
+	const deleteButtonTxt = document.querySelector<HTMLButtonElement>('#edit-delete span')
+	const addButtonTxt = document.querySelector<HTMLButtonElement>('#edit-add span')
 	const { container, target, selectall } = editStates
 	let inputs: string[] = []
 
@@ -148,23 +160,26 @@ function toggleEditInputs(): string[] {
 	domtitle.value = ''
 
 	if (container.mini) {
-		if (target.topsites) inputs = ['pin']
+		if (target.synced) inputs = ['pin', 'delete']
 		else if (target.addgroup) inputs = ['title', 'add']
 		else if (target.title) inputs = ['title', 'delete', 'pin', 'apply']
 	}
 
 	if (container.group) {
-		if (target.topsites) inputs = ['unpin']
+		if (target.synced && !target.title) inputs = ['synced']
+		else if (target.synced && target.title) inputs = ['unpin', 'delete']
+		else if (selectall) inputs = ['delete', 'refresh', 'add']
 		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
-		else if (target.topsite) inputs = []
 		else if (target.folder) inputs = ['title', 'delete', 'apply']
-		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply']
-		else inputs = ['title', 'url', 'icon', 'add']
+		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply']
+		else inputs = ['title', 'url', 'add']
 	}
 
 	if (container.folder) {
 		if (target.title) inputs = []
-		if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
+		else if (selectall) inputs = ['delete', 'unfolder']
+		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
+		else inputs = ['title', 'url', 'add']
 	}
 
 	for (const id of inputs) {
@@ -174,17 +189,17 @@ function toggleEditInputs(): string[] {
 	const hasLabels = inputs.includes('title') || inputs.includes('url') || inputs.includes('icon')
 	domeditlink.querySelector('hr')?.classList.toggle('on', hasLabels)
 
-	if (deleteButton) {
-		if (selectall) deleteButton.textContent = tradThis('Delete selected')
-		else if (target.folder) deleteButton.textContent = tradThis('Delete folder')
-		else if (target.link) deleteButton.textContent = tradThis('Delete link')
-		else if (target.title) deleteButton.textContent = tradThis('Delete group')
+	if (deleteButtonTxt) {
+		if (selectall) deleteButtonTxt.textContent = tradThis('Delete selected')
+		else if (target.folder) deleteButtonTxt.textContent = tradThis('Delete folder')
+		else if (target.link) deleteButtonTxt.textContent = tradThis('Delete link')
+		else if (target.title) deleteButtonTxt.textContent = tradThis('Delete group')
 	}
 
-	if (addButton) {
-		if (selectall) addButton.textContent = tradThis('Create new folder')
-		else if (target.title) addButton.textContent = tradThis('Add new group')
-		else addButton.textContent = tradThis('Add new link')
+	if (addButtonTxt) {
+		if (selectall) addButtonTxt.textContent = tradThis('Create new folder')
+		else if (target.title) addButtonTxt.textContent = tradThis('Add new group')
+		else addButtonTxt.textContent = tradThis('Add new link')
 	}
 
 	return inputs
@@ -251,7 +266,7 @@ queueMicrotask(() => {
 			handleLongPress(event)
 		})
 
-		domlinkblocks?.addEventListener('touchend', function (event) {
+		domlinkblocks?.addEventListener('touchend', function () {
 			handleLongPress.cancel()
 		})
 
@@ -259,71 +274,94 @@ queueMicrotask(() => {
 	}
 })
 
-async function submitChanges(event: SubmitEvent) {
-	switch (event.submitter?.id) {
-		case 'edit-delete':
-			deleteSelection()
-			break
+function submitChanges(event: SubmitEvent) {
+	const change = event.submitter?.id
+	const { container, target, group, selected, selectall } = editStates
 
-		case 'edit-add':
-			addSelection()
-			break
+	if (change === 'edit-apply') {
+		applyLinkChanges('button')
+	}
 
-		case 'edit-apply':
-			applyLinkChanges('button')
-			break
+	if (change === 'edit-refresh') {
+		quickLinks(undefined, { refreshIcons: selected })
+	}
 
-		case 'edit-unfolder':
-			removeSelectionFromFolder()
-			break
+	if (change === 'edit-inputs') {
+		applyLinkChanges('inputs')
+		event.preventDefault()
+		return
+	}
 
-		case 'edit-inputs': {
-			applyLinkChanges('inputs')
-			event.preventDefault()
-			return
+	if (change === 'edit-delete') {
+		if (target.title) {
+			quickLinks(undefined, { deleteGroup: group })
+		} else {
+			quickLinks(undefined, { deleteLinks: selected })
 		}
+	}
 
-		case 'edit-pin':
-		case 'edit-unpin': {
-			const group = editStates.group
-			const action = event.submitter.id === 'edit-pin' ? 'pin' : 'unpin'
-			togglePinGroup(group, action)
-			break
+	if (change === 'edit-add') {
+		if (target.title) {
+			quickLinks(undefined, {
+				addGroups: [{ title: domtitle.value }],
+			})
 		}
+		//
+		else if (selectall) {
+			quickLinks(undefined, {
+				addFolder: { ids: selected, group: group },
+			})
+			document.dispatchEvent(new Event('remove-select-all'))
+		}
+		//
+		else if (container.group) {
+			quickLinks(undefined, {
+				addLinks: [{ group, title: domtitle.value, url: domurl.value }],
+			})
+		}
+	}
+
+	if (change === 'edit-unfolder') {
+		quickLinks(undefined, {
+			moveOutFolder: {
+				ids: editStates.selected,
+				group: editStates.group,
+			},
+		})
+		document.dispatchEvent(new Event('remove-select-all'))
+	}
+
+	if (change === 'edit-pin') {
+		togglePinGroup(group, 'pin')
+	}
+
+	if (change === 'edit-unpin') {
+		togglePinGroup(group, 'unpin')
 	}
 
 	event.preventDefault()
 	setTimeout(closeEditDialog)
 }
 
-async function addSelection() {
-	if (editStates.target.title) addGroup(domtitle.value)
-	if (editStates.target.folder) addSelectionToNewFolder()
-	if (editStates.container.group) addLinkFromEditDialog()
-}
-
-async function applyLinkChanges(origin: 'inputs' | 'button') {
-	const id = getSelectedIds()[0]
+function applyLinkChanges(origin: 'inputs' | 'button') {
+	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (editStates.target.addgroup) {
-		addGroup(domtitle.value)
+		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })
 		closeEditDialog()
 		return
 	}
 	//
 	else if (editStates.target.title) {
+		quickLinks(undefined, { groupTitle: { old: domeditlink.dataset.group ?? '', new: domtitle.value } })
 		closeEditDialog()
-		changeGroupTitle({
-			old: domeditlink.dataset.group ?? '',
-			new: domtitle.value,
-		})
 		return
 	}
 	//
-	else if (editStates.container.group && !editStates.target.link) {
-		addLinkFromEditDialog()
+	else if (editStates.container.group && !editStates.target.link && !editStates.target.folder) {
+		quickLinks(undefined, { addLinks: [{ group: editStates.group, title: domtitle.value, url: domurl.value }] })
 		closeEditDialog()
 		return
 	}
@@ -336,88 +374,19 @@ async function applyLinkChanges(origin: 'inputs' | 'button') {
 		inputs.forEach((node) => node.blur())
 	}
 
-	const data = await storage.sync.get(id)
-	const link = data[id] as Links.Link
-
-	const title = {
-		val: document.querySelector<HTMLInputElement>('#e-title')?.value,
-		dom: document.querySelector<HTMLSpanElement>(`#${id} span`),
-	}
-
-	const url = {
-		val: document.querySelector<HTMLInputElement>('#e-url')?.value,
-		dom: document.querySelector<HTMLAnchorElement>(`#${id} a`),
-	}
-
-	const icon = {
-		val: document.querySelector<HTMLInputElement>('#e-icon')?.value,
-		dom: document.querySelector<HTMLImageElement>(`#${id} img`),
-	}
-
-	if (title.dom && title.val !== undefined) {
-		link.title = stringMaxSize(title.val, 64)
-		title.dom.textContent = link.title
-	}
-
-	if (!link.folder) {
-		if (icon.dom) {
-			const url = icon.val ? stringMaxSize(icon.val, 7500) : undefined ?? getDefaultIcon(link.url)
-			const img = document.createElement('img')
-
-			link.icon = url ? url : undefined
-
-			icon.dom.src = 'src/assets/interface/loading.svg'
-			img.onload = () => (icon.dom!.src = url)
-			img.src = url
-		}
-
-		if (title.dom && url.dom && url.val !== undefined) {
-			link.url = stringMaxSize(url.val, 512)
-			url.dom.href = link.url
-			title.dom.textContent = createTitle(link)
-		}
-	}
-
-	storage.sync.set({ [id]: link })
-}
-
-function addLinkFromEditDialog() {
-	linksUpdate({
-		addLink: {
-			group: editStates.group,
-			title: domtitle.value,
-			url: domurl.value,
+	quickLinks(undefined, {
+		updateLink: {
+			id: id,
+			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
+			icon: document.querySelector<HTMLInputElement>('#e-icon')?.value,
+			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
 		},
 	})
 }
 
-function addSelectionToNewFolder() {
-	linksUpdate({ addFolder: getSelectedIds() })
-	document.dispatchEvent(new Event('remove-select-all'))
-}
-
-function deleteSelection() {
-	if (editStates.target.title) {
-		deleteGroup(editStates.group)
-	} else {
-		linksUpdate({
-			deleteLinks: getSelectedIds(),
-		})
-	}
-}
-
-function removeSelectionFromFolder() {
-	const group = document.querySelector<HTMLDivElement>(`.link-group[data-index="${editStates.group}"]`)
-
-	if (group) {
-		linksUpdate({ unfolder: { ids: getSelectedIds(), group } })
-		document.dispatchEvent(new Event('remove-select-all'))
-	}
-}
-
 function closeEditDialog() {
 	if (domeditlink.open) {
-		document.querySelectorAll('.block.selected').forEach((block) => block?.classList.remove('selected'))
+		document.querySelectorAll('.link-title.selected, .link.selected').forEach((node) => node?.classList.remove('selected'))
 		domeditlink.removeAttribute('data-tab')
 		domeditlink.classList.remove('shown')
 		domeditlink.close()

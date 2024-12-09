@@ -1,48 +1,35 @@
-import { MAIN_API, FALLBACK_API, ENVIRONNEMENT } from './defaults'
 import suntime from './utils/suntime'
 
-const apiList = ENVIRONNEMENT === 'TEST' ? ['http://localhost:8787'] : shuffledAPIUrls()
+export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
+	try {
+		const socket = new WebSocket(`wss://services.bonjourr.fr/${path}`)
+		const isOpened = await new Promise((resolve) => {
+			socket.onopen = () => resolve(true)
+			socket.onerror = () => resolve(false)
+			socket.onclose = () => resolve(false)
+		})
 
-function shuffledAPIUrls(): string[] {
-	return [
-		MAIN_API,
-		...FALLBACK_API.map((value) => ({ value, sort: Math.random() }))
-			.sort((a, b) => a.sort - b.sort)
-			.map(({ value }) => value), // https://stackoverflow.com/a/46545530]
-	]
+		if (isOpened) {
+			return socket
+		}
+	} catch (_error) {
+		// ...
+	}
 }
 
-export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
-	for (let url of apiList) {
-		try {
-			if (ENVIRONNEMENT === 'TEST') {
-				url = 'wss://bonjourr-apis.victr.workers.dev'
-			}
-
-			const socket = new WebSocket(url.replace('https://', 'wss://') + path)
-			const isOpened = await new Promise((resolve) => {
-				socket.onopen = () => resolve(true)
-				socket.onerror = () => resolve(false)
-				socket.onclose = () => resolve(false)
-			})
-
-			if (isOpened) {
-				return socket
-			}
-		} catch (error) {
-			console.warn(error)
-		}
+export async function weatherFetch(query: string): Promise<Response | undefined> {
+	try {
+		return await fetch(`https://weather.bonjourr.fr${query}`)
+	} catch (_error) {
+		// ...
 	}
 }
 
 export async function apiFetch(path: string): Promise<Response | undefined> {
-	for (const url of apiList) {
-		try {
-			return await fetch(url + path)
-		} catch (error) {
-			console.warn(error)
-			await new Promise((r) => setTimeout(() => r(true), 200))
-		}
+	try {
+		return await fetch(`https://services.bonjourr.fr${path}`)
+	} catch (_error) {
+		// ...
 	}
 }
 
@@ -112,30 +99,13 @@ export const freqControl = {
 
 export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	// 1.13.0: Returns an array of found links in storage
-	let res: Links.Link[] = []
+	const res: Links.Link[] = []
+
 	Object.entries(data).map(([key, val]) => {
 		if (key.length === 11 && key.startsWith('links')) res.push(val as Links.Link)
 	})
 
 	return res
-}
-
-export function linksDataMigration(data: Sync.Storage): Sync.Storage {
-	if (data?.linktabs) {
-		return data
-	}
-
-	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
-	const list = (bundleLinks(data) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-
-	list.forEach((link) => {
-		if (link.icon?.startsWith(notfoundicon)) {
-			link.icon = MAIN_API + '/favicon/blob/'
-			data[link._id] = link
-		}
-	})
-
-	return data
 }
 
 export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
@@ -157,6 +127,14 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],
 		animationOptions
 	)
+}
+
+export function fadeOut() {
+	const dominterface = document.getElementById('interface') as HTMLElement
+	dominterface.click()
+	dominterface.style.transition = 'opacity .4s'
+	setTimeout(() => (dominterface.style.opacity = '0'))
+	setTimeout(() => location.reload(), 400)
 }
 
 export function isEvery(freq = ''): freq is Frequency {
@@ -189,10 +167,66 @@ export function getComposedPath(target: EventTarget | null): HTMLElement[] {
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+	return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
 }
 
 function componentToHex(c: number): string {
-    let hex = c.toString(16);
-    return hex.length == 1 ? '0' + hex : hex;
+	const hex = c.toString(16)
+	return hex.length == 1 ? '0' + hex : hex
+}
+
+export function equalsCaseInsensitive(a: string, b: string) {
+	return a.localeCompare(b, undefined, { sensitivity: 'accent' }) === 0
+}
+
+export function getSplitRangeData(id: string): { range?: string; button?: string } {
+	const wrapper = document.querySelector<HTMLInputElement>(`#${id.replace('#', '')}`)
+	const range = wrapper?.querySelector<HTMLInputElement>('input')
+	const button = wrapper?.querySelector<HTMLElement>('button')
+	const span = wrapper?.querySelectorAll<HTMLElement>('span')
+	const isButtonOn = button?.classList?.contains('on')
+
+	return {
+		range: range?.value,
+		button: span?.[isButtonOn ? 1 : 0].dataset.value,
+	}
+}
+
+export function hexColorFromSplitRange(id: string): string {
+	const { range, button } = getSplitRangeData(id)
+
+	const opacity = parseInt(range ?? '0')
+	const color = button === 'dark' ? '#000' : '#fff'
+	const alpha = opacity.toString(16)
+
+	return color + alpha
+}
+
+export function opacityFromHex(hex: string) {
+	return parseInt(hex.slice(4), 16)
+}
+
+export function toggleDisabled(element: Element | null, force?: boolean) {
+	if (element) {
+		if (force === undefined) {
+			force = typeof element.getAttribute('disabled') === 'string'
+		}
+
+		force ? element.setAttribute('disabled', '') : element.removeAttribute('disabled')
+	}
+}
+
+export function countryCodeToLanguageCode(lang: string): string {
+	if (lang.includes('ES')) lang = 'es'
+	if (lang === 'gr') lang = 'el'
+	if (lang === 'jp') lang = 'ja'
+	if (lang === 'cz') lang = 'cs'
+
+	lang = lang.replace('_', '-')
+
+	return lang
+}
+
+async function wait(ms: number) {
+	await new Promise((r) => setTimeout(() => r(true), ms))
 }

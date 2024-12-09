@@ -48,7 +48,7 @@ Here's a list of things you can do to help us out:
 -   Give us feedback (positive and negative!) on how you use Bonjourr
 -   Suggest new features or improvements of the existing ones
 -   Create new [CSS snippets](https://bonjourr.fr/docs/styles) or [custom profiles](https://bonjourr.fr/docs/profiles)
--   [Translate](https://bonjourr.fr/docs/help/#translations) to a new language, or complete an existing one
+-   [Translate](https://bonjourr.fr/docs/contribute/#translate) to a new language, or complete an existing one
 -   Contribute to [our website](https://github.com/morceaudebois/bonjourr.fr)
 -   Add new quotes (especially non english/french) to [the API](https://github.com/victrme/i18n-quotes)
 -   Suggest new [Unsplash photos](https://bonjourr.fr/docs/overview/#backgrounds)
@@ -101,12 +101,12 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇷🇺 Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 -   **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 -   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
--   **🇸🇰 Slovak translation** · Roman Bartík
+-   **🇸🇰 Slovak translation** · Tomáš Švec · [Github](https://github.com/Svec-Tomas) & Roman Bartík
 -   **🇨🇿 Czech translation** · Daniel Zima · [Github](https://github.com/ZimaDaniel)
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
 -   **🇮🇹 Italian translation** · Trazalca · [GitHub](https://github.com/Trazalca)
 -   **🇪🇸 Spanish translation** · [José Alberto](https://github.com/joatb) & [Alí Sinisterra](https://github.com/alisinisterra)
--   **🇷🇴 Romanian translation** · UnifeGi · [GitHub](https://github.com/UnifeGi)
+-   **🇷🇴 Romanian translation** · [UnifeGi](https://github.com/UnifeGi) & [Astra](https://dry.nl.eu.org/links)
 -   **🇺🇦 Ukrainian translation** · [Anton Boksha](https://antonboksha.dev/) · [GitHub](https://github.com/4doge)
 -   **🇹🇷 Turkish translation** · Müslüm Barış Korkmazer · [GitHub](https://github.com/babico)
 -   **🇮🇩 Indonesian translation** · Imam Ali Mustofa · [GitHub](https://github.com/darkterminal)
@@ -115,17 +115,13 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
 -   **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
 -   **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
--   **🇬🇷 Modern Greek translation** · tseli0s · [GitHub](https://github.com/tseli0s)
+-   **🇬🇷 Modern Greek translation** · [tseli0s](https://github.com/tseli0s) · [trlef19](https://github.com/trlef19)
 -   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
+-   **🇭🇷 Croatian translation** · Ghost
 
-## 👨‍💻 Running Bonjourr locally
-
-Prerequisites:
-
--   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
--   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
+## 👨‍💻 Running Bonjourr
 
 Clone this repository
 
@@ -133,6 +129,17 @@ Clone this repository
 git clone https://github.com/victrme/Bonjourr
 cd Bonjourr
 ```
+
+### Self-host APIs
+
+If you wish to self-host the APIs used by Bonjourr, you can do so by following the steps in [Bonjourr APIs repository](https://github.com/victrme/bonjourr-apis).
+
+### Run locally
+
+Prerequisites:
+
+-   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
+-   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
 
 You can replace `pnpm` by `npm run`
 
@@ -151,23 +158,19 @@ pnpm safari
 pnpm online
 ```
 
-#### Self-host APIs
-
-If you wish to self-host the APIs used by Bonjourr, you can do so by following the steps in [Bonjourr APIs repository](https://github.com/victrme/bonjourr-apis).
-
-### Chrome
+#### Chrome
 
 -   Go to `chrome://extensions`
 -   Enable Developer mode
 -   Load unpacked and select `/release/chrome` folder
 
-### Firefox
+#### Firefox
 
 -   Go to `about:debugging#/runtime/this-firefox`
 -   Select "Load temporary Add-on"
 -   Select `manifest.json` in `/release/firefox` folder
 
-### Edge
+#### Edge
 
 -   Go to `edge://extensions`
 -   Enable Developer mode
@@ -175,11 +178,36 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 -   Replace manifest with `/src/manifests/edge.json`
 -   And rename `edge.json` to `manifest.json`
 
-### Safari
+#### Safari
 
 -   Follow install steps on the [Safari repository](https://github.com/victrme/Bonjourr-Safari)
 
-### Online (web version)
+#### Online (web version)
 
 -   A live server opens with `pnpm online`
+-   Go to http://127.0.0.1:8080/
+
+### Using Docker
+
+Prerequisites:
+
+-   [Docker](https://docs.docker.com/get-started)
+
+#### Docker CLI
+
+```bash
+# Build the container image
+docker build -t bonjourr/bonjourr .
+
+# Run the container on local port 8080
+docker run --rm -p "8080:80/tcp" -it bonjourr/bonjourr
+
+# Go to http://127.0.0.1:8080/
+```
+
+#### Docker Desktop
+
+-   Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+-   Search for `bonjourr/bonjourr` Hub image
+-   Run a new container with `8080` as host port
 -   Go to http://127.0.0.1:8080/

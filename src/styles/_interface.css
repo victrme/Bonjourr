@@ -12,7 +12,7 @@
 	font-size: var(--font-size);
 	font-family: var(--font-family);
 	font-weight: var(--font-weight);
-	transition: opacity var(--load-time-transition), transform 0.4s;
+	transition: opacity var(--load-time-transition), transform 0.33s;
 	text-shadow: 1px 2px 6px rgba(0, 0, 0, var(--text-shadow-alpha));
 	grid-template-areas: var(--grid);
 }
@@ -88,7 +88,8 @@
 	pointer-events: all;
 }
 
-#credit-container.shown:hover .exif {
+#credit-container.shown:hover .exif,
+#credit-container.shown:hover .save {
 	opacity: 1;
 }
 
@@ -96,21 +97,42 @@
 	text-align: left;
 	font-size: 13px;
 	line-height: 18px;
-	color: rgba(255, 255, 255, 0.6);
+	color: #fff9;
 }
 
 #credit a {
-	color: rgba(255, 255, 255, 0.6);
+	color: #fff9;
 	text-decoration: none;
 }
 
 #credit a:hover {
-	color: rgba(255, 255, 255, 0.9333333333);
+	color: #fffe;
 }
 
-.exif {
+.exif,
+.save {
 	opacity: 0;
 	transition: opacity 0.4s;
+}
+
+.save {
+	display: inline-block;
+	cursor: pointer;
+	margin-left: 10px;
+	width: 16px;
+	height: 15px;
+	background-color: #fff9;
+	-webkit-mask-image: url('../assets/interface/download.svg');
+	mask-image: url('../assets/interface/download.svg');
+}
+
+.save:hover {
+	background-color: #fffe;
+}
+
+.save.loading {
+	pointer-events: none;
+	--icon: url('../assets/interface/loading.svg');
 }
 
 /* Show Settings */
@@ -122,6 +144,7 @@
 	padding-right: 1.5em;
 	padding-bottom: 1.5em;
 	z-index: 3;
+	transition: opacity 0.15s var(--out-cubic);
 }
 
 #show-settings button {
@@ -136,12 +159,12 @@
 	backdrop-filter: blur(0);
 	-webkit-backdrop-filter: blur(0);
 	cursor: pointer;
-	transition: background-color 0.6s var(--out-cubic);
+	transition: background-color 0.15s var(--out-cubic);
 }
 
 #show-settings img {
 	width: 2.6em;
-	transition: transform 0.6s var(--out-cubic);
+	transition: transform 0.3s var(--out-cubic);
 }
 
 #show-settings.he_hidden {
@@ -165,7 +188,7 @@
 	background-color: rgba(170, 170, 170, 0.4);
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
-	border: 1px solid rgba(255, 255, 255, 0.075)
+	border: 1px solid rgba(255, 255, 255, 0.075);
 }
 
 #show-settings.shown button:hover {

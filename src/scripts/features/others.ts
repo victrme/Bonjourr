@@ -48,6 +48,7 @@ export function pageControl(val: { width?: number; gap?: number }, isEvent?: tru
 }
 
 export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEvent?: boolean) {
+	const settings = document.querySelector<HTMLElement>('aside')
 	let theme = 'light'
 
 	switch (value) {
@@ -75,6 +76,10 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 
 	if (isEvent) {
 		storage.sync.set({ dark: value })
+
+		settings?.classList.add('change-theme')
+		setTimeout(() => settings?.classList.remove('change-theme'), 333)
+
 		return
 	}
 

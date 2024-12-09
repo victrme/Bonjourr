@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "19.2.4",
+	"version": "20.3.0",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"default_locale": "en",
@@ -23,10 +23,9 @@
 	"offline_enabled": true,
 
 	"background": {
-		"service_worker": "src/scripts/background.js",
-		"type": "module"
+		"service_worker": "src/scripts/service-worker.js"
 	},
 
 	"permissions": ["storage"],
-	"optional_permissions": ["bookmarks", "topSites"]
+	"optional_permissions": ["bookmarks", "topSites", "search"]
 }

@@ -1,10 +1,33 @@
-const CACHE_KEY = '19.2.4'
+if (globalThis.chrome) {
+	if (chrome.storage) {
+		chrome.action.onClicked.addListener(createNewTab)
+		chrome.runtime.onInstalled.addListener(handleInstalled)
+		chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')
+	}
+} else {
+	self.addEventListener('activate', updateCache)
+	self.addEventListener('fetch', retrieveCache)
+}
+
+const CACHE_KEY = '20.3.0'
 const API_URLS = ['unsplash.com', 'jsdelivr.net', 'api.bonjourr']
 
-//
-//
+// Web Extension
 
-self.addEventListener('activate', async () => {
+function createNewTab() {
+	const url = chrome.runtime.getURL('index.html')
+	chrome.tabs.create({ url })
+}
+
+function handleInstalled(details) {
+	if (details.reason === 'install') {
+		createNewTab()
+	}
+}
+
+// Progressive Web App
+
+async function updateCache() {
 	const keys = await caches.keys()
 
 	for (const key of keys) {
@@ -12,9 +35,9 @@ self.addEventListener('activate', async () => {
 			await caches.delete(key)
 		}
 	}
-})
+}
 
-self.addEventListener('fetch', async function (event) {
+function retrieveCache(event) {
 	const url = event.request.url
 	const isAPI = API_URLS.some((api) => url.includes(api))
 
@@ -36,4 +59,4 @@ self.addEventListener('fetch', async function (event) {
 			return fetch(event.request)
 		})()
 	)
-})
+}

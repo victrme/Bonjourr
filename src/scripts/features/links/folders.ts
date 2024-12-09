@@ -13,7 +13,7 @@ queueMicrotask(() => {
 export async function folderClick(event: MouseEvent) {
 	const li = getLiFromEvent(event)
 	const rightClick = event.button === 2
-	const inFolder = li?.classList.contains('folder')
+	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
 	if (!li || !inFolder || rightClick || isSelectAll) {
@@ -33,7 +33,7 @@ export async function folderClick(event: MouseEvent) {
 	}
 }
 
-async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
+function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	const linkgroup = li.parentNode!.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
 	const folder = data[li.id] as Links.Folder
@@ -42,7 +42,7 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	transition.first(hide)
 	transition.then(changeToFolder)
 	transition.finally(show)
-	transition.transition(200)
+	transition.transition(40)
 
 	function hide() {
 		linkgroup.dataset.folder = li?.id
@@ -51,17 +51,10 @@ async function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	async function changeToFolder() {
-		const sibling = linkgroup.nextElementSibling
-		const isLastGroup = sibling?.classList.contains('-group') === false
-
 		await initblocks(data)
 
 		if (linktitle) {
 			linktitle.textContent = folder?.title || tradThis('Folder')
-		}
-
-		if (isLastGroup) {
-			domlinkblocks.classList.remove('with-groups')
 		}
 	}
 
@@ -80,7 +73,7 @@ async function closeFolder() {
 	transition.first(hide)
 	transition.then(changeToTab)
 	transition.finally(show)
-	transition.transition(200)
+	transition.transition(40)
 
 	function hide() {
 		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach((group) => {

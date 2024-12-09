@@ -1,9 +1,12 @@
 import storage from '../storage'
+import { countryCodeToLanguageCode } from '../utils'
 
 let trns: Local.Translations | undefined
 let currentTrnsLang = 'en'
 
 export async function setTranslationCache(lang: string, local?: Local.Storage) {
+	lang = countryCodeToLanguageCode(lang)
+
 	if (lang === 'en') {
 		storage.local.remove('translations')
 		trns = undefined
@@ -23,18 +26,18 @@ export async function setTranslationCache(lang: string, local?: Local.Storage) {
 	currentTrnsLang = lang
 }
 
-export function traduction(settingsDom: Element | null, lang = 'en') {
+export function traduction(scope: Element | null, lang = 'en') {
 	if (lang === 'en') {
 		return
 	}
 
 	if (trns) {
-		const dom = settingsDom ? settingsDom : document.body
+		const dom = scope ?? document.body
 		const tags = dom.querySelectorAll('.trn')
 		let text: string
 
 		for (const tag of tags) {
-			text = tag.textContent ?? ''
+			text = tag.textContent?.trim() ?? ''
 			tag.textContent = (trns[text] as string) ?? text
 		}
 	}
@@ -45,9 +48,9 @@ export function traduction(settingsDom: Element | null, lang = 'en') {
 
 export async function toggleTraduction(lang: string) {
 	const tags = document.querySelectorAll('.trn')
+	const toggleDict: { [key: string]: string } = {}
+	const currentDict = { ...trns }
 	let newDict: Local.Translations | undefined
-	let toggleDict: { [key: string]: string } = {}
-	let currentDict = { ...trns }
 	let text: string
 
 	await setTranslationCache(lang)

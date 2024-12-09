@@ -26,31 +26,6 @@
 	</head>
 
 	<body class="init loading">
-		<dialog id="bookmarks">
-			<div id="bookmarks-container">
-				<template id="bookmarks-folder">
-					<div class="bookmarks-folder">
-						<h2></h2>
-						<ol></ol>
-					</div>
-				</template>
-				<template id="bookmarks-item">
-					<li>
-						<button>
-							<img draggable="false" loading="lazy" alt="" />
-							<p class="bookmark-title"></p>
-							<p class="bookmark-url"></p>
-						</button>
-					</li>
-				</template>
-			</div>
-			<hr />
-			<div id="bookmarks-buttons">
-				<button id="bmk_close" class="trn btn-red">Cancel</button>
-				<button id="bmk_apply" class="trn none">Select bookmarks</button>
-			</div>
-		</dialog>
-
 		<dialog id="editlink">
 			<form id="editlink-form">
 				<label id="edit-title" autofocus>
@@ -87,12 +62,128 @@
 				<hr />
 
 				<button type="submit" class="trn" id="edit-inputs">Submit from inputs</button>
-				<button type="submit" class="btn-red" id="edit-delete">Delete something</button>
-				<button type="submit" class="trn" id="edit-add">Add something</button>
-				<button type="submit" class="trn" id="edit-pin">Pin group</button>
-				<button type="submit" class="trn" id="edit-unpin">Unpin group</button>
-				<button type="submit" class="trn" id="edit-unfolder">Remove from folder</button>
-				<button type="submit" class="trn" id="edit-apply">Apply changes</button>
+				<button type="submit" class="btn-red" id="edit-delete">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+						/>
+					</svg>
+
+					<span class="trn">Delete something</span>
+				</button>
+
+				<button type="submit" id="edit-refresh">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+						/>
+					</svg>
+
+					<span class="trn">Refresh icon</span>
+				</button>
+
+				<button type="submit" id="edit-add">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+						/>
+					</svg>
+
+					<span class="trn">Add something</span>
+				</button>
+
+				<button type="submit" id="edit-pin">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+						/>
+					</svg>
+
+					<span class="trn">Pin group</span>
+				</button>
+
+				<button type="submit" id="edit-unpin">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="size-6"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+						/>
+					</svg>
+
+					<span class="trn">Unpin group</span>
+				</button>
+
+				<button type="submit" id="edit-unfolder">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+					</svg>
+
+					<span class="trn">Remove from folder</span>
+				</button>
+
+				<button type="submit" id="edit-apply">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M3 3v18h18V6l-3-3H3ZM7.5 3v6h9V3M6 21v-9h12v9M14.25 5.25v1.5"
+						/>
+					</svg>
+					<span class="trn">Apply changes</span>
+				</button>
+				<button type="submit" class="trn" id="edit-synced">Synced links cannot be modified</button>
 			</form>
 		</dialog>
 
@@ -126,7 +217,7 @@
 			<div>
 				<p class="trn">Box alignment</p>
 				<div id="box-alignment-mover" class="mover">
-					<button type="button" data-align="baseline baseline">
+					<button type="button" data-align="baseline">
 						<i class="box-corner"></i>
 					</button>
 					<button type="button" data-align="baseline center">
@@ -138,7 +229,7 @@
 					<button type="button" data-align="center baseline">
 						<i class="box-side rotate-quart"></i>
 					</button>
-					<button type="button" data-align="">
+					<button type="button" data-align="center">
 						<i class="box-center"></i>
 					</button>
 					<button type="button" data-align="center end">
@@ -150,7 +241,7 @@
 					<button type="button" data-align="end center">
 						<i class="box-side"></i>
 					</button>
-					<button type="button" data-align="end end">
+					<button type="button" data-align="end">
 						<i class="box-corner rotate-half"></i>
 					</button>
 				</div>
@@ -161,7 +252,7 @@
 					<button data-align="left">
 						<i class="text-left"></i>
 					</button>
-					<button data-align="">
+					<button data-align="center">
 						<i class="text-center"></i>
 					</button>
 					<button data-align="right">
@@ -186,31 +277,40 @@
 		<main id="interface">
 			<div id="time">
 				<div id="time-container" data-hide="clock">
-					<h1 id="digital">
-						<span id="digital-hh-leading-zero">0</span><span id="digital-hh"></span
-						><span id="digital-hh-separator">:</span><span id="digital-mm"></span
-						><span id="digital-mm-separator">:</span><span id="digital-ss"></span><span id="digital-am-pm"></span>
-					</h1>
+					<div id="clock-wrapper" class="clock-wrapper" data-index="0">
+						<h1 class="digital" data-hide="clock">
+							<span class="digital-ampm"
+								><span class="digital-am">am</span><span class="digital-pm">pm</span></span
+							><span class="digital-hh-leading-zero">0</span><span class="digital-hh"></span
+							><span class="digital-hh-separator">:</span><span class="digital-mm"></span
+							><span class="digital-mm-separator">:</span><span class="digital-ss"></span
+							><span class="digital-number-width">0</span>
+						</h1>
 
-					<div id="analog">
-						<div id="analog-face">
-							<span>12</span>
-							<span>3</span>
-							<span>6</span>
-							<span>9</span>
+						<div class="analog" data-hide="clock">
+							<div class="analog-face">
+								<span>12</span>
+								<span>3</span>
+								<span>6</span>
+								<span>9</span>
+							</div>
+
+							<div class="analog-center"></div>
+							<span class="analog-hours"></span>
+							<span class="analog-minutes"></span>
+							<span class="analog-seconds"></span>
 						</div>
 
-						<div id="analog-center"></div>
-						<span id="analog-hours"></span>
-						<span id="analog-minutes"></span>
-						<span id="analog-seconds"></span>
+						<p class="clock-region">Paris</p>
+
+						<p class="clock-date" data-hide="date">
+							<span class="clock-date-aa"></span><span class="clock-date-aa-separator"></span
+							><span class="clock-date-bb"></span><span class="clock-date-bb-separator"></span
+							><span class="clock-date-cc"></span>
+							<span class="clock-date-secondary"></span>
+						</p>
 					</div>
 				</div>
-
-				<p id="date" data-hide="date">
-					<span id="date-aa"></span><span id="date-aa-separator"></span><span id="date-bb"></span
-					><span id="date-bb-separator"></span><span id="date-cc"></span>
-				</p>
 			</div>
 
 			<div id="main" class="hidden">
@@ -219,14 +319,17 @@
 					<span id="greeting-name"></span>
 				</h2>
 
-				<a id="weather" class="wait" rel="noreferrer">
+				<a id="weather" class="wait init" rel="noreferrer">
 					<div id="description" data-hide="weatherdesc">
-						<p id="current">meteo</p>
+						<p id="current">
+							<span id="current-desc"></span>
+							<span id="current-temp"></span>
+						</p>
 						<p id="forecast">forecast</p>
 					</div>
 
 					<div id="tempContainer" data-hide="weathericon">
-						<img id="weather-icon" alt="" draggable="false" fetchpriority="high" />
+						<span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
 						<p>00</p>
 					</div>
 				</a>
@@ -265,7 +368,9 @@
 			</form>
 
 			<div id="linkblocks">
-				<div id="link-mini"></div>
+				<div id="link-mini">
+					<div></div>
+				</div>
 			</div>
 
 			<div id="quotes_container" class="hidden">
@@ -289,6 +394,55 @@
 		</div>
 
 		<div id="templates">
+			<template id="bookmarks-dialog-template">
+				<dialog id="bookmarks">
+					<div id="bookmarks-header">
+						<div id="bookmarks-intro">
+							<span class="trn">
+								Synchronized groups are automatically updated to match your browser bookmarks. Learn more on
+							</span>
+
+							<a class="trn" target="_blank" href="https://bonjourr.fr/docs/overview#link-groups"
+								>our documentation</a
+							>.
+						</div>
+
+						<div id="bookmarks-buttons">
+							<button id="bmk_close" class="trn btn-red">Close</button>
+							<button id="bmk_apply" class="trn" disabled>Import selection</button>
+						</div>
+					</div>
+
+					<div id="bookmarks-container"></div>
+				</dialog>
+			</template>
+
+			<template id="bookmarks-folder-template">
+				<div class="bookmarks-folder">
+					<div class="bookmarks-folder-title">
+						<h2>
+							<span class="bookmarks-folder-title-content"></span>
+							<span class="bookmarks-folder-title-synced">(synced)</span>
+						</h2>
+						<div>
+							<button class="trn b_bookmarks-folder-select">Select group</button>
+							<button class="trn b_bookmarks-folder-sync" disabled>Sync with browser</button>
+						</div>
+					</div>
+					<ol></ol>
+				</div>
+			</template>
+
+			<template id="bookmarks-item-template">
+				<li>
+					<button>
+						<img draggable="false" loading="lazy" alt="" />
+						<p class="bookmark-title"></p>
+						<p class="bookmark-url"></p>
+					</button>
+				</li>
+			</template>
+
 			<template id="link-group-template">
 				<div class="link-group">
 					<ul class="link-list"></ul>
@@ -297,9 +451,9 @@
 			</template>
 
 			<template id="link-elem-template">
-				<li class="block">
+				<li class="link link-elem">
 					<a rel="noreferrer noopener" draggable="false">
-						<div class="block-imgs">
+						<div>
 							<img alt="" draggable="false" />
 						</div>
 						<span></span>
@@ -308,8 +462,8 @@
 			</template>
 
 			<template id="link-folder-template">
-				<li class="block folder" tabindex="0">
-					<div class="block-imgs">
+				<li class="link link-folder" tabindex="0">
+					<div>
 						<img alt="" draggable="false" />
 						<img alt="" draggable="false" />
 						<img alt="" draggable="false" />
@@ -324,9 +478,13 @@
 					<div id="popup_text">
 						<div id="popup_close">✕</div>
 						<div id="popup_icon">
-							<div>
-								<span>19</span>
-							</div>
+							<p>
+								<span>20</span>
+							</p>
+							<div></div>
+							<div></div>
+							<div></div>
+							<div></div>
 						</div>
 						<p id="popup_desc"></p>
 					</div>
@@ -344,7 +502,7 @@
 							believe this is because ads on their speed dial is a good revenue source for them.
 						</p>
 
-						<h2 class="trn">What to do from here ?</h2>
+						<h2 class="trn">What to do from here?</h2>
 
 						<ul>
 							<li class="trn">Remove Bonjourr and use Opera speed dial</li>
@@ -352,7 +510,7 @@
 							<li>
 								<span class="trn">Follow </span
 								><a href="https://bonjourr.fr/docs#opera" class="trn">this tutorial on our documentation</a
-								><span class="trn">. Bonjourr, or any homepage, should somewhat work !</span>
+								><span class="trn">. Bonjourr, or any homepage, should somewhat work!</span>
 							</li>
 						</ul>
 					</div>

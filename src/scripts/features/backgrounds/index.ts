@@ -1,6 +1,6 @@
 import unsplashBackgrounds from './unsplash'
 import localBackgrounds from './local'
-import { rgbToHex} from '../../utils'
+import { rgbToHex } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
 import { BROWSER } from '../../defaults'
 
@@ -59,11 +59,11 @@ function solidBackground(colors: string[]) {
 //
 
 export function imgBackground(url: string, color?: string) {
-	let img = new Image()
+	const img = new Image()
 
-	// Set the crossOrigin attribute to handle CORS when average color needed 
-	if (!color) img.crossOrigin = "Anonymous" 
-	
+	// Set the crossOrigin attribute to handle CORS when average color needed
+	if (!color) img.crossOrigin = 'Anonymous'
+
 	img.onload = () => {
 		const bgoverlay = document.getElementById('background_overlay') as HTMLDivElement
 		const bgfirst = document.getElementById('background') as HTMLDivElement
@@ -97,6 +97,10 @@ export function backgroundFilter({ blur, brightness, isEvent }: FilterOptions) {
 	if (hasblur) document.documentElement.style.setProperty('--background-blur', blur.toString() + 'px')
 	if (hasbright) document.documentElement.style.setProperty('--background-brightness', brightness.toString())
 
+	if (hasblur) {
+		document.body.classList.toggle('blurred', blur > 16)
+	}
+
 	if (isEvent && hasblur) eventDebounce({ background_blur: blur })
 	if (isEvent && hasbright) eventDebounce({ background_bright: brightness })
 }
@@ -117,13 +121,13 @@ export function updateBackgroundOption({ freq, refresh }: UpdateOptions) {
 export function getAverageColor(img: HTMLImageElement) {
 	try {
 		// Create a canvas element
-		let canvas = document.createElement('canvas')
-		let ctx = canvas.getContext('2d')
+		const canvas = document.createElement('canvas')
+		const ctx = canvas.getContext('2d')
 
 		const MAX_DIMENSION = 100 // resizing the image for better performance
 
 		// Calculate the scaling factor to maintain aspect ratio
-		let scale = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height)
+		const scale = Math.min(MAX_DIMENSION / img.width, MAX_DIMENSION / img.height)
 
 		// Set canvas dimensions to the scaled image dimensions
 		canvas.width = img.width * scale
@@ -133,11 +137,13 @@ export function getAverageColor(img: HTMLImageElement) {
 		ctx?.drawImage(img, 0, 0, canvas.width, canvas.height)
 
 		// Get the image data from the canvas
-		let imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height)
-		let data = imageData?.data
+		const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height)
+		const data = imageData?.data
 
-		let r = 0, g = 0, b = 0;
-		let count = 0;
+		let r = 0,
+			g = 0,
+			b = 0
+		let count = 0
 
 		// Loop through the image data and sum the color values
 		if (data) {
@@ -162,11 +168,10 @@ export function getAverageColor(img: HTMLImageElement) {
 	}
 }
 
+// function backgroundFreq() {
+// 	//
+// }
 
-function backgroundFreq() {
-	//
-}
-
-function refreshBackground() {
-	//
-}
+// function refreshBackground() {
+// 	//
+// }

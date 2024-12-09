@@ -18,7 +18,7 @@ aside {
 	overflow-x: hidden;
 	touch-action: pan-y;
 	box-sizing: border-box;
-	transition: transform 0.4s, background-color 0.4s var(--out-cubic);
+	transition: transform 0.33s, background-color 0.33s;
 }
 
 aside.shown {
@@ -35,14 +35,14 @@ aside.see-through {
 	opacity: 0.2;
 }
 
-aside a {
-	color: var(--color-blue);
-	border-radius: 4px;
-	text-decoration: none;
-}
-
-aside a:hover {
-	text-decoration: underline;
+aside.change-theme .tooltip,
+aside.change-theme .param,
+aside.change-theme select,
+aside.change-theme button,
+aside.change-theme input,
+aside.change-theme hr {
+	transition-duration: 0.33s;
+	transition-property: background-color, border-color, color;
 }
 
 aside hr {
@@ -65,29 +65,20 @@ aside h2 {
 	letter-spacing: 1px;
 }
 
-aside #hideelem button,
-aside .uploadContainer,
-aside #submitSave,
-aside #i_refresh,
-aside #cssEditor,
-aside .tooltip,
-aside .param,
-aside select,
-aside input,
-aside hr {
-	transition-duration: 0.4s;
-	transition-timing-function: var(--out-cubic);
-	transition-property: background-color, color, border, border-color, transform;
-}
-
 aside .param-btn {
 	height: 31px;
 	padding: 0 1em;
 	color: var(--color-blue);
 	border: none;
 	border-radius: 1em;
+	white-space: nowrap;
 	background-color: rgba(var(--blue), 0.15);
-	transition: background-color 0.1s, color 0.1s;
+}
+
+aside .param-btn img,
+aside .param-btn span {
+	display: inline;
+	vertical-align: middle;
 }
 
 aside .param-btn:hover {
@@ -122,6 +113,21 @@ aside .input-btn {
 	background-color: var(--color-input);
 }
 
+aside .input-btn.icon-only span {
+	display: flex;
+	justify-content: center;
+}
+
+aside .input-btn.icon-only span svg {
+	height: 18px;
+	flex-shrink: 0;
+}
+
+aside .input-btn.icon-only:hover,
+aside .input-btn.icon-only:active {
+	background-color: var(--color-input);
+}
+
 aside textarea,
 aside .prism-code-editor {
 	font-family: Consolas, Monaco, Ubuntu Mono, monospace;
@@ -146,8 +152,22 @@ aside select {
 	background-color: var(--color-input);
 }
 
-aside input::placeholder {
+@media only screen and (hover: hover) {
+	aside input:focus-visible,
+	aside .input-btn:active,
+	aside .tooltip:active,
+	aside .switch:hover {
+		background-color: var(--color-focused);
+	}
+}
+
+aside input::placeholder,
+aside input[type='text'] {
 	color: var(--color-placeholder);
+}
+
+aside input[type='text']:focus-visible {
+	color: var(--color-text);
 }
 
 aside input[type='checkbox'] {
@@ -168,10 +188,6 @@ aside .switch {
 	-moz-appearance: none;
 	appearance: none;
 	overflow: visible;
-}
-
-aside .switch:hover {
-	background-color: var(--color-focused);
 	transition: background-color 0.15s;
 }
 
@@ -185,20 +201,22 @@ aside .switch:after {
 	border-radius: 50%;
 	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
 	background-color: white;
-	transition: background-color 0.3s, transform 0.3s;
+	transition: background-color 0.15s, transform 0.15s;
 }
 
 aside .switch:checked {
 	background-color: var(--color-green);
-	transition: background-color 0.15s;
-}
-
-aside .switch:checked:hover {
-	background-color: #40b354;
+	/* transition: background-color 0.1s; */
 }
 
 aside .switch:checked:after {
 	transform: translateX(20px);
+}
+
+@media only screen and (hover: hover) {
+	aside .switch:checked:hover {
+		background-color: #22c34d;
+	}
 }
 
 aside input::-webkit-calendar-picker-indicator {
@@ -311,7 +329,6 @@ input[type='file'] {
 	width: 100%;
 	color: transparent;
 	cursor: pointer;
-	transition: background-color 0.2s, transform 0.2s;
 }
 
 input[type='file']::-webkit-file-selector-button,
@@ -319,8 +336,7 @@ input[type='file']::file-selector-button {
 	display: none;
 }
 
-label.input-file:hover input[type='file'],
-label.input-file:focus input[type='file'] {
+label.input-file:active input[type='file'] {
 	background-color: var(--color-focused);
 }
 
@@ -334,9 +350,6 @@ label.input-file input[type='file'].dragover ~ span {
 }
 
 aside form {
-	display: flex;
-	position: relative;
-	align-items: center;
 	width: 155px;
 }
 
@@ -348,54 +361,58 @@ aside form > div {
 
 aside form button {
 	height: 31px;
-	width: 100%;
+	width: 31px;
 	padding: 0;
 	opacity: 0;
 	max-width: 0;
 	visibility: hidden;
-	background-color: transparent;
+	background-color: var(--color-input);
 	transition: opacity 0.1s, max-width 0.2s;
 }
 
 aside form button:disabled {
 	cursor: default;
+	background-color: transparent;
 }
 
 aside form button span {
-	justify-content: center;
+	display: block;
+	width: 31px;
 }
 
 aside form.valid button {
 	opacity: 1;
-	pointer-events: all;
-	max-width: 26px;
-	margin-left: 4px;
+	max-width: 31px;
 	visibility: visible;
-	color: var(--color-blue);
+}
+
+aside form.valid span::after {
+	content: '✓';
+}
+
+aside form.valid.remove span::after {
+	content: '×';
 }
 
 @media (hover: hover) {
 	aside form.valid button:not(:disabled):hover,
 	aside form.valid button:not(:disabled):focus-visible {
+		color: var(--color-blue);
 		background-color: rgba(var(--blue), 0.15);
 	}
-}
-
-aside form.valid button:not(:disabled):active {
-	background-color: rgba(var(--blue), 0.25);
 }
 
 .dropdown {
 	max-height: 0;
 	overflow: hidden;
 	visibility: hidden;
-	transition: max-height 0.3s, padding 0.2s, visibility 0s 0.3s;
+	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0.3s;
 }
 
 .all .as,
 .dropdown.shown {
 	visibility: visible;
-	transition: max-height 0.3s, padding 0.2s, visibility 0s 0s;
+	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
 }
 
 #solid_options.shown {
@@ -403,11 +420,11 @@ aside form.valid button:not(:disabled):active {
 }
 
 #local_options.shown {
-	max-height: 400px;
+	max-height: 420px;
 }
 
 #time_options.shown {
-	max-height: 470px;
+	max-height: 920px;
 }
 
 #main_options.shown {
@@ -418,21 +435,38 @@ aside form.valid button:not(:disabled):active {
 	max-height: 460px;
 }
 
+#analog_options.shown {
+	max-height: 280px;
+}
+
+#worldclocks_options.shown,
 #notes_options.shown {
-	max-height: 180px;
+	max-height: 200px;
+}
+
+#ampm_label.shown,
+#disabled-sync.shown,
+#weather_provider.shown,
+#searchbar_request.shown,
+#worldclocks-list .dropdown.shown {
+	max-height: 60px;
 }
 
 #location_options.shown,
 #digital_options.shown,
-#weather_provider.shown,
-#searchbar_request.shown {
-	max-height: 60px;
+#unsplash_options.shown,
+#quotes_url.shown {
+	max-height: 120px;
 }
 
-#analog_options.shown,
-#unsplash_options.shown {
-	max-height: 110px;
+#url-sync.shown,
+#gist-sync.shown {
+	max-height: 160px;
 }
+
+/* #gist-sync-status.shown {
+	max-height: 120px;
+} */
 
 #searchbar_options.shown {
 	max-height: 420px;
@@ -456,19 +490,19 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_timedate {
-	max-height: 300px;
+	max-height: 430px;
 }
 
 .all .as_searchbar {
-	max-height: 180px;
+	max-height: 300px;
 }
 
 .all .as_weather {
-	max-height: 330px;
+	max-height: 345px;
 }
 
 .all .as_clocktype {
-	max-height: 130px;
+	max-height: 300px;
 }
 
 .all .as_fonts {
@@ -476,7 +510,7 @@ aside form.valid button:not(:disabled):active {
 }
 
 .all .as_page {
-	max-height: 380px;
+	max-height: 400px;
 }
 
 .all .as_css {
@@ -511,13 +545,43 @@ aside form.valid button:not(:disabled):active {
 	margin: auto;
 	border-radius: 4px;
 	background-color: var(--color-focused);
+	transition: width 0.15s cubic-bezier(0.215, 0.61, 0.355, 1), background-color 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+#mobile-drag-zone:active div {
+	width: 75px;
+	background-color: var(--color-border);
+}
+
+#settings-notifications {
+	margin-top: 2.2em;
+}
+
+#settings-notifications .param,
+#settings-notifications {
+	position: absolute;
+	visibility: hidden;
+}
+
+#settings-notifications .param.shown,
+#settings-notifications.shown {
+	position: static;
+	visibility: visible;
+}
+
+#settings-notifications .param {
+	margin-bottom: 1em;
+}
+
+#settings-notifications label {
+	padding-inline-end: 1em;
 }
 
 .settings-title {
 	display: grid;
 	place-items: baseline;
 	grid-template-columns: 1fr min-content;
-	margin: 2.2em 1.8em 1.2em;
+	margin: 32px 26px 0px 26px;
 	color: var(--color-light-text);
 }
 
@@ -536,14 +600,9 @@ aside .tooltip {
 	color: var(--color-light-text);
 	border-color: var(--color-input);
 	background-color: var(--color-areas);
-	transition: background-color 0.1s, transform 0.1s;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-}
-
-aside .tooltip:hover {
-	background-color: var(--color-input);
 }
 
 aside .settings-title .tooltip {
@@ -551,9 +610,9 @@ aside .settings-title .tooltip {
 	border-color: var(--color-focused);
 }
 
-@media (hover: hover) {
+@media screen and (hover: hover) {
 	aside .tooltip:active {
-		transform: scale(1.2);
+		background-color: var(--color-input);
 	}
 }
 
@@ -577,20 +636,25 @@ aside .settings-title .tooltip {
 }
 
 .param {
+	margin-top: 18px;
 	padding: 10px 16px;
 	border-radius: 10px;
 	background-color: var(--color-param);
+}
+
+.param + .param {
+	margin-top: 12px;
 }
 
 .wrapper {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	min-height: 26px;
+	min-height: 31px;
 	padding: 4px; /* for tabbing outline */
 }
 
-.wrapper span {
+.wrapper > span {
 	display: flex;
 	align-items: center;
 }
@@ -607,6 +671,31 @@ aside .settings-title .tooltip {
 	display: flex;
 	width: 155px;
 	column-gap: 4px;
+}
+
+.split-range {
+	height: 31px;
+	align-items: center;
+}
+
+.split-inputs input {
+	width: 100%;
+}
+
+.split-range button {
+	height: 31px;
+	width: 40px;
+	font-size: 20px;
+	background-color: transparent;
+}
+
+.split-range button:not(.on) span:last-child,
+.split-range button.on span:first-child {
+	display: none;
+}
+
+.split-range span {
+	display: initial;
 }
 
 .freq_wrap select {
@@ -641,6 +730,8 @@ aside .settings-title .tooltip {
 	opacity: 0.7;
 	padding: 0 4px;
 	min-width: 30px;
+	font-size: 14px;
+	font-weight: bold;
 	font-family: serif;
 	text-align: center;
 	background-color: transparent;
@@ -663,8 +754,14 @@ aside .settings-title .tooltip {
 	height: 14px;
 	display: block;
 	border-radius: 4px;
-	border: 3px solid var(--color-text);
+	border: 2px solid var(--color-text);
 	box-sizing: border-box;
+}
+
+[data-theme='light'] #b_showtitles,
+[data-theme='light'] #b_showbackgrounds span {
+	color: var(--color-light-text);
+	border-color: var(--color-light-text);
 }
 
 #b_showtitles.on,
@@ -674,36 +771,51 @@ aside .settings-title .tooltip {
 }
 
 .refresh-btn {
-	padding: 0 10px;
+	padding: 0 8px;
+	display: flex;
+	align-items: center;
+}
+
+.refresh-btn svg {
+	height: 15px;
 }
 
 #local_options label {
 	padding: 0 4px;
 }
 
-#fileContainer {
-	width: 100%;
+#background-upload {
+	display: none;
+}
+
+#thumbnails-container {
 	display: grid;
-	max-height: 249px;
+	width: 100%;
+	max-height: 300px;
+	overflow: auto;
+	grid-gap: 3px;
 	grid-template-columns: repeat(3, 1fr);
-	grid-gap: 10px;
+}
+
+/* instead of padding on #thumbnails-container */
+/* because buggy when container is empty */
+#thumbnails-container .thumbnail:nth-child(1),
+#thumbnails-container .thumbnail:nth-child(2),
+#thumbnails-container .thumbnail:nth-child(3) {
 	margin-top: 10px;
-	padding: 3px;
-	overflow-y: auto;
-	overflow-x: hidden;
-	box-sizing: border-box;
 }
 
 .thumbnail {
 	position: relative;
 	height: 75px;
-	margin: 0;
+	margin: 3px;
 	padding: 0;
 	overflow: hidden;
 	border: none;
 	outline: 3px solid transparent;
+	outline-offset: -3px;
 	background-color: var(--color-input);
-	transition: opacity 0.1s, filter 0.1s, outline 0.1s;
+	transition: opacity 0.05s, filter 0.05s, outline 0.05s;
 }
 
 .thumbnail.hiding {
@@ -733,8 +845,8 @@ aside .settings-title .tooltip {
 
 .b_removethumb {
 	position: absolute;
-	top: 5px;
-	left: 5px;
+	top: 6px;
+	left: 6px;
 	width: 25px;
 	height: 25px;
 	padding: 0;
@@ -748,7 +860,7 @@ aside .settings-title .tooltip {
 	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
 	backdrop-filter: blur(1em);
 	-webkit-backdrop-filter: blur(1em);
-	transition: opacity 0.1s, background-color 0.1s;
+	transition: opacity 0.05s, background-color 0.05s;
 }
 
 .b_removethumb span {
@@ -768,28 +880,35 @@ aside .settings-title .tooltip {
 
 #thumbnail-show-buttons {
 	display: none;
-	align-items: center;
-	justify-content: center;
-	column-gap: 1em;
+	text-align: center;
 	padding-top: 0.5em;
 }
 
 #thumbnail-show-buttons.shown {
-	display: flex;
+	display: block;
 }
 
-#clockoptions.digital #w_clockface,
-#clockoptions.analog #w_ampm {
-	max-height: 0;
-	opacity: 0;
+#worldclocks_options .wrapper {
+	padding: 0 0 0 4px;
 }
 
-#f_location {
+#worldclocks-list {
 	width: 66%;
 }
 
-#i_ccode {
-	width: 45%;
+#worldclocks-list .split-inputs {
+	width: 100%;
+	padding: 2px;
+	box-sizing: border-box;
+}
+
+#worldclocks-list input,
+#worldclocks-list select {
+	width: 100%;
+}
+
+#i_city {
+	text-transform: capitalize;
 }
 
 #quotes_userlist .wrapper {
@@ -896,6 +1015,7 @@ aside .settings-title .tooltip {
 }
 
 #settings-data {
+	opacity: 0.8;
 	font-size: 13px;
 	width: 100%;
 	height: 110px;
@@ -904,10 +1024,10 @@ aside .settings-title .tooltip {
 	margin: 6px 0;
 	padding: 10px 16px;
 	tab-size: 1.5em;
-	/* user-select: all; */
 	text-overflow: ellipsis;
 	overflow: hidden;
 	resize: vertical;
+	cursor: pointer;
 	box-sizing: border-box;
 	border-radius: 10px;
 	color: var(--color-text);
@@ -918,9 +1038,11 @@ aside .settings-title .tooltip {
 	font-size: 12px;
 }
 
-#settings-data:hover,
-#settings-data:focus {
+#settings-data:focus-within {
 	overflow-y: auto;
+	opacity: unset;
+	cursor: inherit;
+	min-height: 300px;
 }
 
 #file-import,
@@ -942,6 +1064,68 @@ aside .settings-title .tooltip {
 #settings-changes.changes #b_settings-copy {
 	display: none;
 }
+
+/* Synchronization */
+
+.sync-status {
+	margin-top: 0px;
+	padding: 0px 8px;
+}
+
+.sync-status.shown {
+	margin-top: 4px;
+	padding: 8px;
+}
+
+.sync-status div {
+	font-size: 14px;
+	color: var(--color-light-text);
+	margin-left: 8px;
+	padding: 4px 0px 4px 8px;
+	overflow: hidden;
+	max-height: 0;
+}
+
+.sync-status div p {
+	margin-left: 8px;
+}
+
+.sync-status div.shown {
+	max-height: 100px;
+}
+
+.sync-status .status-icon {
+	display: inline-block;
+	text-align: center;
+	width: 18px;
+	font-size: 18px;
+	line-height: 18px;
+	margin-right: 4px;
+}
+
+.sync-status .status-valid::after {
+	content: '☑';
+	color: var(--color-green);
+}
+
+.sync-status .status-error::after {
+	content: '𐄂';
+	color: var(--color-red);
+}
+
+.sync-status .status-none::after {
+	content: '−';
+	color: var(--color-light-text);
+}
+
+.sync-status p.sync-status-time {
+	display: none;
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--color-light-text);
+}
+
+/* Reset */
 
 #reset-settings {
 	margin-top: 1em;
@@ -989,7 +1173,6 @@ aside .settings-title .tooltip {
 
 #settings-footer-links a {
 	margin: 0 6px;
-	transition: opacity ease-in 0.1s;
 }
 
 #settings-footer-links a:hover {

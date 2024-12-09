@@ -21,6 +21,10 @@
 	text-decoration: none;
 	color: inherit;
 	width: 100%;
+	transition: opacity 0.05s 0.1s;
+}
+
+#weather.init {
 	transition: opacity 0.8s;
 }
 
@@ -29,7 +33,7 @@
 }
 
 #weather[href]:hover {
-	opacity: 0.7;
+	opacity: 0.66;
 }
 
 #description {
@@ -51,12 +55,112 @@
 	column-gap: 0.5em;
 }
 
-#tempContainer img {
+#tempContainer p {
+	font-size: 2.2em;
+}
+
+#weather-icon {
 	height: 3.3em;
 	width: 3.3em;
 	border: none;
+	background-size: cover;
 }
 
-#tempContainer p {
-	font-size: 2.2em;
+#weather-icon {
+	--day-clearsky: url('../../assets/weather/day/clearsky.svg');
+	--day-fewclouds: url('../../assets/weather/day/fewclouds.svg');
+	--day-brokenclouds: url('../../assets/weather/day/brokenclouds.svg');
+	--day-overcastclouds: url('../../assets/weather/day/overcastclouds.svg');
+	--day-sunnyrain: url('../../assets/weather/day/sunnyrain.svg');
+	--day-lightrain: url('../../assets/weather/day/lightrain.svg');
+	--day-rain: url('../../assets/weather/day/rain.svg');
+	--day-snow: url('../../assets/weather/day/snow.svg');
+	--day-mist: url('../../assets/weather/day/mist.svg');
+	--day-thunderstorm: url('../../assets/weather/day/thunderstorm.svg');
+	--night-clearsky: url('../../assets/weather/night/clearsky.svg');
+	--night-fewclouds: url('../../assets/weather/night/fewclouds.svg');
+	--night-brokenclouds: url('../../assets/weather/night/brokenclouds.svg');
+	--night-overcastclouds: url('../../assets/weather/night/overcastclouds.svg');
+	--night-lightrain: url('../../assets/weather/night/lightrain.svg');
+	--night-rain: url('../../assets/weather/night/rain.svg');
+	--night-snow: url('../../assets/weather/night/snow.svg');
+	--night-mist: url('../../assets/weather/night/mist.svg');
+	--night-thunderstorm: url('../../assets/weather/night/thunderstorm.svg');
+}
+
+/* Clear clouds */
+#weather-icon[data-condition='clearsky'][data-daytime='day'] {
+	background-image: var(--day-clearsky);
+}
+#weather-icon[data-condition='clearsky'][data-daytime='night'] {
+	background-image: var(--night-clearsky);
+}
+
+/* Few clouds */
+#weather-icon[data-condition='fewclouds'][data-daytime='day'] {
+	background-image: var(--day-fewclouds);
+}
+#weather-icon[data-condition='fewclouds'][data-daytime='night'] {
+	background-image: var(--night-fewclouds);
+}
+
+/* Broken clouds */
+#weather-icon[data-condition='brokenclouds'][data-daytime='day'] {
+	background-image: var(--day-brokenclouds);
+}
+#weather-icon[data-condition='brokenclouds'][data-daytime='night'] {
+	background-image: var(--night-brokenclouds);
+}
+
+/* Overcast */
+#weather-icon[data-condition='overcastclouds'][data-daytime='day'] {
+	background-image: var(--day-overcastclouds);
+}
+#weather-icon[data-condition='overcastclouds'][data-daytime='night'] {
+	background-image: var(--night-overcastclouds);
+}
+
+/* Sunny rain */
+#weather-icon[data-condition='sunnyrain'][data-daytime='day'] {
+	background-image: var(--day-sunnyrain);
+}
+
+/* Light rain */
+#weather-icon[data-condition='lightrain'][data-daytime='day'] {
+	background-image: var(--day-lightrain);
+}
+#weather-icon[data-condition='lightrain'][data-daytime='night'] {
+	background-image: var(--night-lightrain);
+}
+
+/* Rain */
+#weather-icon[data-condition='rain'][data-daytime='day'] {
+	background-image: var(--day-rain);
+}
+#weather-icon[data-condition='rain'][data-daytime='night'] {
+	background-image: var(--night-rain);
+}
+
+/* Thunderstorm */
+#weather-icon[data-condition='thunderstorm'][data-daytime='day'] {
+	background-image: var(--day-thunderstorm);
+}
+#weather-icon[data-condition='thunderstorm'][data-daytime='night'] {
+	background-image: var(--night-thunderstorm);
+}
+
+/* Snow */
+#weather-icon[data-condition='snow'][data-daytime='day'] {
+	background-image: var(--day-snow);
+}
+#weather-icon[data-condition='snow'][data-daytime='night'] {
+	background-image: var(--night-snow);
+}
+
+/* Mist */
+#weather-icon[data-condition='mist'][data-daytime='day'] {
+	background-image: var(--day-mist);
+}
+#weather-icon[data-condition='mist'][data-daytime='night'] {
+	background-image: var(--night-mist);
 }

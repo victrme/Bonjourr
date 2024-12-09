@@ -27,6 +27,10 @@
 		overflow-y: auto;
 	}
 
+	.not-mobile {
+		display: none;
+	}
+
 	#editlink {
 		max-width: 80%;
 	}
@@ -35,12 +39,26 @@
 		padding: 2em;
 	}
 
+	#linkblocks.medium,
+	#linkblocks.large {
+		--folder-padding: 1.5em 1em;
+	}
+
+	#linkblocks.text,
+	#linkblocks.inline,
+	#linkblocks.small {
+		--folder-padding: 1.5em;
+	}
+
 	#element-mover {
 		font-size: 12px;
 	}
 
 	#interface {
 		padding-bottom: 77px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
 	}
 
 	body #interface.pushed {
@@ -52,13 +70,13 @@
 	}
 
 	#show-settings button {
-		height: 44px;
-		width: 44px;
+		height: 3.3em;
+		width: 3.3em;
 		border-radius: 10px;
 	}
 
 	#show-settings img {
-		width: 30px;
+		width: 2em;
 	}
 
 	aside {
@@ -81,7 +99,7 @@
 		display: block;
 	}
 
-	#mobile-drag-zone+.settings-title {
+	#mobile-drag-zone + .settings-title {
 		margin-top: 0;
 	}
 
@@ -107,7 +125,6 @@
 
 	#i_addlink-title,
 	#i_addlink-url,
-	#i_ccode,
 	#i_city {
 		width: 100%;
 	}
@@ -120,12 +137,13 @@
 		max-height: 100px;
 	}
 
+	#pagewidth,
 	#grid-layout-wrapper {
 		display: none;
 	}
 
 	#settings-footer {
-		padding-bottom: 25vh;
+		padding-bottom: 10vh;
 	}
 
 	#credit-container {
@@ -143,19 +161,6 @@
 	#credit p,
 	#credit span {
 		font-size: 11px;
-	}
-
-	#bookmarks_container {
-		font-size: 14px;
-	}
-
-	#bookmarks_container #bookmarks {
-		width: 90%;
-		min-width: 0;
-	}
-
-	#bookmarks_container #bookmarks form div {
-		width: auto;
 	}
 }
 
@@ -185,15 +190,29 @@
 	}
 
 	#sb-buttons {
-		padding-right: 1em;
+		font-size: 1.6em;
 	}
 
-	#sb-buttons #sb_submit img {
-		height: 1.5em;
+	#sb-buttons button {
+		padding: 0 1em;
 	}
 
-	#sb-buttons #sb_empty {
-		font-size: 2em;
+	/* #notes_container #pocket-editor {
+		line-height: 1.7em;
+	} */
+
+	#notes_container #pocket-editor input[type='checkbox'] {
+		width: calc(var(--font-size) * 1.5);
+		height: calc(var(--font-size) * 1.5);
+	}
+
+	#link-mini .link-title.add-group {
+		visibility: visible;
+	}
+
+	[data-pocket-editor] [data-todo] p {
+		display: flex;
+		align-items: center;
 	}
 
 	aside,
@@ -201,7 +220,6 @@
 	select,
 	option,
 	input,
-	.importexport-tabs button,
 	#settings-footer {
 		font-size: 15px;
 	}
@@ -218,12 +236,18 @@
 	}
 
 	aside input:not(.range, .switch),
-	aside .importexport-tabs .glider,
-	aside .importexport-tabs,
 	aside .input-btn,
 	aside select {
 		min-height: 36px;
 		border-radius: 13px;
+	}
+
+	aside .input-btn.icon-only:hover {
+		background-color: initial;
+	}
+
+	aside .switch:checked:hover {
+		background-color: var(--color-green);
 	}
 
 	#settings .tooltip {
@@ -231,10 +255,5 @@
 		height: 25px;
 		min-width: 25px;
 		font-size: 15px;
-	}
-
-	.importexport-tabs button {
-		height: 36px;
-		border-radius: 13px;
 	}
 }

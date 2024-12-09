@@ -20,7 +20,7 @@ type UnsplashUpdate = {
 const collectionForm = networkForm('f_collection')
 
 // https://unsplash.com/@bonjourr/collections
-const bonjourrCollections = {
+export const bonjourrCollections = {
 	noon: 'GD4aOSg4yQE',
 	day: 'o8uX55RbBPs',
 	evening: '3M2rKTckZaQ',
@@ -80,14 +80,14 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplash.lastCollec = 'day'
 
 		unsplashBackgrounds({ unsplash, cache: unsplashCache })
-		collectionForm.accept('i_collection', '2nVzlQADDIE')
+		collectionForm.accept('i_collection', bonjourrCollections[unsplash.lastCollec])
 	}
 
 	if (collection !== undefined && collection.length > 0) {
 		const isFullURL = collection.includes('https://unsplash.com/') && collection.includes('/collections/')
 
 		if (!navigator.onLine) {
-			return collectionForm.warn('No internet connection')
+			return collectionForm.warn(tradThis('No internet connection'))
 		}
 
 		if (isFullURL) {
@@ -103,7 +103,7 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 
 		collectionForm.load()
 
-		let list = await requestNewList(unsplash.collection)
+		const list = await requestNewList(unsplash.collection)
 
 		if (!list || list.length === 0) {
 			collectionForm.warn(`Cannot get "${collection}"`)
@@ -272,6 +272,7 @@ async function requestNewList(collection: string): Promise<Unsplash.Image[] | nu
 		filteredList.push({
 			url: `${img.urls.raw}&w=${width}&h=${height}&dpr=${dpr}&auto=format&q=${quality}&fit=crop`,
 			link: img.links.html,
+			download_link: img.links.download,
 			username: img.user.username,
 			name: img.user.name,
 			city: img.location.city,
@@ -287,6 +288,9 @@ async function requestNewList(collection: string): Promise<Unsplash.Image[] | nu
 function imgCredits(image: Unsplash.Image) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
+
+	if (!domcontainer || !domcredit) return
+
 	const hasLocation = image.city || image.country
 	let exif = ''
 	let credits = ''
@@ -328,16 +332,19 @@ function imgCredits(image: Unsplash.Image) {
 	domlocation.href = `${image.link}?utm_source=Bonjourr&utm_medium=referral`
 	domartist.href = `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`
 
-	if (domcredit) {
-		domcredit.textContent = ''
+	domcredit.textContent = ''
+	domcredit.appendChild(domexif)
+	domcredit.appendChild(domlocation)
+	domcredit.appendChild(domspacer)
+	domcredit.appendChild(domartist)
+	domcredit.appendChild(domrest)
+
+	// cached data may not contain download link
+	if (image.download_link) {
+		appendSaveLink(domcredit, image)
 	}
 
-	domcredit?.appendChild(domexif)
-	domcredit?.appendChild(domlocation)
-	domcredit?.appendChild(domspacer)
-	domcredit?.appendChild(domartist)
-	domcredit?.appendChild(domrest)
-	domcontainer?.classList.toggle('shown', true)
+	domcontainer.classList.toggle('shown', true)
 }
 
 async function getCache(): Promise<Unsplash.Local> {
@@ -360,7 +367,42 @@ async function preloadImage(src: string) {
 		await img.decode()
 		img.remove()
 		sessionStorage.removeItem('waitingForPreload')
-	} catch (error) {
+	} catch (_) {
 		console.warn('Could not decode image: ', src)
+	}
+}
+
+function appendSaveLink(domcredit: HTMLElement, image: Unsplash.Image) {
+	const domsave = document.createElement('a')
+	domsave.className = 'save'
+	domsave.title = 'Download the current background to your computer'
+	domsave.onclick = () => saveImage(domsave, image)
+
+	domcredit.appendChild(domsave)
+}
+
+async function saveImage(domsave: HTMLAnchorElement, image: Unsplash.Image) {
+	domsave.classList.add('loading')
+	try {
+		const downloadUrl = new URL(image.download_link)
+		const apiDownloadUrl = '/unsplash' + downloadUrl.pathname + downloadUrl.search
+		const downloadResponse = await apiFetch(apiDownloadUrl)
+
+		if (!downloadResponse) return
+
+		const data: { url: string } = await downloadResponse.json()
+		const imageResponse = await fetch(data.url)
+
+		if (!imageResponse.ok) return
+
+		const blob = await imageResponse.blob()
+
+		domsave.onclick = null
+		domsave.href = URL.createObjectURL(blob)
+		domsave.download = downloadUrl.pathname.split('/')[2]
+
+		domsave.click()
+	} finally {
+		domsave.classList.remove('loading')
 	}
 }

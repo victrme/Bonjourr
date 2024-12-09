@@ -1,3 +1,129 @@
+## 20.3.0
+
+-   Added:
+    -   Gist and URL settings synchronization (#478)
+    -   Location suggestions for manual weather
+-   Improvements:
+    -   Save settings on inputs as value instead of placeholder (#495)
+    -   Secondary calendar for vietnamese, thanks @trmdi (#490)
+    -   Fix greeting missing last input
+    -   Better hover transition on detailed weather
+    -   Lots of improvements on our backend service
+-   Translations:
+    -   Added Korean translations, thanks @KimTibber !
+    -   Traditional Chinese update by @unknownnumbers
+    -   Portugese update by @Blackspirits
+
+## 20.2.2
+
+-   Fix weather cache using old timestamp convention
+
+## 20.2.1
+
+-   Fixes:
+    -   Bad encoding with spaces in weather city
+    -   RTL on digital clock (#483)
+-   Changes:
+    -   Add dusk to suntime
+    -   Simplified page column option
+
+## 20.2.0
+
+-   Added:
+    -   Stoïc and Hitokoto quotes (#401, #470)
+    -   Two more world clocks (#453)
+    -   "udm=14" to Google search (#404)
+    -   CTRL + Right click on links opens default context menu
+-   Fixes:
+    -   Asia timezone labels mixed up (#477)
+    -   Removed buggy export button on Safari (#400)
+    -   Changing font size also updating fontface
+    -   Weather city name is now sanitized before comparing user input
+    -   Permissions breaking firefox page on synced devices (#434)
+-   Translations:
+    -   Added Croatian language, thanks Gustighost!
+    -   Taiwanese Chinese correction by @jrthsr700tmax
+    -   Ukrainian update by @Veydzher
+    -   Portugese update by @Blackspirits
+    -   Arabic update by @aldoyh
+    -   Armenian update by Hrant Hakobian
+    -   Russian translation fix by @TripleA150
+    -   Translated option titles and placeholders (#439)
+
+## 20.1.0
+
+-   Added:
+    -   Added AM/PM on 12h digital clock option
+    -   Added Brave search suggestions (#447)
+    -   Can load a "config.json" file on startup (#172, #422)
+-   Fixes:
+    -   Displays hidden links added before version 1.18
+    -   Working "Open in new tab" option (#433)
+    -   Blank page with old Spanish configs (#432)
+    -   Inverted date format option (#455)
+    -   Renaming folder no longer adds empty links
+    -   Greetings follows main timezone option
+    -   Reduced folder padding on mobile
+-   Translations:
+    -   Portugese update by @Blackspirits
+    -   Armenian update by Hrant Hakobian
+
+## 20.0.0
+
+-   iOS & iPadOS:
+    -   Friendlier settings menu drag
+    -   Improved inputs & buttons sizes
+    -   Edit link dialog opens on long press
+    -   Fixed most unwanted scrolling
+    -   Fixed background size on landscape
+-   Time and date:
+    -   Added detailed analog clock customization
+    -   Added world clocks with different timezones (#381)
+    -   Added automatic date format based on language (#299)
+    -   Improved timezone list with specific countries & cities
+    -   Fixed centering issue with digital clock with seconds enabled (#286)
+    -   Analog clock face numbers uses language alphabet
+-   Links:
+    -   Added "Most Visited" links in import
+    -   Added pinned groups feature (#288, #285)
+    -   Added "synced" groups: bookmarks managed by your browser
+    -   Added title and background toggles (#327)
+    -   Added link groups drag and drop rearrange
+    -   Renamed link "pages" to "groups"
+    -   Links import dialog overall
+    -   Improved padding and group sizes on small devices
+-   Other changes:
+    -   Added dark mode for search bar and notes
+    -   Added "save background" button in credit infos, (#317)
+    -   Added distant URL option for custom quotes, thanks @ChainsLunatic (#373)
+    -   Improved weather by switching to AccuWeather
+    -   Updated settings management UI
+    -   Faster interactions with settings options
+    -   Fixed link edit dialog not working on RTL languages
+    -   Fixed localization issue in search suggestions (#279)
+    -   Fixed search on Kiwi browser after 19.2.5 (#404)
+-   Translations:
+    -   Added Norwegian translation, thanks @FIameCaster
+    -   Added Catalan translation, thanks Umbert
+    -   Added Taiwanese Chinese with Claude
+    -   Hungarian & German update, thanks @GyDavid22 and @Scalamando
+    -   Slovak translation overall, thanks @Svec-Tomas
+
+$~~~~~~~~~~~$
+
+## 19.2.5
+
+-   Changes:
+    -   Default settings now use the browser's search engine
+    -   Moved search engine option to "all settings"
+    -   Improved accessibility and color schemes for CSS Editor
+-   Translations:
+    -   Danish updated by @FIameCaster
+    -   Simplified Chinese fixed by @angine04
+    -   Romanian updated by @driedpampas
+    -   Portuguese updated by @Blackspirits
+    -   German updated by @Scalamando, thanks everyone
+
 ## 19.2.4
 
 -   Improvements:
