@@ -29,7 +29,7 @@ type CustomFontUpdate = {
 
 const familyForm = networkForm('f_customfont')
 
-const systemfont = (function () {
+export const systemfont = (function () {
 	const fonts = {
 		fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
 		windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
@@ -242,8 +242,6 @@ function initFontSettings(font?: Font) {
 	const hasCustomWeights = font && font.weightlist.length > 0
 	const weights = hasCustomWeights ? font.weightlist : systemfont.weights
 	const family = font?.family || systemfont.placeholder
-
-	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
 
 	setWeightSettings(weights)
 }

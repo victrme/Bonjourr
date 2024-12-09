@@ -75,6 +75,12 @@ aside .param-btn {
 	background-color: rgba(var(--blue), 0.15);
 }
 
+aside .param-btn img,
+aside .param-btn span {
+	display: inline;
+	vertical-align: middle;
+}
+
 aside .param-btn:hover {
 	background-color: rgba(var(--blue), 0.25);
 }
@@ -155,8 +161,13 @@ aside select {
 	}
 }
 
-aside input::placeholder {
+aside input::placeholder,
+aside input[type='text'] {
 	color: var(--color-placeholder);
+}
+
+aside input[type='text']:focus-visible {
+	color: var(--color-text);
 }
 
 aside input[type='checkbox'] {
@@ -339,9 +350,6 @@ label.input-file input[type='file'].dragover ~ span {
 }
 
 aside form {
-	display: flex;
-	position: relative;
-	align-items: center;
 	width: 155px;
 }
 
@@ -353,7 +361,7 @@ aside form > div {
 
 aside form button {
 	height: 31px;
-	width: 100%;
+	width: 31px;
 	padding: 0;
 	opacity: 0;
 	max-width: 0;
@@ -368,15 +376,22 @@ aside form button:disabled {
 }
 
 aside form button span {
-	justify-content: center;
+	display: block;
+	width: 31px;
 }
 
 aside form.valid button {
 	opacity: 1;
-	pointer-events: all;
-	max-width: 26px;
-	margin-left: 4px;
+	max-width: 31px;
 	visibility: visible;
+}
+
+aside form.valid span::after {
+	content: '✓';
+}
+
+aside form.valid.remove span::after {
+	content: '×';
 }
 
 @media (hover: hover) {
@@ -391,13 +406,13 @@ aside form.valid button {
 	max-height: 0;
 	overflow: hidden;
 	visibility: hidden;
-	transition: max-height 0.3s, padding 0.2s, visibility 0s 0.3s;
+	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0.3s;
 }
 
 .all .as,
 .dropdown.shown {
 	visibility: visible;
-	transition: max-height 0.3s, padding 0.2s, visibility 0s 0s;
+	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
 }
 
 #local_options.shown {
@@ -426,18 +441,28 @@ aside form.valid button {
 }
 
 #ampm_label.shown,
-#location_options.shown,
+#disabled-sync.shown,
 #weather_provider.shown,
 #searchbar_request.shown,
 #worldclocks-list .dropdown.shown {
 	max-height: 60px;
 }
 
+#location_options.shown,
 #digital_options.shown,
 #unsplash_options.shown,
 #quotes_url.shown {
 	max-height: 120px;
 }
+
+#url-sync.shown,
+#gist-sync.shown {
+	max-height: 160px;
+}
+
+/* #gist-sync-status.shown {
+	max-height: 120px;
+} */
 
 #searchbar_options.shown {
 	max-height: 420px;
@@ -625,7 +650,7 @@ aside .settings-title .tooltip {
 	padding: 4px; /* for tabbing outline */
 }
 
-.wrapper span {
+.wrapper > span {
 	display: flex;
 	align-items: center;
 }
@@ -863,8 +888,7 @@ aside .settings-title .tooltip {
 	padding: 0 0 0 4px;
 }
 
-#worldclocks-list,
-#f_location {
+#worldclocks-list {
 	width: 66%;
 }
 
@@ -877,10 +901,6 @@ aside .settings-title .tooltip {
 #worldclocks-list input,
 #worldclocks-list select {
 	width: 100%;
-}
-
-#i_ccode {
-	width: 66%;
 }
 
 #i_city {
@@ -1039,6 +1059,72 @@ aside .settings-title .tooltip {
 #settings-changes #b_settings-cancel,
 #settings-changes.changes #b_settings-copy {
 	display: none;
+}
+
+/* Synchronization */
+
+.sync-status {
+	margin-top: 0px;
+	padding: 0px 8px;
+}
+
+.sync-status.shown {
+	margin-top: 4px;
+	padding: 8px;
+}
+
+.sync-status div {
+	font-size: 14px;
+	color: var(--color-light-text);
+	margin-left: 8px;
+	padding: 4px 0px 4px 8px;
+	overflow: hidden;
+	max-height: 0;
+}
+
+.sync-status div p {
+	margin-left: 8px;
+}
+
+.sync-status div.shown {
+	max-height: 100px;
+}
+
+.sync-status .status-icon {
+	display: inline-block;
+	text-align: center;
+	width: 18px;
+	font-size: 18px;
+	line-height: 18px;
+	margin-right: 4px;
+}
+
+.sync-status .status-valid::after {
+	content: '☑';
+	color: var(--color-green);
+}
+
+.sync-status .status-error::after {
+	content: '𐄂';
+	color: var(--color-red);
+}
+
+.sync-status .status-none::after {
+	content: '−';
+	color: var(--color-light-text);
+}
+
+.sync-status p.sync-status-time {
+	display: none;
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--color-light-text);
+}
+
+/* Reset */
+
+#reset-settings {
+	margin-top: 1em;
 }
 
 #reset-conf,

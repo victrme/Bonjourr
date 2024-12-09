@@ -1,12 +1,10 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '20.2.2'
+export const CURRENT_VERSION = '20.3.0'
 
-export const MAIN_API = 'https://api.bonjourr.fr'
+export const API_DOMAIN = 'https://services.bonjourr.fr'
 
-export const FALLBACK_API = ['https://bonjourr-apis.victr.workers.dev', 'https://bonjourr-apis.victrme.workers.dev']
-
-//@ts-expect-error -> "ENV" is defined by esbuild during build step
+//@ts-expect-error: "ENV" is defined by esbuild during build step
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV
 
 export const SYSTEM_OS =
@@ -136,7 +134,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		time: undefined,
 	},
 	weather: {
-		ccode: undefined,
 		city: undefined,
 		unit: 'metric',
 		provider: '',
@@ -173,6 +170,10 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		system: true,
 		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
+	},
+	settingssync: {
+		type: PLATFORM === 'online' || PLATFORM === 'safari' ? 'off' : 'browser',
+		freq: 'manual',
 	},
 	move: {
 		selection: 'single',

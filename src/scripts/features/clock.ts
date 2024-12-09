@@ -1,4 +1,4 @@
-import { hexColorFromSplitRange } from '../utils'
+import { hexColorFromSplitRange, stringMaxSize } from '../utils'
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
@@ -79,8 +79,9 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (update.greeting !== undefined) {
-		greetings(zonedDate(data.clock.timezone), update.greeting)
-		storage.sync.set({ greeting: update.greeting })
+		data.greeting = stringMaxSize(update.greeting, 32)
+		greetings(zonedDate(data.clock.timezone), data.greeting)
+		storage.sync.set({ greeting: data.greeting })
 	}
 
 	if (update.timezone !== undefined) {

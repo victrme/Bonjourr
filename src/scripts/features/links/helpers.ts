@@ -1,12 +1,12 @@
 import { stringMaxSize } from '../../utils'
-import { MAIN_API } from '../../defaults'
+import { API_DOMAIN } from '../../defaults'
 import { tradThis } from '../../utils/translations'
 
 export function getDefaultIcon(url: string, refresh?: number) {
 	if (refresh) {
-		return `${MAIN_API}/favicon/blob/${url}?r=${refresh}`
+		return `${API_DOMAIN}/favicon/blob/${url}?r=${refresh}`
 	} else {
-		return `${MAIN_API}/favicon/blob/${url}`
+		return `${API_DOMAIN}/favicon/blob/${url}`
 	}
 }
 

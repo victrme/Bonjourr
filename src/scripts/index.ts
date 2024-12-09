@@ -1,7 +1,7 @@
 import notes from './features/notes'
 import clock from './features/clock'
 import quotes from './features/quotes'
-import weather from './features/weather'
+import weather from './features/weather/index'
 import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
@@ -10,6 +10,7 @@ import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
 import initBackground from './features/backgrounds'
+import synchronization from './features/synchronization'
 import { settingsPreload } from './settings'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
@@ -30,9 +31,7 @@ const features: FeaturesToWait[] = ['clock', 'links']
 let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
-//
 //	Startup
-//
 
 try {
 	startup()
@@ -45,6 +44,11 @@ try {
 async function startup() {
 	let { sync, local } = await storage.init()
 	const OLD_VERSION = sync?.about?.version
+
+	if (!sync || !local) {
+		errorMessage('Storage failed 😥')
+		return
+	}
 
 	if (OLD_VERSION !== CURRENT_VERSION) {
 		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
@@ -59,7 +63,6 @@ async function startup() {
 	}
 
 	await setTranslationCache(sync.lang, local)
-
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
@@ -78,6 +81,7 @@ async function startup() {
 	hideElements(sync.hide)
 	initBackground(sync, local)
 	quickLinks(sync)
+	synchronization(sync)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
