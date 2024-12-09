@@ -86,7 +86,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 
 	if (!navigator.onLine) {
 		locationForm.warn(tradThis('No internet connection'))
-		return false
+		return
 	}
 
 	if (city === weather.city) {
@@ -96,21 +96,18 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	city = stringMaxSize(city, 64)
 	locationForm.load()
 
-	// don't mutate weather data before confirming that the city exists
 	const currentWeather = { ...weather, city }
-	const newWeather = await requestNewWeather(currentWeather, lastWeather)
-	const newCity = newWeather?.approximation?.city
+	let newWeather: Weather.Local | undefined = undefined
 
-	const sanitizeName = (str = '') => str?.toLowerCase().replaceAll('-', ' ')
-	const foundCityIsSame = newCity === '' || sanitizeName(city).includes(sanitizeName(newCity))
-
-	if (!newWeather) {
-		locationForm.warn(tradThis('Cannot reach weather service'))
+	try {
+		newWeather = await requestNewWeather(currentWeather, lastWeather)
+	} catch (error) {
+		locationForm.warn(tradThis(error as string))
 		return
 	}
 
-	if (!foundCityIsSame) {
-		locationForm.warn(tradThis('Cannot find correct city'))
+	if (!newWeather) {
+		locationForm.warn(tradThis('Cannot reach weather service'))
 		return
 	}
 
@@ -118,12 +115,10 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 		lastWeather = newWeather
 		weather.city = city ?? 'Paris'
 		locationForm.accept('i_city', weather.city)
-	}
 
-	storage.sync.set({ weather })
-	storage.local.set({ lastWeather })
+		storage.sync.set({ weather })
+		storage.local.set({ lastWeather })
 
-	if (lastWeather) {
 		displayWeather(weather, lastWeather)
 	}
 }
@@ -206,19 +201,22 @@ async function fillLocationSuggestions() {
 	url.searchParams.set('geo', 'true')
 	url.searchParams.set('query', encodeURIComponent(city))
 
-	const resp = await fetch(url)
+	try {
+		const resp = await fetch(url)
+		removeLocationSuggestions()
 
-	removeLocationSuggestions()
+		if (resp.status !== 200) {
+			return
+		}
 
-	if (resp.status === 200) {
-		const json = (await resp.json()) as MeteoGeo
-
-		for (const { detail } of json) {
+		for (const { detail } of (await resp.json()) as MeteoGeo) {
 			const option = document.createElement('option')
 			option.value = detail
 			option.textContent = detail
 			dl_cityfound?.appendChild(option)
 		}
+	} catch (_error) {
+		// ...
 	}
 }
 
