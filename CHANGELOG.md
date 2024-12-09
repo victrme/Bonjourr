@@ -1,3 +1,19 @@
+## 20.3.0
+
+-   Added:
+    -   Gist and URL settings synchronization (#478)
+    -   Location suggestions for manual weather
+-   Improvements:
+    -   Save settings on inputs as value instead of placeholder (#495)
+    -   Secondary calendar for vietnamese, thanks @trmdi (#490)
+    -   Fix greeting missing last input
+    -   Better hover transition on detailed weather
+    -   Lots of improvements on our backend service
+-   Translations:
+    -   Added Korean translations, thanks @KimTibber !
+    -   Traditional Chinese update by @unknownnumbers
+    -   Portugese update by @Blackspirits
+
 ## 20.2.2
 
 -   Fix weather cache using old timestamp convention
