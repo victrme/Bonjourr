@@ -550,7 +550,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_greeting').addEventListener('input', function () {
-		clock(undefined, { greeting: stringMaxSize(this.value, 32) })
+		clock(undefined, { greeting: this.value })
 	})
 
 	paramId('i_greeting').addEventListener('change', function () {

@@ -2,7 +2,6 @@ import { retrieveGist, sendGist, findGistId, isGistTokenValid } from './gist'
 import { isDistantUrlValid, receiveFromURL } from './url'
 import onSettingsLoad from '../../utils/onsettingsload'
 import networkForm from '../../utils/networkform'
-import { BROWSER } from '../../defaults'
 import { fadeOut } from '../../utils'
 import storage from '../../storage'
 
@@ -187,7 +186,7 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 
 	switch (sync.type) {
 		case 'off':
-		case 'auto': {
+		case 'browser': {
 			document.getElementById('url-sync')?.classList.remove('shown')
 			document.getElementById('sync-freq')?.classList.remove('shown')
 			document.getElementById('gist-sync')?.classList.remove('shown')
@@ -224,7 +223,7 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 // Type check
 
 function isSyncType(val: string): val is SyncType {
-	return ['auto', 'gist', 'url', 'off'].includes(val)
+	return ['browser', 'gist', 'url', 'off'].includes(val)
 }
 
 // function isSyncFreq(val: string): val is SyncFreq {

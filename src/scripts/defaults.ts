@@ -172,7 +172,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	settingssync: {
-		type: PLATFORM === 'online' ? 'off' : 'auto',
+		type: PLATFORM === 'online' ? 'off' : 'browser',
 		freq: 'manual',
 	},
 	move: {
