@@ -462,11 +462,11 @@ function initOptionsEvents() {
 		clock(undefined, { background: 'opacity' })
 	})
 
-	paramId('i_analog-border-shade').onclickdown(function () {
+	paramId('i_analog-border-shade').addEventListener('click', function () {
 		clock(undefined, { border: 'shade' })
 	})
 
-	paramId('i_analog-background-shade').onclickdown(function () {
+	paramId('i_analog-background-shade').addEventListener('click', function () {
 		clock(undefined, { background: 'shade' })
 	})
 
@@ -594,7 +594,7 @@ function initOptionsEvents() {
 		searchbar(undefined, { background: true })
 	})
 
-	paramId('i_sb-shade').onclickdown(function () {
+	paramId('i_sb-shade').addEventListener('click', function () {
 		searchbar(undefined, { background: true })
 	})
 
