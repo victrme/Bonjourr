@@ -181,6 +181,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
+	setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
 
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle('on', (data.analogstyle?.background ?? '#fff').includes('#000'))
@@ -279,7 +280,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 
 	paramId('i_timezone').value = data.clock.timezone
 
-	supportersNotifications(data?.supporters as object);
+	supportersNotifications(data?.supporters);
 }
 
 function initOptionsEvents() {
@@ -711,6 +712,10 @@ function initOptionsEvents() {
 
 	paramId('i_announce').addEventListener('change', function (this) {
 		interfacePopup(undefined, { announcements: this.value })
+	})
+
+	paramId('i_supporters_notif').onclickdown(function (_, target) {
+		// 🤔
 	})
 
 	// Sync

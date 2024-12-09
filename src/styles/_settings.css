@@ -445,7 +445,16 @@ aside form.valid.remove span::after {
 	box-shadow: rgba(100, 100, 111, 0) 0px 7px 29px 0px;
 }
 
-#supporters-notif:hover, #supporters-notif:has(#supporters-notif-button:focus) {
+#supporters-notif:hover,
+#supporters-notif:has(#supporters-notif-button:focus) {
+	border: 1px solid #64b2ff;
+	box-shadow: 0 0 5px #50a8ff78,
+		0 0 10px #50a8ff78,
+		0 0 20px #50A7FF78,
+		0 0 40px #50a8ff78;
+}
+
+[data-theme='dark'] #supporters-notif:hover, [data-theme='dark'] #supporters-notif:has(#supporters-notif-button:focus) {
 	border: 1px solid #50A7FF;
 	box-shadow: 0 0 5px #50a8ff53,
 			0 0 10px #50A7FF53,
@@ -602,7 +611,7 @@ aside form.valid.remove span::after {
 }
 
 .all .as_fonts {
-	max-height: 300px;
+	max-height: 350px;
 }
 
 .all .as_page {
@@ -618,9 +627,13 @@ aside form.valid.remove span::after {
 	max-height: 380px;
 }
 
+.all .as_notifs {
+	max-height: 250px;
+}
+
 .all .as_updates,
 .all .as_notes {
-	max-height: 180px;
+	max-height: 210px;
 }
 
 #mobile-drag-zone {

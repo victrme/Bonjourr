@@ -6,9 +6,11 @@ const monthNames = [
     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 ];
 
-export function supportersNotifications(supportersData?: { wasClosed?: boolean, storedMonth?: number }): void {
+export function supportersNotifications(supportersData?: { enabled: boolean, wasClosed: boolean, storedMonth: number }): void {
     //
     onSettingsLoad(() => {
+        if (!supportersData?.enabled) return
+
         const wasClosed = supportersData?.wasClosed
         const storedMonth = supportersData?.storedMonth
 
@@ -20,8 +22,8 @@ export function supportersNotifications(supportersData?: { wasClosed?: boolean, 
         const close = doc.getElementById('supporters-notif-close') as HTMLElement
         const button = doc.getElementById('supporters-notif-button') as HTMLElement
 
-        // const currentMonth = 1 // january for testing
-        const currentMonth = new Date().getMonth() + 1 // production one
+        const currentMonth = 6 // january for testing
+        // const currentMonth = new Date().getMonth() + 1 // production one
 
         // if it's a new month and notif was closed in previous month
         // proceeds to enable it for new month 
@@ -29,8 +31,8 @@ export function supportersNotifications(supportersData?: { wasClosed?: boolean, 
             return
         }
 
+        // detected that it's a new month, so resets wasClosed & stores new month
         if (wasClosed) {
-            // detected that it's a new month, so resets wasClosed & stores new month
             storage.sync.set({
                 supporters: {
                     ...supportersData,
@@ -38,8 +40,7 @@ export function supportersNotifications(supportersData?: { wasClosed?: boolean, 
                     wasClosed: false
                 }
             })
-        }
-
+        } 
 
         title.innerText = tradThis(
             `This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`
@@ -96,3 +97,7 @@ export function supportersNotifications(supportersData?: { wasClosed?: boolean, 
         )
     }
 }
+
+// export function supportersSwitch() : void {
+// console.log('eee')
+// }
