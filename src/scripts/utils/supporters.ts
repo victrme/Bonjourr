@@ -1,4 +1,4 @@
-import { getLang, tradThis } from '../utils/translations'
+import { tradThis } from '../utils/translations'
 import onSettingsLoad from './onsettingsload'
 import storage from '../storage'
 
@@ -26,13 +26,11 @@ export function supportersNotifications(supportersData?: { wasClosed?: boolean, 
         // if it's a new month and notif was closed in previous month
         // proceeds to enable it for new month 
         if (!supporters_notif || currentMonth === storedMonth && wasClosed) {
-            // console.log('not a new month')
             return
         }
 
         if (wasClosed) {
-            // console.log("c'était fermé")
-
+            // detected that it's a new month, so resets wasClosed & stores new month
             storage.sync.set({
                 supporters: {
                     ...supportersData,
@@ -42,15 +40,22 @@ export function supportersNotifications(supportersData?: { wasClosed?: boolean, 
             })
         }
 
-        const titleText = tradThis(`This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`)
 
-        title.innerText = titleText
+        title.innerText = tradThis(
+            `This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`
+        )
+        button.innerText = tradThis('Find out who they are')
 
-        // wanted to get the first .settings-title as a reference element instead
-        // but it's not getting the right one for some reason
         document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supporters_notif)
 
+        // CSS needs the exact notification height for closing animation trick to work
+        const mobileDragZone = document.querySelector('#mobile-drag-zone') as HTMLElement
+        
+        setVariableHeight(supporters_notif, mobileDragZone)
+        window.onresize = () => setVariableHeight(supporters_notif, mobileDragZone)
+
         if (close) {
+            // when clicking on close button
             close.addEventListener("click", function() {
                 supporters_notif?.classList.add('removed')
 
@@ -61,7 +66,33 @@ export function supportersNotifications(supportersData?: { wasClosed?: boolean, 
                         wasClosed: true
                     }
                 })
+
+                // completely removes notif HTML after animation is done
+                setTimeout(function () { 
+                    // supporters_notif.remove()
+                }, 200)
             })
         }
     })
+
+    function getHeight(element: HTMLElement): number  {
+        const rect = element.getBoundingClientRect()
+        const style = window.getComputedStyle(element)
+
+        // Get the margins
+        const marginTop = parseFloat(style.marginTop)
+        const marginBottom = parseFloat(style.marginBottom)
+
+        // Return the height including margins
+        return rect.height + marginTop + marginBottom
+    }
+
+    function setVariableHeight(element: HTMLElement, mobileDragZone: HTMLElement) {
+        let isMobileSettings = window.getComputedStyle(mobileDragZone).display === 'block' ? true : false
+ 
+        document.documentElement.style.setProperty(
+            "--supporters-notif-height",
+            '-' + (getHeight(element) + (isMobileSettings ? 40 : 0)).toString() + 'px'
+        )
+    }
 }

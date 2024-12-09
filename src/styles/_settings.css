@@ -437,14 +437,15 @@ aside form.valid.remove span::after {
 	overflow: hidden;
 	z-index: 0;
 	top: 0;
-	transition: box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) .4s, top .15s, margin-bottom .15s;
+	transition: box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) .3s, top .2s, margin-bottom .2s;
 }
 
 [data-theme='dark'] #supporters-notif {
 	border-color: #363636;
+	box-shadow: rgba(100, 100, 111, 0) 0px 7px 29px 0px;
 }
 
-#supporters-notif:hover {
+#supporters-notif:hover, #supporters-notif:has(#supporters-notif-button:focus) {
 	border: 1px solid #50A7FF;
 	box-shadow: 0 0 5px #50a8ff53,
 			0 0 10px #50A7FF53,
@@ -452,9 +453,6 @@ aside form.valid.remove span::after {
 			0 0 40px #50a8ff53;
 }
 
-[data-theme='dark'] #supporters-notif:hover  {
-	
-}
 
 #supporters-notif.removed {
 	/* valeur hauteur de la boîte + margin à calculée en JS sur version finale */
@@ -483,6 +481,10 @@ aside form.valid.remove span::after {
 	align-items: center;
 }
 
+#supporters-notif #supporters-notif-close:focus {
+	outline-offset: 2px;
+}
+
 #supporters-notif #supporters-notif-close svg {
 	width: 22px;
 	stroke: #5f5f5f;
@@ -508,6 +510,10 @@ aside form.valid.remove span::after {
 	color: white;
 	padding: .7em .9em;
 	margin-top: 1em;
+}
+
+#supporters-notif-button:focus {
+	outline: unset;
 }
 
 #local_options.shown {
