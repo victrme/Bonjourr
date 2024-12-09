@@ -20,7 +20,7 @@ type UnsplashUpdate = {
 const collectionForm = networkForm('f_collection')
 
 // https://unsplash.com/@bonjourr/collections
-const bonjourrCollections = {
+export const bonjourrCollections = {
 	noon: 'GD4aOSg4yQE',
 	day: 'o8uX55RbBPs',
 	evening: '3M2rKTckZaQ',
@@ -80,14 +80,14 @@ async function updateUnsplash({ refresh, every, collection }: UnsplashUpdate) {
 		unsplash.lastCollec = 'day'
 
 		unsplashBackgrounds({ unsplash, cache: unsplashCache })
-		collectionForm.accept('i_collection', '2nVzlQADDIE')
+		collectionForm.accept('i_collection', bonjourrCollections[unsplash.lastCollec])
 	}
 
 	if (collection !== undefined && collection.length > 0) {
 		const isFullURL = collection.includes('https://unsplash.com/') && collection.includes('/collections/')
 
 		if (!navigator.onLine) {
-			return collectionForm.warn('No internet connection')
+			return collectionForm.warn(tradThis('No internet connection'))
 		}
 
 		if (isFullURL) {

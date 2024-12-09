@@ -119,6 +119,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
+-   **🇭🇷 Croatian translation** · Ghost
 
 ## 👨‍💻 Running Bonjourr
 
@@ -188,8 +189,6 @@ pnpm online
 
 ### Using Docker
 
-
-
 Prerequisites:
 
 -   [Docker](https://docs.docker.com/get-started)
@@ -208,7 +207,7 @@ docker run --rm -p "8080:80/tcp" -it bonjourr/bonjourr
 
 #### Docker Desktop
 
-- Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Search for `bonjourr/bonjourr` Hub image
-- Run a new container with `8080` as host port
-- Go to http://127.0.0.1:8080/
+-   Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+-   Search for `bonjourr/bonjourr` Hub image
+-   Run a new container with `8080` as host port
+-   Go to http://127.0.0.1:8080/

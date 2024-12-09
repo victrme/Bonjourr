@@ -1,9 +1,10 @@
-import { hexColorFromSplitRange } from '../utils'
+import { hexColorFromSplitRange, stringMaxSize } from '../utils'
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
+import getVnCalendar from '../dependencies/vietnamese-calendar'
 import errorMessage from '../utils/errormessage'
 import storage from '../storage'
 
@@ -78,8 +79,9 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (update.greeting !== undefined) {
-		greetings(zonedDate(data.clock.timezone), update.greeting)
-		storage.sync.set({ greeting: update.greeting })
+		data.greeting = stringMaxSize(update.greeting, 32)
+		greetings(zonedDate(data.clock.timezone), data.greeting)
+		storage.sync.set({ greeting: data.greeting })
 	}
 
 	if (update.timezone !== undefined) {
@@ -233,7 +235,7 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 			}
 
 			if (isNextHour || firstStart) {
-				clockDate(domclock, date, dateformat)
+				clockDate(domclock, date, dateformat, timezone)
 			}
 
 			if (domregion) {
@@ -318,11 +320,12 @@ function analog(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 
 //	Date
 
-function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat) {
+function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, timezone: string) {
 	const datedom = wrapper.querySelector('.clock-date') as HTMLElement
 	const aa = wrapper.querySelector('.clock-date-aa') as HTMLElement
 	const bb = wrapper.querySelector('.clock-date-bb') as HTMLElement
 	const cc = wrapper.querySelector('.clock-date-cc') as HTMLElement
+	const secondary = wrapper.querySelector('.clock-date-secondary') as HTMLElement
 
 	const lang = getLang().replaceAll('_', '-')
 
@@ -356,6 +359,12 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat) {
 		aa.textContent = month
 		bb.textContent = day
 		cc.textContent = weekday
+	}
+
+	if (lang === 'vi' && (timezone === 'auto' || timezone === 'Asia/Ho_Chi_Minh')) {
+		secondary.textContent = getVnCalendar(date)
+	} else {
+		secondary.textContent = ''
 	}
 }
 

@@ -13,42 +13,47 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.1.2'
-const ANNOUNCEMENT_VERSION = '20.1.2'
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.3.0'
+const ANNOUNCEMENT_VERSION = '20.3.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: '<b>Version 20 fixes (bis):</b> All links are now working as normal !',
-	// fr: '<b>Bonjourr vient de recevoir une mise à jour majeure ! ✨</b> Découvrez les nouvelles fonctionnalités de liens rapides, des horloges analogiques élégantes et bien plus encore. ',
-	// de: '<b>Bonjourr hat ein großes Update erhalten! ✨</b> Entdecken Sie die neuen Schnellverknüpfungsfunktionen, stilvolle Analoguhren und vieles mehr. ',
-	// it: '<b>Bonjourr ha appena ricevuto un grande aggiornamento! ✨</b> Scopri le nuove funzionalità di collegamenti rapidi, eleganti orologi analogici e molto altro. ',
-	// es: '<b>¡Bonjourr acaba de recibir una gran actualización! ✨</b> Descubre las nuevas funciones de enlaces rápidos, relojes analógicos elegantes y mucho más. ',
-	// 'pt-BR': '<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Descubra os novos recursos de links rápidos, relógios analógicos elegantes e muito mais. ',
-	// 'pt-PT': '<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Descubra as novas funcionalidades de ligações rápidas, relógios analógicos elegantes e muito mais. ',
-	// nl: '<b>Bonjourr heeft zojuist een grote update gekregen! ✨</b> Ontdek de nieuwe snelkoppelingsfuncties, stijlvolle analoge klokken en nog veel meer. ',
-	// da: '<b>Bonjourr har lige fået en stor opdatering! ✨</b> Udforsk de nye hurtiglinksfunktioner, smarte analoge ure og meget mere. ',
-	// sv: '<b>Bonjourr har precis fått en stor uppdatering! ✨</b> Upptäck de nya snabblänksfunktionerna, snygga analoga klockor och mycket mer. ',
-	// nb: '<b>Bonjourr har akkurat fått en stor oppdatering! ✨</b> Oppdag de nye funksjonene for hurtigkoblinger, stilige analoge klokker og mye mer. ',
-	// fi: '<b>Bonjourr sai juuri suuren päivityksen! ✨</b> Tutustu uusiin pikalinkkiominaisuuksiin, tyylikkäisiin analogisiin kelloihin ja paljon muuhun. ',
-	// pl: '<b>Bonjourr właśnie otrzymało dużą aktualizację! ✨</b> Odkryj nowe funkcje szybkich linków, eleganckie zegary analogowe i wiele więcej. ',
-	// cs: '<b>Bonjourr právě dostalo velkou aktualizaci! ✨</b> Objevte nové funkce rychlých odkazů, stylové analogové hodiny a mnohem více. ',
-	// sk: '<b>Bonjourr práve dostalo veľkú aktualizáciu! ✨</b> Objavte nové funkcie rýchlych odkazov, štýlové analógové hodiny a oveľa viac. ',
-	// hu: '<b>A Bonjourr most kapott egy nagy frissítést! ✨</b> Fedezd fel az új gyorshivatkozás funkciókat, elegáns analóg órákat és még sok mást. ',
-	// ro: '<b>Bonjourr tocmai a primit o actualizare majoră! ✨</b> Descoperiți noile funcționalități de linkuri rapide, ceasuri analogice elegante și multe altele. ',
-	// el: '<b>Το Bonjourr μόλις έλαβε μια σημαντική ενημέρωση! ✨</b> Ανακαλύψτε τις νέες λειτουργίες γρήγορων συνδέσμων, τα κομψά αναλογικά ρολόγια και πολλά άλλα. ',
-	// sr: '<b>Bonjourr је управо добио велико ажурирање! ✨</b> Откријте нове функције брзих веза, стилске аналогне сатове и још много тога. ',
-	// 'sr-YU': '<b>Bonjourr je upravo dobio veliko ažuriranje! ✨</b> Otkrijte nove funkcije brzih veza, stilske analogne satove i još mnogo toga. ',
-	// uk: '<b>Bonjourr щойно отримав велике оновлення! ✨</b> Відкрийте для себе нові функції швидких посилань, стильні аналогові годинники та багато іншого. ',
-	// ru: '<b>Bonjourr только что получил большое обновление! ✨</b> Откройте новые функции быстрых ссылок, стильные аналоговые часы и многое другое. ',
-	// tr: '<b>Bonjourr büyük bir güncelleme aldı! ✨</b> Yeni hızlı bağlantı özelliklerini, şık analog saatleri ve çok daha fazlasını keşfedin. ',
-	// ar: '<b>حصل Bonjourr على تحديث رئيسي! ✨</b> اكتشف الميزات الجديدة للروابط السريعة، والساعات التناظرية الأنيقة والمزيد. ',
-	// fa: '<b>Bonjourr به‌روزرسانی بزرگی دریافت کرد! ✨</b> ویژگی‌های جدید پیوندهای سریع، ساعت‌های آنالوگ شیک و موارد دیگر را کشف کنید. ',
-	// 'zh-CN': '<b>Bonjourr 刚刚进行了重大更新！✨</b> 发现全新的快速链接功能、精美的模拟时钟等更多内容。',
-	// 'zh-HK': '<b>Bonjourr 剛剛進行了重大更新！✨</b> 發現全新的快速連結功能、精美的模擬時鐘等更多內容。',
-	// ja: '<b>Bonjourrに大きなアップデートがありました！✨</b> 新しいクイックリンク機能、スタイリッシュなアナログ時計などをお楽しみください。',
-	// id: '<b>Bonjourr baru saja mendapatkan pembaruan besar! ✨</b> Temukan fitur tautan cepat baru, jam analog yang keren, dan banyak lagi. ',
-	// vi: '<b>Bonjourr vừa nhận được bản cập nhật lớn! ✨</b> Khám phá các tính năng liên kết nhanh mới, đồng hồ kim thời trang và nhiều hơn nữa. ',
-	// hy: '<b>Bonjourr-ը հենց նոր մեծ թարմացում ստացավ! ✨</b> Բացահայտեք նոր արագ հղումների ֆունկցիաները, նրբագեղ անալոգ ժամացույցները և ավելին։ ',
-	// ca: '<b>Bonjourr acaba de rebre una gran actualització! ✨</b> Descobreix les noves funcionalitats d\'enllaços ràpids, rellotges analògics elegants i molt més. ',
+	en: '<b>Version 20.3 ✨</b> New settings sync methods, weather location suggestions, Korean translations, and backend improvements!',
+	fr: '<b>Version 20.3 ✨</b> Nouvelles méthodes de synchronisation des paramètres, suggestions de localisation météo, traductions coréennes et améliorations du backend !',
+	de: '<b>Version 20.3 ✨</b> Neue Methoden zur Einstellungssynchronisation, Wetterlokationsvorschläge, koreanische Übersetzungen und Backend-Verbesserungen!',
+	it: '<b>Versione 20.3 ✨</b> Nuovi metodi di sincronizzazione delle impostazioni, suggerimenti per la posizione meteo, traduzioni in coreano e miglioramenti backend!',
+	es: '<b>Versión 20.3 ✨</b> Nuevos métodos de sincronización de configuración, sugerencias de ubicación meteorológica, traducciones en coreano y mejoras en el backend!',
+	'pt-BR':
+		'<b>Versão 20.3 ✨</b> Novos métodos de sincronização de configurações, sugestões de localização meteorológica, traduções em coreano e melhorias de backend!',
+	'pt-PT':
+		'<b>Versão 20.3 ✨</b> Novos métodos de sincronização de definições, sugestões de localização meteorológica, traduções em coreano e melhorias de backend!',
+	nl: '<b>Versie 20.3 ✨</b> Nieuwe methoden voor synchronisatie van instellingen, suggesties voor weerlocatie, Koreaanse vertalingen en backend-verbeteringen!',
+	da: '<b>Version 20.3 ✨</b> Nye metoder til synkronisering af indstillinger, vejrlokalitetsforslag, koreanske oversættelser og backend-forbedringer!',
+	sv: '<b>Version 20.3 ✨</b> Nya metoder för inställningssynkronisering, förslag på väderplats, koreanska översättningar och backend-förbättringar!',
+	nb: '<b>Versjon 20.3 ✨</b> Nye metoder for synkronisering av innstillinger, forslag til værlokalitet, koreanske oversettelser og backend-forbedringer!',
+	fi: '<b>Versio 20.3 ✨</b> Uudet asetusten synkronointimenetelmät, sääsijainnin ehdotukset, korealaiset käännökset ja taustapalvelun parannukset!',
+	pl: '<b>Wersja 20.3 ✨</b> Nowe metody synchronizacji ustawień, propozycje lokalizacji pogody, tłumaczenia koreańskie i ulepszenia zaplecza!',
+	cs: '<b>Verze 20.3 ✨</b> Nové metody synchronizace nastavení, návrhy umístění počasí, korejské překlady a vylepšení backendu!',
+	hr: '<b>Verzija 20.3 ✨</b> Nove metode sinkronizacije postavki, prijedlozi lokacije vremena, korejski prijevodi i poboljšanja pozadinskog sustava!',
+	sk: '<b>Verzia 20.3 ✨</b> Nové metódy synchronizácie nastavení, návrhy polohy počasia, kórejské preklady a vylepšenia backendu!',
+	hu: '<b>20.3 verzió ✨</b> Új beállítás-szinkronizálási módszerek, időjárási helyszín javaslatai, koreai fordítások és háttérrendszer-fejlesztések!',
+	ro: '<b>Versiunea 20.3 ✨</b> Noi metode de sincronizare a setărilor, sugestii de locație meteo, traduceri în coreeană și îmbunătățiri backend!',
+	el: '<b>Έκδοση 20.3 ✨</b> Νέες μέθοδοι συγχρονισμού ρυθμίσεων, προτάσεις τοποθεσίας καιρού, μεταφράσεις στα Κορεάτικα και βελτιώσεις backend!',
+	hy: '<b>Տարբերակ 20.3 ✨</b> Կարգավորումների սինքրոնացման նոր մեթոդներ, եղանակի տեղանքի առաջարկներ, կորեական թարգմանություններ և հետին մասի բարելավումներ!',
+	sr: '<b>Верзија 20.3 ✨</b> Нове методе синхронизације подешавања, предлози локације времена, корејски преводи и побољшања backend-а!',
+	'sr-YU':
+		'<b>Verzija 20.3 ✨</b> Nove metode sinhronizacije podešavanja, predlozi lokacije vremena, korejski prevodi i poboljšanja backend-a!',
+	uk: '<b>Версія 20.3 ✨</b> Нові методи синхронізації налаштувань, пропозиції розташування погоди, корейські переклади та покращення backend!',
+	ru: '<b>Версия 20.3 ✨</b> Новые методы синхронизации настроек, предложения по местоположению погоды, корейские переводы и улучшения backend!',
+	tr: '<b>Sürüm 20.3 ✨</b> Yeni ayar senkronizasyon yöntemleri, hava konumu önerileri, Korece çeviriler ve arka uç iyileştirmeleri!',
+	ar: '<b>الإصدار 20.3 ✨</b> طرق جديدة لمزامنة الإعدادات، واقتراحات موقع الطقس، وترجمات كورية، وتحسينات الخلفية!',
+	fa: '<b>نسخه 20.3 ✨</b> روش‌های جدید همگام‌سازی تنظیمات، پیشنهادات موقعیت آب و هوایی، ترجمه‌های کره‌ای و بهبودهای پس‌زمینه!',
+	'zh-CN': '<b>版本 20.3 ✨</b> 新的设置同步方法、天气位置建议、韩语翻译和后端改进！',
+	'zh-HK': '<b>版本 20.3 ✨</b> 新的設置同步方法、天氣位置建議、韓語翻譯和後端改進！',
+	'zh-TW': '<b>版本 20.3 ✨</b> 新的設置同步方法、天氣位置建議、韓語翻譯和後端改進！',
+	ja: '<b>バージョン 20.3 ✨</b> 新しい設定同期方法、天気位置の提案、韓国語の翻訳、バックエンドの改善！',
+	id: '<b>Versi 20.3 ✨</b> Metode sinkronisasi pengaturan baru, saran lokasi cuaca, terjemahan Korea, dan perbaikan backend!',
+	ca: '<b>Versió 20.3 ✨</b> Nous mètodes de sincronització de configuració, suggeriments de localització meteorològica, traduccions en coreà i millores de backend!',
+	vi: '<b>Phiên bản 20.3 ✨</b> Các phương pháp đồng bộ hóa cài đặt mới, đề xuất vị trí thời tiết, bản dịch tiếng Hàn và cải tiến backend!',
 }
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'

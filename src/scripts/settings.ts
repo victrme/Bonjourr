@@ -1,33 +1,35 @@
 import clock from './features/clock'
 import notes from './features/notes'
 import quotes from './features/quotes'
-import weather from './features/weather'
+import weather from './features/weather/index'
 import searchbar from './features/searchbar'
 import quickLinks from './features/links'
 import linksImport from './features/links/bookmarks'
 import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
+import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
-import unsplashBackgrounds from './features/backgrounds/unsplash'
-import storage, { getSyncDefaults } from './storage'
-import customFont, { fontIsAvailableInSubset } from './features/fonts'
+import { changeGroupTitle, initGroups } from './features/links/groups'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
+import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
+import customFont, { fontIsAvailableInSubset, systemfont } from './features/fonts'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
+import storage from './storage'
 import langList from './langs'
 import parse from './utils/parse'
 import debounce from './utils/debounce'
 import filterImports from './utils/filterimports'
+import getPermissions from './utils/permissions'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
+import { settingsNotifications } from './utils/notifications'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { IS_MOBILE, PLATFORM, SYNC_DEFAULT, LOCAL_DEFAULT } from './defaults'
-import { getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
+import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
+import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
-import getPermissions from './utils/permissions'
-import { changeGroupTitle } from './features/links/groups'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -64,16 +66,19 @@ export async function settingsPreload() {
 export async function settingsInit() {
 	if (document.getElementById('settings')) return
 
-	const data = await storage.sync.get()
+	const sync = await storage.sync.get()
+	const local = await storage.local.get()
 	const settingsDom = getHTMLTemplate<HTMLElement>('settings-template', '#settings')
 
 	document.body.appendChild(settingsDom)
 
-	traduction(settingsDom, data.lang)
-	showall(data.showall, false)
-	initOptionsValues(data)
+	translateAriaLabels()
+	translatePlaceholders()
+	traduction(settingsDom, sync.lang)
+	showall(sync.showall, false)
+	initOptionsValues(sync, local)
 	initOptionsEvents()
-	updateSettingsJSON(data)
+	updateSettingsJSON(sync)
 	updateSettingsEvent()
 	settingsDrawerBar()
 	settingsFooter()
@@ -101,9 +106,10 @@ function settingsToggle() {
 	document.dispatchEvent(new Event('close-edit'))
 }
 
-function initOptionsValues(data: Sync.Storage) {
+function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	const domsettings = document.getElementById('settings') as HTMLElement
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
+	const unsplashCollec = data?.unsplash?.lastCollec === 'user' ? 'day' : data?.unsplash?.lastCollec
 
 	setInput('i_blur', data.background_blur ?? 15)
 	setInput('i_bright', data.background_bright ?? 0.8)
@@ -138,9 +144,7 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
-	setInput('i_collection', data.unsplash?.collection ?? '')
 	setInput('i_geol', data.weather?.geolocation || 'approximate')
-	setInput('i_ccode', data.weather?.ccode || 'US')
 	setInput('i_units', data.weather?.unit ?? 'metric')
 	setInput('i_forecast', data.weather?.forecast || 'auto')
 	setInput('i_temp', data.weather?.temperature || 'actual')
@@ -149,6 +153,13 @@ function initOptionsValues(data: Sync.Storage) {
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
+	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
+
+	setFormInput('i_collection', bonjourrCollections[unsplashCollec], data.unsplash?.collection)
+	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
+	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
+	setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
+	setFormInput('i_urlsync', 'https://pastebin.com/raw/y7XhhiDs', local?.distantUrl)
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
@@ -234,12 +245,6 @@ function initOptionsValues(data: Sync.Storage) {
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
-	// Unsplash collection placeholder
-	if (data?.unsplash?.collection) {
-		const coll = data?.unsplash?.collection
-		paramId('i_collection')?.setAttribute('placeholder', coll ? coll : '2nVzlQADDIE')
-	}
-
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
@@ -275,6 +280,16 @@ function initOptionsValues(data: Sync.Storage) {
 }
 
 function initOptionsEvents() {
+	paramId('b_accept-permissions').onclickdown(async function () {
+		await getPermissions('topSites', 'bookmarks')
+
+		const data = await storage.sync.get()
+		quickLinks(data)
+		setTimeout(() => initGroups(data), 10)
+
+		settingsNotifications({ 'accept-permissions': false })
+	})
+
 	// General
 
 	paramId('i_showall').onclickdown(function (_, target) {
@@ -447,11 +462,11 @@ function initOptionsEvents() {
 		clock(undefined, { background: 'opacity' })
 	})
 
-	paramId('i_analog-border-shade').onclickdown(function () {
+	paramId('i_analog-border-shade').addEventListener('click', function () {
 		clock(undefined, { border: 'shade' })
 	})
 
-	paramId('i_analog-background-shade').onclickdown(function () {
+	paramId('i_analog-background-shade').addEventListener('click', function () {
 		clock(undefined, { background: 'shade' })
 	})
 
@@ -493,8 +508,8 @@ function initOptionsEvents() {
 		weather(undefined, { geol: this?.value })
 	})
 
-	paramId('i_city').addEventListener('input', function (this: HTMLInputElement) {
-		document.getElementById('f_location')?.classList.toggle('valid', this.value.length > 2)
+	paramId('i_city').addEventListener('input', function (this: HTMLInputElement, event: Event) {
+		weather(undefined, { suggestions: event })
 	})
 
 	paramId('f_location').addEventListener('submit', function (this, event: SubmitEvent) {
@@ -535,7 +550,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_greeting').addEventListener('input', function () {
-		clock(undefined, { greeting: stringMaxSize(this.value, 32) })
+		clock(undefined, { greeting: this.value })
 	})
 
 	paramId('i_greeting').addEventListener('change', function () {
@@ -579,7 +594,7 @@ function initOptionsEvents() {
 		searchbar(undefined, { background: true })
 	})
 
-	paramId('i_sb-shade').onclickdown(function () {
+	paramId('i_sb-shade').addEventListener('click', function () {
 		searchbar(undefined, { background: true })
 	})
 
@@ -672,6 +687,10 @@ function initOptionsEvents() {
 		})
 	})
 
+	paramId('i_pagecolumns').addEventListener('change', function () {
+		moveElements(undefined, { layout: this.value, toggle: true })
+	})
+
 	paramId('i_pagewidth').addEventListener('input', function () {
 		pageControl({ width: parseInt(this.value) }, true)
 	})
@@ -689,6 +708,39 @@ function initOptionsEvents() {
 
 	paramId('i_announce').addEventListener('change', function (this) {
 		interfacePopup(undefined, { announcements: this.value })
+	})
+
+	// Sync
+
+	paramId('i_synctype').addEventListener('change', function (this) {
+		synchronization(undefined, { type: this.value })
+	})
+
+	paramId('f_gistsync').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		synchronization(undefined, { gistToken: paramId('i_gistsync').value })
+	})
+
+	paramId('f_urlsync').addEventListener('submit', function (this, event) {
+		event.preventDefault()
+		synchronization(undefined, { url: paramId('i_urlsync').value })
+	})
+
+	paramId('b_storage-persist').onclickdown(async function () {
+		const persists = await navigator.storage.persist()
+		synchronization(undefined, { firefoxPersist: persists })
+	})
+
+	paramId('b_gistup').onclickdown(function () {
+		synchronization(undefined, { up: true })
+	})
+
+	paramId('b_gistdown').onclickdown(function () {
+		synchronization(undefined, { down: true })
+	})
+
+	paramId('b_urldown').onclickdown(function () {
+		synchronization(undefined, { down: true })
 	})
 
 	// Settings managment
@@ -795,6 +847,15 @@ function translatePlaceholders() {
 	}
 }
 
+function translateAriaLabels() {
+	for (const element of document.querySelectorAll('[title]')) {
+		const title = element.getAttribute('title') ?? ''
+
+		element.setAttribute('title', tradThis(title))
+		element.setAttribute('aria-label', tradThis(title))
+	}
+}
+
 async function switchLangs(nextLang: Langs) {
 	await toggleTraduction(nextLang)
 
@@ -821,6 +882,7 @@ async function switchLangs(nextLang: Langs) {
 	customFont(undefined, { lang: true })
 	settingsFooter()
 	translatePlaceholders()
+	translateAriaLabels()
 }
 
 function showall(val: boolean, event: boolean) {
@@ -838,6 +900,8 @@ async function selectBackgroundType(cat: string) {
 	if (cat === 'local') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
 		setTimeout(() => localBackgrounds(), 100)
+
+		storage.sync.set({ background_type: 'local' })
 	}
 
 	if (cat === 'unsplash') {
@@ -856,9 +920,9 @@ async function selectBackgroundType(cat: string) {
 				}),
 			100
 		)
-	}
 
-	storage.sync.set({ background_type: cat })
+		storage.sync.set({ background_type: 'unsplash' })
+	}
 }
 
 function settingsFooter() {
@@ -1083,15 +1147,7 @@ async function importSettings(imported: Partial<Sync.Storage>) {
 
 function resetSettings(action: 'yes' | 'no' | 'first') {
 	if (action === 'yes') {
-		storage.sync.clear()
-		storage.local.clear()
-
-		setTimeout(async () => {
-			storage.sync.set({ ...(await getSyncDefaults()) })
-			storage.local.set({ ...LOCAL_DEFAULT })
-			fadeOut()
-		}, 50)
-
+		storage.clearall().then(fadeOut)
 		return
 	}
 
@@ -1158,14 +1214,6 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 	}
 }
 
-function fadeOut() {
-	const dominterface = document.getElementById('interface') as HTMLElement
-	dominterface.click()
-	dominterface.style.transition = 'opacity .4s'
-	setTimeout(() => (dominterface.style.opacity = '0'))
-	setTimeout(() => location.reload(), 400)
-}
-
 //	Helpers
 
 function paramId(str: string) {
@@ -1180,4 +1228,15 @@ function setCheckbox(id: string, cat: boolean) {
 function setInput(id: string, val: string | number) {
 	const input = paramId(id) as HTMLInputElement
 	input.value = typeof val === 'string' ? val : val?.toString()
+}
+
+function setFormInput(id: string, defaults: string, value?: string) {
+	const input = paramId(id) as HTMLInputElement
+
+	if (value) {
+		input.value = value
+		input.setAttribute('placeholder', value)
+	} else {
+		input.setAttribute('placeholder', defaults)
+	}
 }

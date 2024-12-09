@@ -1,26 +1,25 @@
 import onSettingsLoad from './onsettingsload'
 
-// <form class="network-form">
-//	...
-// 	<button type="submit">
-// 		<span>✓</span>
-//		<i></i>
-// 	</button>
-// </form>
-
 export default function networkForm(targetId: string) {
 	let form: HTMLFormElement
 	let button: HTMLButtonElement
+	let message: HTMLSpanElement
+	let loadTimeout = 0
 
 	onSettingsLoad(() => {
 		form = document.getElementById(targetId) as HTMLFormElement
 		button = form?.querySelector('button:last-of-type') as HTMLButtonElement
+		message = form?.querySelector('small') as HTMLSpanElement
 
 		form.querySelectorAll('input').forEach((input) => {
-			input?.addEventListener('blur', () => {
-				if (input.value === '') {
-					form.classList.remove('valid')
-				}
+			input?.addEventListener('input', () => {
+				const placeholder = input.getAttribute('placeholder')
+				const isSame = placeholder === input.value
+				const isEmpty = input.value === ''
+				const isValid = form.checkValidity()
+
+				form.classList.toggle('valid', isValid)
+				form.classList.toggle('remove', isValid && (isSame || isEmpty))
 			})
 		})
 
@@ -28,44 +27,51 @@ export default function networkForm(targetId: string) {
 			if (form.classList.contains('warn')) {
 				form.classList.remove('warn')
 				button.removeAttribute('disabled')
-				button.title = ''
 			}
 		})
 	})
 
-	function resetForm() {
-		form.classList.remove('load', 'warn', 'offline', 'valid')
+	function reset() {
+		form.classList.remove('load', 'warn', 'valid', 'remove')
 		button.removeAttribute('disabled')
-		button.title = ''
+		clearTimeout(loadTimeout)
 	}
 
 	function load() {
-		form.classList.add('valid', 'load')
-		form.classList.remove('warn', 'offline')
-		button.setAttribute('disabled', 'disabled')
-		button.title = 'loading'
+		loadTimeout = setTimeout(() => {
+			form.classList.remove('warn')
+			form.classList.add('valid', 'load')
+			button.setAttribute('disabled', 'disabled')
+		}, 50)
 	}
 
-	function warn(err: string) {
+	function warn(err: unknown) {
 		form.classList.add('warn')
-		form.classList.remove('load', 'offline')
-		button.setAttribute('disabled', 'disabled')
-		button.title = err
+		form.classList.remove('load')
+		button.setAttribute('disabled', '')
+		message.textContent = err as string
+		clearTimeout(loadTimeout)
 	}
 
 	function accept(inputId?: string, value?: string) {
-		if (inputId && value) {
+		if (inputId && form.checkValidity()) {
 			form.classList.remove('valid')
-			form.querySelectorAll('input').forEach((input) => (input.value = ''))
-			document.getElementById(inputId)?.setAttribute('placeholder', value)
+
+			const input = document.getElementById(inputId)
+
+			if (input && value) {
+				input.setAttribute('placeholder', value)
+			}
 		}
 
-		setTimeout(() => resetForm(), 200)
+		clearTimeout(loadTimeout)
+		setTimeout(() => reset(), 200)
 	}
 
 	return {
 		load,
 		warn,
+		reset,
 		accept,
 	}
 }

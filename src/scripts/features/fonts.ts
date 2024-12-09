@@ -29,7 +29,7 @@ type CustomFontUpdate = {
 
 const familyForm = networkForm('f_customfont')
 
-const systemfont = (function () {
+export const systemfont = (function () {
 	const fonts = {
 		fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
 		windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
@@ -89,7 +89,7 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
 
 	if (size) {
 		data.font.size = size
-		displayFont(data.font)
+		setFontSize(size)
 	}
 
 	if (lang) {
@@ -140,7 +140,7 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 			}
 
 			if (font.family === '') {
-				familyForm.warn(`Cannot load "${family}"`)
+				familyForm.warn(tradThis('Cannot load this font'))
 				return data.font
 			}
 			break
@@ -224,9 +224,13 @@ function displayFont({ family, size, weight, system }: Font) {
 	}
 
 	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
-	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
 	document.documentElement.style.setProperty('--font-weight', weight)
 	document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight)
+	setFontSize(size)
+}
+
+function setFontSize(size: string) {
+	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
 }
 
 //
@@ -238,8 +242,6 @@ function initFontSettings(font?: Font) {
 	const hasCustomWeights = font && font.weightlist.length > 0
 	const weights = hasCustomWeights ? font.weightlist : systemfont.weights
 	const family = font?.family || systemfont.placeholder
-
-	settings.querySelector('#i_customfont')?.setAttribute('placeholder', family)
 
 	setWeightSettings(weights)
 }

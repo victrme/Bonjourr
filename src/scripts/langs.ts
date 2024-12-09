@@ -9,13 +9,14 @@ export default {
 	es: 'Español',
 	'pt-BR': 'Português (Brasil)',
 	'pt-PT': 'Português (Portugal)',
-	nl: 'Nederlandse',
+	nl: 'Nederlands',
 	da: 'Dansk',
 	sv: 'Svenska',
 	nb: 'Norsk',
 	fi: 'Suomi',
 	pl: 'Polski',
 	cs: 'Čeština',
+	hr: 'Hrvatski',
 	sk: 'Slovenský',
 	hu: 'Magyar',
 	ro: 'Română',
@@ -35,6 +36,7 @@ export default {
 	id: 'Indonesia',
 	ca: 'Català',
 	vi: 'Tiếng Việt',
+	ko: '한국어',
 }
 
 // uses basic latin characters if not included
@@ -46,6 +48,7 @@ export const subsets = {
 	uk: 'cyrillic',
 	sr: 'cyrillic',
 	sk: 'latin-ext',
+	hr: 'latin-ext',
 	cs: 'latin-ext',
 	pl: 'latin-ext',
 	ro: 'latin-ext',
@@ -57,4 +60,5 @@ export const subsets = {
 	'zh-CN': 'chinese-simplified',
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',
+	ko: 'korean',
 }

@@ -1,8 +1,9 @@
 import { bundleLinks, getHTMLTemplate, randomString, toggleDisabled } from '../../utils'
-import { EXTENSION, MAIN_API, PLATFORM } from '../../defaults'
-import quickLinks, { validateLink } from '.'
-import getPermissions from '../../utils/permissions'
 import { getLang, tradThis, traduction } from '../../utils/translations'
+import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults'
+import quickLinks, { validateLink } from '.'
+import { settingsNotifications } from '../../utils/notifications'
+import getPermissions from '../../utils/permissions'
 import { isLink } from './helpers'
 import storage from '../../storage'
 
@@ -37,7 +38,15 @@ export default async function linksImport() {
 
 export async function initBookmarkSync(data: Sync.Storage) {
 	let treenode = await getBookmarkTree()
-	const permission = treenode ? true : await getPermissions('topSites', 'bookmarks')
+	let permission = !!treenode
+
+	if (!permission) {
+		try {
+			permission = await getPermissions('topSites', 'bookmarks')
+		} catch (error) {
+			settingsNotifications({ 'accept-permissions': true })
+		}
+	}
 
 	if (!permission) {
 		return
@@ -123,7 +132,7 @@ function createBookmarksDialog() {
 
 			const url = new URL(bookmark.url)
 
-			li_img.src = `${MAIN_API}/favicon/blob/${url.origin}`
+			li_img.src = `${API_DOMAIN}/favicon/blob/${url.origin}`
 			li_title.textContent = bookmark.title
 			li_url.textContent = url.href
 				.replace(url.protocol, '')

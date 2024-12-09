@@ -3,6 +3,7 @@ import { displayInterface } from '../index'
 import networkForm from '../utils/networkform'
 import storage from '../storage'
 import parse from '../utils/parse'
+import { tradThis } from '../utils/translations'
 
 type Quote = Quotes.Item
 
@@ -130,7 +131,7 @@ async function updateQuotesData(data: Sync.Storage) {
 			list = await fetchQuotes(data.lang, data.quotes.type, data.quotes.url)
 			form.accept()
 		} catch (error) {
-			form.warn('Fetch failed, please check console for further information')
+			form.warn(tradThis('Fetch failed, please check console for more information'))
 			console.warn(error)
 		}
 

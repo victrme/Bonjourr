@@ -43,6 +43,7 @@
 	line-height: 1em;
 	font-weight: 200;
 	font-weight: var(--font-weight-clock);
+	direction: ltr;
 }
 
 .digital span {
@@ -542,4 +543,12 @@
 
 .clock-date.us .clock-date-aa-separator::after {
 	content: ', ';
+}
+
+.clock-date-secondary {
+    display: block;
+    font-size: smaller;
+}
+.clock-date-secondary::after {
+    content: '\200b';
 }

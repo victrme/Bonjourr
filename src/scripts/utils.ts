@@ -1,48 +1,35 @@
-import { MAIN_API, FALLBACK_API, ENVIRONNEMENT } from './defaults'
 import suntime from './utils/suntime'
 
-const apiList = ENVIRONNEMENT === 'TEST' ? ['http://localhost:8787'] : shuffledAPIUrls()
+export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
+	try {
+		const socket = new WebSocket(`wss://services.bonjourr.fr/${path}`)
+		const isOpened = await new Promise((resolve) => {
+			socket.onopen = () => resolve(true)
+			socket.onerror = () => resolve(false)
+			socket.onclose = () => resolve(false)
+		})
 
-function shuffledAPIUrls(): string[] {
-	return [
-		MAIN_API,
-		...FALLBACK_API.map((value) => ({ value, sort: Math.random() }))
-			.sort((a, b) => a.sort - b.sort)
-			.map(({ value }) => value), // https://stackoverflow.com/a/46545530]
-	]
+		if (isOpened) {
+			return socket
+		}
+	} catch (_error) {
+		// ...
+	}
 }
 
-export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
-	for (let url of apiList) {
-		try {
-			if (ENVIRONNEMENT === 'TEST') {
-				url = 'wss://bonjourr-apis.victr.workers.dev'
-			}
-
-			const socket = new WebSocket(url.replace('https://', 'wss://') + path)
-			const isOpened = await new Promise((resolve) => {
-				socket.onopen = () => resolve(true)
-				socket.onerror = () => resolve(false)
-				socket.onclose = () => resolve(false)
-			})
-
-			if (isOpened) {
-				return socket
-			}
-		} catch (error) {
-			console.warn(error)
-		}
+export async function weatherFetch(query: string): Promise<Response | undefined> {
+	try {
+		return await fetch(`https://weather.bonjourr.fr${query}`)
+	} catch (_error) {
+		// ...
 	}
 }
 
 export async function apiFetch(path: string): Promise<Response | undefined> {
-	for (const url of apiList) {
-		try {
-			return await fetch(url + path)
-		} catch (error) {
-			console.warn(error)
-			await new Promise((r) => setTimeout(() => r(true), 200))
-		}
+	try {
+		return await fetch(`https://services.bonjourr.fr${path}`)
+	} catch (_error) {
+		// ...
 	}
 }
 
@@ -142,6 +129,14 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 	)
 }
 
+export function fadeOut() {
+	const dominterface = document.getElementById('interface') as HTMLElement
+	dominterface.click()
+	dominterface.style.transition = 'opacity .4s'
+	setTimeout(() => (dominterface.style.opacity = '0'))
+	setTimeout(() => location.reload(), 400)
+}
+
 export function isEvery(freq = ''): freq is Frequency {
 	const every: Frequency[] = ['tabs', 'hour', 'day', 'period', 'pause']
 	return every.includes(freq as Frequency)
@@ -230,4 +225,8 @@ export function countryCodeToLanguageCode(lang: string): string {
 	lang = lang.replace('_', '-')
 
 	return lang
+}
+
+async function wait(ms: number) {
+	await new Promise((r) => setTimeout(() => r(true), ms))
 }

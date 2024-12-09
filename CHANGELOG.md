@@ -1,3 +1,55 @@
+## 20.3.0
+
+-   Added:
+    -   Gist and URL settings synchronization (#478)
+    -   Location suggestions for manual weather
+-   Improvements:
+    -   Save settings on inputs as value instead of placeholder (#495)
+    -   Secondary calendar for vietnamese, thanks @trmdi (#490)
+    -   Fix greeting missing last input
+    -   Better hover transition on detailed weather
+    -   Lots of improvements on our backend service
+-   Translations:
+    -   Added Korean translations, thanks @KimTibber !
+    -   Traditional Chinese update by @unknownnumbers
+    -   Portugese update by @Blackspirits
+
+## 20.2.2
+
+-   Fix weather cache using old timestamp convention
+
+## 20.2.1
+
+-   Fixes:
+    -   Bad encoding with spaces in weather city
+    -   RTL on digital clock (#483)
+-   Changes:
+    -   Add dusk to suntime
+    -   Simplified page column option
+
+## 20.2.0
+
+-   Added:
+    -   Stoïc and Hitokoto quotes (#401, #470)
+    -   Two more world clocks (#453)
+    -   "udm=14" to Google search (#404)
+    -   CTRL + Right click on links opens default context menu
+-   Fixes:
+    -   Asia timezone labels mixed up (#477)
+    -   Removed buggy export button on Safari (#400)
+    -   Changing font size also updating fontface
+    -   Weather city name is now sanitized before comparing user input
+    -   Permissions breaking firefox page on synced devices (#434)
+-   Translations:
+    -   Added Croatian language, thanks Gustighost!
+    -   Taiwanese Chinese correction by @jrthsr700tmax
+    -   Ukrainian update by @Veydzher
+    -   Portugese update by @Blackspirits
+    -   Arabic update by @aldoyh
+    -   Armenian update by Hrant Hakobian
+    -   Russian translation fix by @TripleA150
+    -   Translated option titles and placeholders (#439)
+
 ## 20.1.0
 
 -   Added:

@@ -62,6 +62,11 @@
 	--color-dialog-input-bg: rgba(110, 107, 114, 0.25);
 }
 
+[data-browser='edge'] .firefox-only,
+[data-browser='other'] .firefox-only,
+[data-browser='opera'] .firefox-only,
+[data-browser='chrome'] .firefox-only,
+[data-browser='safari'] .firefox-only,
 [data-platform='safari'] .not-safari,
 [data-platform='online'] .not-online {
 	display: none;
@@ -135,11 +140,18 @@ body.tabbing #linkblocks .link.folder:focus-visible,
 body.tabbing #linkblocks.text a:focus-visible span,
 body.tabbing #notes_toolbar:focus-visible,
 body.tabbing input:focus-visible + .slider {
-	outline: 2px solid var(--color-blue);
+	outline-width: 2px;
+	outline-color: var(--color-blue);
+	outline-style: dashed;
+}
+
+/* Outline is invisible on Chrome without this. Why. */
+body.tabbing #linkblocks .link a:focus-visible {
+	outline-style: auto;
 }
 
 body.tabbing button.btn-red:focus-visible {
-	outline: 2px solid var(--color-red);
+	outline-color: var(--color-red);
 }
 
 body.loading > * {

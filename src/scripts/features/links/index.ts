@@ -10,7 +10,6 @@ import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
 import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
-import { BROWSER } from '../../defaults'
 import storage from '../../storage'
 
 type Link = Links.Link
@@ -481,7 +480,7 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 
 	if (!link.folder) {
 		if (icondom) {
-			const url = icon ? stringMaxSize(icon, 7500) : undefined ?? getDefaultIcon(link.url)
+			const url = (icon ? stringMaxSize(icon, 7500) : undefined) ?? getDefaultIcon(link.url)
 			const img = document.createElement('img')
 
 			link.icon = url ? url : undefined

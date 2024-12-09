@@ -27,6 +27,10 @@
 		overflow-y: auto;
 	}
 
+	.not-mobile {
+		display: none;
+	}
+
 	#editlink {
 		max-width: 80%;
 	}
@@ -121,7 +125,6 @@
 
 	#i_addlink-title,
 	#i_addlink-url,
-	#i_ccode,
 	#i_city {
 		width: 100%;
 	}
