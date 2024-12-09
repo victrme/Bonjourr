@@ -21,7 +21,7 @@
 	text-decoration: none;
 	color: inherit;
 	width: 100%;
-	transition: opacity 0.05s;
+	transition: opacity 0.05s 0.1s;
 }
 
 #weather.init {
