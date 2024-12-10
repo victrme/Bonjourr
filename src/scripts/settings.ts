@@ -380,7 +380,7 @@ function initOptionsEvents() {
 	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
-		selectBackgroundType(this.value)
+		updateBackgroundOption({ type: this.value })
 	})
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
@@ -400,11 +400,11 @@ function initOptionsEvents() {
 
 	// Custom backgrounds
 
-	paramId('b_background-upload').onclickdown(function (this: HTMLInputElement) {
-		paramId('background-upload')?.click()
+	paramId('b_local-background-upload').onclickdown(function (this: HTMLInputElement) {
+		paramId('local-background-upload')?.click()
 	})
 
-	paramId('background-upload').addEventListener('change', function (this: HTMLInputElement) {
+	paramId('local-background-upload').addEventListener('change', function (this: HTMLInputElement) {
 		localBackgrounds({ newfile: this.files })
 	})
 
@@ -892,44 +892,6 @@ function showall(val: boolean, event: boolean) {
 	if (event) {
 		storage.sync.set({ showall: val })
 	}
-}
-
-async function selectBackgroundType(cat: string) {
-	document.getElementById('local_options')?.classList.toggle('shown', cat === 'local')
-	document.getElementById('solid_options')?.classList.toggle('shown', cat === 'solid')
-	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
-
-	if (cat === 'local') {
-		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
-		setTimeout(() => localBackgrounds(), 100)
-
-		storage.sync.set({ background_type: 'local' })
-	}
-
-	if (cat === 'unsplash') {
-		const data = await storage.sync.get()
-		const local = await storage.local.get('unsplashCache')
-
-		if (!data.unsplash) return
-
-		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
-		document.getElementById('credit-container')?.classList.toggle('shown', true)
-		setTimeout(
-			() =>
-				unsplashBackgrounds({
-					unsplash: data.unsplash,
-					cache: local.unsplashCache,
-				}),
-			100
-		)
-	}
-
-	if (cat === 'solid') {
-		console.log('bjr')
-	}
-
-	storage.sync.set({ background_type: cat })
-	storage.sync.set({ background_type: 'unsplash' })
 }
 
 function settingsFooter() {
