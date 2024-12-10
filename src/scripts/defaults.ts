@@ -90,6 +90,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	background_blur: 15,
 	background_bright: 0.8,
 	background_type: 'unsplash',
+	background_solid: '#222',
 	quicklinks: true,
 	syncbookmarks: undefined,
 	textShadow: 0.2,

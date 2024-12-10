@@ -42,6 +42,19 @@
 	transition: transform 0.4s, opacity 0.4s;
 }
 
+#solid-background,
+#image-background-wrapper,
+#video-background-wrapper {
+	display: none;
+}
+
+[data-type='solid'] #solid-background,
+[data-type='local'] #image-background-wrapper,
+[data-type='videos'] #video-background-wrapper,
+[data-type='unsplash'] #image-background-wrapper {
+	display: block;
+}
+
 #image-background-bis,
 #image-background {
 	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
@@ -55,6 +68,9 @@
 
 #video-background,
 #video-background-bis {
+	position: absolute;
+	top: 0;
+	left: 0;
 	height: 120%;
 	margin-top: -10%;
 }
@@ -66,9 +82,10 @@
 	filter: blur(var(--background-blur)) brightness(var(--background-brightness));
 }
 
-#solid-background-wrapper,
-#videos-background-wrapper {
-	display: none;
+#solid-background {
+	width: 100%;
+	height: 100%;
+	background-color: var(--solid-background);
 }
 
 /* Credits + Show settings */

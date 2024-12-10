@@ -97,6 +97,7 @@
 		<select id="i_type">
 			<option value="unsplash" class="trn">Unsplash</option>
 			<option value="videos" class="trn">Videos</option>
+			<option value="solid" class="trn">Solid color</option>
 			<option value="local" class="trn">Local file</option>
 		</select>
 	</div>
@@ -178,6 +179,15 @@
 					>Learn more</a
 				>
 			</p>
+		</div>
+	</div>
+
+	<div id="solid_options" class="dropdown">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_solid-background" class="trn">Background color</label>
+			<input type="color" id="i_solid-background" name="solid-background" />
 		</div>
 	</div>
 
@@ -1182,7 +1192,7 @@
 			<div class="wrapper">
 				<span class="trn">Page columns</span>
 				<select id="i_pagecolumns">
-					<option class="trn" value="single">Single</option>
+					<option class="trn" value="single">Simple</option>
 					<option class="trn" value="double">Double</option>
 					<option class="trn" value="triple">Triple</option>
 				</select>
@@ -1275,8 +1285,8 @@
 		<label for="i_synctype" class="trn">Synchronization type</label>
 
 		<select id="i_synctype">
-			<option class="trn not-online not-safari" value="browser" selected>Browser sync</option>
-			<option class="trn" value="gist">Github Gist</option>
+			<option class="trn not-online not-safari" value="browser" selected>Browser</option>
+			<option value="gist">Github Gist</option>
 			<option class="trn" value="url">Distant URL</option>
 			<option class="trn" value="off">Disabled</option>
 		</select>

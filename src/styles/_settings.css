@@ -415,6 +415,10 @@ aside form.valid.remove span::after {
 	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
 }
 
+#solid_options.shown {
+	max-height: 400px;
+}
+
 #local_options.shown {
 	max-height: 420px;
 }
