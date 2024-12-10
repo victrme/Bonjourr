@@ -10,6 +10,7 @@ import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
+import solidBackgrounds from './features/backgrounds/solid'
 import { changeGroupTitle, initGroups } from './features/links/groups'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
@@ -120,6 +121,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
+	setInput('i_solid-background', data.background_solid ?? '#222')
 	setInput('i_pagewidth', data.pagewidth || 1600)
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
@@ -381,6 +383,10 @@ function initOptionsEvents() {
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
 		updateBackgroundOption({ type: this.value })
+	})
+
+	paramId('i_solid-background').addEventListener('input', function () {
+		solidBackgrounds(undefined, this.value)
 	})
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {

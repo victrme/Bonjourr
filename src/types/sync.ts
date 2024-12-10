@@ -22,7 +22,7 @@ declare namespace Sync {
 		reviewPopup?: number | string
 		background_blur: number
 		background_bright: number
-		background_colors?: string[]
+		background_solid: string
 		css: string
 		lang: string
 		favicon: string

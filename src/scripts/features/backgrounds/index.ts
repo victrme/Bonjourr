@@ -1,6 +1,7 @@
 import unsplashBackgrounds from './unsplash'
 import videosBackgrounds from './videos'
 import localBackgrounds from './local'
+import solidBackgrounds from './solid'
 
 import { eventDebounce } from '../../utils/debounce'
 import { rgbToHex } from '../../utils'
@@ -20,10 +21,14 @@ type UpdateOptions = {
 }
 
 export default function initBackground(data: Sync.Storage, local: Local.Storage) {
+	const overlay = document.querySelector<HTMLElement>('#background-overlay')
+	const type = data.background_type
 	const blur = data.background_blur
 	const brightness = data.background_bright
 
-	backgroundFilter({ blur, brightness })
+	if (overlay) {
+		overlay.dataset.type = type
+	}
 
 	if (BROWSER === 'safari') {
 		const bgfirst = document.getElementById('image-background') as HTMLDivElement
@@ -33,10 +38,12 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
 	}
 
-	if (data.background_type === 'local') localBackgrounds()
-	if (data.background_type === 'solid') console.log('bjr')
-	if (data.background_type === 'videos') videosBackgrounds(data.background_type === 'videos')
-	if (data.background_type === 'unsplash') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+	solidBackgrounds(data.background_solid)
+	backgroundFilter({ blur, brightness })
+
+	if (type === 'local') localBackgrounds()
+	if (type === 'videos') videosBackgrounds(1)
+	if (type === 'unsplash') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -110,7 +117,18 @@ export function updateBackgroundOption(update: UpdateOptions) {
 }
 
 async function handleBackgroundOptions(type: string) {
+	if (isBackgroundType(type) === false) {
+		return
+	}
+
+	const overlay = document.querySelector<HTMLElement>('#background-overlay')
+
+	if (overlay) {
+		overlay.dataset.type = type
+	}
+
 	document.getElementById('local_options')?.classList.toggle('shown', type === 'local')
+	document.getElementById('solid_options')?.classList.toggle('shown', type === 'solid')
 	document.getElementById('unsplash_options')?.classList.toggle('shown', type === 'unsplash')
 
 	if (type === 'local') {
