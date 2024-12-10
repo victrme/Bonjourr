@@ -715,7 +715,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_supporters_notif').onclickdown(function (_, target) {
-		// 🤔
+		supportersNotifications(undefined, { enabled: target.checked})
 	})
 
 	// Sync
