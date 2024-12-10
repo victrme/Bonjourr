@@ -30,7 +30,7 @@ declare namespace Sync {
 		notes?: Notes
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
-		background_type: 'local' | 'unsplash'
+		background_type: 'local' | 'unsplash' | 'videos'
 		dateformat: 'auto' | 'eu' | 'us' | 'cn'
 		clock: Clock
 		analogstyle?: AnalogStyle

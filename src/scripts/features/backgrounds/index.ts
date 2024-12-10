@@ -1,8 +1,11 @@
 import unsplashBackgrounds from './unsplash'
+import videosBackgrounds from './videos'
 import localBackgrounds from './local'
-import { rgbToHex } from '../../utils'
+
 import { eventDebounce } from '../../utils/debounce'
+import { rgbToHex } from '../../utils'
 import { BROWSER } from '../../defaults'
+import storage from '../../storage'
 
 type FilterOptions = {
 	blur?: number
@@ -12,6 +15,7 @@ type FilterOptions = {
 
 type UpdateOptions = {
 	freq?: string
+	type?: string
 	refresh?: HTMLSpanElement
 }
 
@@ -23,19 +27,17 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 	backgroundFilter({ blur, brightness })
 
 	if (BROWSER === 'safari') {
-		const bgfirst = document.getElementById('background') as HTMLDivElement
-		const bgsecond = document.getElementById('background-bis') as HTMLDivElement
+		const bgfirst = document.getElementById('image-background') as HTMLDivElement
+		const bgsecond = document.getElementById('image-background-bis') as HTMLDivElement
 
 		bgfirst.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
 		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
 	}
 
-	type === 'local' ? localBackgrounds() : unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+	if (type === 'local') localBackgrounds()
+	if (type === 'videos') videosBackgrounds(data.background_type === 'videos')
+	if (type === 'unsplash') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 }
-
-//
-//
-//
 
 export function imgBackground(url: string, color?: string) {
 	const img = new Image()
@@ -44,9 +46,9 @@ export function imgBackground(url: string, color?: string) {
 	if (!color) img.crossOrigin = 'Anonymous'
 
 	img.onload = () => {
-		const bgoverlay = document.getElementById('background_overlay') as HTMLDivElement
-		const bgfirst = document.getElementById('background') as HTMLDivElement
-		const bgsecond = document.getElementById('background-bis') as HTMLDivElement
+		const bgoverlay = document.getElementById('background-overlay') as HTMLDivElement
+		const bgfirst = document.getElementById('image-background') as HTMLDivElement
+		const bgsecond = document.getElementById('image-background-bis') as HTMLDivElement
 		const loadBis = bgfirst.style.opacity === '1'
 		const bgToChange = loadBis ? bgsecond : bgfirst
 
@@ -84,16 +86,56 @@ export function backgroundFilter({ blur, brightness, isEvent }: FilterOptions) {
 	if (isEvent && hasbright) eventDebounce({ background_bright: brightness })
 }
 
-export function updateBackgroundOption({ freq, refresh }: UpdateOptions) {
-	const i_type = document.getElementById('i_type') as HTMLInputElement
-	const isLocal = i_type.value === 'local'
+export function updateBackgroundOption(update: UpdateOptions) {
+	const type = document.querySelector<HTMLInputElement>('#i_type')?.value
 
-	if (freq !== undefined) {
-		isLocal ? localBackgrounds({ freq }) : unsplashBackgrounds(undefined, { every: freq })
+	if (update.freq !== undefined) {
+		if (type === 'local') localBackgrounds({ freq: update.freq })
+		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
+		if (type === 'unsplash') unsplashBackgrounds(undefined, { every: update.freq })
 	}
 
-	if (refresh) {
-		isLocal ? localBackgrounds({ refresh }) : unsplashBackgrounds(undefined, { refresh })
+	if (update.refresh) {
+		if (type === 'local') localBackgrounds({ refresh: update.refresh })
+		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
+		if (type === 'unsplash') unsplashBackgrounds(undefined, { refresh: update.refresh })
+	}
+
+	if (update.type) {
+		if (isBackgroundType(update.type)) {
+			handleBackgroundOptions(update.type)
+			storage.sync.set({ background_type: update.type })
+		}
+	}
+}
+
+async function handleBackgroundOptions(type: string) {
+	document.getElementById('local_options')?.classList.toggle('shown', type === 'local')
+	document.getElementById('unsplash_options')?.classList.toggle('shown', type === 'unsplash')
+
+	if (type === 'local') {
+		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
+		setTimeout(() => localBackgrounds(), 100)
+	}
+
+	if (type === 'unsplash') {
+		const data = await storage.sync.get()
+		const local = await storage.local.get('unsplashCache')
+
+		if (!data.unsplash) {
+			return
+		}
+
+		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
+		document.getElementById('credit-container')?.classList.toggle('shown', true)
+		setTimeout(
+			() =>
+				unsplashBackgrounds({
+					unsplash: data.unsplash,
+					cache: local.unsplashCache,
+				}),
+			100
+		)
 	}
 }
 
@@ -154,3 +196,7 @@ export function getAverageColor(img: HTMLImageElement) {
 // function refreshBackground() {
 // 	//
 // }
+
+function isBackgroundType(str = ''): str is Sync.Storage['background_type'] {
+	return ['unsplash', 'local', 'videos'].includes(str)
+}

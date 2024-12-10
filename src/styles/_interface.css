@@ -18,7 +18,7 @@
 }
 
 @supports not (min-height: 100dvh) {
-	#background_overlay,
+	#image-background-overlay,
 	#interface {
 		min-height: 100vh;
 	}
@@ -30,7 +30,7 @@
 
 /* Background */
 
-#background_overlay {
+#background-overlay {
 	z-index: -1;
 	position: fixed;
 	width: 100%;
@@ -38,12 +38,12 @@
 	min-height: var(--app-height);
 	min-height: 100lvh;
 	overflow: hidden;
-	opacity: 0;
+	/* opacity: 0; */
 	transition: transform 0.4s, opacity 0.4s;
 }
 
-#background-bis,
-#background {
+#image-background-bis,
+#image-background {
 	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
 	position: absolute;
 	width: 100%;
@@ -51,12 +51,24 @@
 	background-size: cover;
 	background-position: center center;
 	transition: opacity 1s var(--out-cubic);
-	filter: blur(var(--background-blur)) brightness(var(--background-brightness));
-	z-index: 1;
 }
 
-#background-bis {
-	z-index: 0;
+#video-background,
+#video-background-bis {
+	height: 120%;
+	margin-top: -10%;
+}
+
+#image-background,
+#video-background,
+#image-background-bis,
+#video-background-bis {
+	filter: blur(var(--background-blur)) brightness(var(--background-brightness));
+}
+
+#solid-background-wrapper,
+#videos-background-wrapper {
+	display: none;
 }
 
 /* Credits + Show settings */
