@@ -311,113 +311,94 @@ function copyDir(...args) {
 //	Auto translator tool
 
 async function updateTranslations() {
-	// const supportedLangs = await fetchDeeplSupportedLangs()
-	const enDict = JSON.parse(readFileSync(`./_locales/en/translations.json`, 'utf8'))
 	const langs = readdirSync('./_locales/')
-	const translations = []
+	const englishDict = JSON.parse(readFileSync(`./_locales/en/translations.json`, 'utf8'))
+	const files = []
 
 	for (const lang of langs) {
-		if (lang === 'en' || lang === '.DS_Store') {
-			continue
+		const isCorrect = lang.length === 2 || (lang.length === 5 && lang[2] === '-')
+		const isNotEnglish = lang !== 'en'
+
+		if (isCorrect && isNotEnglish) {
+			files.push(translateFile(lang))
+		}
+	}
+
+	await Promise.all(files)
+
+	/**
+	 * @param {string} lang
+	 * @returns {Promise<void>}
+	 */
+	async function translateFile(lang) {
+		const translations = readFileSync(`./_locales/${lang}/translations.json`, 'utf8')
+		const newDict = {}
+		let removed = 0
+		let added = 0
+		let langDict
+
+		try {
+			langDict = JSON.parse(translations)
+		} catch (_) {
+			return console.log('Cannot translate ' + lang)
 		}
 
-		translations.push(translateFile(lang, enDict, true))
-	}
-
-	await Promise.all(translations)
-}
-
-async function translateFile(lang, enDict, supportedLangs) {
-	let sanitizedLang = lang
-
-	const supported = true //supportedLangs.includes(sanitizedLang)
-	const translations = readFileSync(`./_locales/${lang}/translations.json`, 'utf8')
-	const newDict = {}
-	let removed = 0
-	let added = 0
-	let langDict
-
-	try {
-		langDict = JSON.parse(translations)
-	} catch (error) {
-		console.log(error)
-		return
-	}
-
-	// Remove keys not found in "english" translation file
-	for (const key of Object.keys(langDict)) {
-		if (enDict[key]) {
-			newDict[key] = langDict[key]
-			continue
-		}
-
-		removed++
-	}
-
-	// Add keys & translate new stuff
-	for (const key of Object.keys(enDict)) {
-		const trn = newDict[key]
-
-		if (!trn) {
-			if (supported) {
-				newDict[key] = await fetchCloudTranslation(key, sanitizedLang)
-			} else {
-				newDict[key] = key
+		// Remove keys not found in "english" translation file
+		for (const key of Object.keys(langDict)) {
+			if (englishDict[key]) {
+				newDict[key] = langDict[key]
+				continue
 			}
 
-			added++
+			removed++
 		}
+
+		// Add keys & translate new stuff
+		const missingKeys = Object.keys(englishDict).filter((key) => newDict[key] === undefined)
+
+		if (missingKeys.length > 0) {
+			const message = lang + '\n' + missingKeys.join('\n')
+			const translations = await claudeTranslation(message)
+
+			for (const key of missingKeys) {
+				newDict[key] = translations.get(key)
+				added++
+			}
+		}
+
+		// Order translations
+		const keylist = new Set()
+		const enKeys = [...Object.keys(englishDict)]
+		const sortOrder = (a, b) => enKeys.indexOf(a) - enKeys.indexOf(b)
+
+		JSON.stringify(newDict, (key, value) => {
+			return keylist.add(key), value
+		})
+
+		const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
+
+		// Write to file
+		writeFileSync(`./_locales/${lang}/translations.json`, stringified)
+
+		// Log
+		console.log(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
 	}
 
-	// Order translations
-	const keylist = new Set()
-	const enKeys = [...Object.keys(enDict)]
-	const sortOrder = (a, b) => enKeys.indexOf(a) - enKeys.indexOf(b)
+	/**
+	 * @param {string} message
+	 * @returns {Promise<Map<string, string>>}
+	 */
+	async function claudeTranslation(message) {
+		const init = { body: message, method: 'POST' }
+		const path = `https://claude-translator.victr.workers.dev/`
+		const json = await (await fetch(path, init)).json()
+		const trns = JSON.parse(json.content[0].text)
+		const map = new Map()
 
-	JSON.stringify(newDict, (key, value) => {
-		return keylist.add(key), value
-	})
+		for (const [en, trn] of trns) {
+			map.set(en, trn)
+		}
 
-	const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
-
-	// Write to file
-	writeFileSync(`./_locales/${lang}/translations.json`, stringified)
-
-	// Log
-	console.log(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}, translated: ${supported ? 'yes' : 'no'}]`)
-}
-
-// async function fetchDeeplSupportedLangs() {
-// 	const auth = await getDeeplAuth()
-// 	const headers = { Authorization: auth, 'User-Agent': 'Bonjourr/19.2.0' }
-// 	const resp = await fetch(
-// 		'https://translation.googleapis.com/language/translate/v2',
-// 		{ headers }
-// 	)
-// 	const json = await resp.json()
-// 	return Object.values(json).map((val) => val.language.toLowerCase())
-// }
-
-async function fetchCloudTranslation(text, lang) {
-	const body = {
-		q: text,
-		target: lang,
-		source: 'en',
-		format: 'text',
+		return map
 	}
-
-	const options = {
-		method: 'POST',
-		body: JSON.stringify(body),
-	}
-
-	const url = `https://translation.googleapis.com/language/translate/v2?key=${await getAuthKey()}`
-	const resp = await fetch(url, options)
-	const json = await resp.json()
-
-	return json.data.translations[0]?.translatedText
-}
-
-async function getAuthKey() {
-	return await (await fetch('https://cloud-translate.bonjourr.workers.dev/')).text()
 }

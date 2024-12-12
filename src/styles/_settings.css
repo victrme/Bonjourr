@@ -717,6 +717,11 @@ aside .settings-title .tooltip {
 	width: 100%;
 }
 
+#f_addlink > div > div {
+	display: flex;
+	gap: 4px;
+}
+
 #f_addlink {
 	width: 66%;
 }
