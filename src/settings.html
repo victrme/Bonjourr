@@ -238,30 +238,31 @@
 			<label for="i_addlink" class="trn">Add link</label>
 			<form id="f_addlink">
 				<div>
-					<input
-						type="text"
-						name="addlink-title"
-						id="i_addlink-title"
-						maxlength="64"
-						placeholder="Title"
-						aria-label="Add title to new link"
-						autocomplete="off"
-					/>
-
-					<input
-						type="text"
-						name="addlink-url"
-						id="i_addlink-url"
-						minlength="3"
-						maxlength="512"
-						placeholder="example.com"
-						aria-label="Add URL to new link"
-						autocomplete="off"
-						autocorrect="off"
-						autocapitalize="off"
-						spellcheck="false"
-						required="true"
-					/>
+					<div>
+						<input
+							type="text"
+							name="addlink-title"
+							id="i_addlink-title"
+							maxlength="64"
+							placeholder="Title"
+							aria-label="Add title to new link"
+							autocomplete="off"
+						/>
+						<input
+							type="text"
+							name="addlink-url"
+							id="i_addlink-url"
+							minlength="3"
+							maxlength="512"
+							placeholder="example.com"
+							aria-label="Add URL to new link"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+							spellcheck="false"
+							required="true"
+						/>
+					</div>
 
 					<button type="submit" id="i_addlink">
 						<span></span>
@@ -1181,7 +1182,7 @@
 			<div class="wrapper">
 				<span class="trn">Page columns</span>
 				<select id="i_pagecolumns">
-					<option class="trn" value="single">Single</option>
+					<option class="trn" value="single">Simple</option>
 					<option class="trn" value="double">Double</option>
 					<option class="trn" value="triple">Triple</option>
 				</select>
@@ -1291,16 +1292,23 @@
 
 <div class="param" id="settings-managment">
 	<div class="wrapper">
-		<span>
-			<label for="i_synctype" class="trn">Synchronization type</label>
-		</span>
+		<label for="i_synctype" class="trn">Synchronization type</label>
 
 		<select id="i_synctype">
-			<option class="trn not-online" value="auto" selected>Auto</option>
-			<option class="trn" value="gist">Github Gist</option>
+			<option class="trn not-online" value="browser" selected>Browser</option>
+			<option value="gist">Github Gist</option>
 			<option class="trn" value="url">Distant URL</option>
 			<option class="trn" value="off">Disabled</option>
 		</select>
+	</div>
+
+	<div id="disabled-sync" class="dropdown firefox-only">
+		<hr />
+
+		<div class="wrapper">
+			<label for="b_storage-persist" class="trn">Persistent storage</label>
+			<button id="b_storage-persist" class="param-btn trn">Ask permission</button>
+		</div>
 	</div>
 
 	<div id="gist-sync" class="dropdown">

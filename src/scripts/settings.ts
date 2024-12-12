@@ -466,11 +466,11 @@ function initOptionsEvents() {
 		clock(undefined, { background: 'opacity' })
 	})
 
-	paramId('i_analog-border-shade').onclickdown(function () {
+	paramId('i_analog-border-shade').addEventListener('click', function () {
 		clock(undefined, { border: 'shade' })
 	})
 
-	paramId('i_analog-background-shade').onclickdown(function () {
+	paramId('i_analog-background-shade').addEventListener('click', function () {
 		clock(undefined, { background: 'shade' })
 	})
 
@@ -554,7 +554,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_greeting').addEventListener('input', function () {
-		clock(undefined, { greeting: stringMaxSize(this.value, 32) })
+		clock(undefined, { greeting: this.value })
 	})
 
 	paramId('i_greeting').addEventListener('change', function () {
@@ -598,7 +598,7 @@ function initOptionsEvents() {
 		searchbar(undefined, { background: true })
 	})
 
-	paramId('i_sb-shade').onclickdown(function () {
+	paramId('i_sb-shade').addEventListener('click', function () {
 		searchbar(undefined, { background: true })
 	})
 
@@ -732,6 +732,11 @@ function initOptionsEvents() {
 	paramId('f_urlsync').addEventListener('submit', function (this, event) {
 		event.preventDefault()
 		synchronization(undefined, { url: paramId('i_urlsync').value })
+	})
+
+	paramId('b_storage-persist').onclickdown(async function () {
+		const persists = await navigator.storage.persist()
+		synchronization(undefined, { firefoxPersist: persists })
 	})
 
 	paramId('b_gistup').onclickdown(function () {

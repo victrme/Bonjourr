@@ -14,7 +14,7 @@ import synchronization from './features/synchronization'
 import { settingsPreload } from './settings'
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION } from './defaults'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
 import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
@@ -381,7 +381,7 @@ function onlineAndMobile() {
 }
 
 function serviceWorker() {
-	if (PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
+	if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
 		return
 	}
 

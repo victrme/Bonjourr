@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '20.2.2'
+export const CURRENT_VERSION = '20.3.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -177,7 +177,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	settingssync: {
-		type: PLATFORM === 'online' ? 'off' : 'auto',
+		type: PLATFORM === 'online' ? 'off' : 'browser',
 		freq: 'manual',
 	},
 	move: {

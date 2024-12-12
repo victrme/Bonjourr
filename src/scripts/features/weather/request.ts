@@ -38,30 +38,32 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 		return lastWeather
 	}
 
-	let coords = await getGeolocation(data.geolocation)
-	let query = '?provider=auto&data=simple'
+	const coords = await getGeolocation(data.geolocation)
+	const url = new URL('https://weather.bonjourr.fr/')
 
-	query += '&units=' + (data.unit ?? 'metric')
-	query += '&lang=' + getLang()
+	url.searchParams.set('provider', 'auto')
+	url.searchParams.set('data', 'simple')
+	url.searchParams.set('lang', getLang())
+	url.searchParams.set('unit', data.unit === 'metric' ? 'C' : 'F')
 
 	if (coords && coords.lat && coords.lon) {
-		query += '&lat=' + coords.lat
-		query += '&lon=' + coords.lon
+		url.searchParams.set('lat', coords.lat.toString())
+		url.searchParams.set('lon', coords.lon.toString())
 	}
 
 	if (data.geolocation === 'off' && !coords) {
 		const city = data.city ?? 'Paris'
 		const q = encodeURIComponent(city)
-
-		query += '&q=' + q
+		url.searchParams.set('query', q)
 	}
 
-	const response = await weatherFetch(query)
+	const response = await fetch(url)
+
+	if (response.status !== 200) {
+		throw new Error('Cannot get weather')
+	}
+
 	const json: Weather.SimpleWeather = await response?.json()
-
-	if (!json) {
-		return lastWeather
-	}
 
 	let [sunset, sunrise] = [0, 0]
 	const { temp, feels } = json.now

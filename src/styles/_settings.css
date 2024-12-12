@@ -551,6 +551,7 @@ aside form.valid.remove span::after {
 }
 
 #ampm_label.shown,
+#disabled-sync.shown,
 #weather_provider.shown,
 #searchbar_request.shown,
 #worldclocks-list .dropdown.shown {
@@ -824,6 +825,11 @@ aside .settings-title .tooltip {
 
 #i_tabtitle {
 	width: 100%;
+}
+
+#f_addlink > div > div {
+	display: flex;
+	gap: 4px;
 }
 
 #f_addlink {
