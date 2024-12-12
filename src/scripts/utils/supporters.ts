@@ -3,15 +3,16 @@ import onSettingsLoad from './onsettingsload'
 import storage from '../storage'
 
 interface SupportersUpdate {
-    close?: boolean,
-    enabled?: boolean
+    wasClosed?: boolean,
+    enabled?: boolean,
+    storedMonth?: number
 }
 
 const monthNames = [
     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 ];
 
-export function supportersNotifications(init?: Sync.Supporters, update?:SupportersUpdate) {
+export function supportersNotifications(init?: Sync.Supporters, update?: SupportersUpdate) {
     if (update) {
         updateSupportersOption(update)
         return
@@ -33,25 +34,19 @@ export function supportersNotifications(init?: Sync.Supporters, update?:Supporte
             const close = doc.getElementById('supporters-notif-close') as HTMLElement
             const button = doc.getElementById('supporters-notif-button') as HTMLElement
 
-            // const currentMonth = 6 // january for testing
+            // const currentMonth = 1 // january for testing
             const currentMonth = new Date().getMonth() + 1 // production one
 
-            // if it's a new month and notif was closed in previous month
-            // proceeds to enable it for new month 
+            // if it's a new month and notif was closed previously
             if (!supporters_notif || currentMonth === storedMonth && wasClosed) {
                 return
             }
 
-            // detected that it's a new month, so resets wasClosed & stores new month
-            if (wasClosed) {
-                storage.sync.set({
-                    supporters: {
-                        ...init,
-                        storedMonth: currentMonth,
-                        wasClosed: false
-                    }
-                })
-            }
+            // resets closing and stores new month
+            supportersNotifications(undefined, {
+                wasClosed: false,
+                storedMonth: currentMonth
+            })
 
             title.innerText = tradThis(
                 `This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`
@@ -72,12 +67,7 @@ export function supportersNotifications(init?: Sync.Supporters, update?:Supporte
                     supporters_notif?.classList.add('removed')
 
                     // updates data to not show notif again this month
-                    storage.sync.set({
-                        supporters: {
-                            ...init,
-                            wasClosed: true
-                        }
-                    })
+                    supportersNotifications(undefined, { wasClosed: true })
 
                     // completely removes notif HTML after animation is done
                     setTimeout(function () {
@@ -113,13 +103,21 @@ export function supportersNotifications(init?: Sync.Supporters, update?:Supporte
 
 async function updateSupportersOption(update: SupportersUpdate) {
     const data = await storage.sync.get()
+    const newSupporters: any = { ...data.supporters }
 
     if (update.enabled !== undefined) {
-        storage.sync.set({
-            supporters: {
-                ...data.supporters,
-                enabled: update.enabled
-            }
-        })
+        newSupporters.enabled = update.enabled
     }
+    
+    if (update.wasClosed !== undefined) {
+        newSupporters.wasClosed = update.wasClosed
+    }
+    
+    if (update.storedMonth !== undefined) {
+        newSupporters.storedMonth = update.storedMonth
+    }
+
+    storage.sync.set({
+        supporters: newSupporters
+    })
 }
