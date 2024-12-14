@@ -16,6 +16,7 @@ import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
+import { supportersNotifications } from './utils/supporters'
 import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
 import filterImports from './utils/filterimports'
@@ -104,6 +105,7 @@ async function startup() {
 			review: sync.review ?? 0,
 			announce: sync.announcements,
 		})
+		supportersNotifications(sync.supporters)
 	})
 }
 

@@ -20,62 +20,66 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 
     //
     if (init) {
+        if (!init?.enabled) return
+
+        const wasClosed = init?.wasClosed
+        const storedMonth = init?.storedMonth
+
+        // extracts notification template from index.html
+        const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
+        const doc = document.importNode(template.content, true)
+        const supporters_notif = doc.getElementById('supporters-notif')
+        const title = doc.getElementById('supporters-notif-title') as HTMLElement
+        const close = doc.getElementById('supporters-notif-close') as HTMLElement
+        const button = doc.getElementById('supporters-notif-button') as HTMLElement
+
+        // const currentMonth = 1 // january for testing
+        const currentMonth = new Date().getMonth() + 1 // production one
+
+        // if it's a new month and notif was closed previously
+        if (!supporters_notif || currentMonth === storedMonth && wasClosed) {
+            return
+        }
+
+        // resets closing and stores new month
+        supportersNotifications(undefined, {
+            wasClosed: false,
+            storedMonth: currentMonth
+        })
+
+        document.documentElement.setAttribute('supporters_notif_visible', '');
+
         onSettingsLoad(() => {
-            if (!init?.enabled) return
-
-            const wasClosed = init?.wasClosed
-            const storedMonth = init?.storedMonth
-
-            // extracts notification template from index.html
-            const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
-            const doc = document.importNode(template.content, true)
-            const supporters_notif = doc.getElementById('supporters-notif')
-            const title = doc.getElementById('supporters-notif-title') as HTMLElement
-            const close = doc.getElementById('supporters-notif-close') as HTMLElement
-            const button = doc.getElementById('supporters-notif-button') as HTMLElement
-
-            // const currentMonth = 1 // january for testing
-            const currentMonth = new Date().getMonth() + 1 // production one
-
-            // if it's a new month and notif was closed previously
-            if (!supporters_notif || currentMonth === storedMonth && wasClosed) {
-                return
-            }
-
-            // resets closing and stores new month
-            supportersNotifications(undefined, {
-                wasClosed: false,
-                storedMonth: currentMonth
-            })
-
             title.innerText = tradThis(
                 `This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`
             )
+            
             button.innerText = tradThis('Find out who they are')
 
             document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supporters_notif)
 
             // CSS needs the exact notification height for closing animation trick to work
             const mobileDragZone = document.querySelector('#mobile-drag-zone') as HTMLElement
-
+            
             setVariableHeight(supporters_notif, mobileDragZone)
             window.onresize = () => setVariableHeight(supporters_notif, mobileDragZone)
-
-            if (close) {
-                // when clicking on close button
-                close.addEventListener("click", function () {
-                    supporters_notif?.classList.add('removed')
-
-                    // updates data to not show notif again this month
-                    supportersNotifications(undefined, { wasClosed: true })
-
-                    // completely removes notif HTML after animation is done
-                    setTimeout(function () {
-                        supporters_notif.remove()
-                    }, 200)
-                })
-            }
         })
+
+
+        if (close) {
+            // when clicking on close button
+            close.addEventListener("click", function () {
+                document.documentElement.removeAttribute('supporters_notif_visible');
+
+                // updates data to not show notif again this month
+                supportersNotifications(undefined, { wasClosed: true })
+
+                // completely removes notif HTML after animation is done
+                setTimeout(function () {
+                    supporters_notif.remove()
+                }, 200)
+            })
+        }
     }
     
 

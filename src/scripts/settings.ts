@@ -280,7 +280,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 
 	paramId('i_timezone').value = data.clock.timezone
 
-	supportersNotifications(data?.supporters);
+	// supportersNotifications(data?.supporters);
 }
 
 function initOptionsEvents() {

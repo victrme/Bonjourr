@@ -415,6 +415,8 @@ aside form.valid.remove span::after {
 	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
 }
 
+/* supporters notification */
+
 #supporters-notif {
 	position: relative;
 	cursor: pointer;
@@ -424,7 +426,6 @@ aside form.valid.remove span::after {
 	background-color: var(--color-param);
 	color: var(--color-text);
 	border: 1px solid #e3e3e3;
-	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 	background-image:
 			linear-gradient(to left, 
 				rgba(255, 255, 255, 0) 0%, 
@@ -436,17 +437,25 @@ aside form.valid.remove span::after {
 	background-position: right center;
 	overflow: hidden;
 	z-index: 0;
-	top: 0;
 	transition: box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) .3s, top .2s, margin-bottom .2s;
+
+	/* valeur hauteur de la boîte + margin à calculée en JS sur version finale */
+	margin-bottom: var(--supporters-notif-height);
+	top: var(--supporters-notif-height);
 }
 
 [data-theme='dark'] #supporters-notif {
 	border-color: #363636;
-	box-shadow: rgba(100, 100, 111, 0) 0px 7px 29px 0px;
 }
 
-#supporters-notif:hover,
-#supporters-notif:has(#supporters-notif-button:focus) {
+html[supporters_notif_visible] #supporters-notif {
+	top: 0;
+	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+	margin-bottom: 0;
+}
+
+html[supporters_notif_visible] #supporters-notif:hover,
+html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:focus) {
 	border: 1px solid #64b2ff;
 	box-shadow: 0 0 5px #50a8ff78,
 		0 0 10px #50a8ff78,
@@ -454,20 +463,13 @@ aside form.valid.remove span::after {
 		0 0 40px #50a8ff78;
 }
 
-[data-theme='dark'] #supporters-notif:hover, [data-theme='dark'] #supporters-notif:has(#supporters-notif-button:focus) {
+[data-theme='dark'][supporters_notif_visible] #supporters-notif:hover,
+[data-theme='dark'][supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:focus) {
 	border: 1px solid #50A7FF;
 	box-shadow: 0 0 5px #50a8ff53,
 			0 0 10px #50A7FF53,
 			0 0 20px #50A7FF53,
 			0 0 40px #50a8ff53;
-}
-
-
-#supporters-notif.removed {
-	/* valeur hauteur de la boîte + margin à calculée en JS sur version finale */
-	margin-bottom: var(--supporters-notif-height);
-	top: var(--supporters-notif-height);
-	box-shadow: rgba(100, 100, 111, 0) 0px 7px 29px 0px;
 }
 
 #supporters-notif #supporters-notif-close {
@@ -484,7 +486,6 @@ aside form.valid.remove span::after {
 	top: 20px;
 	right: 20px;
 	font-size: 1.1em;
-
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -524,6 +525,33 @@ aside form.valid.remove span::after {
 #supporters-notif-button:focus {
 	outline: unset;
 }
+
+#show-settings:after {
+	content: '';
+	position: absolute;
+	display: block;
+	opacity: 0;
+	width: 8px;
+	height: 8px;
+	left: -2px;
+	top: -2px;
+	background-color: #35d55d;
+	border-radius: 100%;
+	z-index: 10;
+	transition: opacity .3s;
+	border: 1px solid #a9f9bd;
+	box-shadow: 0px 0px 5px 5px rgba(80, 253, 123, 0.15);
+}
+
+html[supporters_notif_visible] #show-settings:after {
+	opacity: 1;
+}
+
+html[supporters_notif_visible] #show-settings.shown:after {
+	opacity: 0;
+}
+
+
 
 #local_options.shown {
 	max-height: 420px;
