@@ -110,6 +110,16 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		pinned: [],
 		synced: [],
 	},
+	backgrounds: {
+		type: 'color',
+		blur: 15,
+		bright: 0.8,
+		frequency: 'hour',
+		color: '#222',
+		urls: [],
+		images: { provider: 'unsplash' },
+		videos: { provider: 'pixabay' },
+	},
 	clock: {
 		size: 1,
 		ampm: false,

@@ -22,12 +22,9 @@ type UpdateOptions = {
 
 export default function initBackground(data: Sync.Storage, local: Local.Storage) {
 	const overlay = document.querySelector<HTMLElement>('#background-overlay')
-	const type = data.background_type
-	const blur = data.background_blur
-	const brightness = data.background_bright
 
 	if (overlay) {
-		overlay.dataset.type = type
+		overlay.dataset.type = data.backgrounds.type
 	}
 
 	if (BROWSER === 'safari') {
@@ -38,12 +35,12 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
 	}
 
-	solidBackgrounds(data.background_solid)
-	backgroundFilter({ blur, brightness })
+	solidBackgrounds(data.backgrounds.type)
+	backgroundFilter(data.backgrounds)
 
-	if (type === 'local') localBackgrounds()
-	if (type === 'videos') videosBackgrounds(1)
-	if (type === 'unsplash') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+	if (data.backgrounds.type === 'files') localBackgrounds()
+	if (data.backgrounds.type === 'videos') videosBackgrounds(1)
+	if (data.backgrounds.type === 'images') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -97,22 +94,25 @@ export function updateBackgroundOption(update: UpdateOptions) {
 	const type = document.querySelector<HTMLInputElement>('#i_type')?.value
 
 	if (update.freq !== undefined) {
-		if (type === 'local') localBackgrounds({ freq: update.freq })
+		if (type === 'files') localBackgrounds({ freq: update.freq })
 		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
-		if (type === 'unsplash') unsplashBackgrounds(undefined, { every: update.freq })
+		if (type === 'images') unsplashBackgrounds(undefined, { every: update.freq })
 	}
 
 	if (update.refresh) {
-		if (type === 'local') localBackgrounds({ refresh: update.refresh })
+		if (type === 'files') localBackgrounds({ refresh: update.refresh })
 		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
-		if (type === 'unsplash') unsplashBackgrounds(undefined, { refresh: update.refresh })
+		if (type === 'images') unsplashBackgrounds(undefined, { refresh: update.refresh })
 	}
 
 	if (update.type) {
-		if (isBackgroundType(update.type)) {
-			handleBackgroundOptions(update.type)
-			storage.sync.set({ background_type: update.type })
-		}
+		storage.sync.get('backgrounds').then(({ backgrounds }) => {
+			if (isBackgroundType(update.type)) {
+				backgrounds.type = update.type
+				handleBackgroundOptions(update.type)
+				storage.sync.set({ backgrounds })
+			}
+		})
 	}
 }
 
@@ -127,16 +127,16 @@ async function handleBackgroundOptions(type: string) {
 		overlay.dataset.type = type
 	}
 
-	document.getElementById('local_options')?.classList.toggle('shown', type === 'local')
-	document.getElementById('solid_options')?.classList.toggle('shown', type === 'solid')
-	document.getElementById('unsplash_options')?.classList.toggle('shown', type === 'unsplash')
+	document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
+	document.getElementById('solid_options')?.classList.toggle('shown', type === 'color')
+	document.getElementById('unsplash_options')?.classList.toggle('shown', type === 'images')
 
-	if (type === 'local') {
+	if (type === 'files') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
 		setTimeout(() => localBackgrounds(), 100)
 	}
 
-	if (type === 'unsplash') {
+	if (type === 'images') {
 		const data = await storage.sync.get()
 		const local = await storage.local.get('unsplashCache')
 
@@ -215,6 +215,6 @@ export function getAverageColor(img: HTMLImageElement) {
 // 	//
 // }
 
-function isBackgroundType(str = ''): str is Sync.Storage['background_type'] {
-	return ['unsplash', 'local', 'videos', 'solid'].includes(str)
+function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] {
+	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
 }

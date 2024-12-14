@@ -95,11 +95,24 @@
 	<div class="wrapper">
 		<label for="i_type" class="trn">Background type</label>
 		<select id="i_type">
-			<option value="unsplash" class="trn">Unsplash</option>
+			<option value="images" class="trn">Images</option>
 			<option value="videos" class="trn">Videos</option>
-			<option value="solid" class="trn">Solid color</option>
-			<option value="local" class="trn">Local file</option>
+			<option value="files" class="trn">Local files</option>
+			<option value="color" class="trn">Color</option>
+			<option value="urls" class="trn">URLs</option>
 		</select>
+	</div>
+
+	<div id="background-provider-option" class="dropdown shown">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_background-provider" class="trn">Provider</label>
+			<select id="i_background-provider">
+				<option value="unsplash">Unsplash</option>
+				<option value="pixabay">Pixabay</option>
+			</select>
+		</div>
 	</div>
 
 	<hr />
@@ -130,6 +143,20 @@
 				</svg>
 			</button>
 		</div>
+	</div>
+
+	<div id="background-urls-option" class="dropdown shown">
+		<hr />
+
+		<label for="i_background-urls" class="trn">Background URLs</label>
+		<textarea
+			id="i_background-urls"
+			name="background-urls"
+			type="text"
+			class="param-textarea"
+			placeholder="https://picsum.photos/200&#10;https://picsum.photos/600/400"
+			maxlength="8000"
+		></textarea>
 	</div>
 
 	<div id="unsplash_options" class="dropdown shown">
@@ -1046,6 +1073,7 @@
 						id="i_qtlist"
 						name="qtlist"
 						type="text"
+						class="param-textarea"
 						placeholder="Author, Your quote.&#10;Author, Your second quote."
 						maxlength="8000"
 					></textarea>
