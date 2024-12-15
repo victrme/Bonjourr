@@ -23,7 +23,7 @@ interface Storage {
 	}
 	type: {
 		get: () => StorageType
-		set: (type: 'sync' | 'local', data: Sync.Storage) => void
+		change: (type: 'sync' | 'local', data: Sync.Storage) => void
 		init: () => void
 	}
 	init: () => Promise<AllStorage>
@@ -72,7 +72,7 @@ function storageTypeFn() {
 		}
 	}
 
-	function set(type: 'sync' | 'local', data: Sync.Storage) {
+	function change(type: 'sync' | 'local', data: Sync.Storage) {
 		if (globalThis.chrome?.storage === undefined) {
 			return
 		}
@@ -88,7 +88,7 @@ function storageTypeFn() {
 		}
 	}
 
-	return { init, get, set }
+	return { init, get, change }
 }
 
 //	Synced data  //
@@ -198,8 +198,13 @@ function localSet(value: Record<string, unknown>) {
 		}
 
 		case 'localstorage': {
-			const [key, val] = Object.entries(value)[0]
-			return localStorage.setItem(key, JSON.stringify(val))
+			for (const [key, val] of Object.entries(value)) {
+				if (typeof val === 'string') {
+					return localStorage.setItem(key, val)
+				} else {
+					return localStorage.setItem(key, JSON.stringify(val))
+				}
+			}
 		}
 	}
 }
