@@ -137,7 +137,8 @@ async function updateSyncOption(update: SyncUpdate) {
 
 	if (update.type && isSyncType(update.type)) {
 		sync.type = update.type
-		storage.type.set(update.type, data)
+		storage.type.set(update.type === 'browser' ? 'sync' : 'local', data)
+
 		toggleSyncSettingsOption(sync, local)
 		handleStoragePersistence(update.type)
 	}

@@ -23,7 +23,7 @@ interface Storage {
 	}
 	type: {
 		get: () => StorageType
-		set: (type: string, data: Sync.Storage) => void
+		set: (type: 'sync' | 'local', data: Sync.Storage) => void
 		init: () => void
 	}
 	init: () => Promise<AllStorage>
@@ -61,28 +61,27 @@ function storageTypeFn() {
 	}
 
 	function init() {
-		const hasLocal = !!(globalThis.startupStorage as AllStorage)?.local?.syncStorage
-		const isOnline = PLATFORM === 'online'
-
-		if (isOnline) type = 'localstorage'
-		if (hasLocal) type = 'webext-local'
-	}
-
-	function set(type: string, data: Sync.Storage) {
-		const toLocal = type !== 'auto'
-		const toSync = type === 'auto'
-
-		if (PLATFORM === 'online') {
+		if (globalThis.chrome?.storage === undefined) {
+			type = 'localstorage'
 			return
 		}
 
-		if (toLocal) {
-			chrome.storage.sync.clear().then(function () {
-				chrome.storage.local.set({ syncStorage: data })
-			})
+		if (!!(globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
+			type = 'webext-local'
+			return
+		}
+	}
+
+	function set(type: 'sync' | 'local', data: Sync.Storage) {
+		if (globalThis.chrome?.storage === undefined) {
+			return
 		}
 
-		if (toSync) {
+		if (type === 'local') {
+			chrome.storage.local.set({ syncStorage: data })
+		}
+
+		if (type === 'sync') {
 			chrome.storage.local.remove('syncStorage').then(function () {
 				chrome.storage.sync.set(data)
 			})
