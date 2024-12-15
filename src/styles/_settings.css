@@ -523,6 +523,10 @@ aside form.valid.remove span::after {
 	max-height: 180px;
 }
 
+.all .as_sync {
+	max-height: 180px;
+}
+
 #mobile-drag-zone {
 	position: sticky;
 	display: none;
@@ -1047,22 +1051,9 @@ aside .settings-title .tooltip {
 }
 
 #file-import,
-#file-download {
-	display: none;
-}
-
-#settings-changes {
-	margin-top: 5px;
-	text-align: center;
-}
-
-#settings-changes.changes #b_settings-cancel,
-#settings-changes #b_settings-copy {
-	display: initial;
-}
-
-#settings-changes #b_settings-cancel,
-#settings-changes.changes #b_settings-copy {
+#file-download,
+#settings-files-options.hidden,
+#settings-changes-options.hidden {
 	display: none;
 }
 
