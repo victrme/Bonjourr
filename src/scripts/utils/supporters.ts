@@ -29,9 +29,6 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
         const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
         const doc = document.importNode(template.content, true)
         const supporters_notif = doc.getElementById('supporters-notif')
-        const title = doc.getElementById('supporters-notif-title') as HTMLElement
-        const close = doc.getElementById('supporters-notif-close') as HTMLElement
-        const button = doc.getElementById('supporters-notif-button') as HTMLElement
 
         // const currentMonth = 1 // january for testing
         const currentMonth = new Date().getMonth() + 1 // production one
@@ -41,11 +38,17 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             return
         }
 
+        const title = doc.getElementById('supporters-notif-title') as HTMLElement
+        const close = doc.getElementById('supporters-notif-close') as HTMLElement
+        const button = doc.getElementById('supporters-notif-button') as HTMLElement
+
         // resets closing and stores new month
         supportersNotifications(undefined, {
             wasClosed: false,
             storedMonth: currentMonth
         })
+
+        supportersModal()
 
         document.documentElement.setAttribute('supporters_notif_visible', '');
 
@@ -124,4 +127,30 @@ async function updateSupportersOption(update: SupportersUpdate) {
     storage.sync.set({
         supporters: newSupporters
     })
+}
+
+
+
+
+
+
+
+
+
+export function supportersModal(state?: boolean) {
+    console.log('bjr')
+    const template = document.getElementById('supporters-modal-template') as HTMLTemplateElement
+    const doc = document.importNode(template.content, true)
+    const supporters_modal = doc.getElementById('supporters-modal-container')
+
+    if (supporters_modal) {
+        console.log(supporters_modal)
+
+        // onSettingsLoad(() => {
+            document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supporters_modal)
+
+        // })
+    }
+
+
 }
