@@ -531,16 +531,16 @@ html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:fo
 	position: absolute;
 	display: block;
 	opacity: 0;
-	width: 8px;
-	height: 8px;
+	width: 7px;
+	height: 7px;
 	left: -2px;
 	top: -2px;
-	background-color: #35d55d;
+	background-color: rgb(30, 161, 255);
 	border-radius: 100%;
 	z-index: 10;
 	transition: opacity .3s;
-	border: 1px solid #a9f9bd;
-	box-shadow: 0px 0px 5px 5px rgba(80, 253, 123, 0.15);
+	border: 1px solid #79bcff;
+	/* box-shadow: 0px 0px 2px 2px #4797e641; */
 }
 
 html[supporters_notif_visible] #show-settings:after {
