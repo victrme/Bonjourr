@@ -66,6 +66,12 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             
             setVariableHeight(supporters_notif, mobileDragZone)
             window.onresize = () => setVariableHeight(supporters_notif, mobileDragZone)
+
+            supportersModal(true)
+
+            supporters_notif.addEventListener("click", function () {
+                supportersModal(undefined, true)
+            })
         })
 
 
@@ -137,20 +143,48 @@ async function updateSupportersOption(update: SupportersUpdate) {
 
 
 
-export function supportersModal(state?: boolean) {
-    console.log('bjr')
-    const template = document.getElementById('supporters-modal-template') as HTMLTemplateElement
-    const doc = document.importNode(template.content, true)
-    const supporters_modal = doc.getElementById('supporters-modal-container')
+export function supportersModal(init?: boolean, state?: boolean) {
+    if (init) {
+        const template = document.getElementById('supporters-modal-template') as HTMLTemplateElement
+        const doc = document.importNode(template.content, true)
+        const supporters_modal = doc.getElementById('supporters-modal-container')
 
-    if (supporters_modal) {
-        console.log(supporters_modal)
+        if (supporters_modal) {
+            onSettingsLoad(() => {
+                const close = doc.getElementById('supporters-modal-close') as HTMLElement
 
-        // onSettingsLoad(() => {
-            document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supporters_modal)
+                // inserts modal dom
+                document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supporters_modal)
+                
+                // close button event
+                close.addEventListener("click", function () {
+                    supportersModal(undefined, false)
+                })
 
-        // })
+                // close when click on background
+                supporters_modal.addEventListener("click", function (event) {
+                    if ((event.target as HTMLElement)?.id === "supporters-modal-container") {
+                        supportersModal(undefined, false)
+                    }
+                })
+
+                // close when esc key
+                document.addEventListener('keydown', (event) => {
+                    if (event.key === 'Escape') {
+                        supportersModal(undefined, false)
+                    }
+                })
+            })
+        }
     }
 
+    if (state !== undefined) {
+        if (state) {
+            document.documentElement.setAttribute('supporters_modal_open', '')
+        } else {
+            document.documentElement.removeAttribute('supporters_modal_open')
+        }
+    }
+    
 
 }

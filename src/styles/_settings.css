@@ -560,17 +560,20 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	left: 0;
 	width: 100dvw;
 	height: 100dvh;
-	backdrop-filter: blur(.65em);
+	backdrop-filter: blur(1em);
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	z-index: 99;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity .2s ease-in;
 }
 
 #supporters-modal {
 	display: block; /* temp */
 	width: 100%;
-	max-width: 800px;
+	max-width: 700px;
 	box-sizing: border-box;
 	position: relative;
 	border: 1px solid #fff1;
@@ -720,6 +723,10 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	}
 }
 
+html[supporters_modal_open] #supporters-modal-container {
+	opacity: 1;
+	pointer-events: all;
+}
 
 #local_options.shown {
 	max-height: 420px;
