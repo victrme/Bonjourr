@@ -457,10 +457,10 @@ html[supporters_notif_visible] #supporters-notif {
 html[supporters_notif_visible] #supporters-notif:hover,
 html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:focus) {
 	border: 1px solid #64b2ff;
-	box-shadow: 0 0 5px #50a8ff78,
-		0 0 10px #50a8ff78,
-		0 0 20px #50A7FF78,
-		0 0 40px #50a8ff78;
+	box-shadow: 0 0 5px #50a8ff50,
+		0 0 10px #50a8ff50,
+		0 0 20px #50A7FF50,
+		0 0 30px #50a8ff50;
 }
 
 [data-theme='dark'][supporters_notif_visible] #supporters-notif:hover,
@@ -551,6 +551,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	opacity: 0;
 }
 
+/* supporters modal */
 
 #supporters-modal-container {
 	position: absolute;
@@ -559,8 +560,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	left: 0;
 	width: 100dvw;
 	height: 100dvh;
-	background-color: rgba(0, 0, 0, 0.15);
-	backdrop-filter: blur(.75em);
+	backdrop-filter: blur(.65em);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -573,25 +573,31 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	max-width: 800px;
 	box-sizing: border-box;
 	position: relative;
+	border: 1px solid #fff1;
 	background-color: rgba(243,243,243, 0.8);
 	color: #131313;
 	border-radius: 15px;
 	margin: 1em;
-	padding-top: 1em;
 	overflow: hidden;
 }
 
+[data-theme='dark'] #supporters-modal {
+	background-color: rgba(20, 20, 20, 0.8);
+	color: var(--color-text);
+}
+
 #supporters-modal #supporters-modal-close {
-	cursor: default;
+	cursor: pointer;
 	border-radius: 100%;
 	position: absolute;
-	top: 30px;
-	right: 30px;
+	top: 25px;
+	right: 25px;
 	font-size: 1.1em;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	padding: 3px;
+	background-color: var(--color-dialog);
 }
 
 #supporters-modal #supporters-modal-close:focus {
@@ -607,8 +613,14 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	stroke: #fff;
 }
 
+#supporters-modal #top-section {
+	max-height: 50vh;
+	overflow-y: scroll;
+	padding-inline: 3em;
+}
+
 #supporters-modal h2 {
-	padding-inline: 1em;
+	margin-top: 2em;
 }
 
 #supporters-modal h2, #supporters-modal h3 {
@@ -616,15 +628,14 @@ html[supporters_notif_visible] #show-settings.shown:after {
 }
 
 #supporters-modal #desc {
-	padding-inline: 1em;
 	max-width: 530px;
 	margin-inline: auto;
-	color: #353535
+	opacity: .9;
 }
 
 #supporters-modal main {
-	padding-inline: 1em;
 	margin-block: 2em;
+	margin-bottom: 3em;
 }
 
 #supporters-modal main h3 {
@@ -635,7 +646,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	margin-top: .75em;
 }
 
-#supporters-modal #bottom-bar {
+#supporters-modal #bottom-section {
 	background-color: #f1f1f1;
 	bottom: 0;
 	left: 0;
@@ -644,22 +655,69 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	gap: 1em;
 	box-sizing: border-box;
+	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+	background-color: var(--color-param);
 }
 
-#supporters-modal #bottom-bar #donate-button {
+[data-theme='dark'] #supporters-modal #bottom-section {
+	background-color: #111111;
+	box-shadow: rgba(20, 20, 20, 0.2) 0px 2px 8px 0px;
+}
+
+#supporters-modal #bottom-section #donate-button {
 	border-radius: 100px;
 	background-color: rgba(var(--blue));
+	border: 1px solid rgba(var(--blue));
 	color: white;
-	padding: .7em .9em;
+	padding: .45em .75em;
 	text-decoration: none;
 	display: inline-flex;
 	align-items: center;
+	box-shadow: rgba(100, 100, 111, 0) 0px 0px 0px 0px;
+	transition: box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) .3s, border cubic-bezier(0.175, 0.885, 0.32, 1.275) .3s;
 }
 
-#supporters-modal #bottom-bar #donate-button svg {
+#supporters-modal #bottom-section #donate-button:hover {
+	border: 1px solid #64b2ff;
+	box-shadow: 0 0 4px #50a8ff29,
+		0 0 5px #50A7FF29,
+		0 0 12px #50A7FF29,
+		0 0 19px #50a8ff29;
+}
+
+[data-theme='dark'] #supporters-modal #bottom-section #donate-button:hover {
+	border: 1px solid #50A7FF;
+	box-shadow: 0 0 4px #50a8ff53,
+		0 0 5px #50A7FF53,
+		0 0 10px #50A7FF53,
+		0 0 15px #50a8ff53;
+}
+
+#supporters-modal #bottom-section #donate-button svg {
 	width: 20px;
 	margin-right: 10px;
+}
+
+@media screen and (max-width: 600px) {
+	#supporters-modal #supporters-modal-close {
+		top: 1em;
+		right: 1em;
+	}
+
+	#supporters-modal #top-section, #supporters-modal #bottom-section {
+		padding-inline: 1em;
+	}
+
+	#supporters-modal h2 {
+		font-size: 1.3em;
+		margin-top: 2.6em;
+	}
+
+	#supporters-modal #bottom-section #phrase {
+		text-align: left;
+	}
 }
 
 
