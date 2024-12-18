@@ -728,6 +728,10 @@ html[supporters_modal_open] #supporters-modal-container {
 	pointer-events: all;
 }
 
+html[supporters_modal_open] #popup.shown {
+	opacity: 0;
+}
+
 #local_options.shown {
 	max-height: 420px;
 }

@@ -48,8 +48,6 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             storedMonth: currentMonth
         })
 
-        supportersModal()
-
         document.documentElement.setAttribute('supporters_notif_visible', '');
 
         onSettingsLoad(() => {
@@ -67,10 +65,13 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             setVariableHeight(supporters_notif, mobileDragZone)
             window.onresize = () => setVariableHeight(supporters_notif, mobileDragZone)
 
+            // inserts supporters modal dom
             supportersModal(true)
 
-            supporters_notif.addEventListener("click", function () {
-                supportersModal(undefined, true)
+            supporters_notif.addEventListener("click", function (event) {
+                if (event.target instanceof Element && !event.target.closest('#supporters-notif-close')) {
+                    supportersModal(undefined, true)
+                }
             })
         })
 
@@ -169,8 +170,8 @@ export function supportersModal(init?: boolean, state?: boolean) {
                 })
 
                 // close when esc key
-                document.addEventListener('keydown', (event) => {
-                    if (event.key === 'Escape') {
+                document.addEventListener('keyup', (event) => {
+                    if (event.key === 'Escape' && document.documentElement.hasAttribute('supporters_modal_open')) {
                         supportersModal(undefined, false)
                     }
                 })
@@ -179,12 +180,13 @@ export function supportersModal(init?: boolean, state?: boolean) {
     }
 
     if (state !== undefined) {
+        document.dispatchEvent(new Event('toggle-settings'))
+
         if (state) {
             document.documentElement.setAttribute('supporters_modal_open', '')
         } else {
             document.documentElement.removeAttribute('supporters_modal_open')
         }
     }
-    
 
 }

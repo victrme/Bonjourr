@@ -200,7 +200,11 @@ function userActionsEvents() {
 			}
 			//
 			else if (keyup) {
-				document.dispatchEvent(new Event('toggle-settings'))
+				// condition to avoid conflicts with esc key on supporters modal 
+				// likely to be improved
+				if (!document.documentElement.hasAttribute('supporters_modal_open')) {
+					document.dispatchEvent(new Event('toggle-settings'))
+				}
 			}
 
 			return
