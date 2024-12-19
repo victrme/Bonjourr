@@ -649,6 +649,27 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	margin-top: .75em;
 }
 
+#supporters-modal main ul {
+	display: inline-block;
+	max-width: 450px;
+	padding: 0;
+	margin: auto;
+	line-height: 1.7em;
+}
+
+#supporters-modal main ul li {
+	display: inline-block;
+}
+
+#supporters-modal main ul li:not(:last-child) {
+	margin-right: 5px;
+}
+
+#supporters-modal main ul li:not(:last-child):after {
+	content: '-';
+	margin-left: 5px;
+}
+
 #supporters-modal #bottom-section {
 	background-color: #f1f1f1;
 	bottom: 0;
