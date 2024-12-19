@@ -8,6 +8,10 @@ interface SupportersUpdate {
     storedMonth?: number
 }
 
+const date = new Date()
+// const currentMonth = 1 // january for testing
+const currentMonth = date.getMonth() + 1 // production one
+
 const monthNames = [
     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 ]
@@ -30,9 +34,6 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
         const doc = document.importNode(template.content, true)
         const supporters_notif = doc.getElementById('supporters-notif')
 
-        const currentMonth = 1 // january for testing
-        // const currentMonth = new Date().getMonth() + 1 // production one
-
         // if it's a new month and notif was closed previously
         if (!supporters_notif || currentMonth === storedMonth && wasClosed) {
             return
@@ -48,7 +49,7 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             storedMonth: currentMonth
         })
 
-        document.documentElement.setAttribute('supporters_notif_visible', '');
+        document.documentElement.setAttribute('supporters_notif_visible', '')
 
         onSettingsLoad(() => {
             title.innerText = tradThis(
@@ -76,11 +77,10 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             })
         })
 
-
         if (close) {
             // when clicking on close button
             close.addEventListener("click", function () {
-                document.documentElement.removeAttribute('supporters_notif_visible');
+                document.documentElement.removeAttribute('supporters_notif_visible')
 
                 // updates data to not show notif again this month
                 supportersNotifications(undefined, { wasClosed: true })
@@ -93,7 +93,6 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
         }
     }
     
-
     function getHeight(element: HTMLElement): number  {
         const rect = element.getBoundingClientRect()
         const style = window.getComputedStyle(element)
@@ -195,19 +194,47 @@ let modalPopulated = false
 export async function populateModal() {
     if (modalPopulated) return
 
-    // let response: Response | undefined
-    // response = await fetch("https://bonjourr-kofi.pages.dev/list")
-    // console.log(response)
+    interface Supporter {
+        date: string
+        name: string
+        amount: number
+        monthly: boolean
+        paidWith: string
+        hashedEmail: string
+    }
 
-    const json = [{ "date": "03/10/2024 22:49:00", "name": "Randy", "amount": 2, "monthly": true, "paidWith": "stripe", "hashedEmail": "LTE2NDA4MDM3MDg=" }, { "date": "14/10/2024 04:27:00", "name": "Ko-fi Supporter", "amount": 5, "monthly": false, "paidWith": "stripe", "hashedEmail": "LTIwNDQwODU3MTk=" }, { "date": "17/10/2024 15:41:00", "name": "Mark B", "amount": 10, "monthly": false, "paidWith": "stripe", "hashedEmail": "LTExNjI5MTg1MDY=" }, { "date": "19/10/2024 18:37:00", "name": "Levon", "amount": 5, "monthly": false, "paidWith": "stripe", "hashedEmail": "LTE4ODE0NTY2Njk=" }, { "date": "28/10/2024 09:56:00", "name": "Francis", "amount": 5, "monthly": true, "paidWith": "stripe", "hashedEmail": "MTQ0MTA3MjM2OA==" }, { "date": "03/11/2024 09:37:00", "name": "Marcel", "amount": 5, "monthly": false, "paidWith": "stripe", "hashedEmail": "MTc1NjE0MDc1" }, { "date": "03/11/2024 22:49:00", "name": "Randy", "amount": 2, "monthly": true, "paidWith": "stripe", "hashedEmail": "LTE2NDA4MDM3MDg=" }, { "date": "07/11/2024 16:47:00", "name": "Ros", "amount": 5, "monthly": false, "paidWith": "stripe", "hashedEmail": "NDEzMDUyOTI5" }, { "date": "28/11/2024 09:56:00", "name": "Francis", "amount": 5, "monthly": true, "paidWith": "stripe", "hashedEmail": "MTQ0MTA3MjM2OA==" }, { "date": "30/11/2024 00:22:00", "name": "SteveWhite", "amount": 5, "monthly": false, "paidWith": "stripe", "hashedEmail": "MTk1NjIwMTY2OA==" }]
+    let response: Response | undefined
+    let supporters: Supporter[] = []
+
+    try {
+        let monthToGet: number
+        let yearToGet: number = date.getFullYear()
+
+        if (currentMonth === 1) {
+            monthToGet = 12
+        } else {
+            monthToGet = currentMonth - 1
+        }
+
+        response = await fetch(`https://kofi.bonjourr.fr/list?date=${monthToGet}/${yearToGet}`)
+
+        if (!response.ok) {
+            console.error(`HTTP error when fetching supporters list! status: ${response.status}`)
+        } else {
+            supporters = await response.json()
+
+        }
+    } catch (error) {
+        console.error("An error occurred:", error)
+    }
 
     // sorts in descending order
-    json.sort((a, b) => b.amount - a.amount)
+    supporters.sort((a, b) => b.amount - a.amount)
 
     const monthlyFragment = document.createDocumentFragment()
     const onceFragment = document.createDocumentFragment()
 
-    json.forEach((supporter: { name: string, monthly: boolean }) => {
+    supporters.forEach((supporter) => {
         const li = document.createElement('li')
         li.innerHTML = supporter.name
         
