@@ -575,5 +575,9 @@
 
 			<template id="settings-template"></template>
 		</div>
+
+		<!-- <canvas id="glitter"></canvas>
+
+		<script type="text/javascript">r = Math.random; a = document.getElementById("glitter"); b = a.getContext("2d"); c = function () { t = this; t.a = r() * 2 + 2; t.b = (r() * w - t.a - 1) + t.a + 1; t.c = t.b; t.d = r() * 50 + 1; t.e = r(); t.f = r() * Math.PI * 2; t.g = r() * 1.5 + 0.5; t.i = (r() * h - t.a - 1) + t.a + 1; t.j = () => { t = this; if (t.i > h + t.a) { t.i = -t.a } else { t.i += t.g } t.f += 0.02; t.b = t.c + t.d * Math.sin(t.f); b.fillStyle = `rgba(255,255,255,${t.e})`; b.fillRect(t.b, t.i, t.a, t.a) } }; e = () => { a.width = w = b.canvas.clientWidth; a.height = h = b.canvas.clientHeight; d = []; for (x = 0; x < Math.ceil((w * h) / 15000); x += 1) { d.push(new c()) } }; window.addEventListener("resize", e); f = () => { requestAnimationFrame(f); b.clearRect(0, 0, w, h); for (x of d) { x.j() } }; e(); f();</script> -->
 	</body>
 </html>

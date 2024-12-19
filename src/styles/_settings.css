@@ -654,7 +654,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	max-width: 450px;
 	padding: 0;
 	margin: auto;
-	line-height: 1.7em;
+	line-height: 1.3em;
 }
 
 #supporters-modal main ul li {
@@ -752,6 +752,15 @@ html[supporters_modal_open] #supporters-modal-container {
 html[supporters_modal_open] #popup.shown {
 	opacity: 0;
 }
+
+/* #glitter {
+	width: 100vw;
+	height: 100vh;
+	position: absolute;
+	top: 0;
+	left: 0;
+} */
+
 
 #local_options.shown {
 	max-height: 420px;
