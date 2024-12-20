@@ -330,10 +330,11 @@ export async function populateModal() {
 
     // Initial setup function
     snowfall.setup = () => {
+        const particleDivisor = 20000 // the higher this number, the lower number of particles 
         snowfall.canvas.width = snowfall.context.canvas.clientWidth;
         snowfall.canvas.height = snowfall.context.canvas.clientHeight;
         snowfall.flakes = [];
-        for (let x = 0; x < Math.ceil((snowfall.canvas.width * snowfall.canvas.height) / 15000); x++) {
+        for (let x = 0; x < Math.ceil((snowfall.canvas.width * snowfall.canvas.height) / particleDivisor); x++) { // 
             snowfall.flakes.push(new snowfall.snowflake());
         }
     }
@@ -352,6 +353,4 @@ export async function populateModal() {
     // Let it snow!
     snowfall.setup();
     snowfall.animate();
-
-
 }
