@@ -563,7 +563,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 #supporters-modal {
 	display: block; /* temp */
 	width: 100%;
-	max-width: 40em;
+	max-width: 48em;
 	box-sizing: border-box;
 	position: relative;
 	border: 1px solid #fff1;
@@ -613,9 +613,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 }
 
 #supporters-modal h2 {
-	display: inline-flex;
-	margin: 1em auto;
-	max-width: 15em;
+	margin: 1.5em;
 }
 
 #supporters-modal h2,
@@ -624,15 +622,15 @@ html[supporters_notif_visible] #show-settings.shown:after {
 }
 
 #supporters-modal #desc {
-	max-width: 530px;
+	max-width: 34em;
 	margin-inline: auto;
 	opacity: 0.9;
 }
 
 #supporters-modal main {
 	display: flex;
-	justify-content: space-around;
-	margin-block: 2em;
+	justify-content: space-evenly;
+	margin-block: 2.5em;
 	text-align: left;
 }
 
@@ -649,21 +647,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	line-height: 1.7em;
 }
 
-/* #supporters-modal main ul li {
-	display: inline-block;
-}
-
-#supporters-modal main ul li:not(:last-child) {
-	margin-right: 5px;
-}
-
-#supporters-modal main ul li:not(:last-child):after {
-	content: '-';
-	margin-left: 5px;
-} */
-
 #supporters-modal #bottom-section {
-	background-color: #f1f1f1;
 	bottom: 0;
 	left: 0;
 	padding: 1em 3em;
@@ -673,13 +657,13 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	align-items: center;
 	gap: 1em;
 	box-sizing: border-box;
-	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-	background-color: var(--color-param);
+	background-color: #e9e6e3;
+	/* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
 }
 
 [data-theme='dark'] #supporters-modal #bottom-section {
 	background-color: #111111;
-	box-shadow: rgba(20, 20, 20, 0.2) 0px 2px 8px 0px;
+	/* box-shadow: rgba(20, 20, 20, 0.2) 0px 2px 8px 0px; */
 }
 
 #supporters-modal #bottom-section #donate-button {
