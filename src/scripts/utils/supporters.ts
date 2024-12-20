@@ -261,4 +261,97 @@ export async function populateModal() {
     document.querySelector('#supporters-modal #once #list')?.appendChild(onceFragment)
 
     modalPopulated = true
+
+
+
+    const snowfall: {
+        canvas: HTMLCanvasElement;
+        context: CanvasRenderingContext2D;
+        snowflake: new () => {
+            size: number;
+            x: number;
+            baseX: number;
+            distance: number;
+            opacity: number;
+            radians: number;
+            fallSpeed: number;
+            y: number;
+            draw: () => void;
+        };
+        setup: () => void;
+        animate: () => void;
+        flakes: Array<ReturnType<typeof snowfall.snowflake>>;
+    } = {} as any;
+
+    snowfall.canvas = document.getElementById("glitter") as HTMLCanvasElement;
+    snowfall.context = snowfall.canvas.getContext("2d") as CanvasRenderingContext2D;
+
+    // Snowflake constructor
+    snowfall.snowflake = class {
+        size: number;
+        x: number;
+        baseX: number;
+        distance: number;
+        opacity: number;
+        radians: number;
+        fallSpeed: number;
+        y: number;
+
+        constructor() {
+            this.size = Math.random() * 1.5 + 1.5;
+            this.x = (Math.random() * snowfall.canvas.width - this.size - 1) + this.size + 1;
+            this.baseX = this.x;
+            this.distance = Math.random() * 50 + 1;
+            this.opacity = Math.random();
+            this.radians = Math.random() * Math.PI * 2;
+            this.fallSpeed = Math.random() * 1.5 + 0.5;
+            this.y = (Math.random() * snowfall.canvas.height - this.size - 1) + this.size + 1;
+        }
+
+        draw = () => {
+            // Moves snowflakes down the screen, pushing them to the top when they go off the canvas
+
+            if (this.y > snowfall.canvas.height + this.size) {
+                this.y = -this.size;
+            } else {
+                this.y += this.fallSpeed;
+            }
+            // Side to side motion on snowflakes
+            this.radians += 0.02;
+            this.x = this.baseX + this.distance * Math.sin(this.radians);
+            // Draws the snowflake as a circle
+            snowfall.context.beginPath();
+            snowfall.context.arc(this.x, this.y, this.size, 0, Math.PI * 2); // Draws a circle
+            snowfall.context.fillStyle = `rgba(255, 202, 56,${this.opacity})`; // Sets the fill color
+            snowfall.context.fill(); // Fills the circle with the color
+            snowfall.context.closePath(); // Closes the path
+        }
+    }
+
+    // Initial setup function
+    snowfall.setup = () => {
+        snowfall.canvas.width = snowfall.context.canvas.clientWidth;
+        snowfall.canvas.height = snowfall.context.canvas.clientHeight;
+        snowfall.flakes = [];
+        for (let x = 0; x < Math.ceil((snowfall.canvas.width * snowfall.canvas.height) / 15000); x++) {
+            snowfall.flakes.push(new snowfall.snowflake());
+        }
+    }
+
+    window.addEventListener("resize", snowfall.setup);
+
+    // Animation loop function
+    snowfall.animate = () => {
+        requestAnimationFrame(snowfall.animate);
+        snowfall.context.clearRect(0, 0, snowfall.canvas.width, snowfall.canvas.height);
+        for (let snowflake of snowfall.flakes) {
+            snowflake.draw();
+        }
+    }
+
+    // Let it snow!
+    snowfall.setup();
+    snowfall.animate();
+
+
 }

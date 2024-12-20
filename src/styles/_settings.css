@@ -567,7 +567,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	z-index: 99;
 	opacity: 0;
 	pointer-events: none;
-	transition: opacity .2s ease-in;
+	transition: opacity .3s ease-in;
 }
 
 #supporters-modal {
@@ -776,14 +776,16 @@ html[supporters_modal_open] #popup.shown {
 	opacity: 0;
 }
 
-/* #glitter {
+#supporters-modal-container #glitter {
+	pointer-events: none;
 	width: 100vw;
 	height: 100vh;
 	position: absolute;
 	top: 0;
 	left: 0;
-} */
-
+	transform: rotate(180deg);
+	color: #fbef68;
+}
 
 #local_options.shown {
 	max-height: 420px;
