@@ -641,6 +641,26 @@ html[supporters_notif_visible] #show-settings.shown:after {
 #supporters-modal main {
 	margin-block: 2em;
 	margin-bottom: 3em;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+	background-image: url('../assets/interface/loading.svg');
+	background-size: 4em;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+#supporters-modal.populated main #monthly:has(#list:empty), #supporters-modal.populated main #once:has(#list:empty) {
+	display: none;
+}
+
+#supporters-modal:not(.populated) main #monthly, #supporters-modal:not(.populated) main #once {
+	opacity: 0;
+}
+
+/* hides loader */
+#supporters-modal.populated main {
+	background-image: unset;
 }
 
 #supporters-modal main h3 {

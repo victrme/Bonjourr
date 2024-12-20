@@ -9,8 +9,8 @@ interface SupportersUpdate {
 }
 
 const date = new Date()
-const currentMonth = 2 // january for testing
-// const currentMonth = date.getMonth() + 1 // production one
+// const currentMonth = 1 // january for testing
+const currentMonth = date.getMonth() + 1 // production one
 
 const monthNames = [
     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
@@ -160,8 +160,8 @@ export function supportersModal(init?: boolean, state?: boolean) {
             onSettingsLoad(() => {
                 tradTemplateString(doc, '#title', 'Supporters like you make Bonjourr possible')
                 tradTemplateString(doc, '#desc', 'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.')
-                tradTemplateString(doc, '#monthly-title', 'Our monthly supporters')
-                tradTemplateString(doc, '#once-title', 'Our one-time supporters')
+                tradTemplateString(doc, '#monthly #title', 'Our monthly supporters')
+                tradTemplateString(doc, '#once #title', 'Our one-time supporters')
                 tradTemplateString(doc, '#phrase', 'Join the community and get your name in Bonjourr.')
                 tradTemplateString(doc, '#donate-button-text', 'Donate')
 
@@ -223,7 +223,7 @@ export async function populateModal() {
         let monthToGet: number
         let yearToGet: number = date.getFullYear()
 
-        if (currentMonth === 1) {
+        if (currentMonth === 1) { // january exception
             monthToGet = 12
         } else {
             monthToGet = currentMonth - 1
@@ -235,8 +235,10 @@ export async function populateModal() {
             console.error(`HTTP error when fetching supporters list! status: ${response.status}`)
         } else {
             supporters = await response.json()
-
         }
+
+        // for loader
+        document.querySelector('#supporters-modal')?.classList.add('populated')
     } catch (error) {
         console.error("An error occurred:", error)
     }
@@ -254,9 +256,9 @@ export async function populateModal() {
         const targetFragment = supporter.monthly ? monthlyFragment : onceFragment
         targetFragment.appendChild(li)
     })
-
-    document.querySelector('#supporters-modal #monthly')?.appendChild(monthlyFragment)
-    document.querySelector('#supporters-modal #once')?.appendChild(onceFragment)
+ 
+    document.querySelector('#supporters-modal #monthly #list')?.appendChild(monthlyFragment)
+    document.querySelector('#supporters-modal #once #list')?.appendChild(onceFragment)
 
     modalPopulated = true
 }
