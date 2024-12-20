@@ -509,7 +509,7 @@
 
 			<template id="supporters-modal-template">
 				<div id="supporters-modal-container">
-					<div id="supporters-modal">
+					<dialog id="supporters-modal">
 						<button id="supporters-modal-close" tabindex="0">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -517,30 +517,28 @@
 						</button>
 
 						<div id="top-section">
-							<h2>✨ <span class="trn">Supporters like you make Bonjourr possible</span> ✨</h2>
-							<p id="desc" class="trn">Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr
-								free, open source, and constantly evolving.</p>
+							<h2>✨ <span class="trn" id="title"></span> ✨</h2>
+							<p id="desc" class="trn"></p>
 							
 							<main>
-								<h3>Our monthly supporters</h3>
+								<h3 id="monthly-title" class="trn"></h3>
 								<ul id="monthly"></ul>
 							
-								<h3>Our one-time supporters</h3>
+								<h3 id="once-title" class="trn"></h3>
 								<ul id="once"></ul>
 							</main>
 						</div>
 
 						<div id="bottom-section">
-							<span id="phrase" class="trn">Join the community and get your name in Bonjourr.</span>
+							<span id="phrase" class="trn"></span>
 							<a id="donate-button" href="https://ko-fi.com/bonjourr" title="Donate on Bonjourr's Ko-Fi page">
-								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-									class="size-6">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
 								</svg>
-								Donate
+								<span id="donate-button-text" class="trn"></span>
 							</a>
 						</div>
-					</div>
+					</dialog>
 				</div>
 			</template>
 

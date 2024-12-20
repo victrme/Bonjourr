@@ -9,12 +9,23 @@ interface SupportersUpdate {
 }
 
 const date = new Date()
-// const currentMonth = 1 // january for testing
-const currentMonth = date.getMonth() + 1 // production one
+const currentMonth = 2 // january for testing
+// const currentMonth = date.getMonth() + 1 // production one
 
 const monthNames = [
     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 ]
+
+function tradTemplateString(doc: DocumentFragment, selector: string, text: string): void {
+    const toTranslate = doc.querySelector(selector) as HTMLElement
+
+    if (toTranslate) {
+        toTranslate.innerText = tradThis(text)
+    } else {
+        console.error(`Error when trying to translate "${selector}"`)
+    }
+}
+
 
 export function supportersNotifications(init?: Sync.Supporters, update?: SupportersUpdate) {
     if (update) {
@@ -39,9 +50,7 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             return
         }
 
-        const title = doc.getElementById('supporters-notif-title') as HTMLElement
         const close = doc.getElementById('supporters-notif-close') as HTMLElement
-        const button = doc.getElementById('supporters-notif-button') as HTMLElement
 
         // resets closing and stores new month
         supportersNotifications(undefined, {
@@ -52,11 +61,8 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
         document.documentElement.setAttribute('supporters_notif_visible', '')
 
         onSettingsLoad(() => {
-            title.innerText = tradThis(
-                `This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`
-            )
-            
-            button.innerText = tradThis('Find out who they are')
+            tradTemplateString(doc, '#supporters-notif-title', `This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`)
+            tradTemplateString(doc, '#supporters-notif-button', 'Find out who they are')
 
             document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supporters_notif)
 
@@ -152,11 +158,18 @@ export function supportersModal(init?: boolean, state?: boolean) {
 
         if (supporters_modal) {
             onSettingsLoad(() => {
+                tradTemplateString(doc, '#title', 'Supporters like you make Bonjourr possible')
+                tradTemplateString(doc, '#desc', 'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.')
+                tradTemplateString(doc, '#monthly-title', 'Our monthly supporters')
+                tradTemplateString(doc, '#once-title', 'Our one-time supporters')
+                tradTemplateString(doc, '#phrase', 'Join the community and get your name in Bonjourr.')
+                tradTemplateString(doc, '#donate-button-text', 'Donate')
+
                 const close = doc.getElementById('supporters-modal-close') as HTMLElement
 
                 // inserts modal dom
                 document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supporters_modal)
-                
+
                 // close button event
                 close.addEventListener("click", function () {
                     supportersModal(undefined, false)

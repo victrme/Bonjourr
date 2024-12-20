@@ -571,6 +571,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 }
 
 #supporters-modal {
+	all: unset;
 	display: block; /* temp */
 	width: 100%;
 	max-width: 700px;
@@ -624,6 +625,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 
 #supporters-modal h2 {
 	margin-top: 2em;
+	font-size: 1.4em;
 }
 
 #supporters-modal h2, #supporters-modal h3 {
@@ -671,7 +673,6 @@ html[supporters_notif_visible] #show-settings.shown:after {
 }
 
 #supporters-modal #bottom-section {
-	background-color: #f1f1f1;
 	bottom: 0;
 	left: 0;
 	padding: 1em 3em;
@@ -683,6 +684,10 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	box-sizing: border-box;
 	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 	background-color: var(--color-param);
+}
+
+#supporters-modal #bottom-section #phrase {
+	text-align: left;
 }
 
 [data-theme='dark'] #supporters-modal #bottom-section {
@@ -699,6 +704,8 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	text-decoration: none;
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 	box-shadow: rgba(100, 100, 111, 0) 0px 0px 0px 0px;
 	transition: box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) .3s, border cubic-bezier(0.175, 0.885, 0.32, 1.275) .3s;
 }
@@ -737,10 +744,6 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	#supporters-modal h2 {
 		font-size: 1.3em;
 		margin-top: 2.6em;
-	}
-
-	#supporters-modal #bottom-section #phrase {
-		text-align: left;
 	}
 }
 
