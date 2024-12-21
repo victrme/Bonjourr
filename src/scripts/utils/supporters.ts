@@ -38,7 +38,7 @@ const months = [
     },
     {
         name: "June",
-        image: "https://images.unsplash.com/photo-1597796608813-002d2de5123d?q=80&w=700&auto=format&fit=crop"
+        image: "https://images.unsplash.com/photo-1551516114-063f4cef7213?q=80&w=700&auto=format&fit=crop"
     },
     {
         name: "July",
