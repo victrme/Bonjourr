@@ -9,8 +9,11 @@ interface SupportersUpdate {
 }
 
 const date = new Date()
-// const currentMonth = 1 // january for testing
 const currentMonth = date.getMonth() + 1 // production one
+const currentYear = date.getFullYear() // production one
+
+// const currentMonth = 1 // january for testing
+// const currentYear = 2025 // testing
 
 const monthNames = [
     "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
@@ -78,7 +81,7 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
             supporters_notif.addEventListener("click", function (event) {
                 if (event.target instanceof Element && !event.target.closest('#supporters-notif-close')) {
                     supportersModal(undefined, true)
-                    populateModal()
+                    loadModalData()
                 }
             })
         })
@@ -203,9 +206,9 @@ export function supportersModal(init?: boolean, state?: boolean) {
     }
 }
 
-let modalPopulated = false
-export async function populateModal() {
-    if (modalPopulated) return
+let modalDataLoaded = false
+export async function loadModalData() {
+    if (modalDataLoaded) return
 
     interface Supporter {
         date: string
@@ -216,19 +219,45 @@ export async function populateModal() {
         hashedEmail: string
     }
 
-    let response: Response | undefined
-    let supporters: Supporter[] = []
+    let monthToGet: number
+    let yearToGet: number = currentYear
+
+    if (currentMonth === 1) { // january exception
+        monthToGet = 12
+        yearToGet = yearToGet - 1
+    } else {
+        monthToGet = currentMonth - 1
+    }
+
+    function injectError(string: string) {
+        let main = document.querySelector('#supporters-modal main')
+        if (main) main.innerHTML = `<i>${string}</i>`
+    }
+
+    function injectData(supporters: Supporter[] = []) {
+        // sorts in descending order
+        supporters.sort((a, b) => b.amount - a.amount)
+
+        const monthlyFragment = document.createDocumentFragment()
+        const onceFragment = document.createDocumentFragment()
+
+        supporters.forEach((supporter) => {
+            const li = document.createElement('li')
+            li.innerHTML = supporter.name
+
+            const targetFragment = supporter.monthly ? monthlyFragment : onceFragment
+            targetFragment.appendChild(li)
+        })
+
+        document.querySelector('#supporters-modal #monthly #list')?.appendChild(monthlyFragment)
+        document.querySelector('#supporters-modal #once #list')?.appendChild(onceFragment)
+
+        console.info(`Loaded supporters data from ${monthToGet}/${yearToGet}.`)
+    }
 
     try {
-        let monthToGet: number
-        let yearToGet: number = date.getFullYear()
-
-        if (currentMonth === 1) { // january exception
-            monthToGet = 12
-        } else {
-            monthToGet = currentMonth - 1
-        }
-
+        let response: Response | undefined
+        let supporters: Supporter[] = []
         response = await fetch(`https://kofi.bonjourr.fr/list?date=${monthToGet}/${yearToGet}`)
 
         if (!response.ok) {
@@ -237,33 +266,28 @@ export async function populateModal() {
             supporters = await response.json()
         }
 
-        // for loader
-        document.querySelector('#supporters-modal')?.classList.add('populated')
+        // removes loader
+        document.querySelector('#supporters-modal')?.classList.add('loaded')
+
+        if (supporters.length !== 0) {
+            injectData(supporters)
+        } else {
+            console.error(`No supporters data found for ${monthToGet}/${yearToGet}`)
+            injectError('An error occured or there were no supporters last month.')
+
+        }
     } catch (error) {
         console.error("An error occurred:", error)
+        injectError('An Internet connection is required to see the supporters names.')
     }
 
-    // sorts in descending order
-    supporters.sort((a, b) => b.amount - a.amount)
-
-    const monthlyFragment = document.createDocumentFragment()
-    const onceFragment = document.createDocumentFragment()
-
-    supporters.forEach((supporter) => {
-        const li = document.createElement('li')
-        li.innerHTML = supporter.name
-        
-        const targetFragment = supporter.monthly ? monthlyFragment : onceFragment
-        targetFragment.appendChild(li)
-    })
- 
-    document.querySelector('#supporters-modal #monthly #list')?.appendChild(monthlyFragment)
-    document.querySelector('#supporters-modal #once #list')?.appendChild(onceFragment)
-
-    modalPopulated = true
+    modalDataLoaded = true
+    initGlitter()
+}
 
 
-
+// glitter animation based off this: github.com/pweth/javascript-snow
+function initGlitter() {
     const snowfall: {
         canvas: HTMLCanvasElement;
         context: CanvasRenderingContext2D;
@@ -319,12 +343,22 @@ export async function populateModal() {
             // Side to side motion on snowflakes
             this.radians += 0.02;
             this.x = this.baseX + this.distance * Math.sin(this.radians);
-            // Draws the snowflake as a circle
+
+            // Apply the shadow blur for the blurry effect
             snowfall.context.beginPath();
             snowfall.context.arc(this.x, this.y, this.size, 0, Math.PI * 2); // Draws a circle
-            snowfall.context.fillStyle = `rgba(255, 202, 56,${this.opacity})`; // Sets the fill color
+
+            // Apply shadow blur and color
+            snowfall.context.shadowBlur = 8; // Adjust blur amount
+            snowfall.context.shadowColor = `rgba(255, 202, 56, ${this.opacity})`; // Shadow color (same as snowflake color)
+
+            snowfall.context.fillStyle = `rgba(255, 202, 56, ${this.opacity})`; // Sets the fill color
             snowfall.context.fill(); // Fills the circle with the color
             snowfall.context.closePath(); // Closes the path
+
+            // Reset the shadow properties for the next frame
+            snowfall.context.shadowBlur = 0;
+            snowfall.context.shadowColor = 'transparent';
         }
     }
 

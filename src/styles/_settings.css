@@ -650,16 +650,16 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	background-position: center;
 }
 
-#supporters-modal.populated main #monthly:has(#list:empty), #supporters-modal.populated main #once:has(#list:empty) {
+#supporters-modal.loaded main #monthly:has(#list:empty), #supporters-modal.loaded main #once:has(#list:empty) {
 	display: none;
 }
 
-#supporters-modal:not(.populated) main #monthly, #supporters-modal:not(.populated) main #once {
+#supporters-modal:not(.loaded) main #monthly, #supporters-modal:not(.loaded) main #once {
 	opacity: 0;
 }
 
 /* hides loader */
-#supporters-modal.populated main {
+#supporters-modal.loaded main {
 	background-image: unset;
 }
 
