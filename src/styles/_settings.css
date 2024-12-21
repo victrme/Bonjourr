@@ -427,11 +427,13 @@ aside form.valid.remove span::after {
 	color: var(--color-text);
 	border: 1px solid #e3e3e3;
 	background-image:
-			linear-gradient(to left, 
-				rgba(255, 255, 255, 0) 0%, 
-				var(--color-param) 75%, 
-				var(--color-param) 100%),
-			url('https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+		linear-gradient(
+			to left,
+			rgba(255, 255, 255, 0) 0%,
+			var(--color-param) 75%,
+			var(--color-param) 100%
+		),
+		var(--supporters-notif-background);
 	background-size: 74%;
 	background-repeat: no-repeat;
 	background-position: right center;

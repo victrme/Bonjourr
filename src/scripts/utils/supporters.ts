@@ -15,9 +15,56 @@ const currentYear = date.getFullYear() // production one
 // const currentMonth = 1 // january for testing
 // const currentYear = 2025 // testing
 
-const monthNames = [
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-]
+const months = [
+    { 
+        name: "January",
+        image: "https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "February",
+        image: "https://images.unsplash.com/photo-1613136391099-c2757009bb12?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "March",
+        image: "https://images.unsplash.com/photo-1457670912047-6ad4485d43eb?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "April",
+        image: "https://images.unsplash.com/photo-1528834342297-fdefb9a5a92b?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "May",
+        image: "https://images.unsplash.com/photo-1486608766848-9b9fe0c37b9d?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "June",
+        image: "https://images.unsplash.com/photo-1597796608813-002d2de5123d?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "July",
+        image: "https://images.unsplash.com/photo-1577353716826-9151912dcdd1?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "August",
+        image: "https://images.unsplash.com/photo-1600699260196-aca47e6d2125?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "September",
+        image: "https://images.unsplash.com/photo-1508255139162-e1f7b7288ab7?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "October",
+        image: "https://images.unsplash.com/photo-1507834392452-0559ec185662?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "November",
+        image: "https://images.unsplash.com/photo-1505567745926-ba89000d255a?q=80&w=700&auto=format&fit=crop"
+    },
+    {
+        name: "December",
+        image: "https://images.unsplash.com/photo-1513267257196-91be473829b3?q=80&w=700&auto=format&fit=crop"
+    }
+];
 
 function tradTemplateString(doc: DocumentFragment, selector: string, text: string): void {
     const toTranslate = doc.querySelector(selector) as HTMLElement
@@ -64,8 +111,14 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
         document.documentElement.setAttribute('supporters_notif_visible', '')
 
         onSettingsLoad(() => {
-            tradTemplateString(doc, '#supporters-notif-title', `This ${monthNames[currentMonth - 1]}, Bonjourr is brought to you by our lovely supporters.`)
+            tradTemplateString(doc, '#supporters-notif-title', `This ${months[currentMonth - 1].name}, Bonjourr is brought to you by our lovely supporters.`)
             tradTemplateString(doc, '#supporters-notif-button', 'Find out who they are')
+
+            // sets backgound image
+            document.documentElement.style.setProperty(
+                "--supporters-notif-background",
+                `url(${months[currentMonth - 1].image})`
+            )
 
             document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supporters_notif)
 
@@ -144,12 +197,6 @@ async function updateSupportersOption(update: SupportersUpdate) {
         supporters: newSupporters
     })
 }
-
-
-
-
-
-
 
 
 
