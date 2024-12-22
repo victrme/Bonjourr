@@ -113,14 +113,14 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 			tradTemplateString(
 				doc,
 				'#supporters-notif-title',
-				`This ${months[currentMonth - 1].name}, Bonjourr is brought to you by our lovely supporters.`,
+				`This ${months[currentMonth - 1].name}, Bonjourr is brought to you by our lovely supporters.`
 			)
 			tradTemplateString(doc, '#supporters-notif-button', 'Find out who they are')
 
 			// sets backgound image
 			document.documentElement.style.setProperty(
 				'--supporters-notif-background',
-				`url(${months[currentMonth - 1].image})`,
+				`url(${months[currentMonth - 1].image})`
 			)
 
 			document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supporters_notif)
@@ -175,7 +175,7 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 
 		document.documentElement.style.setProperty(
 			'--supporters-notif-height',
-			'-' + (getHeight(element) + (isMobileSettings ? 40 : 0)).toString() + 'px',
+			'-' + (getHeight(element) + (isMobileSettings ? 40 : 0)).toString() + 'px'
 		)
 	}
 }
@@ -213,7 +213,7 @@ export function supportersModal(init?: boolean, state?: boolean) {
 				tradTemplateString(
 					doc,
 					'#desc',
-					'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.',
+					'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.'
 				)
 				tradTemplateString(doc, '#monthly #title', 'Our monthly supporters')
 				tradTemplateString(doc, '#once #title', 'Our one-time supporters')
@@ -334,7 +334,10 @@ export async function loadModalData() {
 	}
 
 	modalDataLoaded = true
-	initGlitter()
+
+	if (!document.body.className.includes('potato')) {
+		initGlitter()
+	}
 }
 
 // glitter animation based off this: github.com/pweth/javascript-snow
