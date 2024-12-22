@@ -149,9 +149,12 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 	document.body.classList.remove('loading')
 
-	setTimeout(() => {
-		onInterfaceDisplay()
-	}, Math.max(333, loadtime))
+	setTimeout(
+		() => {
+			onInterfaceDisplay()
+		},
+		Math.max(333, loadtime),
+	)
 }
 
 function onInterfaceDisplay(callback?: () => undefined): void {
@@ -200,7 +203,7 @@ function userActionsEvents() {
 			}
 			//
 			else if (keyup) {
-				// condition to avoid conflicts with esc key on supporters modal 
+				// condition to avoid conflicts with esc key on supporters modal
 				// likely to be improved
 				if (!document.documentElement.hasAttribute('supporters_modal_open')) {
 					document.dispatchEvent(new Event('toggle-settings'))

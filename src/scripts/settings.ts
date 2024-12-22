@@ -194,7 +194,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	// Change edit tips on mobile
 	if (IS_MOBILE) {
 		domsettings.querySelector('.tooltiptext .instructions')!.textContent = tradThis(
-			`Edit your Quick Links by long-pressing the icon.`
+			`Edit your Quick Links by long-pressing the icon.`,
 		)
 	}
 
@@ -715,7 +715,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_supporters_notif').onclickdown(function (_, target) {
-		supportersNotifications(undefined, { enabled: target.checked})
+		supportersNotifications(undefined, { enabled: target.checked })
 	})
 
 	// Sync
@@ -926,7 +926,7 @@ async function selectBackgroundType(cat: string) {
 					unsplash: data.unsplash,
 					cache: local.unsplashCache,
 				}),
-			100
+			100,
 		)
 
 		storage.sync.set({ background_type: 'unsplash' })

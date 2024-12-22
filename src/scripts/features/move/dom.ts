@@ -51,7 +51,7 @@ export function removeOverlay(id?: Widgets) {
 export function removeSelection() {
 	const toolbox = document.getElementById('element-mover')
 	const elements = document.querySelectorAll<HTMLElement>(
-		'.move-overlay, #grid-mover button, .grid-spanner, #element-mover button'
+		'.move-overlay, #grid-mover button, .grid-spanner, #element-mover button',
 	)
 
 	elements.forEach((elem) => {

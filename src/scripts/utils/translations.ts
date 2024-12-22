@@ -80,5 +80,5 @@ export function getLang(): string {
 }
 
 export function tradThis(str: string): string {
-	return trns ? trns[str] ?? str : str
+	return trns ? (trns[str] ?? str) : str
 }
