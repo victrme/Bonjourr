@@ -457,7 +457,7 @@ aside form.valid.remove span::after {
 
 #url-sync.shown,
 #gist-sync.shown {
-	max-height: 160px;
+	max-height: 220px;
 }
 
 /* #gist-sync-status.shown {
@@ -524,7 +524,7 @@ aside form.valid.remove span::after {
 }
 
 .all .as_sync {
-	max-height: 180px;
+	max-height: 280px;
 }
 
 #mobile-drag-zone {
@@ -946,59 +946,6 @@ aside .settings-title .tooltip {
 	width: 50px;
 }
 
-.grid-btns {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	justify-content: end;
-}
-
-.grid-btns button {
-	text-align: right;
-}
-
-#grid-layout {
-	display: flex;
-	padding: 4px;
-	column-gap: 1em;
-}
-
-#grid-layout button {
-	display: flex;
-	align-items: center;
-	justify-content: space-evenly;
-	padding: 0;
-	opacity: 0.7;
-	width: 4em;
-	border-radius: 4px;
-	outline: 2px solid var(--color-placeholder);
-	background-color: var(--color-input);
-}
-
-#grid-layout button span {
-	height: 2em;
-	width: 2px;
-	background-color: var(--color-placeholder);
-}
-
-#grid-layout button.selected {
-	outline-width: 3px;
-}
-
-#grid-layout button:hover,
-#grid-layout button:focus-visible,
-#grid-layout button.selected {
-	opacity: 1;
-	outline-color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
-}
-
-#grid-layout button:hover span,
-#grid-layout button:focus-visible span,
-#grid-layout button.selected span {
-	background-color: var(--color-blue);
-}
-
 /* Settings managment */
 
 #settings-managment {
@@ -1059,62 +1006,18 @@ aside .settings-title .tooltip {
 
 /* Synchronization */
 
-.sync-status {
-	margin-top: 0px;
-	padding: 0px 8px;
-}
-
-.sync-status.shown {
-	margin-top: 4px;
-	padding: 8px;
-}
-
-.sync-status div {
-	font-size: 14px;
-	color: var(--color-light-text);
-	margin-left: 8px;
-	padding: 4px 0px 4px 8px;
-	overflow: hidden;
-	max-height: 0;
-}
-
-.sync-status div p {
-	margin-left: 8px;
-}
-
-.sync-status div.shown {
-	max-height: 100px;
-}
-
-.sync-status .status-icon {
-	display: inline-block;
-	text-align: center;
-	width: 18px;
-	font-size: 18px;
-	line-height: 18px;
-	margin-right: 4px;
-}
-
-.sync-status .status-valid::after {
-	content: '☑';
-	color: var(--color-green);
-}
-
-.sync-status .status-error::after {
-	content: '𐄂';
-	color: var(--color-red);
-}
-
-.sync-status .status-none::after {
-	content: '−';
+#gist-sync-status-wrapper {
+	display: flex;
+	flex-direction: column;
+	text-align: right;
+	font-size: 13px;
+	padding-inline-end: 1em;
 	color: var(--color-light-text);
 }
 
-.sync-status p.sync-status-time {
-	display: none;
-	font-size: 14px;
-	line-height: 20px;
-	color: var(--color-light-text);
+#gist-sync-status-wrapper,
+#gist-sync-status-wrapper a {
+	font-size: 13px;
 }
 
 /* Reset */

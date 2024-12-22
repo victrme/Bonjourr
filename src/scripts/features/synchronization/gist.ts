@@ -1,4 +1,4 @@
-import { tradThis } from '../../utils/translations'
+import { getLang, tradThis } from '../../utils/translations'
 
 interface GistItem {
 	url: string
@@ -21,15 +21,59 @@ interface GistFile {
 	size: number
 }
 
+export async function setGistStatus(token?: string, id?: string): Promise<boolean> {
+	const wrapper = document.getElementById('gist-sync-status-wrapper') as HTMLElement
+	const base = document.getElementById('gist-sync-status-base') as HTMLSpanElement
+
+	if (!token) {
+		document.querySelector('#gist-sync-status')?.remove()
+		base.textContent = tradThis('Waiting for authentification')
+		return false
+	}
+
+	if (!id) {
+		document.querySelector('#gist-sync-status')?.remove()
+		base.textContent = tradThis('No saved data yet')
+		return false
+	}
+
+	const resp = await fetch(`https://api.github.com/gists/${id}`, { headers: gistHeaders(token) })
+
+	if (resp.status !== 200) {
+		document.querySelector('#gist-sync-status')?.remove()
+		base.textContent = tradThis('No saved data yet')
+		return false
+	}
+
+	const json = await resp.json()
+	const isoDate = json.updated_at
+	const dateString = new Date(isoDate).toLocaleString(getLang(), {
+		day: '2-digit',
+		month: '2-digit',
+		year: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+	})
+
+	document.querySelector('#gist-sync-status')?.remove()
+
+	const link = document.createElement('a')
+	link.id = 'gist-sync-status'
+	link.href = json.html_url
+	link.textContent = dateString
+
+	wrapper?.appendChild(link)
+
+	base.textContent = tradThis('Last update')
+
+	return true
+}
+
 export async function retrieveGist(token: string, id?: string): Promise<Sync.Storage> {
 	type GistGet = { files: { content: string }[] }
 
-	if (!token) {
-		throw new Error(GIST_ERROR.TOKEN)
-	}
-	if (!id) {
-		throw new Error(GIST_ERROR.ID)
-	}
+	if (!token) throw new Error(GIST_ERROR.TOKEN)
+	if (!id) throw new Error(GIST_ERROR.ID)
 
 	const req = await fetch(`https://api.github.com/gists/${id}`, {
 		headers: gistHeaders(token),
