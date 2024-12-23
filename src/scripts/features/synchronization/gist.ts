@@ -200,7 +200,7 @@ function gistHeaders(token: string) {
 
 const GIST_ERROR = {
 	ID: tradThis('Gist id in settings is invalid'),
-	TOKEN: tradThis('Invalid authentification token'),
+	TOKEN: tradThis('Invalid token'),
 	NOGIST: tradThis('Cannot find bonjourr file in gists'),
 	NOCONN: tradThis('Cannot access Github servers right now'),
 	JSON: tradThis('Response is not valid JSON'),
