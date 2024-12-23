@@ -262,6 +262,10 @@ let modalDataLoaded = false
 export async function loadModalData() {
 	if (modalDataLoaded) return
 
+	if (!document.body.className.includes('potato')) {
+		initGlitter()
+	}
+
 	interface Supporter {
 		date: string
 		name: string
@@ -334,10 +338,6 @@ export async function loadModalData() {
 	}
 
 	modalDataLoaded = true
-
-	if (!document.body.className.includes('potato')) {
-		initGlitter()
-	}
 }
 
 // glitter animation based off this: github.com/pweth/javascript-snow

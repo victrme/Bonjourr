@@ -19,7 +19,7 @@
 	outline-offset: -2px;
 	border-radius: 10px;
 	box-sizing: border-box;
-	background: var(--color-param);
+	background: rgb(var(--color-param));
 	-webkit-user-select: none;
 	user-select: none;
 	isolation: isolate;

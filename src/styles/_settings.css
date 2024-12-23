@@ -423,10 +423,13 @@ aside form.valid.remove span::after {
 	padding: 1.75em;
 	margin-top: 18px;
 	border-radius: 25px;
-	background-color: var(--color-param);
+	background-color: rgb(var(--color-param));
 	color: var(--color-text);
 	border: 1px solid #e3e3e3;
-	background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, var(--color-param) 75%, var(--color-param) 100%),
+	background-image: linear-gradient(to left,
+		rgba(var(--color-param), 0) 0%,
+		rgba(var(--color-param), 0.9) 55%,
+		rgb(var(--color-param)) 100%),
 		var(--supporters-notif-background);
 	background-size: 74%;
 	background-repeat: no-repeat;
@@ -696,7 +699,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	gap: 1em;
 	box-sizing: border-box;
 	box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-	background-color: var(--color-param);
+	background-color: rgb(var(--color-param));
 }
 
 #supporters-modal #bottom-section #phrase {
@@ -999,7 +1002,7 @@ aside .settings-title .tooltip {
 	margin-top: 18px;
 	padding: 10px 16px;
 	border-radius: 10px;
-	background-color: var(--color-param);
+	background-color: rgb(var(--color-param));
 }
 
 .param + .param {
