@@ -162,7 +162,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		author: false,
 		type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
 		frequency: 'day',
-		last: 1650516688,
+		last: undefined,
 	},
 	font: {
 		family: '',
