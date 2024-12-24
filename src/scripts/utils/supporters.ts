@@ -1,4 +1,4 @@
-import { tradThis } from '../utils/translations'
+import { getLang, tradThis } from '../utils/translations'
 import onSettingsLoad from './onsettingsload'
 import storage from '../storage'
 
@@ -110,12 +110,15 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 		document.documentElement.setAttribute('supporters_notif_visible', '')
 
 		onSettingsLoad(() => {
-			tradTemplateString(
-				doc,
-				'#supporters-notif-title',
-				`This ${months[currentMonth - 1].name}, Bonjourr is brought to you by our lovely supporters.`
-			)
-			tradTemplateString(doc, '#supporters-notif-button', 'Find out who they are')
+			const currentMonthLocale = new Date().toLocaleDateString(getLang(), { month: 'long' })
+			const introString = `This <currentMonth>, Bonjourr is brought to you by our lovely supporters.`
+			const notifTitle = doc.getElementById('supporters-notif-title')
+			const notifButton = doc.getElementById('supporters-notif-button')
+
+			if (notifTitle && notifButton) {
+				notifTitle.textContent = tradThis(introString).replace('<currentMonth>', currentMonthLocale)
+				notifButton.textContent = tradThis('Find out who they are')
+			}
 
 			// sets backgound image
 			document.documentElement.style.setProperty(

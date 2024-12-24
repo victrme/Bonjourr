@@ -426,10 +426,12 @@ aside form.valid.remove span::after {
 	background-color: rgb(var(--color-param));
 	color: var(--color-text);
 	border: 1px solid #e3e3e3;
-	background-image: linear-gradient(to left,
-		rgba(var(--color-param), 0) 0%,
-		rgba(var(--color-param), 0.9) 55%,
-		rgb(var(--color-param)) 100%),
+	background-image: linear-gradient(
+			to left,
+			rgba(var(--color-param), 0) 0%,
+			rgba(var(--color-param), 0.9) 55%,
+			rgb(var(--color-param)) 100%
+		),
 		var(--supporters-notif-background);
 	background-size: 74%;
 	background-repeat: no-repeat;
@@ -881,13 +883,12 @@ html[supporters_modal_open] #popup.shown {
 	max-height: 380px;
 }
 
-.all .as_notifs {
-	max-height: 250px;
-}
-
-.all .as_updates,
 .all .as_notes {
 	max-height: 210px;
+}
+
+.all .as_updates {
+	max-height: 280px;
 }
 
 #mobile-drag-zone {

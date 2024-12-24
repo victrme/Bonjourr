@@ -55,6 +55,14 @@
 	"Most visited": "Most visited",
 	"Import selection": "Import selection",
 
+	"This <currentMonth>, Bonjourr is brought to you by our lovely supporters.": "This <currentMonth>, Bonjourr is brought to you by our lovely supporters.",
+	"Find out who they are": "Find out who they are",
+	"Supporters like you make Bonjourr possible": "Supporters like you make Bonjourr possible",
+	"Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.": "Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.",
+	"Our monthly supporters": "Our monthly supporters",
+	"Our one-time supporters": "Our one-time supporters",
+	"Join the community and get your name in Bonjourr.": "Join the community and get your name in Bonjourr.",
+
 	"Synchronized links require the user to accept permissions": "Synchronized links require the user to accept permissions",
 	"Ask permission": "Ask permission",
 
@@ -251,12 +259,13 @@
 	"CSS snippets.": "CSS snippets.",
 	"Type in your custom CSS": "Type in your custom CSS",
 
+	"Notifications": "Notifications",
 	"Updates": "Updates",
-	"Announcements": "Announcements",
-	"Major updates": "Major updates",
-	"All updates": "All updates",
-	"What are announcements?": "What are announcements?",
-	"Decide when to get notified about Bonjourr updates.": "Decide when to get notified about Bonjourr updates.",
+	"Major": "Major",
+	"All": "All",
+	"Supporters": "Supporters",
+	"What are supporters notifications?": "What are supporters notifications?",
+	"Supporters notifications appear monthly at the top of your settings as a thank you to people who donate and support our work.": "Supporters notifications appear monthly at the top of your settings as a thank you to people who donate and support our work.",
 
 	"Settings management": "Settings management",
 	"Tips on imports & exports": "Tips on imports & exports",
@@ -291,25 +300,5 @@
 	"by": "by",
 	"Consider": "Consider",
 	"donating": "donating",
-	"if you love Bonjourr": "if you love Bonjourr",
-
-	"This January, Bonjourr is brought to you by our lovely supporters.": "This January, Bonjourr is brought to you by our lovely supporters.",
-	"This February, Bonjourr is brought to you by our lovely supporters.": "This February, Bonjourr is brought to you by our lovely supporters.",
-	"This March, Bonjourr is brought to you by our lovely supporters.": "This March, Bonjourr is brought to you by our lovely supporters.",
-	"This April, Bonjourr is brought to you by our lovely supporters.": "This April, Bonjourr is brought to you by our lovely supporters.",
-	"This May, Bonjourr is brought to you by our lovely supporters.": "This May, Bonjourr is brought to you by our lovely supporters.",
-	"This June, Bonjourr is brought to you by our lovely supporters.": "This June, Bonjourr is brought to you by our lovely supporters.",
-	"This July, Bonjourr is brought to you by our lovely supporters.": "This July, Bonjourr is brought to you by our lovely supporters.",
-	"This August, Bonjourr is brought to you by our lovely supporters.": "This August, Bonjourr is brought to you by our lovely supporters.",
-	"This September, Bonjourr is brought to you by our lovely supporters.": "This September, Bonjourr is brought to you by our lovely supporters.",
-	"This October, Bonjourr is brought to you by our lovely supporters.": "This October, Bonjourr is brought to you by our lovely supporters.",
-	"This November, Bonjourr is brought to you by our lovely supporters.": "This November, Bonjourr is brought to you by our lovely supporters.",
-	"This December, Bonjourr is brought to you by our lovely supporters.": "This December, Bonjourr is brought to you by our lovely supporters.",
-
-	"Find out who they are": "Find out who they are",
-	"Supporters like you make Bonjourr possible": "Supporters like you make Bonjourr possible",
-	"Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.": "Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.",
-	"Our monthly supporters": "Our monthly supporters",
-	"Our one-time supporters": "Our one-time supporters",
-	"Join the community and get your name in Bonjourr.": "Join the community and get your name in Bonjourr."
+	"if you love Bonjourr": "if you love Bonjourr"
 }
