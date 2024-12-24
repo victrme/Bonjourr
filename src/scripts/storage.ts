@@ -23,7 +23,7 @@ interface Storage {
 	}
 	type: {
 		get: () => StorageType
-		set: (type: string, data: Sync.Storage) => void
+		change: (type: 'sync' | 'local', data: Sync.Storage) => void
 		init: () => void
 	}
 	init: () => Promise<AllStorage>
@@ -61,35 +61,34 @@ function storageTypeFn() {
 	}
 
 	function init() {
-		const hasLocal = !!(globalThis.startupStorage as AllStorage)?.local?.syncStorage
-		const isOnline = PLATFORM === 'online'
-
-		if (isOnline) type = 'localstorage'
-		if (hasLocal) type = 'webext-local'
-	}
-
-	function set(type: string, data: Sync.Storage) {
-		const toLocal = type !== 'auto'
-		const toSync = type === 'auto'
-
-		if (PLATFORM === 'online') {
+		if (globalThis.chrome?.storage === undefined) {
+			type = 'localstorage'
 			return
 		}
 
-		if (toLocal) {
-			chrome.storage.sync.clear().then(function () {
-				chrome.storage.local.set({ syncStorage: data })
-			})
+		if (!!(globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
+			type = 'webext-local'
+			return
+		}
+	}
+
+	function change(type: 'sync' | 'local', data: Sync.Storage) {
+		if (globalThis.chrome?.storage === undefined) {
+			return
 		}
 
-		if (toSync) {
+		if (type === 'local') {
+			chrome.storage.local.set({ syncStorage: data })
+		}
+
+		if (type === 'sync') {
 			chrome.storage.local.remove('syncStorage').then(function () {
 				chrome.storage.sync.set(data)
 			})
 		}
 	}
 
-	return { init, get, set }
+	return { init, get, change }
 }
 
 //	Synced data  //
@@ -199,8 +198,13 @@ function localSet(value: Record<string, unknown>) {
 		}
 
 		case 'localstorage': {
-			const [key, val] = Object.entries(value)[0]
-			return localStorage.setItem(key, JSON.stringify(val))
+			for (const [key, val] of Object.entries(value)) {
+				if (typeof val === 'string') {
+					return localStorage.setItem(key, val)
+				} else {
+					return localStorage.setItem(key, JSON.stringify(val))
+				}
+			}
 		}
 	}
 }
@@ -380,6 +384,47 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 	}
 
 	return SYNC_DEFAULT
+}
+
+export function isStorageDefault(data: Sync.Storage): boolean {
+	const current = structuredClone(data)
+	current.review = SYNC_DEFAULT.review
+	current.showall = SYNC_DEFAULT.showall
+	current.unsplash.time = SYNC_DEFAULT.unsplash.time
+	current.unsplash.pausedImage = SYNC_DEFAULT.unsplash.pausedImage
+	current.weather.city = SYNC_DEFAULT.weather.city
+	current.quotes.last = SYNC_DEFAULT.quotes.last
+	current.settingssync.type = 'browser'
+
+	return deepEqual(current, SYNC_DEFAULT)
+
+	// https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
+	function deepEqual(object1: Record<string, unknown>, object2: Record<string, unknown>) {
+		const keys1 = Object.keys(object1)
+		const keys2 = Object.keys(object2)
+
+		if (keys1.length !== keys2.length) {
+			return false
+		}
+
+		for (const key of keys1) {
+			const val1 = object1[key]
+			const val2 = object2[key]
+			const areObjects = isObject(val1) && isObject(val2)
+			const areDifferent = (areObjects && !deepEqual(val1, val2)) || (!areObjects && val1 !== val2)
+
+			if (areDifferent) {
+				console.log(val1, val2)
+				return false
+			}
+		}
+
+		return true
+	}
+
+	function isObject(object: unknown) {
+		return object != null && typeof object === 'object'
+	}
 }
 
 function verifyDataAsSync(data: Record<string, unknown>) {

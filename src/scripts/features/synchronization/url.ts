@@ -1,5 +1,4 @@
 import { tradThis } from '../../utils/translations'
-import { apiFetch } from '../../utils'
 
 export async function receiveFromURL(url = ''): Promise<Sync.Storage> {
 	let resp: Response
@@ -14,7 +13,10 @@ export async function receiveFromURL(url = ''): Promise<Sync.Storage> {
 		resp = await fetch(url)
 	} catch (_) {
 		try {
-			resp = (await apiFetch('/proxy?query=' + url)) ?? new Response()
+			resp = await fetch('https://services.bonjourr.fr/proxy', {
+				method: 'POST',
+				body: url,
+			})
 		} catch (_) {
 			throw new Error(DISTANT_ERROR.PROXY)
 		}

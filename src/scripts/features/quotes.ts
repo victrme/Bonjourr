@@ -36,7 +36,7 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	}
 
 	const { lang, quotes } = init.sync
-	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last)
+	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last ?? 0)
 
 	const selection = init.local?.userQuoteSelection ?? 0
 	let list = init.local?.quotesCache ?? []
