@@ -9,11 +9,11 @@ interface SupportersUpdate {
 }
 
 const date = new Date()
-const currentMonth = date.getMonth() + 1 // production one
-const currentYear = date.getFullYear() // production one
+// const currentMonth = date.getMonth() + 1 // production one
+// const currentYear = date.getFullYear() // production one
 
-// const currentMonth = 1 // january for testing
-// const currentYear = 2025 // testing
+const currentMonth = 1 // january for testing
+const currentYear = 2025 // testing
 
 const months = [
 	{

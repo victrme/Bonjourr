@@ -507,6 +507,7 @@ html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:fo
 
 #supporters-notif #supporters-notif-title {
 	line-height: 1.5em;
+	font-size: 1.1em;
 }
 
 #supporters-notif #supporters-notif-button {
