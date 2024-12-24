@@ -13,47 +13,47 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.2.0'
-const ANNOUNCEMENT_VERSION = '20.2.0'
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.4.0'
+const ANNOUNCEMENT_VERSION = '20.4.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: '<b>Version 20.2 ✨</b> Added Chinese and Stoic quotes, improved translations and weather stability, and plenty of bug fixes!',
-	fr: '<b>Version 20.2 ✨</b> Ajout de citations chinoises et stoïques, amélioration des traductions et de la stabilité météo, et nombreuses corrections de bugs !',
-	de: '<b>Version 20.2 ✨</b> Chinesische und stoische Zitate hinzugefügt, verbesserte Übersetzungen und Wetterstabilität, sowie viele Fehlerbehebungen!',
-	it: '<b>Versione 20.2 ✨</b> Aggiunte citazioni cinesi e stoiche, migliorate le traduzioni e la stabilità del meteo, e numerose correzioni di bug!',
-	es: '<b>Versión 20.2 ✨</b> ¡Agregadas citas chinas y estoicas, mejoras en las traducciones y la estabilidad del clima, y muchas correcciones de errores!',
+	en: '<b>Version 20.3 ✨</b> New settings sync methods, weather location suggestions, Korean translations, and backend improvements!',
+	fr: '<b>Version 20.3 ✨</b> Nouvelles méthodes de synchronisation des paramètres, suggestions de localisation météo, traductions coréennes et améliorations du backend !',
+	de: '<b>Version 20.3 ✨</b> Neue Methoden zur Einstellungssynchronisation, Wetterlokationsvorschläge, koreanische Übersetzungen und Backend-Verbesserungen!',
+	it: '<b>Versione 20.3 ✨</b> Nuovi metodi di sincronizzazione delle impostazioni, suggerimenti per la posizione meteo, traduzioni in coreano e miglioramenti backend!',
+	es: '<b>Versión 20.3 ✨</b> Nuevos métodos de sincronización de configuración, sugerencias de ubicación meteorológica, traducciones en coreano y mejoras en el backend!',
 	'pt-BR':
-		'<b>Versão 20.2 ✨</b> Adicionadas citações chinesas e estoicas, melhorias nas traduções e na estabilidade do clima, e muitas correções de bugs!',
+		'<b>Versão 20.3 ✨</b> Novos métodos de sincronização de configurações, sugestões de localização meteorológica, traduções em coreano e melhorias de backend!',
 	'pt-PT':
-		'<b>Versão 20.2 ✨</b> Adicionadas citações chinesas e estoicas, melhorias nas traduções e na estabilidade meteorológica, e várias correções de erros!',
-	nl: '<b>Versie 20.2 ✨</b> Chinese en stoïsche citaten toegevoegd, verbeterde vertalingen en weerstabiliteit, en veel bugfixes!',
-	da: '<b>Version 20.2 ✨</b> Tilføjet kinesiske og stoiske citater, forbedrede oversættelser og vejrstabilitet, og mange fejlrettelser!',
-	sv: '<b>Version 20.2 ✨</b> Lagt till kinesiska och stoiska citat, förbättrade översättningar och väderstabilitet, och många buggfixar!',
-	nb: '<b>Versjon 20.2 ✨</b> Lagt til kinesiske og stoiske sitater, forbedret oversettelser og værstabilitet, og mange feilrettinger!',
-	fi: '<b>Versio 20.2 ✨</b> Lisätty kiinalaisia ja stoalaisia lainauksia, paranneltu käännöksiä ja sään vakautta, sekä paljon vikakorjauksia!',
-	pl: '<b>Wersja 20.2 ✨</b> Dodano cytaty chińskie i stoickie, ulepszono tłumaczenia i stabilność pogody, oraz mnóstwo poprawek błędów!',
-	cs: '<b>Verze 20.2 ✨</b> Přidány čínské a stoické citáty, vylepšené překlady a stabilita počasí, a spousta oprav chyb!',
-	hr: '<b>Verzija 20.2 ✨</b> Dodani kineski i stoički citati, poboljšani prijevodi i stabilnost vremenske prognoze, i mnoštvo ispravaka grešaka!',
-	sk: '<b>Verzia 20.2 ✨</b> Pridané čínske a stoické citáty, vylepšené preklady a stabilita počasia, a množstvo opráv chýb!',
-	hu: '<b>20.2-es verzió ✨</b> Kínai és sztoikus idézetek hozzáadása, fejlesztett fordítások és időjárás-stabilitás, valamint rengeteg hibajavítás!',
-	ro: '<b>Versiunea 20.2 ✨</b> Adăugate citate chinezești și stoice, îmbunătățiri ale traducerilor și stabilității meteo, și numeroase remedieri de erori!',
-	el: '<b>Έκδοση 20.2 ✨</b> Προστέθηκαν κινέζικα και στωικά αποφθέγματα, βελτιωμένες μεταφράσεις και σταθερότητα καιρού, και πολλές διορθώσεις σφαλμάτων!',
-	hy: '<b>Տարբերակ 20.2 ✨</b> Ավելացվել են չինական և ստոիկյան մեջբերումներ, բարելավվել են թարգմանությունները և եղանակի կայունությունը, և բազմաթիվ սխալների ուղղումներ!',
-	sr: '<b>Верзија 20.2 ✨</b> Додати кинески и стоички цитати, побољшани преводи и стабилност временске прогнозе, и много исправки грешака!',
+		'<b>Versão 20.3 ✨</b> Novos métodos de sincronização de definições, sugestões de localização meteorológica, traduções em coreano e melhorias de backend!',
+	nl: '<b>Versie 20.3 ✨</b> Nieuwe methoden voor synchronisatie van instellingen, suggesties voor weerlocatie, Koreaanse vertalingen en backend-verbeteringen!',
+	da: '<b>Version 20.3 ✨</b> Nye metoder til synkronisering af indstillinger, vejrlokalitetsforslag, koreanske oversættelser og backend-forbedringer!',
+	sv: '<b>Version 20.3 ✨</b> Nya metoder för inställningssynkronisering, förslag på väderplats, koreanska översättningar och backend-förbättringar!',
+	nb: '<b>Versjon 20.3 ✨</b> Nye metoder for synkronisering av innstillinger, forslag til værlokalitet, koreanske oversettelser og backend-forbedringer!',
+	fi: '<b>Versio 20.3 ✨</b> Uudet asetusten synkronointimenetelmät, sääsijainnin ehdotukset, korealaiset käännökset ja taustapalvelun parannukset!',
+	pl: '<b>Wersja 20.3 ✨</b> Nowe metody synchronizacji ustawień, propozycje lokalizacji pogody, tłumaczenia koreańskie i ulepszenia zaplecza!',
+	cs: '<b>Verze 20.3 ✨</b> Nové metody synchronizace nastavení, návrhy umístění počasí, korejské překlady a vylepšení backendu!',
+	hr: '<b>Verzija 20.3 ✨</b> Nove metode sinkronizacije postavki, prijedlozi lokacije vremena, korejski prijevodi i poboljšanja pozadinskog sustava!',
+	sk: '<b>Verzia 20.3 ✨</b> Nové metódy synchronizácie nastavení, návrhy polohy počasia, kórejské preklady a vylepšenia backendu!',
+	hu: '<b>20.3 verzió ✨</b> Új beállítás-szinkronizálási módszerek, időjárási helyszín javaslatai, koreai fordítások és háttérrendszer-fejlesztések!',
+	ro: '<b>Versiunea 20.3 ✨</b> Noi metode de sincronizare a setărilor, sugestii de locație meteo, traduceri în coreeană și îmbunătățiri backend!',
+	el: '<b>Έκδοση 20.3 ✨</b> Νέες μέθοδοι συγχρονισμού ρυθμίσεων, προτάσεις τοποθεσίας καιρού, μεταφράσεις στα Κορεάτικα και βελτιώσεις backend!',
+	hy: '<b>Տարբերակ 20.3 ✨</b> Կարգավորումների սինքրոնացման նոր մեթոդներ, եղանակի տեղանքի առաջարկներ, կորեական թարգմանություններ և հետին մասի բարելավումներ!',
+	sr: '<b>Верзија 20.3 ✨</b> Нове методе синхронизације подешавања, предлози локације времена, корејски преводи и побољшања backend-а!',
 	'sr-YU':
-		'<b>Verzija 20.2 ✨</b> Dodati kineski i stoički citati, poboljšani prevodi i stabilnost vremenske prognoze, i mnogo ispravki grešaka!',
-	uk: '<b>Версія 20.2 ✨</b> Додано китайські та стоїчні цитати, покращено переклади та стабільність погоди, та безліч виправлень помилок!',
-	ru: '<b>Версия 20.2 ✨</b> Добавлены китайские и стоические цитаты, улучшены переводы и стабильность погоды, и множество исправлений ошибок!',
-	tr: '<b>Sürüm 20.2 ✨</b> Çin ve Stoacı alıntılar eklendi, çeviriler ve hava durumu kararlılığı iyileştirildi, ve birçok hata düzeltmesi yapıldı!',
-	ar: '<b>الإصدار 20.2 ✨</b> تمت إضافة اقتباسات صينية ورواقية، تحسينات في الترجمات واستقرار الطقس، والعديد من إصلاحات الأخطاء!',
-	fa: '<b>نسخه 20.2 ✨</b> افزودن نقل‌قول‌های چینی و رواقی، بهبود ترجمه‌ها و ثبات آب و هوا، و اصلاح بسیاری از اشکالات!',
-	'zh-CN': '<b>版本 20.2 ✨</b> 新增中国和斯多葛学派名言，改进翻译和天气稳定性，以及大量错误修复！',
-	'zh-HK': '<b>版本 20.2 ✨</b> 新增中國和斯多葛學派名言，改進翻譯和天氣穩定性，以及大量錯誤修復！',
-	'zh-TW': '<b>版本 20.2 ✨</b> 新增中國和斯多葛學派名言，改進翻譯和天氣穩定性，以及大量錯誤修復！',
-	ja: '<b>バージョン20.2 ✨</b> 中国語とストア派の引用を追加、翻訳と天気の安定性を改善、そして多数のバグ修正！',
-	id: '<b>Versi 20.2 ✨</b> Ditambahkan kutipan Cina dan Stoik, peningkatan terjemahan dan stabilitas cuaca, dan banyak perbaikan bug!',
-	ca: "<b>Versió 20.2 ✨</b> Afegides citacions xineses i estoiques, millores en les traduccions i l'estabilitat meteorològica, i moltes correccions d'errors!",
-	vi: '<b>Phiên bản 20.2 ✨</b> Đã thêm trích dẫn Trung Quốc và Khắc kỷ, cải thiện bản dịch và độ ổn định thời tiết, và nhiều sửa lỗi!',
+		'<b>Verzija 20.3 ✨</b> Nove metode sinhronizacije podešavanja, predlozi lokacije vremena, korejski prevodi i poboljšanja backend-a!',
+	uk: '<b>Версія 20.3 ✨</b> Нові методи синхронізації налаштувань, пропозиції розташування погоди, корейські переклади та покращення backend!',
+	ru: '<b>Версия 20.3 ✨</b> Новые методы синхронизации настроек, предложения по местоположению погоды, корейские переводы и улучшения backend!',
+	tr: '<b>Sürüm 20.3 ✨</b> Yeni ayar senkronizasyon yöntemleri, hava konumu önerileri, Korece çeviriler ve arka uç iyileştirmeleri!',
+	ar: '<b>الإصدار 20.3 ✨</b> طرق جديدة لمزامنة الإعدادات، واقتراحات موقع الطقس، وترجمات كورية، وتحسينات الخلفية!',
+	fa: '<b>نسخه 20.3 ✨</b> روش‌های جدید همگام‌سازی تنظیمات، پیشنهادات موقعیت آب و هوایی، ترجمه‌های کره‌ای و بهبودهای پس‌زمینه!',
+	'zh-CN': '<b>版本 20.3 ✨</b> 新的设置同步方法、天气位置建议、韩语翻译和后端改进！',
+	'zh-HK': '<b>版本 20.3 ✨</b> 新的設置同步方法、天氣位置建議、韓語翻譯和後端改進！',
+	'zh-TW': '<b>版本 20.3 ✨</b> 新的設置同步方法、天氣位置建議、韓語翻譯和後端改進！',
+	ja: '<b>バージョン 20.3 ✨</b> 新しい設定同期方法、天気位置の提案、韓国語の翻訳、バックエンドの改善！',
+	id: '<b>Versi 20.3 ✨</b> Metode sinkronisasi pengaturan baru, saran lokasi cuaca, terjemahan Korea, dan perbaikan backend!',
+	ca: '<b>Versió 20.3 ✨</b> Nous mètodes de sincronització de configuració, suggeriments de localització meteorològica, traduccions en coreà i millores de backend!',
+	vi: '<b>Phiên bản 20.3 ✨</b> Các phương pháp đồng bộ hóa cài đặt mới, đề xuất vị trí thời tiết, bản dịch tiếng Hàn và cải tiến backend!',
 }
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'

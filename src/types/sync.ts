@@ -20,8 +20,6 @@ declare namespace Sync {
 		settingssync: SettingsSync
 		announcements: 'all' | 'major' | 'off'
 		reviewPopup?: number | string
-		background_blur: number
-		background_bright: number
 		css: string
 		lang: string
 		favicon: string
@@ -30,8 +28,8 @@ declare namespace Sync {
 		notes?: Notes
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
-		background_type: 'local' | 'unsplash' | 'videos'
 		dateformat: 'auto' | 'eu' | 'us' | 'cn'
+		backgrounds: Backgrounds
 		clock: Clock
 		analogstyle?: AnalogStyle
 		worldclocks: WorldClocks
@@ -77,6 +75,27 @@ declare namespace Sync {
 		weatherdesc?: boolean
 		weathericon?: boolean
 		settingsicon?: boolean
+	}
+
+	type Backgrounds = {
+		type: 'files' | 'urls' | 'images' | 'videos' | 'color'
+		frequency: Frequency
+		bright: number
+		blur: number
+		color: string
+		urls: string[]
+		images: {
+			provider: 'unsplash' | 'pixabay'
+			lastUpdate?: string
+			pausedImage?: unknown
+			customCollection?: string
+		}
+		videos: {
+			provider: 'pixabay'
+			lastUpdate?: string
+			pausedVideo?: unknown
+			customCollection?: string
+		}
 	}
 
 	type Clock = {

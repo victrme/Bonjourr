@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '20.3.0'
+export const CURRENT_VERSION = '20.4.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -90,6 +90,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	background_blur: 15,
 	background_bright: 0.8,
 	background_type: 'unsplash',
+	background_solid: '#222',
 	quicklinks: true,
 	syncbookmarks: undefined,
 	textShadow: 0.2,
@@ -108,6 +109,16 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		groups: ['default'],
 		pinned: [],
 		synced: [],
+	},
+	backgrounds: {
+		type: 'color',
+		blur: 15,
+		bright: 0.8,
+		frequency: 'hour',
+		color: '#222',
+		urls: [],
+		images: { provider: 'unsplash' },
+		videos: { provider: 'pixabay' },
 	},
 	clock: {
 		size: 1,
@@ -162,7 +173,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		author: false,
 		type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
 		frequency: 'day',
-		last: 1650516688,
+		last: undefined,
 	},
 	font: {
 		family: '',
@@ -172,7 +183,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
 	settingssync: {
-		type: PLATFORM === 'online' || PLATFORM === 'safari' ? 'off' : 'browser',
+		type: PLATFORM === 'online' ? 'off' : 'browser',
 		freq: 'manual',
 	},
 	move: {

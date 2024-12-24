@@ -10,6 +10,7 @@ import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
+import solidBackgrounds from './features/backgrounds/solid'
 import { changeGroupTitle, initGroups } from './features/links/groups'
 import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
@@ -120,6 +121,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
+	setInput('i_solid-background', data.background_solid ?? '#222')
 	setInput('i_pagewidth', data.pagewidth || 1600)
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
@@ -243,6 +245,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 
 	// Backgrounds options init
 	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
+	paramId('solid_options')?.classList.toggle('shown', data.background_type === 'solid')
 	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
 	// Quotes option display
@@ -380,6 +383,10 @@ function initOptionsEvents() {
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
 		updateBackgroundOption({ type: this.value })
+	})
+
+	paramId('i_solid-background').addEventListener('input', function () {
+		solidBackgrounds(undefined, this.value)
 	})
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
@@ -765,12 +772,20 @@ function initOptionsEvents() {
 		loadImportFile(this)
 	})
 
-	paramId('b_settings-copy').onclickdown(function (_, target) {
-		copySettings(target)
+	paramId('b_settings-copy').onclickdown(function () {
+		copySettings()
 	})
 
-	paramId('settings-data').addEventListener('input', function () {
-		toggleSettingsChangesButtons('input')
+	paramId('settings-data').addEventListener('input', function (event) {
+		toggleSettingsChangesButtons(event.type)
+	})
+
+	paramId('settings-data').addEventListener('focus', function (event) {
+		toggleSettingsChangesButtons(event.type)
+	})
+
+	paramId('settings-data').addEventListener('blur', function (event) {
+		toggleSettingsChangesButtons(event.type)
 	})
 
 	paramId('b_settings-cancel').onclickdown(function () {
@@ -1008,19 +1023,19 @@ function drawerDragEvents() {
 
 //	Settings management
 
-async function copySettings(target: HTMLElement) {
+async function copySettings() {
+	const copybtn = document.querySelector('#b_settings-copy span')
+	const pre = document.getElementById('settings-data')
+
 	try {
-		const pre = document.getElementById('settings-data')
 		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
-		target.textContent = tradThis('Copied')
-		setTimeout(() => {
-			const domimport = document.getElementById('b_settings-copy')
-			if (domimport) {
-				domimport.textContent = tradThis('Copy')
-			}
-		}, 1000)
-	} catch (err) {
-		console.error('Failed to copy: ', err)
+
+		if (copybtn) {
+			copybtn.textContent = tradThis('Copied')
+			setTimeout(() => (copybtn.textContent = tradThis('Copy')), 1000)
+		}
+	} catch (_) {
+		// ..
 	}
 }
 
@@ -1150,7 +1165,7 @@ function updateSettingsEvent() {
 	}
 }
 
-async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
+async function toggleSettingsChangesButtons(action: string) {
 	const textarea = paramId('settings-data')
 	const data = await storage.sync.get()
 	let hasChanges = false
@@ -1166,6 +1181,12 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 		}
 
 		hasChanges = user.length > 2 && current !== user
+
+		if (hasChanges) {
+			paramId('b_settings-apply')?.removeAttribute('disabled')
+		} else {
+			paramId('b_settings-apply')?.setAttribute('disabled', '')
+		}
 	}
 
 	if (action === 'cancel') {
@@ -1173,12 +1194,14 @@ async function toggleSettingsChangesButtons(action: 'input' | 'cancel') {
 		hasChanges = false
 	}
 
-	if (hasChanges) {
-		paramId('settings-changes')?.classList.toggle('changes', true)
-		paramId('b_settings-apply')?.removeAttribute('disabled')
-	} else {
-		paramId('settings-changes')?.classList.remove('changes')
-		paramId('b_settings-apply')?.setAttribute('disabled', '')
+	if (action === 'focus') {
+		paramId('settings-files-options')?.classList.add('hidden')
+		paramId('settings-changes-options')?.classList.remove('hidden')
+	}
+
+	if (action === 'blur') {
+		paramId('settings-changes-options')?.classList.add('hidden')
+		paramId('settings-files-options')?.classList.remove('hidden')
 	}
 }
 
