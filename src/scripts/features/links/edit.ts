@@ -46,7 +46,8 @@ export default async function openEditDialog(event: Event) {
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
 
-	const ctrlRightClick = !!(event as PointerEvent).ctrlKey && event.type === 'contextmenu'
+	const pointer = event as PointerEvent
+	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
 	const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
 
 	if (ctrlRightClick || pressingE) {

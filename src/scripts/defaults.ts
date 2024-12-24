@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '20.3.0'
+export const CURRENT_VERSION = '20.4.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -173,7 +173,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		author: false,
 		type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
 		frequency: 'day',
-		last: 1650516688,
+		last: undefined,
 	},
 	font: {
 		family: '',
