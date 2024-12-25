@@ -547,6 +547,20 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	opacity: 0;
 }
 
+@media screen and (max-width: 600px) {
+	#supporters-notif {
+		padding: 1.5em;
+	}
+
+	#supporters-notif #supporters-notif-title {
+		font-size: 1em;
+	}
+
+	#supporters-notif #supporters-notif-button {
+		padding: 0.5em 0.7em;
+	}
+}
+
 /* supporters modal */
 
 #supporters-modal-container {

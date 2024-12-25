@@ -8,12 +8,11 @@ interface SupportersUpdate {
 	storedMonth?: number
 }
 
-const date = new Date()
-// const currentMonth = date.getMonth() + 1 // production one
-// const currentYear = date.getFullYear() // production one
+// const date = new Date() // prod
+const date = new Date('January 17, 2025 03:24:00') // testing
 
-const currentMonth = 1 // january for testing
-const currentYear = 2025 // testing
+const currentMonth = date.getMonth() + 1
+const currentYear = date.getFullYear()
 
 const months = [
 	{
@@ -110,7 +109,7 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 		document.documentElement.setAttribute('supporters_notif_visible', '')
 
 		onSettingsLoad(() => {
-			const currentMonthLocale = new Date().toLocaleDateString(getLang(), { month: 'long' })
+			const currentMonthLocale = date.toLocaleDateString(getLang(), { month: 'long' })
 			const introString = `This <currentMonth>, Bonjourr is brought to you by our lovely supporters.`
 			const notifTitle = doc.getElementById('supporters-notif-title')
 			const notifButton = doc.getElementById('supporters-notif-button')
