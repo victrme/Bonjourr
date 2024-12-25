@@ -194,7 +194,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	// Change edit tips on mobile
 	if (IS_MOBILE) {
 		domsettings.querySelector('.tooltiptext .instructions')!.textContent = tradThis(
-			`Edit your Quick Links by long-pressing the icon.`,
+			`Edit your Quick Links by long-pressing the icon.`
 		)
 	}
 
@@ -926,7 +926,7 @@ async function selectBackgroundType(cat: string) {
 					unsplash: data.unsplash,
 					cache: local.unsplashCache,
 				}),
-			100,
+			100
 		)
 
 		storage.sync.set({ background_type: 'unsplash' })
@@ -986,6 +986,9 @@ function drawerDragEvents() {
 	function dragStart(e: Event) {
 		e.preventDefault()
 
+		// prevents touchEvent and pointerEvent from firing at the same time
+		if (settingsDom.classList.contains('dragging-mobile-settings')) return
+
 		// Get mouse / touch y position
 		if (e.type === 'pointerdown') startTouchY = (e as MouseEvent).clientY
 		if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
@@ -998,6 +1001,8 @@ function drawerDragEvents() {
 		window.addEventListener('pointermove', dragMove)
 		document.body.addEventListener('touchend', dragEnd)
 		document.body.addEventListener('pointerup', dragEnd)
+
+		document.body.classList.add('dragging-mobile-settings')
 	}
 
 	function dragMove(e: Event) {
@@ -1038,6 +1043,7 @@ function drawerDragEvents() {
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')
 		settingsDom.style.removeProperty('overflow')
+		settingsDom.classList.remove('dragging')
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {

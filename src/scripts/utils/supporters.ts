@@ -8,8 +8,8 @@ interface SupportersUpdate {
 	storedMonth?: number
 }
 
-// const date = new Date() // prod
-const date = new Date('January 17, 2025 03:24:00') // testing
+const date = new Date() // prod
+// const date = new Date('January 17, 2025 03:24:00') // testing
 
 const currentMonth = date.getMonth() + 1
 const currentYear = date.getFullYear()

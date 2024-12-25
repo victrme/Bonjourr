@@ -912,6 +912,7 @@ html[supporters_modal_open] #popup.shown {
 }
 
 #mobile-drag-zone {
+	touch-action: none;
 	position: sticky;
 	display: none;
 	top: 0;
