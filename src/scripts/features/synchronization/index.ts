@@ -112,8 +112,12 @@ async function updateSyncOption(update: SyncUpdate) {
 			local.gistToken = update.gistToken
 			local.gistId = await findGistId(local.gistToken)
 
+			storage.local.set({
+				gistId: local.gistId,
+				gistToken: local.gistToken,
+			})
+
 			gistsyncform.accept()
-			storage.local.set(local)
 			toggleSyncSettingsOption(sync, local)
 		} catch (error) {
 			gistsyncform.warn(error as string)
@@ -137,7 +141,9 @@ async function updateSyncOption(update: SyncUpdate) {
 
 	if (update.type && isSyncType(update.type)) {
 		sync.type = update.type
-		storage.type.set(update.type, data)
+		storage.sync.set(data)
+		storage.type.change(update.type === 'browser' ? 'sync' : 'local', data)
+
 		toggleSyncSettingsOption(sync, local)
 		handleStoragePersistence(update.type)
 	}

@@ -23,7 +23,7 @@ interface Storage {
 	}
 	type: {
 		get: () => StorageType
-		set: (type: string, data: Sync.Storage) => void
+		change: (type: 'sync' | 'local', data: Sync.Storage) => void
 		init: () => void
 	}
 	init: () => Promise<AllStorage>
@@ -61,35 +61,34 @@ function storageTypeFn() {
 	}
 
 	function init() {
-		const hasLocal = !!(globalThis.startupStorage as AllStorage)?.local?.syncStorage
-		const isOnline = PLATFORM === 'online'
-
-		if (isOnline) type = 'localstorage'
-		if (hasLocal) type = 'webext-local'
-	}
-
-	function set(type: string, data: Sync.Storage) {
-		const toLocal = type !== 'auto'
-		const toSync = type === 'auto'
-
-		if (PLATFORM === 'online') {
+		if (globalThis.chrome?.storage === undefined) {
+			type = 'localstorage'
 			return
 		}
 
-		if (toLocal) {
-			chrome.storage.sync.clear().then(function () {
-				chrome.storage.local.set({ syncStorage: data })
-			})
+		if (!!(globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
+			type = 'webext-local'
+			return
+		}
+	}
+
+	function change(type: 'sync' | 'local', data: Sync.Storage) {
+		if (globalThis.chrome?.storage === undefined) {
+			return
 		}
 
-		if (toSync) {
+		if (type === 'local') {
+			chrome.storage.local.set({ syncStorage: data })
+		}
+
+		if (type === 'sync') {
 			chrome.storage.local.remove('syncStorage').then(function () {
 				chrome.storage.sync.set(data)
 			})
 		}
 	}
 
-	return { init, get, set }
+	return { init, get, change }
 }
 
 //	Synced data  //
@@ -199,8 +198,13 @@ function localSet(value: Record<string, unknown>) {
 		}
 
 		case 'localstorage': {
-			const [key, val] = Object.entries(value)[0]
-			return localStorage.setItem(key, JSON.stringify(val))
+			for (const [key, val] of Object.entries(value)) {
+				if (typeof val === 'string') {
+					return localStorage.setItem(key, val)
+				} else {
+					return localStorage.setItem(key, JSON.stringify(val))
+				}
+			}
 		}
 	}
 }
