@@ -1230,30 +1230,52 @@
 	<div class="param" id="css-editor"></div>
 </div>
 
-<div class="as as_updates">
+<div class="as as_updates dropdown">
 	<div class="settings-title">
-		<h2 class="trn">Updates</h2>
+		<h2 class="trn">Notifications</h2>
 	</div>
 
 	<div class="param">
 		<div class="wrapper">
-			<span>
-				<label for="i_announce" class="trn">Announcements</label>
-				<!-- <button class="tooltip ttannouncements" title="What are announcements?" aria-label="What are announcements?">
-					?
-				</button> -->
-			</span>
+			<label for="i_announce" class="trn">Updates</label>
 
 			<select id="i_announce">
-				<option class="trn" value="all">All updates</option>
-				<option class="trn" value="major">Major updates</option>
+				<option class="trn" value="all">All</option>
+				<option class="trn" value="major">Major</option>
 				<option class="trn" value="off">Disabled</option>
 			</select>
 		</div>
 
-		<!-- <p class="tooltiptext dropdown ttannouncements">
-			<span class="trn">Decide when to get notified about Bonjourr updates.</span>
-		</p> -->
+		<hr />
+
+		<div class="supporters-notif wrapper">
+			<span>
+				<label for="i_supporters_notif" class="trn">Supporters</label>
+				<button
+					class="tooltip ttsupporters"
+					title="What are supporters notifications?"
+					aria-label="What are supporters notifications?"
+				>
+					?
+				</button>
+			</span>
+
+			<input id="i_supporters_notif" class="switch" type="checkbox" />
+		</div>
+
+		<p class="tooltiptext dropdown ttsupporters">
+			<!-- prettier-ignore -->
+			<span class="trn"
+				>The supporters notification appears at the top of your settings to thank those who donate and support our work.</span
+			>
+			<a
+				class="trn"
+				href="https://bonjourr.fr/docs/overview/#supporters-notification"
+				rel="noreferrer noopener"
+				target="_blank"
+				>Learn more</a
+			>
+		</p>
 	</div>
 </div>
 
@@ -1480,11 +1502,19 @@
 					/>
 				</svg>
 			</a>
-			<a href="https://twitter.com/BonjourrTeam" title="Check out our Twitter" rel="noreferrer noopener">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 244">
+			<a href="https://bsky.app/profile/bonjourr.fr" title="Join us on Bluesky" rel="noreferrer noopener">
+				<svg
+					clip-rule="evenodd"
+					fill-rule="evenodd"
+					stroke-linejoin="round"
+					stroke-miterlimit="2"
+					viewBox="0 0 581 511"
+					xmlns="http://www.w3.org/2000/svg"
+				>
 					<path
-						d="M95 243A173 173 0 0 0 269 61c11-8 22-19 30-31-11 5-23 8-35 9 13-7 22-19 27-34a123 123 0 0 1-39 15 61 61 0 0 0-104 56C97 74 52 49 22 12a61 61 0 0 0 19 82 61 61 0 0 1-28-8v1c0 30 21 54 49 60a61 61 0 0 1-16 2l-12-1c8 24 31 42 58 42a123 123 0 0 1-76 27l-15-1c27 17 59 27 94 27"
-					/>
+						d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.38-3.69-10.832-3.708-7.896-.017-2.936-1.193.516-3.707 7.896-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.449-163.25-81.433-5.957-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"
+						fill-rule="nonzero"
+					></path>
 				</svg>
 			</a>
 			<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository" rel="noreferrer noopener">

@@ -25,6 +25,7 @@ import getPermissions from './utils/permissions'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
 import { settingsNotifications } from './utils/notifications'
+import { supportersNotifications } from './utils/supporters'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
 import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
@@ -180,6 +181,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
+	setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
 
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle('on', (data.analogstyle?.background ?? '#fff').includes('#000'))
@@ -277,6 +279,8 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	})
 
 	paramId('i_timezone').value = data.clock.timezone
+
+	// supportersNotifications(data?.supporters);
 }
 
 function initOptionsEvents() {
@@ -710,6 +714,10 @@ function initOptionsEvents() {
 		interfacePopup(undefined, { announcements: this.value })
 	})
 
+	paramId('i_supporters_notif').onclickdown(function (_, target) {
+		supportersNotifications(undefined, { enabled: target.checked })
+	})
+
 	// Sync
 
 	paramId('i_synctype').addEventListener('change', function (this) {
@@ -986,6 +994,9 @@ function drawerDragEvents() {
 	function dragStart(e: Event) {
 		e.preventDefault()
 
+		// prevents touchEvent and pointerEvent from firing at the same time
+		if (settingsDom.classList.contains('dragging-mobile-settings')) return
+
 		// Get mouse / touch y position
 		if (e.type === 'pointerdown') startTouchY = (e as MouseEvent).clientY
 		if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
@@ -998,6 +1009,8 @@ function drawerDragEvents() {
 		window.addEventListener('pointermove', dragMove)
 		document.body.addEventListener('touchend', dragEnd)
 		document.body.addEventListener('pointerup', dragEnd)
+
+		document.body.classList.add('dragging-mobile-settings')
 	}
 
 	function dragMove(e: Event) {
@@ -1038,6 +1051,7 @@ function drawerDragEvents() {
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')
 		settingsDom.style.removeProperty('overflow')
+		settingsDom.classList.remove('dragging')
 
 		// small enough ? close settings
 		if (clientY > window.innerHeight - 100) {
