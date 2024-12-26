@@ -645,7 +645,7 @@ html[supporters_notif_visible] #show-settings.shown:after {
 }
 
 #supporters-modal #desc {
-	max-width: 530px;
+	max-width: 565px;
 	margin-inline: auto;
 	opacity: 0.9;
 }
