@@ -16,6 +16,7 @@ import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
+import { supportersNotifications } from './utils/supporters'
 import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
 import filterImports from './utils/filterimports'
@@ -104,6 +105,7 @@ async function startup() {
 			review: sync.review ?? 0,
 			announce: sync.announcements,
 		})
+		supportersNotifications(sync.supporters)
 	})
 }
 
@@ -147,9 +149,12 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 	document.body.classList.remove('loading')
 
-	setTimeout(() => {
-		onInterfaceDisplay()
-	}, Math.max(333, loadtime))
+	setTimeout(
+		() => {
+			onInterfaceDisplay()
+		},
+		Math.max(333, loadtime),
+	)
 }
 
 function onInterfaceDisplay(callback?: () => undefined): void {
@@ -198,7 +203,11 @@ function userActionsEvents() {
 			}
 			//
 			else if (keyup) {
-				document.dispatchEvent(new Event('toggle-settings'))
+				// condition to avoid conflicts with esc key on supporters modal
+				// likely to be improved
+				if (!document.documentElement.hasAttribute('supporters_modal_open')) {
+					document.dispatchEvent(new Event('toggle-settings'))
+				}
 			}
 
 			return

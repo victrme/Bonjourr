@@ -5,7 +5,7 @@
 
 		<meta charset="utf-8" />
 		<meta name="theme-color" content="#000" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta
 			name="viewport"
@@ -489,6 +489,61 @@
 						<p id="popup_desc"></p>
 					</div>
 					<div id="popup_buttons"></div>
+				</div>
+			</template>
+
+			<template id="supporters-notif-template">
+				<div id="supporters-notif">
+					<button id="supporters-notif-close" tabindex="0">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+						</svg>
+					</button>
+				
+					<div id="supporters-notif-content">
+						<h3 id="supporters-notif-title" class="trn"></h3>
+						<button id="supporters-notif-button" class="trn"></button>
+					</div>
+				</div>
+			</template>
+
+			<template id="supporters-modal-template">
+				<div id="supporters-modal-container">
+					<canvas id="glitter"></canvas>
+					<dialog id="supporters-modal">
+						<button id="supporters-modal-close" tabindex="0">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+							</svg>
+						</button>
+
+						<div id="top-section">
+							<h2>✨ <span class="trn" id="title"></span> ✨</h2>
+							<p id="desc" class="trn"></p>
+							
+							<main>
+								<div id="monthly">
+									<h3 id="title" class="trn"></h3>
+									<ul id="list"></ul>
+								</div>
+
+								<div id="once">
+									<h3 id="title" class="trn"></h3>
+									<ul id="list"></ul>
+								</div>
+							</main>
+						</div>
+
+						<div id="bottom-section">
+							<span id="phrase" class="trn"></span>
+							<a id="donate-button" href="https://ko-fi.com/bonjourr" title="Donate on Bonjourr's Ko-Fi page">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+								</svg>
+								<span id="donate-button-text" class="trn"></span>
+							</a>
+						</div>
+					</dialog>
 				</div>
 			</template>
 
