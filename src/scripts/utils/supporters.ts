@@ -14,66 +14,20 @@ const date = new Date() // prod
 const currentMonth = date.getMonth() + 1
 const currentYear = date.getFullYear()
 
-const months = [
-	{
-		name: 'January',
-		image: 'https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'February',
-		image: 'https://images.unsplash.com/photo-1613136391099-c2757009bb12?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'March',
-		image: 'https://images.unsplash.com/photo-1457670912047-6ad4485d43eb?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'April',
-		image: 'https://images.unsplash.com/photo-1528834342297-fdefb9a5a92b?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'May',
-		image: 'https://images.unsplash.com/photo-1486608766848-9b9fe0c37b9d?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'June',
-		image: 'https://images.unsplash.com/photo-1551516114-063f4cef7213?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'July',
-		image: 'https://images.unsplash.com/photo-1577353716826-9151912dcdd1?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'August',
-		image: 'https://images.unsplash.com/photo-1600699260196-aca47e6d2125?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'September',
-		image: 'https://images.unsplash.com/photo-1508255139162-e1f7b7288ab7?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'October',
-		image: 'https://images.unsplash.com/photo-1507834392452-0559ec185662?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'November',
-		image: 'https://images.unsplash.com/photo-1505567745926-ba89000d255a?q=80&w=700&auto=format&fit=crop',
-	},
-	{
-		name: 'December',
-		image: 'https://images.unsplash.com/photo-1513267257196-91be473829b3?q=80&w=700&auto=format&fit=crop',
-	},
+const monthBackgrounds = [
+	'https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1613136391099-c2757009bb12?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1457670912047-6ad4485d43eb?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1528834342297-fdefb9a5a92b?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1486608766848-9b9fe0c37b9d?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1551516114-063f4cef7213?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1577353716826-9151912dcdd1?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1600699260196-aca47e6d2125?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1508255139162-e1f7b7288ab7?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1507834392452-0559ec185662?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1505567745926-ba89000d255a?q=80&w=700&auto=format&fit=crop',
+	'https://images.unsplash.com/photo-1513267257196-91be473829b3?q=80&w=700&auto=format&fit=crop',
 ]
-
-function tradTemplateString(doc: DocumentFragment, selector: string, text: string): void {
-	const toTranslate = doc.querySelector(selector) as HTMLElement
-
-	if (toTranslate) {
-		toTranslate.innerText = tradThis(text)
-	} else {
-		console.error(`Error when trying to translate "${selector}"`)
-	}
-}
 
 export function supportersNotifications(init?: Sync.Supporters, update?: SupportersUpdate) {
 	if (update) {
@@ -120,10 +74,8 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 			}
 
 			// sets backgound image
-			document.documentElement.style.setProperty(
-				'--supporters-notif-background',
-				`url(${months[currentMonth - 1].image})`
-			)
+			const background = monthBackgrounds[currentMonth - 1]
+			supporters_notif.style.setProperty('--supporters-notif-background', `url(${background})`)
 
 			document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supporters_notif)
 
@@ -136,28 +88,23 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 			// inserts supporters modal dom
 			supportersModal(true)
 
-			supporters_notif.addEventListener('click', function (event) {
-				if (event.target instanceof Element && !event.target.closest('#supporters-notif-close')) {
-					supportersModal(undefined, true)
-					loadModalData()
-				}
+			notifButton?.onclickdown(function () {
+				supportersModal(undefined, true)
+				loadModalData()
 			})
 		})
 
-		if (close) {
-			// when clicking on close button
-			close.addEventListener('click', function () {
-				document.documentElement.removeAttribute('supporters_notif_visible')
+		close?.onclickdown(function () {
+			document.documentElement.removeAttribute('supporters_notif_visible')
 
-				// updates data to not show notif again this month
-				supportersNotifications(undefined, { wasClosed: true })
+			// updates data to not show notif again this month
+			supportersNotifications(undefined, { wasClosed: true })
 
-				// completely removes notif HTML after animation is done
-				setTimeout(function () {
-					supporters_notif.remove()
-				}, 200)
-			})
-		}
+			// completely removes notif HTML after animation is done
+			setTimeout(function () {
+				supporters_notif.remove()
+			}, 200)
+		})
 	}
 
 	function getHeight(element: HTMLElement): number {
@@ -173,12 +120,11 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 	}
 
 	function setVariableHeight(element: HTMLElement, mobileDragZone: HTMLElement) {
-		let isMobileSettings = window.getComputedStyle(mobileDragZone).display === 'block' ? true : false
+		const isMobileSettings = window.getComputedStyle(mobileDragZone).display === 'block' ? true : false
+		const height = (getHeight(element) + (isMobileSettings ? 40 : 0)).toString()
+		const notif = document.getElementById('supporters-notif')
 
-		document.documentElement.style.setProperty(
-			'--supporters-notif-height',
-			'-' + (getHeight(element) + (isMobileSettings ? 40 : 0)).toString() + 'px'
-		)
+		notif?.style.setProperty('--supporters-notif-height', `-${height}px`)
 	}
 }
 
@@ -340,6 +286,16 @@ export async function loadModalData() {
 	}
 
 	modalDataLoaded = true
+}
+
+function tradTemplateString(doc: DocumentFragment, selector: string, text: string): void {
+	const toTranslate = doc.querySelector(selector) as HTMLElement
+
+	if (toTranslate) {
+		toTranslate.innerText = tradThis(text)
+	} else {
+		console.error(`Error when trying to translate "${selector}"`)
+	}
 }
 
 // glitter animation based off this: github.com/pweth/javascript-snow

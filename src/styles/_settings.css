@@ -419,10 +419,9 @@ aside form.valid.remove span::after {
 
 #supporters-notif {
 	position: relative;
-	cursor: pointer;
-	padding: 1.75em;
+	padding: 1.5em 1.8em;
 	margin-top: 18px;
-	border-radius: 25px;
+	border-radius: 1em;
 	background-color: rgb(var(--color-param));
 	color: var(--color-text);
 	border: 1px solid #e3e3e3;
@@ -438,7 +437,7 @@ aside form.valid.remove span::after {
 	background-position: right center;
 	overflow: hidden;
 	z-index: 0;
-	transition: box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s, top 0.2s, margin-bottom 0.2s;
+	transition: box-shadow 0.1s, top 0.2s, margin-bottom 0.2s;
 
 	/* valeur hauteur de la boîte + margin à calculée en JS sur version finale */
 	margin-bottom: var(--supporters-notif-height);
@@ -455,26 +454,34 @@ html[supporters_notif_visible] #supporters-notif {
 	margin-bottom: 0;
 }
 
-html[supporters_notif_visible] #supporters-notif:hover,
-html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:focus) {
+/* html[supporters_notif_visible] #supporters-notif:hover, */
+html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:hover) {
 	border: 1px solid #64b2ff;
 	box-shadow: 0 0 5px #50a8ff50, 0 0 10px #50a8ff50, 0 0 20px #50a7ff50, 0 0 30px #50a8ff50;
 }
 
-[data-theme='dark'][supporters_notif_visible] #supporters-notif:hover,
-[data-theme='dark'][supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:focus) {
+/* [data-theme='dark'][supporters_notif_visible] #supporters-notif:hover, */
+[data-theme='dark'][supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:hover) {
 	border: 1px solid #50a7ff;
 	box-shadow: 0 0 5px #50a8ff53, 0 0 10px #50a7ff53, 0 0 20px #50a7ff53, 0 0 40px #50a8ff53;
 }
 
+#supporters-notif-button:hover {
+	filter: brightness(1.2);
+}
+
+#supporters-notif-close:hover {
+	filter: brightness(1.4);
+}
+
 #supporters-notif #supporters-notif-close {
 	z-index: 2;
-	cursor: default;
+	cursor: pointer;
 	border-radius: 100%;
 	width: 30px;
 	height: 30px;
 	position: absolute;
-	box-shadow: rgba(43, 43, 49, 0.3) 0px 5px 9px 0px;
+	/* box-shadow: rgba(43, 43, 49, 0.3) 0px 5px 9px 0px; */
 	backdrop-filter: blur(4em);
 	-webkit-backdrop-filter: blur(4em);
 	background-color: var(--color-dialog);
@@ -516,6 +523,7 @@ html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:fo
 	color: white;
 	padding: 0.7em 0.9em;
 	margin-top: 1em;
+	transition: filter 0.05s;
 }
 
 #supporters-notif-button:focus {
