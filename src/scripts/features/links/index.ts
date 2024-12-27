@@ -38,7 +38,6 @@ type AddGroups = {
 type MoveToFolder = {
 	source: string
 	target: string
-	group: string
 }
 
 type MoveToGroup = {
@@ -69,6 +68,7 @@ type LinksUpdate = {
 	updateLink?: UpdateLink
 	moveLinks?: string[]
 	moveGroups?: string[]
+	concatFolders?: MoveToFolder
 	moveToFolder?: MoveToFolder
 	moveToGroup?: MoveToGroup
 	moveOutFolder?: { ids: string[]; group: string }
@@ -367,6 +367,7 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.moveGroups) data = moveGroups(update.moveGroups, data)
 	if (update.moveToGroup) data = moveToGroup(update.moveToGroup, data)
 	if (update.moveToFolder) data = moveToFolder(update.moveToFolder, data)
+	if (update.concatFolders) data = concatFolders(update.concatFolders, data)
 	if (update.moveOutFolder) data = moveOutFolder(update.moveOutFolder, data)
 	if (update.updateLink) data = updateLink(update.updateLink, data)
 	if (update.deleteLinks) data = deleteLinks(update.deleteLinks, data)
@@ -501,19 +502,17 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 	return data
 }
 
-function moveToFolder({ target, source, group }: MoveToFolder, data: Sync): Sync {
+function concatFolders({ target, source }: MoveToFolder, data: Sync): Sync {
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
-	const title = linktarget?.title
-	const ids: string[] = []
 
-	if (!linktarget || !linksource) {
+	if (!linktarget.folder || !linksource.folder) {
 		return data
 	}
 
-	const getIdsFrom = (id: string) => getLinksInFolder(data, id).map((l) => l._id)
-	linktarget.folder ? ids.push(target, ...getIdsFrom(target)) : ids.push(target)
-	linksource.folder ? ids.push(source, ...getIdsFrom(source)) : ids.push(source)
+	const sourceIds = getLinksInFolder(data, source).map(({ _id }) => _id)
+	const targetIds = getLinksInFolder(data, target).map(({ _id }) => _id)
+	const ids = [...targetIds, ...sourceIds]
 
 	for (const [key, val] of Object.entries(data)) {
 		if (isLink(val) === false) {
@@ -526,15 +525,24 @@ function moveToFolder({ target, source, group }: MoveToFolder, data: Sync): Sync
 		}
 	}
 
-	;[linksource, linktarget].forEach((link) => {
-		if (link.folder) {
-			delete data[link._id]
-			storage.sync.remove(link._id)
-		}
-	})
+	delete data[source]
+	initblocks(data)
 
-	data = linkSubmission({ ids, type: 'folder', title, group }, data)
-	animateLinksRemove(ids)
+	setTimeout(() => storage.sync.remove(source))
+
+	return data
+}
+
+function moveToFolder({ target, source }: MoveToFolder, data: Sync): Sync {
+	const isSourceElem = typeof (data[source] as Links.Elem)?.url === 'string'
+	const isTargetFolder = (data[target] as Links.Folder)?.folder === true
+
+	if (isSourceElem && isTargetFolder) {
+		;(data[source] as Elem).parent = target
+		;(data[source] as Elem).order = Date.now()
+		initblocks(data)
+	}
+
 	return data
 }
 
