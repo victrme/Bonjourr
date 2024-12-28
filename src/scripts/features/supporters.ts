@@ -87,7 +87,6 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 	document.documentElement.dataset.supporters = ''
 
 	onSettingsLoad(() => {
-		const notifButton = doc.getElementById('supporters-notif-button')
 		const notifClose = doc.getElementById('supporters-notif-close')
 		const settingsNotifs = document.getElementById('settings-notifications')
 		const image = monthBackgrounds[currentMonth - 1]
@@ -98,9 +97,11 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		initSupportersModal()
 		translateNotif()
 
-		notifButton?.onclickdown(function () {
-			toggleSupportersModal(true)
-			loadModalData()
+		supportersNotif?.onclickdown(function (e) {
+			if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
+				toggleSupportersModal(true)
+				loadModalData()
+			}
 		})
 
 		notifClose?.onclickdown(function () {
@@ -180,7 +181,7 @@ function initSupportersModal() {
 
 		// close when esc key
 		document.addEventListener('keyup', (event) => {
-			if (event.key === 'Escape' && document.documentElement.dataset.supportersModal) {
+			if (event.key === 'Escape' && document.documentElement.dataset.supportersModal !== undefined) {
 				toggleSupportersModal(false)
 			}
 		})

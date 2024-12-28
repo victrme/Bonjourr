@@ -21,32 +21,25 @@
 	background-repeat: no-repeat;
 	background-position: right center;
 	transition: box-shadow 0.1s;
+	cursor: pointer;
+	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 [data-theme='dark'] #supporters-notif {
 	border-color: #363636;
 }
 
-#supporters-notif {
-	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-}
-
-#supporters-notif:has(#supporters-notif-button:hover) {
+#supporters-notif:hover:not(:has(#supporters-notif-close:hover)),
+#supporters-notif:focus {
 	border: 1px solid #64b2ff;
 	box-shadow: 0 0 5px #50a8ff50, 0 0 10px #50a8ff50, 0 0 20px #50a7ff50, 0 0 30px #50a8ff50;
+	outline: unset;
 }
 
-[data-theme='dark'] #supporters-notif:has(#supporters-notif-button:hover) {
+[data-theme='dark'] #supporters-notif:hover:not(:has(#supporters-notif-close:hover)),
+#supporters-notif:focus {
 	border: 1px solid #50a7ff;
 	box-shadow: 0 0 5px #50a8ff53, 0 0 10px #50a7ff53, 0 0 20px #50a7ff53, 0 0 40px #50a8ff53;
-}
-
-#supporters-notif-button:hover {
-	filter: brightness(1.2);
-}
-
-#supporters-notif-close:hover {
-	filter: brightness(1.4);
 }
 
 #supporters-notif #supporters-notif-close {
@@ -65,6 +58,10 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+}
+
+#supporters-notif-close:hover {
+	background-color: #191919d7;
 }
 
 #supporters-notif #supporters-notif-close:focus {

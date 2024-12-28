@@ -207,7 +207,7 @@ function userActionsEvents() {
 			else if (keyup) {
 				// condition to avoid conflicts with esc key on supporters modal
 				// likely to be improved
-				if (!document.documentElement.hasAttribute('supporters_modal_open')) {
+				if (document.documentElement.dataset.supportersModal === undefined) {
 					document.dispatchEvent(new Event('toggle-settings'))
 				}
 			}
