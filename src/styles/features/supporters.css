@@ -58,10 +58,15 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	transition: background-color 0.1s;
 }
 
-#supporters-notif-close:hover {
-	background-color: #191919d7;
+#supporters-notif #supporters-notif-close:hover {
+	background-color: white;
+}
+
+[data-theme='dark'] #supporters-notif #supporters-notif-close:hover {
+	background-color: #191919;
 }
 
 #supporters-notif #supporters-notif-close:focus {
@@ -193,6 +198,15 @@ html[data-supporters] #show-settings.shown:after {
 	align-items: center;
 	padding: 3px;
 	background-color: var(--color-dialog);
+	transition: background-color 0.1s;
+}
+
+#supporters-modal #supporters-modal-close:hover {
+	background-color: white;
+}
+
+[data-theme='dark'] #supporters-modal #supporters-modal-close:hover {
+	background-color: #191919;
 }
 
 #supporters-modal #supporters-modal-close:focus {
