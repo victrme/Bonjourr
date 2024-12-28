@@ -42,7 +42,10 @@ export async function settingsPreload() {
 		template.innerHTML = outerHtml
 	}
 
-	if (IS_MOBILE) {
+	// detects mobile devices with a touch screen, excludes laptops with one
+	const isTouchOnly = window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(pointer: fine)').matches
+
+	if (isTouchOnly) {
 		settingsInit()
 		return
 	}
