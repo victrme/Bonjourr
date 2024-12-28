@@ -1,7 +1,7 @@
 import { getLang, tradThis } from '../utils/translations'
-import onSettingsLoad from './onsettingsload'
+import onSettingsLoad from '../utils/onsettingsload'
+import debounce from '../utils/debounce'
 import storage from '../storage'
-import debounce from './debounce'
 
 interface SupportersUpdate {
 	wasClosed?: boolean
