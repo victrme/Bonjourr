@@ -417,6 +417,10 @@ aside form.valid.remove span::after {
 
 /* supporters notification */
 
+#supporters-notif-container.shown {
+	overflow: visible; /* It clips box-shadows on "hidden" */
+}
+
 #supporters-notif {
 	position: relative;
 	padding: 1.5em 1.8em;
@@ -431,37 +435,27 @@ aside form.valid.remove span::after {
 			rgba(var(--color-param), 0.9) 55%,
 			rgb(var(--color-param)) 100%
 		),
-		var(--supporters-notif-background);
+		var(--background);
 	background-size: 74%;
 	background-repeat: no-repeat;
 	background-position: right center;
-	overflow: hidden;
-	z-index: 0;
-	transition: box-shadow 0.1s, top 0.2s, margin-bottom 0.2s;
-
-	/* valeur hauteur de la boîte + margin à calculée en JS sur version finale */
-	margin-bottom: var(--supporters-notif-height);
-	top: var(--supporters-notif-height);
+	transition: box-shadow 0.1s;
 }
 
 [data-theme='dark'] #supporters-notif {
 	border-color: #363636;
 }
 
-html[supporters_notif_visible] #supporters-notif {
-	top: 0;
+#supporters-notif {
 	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-	margin-bottom: 0;
 }
 
-/* html[supporters_notif_visible] #supporters-notif:hover, */
-html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:hover) {
+#supporters-notif:has(#supporters-notif-button:hover) {
 	border: 1px solid #64b2ff;
 	box-shadow: 0 0 5px #50a8ff50, 0 0 10px #50a8ff50, 0 0 20px #50a7ff50, 0 0 30px #50a8ff50;
 }
 
-/* [data-theme='dark'][supporters_notif_visible] #supporters-notif:hover, */
-[data-theme='dark'][supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:hover) {
+[data-theme='dark'] #supporters-notif:has(#supporters-notif-button:hover) {
 	border: 1px solid #50a7ff;
 	box-shadow: 0 0 5px #50a8ff53, 0 0 10px #50a7ff53, 0 0 20px #50a7ff53, 0 0 40px #50a8ff53;
 }
@@ -547,11 +541,11 @@ html[supporters_notif_visible] #supporters-notif:has(#supporters-notif-button:ho
 	/* box-shadow: 0px 0px 2px 2px #4797e641; */
 }
 
-html[supporters_notif_visible] #show-settings:after {
+html[data-supporters] #show-settings:after {
 	opacity: 1;
 }
 
-html[supporters_notif_visible] #show-settings.shown:after {
+html[data-supporters] #show-settings.shown:after {
 	opacity: 0;
 }
 
@@ -784,16 +778,16 @@ html[supporters_notif_visible] #show-settings.shown:after {
 	}
 }
 
-html[supporters_modal_open] body {
+html[data-supporters-modal] body {
 	overflow-y: hidden;
 }
 
-html[supporters_modal_open] #supporters-modal-container {
+html[data-supporters-modal] #supporters-modal-container {
 	opacity: 1;
 	pointer-events: all;
 }
 
-html[supporters_modal_open] #popup.shown {
+html[data-supporters-modal] #popup.shown {
 	opacity: 0;
 }
 
@@ -806,6 +800,10 @@ html[supporters_modal_open] #popup.shown {
 	left: 0;
 	transform: rotate(180deg);
 	color: #fbef68;
+}
+
+#supporters-notif-container.shown {
+	max-height: 180px;
 }
 
 #local_options.shown {

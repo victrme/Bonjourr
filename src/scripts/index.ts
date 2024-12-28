@@ -99,13 +99,13 @@ async function startup() {
 		settingsPreload()
 		userActionsEvents()
 		setPotatoComputerMode()
+		supportersNotifications(sync.supporters)
 		interfacePopup({
 			old: OLD_VERSION,
 			new: CURRENT_VERSION,
 			review: sync.review ?? 0,
 			announce: sync.announcements,
 		})
-		supportersNotifications(sync.supporters)
 	})
 }
 
@@ -149,12 +149,9 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 	document.body.classList.remove('loading')
 
-	setTimeout(
-		() => {
-			onInterfaceDisplay()
-		},
-		Math.max(333, loadtime),
-	)
+	setTimeout(() => {
+		onInterfaceDisplay()
+	}, Math.max(333, loadtime))
 }
 
 function onInterfaceDisplay(callback?: () => undefined): void {

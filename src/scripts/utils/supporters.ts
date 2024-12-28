@@ -1,6 +1,7 @@
 import { getLang, tradThis } from '../utils/translations'
 import onSettingsLoad from './onsettingsload'
 import storage from '../storage'
+import debounce from './debounce'
 
 interface SupportersUpdate {
 	wasClosed?: boolean
@@ -29,6 +30,9 @@ const monthBackgrounds = [
 	'https://images.unsplash.com/photo-1513267257196-91be473829b3?q=80&w=700&auto=format&fit=crop',
 ]
 
+let supportersNotif: HTMLElement
+let supportersModal: HTMLElement
+
 export function supportersNotifications(init?: Sync.Supporters, update?: SupportersUpdate) {
 	if (update) {
 		updateSupportersOption(update)
@@ -45,10 +49,10 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 		// extracts notification template from index.html
 		const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
 		const doc = document.importNode(template.content, true)
-		const supporters_notif = doc.getElementById('supporters-notif')
+		supportersNotif = doc.getElementById('supporters-notif-container') as HTMLElement
 
 		// if it's a new month and notif was closed previously
-		if (!supporters_notif || (currentMonth === storedMonth && wasClosed)) {
+		if (!supportersNotif || (currentMonth === storedMonth && wasClosed)) {
 			return
 		}
 
@@ -60,7 +64,8 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 			storedMonth: currentMonth,
 		})
 
-		document.documentElement.setAttribute('supporters_notif_visible', '')
+		supportersNotif.classList.add('shown')
+		document.documentElement.dataset.supporters = ''
 
 		onSettingsLoad(() => {
 			const currentMonthLocale = date.toLocaleDateString(getLang(), { month: 'long' })
@@ -74,63 +79,30 @@ export function supportersNotifications(init?: Sync.Supporters, update?: Support
 			}
 
 			// sets backgound image
-			const background = monthBackgrounds[currentMonth - 1]
-			supporters_notif.style.setProperty('--supporters-notif-background', `url(${background})`)
+			const image = monthBackgrounds[currentMonth - 1]
+			supportersNotif.style.setProperty('--background', `url(${image})`)
 
-			document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supporters_notif)
+			document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supportersNotif)
 
-			// CSS needs the exact notification height for closing animation trick to work
-			const mobileDragZone = document.querySelector('#mobile-drag-zone') as HTMLElement
-
-			setVariableHeight(supporters_notif, mobileDragZone)
-			window.onresize = () => setVariableHeight(supporters_notif, mobileDragZone)
-
-			// inserts supporters modal dom
-			supportersModal(true)
+			initSupportersModal()
 
 			notifButton?.onclickdown(function () {
-				supportersModal(undefined, true)
+				toggleSupportersModal(true)
 				loadModalData()
 			})
 		})
 
 		close?.onclickdown(function () {
-			document.documentElement.removeAttribute('supporters_notif_visible')
-
-			// updates data to not show notif again this month
-			supportersNotifications(undefined, { wasClosed: true })
-
-			// completely removes notif HTML after animation is done
-			setTimeout(function () {
-				supporters_notif.remove()
-			}, 200)
+			delete document.documentElement.dataset.supporters
+			supportersNotif.classList.remove('shown')
+			updateSupportersOption({ wasClosed: true })
 		})
-	}
-
-	function getHeight(element: HTMLElement): number {
-		const rect = element.getBoundingClientRect()
-		const style = window.getComputedStyle(element)
-
-		// Get the margins
-		const marginTop = parseFloat(style.marginTop)
-		const marginBottom = parseFloat(style.marginBottom)
-
-		// Return the height including margins
-		return rect.height + marginTop + marginBottom
-	}
-
-	function setVariableHeight(element: HTMLElement, mobileDragZone: HTMLElement) {
-		const isMobileSettings = window.getComputedStyle(mobileDragZone).display === 'block' ? true : false
-		const height = (getHeight(element) + (isMobileSettings ? 40 : 0)).toString()
-		const notif = document.getElementById('supporters-notif')
-
-		notif?.style.setProperty('--supporters-notif-height', `-${height}px`)
 	}
 }
 
 async function updateSupportersOption(update: SupportersUpdate) {
 	const data = await storage.sync.get()
-	const newSupporters: any = { ...data.supporters }
+	const newSupporters = { ...data.supporters }
 
 	if (update.enabled !== undefined) {
 		newSupporters.enabled = update.enabled
@@ -149,61 +121,54 @@ async function updateSupportersOption(update: SupportersUpdate) {
 	})
 }
 
-export function supportersModal(init?: boolean, state?: boolean) {
-	if (init) {
-		const template = document.getElementById('supporters-modal-template') as HTMLTemplateElement
-		const doc = document.importNode(template.content, true)
-		const supporters_modal = doc.getElementById('supporters-modal-container')
+function initSupportersModal() {
+	const template = document.getElementById('supporters-modal-template') as HTMLTemplateElement
+	const doc = document.importNode(template.content, true)
+	supportersModal = doc.getElementById('supporters-modal-container') as HTMLElement
 
-		if (supporters_modal) {
-			onSettingsLoad(() => {
-				tradTemplateString(doc, '#title', 'Supporters like you make Bonjourr possible')
-				tradTemplateString(
-					doc,
-					'#desc',
-					'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.'
-				)
-				tradTemplateString(doc, '#monthly #title', 'Our monthly supporters')
-				tradTemplateString(doc, '#once #title', 'Our one-time supporters')
-				tradTemplateString(doc, '#phrase', 'Join the community and get your name in Bonjourr.')
-				tradTemplateString(doc, '#donate-button-text', 'Donate')
+	onSettingsLoad(() => {
+		tradTemplateString(doc, '#title', 'Supporters like you make Bonjourr possible')
+		tradTemplateString(
+			doc,
+			'#desc',
+			'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.'
+		)
+		tradTemplateString(doc, '#monthly #title', 'Our monthly supporters')
+		tradTemplateString(doc, '#once #title', 'Our one-time supporters')
+		tradTemplateString(doc, '#phrase', 'Join the community and get your name in Bonjourr.')
+		tradTemplateString(doc, '#donate-button-text', 'Donate')
 
-				const close = doc.getElementById('supporters-modal-close') as HTMLElement
+		const close = doc.getElementById('supporters-modal-close') as HTMLElement
 
-				// inserts modal dom
-				document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supporters_modal)
+		// inserts modal dom
+		document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supportersModal)
 
-				// close button event
-				close.addEventListener('click', function () {
-					supportersModal(undefined, false)
-				})
+		// close button event
+		close.addEventListener('click', function () {
+			toggleSupportersModal(false)
+		})
 
-				// close when click on background
-				supporters_modal.addEventListener('click', function (event) {
-					if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
-						supportersModal(undefined, false)
-					}
-				})
+		// close when click on background
+		supportersModal.addEventListener('click', function (event) {
+			if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
+				toggleSupportersModal(false)
+			}
+		})
 
-				// close when esc key
-				document.addEventListener('keyup', (event) => {
-					if (event.key === 'Escape' && document.documentElement.hasAttribute('supporters_modal_open')) {
-						supportersModal(undefined, false)
-					}
-				})
-			})
-		}
-	}
+		// close when esc key
+		document.addEventListener('keyup', (event) => {
+			if (event.key === 'Escape' && document.documentElement.dataset.supportersModal) {
+				toggleSupportersModal(false)
+			}
+		})
+	})
+}
 
-	if (state !== undefined) {
-		document.dispatchEvent(new Event('toggle-settings'))
+function toggleSupportersModal(toggle: boolean) {
+	document.dispatchEvent(new Event('toggle-settings'))
 
-		if (state) {
-			document.documentElement.setAttribute('supporters_modal_open', '')
-		} else {
-			document.documentElement.removeAttribute('supporters_modal_open')
-		}
-	}
+	if (toggle) document.documentElement.dataset.supportersModal = 'true'
+	if (!toggle) delete document.documentElement.dataset.supportersModal
 }
 
 let modalDataLoaded = false
@@ -316,7 +281,7 @@ function initGlitter() {
 		}
 		setup: () => void
 		animate: () => void
-		flakes: Array<ReturnType<typeof snowfall.snowflake>>
+		flakes: Array<InstanceType<typeof snowfall.snowflake>>
 	} = {} as any
 
 	snowfall.canvas = document.getElementById('glitter') as HTMLCanvasElement
@@ -386,7 +351,9 @@ function initGlitter() {
 		}
 	}
 
-	window.addEventListener('resize', snowfall.setup)
+	const snowfallDebounce = debounce(snowfall.setup, 200)
+
+	window.addEventListener('resize', snowfallDebounce)
 
 	// Animation loop function
 	snowfall.animate = () => {
