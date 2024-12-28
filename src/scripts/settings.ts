@@ -899,6 +899,7 @@ async function switchLangs(nextLang: Langs) {
 	settingsFooter()
 	translatePlaceholders()
 	translateAriaLabels()
+	supportersNotifications(undefined, { translate: true })
 }
 
 function showall(val: boolean, event: boolean) {

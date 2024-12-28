@@ -3,17 +3,26 @@ import onSettingsLoad from '../utils/onsettingsload'
 import debounce from '../utils/debounce'
 import storage from '../storage'
 
-interface SupportersUpdate {
-	wasClosed?: boolean
-	enabled?: boolean
-	storedMonth?: number
+interface SupportersAPI {
+	date: string
+	name: string
+	amount: number
+	monthly: boolean
+	paidWith: string
+	hashedEmail: string
 }
 
-const date = new Date() // prod
-// const date = new Date('January 17, 2025 03:24:00') // testing
+interface SupportersUpdate {
+	enabled?: boolean
+	wasClosed?: boolean
+	storedMonth?: number
+	translate?: true
+}
 
-const currentMonth = date.getMonth() + 1
-const currentYear = date.getFullYear()
+interface SupportersInit {
+	supporters: Sync.Storage['supporters']
+	review: Sync.Storage['review']
+}
 
 const monthBackgrounds = [
 	'https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=700&auto=format&fit=crop',
@@ -33,71 +42,72 @@ const monthBackgrounds = [
 let supportersNotif: HTMLElement
 let supportersModal: HTMLElement
 
-export function supportersNotifications(init?: Sync.Supporters, update?: SupportersUpdate) {
+export function supportersNotifications(init?: SupportersInit, update?: SupportersUpdate) {
+	if (update?.translate) {
+		translateNotif()
+		return
+	}
+
 	if (update) {
 		updateSupportersOption(update)
 		return
 	}
 
-	//
-	if (init) {
-		if (!init?.enabled) return
-
-		const wasClosed = init?.wasClosed
-		const storedMonth = init?.storedMonth
-
-		// extracts notification template from index.html
-		const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
-		const doc = document.importNode(template.content, true)
-		supportersNotif = doc.getElementById('supporters-notif-container') as HTMLElement
-
-		// if it's a new month and notif was closed previously
-		if (!supportersNotif || (currentMonth === storedMonth && wasClosed)) {
-			return
-		}
-
-		const close = doc.getElementById('supporters-notif-close') as HTMLElement
-
-		// resets closing and stores new month
-		supportersNotifications(undefined, {
-			wasClosed: false,
-			storedMonth: currentMonth,
-		})
-
-		supportersNotif.classList.add('shown')
-		document.documentElement.dataset.supporters = ''
-
-		onSettingsLoad(() => {
-			const currentMonthLocale = date.toLocaleDateString(getLang(), { month: 'long' })
-			const introString = `This <currentMonth>, Bonjourr is brought to you by our lovely supporters.`
-			const notifTitle = doc.getElementById('supporters-notif-title')
-			const notifButton = doc.getElementById('supporters-notif-button')
-
-			if (notifTitle && notifButton) {
-				notifTitle.textContent = tradThis(introString).replace('<currentMonth>', currentMonthLocale)
-				notifButton.textContent = tradThis('Find out who they are')
-			}
-
-			// sets backgound image
-			const image = monthBackgrounds[currentMonth - 1]
-			supportersNotif.style.setProperty('--background', `url(${image})`)
-
-			document.querySelector('#settings-notifications')?.insertAdjacentElement('beforebegin', supportersNotif)
-
-			initSupportersModal()
-
-			notifButton?.onclickdown(function () {
-				toggleSupportersModal(true)
-				loadModalData()
-			})
-		})
-
-		close?.onclickdown(function () {
-			delete document.documentElement.dataset.supporters
-			supportersNotif.classList.remove('shown')
-			updateSupportersOption({ wasClosed: true })
-		})
+	if (!init?.supporters?.enabled) {
+		return
 	}
+
+	const wasClosed = init?.supporters.wasClosed
+	const storedMonth = init?.supporters.storedMonth
+	const hasClosedReview = init.review === -1
+	const currentMonth = new Date().getMonth() + 1
+
+	// Do not show supporters with or before review popup
+	if (!hasClosedReview && !wasClosed) {
+		updateSupportersOption({ wasClosed: true })
+		return
+	}
+
+	if (currentMonth === storedMonth && wasClosed) {
+		return
+	}
+
+	// extracts notification template from index.html
+	const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
+	const doc = document.importNode(template.content, true)
+	supportersNotif = doc.getElementById('supporters-notif-container') as HTMLElement
+
+	// resets closing and stores new month
+	updateSupportersOption({
+		wasClosed: false,
+		storedMonth: currentMonth,
+	})
+
+	supportersNotif.classList.add('shown')
+	document.documentElement.dataset.supporters = ''
+
+	onSettingsLoad(() => {
+		const notifButton = doc.getElementById('#supporters-notif-button')
+		const settingsNotifs = document.getElementById('settings-notifications')
+		const image = monthBackgrounds[currentMonth - 1]
+
+		supportersNotif.style.setProperty('--background', `url(${image})`)
+		settingsNotifs?.insertAdjacentElement('beforebegin', supportersNotif)
+
+		initSupportersModal()
+		translateNotif()
+
+		notifButton?.onclickdown(function () {
+			toggleSupportersModal(true)
+			loadModalData()
+		})
+	})
+
+	doc.getElementById('supporters-notif-close')?.onclickdown(function () {
+		delete document.documentElement.dataset.supporters
+		supportersNotif.classList.remove('shown')
+		updateSupportersOption({ wasClosed: true })
+	})
 }
 
 async function updateSupportersOption(update: SupportersUpdate) {
@@ -119,6 +129,18 @@ async function updateSupportersOption(update: SupportersUpdate) {
 	storage.sync.set({
 		supporters: newSupporters,
 	})
+}
+
+function translateNotif() {
+	const currentMonthLocale = new Date().toLocaleDateString(getLang(), { month: 'long' })
+	const introString = `This <currentMonth>, Bonjourr is brought to you by our lovely supporters.`
+	const notifTitle = document?.getElementById('supporters-notif-title')
+	const notifButton = document.getElementById('supporters-notif-button')
+
+	if (notifTitle && notifButton) {
+		notifTitle.textContent = tradThis(introString).replace('<currentMonth>', currentMonthLocale)
+		notifButton.textContent = tradThis('Find out who they are')
+	}
 }
 
 function initSupportersModal() {
@@ -179,15 +201,8 @@ export async function loadModalData() {
 		initGlitter()
 	}
 
-	interface Supporter {
-		date: string
-		name: string
-		amount: number
-		monthly: boolean
-		paidWith: string
-		hashedEmail: string
-	}
-
+	const currentMonth = new Date().getMonth() + 1
+	const currentYear = new Date().getFullYear()
 	let monthToGet: number
 	let yearToGet: number = currentYear
 
@@ -204,7 +219,7 @@ export async function loadModalData() {
 		if (main) main.innerHTML = `<i>${string}</i>`
 	}
 
-	function injectData(supporters: Supporter[] = []) {
+	function injectData(supporters: SupportersAPI[] = []) {
 		// sorts in descending order
 		supporters.sort((a, b) => b.amount - a.amount)
 
@@ -227,7 +242,7 @@ export async function loadModalData() {
 
 	try {
 		let response: Response | undefined
-		let supporters: Supporter[] = []
+		let supporters: SupportersAPI[] = []
 		response = await fetch(`https://kofi.bonjourr.fr/list?date=${monthToGet}/${yearToGet}`)
 
 		if (!response.ok) {

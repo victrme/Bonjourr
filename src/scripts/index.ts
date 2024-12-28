@@ -99,7 +99,12 @@ async function startup() {
 		settingsPreload()
 		userActionsEvents()
 		setPotatoComputerMode()
-		supportersNotifications(sync.supporters)
+
+		supportersNotifications({
+			supporters: sync.supporters,
+			review: sync.review,
+		})
+
 		interfacePopup({
 			old: OLD_VERSION,
 			new: CURRENT_VERSION,
