@@ -14,8 +14,8 @@ interface SupportersAPI {
 
 interface SupportersUpdate {
 	enabled?: boolean
-	wasClosed?: boolean
-	storedMonth?: number
+	closed?: boolean
+	month?: number
 	translate?: true
 }
 
@@ -57,18 +57,18 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		return
 	}
 
-	const wasClosed = init?.supporters.wasClosed
-	const storedMonth = init?.supporters.storedMonth
+	const closed = init?.supporters.closed
+	const month = init?.supporters.month
 	const hasClosedReview = init.review === -1
 	const currentMonth = new Date().getMonth() + 1
 
 	// Do not show supporters with or before review popup
-	if (!hasClosedReview && !wasClosed) {
-		updateSupportersOption({ wasClosed: true })
+	if (!hasClosedReview && !closed) {
+		updateSupportersOption({ closed: true })
 		return
 	}
 
-	if (currentMonth === storedMonth && wasClosed) {
+	if (currentMonth === month && closed) {
 		return
 	}
 
@@ -79,15 +79,16 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 
 	// resets closing and stores new month
 	updateSupportersOption({
-		wasClosed: false,
-		storedMonth: currentMonth,
+		closed: false,
+		month: currentMonth,
 	})
 
 	supportersNotif.classList.add('shown')
 	document.documentElement.dataset.supporters = ''
 
 	onSettingsLoad(() => {
-		const notifButton = doc.getElementById('#supporters-notif-button')
+		const notifButton = doc.getElementById('supporters-notif-button')
+		const notifClose = doc.getElementById('supporters-notif-close')
 		const settingsNotifs = document.getElementById('settings-notifications')
 		const image = monthBackgrounds[currentMonth - 1]
 
@@ -101,12 +102,12 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 			toggleSupportersModal(true)
 			loadModalData()
 		})
-	})
 
-	doc.getElementById('supporters-notif-close')?.onclickdown(function () {
-		delete document.documentElement.dataset.supporters
-		supportersNotif.classList.remove('shown')
-		updateSupportersOption({ wasClosed: true })
+		notifClose?.onclickdown(function () {
+			delete document.documentElement.dataset.supporters
+			supportersNotif.classList.remove('shown')
+			updateSupportersOption({ closed: true })
+		})
 	})
 }
 
@@ -118,12 +119,12 @@ async function updateSupportersOption(update: SupportersUpdate) {
 		newSupporters.enabled = update.enabled
 	}
 
-	if (update.wasClosed !== undefined) {
-		newSupporters.wasClosed = update.wasClosed
+	if (update.closed !== undefined) {
+		newSupporters.closed = update.closed
 	}
 
-	if (update.storedMonth !== undefined) {
-		newSupporters.storedMonth = update.storedMonth
+	if (update.month !== undefined) {
+		newSupporters.month = update.month
 	}
 
 	storage.sync.set({
@@ -189,7 +190,7 @@ function initSupportersModal() {
 function toggleSupportersModal(toggle: boolean) {
 	document.dispatchEvent(new Event('toggle-settings'))
 
-	if (toggle) document.documentElement.dataset.supportersModal = 'true'
+	if (toggle) document.documentElement.dataset.supportersModal = ''
 	if (!toggle) delete document.documentElement.dataset.supportersModal
 }
 

@@ -165,7 +165,7 @@ declare namespace Sync {
 
 	type Supporters = {
 		enabled: boolean
-		wasClosed: boolean
-		storedMonth: number
+		closed: boolean
+		month: number
 	}
 }
