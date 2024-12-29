@@ -120,10 +120,10 @@ function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
 
 function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 	data.translations = undefined
-	data.lastWeather = undefined
-
 	storage.local.remove('translations')
-	storage.local.remove('lastWeather')
+
+	// data.lastWeather = undefined
+	// storage.local.remove('lastWeather')
 
 	return data
 }
