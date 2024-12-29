@@ -177,7 +177,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	},
 	supporters: {
 		enabled: true,
-		closed: true,
+		closed: false,
 		month: new Date().getMonth() + 1,
 	},
 	move: {
