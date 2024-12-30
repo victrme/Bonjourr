@@ -148,7 +148,8 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 		function replaceWithId(a: string[], i: number, lim: number) {
 			// not stopping and elem exit
 			if (!stopper[lim] && a[i]) {
-				if (a[i] === '.') a[i] = id // replaces dot with id
+				if (a[i] === '.')
+					a[i] = id // replaces dot with id
 				else if (a[i] !== id) stopper[lim] = true // other ? stop
 			}
 

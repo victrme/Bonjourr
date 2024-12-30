@@ -147,8 +147,8 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 				},
 				() => {
 					resolve(false)
-				}
-			)
+				},
+			),
 		)
 	}
 

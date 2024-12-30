@@ -186,6 +186,11 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		type: PLATFORM === 'online' ? 'off' : 'browser',
 		freq: 'manual',
 	},
+	supporters: {
+		enabled: true,
+		closed: false,
+		month: new Date().getMonth() + 1,
+	},
 	move: {
 		selection: 'single',
 		layouts: {},
