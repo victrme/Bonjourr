@@ -16,5 +16,6 @@
 @import 'features/editlink';
 @import 'features/bookmarks';
 @import 'features/csseditor';
+@import 'features/supporters';
 
 @import '_responsive';

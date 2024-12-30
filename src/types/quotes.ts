@@ -9,7 +9,7 @@ declare namespace Quotes {
 	type Sync = {
 		on: boolean
 		author: boolean
-		last: number
+		last?: number
 		type: Types
 		frequency: Frequency
 		userlist?: string

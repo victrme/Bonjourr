@@ -125,7 +125,7 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 		canTurn
 			? [{ transform: 'rotate(360deg)' }]
 			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],
-		animationOptions
+		animationOptions,
 	)
 }
 

@@ -14,11 +14,14 @@ export default function throttle<F extends (...args: Parameters<F>) => ReturnTyp
 
 		clearTimeout(timeout)
 
-		timeout = setTimeout(() => {
-			if (Date.now() - lastTime >= waitFor) {
-				lastTime = Date.now()
-				callback(...args)
-			}
-		}, Math.max(waitFor - (Date.now() - lastTime), 0))
+		timeout = setTimeout(
+			() => {
+				if (Date.now() - lastTime >= waitFor) {
+					lastTime = Date.now()
+					callback(...args)
+				}
+			},
+			Math.max(waitFor - (Date.now() - lastTime), 0),
+		)
 	}
 }

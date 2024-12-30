@@ -16,6 +16,8 @@
 	--font-weight: 400;
 	--font-size: 1em;
 	--clock-size: 6em;
+	--supporters-notif-height: -171px;
+	--supporters-notif-background: 'https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=1074&auto=format&fit=crop';
 	--red: 230, 75, 67;
 	--blue: 41, 144, 255;
 	--color-red: #e64b43;
@@ -26,7 +28,7 @@
 
 [data-theme='light'] {
 	--color-text: #222222;
-	--color-param: #ffffff;
+	--color-param: 255, 255, 255;
 	--color-settings: #f2f2f7;
 	--color-areas: #f2f2f7;
 	--color-areas-text: var(--color-blue);
@@ -46,7 +48,7 @@
 [data-theme='dark'] {
 	--color-text: #eeeeee;
 	--color-light-text: #929294;
-	--color-param: #1c1c1e;
+	--color-param: 28, 28, 30;
 	--color-settings: #000000;
 	--color-input: #39383d;
 	--color-input-outside: #39383d;
@@ -178,6 +180,7 @@ body.potato .move-overlay {
 	transition: none;
 }
 
+body.potato #supporters-modal-container,
 body.potato #linkblocks.in-folder #link-list {
 	-webkit-backdrop-filter: none;
 	backdrop-filter: none;
@@ -187,10 +190,17 @@ body.potato #bookmarks::backdrop {
 	background-color: rgba(34, 34, 34, 0.5333333333);
 }
 
+[data-theme='dark'] body.potato #supporters-modal {
+	background-color: #1a1a1a;
+}
+[data-theme='light'] body.potato #supporters-modal {
+	background-color: #e2e2e2;
+}
+
 body.potato #editlink,
 body.potato #bookmarks,
 body.potato #element-mover {
-	background-color: var(--color-param);
+	background-color: rgb(var(--color-param));
 }
 
 body.blurred .analog,

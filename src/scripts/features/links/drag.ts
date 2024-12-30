@@ -368,7 +368,8 @@ function endDrag(event: Event) {
 		const targetIsFolder = blocks.get(targetId)?.classList.contains('link-folder')
 		const draggedIsFolder = blocks.get(draggedId)?.classList.contains('link-folder')
 		const createFolder = toFolder && !targetIsFolder && !draggedIsFolder
-		const concatFolders = toFolder && (targetIsFolder || draggedIsFolder)
+		const moveToFolder = toFolder && targetIsFolder && !draggedIsFolder
+		const concatFolders = toFolder && targetIsFolder && draggedIsFolder
 
 		if (type === 'mini') {
 			linksUpdate({ moveGroups: ids })
@@ -378,8 +379,12 @@ function endDrag(event: Event) {
 			linksUpdate({ addFolder: { ids: [targetId, draggedId], group } })
 		}
 		//
+		else if (moveToFolder) {
+			linksUpdate({ moveToFolder: { source: draggedId, target: targetId } })
+		}
+		//
 		else if (concatFolders) {
-			linksUpdate({ moveToFolder: { source: draggedId, target: targetId, group } })
+			linksUpdate({ concatFolders: { source: draggedId, target: targetId } })
 		}
 		//
 		else if (toTab) {

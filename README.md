@@ -37,7 +37,7 @@ You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
 
 ## 👋 Get in touch
 
-Check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) or follow us [on Twitter](https://twitter.com/BonjourrTeam/) :)
+Check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) or follow us [on Bluesky](https://bsky.app/profile/bonjourr.fr) :)
 
 <br>
 
@@ -59,7 +59,7 @@ Here's a list of things you can do to help us out:
 
 If you just want to say thank you and support our work, here's some ideas:
 
--   Tweet what you like about Bonjourr! (tag us, [@BonjourrTeam](https://twitter.com/BonjourrTeam/))
+-   Tweet what you like about Bonjourr! (tag us, on [Bluesky](https://bsky.app/profile/bonjourr.fr) or [Twitter](https://twitter.com/BonjourrTeam/))
 -   Leave a review on [Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0), [Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) or [Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid)
 -   Add a GitHub Star to the repository ⭐️
 
