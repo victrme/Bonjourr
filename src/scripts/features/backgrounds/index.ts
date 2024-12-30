@@ -4,6 +4,7 @@ import localBackgrounds from './local'
 import solidBackgrounds from './solid'
 
 import { eventDebounce } from '../../utils/debounce'
+import onSettingsLoad from '../../utils/onsettingsload'
 import { rgbToHex } from '../../utils'
 import { BROWSER } from '../../defaults'
 import storage from '../../storage'
@@ -35,12 +36,13 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
 	}
 
-	solidBackgrounds(data.backgrounds.type)
-	backgroundFilter(data.backgrounds)
-
+	if (data.backgrounds.type === 'color') solidBackgrounds(data.backgrounds.color)
 	if (data.backgrounds.type === 'files') localBackgrounds()
 	if (data.backgrounds.type === 'videos') videosBackgrounds(1)
 	if (data.backgrounds.type === 'images') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+
+	backgroundFilter(data.backgrounds)
+	onSettingsLoad(() => handleBackgroundOptions(data.backgrounds.type))
 }
 
 export function imgBackground(url: string, color?: string) {
@@ -130,6 +132,9 @@ async function handleBackgroundOptions(type: string) {
 	document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
 	document.getElementById('solid_options')?.classList.toggle('shown', type === 'color')
 	document.getElementById('unsplash_options')?.classList.toggle('shown', type === 'images')
+	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
+	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
+	document.getElementById('background-provider-option')?.classList.toggle('shown', type === 'images')
 
 	if (type === 'files') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })

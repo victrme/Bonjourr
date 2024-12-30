@@ -319,6 +319,11 @@ aside input[type='range']::-ms-tooltip {
 	display: none;
 }
 
+aside input[type='color'] {
+	padding: 0;
+	border-radius: 2px;
+}
+
 label.input-file {
 	position: relative;
 	display: block;

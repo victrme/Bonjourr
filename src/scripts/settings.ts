@@ -116,16 +116,16 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
 	const unsplashCollec = data?.unsplash?.lastCollec === 'user' ? 'day' : data?.unsplash?.lastCollec
 
-	setInput('i_blur', data.background_blur ?? 15)
-	setInput('i_bright', data.background_bright ?? 0.8)
+	setInput('i_blur', data.backgrounds.blur ?? 15)
+	setInput('i_bright', data.backgrounds.bright ?? 0.8)
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
-	setInput('i_type', data.background_type || 'unsplash')
+	setInput('i_type', data.backgrounds.type || 'images')
 	setInput('i_freq', data.unsplash?.every)
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
-	setInput('i_solid-background', data.background_solid ?? '#222')
+	setInput('i_solid-background', data.backgrounds.color ?? '#222')
 	setInput('i_pagewidth', data.pagewidth || 1600)
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
@@ -247,11 +247,6 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
 	})()
-
-	// Backgrounds options init
-	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
-	paramId('solid_options')?.classList.toggle('shown', data.background_type === 'solid')
-	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
