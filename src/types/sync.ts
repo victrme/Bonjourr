@@ -19,6 +19,7 @@ declare namespace Sync {
 		review: number
 		settingssync: SettingsSync
 		announcements: 'all' | 'major' | 'off'
+		supporters: Supporters
 		reviewPopup?: number | string
 		background_blur: number
 		background_bright: number
@@ -175,5 +176,11 @@ declare namespace Sync {
 		text?: 'left' | 'center' | 'right'
 		gap?: number
 		minwidth?: 'auto' | number
+	}
+
+	type Supporters = {
+		enabled: boolean
+		closed: boolean
+		month: number
 	}
 }

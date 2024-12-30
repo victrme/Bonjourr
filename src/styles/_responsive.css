@@ -148,7 +148,8 @@
 	}
 
 	#settings-footer {
-		padding-bottom: 10vh;
+		width: 85%;
+		padding-bottom: 13vh;
 	}
 
 	#credit-container {
