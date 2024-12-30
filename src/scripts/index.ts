@@ -24,6 +24,7 @@ import errorMessage from './utils/errormessage'
 import suntime from './utils/suntime'
 import storage from './storage'
 import 'clickdown'
+import userDate from './utils/userdate'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -66,7 +67,9 @@ async function startup() {
 	await setTranslationCache(sync.lang, local)
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
+	userDate(sync.clock.timezone)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
+
 	weather({ sync: sync, lastWeather: local.lastWeather })
 	customFont(sync.font)
 	textShadow(sync.textShadow)
@@ -75,7 +78,7 @@ async function startup() {
 	clock(sync)
 	darkmode(sync.dark)
 	searchbar(sync.searchbar)
-	quotes({ sync: sync, local })
+	quotes({ sync, local })
 	notes(sync.notes)
 	moveElements(sync.move)
 	customCss(sync.css)

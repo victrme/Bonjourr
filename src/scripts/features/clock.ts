@@ -6,6 +6,7 @@ import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
 import getVnCalendar from '../dependencies/vietnamese-calendar'
 import errorMessage from '../utils/errormessage'
+import userDate from '../utils/userdate'
 import storage from '../storage'
 
 type ClockUpdate = {
@@ -80,12 +81,13 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.greeting !== undefined) {
 		data.greeting = stringMaxSize(update.greeting, 32)
-		greetings(zonedDate(data.clock.timezone), data.greeting)
+		greetings(data.greeting)
 		storage.sync.set({ greeting: data.greeting })
 	}
 
 	if (update.timezone !== undefined) {
-		greetings(zonedDate(update.timezone), data.greeting)
+		userDate(update.timezone)
+		greetings(data.greeting)
 	}
 
 	if (isHands(update.hands)) {
@@ -225,13 +227,13 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 			const { region, timezone } = clocks[index]
 			const domclock = getClock(index)
 			const domregion = domclock.querySelector<HTMLElement>('.clock-region')
-			const date = zonedDate(timezone)
+			const date = userDate()
 			const isNextHour = date.getMinutes() === 0
 
 			if (clock.analog) {
-				analog(domclock, date, clock)
+				analog(domclock, clock)
 			} else {
-				digital(domclock, date, clock)
+				digital(domclock, clock)
 			}
 
 			if (isNextHour || firstStart) {
@@ -243,7 +245,7 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 			}
 		}
 
-		greetings(zonedDate(clock.timezone), greeting)
+		greetings(greeting)
 	}
 }
 
@@ -265,7 +267,8 @@ function getClock(index: number): HTMLDivElement {
 	return clone
 }
 
-function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
+function digital(wrapper: HTMLElement, clock: Sync.Clock) {
+	const date = userDate()
 	const domclock = wrapper.querySelector<HTMLElement>('.digital')
 	const hh = wrapper.querySelector('.digital-hh') as HTMLElement
 	const mm = wrapper.querySelector('.digital-mm') as HTMLElement
@@ -303,7 +306,8 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 	ss.textContent = s.toString()
 }
 
-function analog(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
+function analog(wrapper: HTMLElement, clock: Sync.Clock) {
+	const date = userDate()
 	const m = ((date.getMinutes() + date.getSeconds() / 60) * 6).toFixed(1)
 	const h = (((date.getHours() % 12) + date.getMinutes() / 60) * 30).toFixed(1)
 	const s = (date.getSeconds() * 6).toFixed(1)
@@ -370,7 +374,8 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, tim
 
 //	Greetings
 
-function greetings(date: Date, name?: string) {
+function greetings(name?: string) {
+	const date = userDate()
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
@@ -432,41 +437,6 @@ function setSecondsWidthInCh() {
 
 function getSecondsWidthInCh(second: number): number {
 	return Math.min(...numberWidths) + numberWidths[second]
-}
-
-function zonedDate(timezone: string = 'auto'): Date {
-	const isUTC = (timezone.includes('+') || timezone.includes('-')) && timezone.length < 6
-	const date = new Date()
-
-	if (timezone === 'auto') {
-		return date
-	}
-
-	if (isUTC) {
-		const offset = date.getTimezoneOffset() / 60 // hour
-		let utcHour = date.getHours() + offset
-		const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
-		let minutes
-
-		if (timezone.split('.')[1]) {
-			minutes = utcMinutes + parseInt(timezone.split('.')[1])
-
-			if (minutes > -30) {
-				utcHour++
-			}
-		} else {
-			minutes = date.getMinutes()
-		}
-
-		date.setHours(utcHour + parseInt(timezone), minutes)
-
-		return date
-	}
-
-	const intl = new Intl.DateTimeFormat('en', { timeZone: timezone, dateStyle: 'medium', timeStyle: 'medium' })
-	const zonedDate = new Date(intl.format(date))
-
-	return zonedDate
 }
 
 function fixunits(val: number) {
