@@ -432,6 +432,10 @@ aside form.valid.remove span::after {
 	max-height: 400px;
 }
 
+#supporters-notif-container.shown {
+	max-height: 180px;
+}
+
 #local_options.shown {
 	max-height: 420px;
 }
@@ -517,7 +521,7 @@ aside form.valid.remove span::after {
 }
 
 .all .as_fonts {
-	max-height: 300px;
+	max-height: 350px;
 }
 
 .all .as_page {
@@ -533,9 +537,12 @@ aside form.valid.remove span::after {
 	max-height: 380px;
 }
 
-.all .as_updates,
 .all .as_notes {
-	max-height: 180px;
+	max-height: 210px;
+}
+
+.all .as_updates {
+	max-height: 280px;
 }
 
 .all .as_sync {
@@ -543,6 +550,7 @@ aside form.valid.remove span::after {
 }
 
 #mobile-drag-zone {
+	touch-action: none;
 	position: sticky;
 	display: none;
 	top: 0;
@@ -654,7 +662,7 @@ aside .settings-title .tooltip {
 	margin-top: 18px;
 	padding: 10px 16px;
 	border-radius: 10px;
-	background-color: var(--color-param);
+	background-color: rgb(var(--color-param));
 }
 
 .param + .param {

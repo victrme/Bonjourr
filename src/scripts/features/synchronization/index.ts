@@ -159,6 +159,10 @@ async function updateSyncOption(update: SyncUpdate) {
 }
 
 async function handleStoragePersistence(type: SyncType): Promise<boolean | undefined> {
+	if (!navigator?.storage?.persisted) {
+		return
+	}
+
 	const persisted = await navigator.storage.persisted()
 
 	if (type !== 'off') {
