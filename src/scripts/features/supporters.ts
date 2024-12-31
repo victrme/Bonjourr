@@ -245,7 +245,7 @@ export async function loadModalData() {
 	try {
 		let response: Response | undefined
 		let supporters: SupportersAPI[] = []
-		response = await fetch(`https://kofi.bonjourr.fr/list?date=${monthToGet}/${yearToGet}`)
+		response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
 
 		if (!response.ok) {
 			console.error(`HTTP error when fetching supporters list! status: ${response.status}`)
