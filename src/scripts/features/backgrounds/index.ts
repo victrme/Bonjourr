@@ -3,23 +3,28 @@ import videosBackgrounds from './videos'
 import localBackgrounds from './local'
 import solidBackgrounds from './solid'
 
-import { eventDebounce } from '../../utils/debounce'
+import debounce, { eventDebounce } from '../../utils/debounce'
 import onSettingsLoad from '../../utils/onsettingsload'
 import { rgbToHex } from '../../utils'
 import { BROWSER } from '../../defaults'
 import storage from '../../storage'
 
-type FilterOptions = {
-	blur?: number
-	brightness?: number
-	isEvent?: true
+interface BackgroundProperties {
+	blur?: string
+	bright?: string
+	fadein?: string
 }
 
-type UpdateOptions = {
+interface BackgroundUpdate {
 	freq?: string
 	type?: string
+	blur?: string
+	bright?: string
+	fadein?: string
 	refresh?: HTMLSpanElement
 }
+
+const propertiesUpdateDebounce = debounce(backgroundPropertiesUpdate, 600)
 
 export default function initBackground(data: Sync.Storage, local: Local.Storage) {
 	const overlay = document.querySelector<HTMLElement>('#background-overlay')
@@ -28,28 +33,78 @@ export default function initBackground(data: Sync.Storage, local: Local.Storage)
 		overlay.dataset.type = data.backgrounds.type
 	}
 
-	if (BROWSER === 'safari') {
-		const bgfirst = document.getElementById('image-background') as HTMLDivElement
-		const bgsecond = document.getElementById('image-background-bis') as HTMLDivElement
+	onSettingsLoad(() => {
+		handleBackgroundOptions(data.backgrounds.type)
+	})
 
-		bgfirst.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
-		bgsecond.style.transform = 'scale(1.1) translateX(0px) translate3d(0, 0, 0)'
-	}
+	backgroundProperties(data.backgrounds)
 
 	if (data.backgrounds.type === 'color') solidBackgrounds(data.backgrounds.color)
 	if (data.backgrounds.type === 'files') localBackgrounds()
 	if (data.backgrounds.type === 'videos') videosBackgrounds(1)
 	if (data.backgrounds.type === 'images') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+}
 
-	backgroundFilter(data.backgrounds)
-	onSettingsLoad(() => handleBackgroundOptions(data.backgrounds.type))
+export async function backgroundUpdate(update: BackgroundUpdate) {
+	const type = document.querySelector<HTMLInputElement>('#i_type')?.value
+
+	if (update.freq !== undefined) {
+		if (type === 'files') localBackgrounds({ freq: update.freq })
+		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
+		if (type === 'images') unsplashBackgrounds(undefined, { every: update.freq })
+		return
+	}
+
+	if (update.refresh) {
+		if (type === 'files') localBackgrounds({ refresh: update.refresh })
+		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
+		if (type === 'images') unsplashBackgrounds(undefined, { refresh: update.refresh })
+		return
+	}
+
+	if (update.blur !== undefined) {
+		backgroundProperties({ blur: parseFloat(update.blur) })
+		propertiesUpdateDebounce({ blur: parseFloat(update.blur) })
+		return
+	}
+
+	if (update.bright !== undefined) {
+		backgroundProperties({ bright: parseFloat(update.bright) })
+		propertiesUpdateDebounce({ bright: parseFloat(update.bright) })
+		return
+	}
+
+	if (update.fadein !== undefined) {
+		backgroundProperties({ fadein: parseInt(update.fadein) })
+		propertiesUpdateDebounce({ fadein: parseFloat(update.fadein) })
+		return
+	}
+
+	if (isBackgroundType(update.type)) {
+		const data = await storage.sync.get('backgrounds')
+		data.backgrounds.type = update.type
+		handleBackgroundOptions(update.type)
+		storage.sync.set({ backgrounds: data.backgrounds })
+	}
+}
+
+async function backgroundPropertiesUpdate({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+	const data = await storage.sync.get('backgrounds')
+
+	if (blur !== undefined) data.backgrounds.blur = blur
+	if (bright !== undefined) data.backgrounds.bright = bright
+	if (fadein !== undefined) data.backgrounds.fadein = fadein
+
+	storage.sync.set({ backgrounds: data.backgrounds })
 }
 
 export function imgBackground(url: string, color?: string) {
 	const img = new Image()
 
 	// Set the crossOrigin attribute to handle CORS when average color needed
-	if (!color) img.crossOrigin = 'Anonymous'
+	// if (!color) {
+	// 	img.crossOrigin = 'Anonymous'
+	// }
 
 	img.onload = () => {
 		const bgoverlay = document.getElementById('background-overlay') as HTMLDivElement
@@ -61,14 +116,17 @@ export function imgBackground(url: string, color?: string) {
 		bgfirst.style.opacity = loadBis ? '0' : '1'
 		bgToChange.style.backgroundImage = `url(${url})`
 
-		bgoverlay.style.opacity = '1'
+		bgoverlay.classList.remove('hidden')
 
 		if (BROWSER === 'safari') {
-			if (!color) color = getAverageColor(img)
+			if (!color) {
+				color = getAverageColor(img)
+			}
 
 			if (color) {
+				const fadein = parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
 				document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
-				setTimeout(() => document.documentElement.style.setProperty('--average-color', color!), 400)
+				setTimeout(() => document.documentElement.style.setProperty('--average-color', color!), fadein)
 			}
 		}
 	}
@@ -77,44 +135,18 @@ export function imgBackground(url: string, color?: string) {
 	img.remove()
 }
 
-export function backgroundFilter({ blur, brightness, isEvent }: FilterOptions) {
-	const hasbright = typeof brightness === 'number'
-	const hasblur = typeof blur === 'number'
-
-	if (hasblur) document.documentElement.style.setProperty('--background-blur', blur.toString() + 'px')
-	if (hasbright) document.documentElement.style.setProperty('--background-brightness', brightness.toString())
-
-	if (hasblur) {
-		document.body.classList.toggle('blurred', blur > 16)
+export function backgroundProperties({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+	if (blur !== undefined) {
+		document.documentElement.style.setProperty('--blur', blur + 'px')
+		document.body.classList.toggle('blurred', blur >= 15)
 	}
 
-	if (isEvent && hasblur) eventDebounce({ background_blur: blur })
-	if (isEvent && hasbright) eventDebounce({ background_bright: brightness })
-}
-
-export function updateBackgroundOption(update: UpdateOptions) {
-	const type = document.querySelector<HTMLInputElement>('#i_type')?.value
-
-	if (update.freq !== undefined) {
-		if (type === 'files') localBackgrounds({ freq: update.freq })
-		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
-		if (type === 'images') unsplashBackgrounds(undefined, { every: update.freq })
+	if (bright !== undefined) {
+		document.documentElement.style.setProperty('--brightness', bright + '')
 	}
 
-	if (update.refresh) {
-		if (type === 'files') localBackgrounds({ refresh: update.refresh })
-		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
-		if (type === 'images') unsplashBackgrounds(undefined, { refresh: update.refresh })
-	}
-
-	if (update.type) {
-		storage.sync.get('backgrounds').then(({ backgrounds }) => {
-			if (isBackgroundType(update.type)) {
-				backgrounds.type = update.type
-				handleBackgroundOptions(update.type)
-				storage.sync.set({ backgrounds })
-			}
-		})
+	if (fadein !== undefined) {
+		document.documentElement.style.setProperty('--fade-in', fadein + 'ms')
 	}
 }
 

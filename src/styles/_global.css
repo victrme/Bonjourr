@@ -4,8 +4,9 @@
 	--page-width: 1600px;
 	--page-gap: 1em;
 	--links-width: auto;
-	--background-blur: 15px;
-	--background-brightness: 0.8;
+	--fade-in: 400ms;
+	--blur: 15px;
+	--brightness: 0.8;
 	--load-time-transition: 0ms;
 	--solid-background: black;
 	--average-color: black;

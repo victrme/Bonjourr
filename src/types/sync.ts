@@ -81,6 +81,7 @@ declare namespace Sync {
 	type Backgrounds = {
 		type: 'files' | 'urls' | 'images' | 'videos' | 'color'
 		frequency: Frequency
+		fadein: number
 		bright: number
 		blur: number
 		color: string

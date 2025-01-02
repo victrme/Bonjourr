@@ -11,9 +11,9 @@ import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
 import solidBackgrounds from './features/backgrounds/solid'
+import { backgroundUpdate } from './features/backgrounds'
 import { supportersNotifications } from './features/supporters'
 import { changeGroupTitle, initGroups } from './features/links/groups'
-import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
 import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
 import customFont, { fontIsAvailableInSubset, systemfont } from './features/fonts'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
@@ -118,6 +118,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 
 	setInput('i_blur', data.backgrounds.blur ?? 15)
 	setInput('i_bright', data.backgrounds.bright ?? 0.8)
+	setInput('i_fadein', data.backgrounds.fadein ?? 400)
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
 	setInput('i_type', data.backgrounds.type || 'images')
@@ -384,7 +385,7 @@ function initOptionsEvents() {
 	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
-		updateBackgroundOption({ type: this.value })
+		backgroundUpdate({ type: this.value })
 	})
 
 	paramId('i_solid-background').addEventListener('input', function () {
@@ -392,11 +393,11 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
-		updateBackgroundOption({ freq: this.value })
+		backgroundUpdate({ freq: this.value })
 	})
 
 	paramId('i_refresh').onclickdown(function (_, target) {
-		updateBackgroundOption({ refresh: target.children[0] as HTMLSpanElement })
+		backgroundUpdate({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
 	paramId('f_collection').addEventListener('submit', function (this, event) {
@@ -405,8 +406,6 @@ function initOptionsEvents() {
 			collection: stringMaxSize(paramId('i_collection').value, 256),
 		})
 	})
-
-	// Custom backgrounds
 
 	paramId('b_local-background-upload').onclickdown(function (this: HTMLInputElement) {
 		paramId('local-background-upload')?.click()
@@ -421,11 +420,15 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter({ blur: parseFloat(this.value), isEvent: true })
+		backgroundUpdate({ blur: this.value })
 	})
 
 	paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
+		backgroundUpdate({ bright: this.value })
+	})
+
+	paramId('i_fadein').addEventListener('input', function (this: HTMLInputElement) {
+		backgroundUpdate({ fadein: this.value })
 	})
 
 	// Time and date

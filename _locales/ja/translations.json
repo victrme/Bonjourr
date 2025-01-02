@@ -91,6 +91,7 @@
 	"Type the collection ID from its URL, add more by separating them with a comma.": "(URLから見つけた)コレクションのIDを入力してください。　点(、)ではなく半角カンマ(,)を使って区切れます。",
 	"Blur intensity": "ぼかし強度",
 	"Brightness": "明るさ",
+	"Fade in": "フェードイン",
 	"Quick Links": "ブックマーク",
 	"Tips on Quick Links": "クイックリンクに関するヒント",
 	"These are Bonjourr's bookmarks. ": "これらはBonjourrのブックマークです。",

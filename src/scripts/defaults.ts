@@ -111,7 +111,8 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		synced: [],
 	},
 	backgrounds: {
-		type: 'color',
+		type: 'images',
+		fadein: 600,
 		blur: 15,
 		bright: 0.8,
 		frequency: 'hour',

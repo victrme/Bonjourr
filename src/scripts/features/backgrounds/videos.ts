@@ -5,13 +5,16 @@ interface VideosUpdate {
 export default function videosBackgrounds(init: unknown, update?: VideosUpdate) {
 	const video = document.querySelector<HTMLMediaElement>('#video-background')
 
-	video?.addEventListener('timeupdate', function (event) {
-		console.log(event)
-	})
+	// video?.addEventListener('timeupdate', function (event) {
+	// 	console.log(event)
+	// })
 
 	if (init) {
 		if (video) {
 			video.src = 'https://cdn.pixabay.com/video/2022/06/13/120254-720504899_tiny.mp4'
+
+			const bgoverlay = document.getElementById('background-overlay') as HTMLDivElement
+			setTimeout(() => (bgoverlay.style.opacity = '1'))
 		}
 	}
 }
