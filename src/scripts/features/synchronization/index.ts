@@ -5,9 +5,6 @@ import networkForm from '../../utils/networkform'
 import { fadeOut } from '../../utils'
 import storage from '../../storage'
 
-type SyncType = Sync.SettingsSync['type']
-// type SyncFreq = Sync.SettingsSync['freq']
-
 interface SyncUpdate {
 	type?: string
 	freq?: string
@@ -22,13 +19,11 @@ interface SyncUpdate {
 const gistsyncform = networkForm('f_gistsync')
 const urlsyncform = networkForm('f_urlsync')
 
-export default function synchronization(init?: Sync.Storage, update?: SyncUpdate) {
+export default function synchronization(init?: Local.Storage, update?: SyncUpdate) {
 	if (init) {
-		onSettingsLoad(async function () {
-			const local = await storage.local.get(['gistId', 'gistToken', 'distantUrl'])
-			const sync = init.settingssync
-			toggleSyncSettingsOption(sync, local)
-			setTimeout(() => handleStoragePersistence(sync.type), 200)
+		onSettingsLoad(() => {
+			toggleSyncSettingsOption(init)
+			setTimeout(() => handleStoragePersistence(init.syncType), 200)
 		})
 	}
 
@@ -38,23 +33,17 @@ export default function synchronization(init?: Sync.Storage, update?: SyncUpdate
 }
 
 async function updateSyncOption(update: SyncUpdate) {
+	const local = await storage.local.get(['gistId', 'gistToken', 'distantUrl', 'syncType'])
 	const data = await storage.sync.get()
-	const local = await storage.local.get(['gistId', 'gistToken', 'distantUrl'])
-	const sync = data.settingssync
 
 	if (update.down) {
-		if (sync.type === 'gist') {
+		if (local.syncType === 'gist') {
 			gistsyncform.load()
 
 			try {
 				const id = local.gistId ?? ''
 				const token = local.gistToken ?? ''
 				const update = await retrieveGist(token, id)
-
-				if (update?.settingssync?.type) {
-					update.settingssync.type = 'gist'
-				}
-
 				storage.sync.set(update)
 				fadeOut()
 			} catch (err) {
@@ -62,7 +51,7 @@ async function updateSyncOption(update: SyncUpdate) {
 			}
 		}
 
-		if (sync.type === 'url') {
+		if (local.syncType === 'url') {
 			urlsyncform.load()
 
 			try {
@@ -76,7 +65,7 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 
 	if (update.up) {
-		if (sync.type === 'gist') {
+		if (local.syncType === 'gist') {
 			gistsyncform.load()
 
 			try {
@@ -87,7 +76,7 @@ async function updateSyncOption(update: SyncUpdate) {
 
 				local.gistId = id
 				storage.local.set({ gistId: id })
-				toggleSyncSettingsOption(sync, local)
+				toggleSyncSettingsOption(local)
 			} catch (error) {
 				gistsyncform.warn(error as string)
 			}
@@ -100,14 +89,14 @@ async function updateSyncOption(update: SyncUpdate) {
 		storage.local.remove('gistToken')
 		storage.local.remove('gistId')
 		gistsyncform.accept()
-		toggleSyncSettingsOption(sync, local)
+		toggleSyncSettingsOption(local)
 		return
 	}
 
 	if (update.url === '') {
 		local.distantUrl = ''
 		storage.local.remove('distantUrl')
-		toggleSyncSettingsOption(sync, local)
+		toggleSyncSettingsOption(local)
 		return
 	}
 
@@ -122,7 +111,7 @@ async function updateSyncOption(update: SyncUpdate) {
 			storage.local.set({ gistToken: local.gistToken })
 
 			gistsyncform.accept()
-			toggleSyncSettingsOption(sync, local)
+			toggleSyncSettingsOption(local)
 		} catch (error) {
 			gistsyncform.warn(error as string)
 		}
@@ -137,28 +126,28 @@ async function updateSyncOption(update: SyncUpdate) {
 
 			local.distantUrl = update.url
 			storage.local.set({ distantUrl: update.url })
-			toggleSyncSettingsOption(sync, local)
+			toggleSyncSettingsOption(local)
 		} catch (error) {
 			urlsyncform.warn(error as string)
 		}
 	}
 
-	if (update.type && isSyncType(update.type)) {
-		sync.type = update.type
-		storage.sync.set(data)
+	if (isSyncType(update.type)) {
+		local.syncType = update.type
+		storage.local.set({ syncType: local.syncType })
 		storage.type.change(update.type === 'browser' ? 'sync' : 'local', data)
 
-		toggleSyncSettingsOption(sync, local)
+		toggleSyncSettingsOption(local)
 		handleStoragePersistence(update.type)
 	}
 
 	if (update.firefoxPersist) {
 		localStorage.choseStoragePersistence = 'true'
-		toggleSyncSettingsOption(sync, local)
+		toggleSyncSettingsOption(local)
 	}
 }
 
-async function handleStoragePersistence(type: SyncType): Promise<boolean | undefined> {
+async function handleStoragePersistence(type?: Local.SyncType): Promise<boolean | undefined> {
 	if (!navigator?.storage?.persisted) {
 		return
 	}
@@ -174,10 +163,11 @@ async function handleStoragePersistence(type: SyncType): Promise<boolean | undef
 	}
 }
 
-async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.Storage) {
+async function toggleSyncSettingsOption(local?: Local.Storage) {
 	const gistId = local?.gistId
 	const gistToken = local?.gistToken
 	const distantUrl = local?.distantUrl
+	const type = local?.syncType
 
 	const i_gistsync = document.querySelector<HTMLInputElement>('#i_gistsync')
 	const i_urlsync = document.querySelector<HTMLInputElement>('#i_urlsync')
@@ -199,7 +189,7 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 	const choseStoragePersistence = localStorage.choseStoragePersistence === 'true'
 	document.getElementById('disabled-sync')?.classList.toggle('shown', !choseStoragePersistence)
 
-	switch (sync.type) {
+	switch (type) {
 		case 'off':
 		case 'browser': {
 			document.getElementById('url-sync')?.classList.remove('shown')
@@ -241,7 +231,7 @@ async function toggleSyncSettingsOption(sync: Sync.SettingsSync, local?: Local.S
 
 // Type check
 
-function isSyncType(val: string): val is SyncType {
+function isSyncType(val = ''): val is Local.SyncType {
 	return ['browser', 'gist', 'url', 'off'].includes(val)
 }
 

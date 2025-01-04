@@ -171,10 +171,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
-	settingssync: {
-		type: PLATFORM === 'online' ? 'off' : 'browser',
-		freq: 'manual',
-	},
 	supporters: {
 		enabled: true,
 		closed: false,
@@ -192,11 +188,6 @@ export const LOCAL_DEFAULT: Local.Storage = {
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],
-	unsplashCache: {
-		noon: [],
-		day: [],
-		evening: [],
-		night: [],
-		user: [],
-	},
+	unsplashCache: { noon: [], day: [], evening: [], night: [], user: [] },
+	syncType: PLATFORM === 'online' ? 'off' : 'browser',
 }
