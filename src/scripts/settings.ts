@@ -406,11 +406,7 @@ function initOptionsEvents() {
 
 	// Custom backgrounds
 
-	paramId('b_background-upload').onclickdown(function (this: HTMLInputElement) {
-		paramId('background-upload')?.click()
-	})
-
-	paramId('background-upload').addEventListener('change', function (this: HTMLInputElement) {
+	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
 		localBackgrounds({ newfile: this.files })
 	})
 

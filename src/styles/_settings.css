@@ -797,7 +797,20 @@ aside .settings-title .tooltip {
 	padding: 0 4px;
 }
 
-#background-upload {
+#lbl_background-upload {
+	pointer-events: all;
+}
+
+#lbl_background-upload span {
+	display: block;
+	padding: 0 1em;
+	height: 31px;
+	font-size: 13px;
+	line-height: 31px;
+	cursor: pointer;
+}
+
+#i_background-upload {
 	display: none;
 }
 
