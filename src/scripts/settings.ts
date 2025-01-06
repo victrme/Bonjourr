@@ -160,7 +160,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
-	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
+	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
 
 	setFormInput('i_collection', bonjourrCollections[unsplashCollec], data.unsplash?.collection)
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
@@ -407,11 +407,9 @@ function initOptionsEvents() {
 		})
 	})
 
-	paramId('b_local-background-upload').onclickdown(function (this: HTMLInputElement) {
-		paramId('local-background-upload')?.click()
-	})
+	// Custom backgrounds
 
-	paramId('local-background-upload').addEventListener('change', function (this: HTMLInputElement) {
+	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
 		localBackgrounds({ newfile: this.files })
 	})
 

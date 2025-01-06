@@ -35,6 +35,7 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
 
+	delete current.settingssync
 	delete current.custom_every
 	delete current.custom_time
 	delete current.searchbar_newtab
