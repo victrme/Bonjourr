@@ -37,7 +37,7 @@ You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
 
 ## 👋 Get in touch
 
-Check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) or follow us [on Bluesky](https://bsky.app/profile/bonjourr.fr) :)
+Follow us [on Bluesky](https://bsky.app/profile/bonjourr.fr) or check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) :)
 
 <br>
 
@@ -68,6 +68,8 @@ If you just want to say thank you and support our work, here's some ideas:
 ## ☕ Donate
 
 If you feel like we've earned it and you want to support independant open source developpers, we'll gladly accept your donations! It motivates us to keep improving Bonjourr and makes it feel more real :)
+
+__As a token of our appreciation, donating will also get your name [featured in Bonjourr](https://bonjourr.fr/docs/overview/#supporters-notification) for the entire month after you donate!__
 
 <div>
 
