@@ -81,9 +81,19 @@
 		<hr />
 
 		<div class="settingshide wrapper">
-			<label for="i_settingshide" class="trn">Hide settings icon</label>
+			<span>
+				<label for="i_settingshide" class="trn">Hide settings icon</label>
+				<button class="tooltip tthidesettingsicon" title="What does this do?" aria-label="What does this do?">?</button>
+			</span>
 			<input id="i_settingshide" class="switch" type="checkbox" />
 		</div>
+
+		<p class="tooltiptext dropdown tthidesettingsicon">
+			<!-- prettier-ignore -->
+			<span class="trn"
+				>When this is enabled, clicking the bottom right corner will still open settings.</span
+			>
+		</p>
 	</div>
 </div>
 
@@ -1111,7 +1121,16 @@
 
 	<div class="param">
 		<div class="wrapper">
-			<label for="i_customfont" class="trn">Font family</label>
+			<span>
+				<label for="i_customfont" class="trn">Font family</label>
+				<button
+					class="tooltip ttfontfamily"
+					title="When can I preview these fonts?"
+					aria-label="When can I preview these fonts?"
+				>
+					?
+				</button>
+			</span>
 
 			<form id="f_customfont" class="network-form">
 				<div>
@@ -1125,6 +1144,14 @@
 				<small class="network-form-warning"></small>
 			</form>
 		</div>
+
+		<p class="tooltiptext dropdown ttfontfamily">
+			<!-- prettier-ignore -->
+			<span class="trn"
+				>These fonts come from Fontsource.</span
+			>
+			<a class="trn" href="https://fontsource.org/" rel="noreferrer noopener" target="_blank">Preview fonts</a>
+		</p>
 
 		<hr />
 

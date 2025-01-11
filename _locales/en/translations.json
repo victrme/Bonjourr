@@ -80,6 +80,7 @@
 	"Tips on tab appearance": "Tips on tab appearance",
 	"The icon and title that appear on your tab. You can put any emoji.": "The icon and title that appear on your tab. You can put any emoji.",
 	"Hide settings icon": "Hide settings icon",
+	"When this is enabled, clicking the bottom right corner will still open settings.": "When this is enabled, clicking the bottom right corner will still open settings.",
 
 	"Background": "Background",
 	"Background type": "Background type",
@@ -238,6 +239,8 @@
 	"Weight": "Weight",
 	"Size": "Size",
 	"Shadow": "Shadow",
+	"These fonts come from Fontsource.": "These fonts come from Fontsource.",
+	"Preview fonts": "Preview fonts",
 
 	"Page layout": "Page layout",
 	"Tips on page grid layout": "Tips on page grid layout",
