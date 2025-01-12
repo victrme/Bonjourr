@@ -80,6 +80,7 @@
 	"Tips on tab appearance": "Dicas sobre o aspeto do separador",
 	"The icon and title that appear on your tab. You can put any emoji.": "O ícone e o título que aparecem no teu separador. Podes colocar qualquer emoji.",
 	"Hide settings icon": "Ocultar o ícone das definições",
+	"When this is enabled, clicking the bottom right corner will still open settings.": "Quando esta opção estiver ativada, clicar no canto inferior direito continuará a abrir as definições.",
 	
 	"Background": "Fundo",
 	"Background type": "Tipo de fundo",
@@ -238,6 +239,8 @@
 	"Weight": "Espessura",
 	"Size": "Tamanho",
 	"Shadow": "Sombra",
+	"These fonts come from Fontsource.": "Estes tipos de letra provêm do Fontsource.",
+	"Preview fonts": "Pré-visualizar tipos de letra",
 	
 	"Page layout": "Esquema da página",
 	"Tips on page grid layout": "Dicas sobre o esquema da grelha de páginas",
