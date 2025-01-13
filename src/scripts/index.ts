@@ -46,8 +46,6 @@ async function startup() {
 	let { sync, local } = await storage.init()
 	const OLD_VERSION = sync?.about?.version
 
-	console.log(sync)
-
 	if (!sync || !local) {
 		errorMessage('Storage failed 😥')
 		return

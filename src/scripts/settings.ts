@@ -1067,14 +1067,19 @@ async function copySettings() {
 	const pre = document.getElementById('settings-data')
 
 	try {
-		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
+		// timeout otherwise doesn't work on Safari iOS
+		// https://stackoverflow.com/a/77517883
+		setTimeout(() => {
+			navigator.clipboard.writeText(pre?.textContent ?? '{}')
+		}, 0)
 
 		if (copybtn) {
-			copybtn.textContent = tradThis('Copied')
+			copybtn.textContent = tradThis('Copied!')
+
 			setTimeout(() => (copybtn.textContent = tradThis('Copy')), 1000)
 		}
-	} catch (_) {
-		// ..
+	} catch (error) {
+		console.error(`Failed when copying: ${error}`)
 	}
 }
 

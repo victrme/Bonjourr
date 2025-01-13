@@ -69,6 +69,11 @@
 [data-browser='opera'] .firefox-only,
 [data-browser='chrome'] .firefox-only,
 [data-browser='safari'] .firefox-only,
+[data-browser='edge'] .safari-only,
+[data-browser='other'] .safari-only,
+[data-browser='opera'] .safari-only,
+[data-browser='chrome'] .safari-only,
+[data-browser='firefox'] .safari-only,
 [data-platform='safari'] .not-safari,
 [data-platform='online'] .not-online {
 	display: none;
