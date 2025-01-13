@@ -772,7 +772,7 @@ function initOptionsEvents() {
 		loadImportFile(this)
 	})
 
-	paramId('b_settings-copy').onclickdown(function () {
+	paramId('b_settings-copy').addEventListener('click', function () {
 		copySettings()
 	})
 
@@ -1067,15 +1067,10 @@ async function copySettings() {
 	const pre = document.getElementById('settings-data')
 
 	try {
-		// timeout otherwise doesn't work on Safari iOS
-		// https://stackoverflow.com/a/77517883
-		setTimeout(() => {
-			navigator.clipboard.writeText(pre?.textContent ?? '{}')
-		}, 0)
+		navigator.clipboard.writeText(pre?.textContent ?? '{}')
 
 		if (copybtn) {
 			copybtn.textContent = tradThis('Copied!')
-
 			setTimeout(() => (copybtn.textContent = tradThis('Copy')), 1000)
 		}
 	} catch (error) {
