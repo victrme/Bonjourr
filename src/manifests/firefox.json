@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
 	"short_name": "Bonjourr",
-	"version": "20.4.1",
+	"version": "20.4.2",
 	"description": "__MSG_extensionDesc__",
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"homepage_url": "https://bonjourr.fr",
