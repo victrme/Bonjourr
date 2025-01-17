@@ -45,18 +45,6 @@
 	opacity: 0;
 }
 
-#solid-background,
-#image-background-wrapper,
-#video-background-wrapper {
-	display: none;
-}
-
-[data-type='solid'] #solid-background,
-[data-type='videos'] #video-background-wrapper,
-[data-type='images'] #image-background-wrapper {
-	display: block;
-}
-
 #image-background-bis,
 #image-background {
 	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */

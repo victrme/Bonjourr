@@ -6,10 +6,10 @@ import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
+import backgrounds from './features/backgrounds'
 import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
-import initBackground from './features/backgrounds'
 import synchronization from './features/synchronization'
 import { settingsPreload } from './settings'
 import { supportersNotifications } from './features/supporters'
@@ -21,10 +21,10 @@ import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
 import filterImports from './utils/filterimports'
 import errorMessage from './utils/errormessage'
+import userDate from './utils/userdate'
 import suntime from './utils/suntime'
 import storage from './storage'
 import 'clickdown'
-import userDate from './utils/userdate'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -84,7 +84,7 @@ async function startup() {
 	moveElements(sync.move)
 	customCss(sync.css)
 	hideElements(sync.hide)
-	initBackground(sync, local)
+	backgrounds(sync, local, true)
 	quickLinks(sync)
 	synchronization(local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
@@ -362,7 +362,7 @@ function onlineAndMobile() {
 		const needNewImage = data.background_type === 'unsplash' && frequency
 
 		if (needNewImage && data.unsplash) {
-			initBackground(data, local)
+			backgrounds(data, local)
 		}
 
 		clock(data)

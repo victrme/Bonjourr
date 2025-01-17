@@ -1,6 +1,6 @@
 import { periodOfDay, turnRefreshButton, apiFetch, freqControl, isEvery } from '../../utils'
 import { LOCAL_DEFAULT, SYNC_DEFAULT } from '../../defaults'
-import { imgBackground } from '.'
+import { applyBackground } from '.'
 import { tradThis } from '../../utils/translations'
 import errorMessage from '../../utils/errormessage'
 import networkForm from '../../utils/networkform'
@@ -353,7 +353,7 @@ async function getCache(): Promise<Unsplash.Local> {
 }
 
 function loadBackground(props: Unsplash.Image) {
-	imgBackground(props.url, props.color)
+	applyBackground({ image: { ...props } })
 	imgCredits(props)
 }
 

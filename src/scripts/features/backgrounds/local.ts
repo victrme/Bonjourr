@@ -1,6 +1,6 @@
 import { randomString, turnRefreshButton, freqControl, isEvery } from '../../utils'
+import { applyBackground } from '.'
 import unsplashBackgrounds from './unsplash'
-import { imgBackground } from '.'
 import onSettingsLoad from '../../utils/onsettingsload'
 import { IS_MOBILE } from '../../defaults'
 import errorMessage from '../../utils/errormessage'
@@ -175,7 +175,7 @@ async function updateThumbnailAmount(showing?: string) {
 
 async function displayCustomBackground(blob?: Blob) {
 	if (blob) {
-		imgBackground(URL.createObjectURL(blob))
+		applyBackground({ image: { url: URL.createObjectURL(blob) } })
 		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
 	}

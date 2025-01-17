@@ -321,7 +321,7 @@ aside input[type='range']::-ms-tooltip {
 
 aside input[type='color'] {
 	padding: 0;
-	border-radius: 2px;
+	background-color: transparent;
 }
 
 label.input-file {
@@ -495,6 +495,10 @@ aside form.valid.remove span::after {
 #quotes_userlist.shown,
 #quotes_options.shown {
 	max-height: 450px;
+}
+
+#background-filters-options.shown {
+	max-height: 200px;
 }
 
 .all .as_visuals {

@@ -417,6 +417,8 @@ function initOptionsEvents() {
 		localBackgrounds({ showing: 'all' })
 	})
 
+	// Background filters
+
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
 		backgroundUpdate({ blur: this.value })
 	})

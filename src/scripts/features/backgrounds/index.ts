@@ -3,17 +3,11 @@ import videosBackgrounds from './videos'
 import localBackgrounds from './local'
 import solidBackgrounds from './solid'
 
-import debounce, { eventDebounce } from '../../utils/debounce'
 import onSettingsLoad from '../../utils/onsettingsload'
 import { rgbToHex } from '../../utils'
 import { BROWSER } from '../../defaults'
+import debounce from '../../utils/debounce'
 import storage from '../../storage'
-
-interface BackgroundProperties {
-	blur?: string
-	bright?: string
-	fadein?: string
-}
 
 interface BackgroundUpdate {
 	freq?: string
@@ -24,25 +18,29 @@ interface BackgroundUpdate {
 	refresh?: HTMLSpanElement
 }
 
+type ApplyBackgroundOptions = {
+	image?: { url: string; color?: string }
+	video?: { url: string; color?: string }
+	solid?: { value: string }
+}
+
 const propertiesUpdateDebounce = debounce(backgroundPropertiesUpdate, 600)
 
-export default function initBackground(data: Sync.Storage, local: Local.Storage) {
-	const overlay = document.querySelector<HTMLElement>('#background-overlay')
+export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true) {
+	const type = sync.backgrounds.type
 
-	if (overlay) {
-		overlay.dataset.type = data.backgrounds.type
+	if (init) {
+		onSettingsLoad(() => {
+			handleBackgroundOptions(sync.backgrounds.type)
+		})
 	}
 
-	onSettingsLoad(() => {
-		handleBackgroundOptions(data.backgrounds.type)
-	})
+	backgroundProperties(sync.backgrounds)
 
-	backgroundProperties(data.backgrounds)
-
-	if (data.backgrounds.type === 'color') solidBackgrounds(data.backgrounds.color)
-	if (data.backgrounds.type === 'files') localBackgrounds()
-	if (data.backgrounds.type === 'videos') videosBackgrounds(1)
-	if (data.backgrounds.type === 'images') unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+	if (type === 'color') solidBackgrounds(sync.backgrounds.color)
+	if (type === 'files') localBackgrounds()
+	if (type === 'videos') videosBackgrounds(1)
+	if (type === 'images') unsplashBackgrounds({ unsplash: sync.unsplash, cache: local.unsplashCache })
 }
 
 export async function backgroundUpdate(update: BackgroundUpdate) {
@@ -82,13 +80,17 @@ export async function backgroundUpdate(update: BackgroundUpdate) {
 
 	if (isBackgroundType(update.type)) {
 		const data = await storage.sync.get('backgrounds')
+		const local = await storage.local.get()
+
 		data.backgrounds.type = update.type
-		handleBackgroundOptions(update.type)
 		storage.sync.set({ backgrounds: data.backgrounds })
+
+		handleBackgroundOptions(update.type)
+		backgrounds(data, local)
 	}
 }
 
-async function backgroundPropertiesUpdate({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+export async function backgroundPropertiesUpdate({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 	const data = await storage.sync.get('backgrounds')
 
 	if (blur !== undefined) data.backgrounds.blur = blur
@@ -98,41 +100,60 @@ async function backgroundPropertiesUpdate({ blur, bright, fadein }: Partial<Sync
 	storage.sync.set({ backgrounds: data.backgrounds })
 }
 
-export function imgBackground(url: string, color?: string) {
-	const img = new Image()
+export function applyBackground({ image, video, solid }: ApplyBackgroundOptions) {
+	const overlay = document.getElementById('background-overlay') as HTMLDivElement
+	const solidBackground = document.getElementById('solid-background') as HTMLDivElement
+	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
+	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
 
-	// Set the crossOrigin attribute to handle CORS when average color needed
-	// if (!color) {
-	// 	img.crossOrigin = 'Anonymous'
-	// }
+	solidBackground.style.display = solid ? 'block' : 'none'
+	imageWrapper.style.display = image ? 'block' : 'none'
+	videoWrapper.style.display = video ? 'block' : 'none'
 
-	img.onload = () => {
-		const bgoverlay = document.getElementById('background-overlay') as HTMLDivElement
-		const bgfirst = document.getElementById('image-background') as HTMLDivElement
-		const bgsecond = document.getElementById('image-background-bis') as HTMLDivElement
-		const loadBis = bgfirst.style.opacity === '1'
-		const bgToChange = loadBis ? bgsecond : bgfirst
+	if (image) {
+		const img = new Image()
 
-		bgfirst.style.opacity = loadBis ? '0' : '1'
-		bgToChange.style.backgroundImage = `url(${url})`
+		img.onload = () => {
+			const bgfirst = document.getElementById('image-background') as HTMLDivElement
+			const bgsecond = document.getElementById('image-background-bis') as HTMLDivElement
+			const loadBis = bgfirst.style.opacity === '1'
+			const bgToChange = loadBis ? bgsecond : bgfirst
 
-		bgoverlay.classList.remove('hidden')
+			bgfirst.style.opacity = loadBis ? '0' : '1'
+			bgToChange.style.backgroundImage = `url(${image.url})`
 
-		if (BROWSER === 'safari') {
-			if (!color) {
-				color = getAverageColor(img)
+			overlay.classList.remove('hidden')
+
+			if (BROWSER === 'safari') {
+				if (!image.color) {
+					image.color = getAverageColor(img)
+				}
+
+				if (image.color) {
+					const fadein = parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
+					document.querySelector('meta[name="theme-color"]')?.setAttribute('content', image.color)
+					setTimeout(() => document.documentElement.style.setProperty('--average-color', image.color!), fadein)
+				}
 			}
+		}
 
-			if (color) {
-				const fadein = parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
-				document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
-				setTimeout(() => document.documentElement.style.setProperty('--average-color', color!), fadein)
-			}
+		img.src = image.url
+		img.remove()
+	}
+
+	if (video) {
+		const domvideo = document.querySelector<HTMLMediaElement>('#video-background')
+
+		if (domvideo) {
+			domvideo.src = video.url
+			setTimeout(() => overlay.classList.remove('hidden'))
 		}
 	}
 
-	img.src = url
-	img.remove()
+	if (solid) {
+		document.documentElement.style.setProperty('--solid-background', solid.value)
+		overlay.classList.remove('hidden')
+	}
 }
 
 export function backgroundProperties({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
@@ -166,6 +187,7 @@ async function handleBackgroundOptions(type: string) {
 	document.getElementById('unsplash_options')?.classList.toggle('shown', type === 'images')
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
+	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-provider-option')?.classList.toggle('shown', type === 'images')
 
 	if (type === 'files') {
@@ -194,7 +216,7 @@ async function handleBackgroundOptions(type: string) {
 	}
 }
 
-export function getAverageColor(img: HTMLImageElement) {
+function getAverageColor(img: HTMLImageElement) {
 	try {
 		// Create a canvas element
 		const canvas = document.createElement('canvas')
@@ -243,14 +265,6 @@ export function getAverageColor(img: HTMLImageElement) {
 		console.error('Error accessing image data:', error)
 	}
 }
-
-// function backgroundFreq() {
-// 	//
-// }
-
-// function refreshBackground() {
-// 	//
-// }
 
 function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
