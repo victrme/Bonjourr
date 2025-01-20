@@ -7,7 +7,7 @@ import storage from '../storage'
 
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
-		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="95">${emoji}</text></svg>`
+		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
 		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
 
