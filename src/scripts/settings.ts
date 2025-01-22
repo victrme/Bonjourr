@@ -483,6 +483,9 @@ function initOptionsEvents() {
 
 	paramId('i_ampm').onclickdown(function (_, target) {
 		clock(undefined, { ampm: target.checked })
+
+		// shows/hides ampm_label option
+		paramId('ampm_label')?.classList.toggle('shown', target.checked)
 	})
 
 	paramId('i_ampm-label').onclickdown(function (_, target) {
