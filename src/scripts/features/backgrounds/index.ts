@@ -4,10 +4,11 @@ import localBackgrounds from './local'
 import solidBackgrounds from './solid'
 
 import onSettingsLoad from '../../utils/onsettingsload'
-import { rgbToHex } from '../../utils'
-import { BROWSER } from '../../defaults'
+import { freqControl, periodOfDay, rgbToHex } from '../../utils'
+import { API_DOMAIN, BROWSER } from '../../defaults'
 import debounce from '../../utils/debounce'
 import storage from '../../storage'
+import userDate from '../../utils/userdate'
 
 interface BackgroundUpdate {
 	freq?: string
@@ -24,7 +25,11 @@ type ApplyBackgroundOptions = {
 	solid?: { value: string }
 }
 
-const propertiesUpdateDebounce = debounce(backgroundPropertiesUpdate, 600)
+const propertiesUpdateDebounce = debounce(backgroundUpdateProperties, 600)
+
+//
+// 	Main
+//
 
 export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true) {
 	const type = sync.backgrounds.type
@@ -35,13 +40,26 @@ export default function backgrounds(sync: Sync.Storage, local: Local.Storage, in
 		})
 	}
 
-	backgroundProperties(sync.backgrounds)
+	applyBackgroundProperties(sync.backgrounds)
+	solidBackgrounds(sync.backgrounds.color)
 
-	if (type === 'color') solidBackgrounds(sync.backgrounds.color)
-	if (type === 'files') localBackgrounds()
-	if (type === 'videos') videosBackgrounds(1)
-	if (type === 'images') unsplashBackgrounds({ unsplash: sync.unsplash, cache: local.unsplashCache })
+	if (local.daylightCollection?.images.unsplash.day.length === 0) {
+		fetch(`${API_DOMAIN}/backgrounds/daylight/images/unsplash`)
+			.then((resp) => resp.json())
+			.then((json) => {
+				if (local.daylightCollection) {
+					local.daylightCollection.images.unsplash = json
+					storage.local.set({ daylightCollection: local.daylightCollection })
+				}
+			})
+	}
+
+	daylightCollection(sync.backgrounds).then(console.log)
 }
+
+//
+// 	Storage update
+//
 
 export async function backgroundUpdate(update: BackgroundUpdate) {
 	const type = document.querySelector<HTMLInputElement>('#i_type')?.value
@@ -61,19 +79,19 @@ export async function backgroundUpdate(update: BackgroundUpdate) {
 	}
 
 	if (update.blur !== undefined) {
-		backgroundProperties({ blur: parseFloat(update.blur) })
+		applyBackgroundProperties({ blur: parseFloat(update.blur) })
 		propertiesUpdateDebounce({ blur: parseFloat(update.blur) })
 		return
 	}
 
 	if (update.bright !== undefined) {
-		backgroundProperties({ bright: parseFloat(update.bright) })
+		applyBackgroundProperties({ bright: parseFloat(update.bright) })
 		propertiesUpdateDebounce({ bright: parseFloat(update.bright) })
 		return
 	}
 
 	if (update.fadein !== undefined) {
-		backgroundProperties({ fadein: parseInt(update.fadein) })
+		applyBackgroundProperties({ fadein: parseInt(update.fadein) })
 		propertiesUpdateDebounce({ fadein: parseFloat(update.fadein) })
 		return
 	}
@@ -90,7 +108,7 @@ export async function backgroundUpdate(update: BackgroundUpdate) {
 	}
 }
 
-export async function backgroundPropertiesUpdate({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+export async function backgroundUpdateProperties({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 	const data = await storage.sync.get('backgrounds')
 
 	if (blur !== undefined) data.backgrounds.blur = blur
@@ -99,6 +117,119 @@ export async function backgroundPropertiesUpdate({ blur, bright, fadein }: Parti
 
 	storage.sync.set({ backgrounds: data.backgrounds })
 }
+
+//
+//	Frequency update
+//
+
+function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage) {
+	const { images, videos, type } = backgrounds
+	const last = local.backgroundLastChange ?? new Date()
+	// const list = local.daylightCollection?.[type]
+
+	// const needNewImage = freqControl.get(every, time ?? Date.now())
+	// const needNewCollec = !every.match(/day|pause/) && periodOfDay() !== lastCollec
+
+	// if (needNewCollec && lastCollec !== 'user') {
+	// 	lastCollec = periodOfDay()
+	// }
+
+	// let collectionId = lastCollec === 'user' ? collection : bonjourrCollections[lastCollec]
+	// let list = cache[lastCollec]
+
+	// if (list.length === 0) {
+	// 	const newlist = await requestNewList(collectionId)
+
+	// 	if (!newlist) {
+	// 		return
+	// 	}
+
+	// 	list = newlist
+	// 	await preloadImage(list[0].url)
+
+	// 	cache[lastCollec] = list
+	// 	storage.local.set({ unsplashCache: cache })
+	// 	sessionStorage.setItem('waitingForPreload', 'true')
+	// }
+
+	// if (sessionStorage.waitingForPreload === 'true') {
+	// 	loadBackground(list[0])
+	// 	await preloadImage(list[1].url)
+	// 	return
+	// }
+
+	// if (!needNewImage) {
+	// 	const hasPausedImage = every === 'pause' && pausedImage
+	// 	loadBackground(hasPausedImage ? pausedImage : list[0])
+	// 	return
+	// }
+
+	// // Needs new image, Update time
+	// unsplash.lastCollec = lastCollec
+	// unsplash.time = freqControl.set()
+
+	// if (list.length > 1) {
+	// 	list.shift()
+	// }
+
+	// loadBackground(list[0])
+
+	// if (every === 'pause') {
+	// 	unsplash.pausedImage = list[0]
+	// }
+
+	// // If end of cache, get & save new list
+	// if (list.length === 1 && navigator.onLine) {
+	// 	const newList = await requestNewList(collectionId)
+
+	// 	if (newList) {
+	// 		cache[unsplash.lastCollec] = list.concat(newList)
+	// 		await preloadImage(newList[0].url)
+	// 	}
+	// }
+
+	// // Or preload next
+	// else if (list.length > 1) {
+	// 	await preloadImage(list[1].url)
+	// }
+
+	// storage.sync.set({ unsplash })
+	// storage.local.set({ unsplashCache: cache })
+}
+
+//
+//	Daylight Collection
+//
+
+async function daylightCollection(backgrounds: Sync.Backgrounds): Promise<Backgrounds.Image[]> {
+	const date = userDate()
+	const period = periodOfDay(date.getTime())
+	const local = await storage.local.get()
+
+	if (!local.daylightCollection) {
+		return []
+	}
+
+	if (backgrounds.type === 'images') {
+		const provider = backgrounds.images.provider
+		const images = local.daylightCollection.images
+		return images[provider][period]
+	}
+
+	// Videos todo
+
+	// if (backgrounds.type === 'videos') {
+	// 	const provider = backgrounds.videos.provider
+	// 	const videos = local.daylightCollection.videos
+	// 	return videos[provider][period]
+	// }
+
+	return []
+}
+
+//
+// 	DOM
+//
 
 export function applyBackground({ image, video, solid }: ApplyBackgroundOptions) {
 	const overlay = document.getElementById('background-overlay') as HTMLDivElement
@@ -156,7 +287,7 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 	}
 }
 
-export function backgroundProperties({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+export function applyBackgroundProperties({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 	if (blur !== undefined) {
 		document.documentElement.style.setProperty('--blur', blur + 'px')
 		document.body.classList.toggle('blurred', blur >= 15)
@@ -170,6 +301,10 @@ export function backgroundProperties({ blur, bright, fadein }: Partial<Sync.Back
 		document.documentElement.style.setProperty('--fade-in', fadein + 'ms')
 	}
 }
+
+//
+// 	Settings options
+//
 
 async function handleBackgroundOptions(type: string) {
 	if (isBackgroundType(type) === false) {
@@ -215,6 +350,10 @@ async function handleBackgroundOptions(type: string) {
 		)
 	}
 }
+
+//
+//  Helpers
+//
 
 function getAverageColor(img: HTMLImageElement) {
 	try {

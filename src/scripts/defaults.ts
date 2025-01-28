@@ -111,12 +111,12 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		synced: [],
 	},
 	backgrounds: {
-		type: 'images',
+		type: 'color',
 		fadein: 600,
 		blur: 15,
 		bright: 0.8,
 		frequency: 'hour',
-		color: '#222',
+		color: '#654',
 		urls: [],
 		images: { provider: 'unsplash' },
 		videos: { provider: 'pixabay' },
@@ -195,11 +195,26 @@ export const SYNC_DEFAULT: Sync.Storage = {
 }
 
 export const LOCAL_DEFAULT: Local.Storage = {
+	syncType: PLATFORM === 'online' ? 'off' : 'browser',
 	userQuoteSelection: 0,
 	translations: undefined,
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],
-	unsplashCache: { noon: [], day: [], evening: [], night: [], user: [] },
-	syncType: PLATFORM === 'online' ? 'off' : 'browser',
+	unsplashCache: {
+		noon: [],
+		day: [],
+		evening: [],
+		night: [],
+		user: [],
+	},
+	daylightCollection: {
+		images: {
+			unsplash: { noon: [], day: [], evening: [], night: [] },
+			pixabay: { noon: [], day: [], evening: [], night: [] },
+		},
+		videos: {
+			pixabay: { noon: [], day: [], evening: [], night: [] },
+		},
+	},
 }
