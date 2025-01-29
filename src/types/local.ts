@@ -17,6 +17,7 @@ declare namespace Local {
 		syncType?: SyncType
 
 		// Backgrounds
+		customCollection?: CustomCollection
 		daylightCollection?: DaylightCollection
 		backgroundPreloading?: true
 		backgroundLastChange?: Date
@@ -41,6 +42,16 @@ declare namespace Local {
 	}[]
 
 	//
+
+	interface CustomCollection {
+		images: {
+			unsplash: Backgrounds.Image[]
+			pixabay: Backgrounds.Image[]
+		}
+		videos: {
+			pixabay: Backgrounds.Video[]
+		}
+	}
 
 	interface DaylightCollection {
 		images: {

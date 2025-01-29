@@ -84,12 +84,14 @@ declare namespace Sync {
 			provider: 'unsplash' | 'pixabay'
 			lastUpdate?: string
 			pausedImage?: unknown
+			customTags?: string
 			customCollection?: string
 		}
 		videos: {
 			provider: 'pixabay'
 			lastUpdate?: string
 			pausedVideo?: unknown
+			customTags?: string
 			customCollection?: string
 		}
 	}

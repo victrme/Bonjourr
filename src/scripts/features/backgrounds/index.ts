@@ -44,7 +44,7 @@ export default function backgrounds(sync: Sync.Storage, local: Local.Storage, in
 	solidBackgrounds(sync.backgrounds.color)
 
 	if (local.daylightCollection?.images.unsplash.day.length === 0) {
-		fetch(`${API_DOMAIN}/backgrounds/daylight/images/unsplash`)
+		fetch('https://services.bonjourr.fr/backgrounds/daylight/images/unsplash')
 			.then((resp) => resp.json())
 			.then((json) => {
 				if (local.daylightCollection) {
@@ -53,8 +53,6 @@ export default function backgrounds(sync: Sync.Storage, local: Local.Storage, in
 				}
 			})
 	}
-
-	daylightCollection(sync.backgrounds).then(console.log)
 }
 
 //
@@ -122,109 +120,161 @@ export async function backgroundUpdateProperties({ blur, bright, fadein }: Parti
 //	Frequency update
 //
 
-function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage) {
-	const { images, videos, type } = backgrounds
-	const last = local.backgroundLastChange ?? new Date()
-	// const list = local.daylightCollection?.[type]
+async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage) {
+	const { daylightCollection, customCollection } = local
 
-	// const needNewImage = freqControl.get(every, time ?? Date.now())
-	// const needNewCollec = !every.match(/day|pause/) && periodOfDay() !== lastCollec
+	// 1. Find correct list to use
 
-	// if (needNewCollec && lastCollec !== 'user') {
-	// 	lastCollec = periodOfDay()
-	// }
+	let list: Backgrounds.Video[] | Backgrounds.Image[] = []
 
-	// let collectionId = lastCollec === 'user' ? collection : bonjourrCollections[lastCollec]
-	// let list = cache[lastCollec]
+	if (backgrounds.type === 'images') {
+		const images = backgrounds.images
+		const isCustom = images.customCollection || images.customTags
 
-	// if (list.length === 0) {
-	// 	const newlist = await requestNewList(collectionId)
+		if (isCustom && customCollection) {
+			list = getCustomCollectionImages(backgrounds, local)
+		}
+		if (!isCustom && daylightCollection) {
+			list = getDaylightCollectionImages(backgrounds, local)
+		}
+	}
 
-	// 	if (!newlist) {
-	// 		return
-	// 	}
+	if (backgrounds.type === 'videos') {
+		const videos = backgrounds.videos
+		const isCustom = videos.customCollection || videos.customTags
 
-	// 	list = newlist
-	// 	await preloadImage(list[0].url)
+		if (isCustom && customCollection) {
+			list = getCustomCollectionVideos(backgrounds, local)
+		}
+		if (!isCustom && daylightCollection) {
+			list = getDaylightCollectionVideos(backgrounds, local)
+		}
+	}
 
-	// 	cache[lastCollec] = list
-	// 	storage.local.set({ unsplashCache: cache })
-	// 	sessionStorage.setItem('waitingForPreload', 'true')
-	// }
+	// 2. Control change for specified list
 
-	// if (sessionStorage.waitingForPreload === 'true') {
-	// 	loadBackground(list[0])
-	// 	await preloadImage(list[1].url)
-	// 	return
-	// }
+	const lastTime = (local.backgroundLastChange ?? new Date()).getTime()
+	const needNew = freqControl.get(backgrounds.frequency, lastTime)
 
-	// if (!needNewImage) {
-	// 	const hasPausedImage = every === 'pause' && pausedImage
-	// 	loadBackground(hasPausedImage ? pausedImage : list[0])
-	// 	return
-	// }
+	if (list.length === 0) {
+		const newlist = true // request a new list
 
-	// // Needs new image, Update time
-	// unsplash.lastCollec = lastCollec
-	// unsplash.time = freqControl.set()
+		if (newlist) {
+			// replace list
+			// preload image
+			// storage.local.set({ unsplashCache: cache })
+			// storage.local.set({ backgroundPreloading: true })
+		}
+	}
 
-	// if (list.length > 1) {
-	// 	list.shift()
-	// }
+	if (local.backgroundPreloading) {
+		// Don't change
+		// Keep preloading
+		return
+	}
+
+	if (!needNew) {
+		// keep paused image
+		// load same background
+		return
+	}
+
+	// Needs new image, Update time
+
+	if (list.length > 1) {
+		list.shift()
+	}
 
 	// loadBackground(list[0])
 
-	// if (every === 'pause') {
-	// 	unsplash.pausedImage = list[0]
-	// }
+	if (backgrounds.frequency === 'pause') {
+		// save paused image
+	}
 
-	// // If end of cache, get & save new list
-	// if (list.length === 1 && navigator.onLine) {
-	// 	const newList = await requestNewList(collectionId)
+	if (list.length === 1 && navigator.onLine) {
+		// End of cache, get & save new list
+		const newList = true // request a new list
 
-	// 	if (newList) {
-	// 		cache[unsplash.lastCollec] = list.concat(newList)
-	// 		await preloadImage(newList[0].url)
-	// 	}
-	// }
+		if (newList) {
+			// replace list
+			// preload image
+		}
+	}
 
-	// // Or preload next
-	// else if (list.length > 1) {
-	// 	await preloadImage(list[1].url)
-	// }
+	// Or preload next
+	else if (list.length > 1) {
+		// preload next image
+	}
 
-	// storage.sync.set({ unsplash })
-	// storage.local.set({ unsplashCache: cache })
+	// storage.sync.set({ backgrounds })
+	// storage.local.set({ daylightCollection: cache })
 }
 
 //
-//	Daylight Collection
+//	Collections
+//	( Can be refactored )
 //
 
-async function daylightCollection(backgrounds: Sync.Backgrounds): Promise<Backgrounds.Image[]> {
+function getDaylightCollectionImages(backgrounds: Sync.Backgrounds, local: Local.Storage): Backgrounds.Image[] {
+	if (!local.daylightCollection) {
+		throw new Error('Empty daylight collection !')
+	}
+	if (backgrounds.type !== 'images') {
+		throw new Error('Selected background type is not "images"')
+	}
+
 	const date = userDate()
 	const period = periodOfDay(date.getTime())
-	const local = await storage.local.get()
+	const provider = backgrounds.images.provider
+	const images = local.daylightCollection.images
 
+	// const needNewCollec = !every.match(/day|pause/) && periodOfDay() !== lastCollec
+
+	return images[provider][period]
+}
+
+function getDaylightCollectionVideos(backgrounds: Sync.Backgrounds, local: Local.Storage): Backgrounds.Video[] {
 	if (!local.daylightCollection) {
-		return []
+		throw new Error('Empty daylight collection !')
+	}
+	if (backgrounds.type !== 'videos') {
+		throw new Error('Selected background type is not "videos"')
 	}
 
-	if (backgrounds.type === 'images') {
-		const provider = backgrounds.images.provider
-		const images = local.daylightCollection.images
-		return images[provider][period]
+	const date = userDate()
+	const period = periodOfDay(date.getTime())
+	const provider = backgrounds.videos.provider
+	const videos = local.daylightCollection.videos
+
+	// const needNewCollec = !every.match(/day|pause/) && periodOfDay() !== lastCollec
+
+	return videos[provider][period]
+}
+
+function getCustomCollectionImages(backgrounds: Sync.Backgrounds, local: Local.Storage): Backgrounds.Image[] {
+	if (!local.customCollection) {
+		throw new Error('Empty custom collection !')
+	}
+	if (backgrounds.type !== 'images') {
+		throw new Error('Selected background type is not "images"')
 	}
 
-	// Videos todo
+	const provider = backgrounds.images.provider
+	const images = local.customCollection.images
+	return images[provider]
+}
 
-	// if (backgrounds.type === 'videos') {
-	// 	const provider = backgrounds.videos.provider
-	// 	const videos = local.daylightCollection.videos
-	// 	return videos[provider][period]
-	// }
+function getCustomCollectionVideos(backgrounds: Sync.Backgrounds, local: Local.Storage): Backgrounds.Video[] {
+	if (!local.customCollection) {
+		throw new Error('Empty custom collection !')
+	}
+	if (backgrounds.type !== 'videos') {
+		throw new Error('Selected background type is not "videos"')
+	}
 
-	return []
+	const provider = backgrounds.videos.provider
+	const videos = local.customCollection.videos
+	return videos[provider]
 }
 
 //
