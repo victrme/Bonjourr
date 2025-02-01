@@ -197,6 +197,7 @@
 	"Icon only": "Icon only",
 
 	"Notes": "Notes",
+	"You can use Markdown and keyboard shortcut in notes.": "You can use Markdown and keyboard shortcut in notes.",
 	"Edit this note": "Edit this note",
 	"With markdown titles, lists, and checkboxes": "With markdown titles, lists, and checkboxes",
 	"Learn more on <url>": "Learn more on <url>",
@@ -209,6 +210,7 @@
 	"Search bar": "Search bar",
 	"Suggestions": "Suggestions",
 	"Search engine": "Search engine",
+	"Change the endpoint of the search bar.": "Change the endpoint of the search bar.",
 	"google": "google",
 	"duckduckgo": "duckduckgo",
 	"startpage": "startpage",
@@ -224,6 +226,7 @@
 	"Search bar shade": "Search bar shade",
 
 	"Quotes": "Quotes",
+	"Use the default quote collections or import your own.": "Use the default quote collections or import your own.",
 	"Always show author": "Always show author",
 	"Quote type": "Quote type",
 	"Classic": "Classic",
@@ -258,7 +261,7 @@
 
 	"Custom Style": "Custom Style",
 	"Tips on Custom styles": "Tips on Custom styles",
-	"Make cool things happen with CSS. ": "Make cool things happen with CSS.",
+	"Make cool things happen with CSS.": "Make cool things happen with CSS.",
 	"Check out our ": "Check out our",
 	"CSS snippets.": "CSS snippets.",
 	"Type in your custom CSS": "Type in your custom CSS",
