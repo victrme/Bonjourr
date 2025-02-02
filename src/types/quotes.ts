@@ -4,7 +4,7 @@ declare namespace Quotes {
 		content: string
 	}
 
-	type Types = 'classic' | 'kaamelott' | 'inspirobot' | 'stoic' | 'hitokoto' | 'user' | 'url'
+	type Types = 'classic' | 'kaamelott' | 'inspirobot' | 'stoic' | 'hitokoto' | 'the-office' | 'user' | 'url'
 
 	type Sync = {
 		on: boolean
