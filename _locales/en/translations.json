@@ -54,6 +54,7 @@
 	"Sync with browser": "Sync with browser",
 	"Most visited": "Most visited",
 	"Import selection": "Import selection",
+	"(synced)": "(synced)",
 
 	"This <currentMonth>, Bonjourr is brought to you by our lovely supporters.": "This <currentMonth>, Bonjourr is brought to you by our lovely supporters.",
 	"Find out who they are": "Find out who they are",
@@ -105,9 +106,7 @@
 
 	"Quick Links": "Quick Links",
 	"Tips on Quick Links": "Tips on Quick Links",
-	"These are Bonjourr's bookmarks. ": "These are Bonjourr's bookmarks. ",
-	"Edit your Quick Links by right clicking the icon.": "Edit your Quick Links by right clicking the icon.",
-	"Edit your Quick Links by long-pressing the icon.": "Edit your Quick Links by long-pressing the icon.",
+	"These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.": "These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.",
 	"Learn more": "Learn more",
 	"Enable": "Enable",
 	"Add link": "Add link",
