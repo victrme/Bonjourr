@@ -1,4 +1,6 @@
 declare namespace Backgrounds {
+	type Item = Backgrounds.Video & Backgrounds.Image
+
 	/**
 	 * Unified schema returned for Bonjourr Images
 	 */

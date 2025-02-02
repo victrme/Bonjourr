@@ -3,12 +3,12 @@ import videosBackgrounds from './videos'
 import localBackgrounds from './local'
 import solidBackgrounds from './solid'
 
-import onSettingsLoad from '../../utils/onsettingsload'
 import { freqControl, periodOfDay, rgbToHex } from '../../utils'
-import { API_DOMAIN, BROWSER } from '../../defaults'
+import onSettingsLoad from '../../utils/onsettingsload'
+import { BROWSER } from '../../defaults'
 import debounce from '../../utils/debounce'
-import storage from '../../storage'
 import userDate from '../../utils/userdate'
+import storage from '../../storage'
 
 interface BackgroundUpdate {
 	freq?: string
@@ -25,13 +25,15 @@ type ApplyBackgroundOptions = {
 	solid?: { value: string }
 }
 
+type BackgroundApiResponse = Backgrounds.Item[] & Local.DaylightImages & Local.DaylightVideos
+
 const propertiesUpdateDebounce = debounce(backgroundUpdateProperties, 600)
 
 //
 // 	Main
 //
 
-export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true) {
+export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	const type = sync.backgrounds.type
 
 	if (init) {
@@ -40,26 +42,16 @@ export default function backgrounds(sync: Sync.Storage, local: Local.Storage, in
 		})
 	}
 
+	backgroundFrequencyControl(sync.backgrounds, local)
 	applyBackgroundProperties(sync.backgrounds)
 	solidBackgrounds(sync.backgrounds.color)
-
-	if (local.daylightCollection?.images.unsplash.day.length === 0) {
-		fetch('https://services.bonjourr.fr/backgrounds/daylight/images/unsplash')
-			.then((resp) => resp.json())
-			.then((json) => {
-				if (local.daylightCollection) {
-					local.daylightCollection.images.unsplash = json
-					storage.local.set({ daylightCollection: local.daylightCollection })
-				}
-			})
-	}
 }
 
 //
 // 	Storage update
 //
 
-export async function backgroundUpdate(update: BackgroundUpdate) {
+export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> {
 	const type = document.querySelector<HTMLInputElement>('#i_type')?.value
 
 	if (update.freq !== undefined) {
@@ -120,33 +112,31 @@ export async function backgroundUpdateProperties({ blur, bright, fadein }: Parti
 //	Frequency update
 //
 
-async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage) {
-	const { daylightCollection, customCollection } = local
-
+async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage): Promise<void> {
 	// 1. Find correct list to use
 
 	let list: Backgrounds.Video[] | Backgrounds.Image[] = []
 
 	if (backgrounds.type === 'images') {
 		const images = backgrounds.images
-		const isCustom = images.customCollection || images.customTags
+		const isCustom = images.user
 
-		if (isCustom && customCollection) {
+		if (isCustom && local.customCollection) {
 			list = getCustomCollectionImages(backgrounds, local)
 		}
-		if (!isCustom && daylightCollection) {
+		if (!isCustom && local.daylightCollection) {
 			list = getDaylightCollectionImages(backgrounds, local)
 		}
 	}
 
 	if (backgrounds.type === 'videos') {
 		const videos = backgrounds.videos
-		const isCustom = videos.customCollection || videos.customTags
+		const isCustom = videos.user
 
-		if (isCustom && customCollection) {
+		if (isCustom && local.customCollection) {
 			list = getCustomCollectionVideos(backgrounds, local)
 		}
-		if (!isCustom && daylightCollection) {
+		if (!isCustom && local.daylightCollection) {
 			list = getDaylightCollectionVideos(backgrounds, local)
 		}
 	}
@@ -157,13 +147,13 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 	const needNew = freqControl.get(backgrounds.frequency, lastTime)
 
 	if (list.length === 0) {
-		const newlist = true // request a new list
+		const json = await fetchNewBackgrounds(backgrounds)
 
-		if (newlist) {
-			// replace list
+		if (json) {
+			local = updateCollection(backgrounds, local, json)
+			local.backgroundLastChange = userDate()
+			storage.local.set(local)
 			// preload image
-			// storage.local.set({ unsplashCache: cache })
-			// storage.local.set({ backgroundPreloading: true })
 		}
 	}
 
@@ -173,41 +163,83 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		return
 	}
 
-	if (!needNew) {
-		// keep paused image
-		// load same background
+	if (!needNew && backgrounds.frequency === 'pause' && backgrounds.images?.paused) {
+		// load synced image
 		return
 	}
 
-	// Needs new image, Update time
+	if (!needNew && backgrounds.frequency === 'pause' && backgrounds.videos?.paused) {
+		// load synced video
+		return
+	}
+
+	if (!needNew && backgrounds.frequency !== 'pause') {
+		// load same background
+		return
+	}
 
 	if (list.length > 1) {
 		list.shift()
 	}
 
-	// loadBackground(list[0])
-
 	if (backgrounds.frequency === 'pause') {
-		// save paused image
+		if (backgrounds.type === 'images') backgrounds.images.paused = list[0] as Backgrounds.Image
+		if (backgrounds.type === 'videos') backgrounds.videos.paused = list[0] as Backgrounds.Video
 	}
 
-	if (list.length === 1 && navigator.onLine) {
-		// End of cache, get & save new list
-		const newList = true // request a new list
+	if (list.length > 1 && navigator.onLine) {
+		// preload next image
+	}
 
-		if (newList) {
-			// replace list
+	// End of cache, get & save new list
+	if (list.length === 1 && navigator.onLine) {
+		const json = await fetchNewBackgrounds(backgrounds)
+
+		if (json) {
+			local = updateCollection(backgrounds, local, json)
+			local.backgroundLastChange = userDate()
+			storage.local.set(local)
 			// preload image
 		}
 	}
 
-	// Or preload next
-	else if (list.length > 1) {
-		// preload next image
+	// loadBackground(list[0])
+	// storage.sync.set({ backgrounds })
+}
+
+async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<BackgroundApiResponse> {
+	switch (backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			throw new Error('Can only fetch with "images" or "videos" type')
+		}
 	}
 
-	// storage.sync.set({ backgrounds })
-	// storage.local.set({ daylightCollection: cache })
+	const type = backgrounds.type
+	const infos = type === 'images' ? backgrounds.images : backgrounds.videos
+	const category = infos.user ? 'user' : 'daylight'
+	const provider = infos.provider
+
+	const path = `https://services.bonjourr.fr/backgrounds/${category}/${type}/${provider}`
+	const resp = await fetch(path)
+	const json = (await resp.json()) as BackgroundApiResponse
+
+	const isResponseDaylightImage = json?.day[0]?.url
+	const isResponseDaylightVideo = json?.day[0]?.duration
+	const isResponseCustomImage = json[0]?.url
+	const isResponseCustomVideo = json[0]?.duration
+
+	const isDaylightImage = isResponseDaylightImage && category === 'daylight' && type === 'images'
+	const isDaylightVideo = isResponseDaylightVideo && category === 'daylight' && type === 'videos'
+	const isCustomImage = isResponseCustomImage && category === 'user' && type === 'images'
+	const isCustomVideo = isResponseCustomVideo && category === 'user' && type === 'videos'
+
+	if (isDaylightImage || isDaylightVideo || isCustomImage || isCustomVideo) {
+		return json
+	}
+
+	throw new Error('Received JSON is bad')
 }
 
 //
@@ -275,6 +307,39 @@ function getCustomCollectionVideos(backgrounds: Sync.Backgrounds, local: Local.S
 	const provider = backgrounds.videos.provider
 	const videos = local.customCollection.videos
 	return videos[provider]
+}
+
+function updateCollection(backgrounds: Sync.Backgrounds, local: Local.Storage, json: BackgroundApiResponse): Local.Storage {
+	switch (backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			throw new Error('Can only update with "images" or "videos" type')
+		}
+	}
+
+	const isDaylightImage = backgrounds.images && json?.day[0]?.url
+	const isDaylightVideo = backgrounds.videos && json?.day[0]?.duration
+	const isCustomImage = backgrounds.images?.user && json[0]?.url
+	const isCustomVideo = backgrounds.videos?.user && json[0]?.duration
+
+	const imageProvider = backgrounds.images?.provider
+	const videoProvider = backgrounds.videos?.provider
+
+	if (isDaylightImage && local.daylightCollection) {
+		local.daylightCollection.images[imageProvider] = json
+	}
+	if (isDaylightVideo && local.daylightCollection) {
+		local.daylightCollection.videos[videoProvider] = json
+	}
+	if (isCustomImage && local.daylightCollection) {
+		local.daylightCollection.images[imageProvider] = json
+	}
+	if (isCustomVideo && local.daylightCollection) {
+		local.daylightCollection.videos[videoProvider] = json
+	}
+
+	return local
 }
 
 //

@@ -82,17 +82,21 @@ declare namespace Sync {
 		urls: string[]
 		images: {
 			provider: 'unsplash' | 'pixabay'
-			lastUpdate?: string
-			pausedImage?: unknown
-			customTags?: string
-			customCollection?: string
+			paused?: Backgrounds.Image
+			last?: Date
+			user?: {
+				query: string
+				type: 'collections' | 'tags'
+			}
 		}
 		videos: {
 			provider: 'pixabay'
-			lastUpdate?: string
-			pausedVideo?: unknown
-			customTags?: string
-			customCollection?: string
+			paused?: Backgrounds.Video
+			last?: Date
+			user?: {
+				query: string
+				type: 'collections' | 'tags'
+			}
 		}
 	}
 
