@@ -29,14 +29,15 @@ export default {
 	tr: 'Türkçe',
 	ar: 'العربية',
 	fa: 'فارسی',
-	'zh-CN': '简体中文',
-	'zh-HK': '繁體中文',
-	'zh-TW': '正體中文',
+	'zh-CN': '中国简体中文',
+	'zh-HK': '香港繁體中文',
+	'zh-TW': '臺灣正體中文',
 	ja: '日本語',
 	id: 'Indonesia',
 	ca: 'Català',
 	vi: 'Tiếng Việt',
 	ko: '한국어',
+	'nan-Hant-TW': 'Tâi-gí（漢羅）',
 }
 
 // uses basic latin characters if not included
@@ -61,4 +62,5 @@ export const subsets = {
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',
 	ko: 'korean',
+	'nan-Hant-TW': 'chinese-traditional',
 }
