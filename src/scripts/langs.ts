@@ -13,7 +13,7 @@ export default {
 	da: 'Dansk',
 	sv: 'Svenska',
 	nb: 'Norsk',
-	fi: 'Suomi',
+	fi: 'suomi',
 	pl: 'Polski',
 	cs: 'Čeština',
 	hr: 'Hrvatski',
