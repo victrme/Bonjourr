@@ -115,7 +115,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
 	const unsplashCollec = data?.unsplash?.lastCollec === 'user' ? 'day' : data?.unsplash?.lastCollec
 
-	setInput('i_blur', data.background_blur ?? 15)
+	setInput('i_blur', data.background_blur ?? 10)
 	setInput('i_bright', data.background_bright ?? 0.8)
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
