@@ -87,7 +87,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	time: true,
 	main: true,
 	dateformat: 'auto',
-	background_blur: 15,
+	background_blur: 10,
 	background_bright: 0.8,
 	background_type: 'unsplash',
 	quicklinks: true,
