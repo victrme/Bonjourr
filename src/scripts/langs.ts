@@ -32,12 +32,12 @@ export default {
 	'zh-CN': '中国简体中文',
 	'zh-HK': '香港繁體中文',
 	'zh-TW': '臺灣正體中文',
+	'nan-Hant-TW': '臺灣台語（漢羅）',
 	ja: '日本語',
 	id: 'Indonesia',
 	ca: 'Català',
 	vi: 'Tiếng Việt',
 	ko: '한국어',
-	'nan-Hant-TW': 'Tâi-gí（漢羅）',
 }
 
 // uses basic latin characters if not included
