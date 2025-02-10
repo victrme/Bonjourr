@@ -64,6 +64,11 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	transition: opacity 4s;
+}
+
+#video-background-bis {
+	opacity: 0;
 }
 
 #image-background,

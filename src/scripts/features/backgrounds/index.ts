@@ -425,10 +425,16 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 
 	if (video) {
 		const domvideo = document.querySelector<HTMLMediaElement>('#video-background')
+		const domvideobis = document.querySelector<HTMLMediaElement>('#video-background-bis')
 
-		if (domvideo) {
-			domvideo.src = video.urls.large
+		if (domvideo && domvideobis) {
+			domvideo.src = video.urls.tiny
 			setTimeout(() => overlay.classList.remove('hidden'))
+			setTimeout(() => {
+				domvideobis.style.opacity = '1'
+				domvideobis.style.zIndex = '2'
+				domvideobis.src = video.urls.tiny
+			}, 1000 * video.duration - 4)
 		}
 	}
 
