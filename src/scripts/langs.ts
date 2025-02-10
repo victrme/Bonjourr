@@ -37,6 +37,7 @@ export default {
 	ca: 'Català',
 	vi: 'Tiếng Việt',
 	ko: '한국어',
+	az: 'Azərbaycan',
 }
 
 // uses basic latin characters if not included
@@ -61,4 +62,5 @@ export const subsets = {
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',
 	ko: 'korean',
+	az: 'latin-ext', 
 }
