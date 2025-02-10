@@ -10,11 +10,9 @@ import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
-import solidBackgrounds from './features/backgrounds/solid'
 import { backgroundUpdate } from './features/backgrounds'
 import { supportersNotifications } from './features/supporters'
 import { changeGroupTitle, initGroups } from './features/links/groups'
-import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
 import customFont, { fontIsAvailableInSubset, systemfont } from './features/fonts'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
@@ -162,7 +160,6 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
 
-	setFormInput('i_collection', bonjourrCollections[unsplashCollec], data.unsplash?.collection)
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
 	setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
@@ -389,7 +386,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_solid-background').addEventListener('input', function () {
-		solidBackgrounds(undefined, this.value)
+		backgroundUpdate({ color: this.value })
 	})
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
@@ -401,10 +398,10 @@ function initOptionsEvents() {
 	})
 
 	paramId('f_collection').addEventListener('submit', function (this, event) {
-		event.preventDefault()
-		unsplashBackgrounds(undefined, {
-			collection: stringMaxSize(paramId('i_collection').value, 256),
-		})
+		// event.preventDefault()
+		// unsplashBackgrounds(undefined, {
+		// 	collection: stringMaxSize(paramId('i_collection').value, 256),
+		// })
 	})
 
 	// Custom backgrounds

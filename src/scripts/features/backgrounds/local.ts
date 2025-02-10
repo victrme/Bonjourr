@@ -1,6 +1,5 @@
 import { randomString, turnRefreshButton, freqControl, isEvery } from '../../utils'
 import { applyBackground } from '.'
-import unsplashBackgrounds from './unsplash'
 import onSettingsLoad from '../../utils/onsettingsload'
 import { IS_MOBILE } from '../../defaults'
 import errorMessage from '../../utils/errormessage'
@@ -50,7 +49,7 @@ async function initLocalBackgrounds() {
 	if (ids.length === 0) {
 		const data = await storage.sync.get('unsplash')
 		const local = await storage.local.get('unsplashCache')
-		unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+		// unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 		return
 	}
 
@@ -175,7 +174,7 @@ async function updateThumbnailAmount(showing?: string) {
 
 async function displayCustomBackground(blob?: Blob) {
 	if (blob) {
-		applyBackground({ image: { url: URL.createObjectURL(blob) } })
+		// applyBackground({ image: { url: URL.createObjectURL(blob) } })
 		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
 	}
@@ -311,7 +310,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 			document.getElementById('credit-container')?.classList.toggle('shown', true)
 			const data = await storage.sync.get('unsplash')
 			const local = await storage.local.get('unsplashCache')
-			unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+			// unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
 		}, 100)
 	}
 
