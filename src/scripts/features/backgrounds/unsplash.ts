@@ -353,7 +353,7 @@ async function getCache(): Promise<Unsplash.Local> {
 }
 
 function loadBackground(props: Unsplash.Image) {
-	applyBackground({ image: { ...props } })
+	applyBackground({ image: props })
 	imgCredits(props)
 }
 

@@ -20,7 +20,7 @@ declare namespace Local {
 		customCollection?: CustomCollection
 		daylightCollection?: DaylightCollection
 		backgroundPreloading?: true
-		backgroundLastChange?: Date
+		backgroundLastChange?: string
 
 		// Unused - Old
 		unsplashCache: Unsplash.Local

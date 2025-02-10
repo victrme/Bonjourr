@@ -20,9 +20,9 @@ interface BackgroundUpdate {
 }
 
 type ApplyBackgroundOptions = {
-	image?: { url: string; color?: string }
-	video?: { url: string; color?: string }
-	solid?: { value: string }
+	image?: Backgrounds.Image
+	video?: Backgrounds.Video
+	solid?: string
 }
 
 type BackgroundApiResponse = Backgrounds.Item[] & Local.DaylightImages & Local.DaylightVideos
@@ -34,8 +34,6 @@ const propertiesUpdateDebounce = debounce(backgroundUpdateProperties, 600)
 //
 
 export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true): void {
-	const type = sync.backgrounds.type
-
 	if (init) {
 		onSettingsLoad(() => {
 			handleBackgroundOptions(sync.backgrounds.type)
@@ -44,7 +42,6 @@ export default function backgrounds(sync: Sync.Storage, local: Local.Storage, in
 
 	backgroundFrequencyControl(sync.backgrounds, local)
 	applyBackgroundProperties(sync.backgrounds)
-	solidBackgrounds(sync.backgrounds.color)
 }
 
 //
@@ -53,13 +50,6 @@ export default function backgrounds(sync: Sync.Storage, local: Local.Storage, in
 
 export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> {
 	const type = document.querySelector<HTMLInputElement>('#i_type')?.value
-
-	if (update.freq !== undefined) {
-		if (type === 'files') localBackgrounds({ freq: update.freq })
-		if (type === 'videos') videosBackgrounds(undefined, { hello: true })
-		if (type === 'images') unsplashBackgrounds(undefined, { every: update.freq })
-		return
-	}
 
 	if (update.refresh) {
 		if (type === 'files') localBackgrounds({ refresh: update.refresh })
@@ -86,15 +76,19 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		return
 	}
 
-	if (isBackgroundType(update.type)) {
-		const data = await storage.sync.get('backgrounds')
-		const local = await storage.local.get()
+	const data = await storage.sync.get('backgrounds')
+	const local = await storage.local.get()
 
+	if (isBackgroundType(update.type)) {
 		data.backgrounds.type = update.type
 		storage.sync.set({ backgrounds: data.backgrounds })
-
 		handleBackgroundOptions(update.type)
 		backgrounds(data, local)
+	}
+
+	if (isFrequency(update.freq)) {
+		data.backgrounds.frequency = update.freq
+		storage.sync.set({ backgrounds: data.backgrounds })
 	}
 }
 
@@ -143,15 +137,15 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 	// 2. Control change for specified list
 
-	const lastTime = (local.backgroundLastChange ?? new Date()).getTime()
+	const lastTime = new Date(local.backgroundLastChange ?? '').getTime()
 	const needNew = freqControl.get(backgrounds.frequency, lastTime)
 
 	if (list.length === 0) {
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
-			local = updateCollection(backgrounds, local, json)
-			local.backgroundLastChange = userDate()
+			local = updateCollectionFromApi(backgrounds, local, json)
+			local.backgroundLastChange = userDate().toISOString()
 			storage.local.set(local)
 			// preload image
 		}
@@ -163,18 +157,15 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		return
 	}
 
-	if (!needNew && backgrounds.frequency === 'pause' && backgrounds.images?.paused) {
-		// load synced image
-		return
-	}
-
-	if (!needNew && backgrounds.frequency === 'pause' && backgrounds.videos?.paused) {
-		// load synced video
+	if (!needNew && backgrounds.frequency === 'pause') {
+		if (backgrounds.images?.paused) applyBackground({ image: backgrounds.images.paused })
+		if (backgrounds.videos?.paused) applyBackground({ video: backgrounds.videos.paused })
 		return
 	}
 
 	if (!needNew && backgrounds.frequency !== 'pause') {
-		// load same background
+		if (isVideo(list[0])) applyBackground({ video: list[0] })
+		if (isImage(list[0])) applyBackground({ image: list[0] })
 		return
 	}
 
@@ -189,6 +180,8 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 	if (list.length > 1 && navigator.onLine) {
 		// preload next image
+		local = updateCollectionFromList(backgrounds, local, list)
+		storage.local.set(local)
 	}
 
 	// End of cache, get & save new list
@@ -196,15 +189,17 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
-			local = updateCollection(backgrounds, local, json)
-			local.backgroundLastChange = userDate()
+			local = updateCollectionFromApi(backgrounds, local, json)
+			local.backgroundLastChange = userDate().toISOString()
 			storage.local.set(local)
 			// preload image
 		}
 	}
 
-	// loadBackground(list[0])
-	// storage.sync.set({ backgrounds })
+	if (isVideo(list[0])) applyBackground({ video: list[0] })
+	if (isImage(list[0])) applyBackground({ image: list[0] })
+
+	storage.sync.set({ backgrounds })
 }
 
 async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<BackgroundApiResponse> {
@@ -309,7 +304,11 @@ function getCustomCollectionVideos(backgrounds: Sync.Backgrounds, local: Local.S
 	return videos[provider]
 }
 
-function updateCollection(backgrounds: Sync.Backgrounds, local: Local.Storage, json: BackgroundApiResponse): Local.Storage {
+function updateCollectionFromApi(
+	backgrounds: Sync.Backgrounds,
+	local: Local.Storage,
+	json: BackgroundApiResponse
+): Local.Storage {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -332,11 +331,50 @@ function updateCollection(backgrounds: Sync.Backgrounds, local: Local.Storage, j
 	if (isDaylightVideo && local.daylightCollection) {
 		local.daylightCollection.videos[videoProvider] = json
 	}
-	if (isCustomImage && local.daylightCollection) {
-		local.daylightCollection.images[imageProvider] = json
+	if (isCustomImage && local.customCollection) {
+		local.customCollection.images[imageProvider] = json
 	}
-	if (isCustomVideo && local.daylightCollection) {
-		local.daylightCollection.videos[videoProvider] = json
+	if (isCustomVideo && local.customCollection) {
+		local.customCollection.videos[videoProvider] = json
+	}
+
+	return local
+}
+
+function updateCollectionFromList(
+	backgrounds: Sync.Backgrounds,
+	local: Local.Storage,
+	list: Backgrounds.Image[] | Backgrounds.Video[]
+): Local.Storage {
+	switch (backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			throw new Error('Can only update with "images" or "videos" type')
+		}
+	}
+
+	const isDaylightImage = backgrounds.images && (list[0] as Backgrounds.Image)?.url
+	const isDaylightVideo = backgrounds.videos && (list[0] as Backgrounds.Video)?.duration
+	const isCustomImage = backgrounds.images?.user !== undefined
+	const isCustomVideo = backgrounds.videos?.user !== undefined
+
+	const imageProvider = backgrounds.images?.provider
+	const videoProvider = backgrounds.videos?.provider
+	const date = userDate()
+	const period = periodOfDay(date.getTime())
+
+	if (isDaylightImage && local.daylightCollection && isImage(list[0])) {
+		local.daylightCollection.images[imageProvider][period] = list as Backgrounds.Image[]
+	}
+	if (isDaylightVideo && local.daylightCollection && isVideo(list[0])) {
+		local.daylightCollection.videos[videoProvider][period] = list as Backgrounds.Video[]
+	}
+	if (isCustomImage && local.customCollection && isImage(list[0])) {
+		local.customCollection.images[imageProvider] = list as Backgrounds.Image[]
+	}
+	if (isCustomVideo && local.customCollection && isVideo(list[0])) {
+		local.customCollection.videos[videoProvider] = list as Backgrounds.Video[]
 	}
 
 	return local
@@ -391,13 +429,13 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 		const domvideo = document.querySelector<HTMLMediaElement>('#video-background')
 
 		if (domvideo) {
-			domvideo.src = video.url
+			domvideo.src = video.urls.large
 			setTimeout(() => overlay.classList.remove('hidden'))
 		}
 	}
 
 	if (solid) {
-		document.documentElement.style.setProperty('--solid-background', solid.value)
+		document.documentElement.style.setProperty('--solid-background', solid)
 		overlay.classList.remove('hidden')
 	}
 }
@@ -438,7 +476,7 @@ async function handleBackgroundOptions(type: string) {
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
-	document.getElementById('background-provider-option')?.classList.toggle('shown', type === 'images')
+	// document.getElementById('background-provider-option')?.classList.toggle('shown', type === 'images')
 
 	if (type === 'files') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
@@ -447,22 +485,15 @@ async function handleBackgroundOptions(type: string) {
 
 	if (type === 'images') {
 		const data = await storage.sync.get()
-		const local = await storage.local.get('unsplashCache')
+		const local = await storage.local.get()
 
 		if (!data.unsplash) {
 			return
 		}
 
-		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
+		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.backgrounds.frequency
 		document.getElementById('credit-container')?.classList.toggle('shown', true)
-		setTimeout(
-			() =>
-				unsplashBackgrounds({
-					unsplash: data.unsplash,
-					cache: local.unsplashCache,
-				}),
-			100
-		)
+		backgroundFrequencyControl(data.backgrounds, local)
 	}
 }
 
@@ -513,7 +544,6 @@ function getAverageColor(img: HTMLImageElement) {
 		b = Math.floor(b / count)
 
 		// Output the average color in RGB format
-		console.log(rgbToHex(r, g, b))
 		return rgbToHex(r, g, b)
 	} catch (error) {
 		console.error('Error accessing image data:', error)
@@ -522,4 +552,14 @@ function getAverageColor(img: HTMLImageElement) {
 
 function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
+}
+
+function isVideo(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Video {
+	return Object.keys(item).includes('duration')
+}
+function isImage(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Image {
+	return Object.keys(item).includes('url')
+}
+function isFrequency(str = ''): str is Frequency {
+	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)
 }

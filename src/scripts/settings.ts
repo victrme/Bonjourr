@@ -122,7 +122,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
 	setInput('i_type', data.backgrounds.type || 'images')
-	setInput('i_freq', data.unsplash?.every)
+	setInput('i_freq', data.backgrounds?.frequency || 'hour')
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
