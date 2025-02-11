@@ -28,6 +28,7 @@ interface ApplyBackgroundOptions {
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
+let videoInterval = 0
 
 export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
@@ -428,18 +429,28 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 	}
 
 	if (video) {
-		const domvideo = document.querySelector<HTMLMediaElement>('#video-background')
-		const domvideobis = document.querySelector<HTMLMediaElement>('#video-background-bis')
+		const opacity = 4 //s
+		const duration = 1000 * (video.duration - opacity)
 
-		if (domvideo && domvideobis) {
-			domvideo.src = video.urls.tiny
+		const createVideo = () => {
+			const vid = document.createElement('video')
+			vid.src = video.urls.tiny
+			vid.muted = true
+			vid.autoplay = true
+			document.getElementById('video-background-wrapper')?.prepend(vid)
 			setTimeout(() => overlay.classList.remove('hidden'))
-			setTimeout(() => {
-				domvideobis.style.opacity = '1'
-				domvideobis.style.zIndex = '2'
-				domvideobis.src = video.urls.tiny
-			}, 1000 * video.duration - 4)
 		}
+
+		const rerunVideo = () => {
+			setTimeout(() => {
+				createVideo()
+				document.querySelector('#video-background-wrapper video:last-child')?.setAttribute('style', 'opacity: 0')
+				setTimeout(() => document.querySelector('#video-background-wrapper video:last-child')?.remove(), 4000)
+			})
+		}
+
+		createVideo()
+		setInterval(rerunVideo, duration)
 	}
 
 	if (solid) {
