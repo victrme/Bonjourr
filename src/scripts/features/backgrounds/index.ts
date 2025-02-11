@@ -31,7 +31,7 @@ const colorUpdateDebounce = debounce(solidUpdate, 600)
 
 export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
-		onSettingsLoad(() => handleBackgroundOptions(sync.backgrounds.type))
+		onSettingsLoad(() => handleBackgroundOptions(sync.backgrounds.type, true))
 	}
 
 	applyFilters(sync.backgrounds)
@@ -125,29 +125,8 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 	let list: Backgrounds.Video[] | Backgrounds.Image[] = []
 
-	if (backgrounds.type === 'images') {
-		const images = backgrounds.images
-		const isCustom = images.user
-
-		if (isCustom && local.customCollection) {
-			list = getCollection(backgrounds, local).customImages()
-		}
-		if (!isCustom && local.daylightCollection) {
-			list = getCollection(backgrounds, local).daylightImages()
-		}
-	}
-
-	if (backgrounds.type === 'videos') {
-		const videos = backgrounds.videos
-		const isCustom = videos.user
-
-		if (isCustom && local.customCollection) {
-			list = getCollection(backgrounds, local).customVideos()
-		}
-		if (!isCustom && local.daylightCollection) {
-			list = getCollection(backgrounds, local).daylightVideos()
-		}
-	}
+	if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
+	if (backgrounds.type === 'videos') list = getCollection(backgrounds, local).videos()
 
 	// 2. Control change for specified list
 
@@ -161,13 +140,20 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 			local = setCollection(backgrounds, local).fromApi(json)
 			local.backgroundLastChange = userDate().toISOString()
 			storage.local.set(local)
-			// preload image
+
+			if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
+			if (backgrounds.type === 'videos') list = getCollection(backgrounds, local).videos()
+
+			if (isVideo(list[1])) preloadBackground({ video: list[1] })
+			if (isImage(list[1])) preloadBackground({ image: list[1] })
 		}
 	}
 
 	if (local.backgroundPreloading) {
-		// Don't change
-		// Keep preloading
+		if (isVideo(list[0])) applyBackground({ video: list[0] })
+		if (isImage(list[0])) applyBackground({ image: list[0] })
+		if (isVideo(list[1])) preloadBackground({ video: list[1] })
+		if (isImage(list[1])) preloadBackground({ image: list[1] })
 		return
 	}
 
@@ -193,7 +179,9 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 	}
 
 	if (list.length > 1 && navigator.onLine) {
-		// preload next image
+		if (isVideo(list[1])) preloadBackground({ video: list[1] })
+		if (isImage(list[1])) preloadBackground({ image: list[1] })
+
 		local = setCollection(backgrounds, local).fromList(list)
 		storage.local.set(local)
 	}
@@ -206,7 +194,12 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 			local = setCollection(backgrounds, local).fromApi(json)
 			local.backgroundLastChange = userDate().toISOString()
 			storage.local.set(local)
-			// preload image
+
+			if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
+			if (backgrounds.type === 'videos') list = getCollection(backgrounds, local).videos()
+
+			if (isVideo(list[1])) preloadBackground({ video: list[1] })
+			if (isImage(list[1])) preloadBackground({ image: list[1] })
 		}
 	}
 
@@ -310,12 +303,23 @@ function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 		return videos[provider]
 	}
 
-	return {
-		daylightImages,
-		daylightVideos,
-		customImages,
-		customVideos,
+	function images(): Backgrounds.Image[] {
+		if (backgrounds.images.user) {
+			return customImages()
+		} else {
+			return daylightImages()
+		}
 	}
+
+	function videos(): Backgrounds.Video[] {
+		if (backgrounds.videos.user) {
+			return customVideos()
+		} else {
+			return daylightVideos()
+		}
+	}
+
+	return { images, videos }
 }
 
 function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
@@ -444,6 +448,33 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 	}
 }
 
+export function preloadBackground({ image, video }: ApplyBackgroundOptions) {
+	const img = document.createElement('img')
+
+	if (image) {
+		img.addEventListener('load', function () {
+			storage.local.remove('backgroundPreloading')
+			img.remove()
+		})
+		img.src = image.url
+		storage.local.set({ backgroundPreloading: true })
+	}
+
+	if (video) {
+		const vid = document.createElement('video')
+
+		vid.addEventListener('progress', function (e) {
+			setTimeout(() => {
+				storage.local.remove('backgroundPreloading')
+				vid.remove()
+			}, 200)
+		})
+
+		vid.src = video.urls.tiny
+		storage.local.set({ backgroundPreloading: true })
+	}
+}
+
 export function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 	if (blur !== undefined) {
 		document.documentElement.style.setProperty('--blur', blur + 'px')
@@ -461,7 +492,7 @@ export function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>
 
 // 	Settings options
 
-async function handleBackgroundOptions(type: string) {
+async function handleBackgroundOptions(type: string, init?: true) {
 	if (isBackgroundType(type) === false) {
 		return
 	}
@@ -482,7 +513,10 @@ async function handleBackgroundOptions(type: string) {
 
 	if (type === 'files') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
-		setTimeout(() => localBackgrounds(), 100)
+
+		if (init) {
+			setTimeout(() => localBackgrounds(), 100)
+		}
 	}
 
 	if (type === 'images') {
@@ -491,7 +525,10 @@ async function handleBackgroundOptions(type: string) {
 
 		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.backgrounds.frequency
 		document.getElementById('credit-container')?.classList.toggle('shown', true)
-		backgrounds(data, local)
+
+		if (init) {
+			backgrounds(data, local)
+		}
 	}
 }
 
