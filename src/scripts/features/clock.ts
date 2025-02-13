@@ -79,7 +79,7 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (update.greeting !== undefined) {
-		data.greeting = stringMaxSize(update.greeting, 32)
+		data.greeting = stringMaxSize(update.greeting, 64)
 		greetings(zonedDate(data.clock.timezone), data.greeting)
 		storage.sync.set({ greeting: data.greeting })
 	}
