@@ -115,6 +115,51 @@
 		</div>
 	</div>
 
+	<div id="background-collection-option" class="dropdown shown">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_background-collection" class="trn">Collection</label>
+			<select id="i_background-collection">
+				<option value="daylight">Bonjourr daylight</option>
+				<option value="usercoll">Custom collection</option>
+				<option value="usertags">Custom tags</option>
+			</select>
+		</div>
+
+		<div id="background-user-coll-option" class="dropdown shown">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_background-user-coll" class="trn">Custom collection</label>
+				<input
+					type="text"
+					name="background-user-coll"
+					id="i_background-user-coll"
+					placeholder="XSCVKUH"
+					aria-label="Background collections"
+					maxlength="256"
+				/>
+			</div>
+		</div>
+
+		<div id="background-user-tags-option" class="dropdown">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_background-user-tags" class="trn">Custom tags</label>
+				<input
+					type="text"
+					name="background-user-tags"
+					id="i_background-user-tags"
+					placeholder="nature, winter"
+					aria-label="Background tags"
+					maxlength="256"
+				/>
+			</div>
+		</div>
+	</div>
+
 	<div id="background-freq-option" class="dropdown">
 		<hr />
 
@@ -160,56 +205,6 @@
 			placeholder="https://picsum.photos/200&#10;https://picsum.photos/600/400"
 			maxlength="8000"
 		></textarea>
-	</div>
-
-	<div id="unsplash_options" class="dropdown">
-		<div class="as as_collection dropdown">
-			<hr />
-
-			<div class="wrapper">
-				<span>
-					<label for="i_collection" class="trn">Unsplash collection</label>
-					<button
-						class="tooltip ttcoll"
-						title="Tips on Unsplash collections"
-						aria-label="Tips on Unsplash collections"
-					>
-						?
-					</button>
-				</span>
-
-				<form id="f_collection" class="network-form">
-					<div>
-						<input
-							type="text"
-							name="collection"
-							id="i_collection"
-							autocomplete="off"
-							maxlength="256"
-							spellcheck="false"
-							autocomplete="off"
-							autocorrect="off"
-							autocapitalize="off"
-						/>
-						<button type="submit" id="b_collection">
-							<span></span>
-						</button>
-					</div>
-					<small class="network-form-warning"></small>
-				</form>
-			</div>
-
-			<p class="tooltiptext dropdown ttcoll">
-				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
-				<a
-					class="trn"
-					href="https://bonjourr.fr/docs/overview/#custom-unsplash-collection"
-					rel="noreferrer noopener"
-					target="_blank"
-					>Learn more</a
-				>
-			</p>
-		</div>
 	</div>
 
 	<div id="solid_options" class="dropdown">

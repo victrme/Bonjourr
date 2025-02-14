@@ -397,13 +397,6 @@ function initOptionsEvents() {
 		backgroundUpdate({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
-	paramId('f_collection').addEventListener('submit', function (this, event) {
-		// event.preventDefault()
-		// unsplashBackgrounds(undefined, {
-		// 	collection: stringMaxSize(paramId('i_collection').value, 256),
-		// })
-	})
-
 	// Custom backgrounds
 
 	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
