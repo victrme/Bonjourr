@@ -118,8 +118,8 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		frequency: 'hour',
 		color: '#654',
 		urls: [],
-		images: { provider: 'unsplash' },
-		videos: { provider: 'pixabay' },
+		images: { provider: 'unsplash', collection: 'daylight' },
+		videos: { provider: 'pixabay', collection: 'daylight' },
 	},
 	clock: {
 		size: 1,

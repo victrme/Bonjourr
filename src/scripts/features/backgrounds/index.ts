@@ -15,9 +15,11 @@ interface BackgroundUpdate {
 	type?: string
 	blur?: string
 	color?: string
+	query?: string
 	bright?: string
 	fadein?: string
 	refresh?: HTMLSpanElement
+	collection?: string
 }
 
 interface ApplyBackgroundOptions {
@@ -30,9 +32,9 @@ const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
 let videoInterval = 0
 
-export default function backgrounds(sync: Sync.Storage, local: Local.Storage, init?: true): void {
+export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
-		onSettingsLoad(() => handleBackgroundOptions(sync.backgrounds.type, true))
+		onSettingsLoad(() => handleBackgroundOptions(sync.backgrounds, true))
 	}
 
 	applyFilters(sync.backgrounds)
@@ -82,8 +84,8 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (isBackgroundType(update.type)) {
 		data.backgrounds.type = update.type
 		storage.sync.set({ backgrounds: data.backgrounds })
-		handleBackgroundOptions(update.type)
-		backgrounds(data, local)
+		handleBackgroundOptions(data.backgrounds)
+		backgroundsInit(data, local)
 	}
 
 	if (isFrequency(update.freq)) {
@@ -94,12 +96,35 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (update.refresh) {
 		local.backgroundLastChange = userDate().toISOString()
 		storage.local.set({ backgroundLastChange: local.backgroundLastChange })
-		backgrounds(data, local)
+		backgroundsInit(data, local)
 	}
 
 	if (update.color) {
 		applyBackground({ solid: update.color })
 		colorUpdateDebounce(update.color)
+	}
+
+	if (isCollection(update.collection)) {
+		const type = data.backgrounds.type === 'videos' ? 'videos' : 'images'
+		data.backgrounds[type].collection = update.collection
+		storage.sync.set({ backgrounds: data.backgrounds })
+		handleBackgroundOptions(data.backgrounds)
+	}
+
+	if (update.query !== undefined) {
+		const type = data.backgrounds.type
+		const isImageOrVideos = type === 'images' || type === 'videos'
+
+		if (isImageOrVideos) {
+			const user = data.backgrounds[type]?.user ?? { coll: '', tags: '' }
+
+			if (data.backgrounds[type].collection === 'usercoll') user.coll = update.query
+			if (data.backgrounds[type].collection === 'usertags') user.tags = update.query
+
+			data.backgrounds[type].user = user
+			storage.sync.set({ backgrounds: data.backgrounds })
+			handleBackgroundOptions(data.backgrounds)
+		}
 	}
 }
 
@@ -221,7 +246,7 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 
 	const type = backgrounds.type
 	const infos = type === 'images' ? backgrounds.images : backgrounds.videos
-	const category = infos.user ? 'user' : 'daylight'
+	const category = infos.collection === 'daylight' ? 'daylight' : 'user'
 	const provider = infos.provider
 
 	const path = `https://services.bonjourr.fr/backgrounds/${category}/${type}/${provider}`
@@ -305,18 +330,18 @@ function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	}
 
 	function images(): Backgrounds.Image[] {
-		if (backgrounds.images.user) {
-			return customImages()
-		} else {
+		if (backgrounds.images.collection === 'daylight') {
 			return daylightImages()
+		} else {
+			return customImages()
 		}
 	}
 
 	function videos(): Backgrounds.Video[] {
-		if (backgrounds.videos.user) {
-			return customVideos()
-		} else {
+		if (backgrounds.videos.collection === 'daylight') {
 			return daylightVideos()
+		} else {
+			return customVideos()
 		}
 	}
 
@@ -340,8 +365,8 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	function fromApi(json: BackgroundApiResponse): Local.Storage {
 		const isDaylightImage = backgrounds.images && json?.day[0]?.url
 		const isDaylightVideo = backgrounds.videos && json?.day[0]?.duration
-		const isCustomImage = backgrounds.images?.user && json[0]?.url
-		const isCustomVideo = backgrounds.videos?.user && json[0]?.duration
+		const isCustomImage = backgrounds.images?.collection !== 'daylight' && json[0]?.url
+		const isCustomVideo = backgrounds.videos?.collection !== 'daylight' && json[0]?.duration
 
 		if (isDaylightImage && local.daylightCollection) {
 			local.daylightCollection.images[imageProvider] = json
@@ -362,8 +387,8 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	function fromList(list: Backgrounds.Image[] | Backgrounds.Video[]): Local.Storage {
 		const isDaylightImage = backgrounds.images && (list[0] as Backgrounds.Image)?.url
 		const isDaylightVideo = backgrounds.videos && (list[0] as Backgrounds.Video)?.duration
-		const isCustomImage = backgrounds.images?.user !== undefined
-		const isCustomVideo = backgrounds.videos?.user !== undefined
+		const isCustomImage = backgrounds.images?.collection !== 'daylight'
+		const isCustomVideo = backgrounds.videos?.collection !== 'daylight'
 
 		if (isDaylightImage && local.daylightCollection && isImage(list[0])) {
 			local.daylightCollection.images[imageProvider][period] = list as Backgrounds.Image[]
@@ -503,12 +528,13 @@ export function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>
 
 // 	Settings options
 
-async function handleBackgroundOptions(type: string, init?: true) {
+async function handleBackgroundOptions(backgrounds: Sync.Backgrounds, init?: true) {
+	const overlay = document.querySelector<HTMLElement>('#background-overlay')
+	const type = backgrounds.type
+
 	if (isBackgroundType(type) === false) {
 		return
 	}
-
-	const overlay = document.querySelector<HTMLElement>('#background-overlay')
 
 	if (overlay) {
 		overlay.dataset.type = type
@@ -538,9 +564,29 @@ async function handleBackgroundOptions(type: string, init?: true) {
 		document.getElementById('credit-container')?.classList.toggle('shown', true)
 
 		if (init) {
-			backgrounds(data, local)
+			backgroundsInit(data, local)
 		}
 	}
+
+	const isImageOrVideos = type === 'images' || type === 'videos'
+
+	if (isImageOrVideos) {
+		const hasColls = backgrounds[type].collection === 'usercoll'
+		const hasTags = backgrounds[type].collection === 'usertags'
+
+		document.getElementById('background-user-coll-option')?.classList.toggle('shown', hasColls)
+		document.getElementById('background-user-tags-option')?.classList.toggle('shown', hasTags)
+
+		const domcollection = document.querySelector<HTMLSelectElement>('#i_background-collection')!
+		const domusercoll = document.querySelector<HTMLInputElement>('#i_background-user-coll')!
+		const domusertags = document.querySelector<HTMLInputElement>('#i_background-user-tags')!
+
+		domcollection.value = hasColls ? 'usercoll' : hasTags ? 'usertags' : 'daylight'
+		domusercoll.value = backgrounds[type].user?.coll ?? ''
+		domusertags.value = backgrounds[type].user?.tags ?? ''
+	}
+
+	document.getElementById('background-collection-option')?.classList.toggle('shown', isImageOrVideos)
 }
 
 //  Helpers
@@ -596,6 +642,9 @@ function getAverageColor(img: HTMLImageElement) {
 
 function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
+}
+function isCollection(str = ''): str is Sync.Storage['backgrounds']['images']['collection'] {
+	return ['daylight', 'usercoll', 'usertags'].includes(str)
 }
 function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)
