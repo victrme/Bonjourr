@@ -304,7 +304,8 @@ function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 
 	function customImages(): Backgrounds.Image[] {
 		if (!local.customCollection) {
-			throw new Error('Empty custom collection !')
+			console.log(new Error('Empty custom collection storage !'))
+			return daylightImages()
 		}
 		if (backgrounds.type !== 'images') {
 			throw new Error('Selected background type is not "images"')
@@ -318,7 +319,8 @@ function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 
 	function customVideos(): Backgrounds.Video[] {
 		if (!local.customCollection) {
-			throw new Error('Empty custom collection !')
+			console.log(new Error('Empty custom collection storage !'))
+			return daylightVideos()
 		}
 		if (backgrounds.type !== 'videos') {
 			throw new Error('Selected background type is not "videos"')

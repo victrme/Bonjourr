@@ -461,7 +461,6 @@ aside form.valid.remove span::after {
 	max-height: 280px;
 }
 
-
 #worldclocks_options.shown,
 #notes_options.shown {
 	max-height: 200px;
@@ -503,7 +502,7 @@ aside form.valid.remove span::after {
 }
 
 #background-filters-options.shown {
-	max-height: 200px;
+	max-height: 300px;
 }
 
 .all .as_visuals {
@@ -899,6 +898,7 @@ aside .settings-title .tooltip {
 }
 
 .b_removethumb {
+	display: none;
 	position: absolute;
 	top: 6px;
 	left: 6px;
@@ -941,6 +941,12 @@ aside .settings-title .tooltip {
 
 #thumbnail-show-buttons.shown {
 	display: block;
+}
+
+#thumbnail-action-buttons {
+	margin-top: 4px;
+	column-gap: 8px;
+	/* justify-content: center; */
 }
 
 #worldclocks_options .wrapper {
