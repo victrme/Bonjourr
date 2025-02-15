@@ -282,7 +282,7 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 	if (clock.ampmlabel) domclock.dataset.ampmLabel = ''
 	else delete domclock.dataset.ampmLabel
 
-	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 13 ? 'am' : 'pm'
+	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 12 ? 'am' : 'pm'
 	else delete domclock.dataset.ampm
 
 	if (clock.ampm && h === 0) {
