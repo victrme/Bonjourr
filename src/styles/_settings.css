@@ -478,6 +478,7 @@ aside form.valid.remove span::after {
 	max-height: 60px;
 }
 
+#background-position-options.shown,
 #background-collection-option.shown,
 #location_options.shown,
 #digital_options.shown,
@@ -843,25 +844,17 @@ aside .settings-title .tooltip {
 }
 
 #thumbnails-container {
+	--thumbnails-columns: 3;
 	display: grid;
 	width: 100%;
 	max-height: 300px;
 	overflow: auto;
-	grid-gap: 3px;
-	grid-template-columns: repeat(3, 1fr);
-}
-
-/* instead of padding on #thumbnails-container */
-/* because buggy when container is empty */
-#thumbnails-container .thumbnail:nth-child(1),
-#thumbnails-container .thumbnail:nth-child(2),
-#thumbnails-container .thumbnail:nth-child(3) {
-	margin-top: 10px;
+	grid-template-columns: repeat(var(--thumbnails-columns), 1fr);
 }
 
 .thumbnail {
 	position: relative;
-	height: 75px;
+	height: calc(230px / var(--thumbnails-columns));
 	margin: 3px;
 	padding: 0;
 	overflow: hidden;
@@ -897,42 +890,6 @@ aside .settings-title .tooltip {
 	object-fit: cover;
 }
 
-.b_removethumb {
-	display: none;
-	position: absolute;
-	top: 6px;
-	left: 6px;
-	width: 25px;
-	height: 25px;
-	padding: 0;
-	opacity: 0;
-	color: #222;
-	background-color: #fff4;
-	border-radius: 100%;
-	text-align: center;
-	text-decoration: none;
-	box-sizing: border-box;
-	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
-	transition: opacity 0.05s, background-color 0.05s;
-}
-
-.b_removethumb span {
-	display: block;
-	width: 100%;
-}
-
-.b_removethumb:focus-visible {
-	opacity: 1;
-}
-
-.b_removethumb:hover {
-	color: #000;
-	background-color: #fff8;
-	text-decoration: none;
-}
-
 #thumbnail-show-buttons {
 	display: none;
 	text-align: center;
@@ -946,7 +903,10 @@ aside .settings-title .tooltip {
 #thumbnail-action-buttons {
 	margin-top: 4px;
 	column-gap: 8px;
-	/* justify-content: center; */
+}
+
+#background-position-options {
+	margin-top: 8px;
 }
 
 #worldclocks_options .wrapper {

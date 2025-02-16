@@ -182,12 +182,12 @@
 
 		<div id="thumbnail-action-buttons" class="wrapper">
 			<div>
-				<button class="trn param-btn">Change position</button>
-				<button class="trn param-btn btn-red">Remove</button>
+				<button id="thumbnail-position" class="trn param-btn">Change position</button>
+				<button id="thumbnail-remove" class="trn param-btn btn-red">Remove</button>
 			</div>
 
-			<button class="trn param-btn">
-				<img src="src/assets/labels/columns.svg" height="16" alt="" />
+			<button id="thumbnail-zoom" class="trn param-btn">
+				<img src="src/assets/labels/zoom-out.svg" height="16" alt="" />
 			</button>
 		</div>
 
@@ -222,7 +222,7 @@
 
 			<div class="wrapper">
 				<label for="i_zoom" class="trn">Zoom</label>
-				<input id="i_zoom" type="range" name="background_zoom" min="0" max="1" value=".9" step="0.1" class="range" />
+				<input id="i_zoom" type="range" name="background_zoom" min="0" max="1" value=".1" step="0.1" class="range" />
 			</div>
 		</div>
 	</div>

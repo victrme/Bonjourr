@@ -1,7 +1,6 @@
 import { randomString, turnRefreshButton, freqControl, isEvery } from '../../utils'
-import { applyBackground } from '.'
+import { applyBackground } from './index'
 import onSettingsLoad from '../../utils/onsettingsload'
-import { IS_MOBILE } from '../../defaults'
 import errorMessage from '../../utils/errormessage'
 import storage from '../../storage'
 import * as idb from 'idb-keyval'
@@ -61,7 +60,24 @@ async function initLocalBackgrounds() {
 	}
 
 	displayCustomBackground(await getBlob(selected, 'background'))
-	onSettingsLoad(() => handleSettingsOptions())
+
+	onSettingsLoad(() => {
+		handleSettingsOptions()
+		document.getElementById('thumbnail-zoom')?.onclickdown(thumbnailDisplayZoom)
+		document.getElementById('thumbnail-position')?.onclickdown(thumbnailPosition)
+	})
+}
+
+function thumbnailDisplayZoom() {
+	const container = document.getElementById('thumbnails-container')!
+	const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
+	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 1)
+	container.style.setProperty('--thumbnails-columns', newZoom.toString())
+}
+
+function thumbnailPosition() {
+	const domoptions = document.getElementById('background-position-options')
+	domoptions?.classList.toggle('shown')
 }
 
 async function handleSettingsOptions() {
@@ -174,7 +190,7 @@ async function updateThumbnailAmount(showing?: string) {
 
 async function displayCustomBackground(blob?: Blob) {
 	if (blob) {
-		// applyBackground({ image: { url: URL.createObjectURL(blob) } })
+		applyBackground({ image: { url: URL.createObjectURL(blob), page: '', username: '' } })
 		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
 	}
@@ -221,9 +237,7 @@ async function compressThumbnail(blob: Blob) {
 
 function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean): HTMLButtonElement {
 	const thb = document.createElement('button')
-	const rem = document.createElement('button')
 	const thbimg = document.createElement('img')
-	const remspan = document.createElement('span')
 
 	if (!blob) {
 		return thb
@@ -233,23 +247,13 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 	thbimg.src = URL.createObjectURL(blob)
 	thb.className = 'thumbnail' + (isSelected ? ' selected' : '')
 
-	rem.classList.toggle('b_removethumb', true)
-	rem.classList.toggle('hidden', !IS_MOBILE)
-
 	thb.setAttribute('aria-label', 'Select this background')
-	rem.setAttribute('aria-label', 'Remove this background')
 
 	thbimg.setAttribute('alt', '')
 	thbimg.setAttribute('draggable', 'false')
 
-	remspan.textContent = '✕'
-	rem.appendChild(remspan)
-
 	thb.appendChild(thbimg)
-	thb.appendChild(rem)
-
 	thbimg.addEventListener('click', applyThisBackground)
-	rem.addEventListener('click', deleteThisBackground)
 
 	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
 		if (e.button !== 0 || localIsLoading) return

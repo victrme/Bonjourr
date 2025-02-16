@@ -34,7 +34,9 @@ let videoInterval = 0
 
 export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
-		onSettingsLoad(() => handleBackgroundOptions(sync.backgrounds, true))
+		onSettingsLoad(() => {
+			handleBackgroundOptions(sync.backgrounds, true)
+		})
 	}
 
 	applyFilters(sync.backgrounds)
@@ -553,9 +555,9 @@ async function handleBackgroundOptions(backgrounds: Sync.Backgrounds, init?: tru
 	if (type === 'files') {
 		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
 
-		if (init) {
-			setTimeout(() => localBackgrounds(), 100)
-		}
+		// if (init) {
+		// 	setTimeout(() => localBackgrounds(), 100)
+		// }
 	}
 
 	if (type === 'images') {
