@@ -45,14 +45,21 @@
 	opacity: 0;
 }
 
+#image-background-wrapper {
+	--background-position-x: 50%;
+	--background-position-y: 50%;
+	--background-zoom: cover;
+}
+
 #image-background-bis,
 #image-background {
 	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-position: 50% 50%;
+	background-size: var(--background-zoom);
+	background-position-x: var(--background-position-x);
+	background-position-y: var(--background-position-y);
 	transition: opacity 1.2s;
 }
 

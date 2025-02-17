@@ -442,7 +442,7 @@ aside form.valid.remove span::after {
 }
 
 #local_options.shown {
-	max-height: 420px;
+	max-height: 500px;
 }
 
 #time_options.shown {

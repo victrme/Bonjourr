@@ -65,19 +65,42 @@ async function initLocalBackgrounds() {
 		handleSettingsOptions()
 		document.getElementById('thumbnail-zoom')?.onclickdown(thumbnailDisplayZoom)
 		document.getElementById('thumbnail-position')?.onclickdown(thumbnailPosition)
+		document.getElementById('i_background-zoom')?.addEventListener('input', backgroundPositionControl)
+		document.getElementById('i_background-vertical')?.addEventListener('input', backgroundPositionControl)
+		document.getElementById('i_background-horizontal')?.addEventListener('input', backgroundPositionControl)
 	})
 }
 
 function thumbnailDisplayZoom() {
 	const container = document.getElementById('thumbnails-container')!
 	const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
-	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 1)
+	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 2)
 	container.style.setProperty('--thumbnails-columns', newZoom.toString())
 }
 
 function thumbnailPosition() {
 	const domoptions = document.getElementById('background-position-options')
 	domoptions?.classList.toggle('shown')
+}
+
+function backgroundPositionControl(this: HTMLInputElement) {
+	const wrapper = document.getElementById('image-background-wrapper')
+	const { id, value } = this
+
+	if (!wrapper) {
+		console.log(new Error('?'))
+		return
+	}
+
+	if (id === 'i_background-zoom') {
+		wrapper.style.setProperty('--background-zoom', value === '100' ? 'cover' : `${value}%`)
+	}
+	if (id === 'i_background-vertical') {
+		wrapper.style.setProperty('--background-position-y', `${value}%`)
+	}
+	if (id === 'i_background-horizontal') {
+		wrapper.style.setProperty('--background-position-x', `${value}%`)
+	}
 }
 
 async function handleSettingsOptions() {
