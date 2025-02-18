@@ -51,7 +51,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 			break
 
 		case 'files':
-			localBackgrounds()
+			localBackgrounds(local)
 			break
 
 		default:
@@ -553,7 +553,7 @@ async function handleBackgroundOptions(backgrounds: Sync.Backgrounds, init?: tru
 	// document.getElementById('background-provider-option')?.classList.toggle('shown', type === 'images')
 
 	if (type === 'files') {
-		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
+		localBackgrounds(undefined, { settings: document.getElementById('settings') as HTMLElement })
 
 		// if (init) {
 		// 	setTimeout(() => localBackgrounds(), 100)

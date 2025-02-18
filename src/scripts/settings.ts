@@ -112,7 +112,6 @@ function settingsToggle() {
 function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	const domsettings = document.getElementById('settings') as HTMLElement
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
-	const unsplashCollec = data?.unsplash?.lastCollec === 'user' ? 'day' : data?.unsplash?.lastCollec
 
 	setInput('i_blur', data.backgrounds.blur ?? 15)
 	setInput('i_bright', data.backgrounds.bright ?? 0.8)
@@ -412,11 +411,11 @@ function initOptionsEvents() {
 	// Custom backgrounds
 
 	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds({ newfile: this.files })
+		localBackgrounds(undefined, { newfile: this.files })
 	})
 
 	paramId('b_thumbnail-all').onclickdown(function () {
-		localBackgrounds({ showing: 'all' })
+		localBackgrounds(undefined, { showing: 'all' })
 	})
 
 	// Background filters

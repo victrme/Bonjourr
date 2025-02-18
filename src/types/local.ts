@@ -21,6 +21,7 @@ declare namespace Local {
 		daylightCollection?: DaylightCollection
 		backgroundPreloading?: true
 		backgroundLastChange?: string
+		localFiles?: LocalFiles
 
 		// Unused - Old
 		unsplashCache: Unsplash.Local
@@ -40,6 +41,11 @@ declare namespace Local {
 		weights: string[]
 		variable: boolean
 	}[]
+
+	interface LocalFiles {
+		ids: string[]
+		selected: string
+	}
 
 	//
 

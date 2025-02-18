@@ -217,4 +217,8 @@ export const LOCAL_DEFAULT: Local.Storage = {
 			pixabay: { noon: [], day: [], evening: [], night: [] },
 		},
 	},
+	localFiles: {
+		selected: '',
+		ids: [],
+	},
 }
