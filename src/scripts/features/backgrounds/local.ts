@@ -89,26 +89,27 @@ async function handleSettingsOptions() {
 	// <!> must stay at the end (ids mutation)
 	addThumbnailsToDom(ids, local.localFiles?.selected)
 
-	document.getElementById('thumbnail-zoom')?.onclickdown(thumbnailDisplayZoom)
-	document.getElementById('thumbnail-position')?.onclickdown(thumbnailPosition)
-	document.getElementById('i_background-zoom')?.addEventListener('input', backgroundPositionControl)
-	document.getElementById('i_background-vertical')?.addEventListener('input', backgroundPositionControl)
-	document.getElementById('i_background-horizontal')?.addEventListener('input', backgroundPositionControl)
+	document.getElementById('thumbnail-remove')?.onclickdown(thumbnailRemove)
+	document.getElementById('thumbnail-zoom')?.onclickdown(thumbnailGridZoom)
+	document.getElementById('thumbnail-position')?.onclickdown(thumbnailTogglePosition)
+	document.getElementById('i_background-zoom')?.addEventListener('input', thumbnailPosition)
+	document.getElementById('i_background-vertical')?.addEventListener('input', thumbnailPosition)
+	document.getElementById('i_background-horizontal')?.addEventListener('input', thumbnailPosition)
 }
 
-function thumbnailDisplayZoom() {
+function thumbnailGridZoom() {
 	const container = document.getElementById('thumbnails-container')!
 	const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
 	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 2)
 	container.style.setProperty('--thumbnails-columns', newZoom.toString())
 }
 
-function thumbnailPosition() {
+function thumbnailTogglePosition() {
 	const domoptions = document.getElementById('background-position-options')
 	domoptions?.classList.toggle('shown')
 }
 
-function backgroundPositionControl(this: HTMLInputElement) {
+function thumbnailPosition(this: HTMLInputElement) {
 	const wrapper = document.getElementById('image-background-wrapper')
 	const { id, value } = this
 
@@ -126,6 +127,37 @@ function backgroundPositionControl(this: HTMLInputElement) {
 	if (id === 'i_background-horizontal') {
 		wrapper.style.setProperty('--background-position-x', `${value}%`)
 	}
+}
+
+async function thumbnailRemove(event: Event) {
+	const local = await storage.local.get()
+	const thumbnail = document.querySelector<HTMLElement>('.thumbnail.selected')
+	const id = thumbnail?.id ?? ''
+
+	if (localIsLoading || !thumbnail || !id || !local.localFiles) {
+		return
+	}
+
+	const newIdList = local.localFiles.ids.filter((s) => !s.includes(id))
+	const currIndex = local.localFiles.ids.indexOf(id)
+	const newIndex = Math.min(currIndex, newIdList.length - 1)
+	const newId = newIdList[newIndex] ?? ''
+
+	local.localFiles.ids = newIdList
+	local.localFiles.selected = newId
+
+	storage.local.set(local)
+	idb.del(id)
+
+	if (newId) {
+		displayCustomBackground(await getFile(newId))
+		selectThumbnail(newId)
+	} else {
+		// Show black screen
+	}
+
+	thumbnail.classList.toggle('hiding', true)
+	setTimeout(() => thumbnail.remove(), 100)
 }
 
 //
@@ -268,74 +300,33 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 	thbimg.setAttribute('draggable', 'false')
 
 	thb.appendChild(thbimg)
-	thbimg.addEventListener('click', applyThisBackground)
 
-	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
-		if (e.button !== 0 || localIsLoading) return
+	thbimg.onclickdown(function (e, target) {
+		const isLeftClick = (e as MouseEvent).button === 0
 
-		const local = await storage.local.get()
-		const thumbnail = this?.parentElement
-		const id = thumbnail?.id
-		const notAlreadySelected = id && id !== local.localFiles?.selected
-
-		if (notAlreadySelected && local.localFiles) {
-			localIsLoading = false
-			local.localFiles.selected = id
-
-			storage.local.set(local)
-
-			selectThumbnail(id)
-			displayCustomBackground(await getFile(id))
+		if (isLeftClick && !localIsLoading) {
+			const thumbnail = target?.parentElement
+			const id = thumbnail?.id ?? ''
+			applyThumbnailBackground(id)
 		}
-	}
-
-	// async function deleteThisBackground(this: HTMLButtonElement, e: MouseEvent) {
-	// 	if (e.button !== 0 || localIsLoading || !e.target) return
-
-	// 	let { ids, selected } = await localImages.get()
-	// 	const thumbnail = this?.parentElement
-	// 	const id = thumbnail?.id
-
-	// 	if (id) {
-	// 		thumbnail?.classList.toggle('hiding', true)
-	// 		setTimeout(() => thumbnail?.remove(), 100)
-
-	// 		// Pop background from list
-	// 		ids = ids.filter((s) => !s.includes(id))
-	// 		localImages.update({ ids })
-
-	// 		idb.del(id)
-	// 	}
-
-	// 	if (id !== selected) {
-	// 		return
-	// 	}
-
-	// 	// Draw new image if displayed is removed to another custom
-	// 	if (ids.length > 0) {
-	// 		selected = ids[0]
-	// 		localImages.update({ selected })
-
-	// 		const blob = await getBlob(selected, 'raw')
-
-	// 		selectThumbnail(selected)
-	// 		displayCustomBackground(blob)
-	// 		return
-	// 	}
-
-	// 	// back to unsplash
-	// 	storage.sync.set({ background_type: 'unsplash' })
-	// 	localImages.update({ ids: [], selected: '' })
-
-	// 	setTimeout(async () => {
-	// 		document.getElementById('credit-container')?.classList.toggle('shown', true)
-	// 		const data = await storage.sync.get('unsplash')
-	// 		const local = await storage.local.get('unsplashCache')
-	// 		// unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
-	// 	}, 100)
-	// }
+	})
 
 	return thb
+}
+
+async function applyThumbnailBackground(id: string, local?: Local.Storage) {
+	local = local ?? (await storage.local.get())
+	const notAlreadySelected = id && id !== local.localFiles?.selected
+
+	if (notAlreadySelected && local.localFiles) {
+		localIsLoading = false
+		local.localFiles.selected = id
+
+		storage.local.set(local)
+
+		selectThumbnail(id)
+		displayCustomBackground(await getFile(id))
+	}
 }
 
 async function addThumbnailsToDom(ids: string[], selected?: string) {
