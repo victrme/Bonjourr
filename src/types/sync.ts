@@ -94,6 +94,10 @@ declare namespace Sync {
 			last?: Date
 			user?: { coll: string; tags: string }
 		}
+		texture: {
+			type: 'none' | 'grain' | 'dots' | 'geo'
+			opacity?: number
+		}
 	}
 
 	type Clock = {

@@ -20,6 +20,8 @@ interface BackgroundUpdate {
 	fadein?: string
 	refresh?: HTMLSpanElement
 	collection?: string
+	texture?: string
+	textureopacity?: string
 }
 
 interface ApplyBackgroundOptions {
@@ -40,6 +42,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	}
 
 	applyFilters(sync.backgrounds)
+	applyTexture(sync.backgrounds.texture)
 
 	switch (sync.backgrounds.type) {
 		case 'urls':
@@ -127,6 +130,20 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 			storage.sync.set({ backgrounds: data.backgrounds })
 			handleBackgroundOptions(data.backgrounds)
 		}
+	}
+
+	if (update.textureopacity !== undefined) {
+		data.backgrounds.texture.opacity = parseFloat(update.textureopacity)
+		applyTexture(data.backgrounds.texture)
+		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
+	}
+
+	if (isBackgroundTexture(update.texture)) {
+		data.backgrounds.texture.opacity = undefined
+		data.backgrounds.texture.type = update.texture
+
+		applyTexture(data.backgrounds.texture)
+		storage.sync.set({ backgrounds: data.backgrounds })
 	}
 }
 
@@ -530,6 +547,25 @@ export function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>
 	}
 }
 
+function applyTexture(texture: Sync.Backgrounds['texture']): void {
+	const overlay = document.getElementById('background-texture-overlay')
+
+	if (!overlay) {
+		console.log(new Error('?'))
+		return
+	}
+
+	if (texture.type) {
+		overlay.dataset.texture = texture.type
+	}
+
+	if (texture.opacity === undefined) {
+		document.documentElement.style.removeProperty('--texture-opacity')
+	} else {
+		document.documentElement.style.setProperty('--texture-opacity', texture.opacity.toString())
+	}
+}
+
 // 	Settings options
 
 async function handleBackgroundOptions(backgrounds: Sync.Backgrounds, init?: true) {
@@ -646,6 +682,9 @@ function getAverageColor(img: HTMLImageElement) {
 
 function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
+}
+function isBackgroundTexture(str = ''): str is Sync.Storage['backgrounds']['texture']['type'] {
+	return ['none', 'grain', 'dots', 'geo'].includes(str)
 }
 function isCollection(str = ''): str is Sync.Storage['backgrounds']['images']['collection'] {
 	return ['daylight', 'usercoll', 'usertags'].includes(str)

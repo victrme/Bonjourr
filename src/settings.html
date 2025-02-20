@@ -292,6 +292,37 @@
 		</div>
 	</div>
 
+	<div id="background-texture-options" class="dropdown shown">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_texture" class="trn">Texture</label>
+
+			<select id="i_texture">
+				<option value="none" class="trn">None</option>
+				<option value="grain" class="trn">Grain</option>
+				<option value="dots" class="trn">Dots</option>
+				<option value="geo" class="trn">Cartographer</option>
+			</select>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_texture-opacity" class="trn">Texture opacity</label>
+			<input
+				id="i_texture-opacity"
+				name="texture-opacity"
+				class="range"
+				type="range"
+				min="0"
+				max="1"
+				step=".01"
+				value=".08"
+			/>
+		</div>
+	</div>
+
 	<div id="background-filters-options" class="dropdown">
 		<hr />
 

@@ -120,6 +120,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		urls: [],
 		images: { provider: 'unsplash', collection: 'daylight' },
 		videos: { provider: 'pixabay', collection: 'daylight' },
+		texture: { type: 'none', opacity: 0.1 },
 	},
 	clock: {
 		size: 1,
