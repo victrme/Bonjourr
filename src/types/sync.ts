@@ -95,7 +95,7 @@ declare namespace Sync {
 			user?: { coll: string; tags: string }
 		}
 		texture: {
-			type: 'none' | 'grain' | 'dots' | 'geo'
+			type: 'none' | 'grain' | 'dots' | 'topographic'
 			opacity?: number
 		}
 	}
