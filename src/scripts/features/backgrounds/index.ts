@@ -446,35 +446,48 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 	videoWrapper.style.display = video ? 'block' : 'none'
 
 	credits(image ? image : undefined)
+	overlay.classList.remove('hidden')
 
 	if (image) {
-		const img = new Image()
+		const applySafariThemeColor = (color?: string) => {
+			if (BROWSER === 'safari' && !color) {
+				image.color = getAverageColor(img)
+			}
 
-		img.onload = () => {
-			const bgfirst = document.getElementById('image-background') as HTMLDivElement
-			const bgsecond = document.getElementById('image-background-bis') as HTMLDivElement
-			const loadBis = bgfirst.style.opacity === '1'
-			const bgToChange = loadBis ? bgsecond : bgfirst
-
-			bgfirst.style.opacity = loadBis ? '0' : '1'
-			bgToChange.style.backgroundImage = `url(${image.url})`
-			overlay.classList.remove('hidden')
-
-			if (BROWSER === 'safari') {
-				if (!image.color) {
-					image.color = getAverageColor(img)
-				}
-
-				if (image.color) {
-					const fadein = parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
-					document.querySelector('meta[name="theme-color"]')?.setAttribute('content', image.color)
-					setTimeout(() => document.documentElement.style.setProperty('--average-color', image.color!), fadein)
-				}
+			if (BROWSER === 'safari' && color) {
+				const fadein = parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
+				document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
+				setTimeout(() => document.documentElement.style.setProperty('--average-color', color!), fadein)
 			}
 		}
 
+		const applyLoadedImage = () => {
+			imageWrapper?.append(div)
+
+			setTimeout(() => {
+				div.style.removeProperty('opacity')
+			}, 10)
+
+			if (imageWrapper.childElementCount > 1) {
+				setTimeout(() => {
+					imageWrapper.firstChild?.remove()
+				}, 1300)
+			}
+		}
+
+		const div = document.createElement('div')
+		const img = new Image()
+
+		img.addEventListener('load', function () {
+			applyLoadedImage()
+			applySafariThemeColor(image.color)
+		})
+
 		img.src = image.url
 		img.remove()
+
+		div.style.backgroundImage = `url(${image.url})`
+		div.style.opacity = '0'
 	}
 
 	if (video) {
@@ -486,15 +499,15 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 			vid.src = video.urls.tiny
 			vid.muted = true
 			vid.autoplay = true
-			document.getElementById('video-background-wrapper')?.prepend(vid)
+			videoWrapper?.prepend(vid)
 			setTimeout(() => overlay.classList.remove('hidden'))
 		}
 
 		const rerunVideo = () => {
 			setTimeout(() => {
 				createVideo()
-				document.querySelector('#video-background-wrapper video:last-child')?.setAttribute('style', 'opacity: 0')
-				setTimeout(() => document.querySelector('#video-background-wrapper video:last-child')?.remove(), 4000)
+				videoWrapper.lastElementChild?.setAttribute('style', 'opacity: 0')
+				setTimeout(() => videoWrapper.lastElementChild?.remove(), 4000)
 			})
 		}
 

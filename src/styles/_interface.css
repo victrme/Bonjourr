@@ -55,8 +55,7 @@
 	--background-zoom: cover;
 }
 
-#image-background-bis,
-#image-background {
+#image-background-wrapper div {
 	position: absolute;
 	width: 100%;
 	height: 100%;
