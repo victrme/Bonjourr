@@ -60,6 +60,9 @@
 					placeholder="🌤"
 					aria-label="Tab favicon"
 					class="not-safari"
+					autocomplete="off"
+					autocorrect="off"
+					spellcheck="false"
 				/>
 				<input
 					type="text"
@@ -76,14 +79,30 @@
 
 		<div class="tooltiptext dropdown tttab">
 			<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
+			<a class="trn" href="https://bonjourr.fr/docs/overview/#newtab-title" rel="noreferrer noopener" target="_blank"
+				>Learn more</a
+			>
 		</div>
 
 		<hr />
 
 		<div class="settingshide wrapper">
-			<label for="i_settingshide" class="trn">Hide settings icon</label>
+			<span>
+				<label for="i_settingshide" class="trn">Hide settings icon</label>
+				<button class="tooltip tthidesettingsicon" title="What does this do?" aria-label="What does this do?">?</button>
+			</span>
 			<input id="i_settingshide" class="switch" type="checkbox" />
 		</div>
+
+		<p class="tooltiptext dropdown tthidesettingsicon">
+			<!-- prettier-ignore -->
+			<span class="trn"
+				>When this is enabled, clicking the bottom right corner will still open settings.</span
+			>
+			<a class="trn" href="https://bonjourr.fr/docs/overview/#hide-settings" rel="noreferrer noopener" target="_blank"
+				>Learn more</a
+			>
+		</p>
 	</div>
 </div>
 
@@ -378,8 +397,7 @@
 	<button class="tooltip ttlinks" title="Tips on Quick Links" aria-label="Tips on Quick Links">?</button>
 
 	<p class="tooltiptext dropdown ttlinks">
-		<span class="trn">These are Bonjourr's bookmarks. </span>
-		<span class="trn instructions">Edit your Quick Links by right clicking the icon.</span>
+		<span class="trn">These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.</span>
 		<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
 			>Learn more</a
 		>
@@ -934,6 +952,13 @@
 
 			<p class="tooltiptext dropdown ttdetailledweather">
 				<span class="trn">Click on the weather widget to get detailed weather reports.</span>
+				<a
+					class="trn"
+					href="https://bonjourr.fr/docs/overview/#detailed-weather"
+					rel="noreferrer noopener"
+					target="_blank"
+					>Learn more</a
+				>
 			</p>
 
 			<div id="weather_provider" class="dropdown">
@@ -968,13 +993,20 @@
 
 		<div class="wrapper">
 			<label for="i_greeting" class="trn">Greeting name</label>
-			<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="24" placeholder="Name" />
+			<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="64" placeholder="Name" />
 		</div>
 	</div>
 </div>
 
 <div class="settings-title">
-	<h2 class="trn">Notes</h2>
+	<h2 id="lbl-notes" class="trn">Notes</h2>
+
+	<button class="tooltip ttnotes" title="Tips on Notes" aria-label="Tips Notes">?</button>
+
+	<p class="tooltiptext dropdown ttnotes">
+		<span class="trn">You can use Markdown and keyboard shortcuts in notes.</span>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#notes" rel="noreferrer noopener" target="_blank">Learn more</a>
+	</p>
 </div>
 
 <div class="param">
@@ -1065,7 +1097,16 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_sbengine" class="trn">Search engine</label>
+				<span>
+					<label for="i_searchengine" class="trn">Search engine</label>
+					<button
+						class="tooltip ttsearchengine"
+						title="I want more info on search engines"
+						aria-label="I want more info on search engines"
+					>
+						?
+					</button>
+				</span>
 				<select id="i_sbengine" class="choose_search">
 					<option value="default" class="trn">Default</option>
 					<option value="google">Google</option>
@@ -1081,6 +1122,16 @@
 					<option value="custom" class="trn">Custom</option>
 				</select>
 			</div>
+
+			<p class="tooltiptext dropdown ttsearchengine">
+				<!-- prettier-ignore -->
+				<span class="trn"
+				>Change the endpoint of the search bar.</span
+			>
+				<a class="trn" href="https://bonjourr.fr/docs/overview/#searchbar" rel="noreferrer noopener" target="_blank"
+					>Learn more</a
+				>
+			</p>
 
 			<div id="searchbar_request" class="dropdown">
 				<hr />
@@ -1145,7 +1196,14 @@
 </div>
 
 <div class="settings-title">
-	<h2 class="trn">Quotes</h2>
+	<h2 id="lbl-quotes" class="trn">Quotes</h2>
+
+	<button class="tooltip ttquotes" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
+
+	<p class="tooltiptext dropdown ttquotes">
+		<span class="trn">Use the default quote collections or import your own.</span>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#quotes" rel="noreferrer noopener" target="_blank">Learn more</a>
+	</p>
 </div>
 
 <div class="param">
@@ -1176,6 +1234,7 @@
 							<option value="kaamelott">Kaamelott</option>
 							<option value="stoic">Stoic</option>
 							<option value="hitokoto">Hitokoto</option>
+							<option value="office">The Office</option>
 							<option value="user" class="trn">Custom</option>
 							<option value="url">URL</option>
 						</select>
@@ -1271,7 +1330,16 @@
 
 	<div class="param">
 		<div class="wrapper">
-			<label for="i_customfont" class="trn">Font family</label>
+			<span>
+				<label for="i_customfont" class="trn">Font family</label>
+				<button
+					class="tooltip ttfontfamily"
+					title="When can I preview these fonts?"
+					aria-label="When can I preview these fonts?"
+				>
+					?
+				</button>
+			</span>
 
 			<form id="f_customfont" class="network-form">
 				<div>
@@ -1285,6 +1353,14 @@
 				<small class="network-form-warning"></small>
 			</form>
 		</div>
+
+		<p class="tooltiptext dropdown ttfontfamily">
+			<!-- prettier-ignore -->
+			<span class="trn"
+				>These fonts come from Fontsource.</span
+			>
+			<a class="trn" href="https://fontsource.org/" rel="noreferrer noopener" target="_blank">Preview fonts</a>
+		</p>
 
 		<hr />
 
@@ -1383,7 +1459,7 @@
 		<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
 
 		<p class="tooltiptext dropdown ttcss">
-			<span class="trn">Make cool things happen with CSS. </span>
+			<span class="trn">Make cool things happen with CSS.</span>
 			<span class="trn instructions">Check out our </span>
 			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank">CSS snippets.</a>
 		</p>
@@ -1708,10 +1784,13 @@
 		</p>
 	</div>
 
-	<div id="donate" class="not-safari">
+	<div id="donate">
 		<p>
 			<span class="trn">Consider</span>
-			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>
+			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn not-safari">donating</a>
+
+			<span class="trn safari-only">donating</span>
+
 			<span class="trn">if you love Bonjourr</span> 😊
 		</p>
 	</div>

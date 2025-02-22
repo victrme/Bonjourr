@@ -508,6 +508,9 @@ function initOptionsEvents() {
 
 	paramId('i_ampm').onclickdown(function (_, target) {
 		clock(undefined, { ampm: target.checked })
+
+		// shows/hides ampm_label option
+		paramId('ampm_label')?.classList.toggle('shown', target.checked)
 	})
 
 	paramId('i_ampm-label').onclickdown(function (_, target) {
@@ -797,7 +800,7 @@ function initOptionsEvents() {
 		loadImportFile(this)
 	})
 
-	paramId('b_settings-copy').onclickdown(function () {
+	paramId('b_settings-copy').addEventListener('click', function () {
 		copySettings()
 	})
 
@@ -1060,14 +1063,14 @@ async function copySettings() {
 	const pre = document.getElementById('settings-data')
 
 	try {
-		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
+		navigator.clipboard.writeText(pre?.textContent ?? '{}')
 
 		if (copybtn) {
-			copybtn.textContent = tradThis('Copied')
+			copybtn.textContent = tradThis('Copied!')
 			setTimeout(() => (copybtn.textContent = tradThis('Copy')), 1000)
 		}
-	} catch (_) {
-		// ..
+	} catch (error) {
+		console.error(`Failed when copying: ${error}`)
 	}
 }
 

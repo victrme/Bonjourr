@@ -80,7 +80,7 @@ async function clockUpdate(update: ClockUpdate) {
 	}
 
 	if (update.greeting !== undefined) {
-		data.greeting = stringMaxSize(update.greeting, 32)
+		data.greeting = stringMaxSize(update.greeting, 64)
 		greetings(data.greeting)
 		storage.sync.set({ greeting: data.greeting })
 	}
@@ -285,7 +285,7 @@ function digital(wrapper: HTMLElement, clock: Sync.Clock) {
 	if (clock.ampmlabel) domclock.dataset.ampmLabel = ''
 	else delete domclock.dataset.ampmLabel
 
-	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 13 ? 'am' : 'pm'
+	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 12 ? 'am' : 'pm'
 	else delete domclock.dataset.ampm
 
 	if (clock.ampm && h === 0) {

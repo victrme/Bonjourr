@@ -54,6 +54,7 @@
 	"Sync with browser": "Sync with browser",
 	"Most visited": "Most visited",
 	"Import selection": "Import selection",
+	"(synced)": "(synced)",
 
 	"This <currentMonth>, Bonjourr is brought to you by our lovely supporters.": "This <currentMonth>, Bonjourr is brought to you by our lovely supporters.",
 	"Find out who they are": "Find out who they are",
@@ -80,6 +81,7 @@
 	"Tips on tab appearance": "Tips on tab appearance",
 	"The icon and title that appear on your tab. You can put any emoji.": "The icon and title that appear on your tab. You can put any emoji.",
 	"Hide settings icon": "Hide settings icon",
+	"When this is enabled, clicking the bottom right corner will still open settings.": "When this is enabled, clicking the bottom right corner will still open settings.",
 
 	"Background": "Background",
 	"Background type": "Background type",
@@ -105,9 +107,7 @@
 
 	"Quick Links": "Quick Links",
 	"Tips on Quick Links": "Tips on Quick Links",
-	"These are Bonjourr's bookmarks. ": "These are Bonjourr's bookmarks. ",
-	"Edit your Quick Links by right clicking the icon.": "Edit your Quick Links by right clicking the icon.",
-	"Edit your Quick Links by long-pressing the icon.": "Edit your Quick Links by long-pressing the icon.",
+	"These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.": "These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.",
 	"Learn more": "Learn more",
 	"Enable": "Enable",
 	"Add link": "Add link",
@@ -197,6 +197,7 @@
 	"Icon only": "Icon only",
 
 	"Notes": "Notes",
+	"You can use Markdown and keyboard shortcuts in notes.": "You can use Markdown and keyboard shortcuts in notes.",
 	"Edit this note": "Edit this note",
 	"With markdown titles, lists, and checkboxes": "With markdown titles, lists, and checkboxes",
 	"Learn more on <url>": "Learn more on <url>",
@@ -209,6 +210,7 @@
 	"Search bar": "Search bar",
 	"Suggestions": "Suggestions",
 	"Search engine": "Search engine",
+	"Change the endpoint of the search bar.": "Change the endpoint of the search bar.",
 	"google": "google",
 	"duckduckgo": "duckduckgo",
 	"startpage": "startpage",
@@ -224,6 +226,7 @@
 	"Search bar shade": "Search bar shade",
 
 	"Quotes": "Quotes",
+	"Use the default quote collections or import your own.": "Use the default quote collections or import your own.",
 	"Always show author": "Always show author",
 	"Quote type": "Quote type",
 	"Classic": "Classic",
@@ -239,6 +242,8 @@
 	"Weight": "Weight",
 	"Size": "Size",
 	"Shadow": "Shadow",
+	"These fonts come from Fontsource.": "These fonts come from Fontsource.",
+	"Preview fonts": "Preview fonts",
 
 	"Page layout": "Page layout",
 	"Tips on page grid layout": "Tips on page grid layout",
@@ -256,7 +261,7 @@
 
 	"Custom Style": "Custom Style",
 	"Tips on Custom styles": "Tips on Custom styles",
-	"Make cool things happen with CSS. ": "Make cool things happen with CSS.",
+	"Make cool things happen with CSS.": "Make cool things happen with CSS.",
 	"Check out our ": "Check out our",
 	"CSS snippets.": "CSS snippets.",
 	"Type in your custom CSS": "Type in your custom CSS",
@@ -300,7 +305,7 @@
 	"Export": "Export",
 	"Copy settings data to clipboard": "Copy settings data to clipboard",
 	"Copy": "Copy",
-	"Copied": "Copied",
+	"Copied!": "Copied!",
 	"Cancel changes": "Cancel changes",
 	"Load Bonjourr with these settings": "Load Bonjourr with these settings",
 	"Reset all settings": "Reset all settings",

@@ -201,15 +201,25 @@ function importSelectedBookmarks() {
 		})
 	})
 
-	quickLinks(undefined, {
-		groups: groups.length > 1 ? true : undefined,
-		addLinks: links,
-		addGroups: groups,
-	})
+	storage.sync.get('linkgroups').then(({ linkgroups }) => {
+		const i_linkgroups = document.querySelector<HTMLInputElement>('#i_linkgroups')
+		const allGroups = [...groups, ...linkgroups.groups]
+		const toggleGroups = allGroups.length > 1
 
-	bookmarksdom?.classList.remove('shown')
-	bookmarksdom?.close()
-	closeDialog()
+		quickLinks(undefined, {
+			groups: toggleGroups,
+			addLinks: links,
+			addGroups: groups,
+		})
+
+		if (i_linkgroups) {
+			i_linkgroups.checked = toggleGroups
+		}
+
+		bookmarksdom?.classList.remove('shown')
+		bookmarksdom?.close()
+		closeDialog()
+	})
 }
 
 function handleApplyButtonText() {

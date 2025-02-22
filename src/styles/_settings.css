@@ -494,7 +494,7 @@ aside form.valid.remove span::after {
 }
 
 #searchbar_options.shown {
-	max-height: 420px;
+	max-height: 440px;
 }
 
 #background-urls-option.shown,
@@ -508,7 +508,7 @@ aside form.valid.remove span::after {
 }
 
 .all .as_visuals {
-	max-height: 220px;
+	max-height: 285px;
 }
 
 .all .as_link {
@@ -524,7 +524,7 @@ aside form.valid.remove span::after {
 }
 
 .all .as_searchbar {
-	max-height: 300px;
+	max-height: 320px;
 }
 
 .all .as_weather {
@@ -658,6 +658,9 @@ aside .settings-title .tooltip {
 	color: var(--color-light-text);
 	font-size: 13px;
 	line-height: 1.5em;
+}
+
+.param .tooltiptext {
 	padding-left: 4px;
 }
 

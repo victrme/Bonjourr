@@ -82,7 +82,7 @@ function changeGroup(event: Event) {
 		button.classList.add('selected-group')
 		data.linkgroups.selected = group
 		storage.sync.set(data)
-		await initblocks(data)
+		initblocks(data)
 	}
 
 	function hideCurrentGroup() {
@@ -166,6 +166,12 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 	data.linkgroups.pinned = pinned.filter((p) => p !== group)
 	data.linkgroups.synced = synced.filter((g) => g !== group)
 	data.linkgroups.groups = groups.filter((g) => g !== group)
+
+	if (groups.length === 2) {
+		data.linkgroups.pinned = []
+	}
+
+	console.log(data.linkgroups)
 
 	storage.sync.clear()
 	initblocks(data)
