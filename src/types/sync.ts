@@ -95,11 +95,13 @@ declare namespace Sync {
 			user?: { coll: string; tags: string }
 		}
 		texture: {
-			type: 'none' | 'grain' | 'dots' | 'topographic'
+			type: TextureType
 			size?: number
 			opacity?: number
 		}
 	}
+
+	type TextureType = 'none' | 'grain' | 'dots' | 'topographic'
 
 	type Clock = {
 		ampm: boolean

@@ -1,4 +1,5 @@
 import localBackgrounds from './local'
+import textureRanges from './textures'
 import { credits } from './credits'
 
 import { freqControl, periodOfDay, rgbToHex } from '../../utils'
@@ -33,17 +34,17 @@ interface ApplyBackgroundOptions {
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
-let videoInterval = 0
 
 export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
 		onSettingsLoad(() => {
-			handleBackgroundOptions(sync.backgrounds, true)
+			handleBackgroundOptions(sync.backgrounds)
 		})
 	}
 
 	applyFilters(sync.backgrounds)
 	applyTexture(sync.backgrounds.texture)
+	document.getElementById('background-overlay')?.setAttribute('data-type', sync.backgrounds.type)
 
 	switch (sync.backgrounds.type) {
 		case 'urls':
@@ -148,8 +149,8 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (isBackgroundTexture(update.texture)) {
 		data.backgrounds.texture = { type: update.texture }
 		storage.sync.set({ backgrounds: data.backgrounds })
-		applyTexture(data.backgrounds.texture)
 		handleBackgroundOptions(data.backgrounds)
+		applyTexture(data.backgrounds.texture)
 	}
 }
 
@@ -568,42 +569,26 @@ export function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>
 }
 
 function applyTexture(texture: Sync.Backgrounds['texture']): void {
-	const overlay = document.getElementById('background-texture-overlay')
+	const domtexture = document.getElementById('background-texture')
 
-	if (!overlay) {
+	if (!domtexture) {
 		console.log(new Error('?'))
 		return
 	}
 
-	if (texture.type) {
-		overlay.dataset.texture = texture.type
-	}
+	const ranges = textureRanges[texture.type]
+	const size = texture.size ?? ranges.size.value
+	const opacity = texture.opacity ?? ranges.opacity.value
 
-	if (texture.opacity === undefined) {
-		document.documentElement.style.removeProperty('--texture-opacity')
-	} else {
-		document.documentElement.style.setProperty('--texture-opacity', texture.opacity.toString())
-	}
-	if (texture.size === undefined) {
-		document.documentElement.style.removeProperty('--texture-size')
-	} else {
-		document.documentElement.style.setProperty('--texture-size', texture.size + 'px')
-	}
+	domtexture.dataset.texture = texture.type
+	document.documentElement.style.setProperty('--texture-opacity', opacity + '')
+	document.documentElement.style.setProperty('--texture-size', size + 'px')
 }
 
 // 	Settings options
 
-async function handleBackgroundOptions(backgrounds: Sync.Backgrounds, init?: true) {
-	const overlay = document.querySelector<HTMLElement>('#background-overlay')
+async function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	const type = backgrounds.type
-
-	if (isBackgroundType(type) === false) {
-		return
-	}
-
-	if (overlay) {
-		overlay.dataset.type = type
-	}
 
 	document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
 	document.getElementById('solid_options')?.classList.toggle('shown', type === 'color')
@@ -613,38 +598,39 @@ async function handleBackgroundOptions(backgrounds: Sync.Backgrounds, init?: tru
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
 	// document.getElementById('background-provider-option')?.classList.toggle('shown', type === 'images')
 
-	if (type === 'files') {
-		localBackgrounds(undefined, { settings: document.getElementById('settings') as HTMLElement })
-	}
+	handleTextureOptions(backgrounds)
+	handleCollectionOptions(backgrounds)
+}
 
-	if (type === 'images') {
-		const data = await storage.sync.get()
-		const local = await storage.local.get()
-
-		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.backgrounds.frequency
-		document.getElementById('credit-container')?.classList.toggle('shown', true)
-
-		if (init) {
-			backgroundsInit(data, local)
-		}
-	}
-
-	// Option: Textures
-
-	const textureOpacityInput = document.querySelector<HTMLInputElement>('#i_texture-opacity')
-	const textureOverlay = document.querySelector<HTMLInputElement>('#background-texture-overlay')
+function handleTextureOptions(backgrounds: Sync.Backgrounds) {
 	const hasTexture = backgrounds.texture.type !== 'none'
 
-	if (hasTexture && textureOpacityInput && textureOverlay) {
-		if (backgrounds.texture.opacity) {
-			textureOpacityInput.value = backgrounds.texture.opacity.toString()
-		} else {
-			textureOpacityInput.value = window.getComputedStyle(textureOverlay).opacity
+	document.getElementById('background-texture-options')?.classList.toggle('shown', hasTexture)
+
+	if (hasTexture) {
+		const i_opacity = document.querySelector<HTMLInputElement>('#i_texture-opacity')
+		const i_size = document.querySelector<HTMLInputElement>('#i_texture-size')
+		const ranges = textureRanges[backgrounds.texture.type]
+		const { opacity, size } = backgrounds.texture
+
+		if (i_opacity) {
+			i_opacity.min = ranges.opacity.min
+			i_opacity.max = ranges.opacity.max
+			i_opacity.step = ranges.opacity.step
+			i_opacity.value = opacity === undefined ? ranges.opacity.value : opacity.toString()
+		}
+
+		if (i_size) {
+			i_size.min = ranges.size.min
+			i_size.max = ranges.size.max
+			i_size.step = ranges.size.step
+			i_size.value = size === undefined ? ranges.size.value : size.toString()
 		}
 	}
+}
 
-	//	Option: Collections
-
+function handleCollectionOptions(backgrounds: Sync.Backgrounds) {
+	const type = backgrounds.type
 	const isImageOrVideos = type === 'images' || type === 'videos'
 
 	if (isImageOrVideos) {

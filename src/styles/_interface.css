@@ -30,7 +30,7 @@
 
 /* Background */
 
-#background-texture-overlay,
+#background-texture,
 #background-overlay {
 	position: fixed;
 	width: 100%;
@@ -95,25 +95,25 @@
 	transform: scale(1.1) translateX(0px) translate3d(0, 0, 0);
 }
 
-#background-texture-overlay[data-texture='grain'] {
-	opacity: var(--texture-opacity, 0.1);
-	background-size: var(--texture-size, 220px);
+#background-texture[data-texture='grain'] {
+	opacity: var(--texture-opacity);
+	background-size: var(--texture-size);
 	background-image: url('../assets/interface/grain.png');
 	background-repeat: repeat;
 }
 
-#background-texture-overlay[data-texture='topographic'] {
-	opacity: var(--texture-opacity, 0.6);
-	background-image: url('../assets/interface/topographic.png');
-	background-repeat: repeat;
-	background-size: 500px;
-	filter: invert(1);
+#background-texture[data-texture='dots'] {
+	opacity: var(--texture-opacity);
+	background-size: var(--texture-size) var(--texture-size);
+	background-image: radial-gradient(white 1px, transparent 0);
 }
 
-#background-texture-overlay[data-texture='dots'] {
-	opacity: var(--texture-opacity, 0.3);
-	background-image: radial-gradient(white 1px, transparent 0);
-	background-size: 30px 30px;
+#background-texture[data-texture='topographic'] {
+	opacity: var(--texture-opacity);
+	background-size: var(--texture-size);
+	background-image: url('../assets/interface/topographic.png');
+	background-repeat: repeat;
+	filter: invert(1);
 }
 
 /* Credits + Show settings */
