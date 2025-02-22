@@ -96,6 +96,7 @@ declare namespace Sync {
 		}
 		texture: {
 			type: 'none' | 'grain' | 'dots' | 'topographic'
+			size?: number
 			opacity?: number
 		}
 	}

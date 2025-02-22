@@ -21,6 +21,7 @@ interface BackgroundUpdate {
 	refresh?: HTMLSpanElement
 	collection?: string
 	texture?: string
+	texturesize?: string
 	textureopacity?: string
 }
 
@@ -134,28 +135,31 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
 	if (update.textureopacity !== undefined) {
 		data.backgrounds.texture.opacity = parseFloat(update.textureopacity)
-
-		applyTexture(data.backgrounds.texture)
 		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
+		applyTexture(data.backgrounds.texture)
+	}
+
+	if (update.texturesize !== undefined) {
+		data.backgrounds.texture.size = parseInt(update.texturesize)
+		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
+		applyTexture(data.backgrounds.texture)
 	}
 
 	if (isBackgroundTexture(update.texture)) {
-		data.backgrounds.texture.opacity = undefined
-		data.backgrounds.texture.type = update.texture
-
+		data.backgrounds.texture = { type: update.texture }
+		storage.sync.set({ backgrounds: data.backgrounds })
 		applyTexture(data.backgrounds.texture)
 		handleBackgroundOptions(data.backgrounds)
-
-		storage.sync.set({ backgrounds: data.backgrounds })
 	}
 }
 
-export async function filtersUpdate({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<Sync.Backgrounds>) {
 	const data = await storage.sync.get('backgrounds')
 
 	if (blur !== undefined) data.backgrounds.blur = blur
 	if (bright !== undefined) data.backgrounds.bright = bright
 	if (fadein !== undefined) data.backgrounds.fadein = fadein
+	if (texture !== undefined) data.backgrounds.texture = texture
 
 	storage.sync.set({ backgrounds: data.backgrounds })
 }
@@ -579,6 +583,11 @@ function applyTexture(texture: Sync.Backgrounds['texture']): void {
 		document.documentElement.style.removeProperty('--texture-opacity')
 	} else {
 		document.documentElement.style.setProperty('--texture-opacity', texture.opacity.toString())
+	}
+	if (texture.size === undefined) {
+		document.documentElement.style.removeProperty('--texture-size')
+	} else {
+		document.documentElement.style.setProperty('--texture-size', texture.size + 'px')
 	}
 }
 

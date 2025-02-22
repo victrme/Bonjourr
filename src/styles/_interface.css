@@ -97,9 +97,9 @@
 
 #background-texture-overlay[data-texture='grain'] {
 	opacity: var(--texture-opacity, 0.1);
+	background-size: var(--texture-size, 220px);
 	background-image: url('../assets/interface/grain.png');
 	background-repeat: repeat;
-	background-size: 220px;
 }
 
 #background-texture-overlay[data-texture='topographic'] {

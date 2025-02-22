@@ -437,6 +437,7 @@ aside form.valid.remove span::after {
 	max-height: 400px;
 }
 
+#background-texture-options.shown,
 #supporters-notif-container.shown {
 	max-height: 180px;
 }
@@ -478,7 +479,6 @@ aside form.valid.remove span::after {
 	max-height: 60px;
 }
 
-#background-texture-options.shown,
 #background-position-options.shown,
 #background-collection-option.shown,
 #location_options.shown,

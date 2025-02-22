@@ -123,8 +123,9 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
-	setInput('i_solid-background', data.backgrounds.color ?? '#222')
+	setInput('i_solid-background', data.backgrounds.color ?? '#654')
 	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
+	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
 	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
 	setInput('i_pagewidth', data.pagewidth || 1600)
 	setInput('i_pagegap', data.pagegap ?? 1)
@@ -424,6 +425,10 @@ function initOptionsEvents() {
 
 	paramId('i_texture').addEventListener('change', function (this: HTMLInputElement) {
 		backgroundUpdate({ texture: this.value })
+	})
+
+	paramId('i_texture-size').addEventListener('input', function (this: HTMLInputElement) {
+		backgroundUpdate({ texturesize: this.value })
 	})
 
 	paramId('i_texture-opacity').addEventListener('input', function (this: HTMLInputElement) {
