@@ -1,6 +1,7 @@
 import { LastWeather, getSunsetHour } from './index'
 import { getLang, tradThis } from '../../utils/translations'
 import { minutator } from '../../utils'
+import userDate from '../../utils/userdate'
 import suntime from '../../utils/suntime'
 
 import type { Weather } from '.'
@@ -14,7 +15,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 	const tempContainer = document.getElementById('tempContainer')
 	const weatherdom = document.getElementById('weather')
 	const dot = useSinograms ? '。' : '. '
-	const date = new Date()
+	const date = userDate()
 
 	const handleDescription = () => {
 		const feels = Math.floor(lastWeather.feels_like)
@@ -52,7 +53,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 			return
 		}
 
-		const now = minutator(new Date())
+		const now = minutator(date)
 		const { sunrise, sunset, dusk } = suntime()
 		const daytime = now < sunrise || now > sunset + dusk ? 'night' : 'day'
 
@@ -115,7 +116,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 }
 
 export function handleForecastDisplay(forecast: string) {
-	const date = new Date()
+	const date = userDate()
 	const morningOrLateDay = date.getHours() < 12 || date.getHours() > getSunsetHour()
 	const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'
 

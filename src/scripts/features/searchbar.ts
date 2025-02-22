@@ -297,7 +297,7 @@ function initSuggestions() {
 	}
 
 	async function createSuggestionSocket() {
-		socket = await apiWebSocket('/suggestions')
+		socket = await apiWebSocket('suggestions')
 
 		socket?.addEventListener('message', function (event: MessageEvent) {
 			const data = parse<Suggestions | { error: string }>(event.data)

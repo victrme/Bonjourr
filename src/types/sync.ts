@@ -17,12 +17,9 @@ declare namespace Sync {
 		textShadow: number
 		cssHeight?: number
 		review: number
-		settingssync: SettingsSync
 		announcements: 'all' | 'major' | 'off'
 		supporters: Supporters
 		reviewPopup?: number | string
-		background_blur: number
-		background_bright: number
 		css: string
 		lang: string
 		favicon: string
@@ -31,8 +28,8 @@ declare namespace Sync {
 		notes?: Notes
 		hide?: Hide
 		dark: 'auto' | 'system' | 'enable' | 'disable'
-		background_type: 'local' | 'unsplash'
 		dateformat: 'auto' | 'eu' | 'us' | 'cn'
+		backgrounds: Backgrounds
 		clock: Clock
 		analogstyle?: AnalogStyle
 		worldclocks: WorldClocks
@@ -47,11 +44,6 @@ declare namespace Sync {
 			version: string
 		}
 		[key: string]: Links.Link | unknown
-	}
-
-	type SettingsSync = {
-		type: 'browser' | 'gist' | 'url' | 'off'
-		freq: 'newtabs' | 'start' | 'manual'
 	}
 
 	type LinkTabsOld = {
@@ -78,6 +70,35 @@ declare namespace Sync {
 		weatherdesc?: boolean
 		weathericon?: boolean
 		settingsicon?: boolean
+	}
+
+	type Backgrounds = {
+		type: 'files' | 'urls' | 'images' | 'videos' | 'color'
+		frequency: Frequency
+		fadein: number
+		bright: number
+		blur: number
+		color: string
+		urls: string[]
+		images: {
+			provider: 'unsplash' | 'pixabay'
+			collection: 'daylight' | 'usercoll' | 'usertags'
+			paused?: Backgrounds.Image
+			last?: Date
+			user?: { coll: string; tags: string }
+		}
+		videos: {
+			provider: 'pixabay'
+			collection: 'daylight' | 'usercoll' | 'usertags'
+			paused?: Backgrounds.Video
+			last?: Date
+			user?: { coll: string; tags: string }
+		}
+		texture: {
+			type: 'none' | 'grain' | 'dots' | 'topographic'
+			size?: number
+			opacity?: number
+		}
 	}
 
 	type Clock = {

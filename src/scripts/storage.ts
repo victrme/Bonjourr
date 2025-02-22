@@ -11,7 +11,7 @@ interface AllStorage {
 interface Storage {
 	sync: {
 		get: (key?: string | string[]) => Promise<Sync.Storage>
-		set: (val: Partial<Sync.Storage>) => void
+		set: (val: Partial<Sync.Storage>) => Promise<void>
 		remove: (key: string) => void
 		clear: () => Promise<void>
 	}
@@ -24,7 +24,7 @@ interface Storage {
 	type: {
 		get: () => StorageType
 		change: (type: 'sync' | 'local', data: Sync.Storage) => void
-		init: () => void
+		init: () => StorageType
 	}
 	init: () => Promise<AllStorage>
 	clearall: () => Promise<void>
@@ -63,13 +63,15 @@ function storageTypeFn() {
 	function init() {
 		if (globalThis.chrome?.storage === undefined) {
 			type = 'localstorage'
-			return
+			return 'localstorage'
 		}
 
 		if (!!(globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
 			type = 'webext-local'
-			return
+			return 'webext-local'
 		}
+
+		return type
 	}
 
 	function change(type: 'sync' | 'local', data: Sync.Storage) {
@@ -297,9 +299,9 @@ async function init(): Promise<AllStorage> {
 		})
 	}
 
-	storage.type.init()
+	const type = storage.type.init()
 
-	switch (storage.type.get()) {
+	switch (type) {
 		case 'webext-local': {
 			store.sync = (globalThis.startupStorage as AllStorage).local?.syncStorage
 			store.local = globalThis.startupStorage.local
@@ -394,7 +396,6 @@ export function isStorageDefault(data: Sync.Storage): boolean {
 	current.unsplash.pausedImage = SYNC_DEFAULT.unsplash.pausedImage
 	current.weather.city = SYNC_DEFAULT.weather.city
 	current.quotes.last = SYNC_DEFAULT.quotes.last
-	current.settingssync.type = 'browser'
 
 	return deepEqual(current, SYNC_DEFAULT)
 

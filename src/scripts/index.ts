@@ -6,10 +6,10 @@ import customCss from './features/css'
 import searchbar from './features/searchbar'
 import customFont from './features/fonts'
 import quickLinks from './features/links'
+import backgrounds from './features/backgrounds'
 import moveElements from './features/move'
 import hideElements from './features/hide'
 import interfacePopup from './features/popup'
-import initBackground from './features/backgrounds'
 import synchronization from './features/synchronization'
 import { settingsPreload } from './settings'
 import { supportersNotifications } from './features/supporters'
@@ -21,6 +21,7 @@ import { freqControl } from './utils'
 import onSettingsLoad from './utils/onsettingsload'
 import filterImports from './utils/filterimports'
 import errorMessage from './utils/errormessage'
+import userDate from './utils/userdate'
 import suntime from './utils/suntime'
 import storage from './storage'
 import 'clickdown'
@@ -59,14 +60,15 @@ async function startup() {
 		// <!> do not move
 		// <!> must delete old keys before upgrading storage
 		await storage.sync.clear()
-
-		storage.sync.set(sync)
+		await storage.sync.set(sync)
 	}
 
 	await setTranslationCache(sync.lang, local)
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
+	userDate(sync.clock.timezone)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
+
 	weather({ sync: sync, lastWeather: local.lastWeather })
 	customFont(sync.font)
 	textShadow(sync.textShadow)
@@ -75,14 +77,14 @@ async function startup() {
 	clock(sync)
 	darkmode(sync.dark)
 	searchbar(sync.searchbar)
-	quotes({ sync: sync, local })
+	quotes({ sync, local })
 	notes(sync.notes)
 	moveElements(sync.move)
 	customCss(sync.css)
 	hideElements(sync.hide)
-	initBackground(sync, local)
+	backgrounds(sync, local, true)
 	quickLinks(sync)
-	synchronization(sync)
+	synchronization(local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
@@ -358,7 +360,7 @@ function onlineAndMobile() {
 		const needNewImage = data.background_type === 'unsplash' && frequency
 
 		if (needNewImage && data.unsplash) {
-			initBackground(data, local)
+			backgrounds(data, local)
 		}
 
 		clock(data)

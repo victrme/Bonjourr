@@ -1,6 +1,6 @@
 import langList from './langs'
 
-export const CURRENT_VERSION = '20.4.0'
+export const CURRENT_VERSION = '20.4.2'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -90,6 +90,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	background_blur: 15,
 	background_bright: 0.8,
 	background_type: 'unsplash',
+	background_solid: '#222',
 	quicklinks: true,
 	syncbookmarks: undefined,
 	textShadow: 0.2,
@@ -108,6 +109,18 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		groups: ['default'],
 		pinned: [],
 		synced: [],
+	},
+	backgrounds: {
+		type: 'color',
+		fadein: 600,
+		blur: 15,
+		bright: 0.8,
+		frequency: 'hour',
+		color: '#654',
+		urls: [],
+		images: { provider: 'unsplash', collection: 'daylight' },
+		videos: { provider: 'pixabay', collection: 'daylight' },
+		texture: { type: 'none' },
 	},
 	clock: {
 		size: 1,
@@ -171,10 +184,6 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
-	settingssync: {
-		type: PLATFORM === 'online' ? 'off' : 'browser',
-		freq: 'manual',
-	},
 	supporters: {
 		enabled: true,
 		closed: false,
@@ -187,6 +196,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 }
 
 export const LOCAL_DEFAULT: Local.Storage = {
+	syncType: PLATFORM === 'online' ? 'off' : 'browser',
 	userQuoteSelection: 0,
 	translations: undefined,
 	selectedId: '',
@@ -198,5 +208,18 @@ export const LOCAL_DEFAULT: Local.Storage = {
 		evening: [],
 		night: [],
 		user: [],
+	},
+	daylightCollection: {
+		images: {
+			unsplash: { noon: [], day: [], evening: [], night: [] },
+			pixabay: { noon: [], day: [], evening: [], night: [] },
+		},
+		videos: {
+			pixabay: { noon: [], day: [], evening: [], night: [] },
+		},
+	},
+	localFiles: {
+		selected: '',
+		ids: [],
 	},
 }

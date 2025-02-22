@@ -18,7 +18,7 @@
 }
 
 @supports not (min-height: 100dvh) {
-	#background_overlay,
+	#image-background-overlay,
 	#interface {
 		min-height: 100vh;
 	}
@@ -30,33 +30,90 @@
 
 /* Background */
 
-#background_overlay {
-	z-index: -1;
+#background-texture-overlay,
+#background-overlay {
 	position: fixed;
 	width: 100%;
 	height: 100%;
 	min-height: var(--app-height);
 	min-height: 100lvh;
 	overflow: hidden;
-	opacity: 0;
-	transition: transform 0.4s, opacity 0.4s;
 }
 
-#background-bis,
-#background {
-	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
+#background-overlay {
+	z-index: -1;
+	transition: transform var(--fade-in), opacity var(--fade-in);
+}
+
+#background-overlay.hidden {
+	opacity: 0;
+}
+
+#image-background-wrapper {
+	--background-position-x: 50%;
+	--background-position-y: 50%;
+	--background-zoom: cover;
+}
+
+#image-background-wrapper div {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-size: cover;
-	background-position: center center;
-	transition: opacity 1s var(--out-cubic);
-	filter: blur(var(--background-blur)) brightness(var(--background-brightness));
-	z-index: 1;
+	background-size: var(--background-zoom);
+	background-position-x: var(--background-position-x);
+	background-position-y: var(--background-position-y);
+	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
+	transition: opacity 1.2s;
 }
 
-#background-bis {
-	z-index: 0;
+#video-background-wrapper video {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
+	transition: opacity 4s;
+}
+
+#image-background-wrapper div,
+#video-background-wrapper video {
+	filter: blur(var(--blur)) brightness(var(--brightness));
+}
+
+#solid-background {
+	position: fixed;
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	background-color: var(--solid-background);
+}
+
+[data-browser='safari'] #image-background-bis,
+[data-browser='safari'] #image-background {
+	transform: scale(1.1) translateX(0px) translate3d(0, 0, 0);
+}
+
+#background-texture-overlay[data-texture='grain'] {
+	opacity: var(--texture-opacity, 0.1);
+	background-size: var(--texture-size, 220px);
+	background-image: url('../assets/interface/grain.png');
+	background-repeat: repeat;
+}
+
+#background-texture-overlay[data-texture='topographic'] {
+	opacity: var(--texture-opacity, 0.6);
+	background-image: url('../assets/interface/topographic.png');
+	background-repeat: repeat;
+	background-size: 500px;
+	filter: invert(1);
+}
+
+#background-texture-overlay[data-texture='dots'] {
+	opacity: var(--texture-opacity, 0.3);
+	background-image: radial-gradient(white 1px, transparent 0);
+	background-size: 30px 30px;
 }
 
 /* Credits + Show settings */

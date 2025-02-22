@@ -185,7 +185,7 @@
 
 /* touch screens! */
 @media only screen and (hover: none) and (pointer: coarse) {
-	#background_overlay {
+	#image-background-overlay {
 		position: fixed;
 	}
 

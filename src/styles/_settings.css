@@ -65,6 +65,19 @@ aside h2 {
 	letter-spacing: 1px;
 }
 
+aside .param-textarea {
+	width: 100%;
+	height: 200px;
+	margin-top: 20px;
+	padding: 12px;
+	font-size: 13px;
+	line-height: 1.5;
+	resize: none;
+	border-radius: 8px;
+	color: var(--color-text);
+	background-color: var(--color-areas);
+}
+
 aside .param-btn {
 	height: 31px;
 	padding: 0 1em;
@@ -306,6 +319,11 @@ aside input[type='range']::-ms-tooltip {
 	display: none;
 }
 
+aside input[type='color'] {
+	padding: 0;
+	background-color: transparent;
+}
+
 label.input-file {
 	position: relative;
 	display: block;
@@ -415,12 +433,17 @@ aside form.valid.remove span::after {
 	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
 }
 
+#solid_options.shown {
+	max-height: 400px;
+}
+
+#background-texture-options.shown,
 #supporters-notif-container.shown {
 	max-height: 180px;
 }
 
 #local_options.shown {
-	max-height: 420px;
+	max-height: 500px;
 }
 
 #time_options.shown {
@@ -448,10 +471,16 @@ aside form.valid.remove span::after {
 #disabled-sync.shown,
 #weather_provider.shown,
 #searchbar_request.shown,
-#worldclocks-list .dropdown.shown {
+#background-freq-option.shown,
+#background-user-coll-option.shown,
+#background-user-tags-option.shown,
+#worldclocks-list .dropdown.shown,
+#background-provider-option.shown {
 	max-height: 60px;
 }
 
+#background-position-options.shown,
+#background-collection-option.shown,
 #location_options.shown,
 #digital_options.shown,
 #unsplash_options.shown,
@@ -464,14 +493,11 @@ aside form.valid.remove span::after {
 	max-height: 220px;
 }
 
-/* #gist-sync-status.shown {
-	max-height: 120px;
-} */
-
 #searchbar_options.shown {
-	max-height: 420px;
+	max-height: 440px;
 }
 
+#background-urls-option.shown,
 #quotes_userlist.shown,
 #quotes_options.shown {
 	max-height: 450px;
@@ -481,8 +507,12 @@ aside form.valid.remove span::after {
 	max-height: 540px;
 }
 
+#background-filters-options.shown {
+	max-height: 300px;
+}
+
 .all .as_visuals {
-	max-height: 220px;
+	max-height: 285px;
 }
 
 .all .as_link {
@@ -498,7 +528,7 @@ aside form.valid.remove span::after {
 }
 
 .all .as_searchbar {
-	max-height: 300px;
+	max-height: 320px;
 }
 
 .all .as_weather {
@@ -632,6 +662,9 @@ aside .settings-title .tooltip {
 	color: var(--color-light-text);
 	font-size: 13px;
 	line-height: 1.5em;
+}
+
+.param .tooltiptext {
 	padding-left: 4px;
 }
 
@@ -801,30 +834,35 @@ aside .settings-title .tooltip {
 	padding: 0 4px;
 }
 
-#background-upload {
+#lbl_background-upload {
+	pointer-events: all;
+}
+
+#lbl_background-upload span {
+	display: block;
+	padding: 0 1em;
+	height: 31px;
+	font-size: 13px;
+	line-height: 31px;
+	cursor: pointer;
+}
+
+#i_background-upload {
 	display: none;
 }
 
 #thumbnails-container {
+	--thumbnails-columns: 3;
 	display: grid;
 	width: 100%;
 	max-height: 300px;
 	overflow: auto;
-	grid-gap: 3px;
-	grid-template-columns: repeat(3, 1fr);
-}
-
-/* instead of padding on #thumbnails-container */
-/* because buggy when container is empty */
-#thumbnails-container .thumbnail:nth-child(1),
-#thumbnails-container .thumbnail:nth-child(2),
-#thumbnails-container .thumbnail:nth-child(3) {
-	margin-top: 10px;
+	grid-template-columns: repeat(var(--thumbnails-columns), 1fr);
 }
 
 .thumbnail {
 	position: relative;
-	height: 75px;
+	height: calc(230px / var(--thumbnails-columns));
 	margin: 3px;
 	padding: 0;
 	overflow: hidden;
@@ -860,41 +898,6 @@ aside .settings-title .tooltip {
 	object-fit: cover;
 }
 
-.b_removethumb {
-	position: absolute;
-	top: 6px;
-	left: 6px;
-	width: 25px;
-	height: 25px;
-	padding: 0;
-	opacity: 0;
-	color: #222;
-	background-color: #fff4;
-	border-radius: 100%;
-	text-align: center;
-	text-decoration: none;
-	box-sizing: border-box;
-	box-shadow: rgba(0, 0, 0, 0.2) 0 2px 5px;
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
-	transition: opacity 0.05s, background-color 0.05s;
-}
-
-.b_removethumb span {
-	display: block;
-	width: 100%;
-}
-
-.b_removethumb:focus-visible {
-	opacity: 1;
-}
-
-.b_removethumb:hover {
-	color: #000;
-	background-color: #fff8;
-	text-decoration: none;
-}
-
 #thumbnail-show-buttons {
 	display: none;
 	text-align: center;
@@ -903,6 +906,15 @@ aside .settings-title .tooltip {
 
 #thumbnail-show-buttons.shown {
 	display: block;
+}
+
+#thumbnail-action-buttons {
+	margin-top: 4px;
+	column-gap: 8px;
+}
+
+#background-position-options {
+	margin-top: 8px;
 }
 
 #worldclocks_options .wrapper {
@@ -930,19 +942,6 @@ aside .settings-title .tooltip {
 
 #quotes_userlist .wrapper {
 	flex-wrap: wrap;
-}
-
-#i_qtlist {
-	width: 100%;
-	height: 200px;
-	margin-top: 20px;
-	padding: 12px;
-	font-size: 13px;
-	line-height: 1.5;
-	resize: none;
-	border-radius: 8px;
-	color: var(--color-text);
-	background-color: var(--color-areas);
 }
 
 #i_customfont {

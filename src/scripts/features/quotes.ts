@@ -312,7 +312,7 @@ function csvToQuotes(csv: string): Quote[] {
 }
 
 function isQuotesType(type = ''): type is Quotes.Types {
-	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'user', 'url']
+	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'office', 'user', 'url']
 	return types.includes(type as Quotes.Types)
 }
 

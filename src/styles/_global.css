@@ -4,10 +4,14 @@
 	--page-width: 1600px;
 	--page-gap: 1em;
 	--links-width: auto;
-	--background-blur: 15px;
-	--background-brightness: 0.8;
+
+	--fade-in: 400ms;
+	--blur: 15px;
+	--brightness: 0.8;
 	--load-time-transition: 0ms;
+	--solid-background: black;
 	--average-color: black;
+
 	--text-shadow-alpha: 0.2;
 	--notes-background-alpha: 0.1;
 	--searchbar-background-alpha: 0.1;
@@ -69,6 +73,11 @@
 [data-browser='opera'] .firefox-only,
 [data-browser='chrome'] .firefox-only,
 [data-browser='safari'] .firefox-only,
+[data-browser='edge'] .safari-only,
+[data-browser='other'] .safari-only,
+[data-browser='opera'] .safari-only,
+[data-browser='chrome'] .safari-only,
+[data-browser='firefox'] .safari-only,
 [data-platform='safari'] .not-safari,
 [data-platform='online'] .not-online {
 	display: none;

@@ -269,9 +269,12 @@
 			</div>
 		</dialog>
 
-		<div id="background_overlay">
-			<div id="background"></div>
-			<div id="background-bis"></div>
+		<div id="background-overlay" class="hidden">
+			<div id="image-background-wrapper"></div>
+			<div id="video-background-wrapper"></div>
+			<div id="solid-background"></div>
+
+			<div id="background-texture-overlay" data-texture="none"></div>
 		</div>
 
 		<main id="interface">
@@ -422,7 +425,7 @@
 					<div class="bookmarks-folder-title">
 						<h2>
 							<span class="bookmarks-folder-title-content"></span>
-							<span class="bookmarks-folder-title-synced">(synced)</span>
+							<span class="bookmarks-folder-title-synced trn">(synced)</span>
 						</h2>
 						<div>
 							<button class="trn b_bookmarks-folder-select">Select group</button>

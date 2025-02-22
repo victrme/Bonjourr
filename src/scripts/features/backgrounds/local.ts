@@ -1,22 +1,17 @@
 import { randomString, turnRefreshButton, freqControl, isEvery } from '../../utils'
-import unsplashBackgrounds from './unsplash'
-import { imgBackground } from '.'
+import { applyBackground } from './index'
 import onSettingsLoad from '../../utils/onsettingsload'
-import { IS_MOBILE } from '../../defaults'
-import errorMessage from '../../utils/errormessage'
 import storage from '../../storage'
 import * as idb from 'idb-keyval'
 
-type LocalImages = {
-	ids: string[]
-	last: number
-	selected: string
-	freq: Frequency
-}
-
-type Blobs = {
-	background: Blob
-	thumbnail: Blob
+type LocalFileData = {
+	file: File
+	small: Blob
+	position: {
+		zoom: string
+		x: string
+		y: string
+	}
 }
 
 type UpdateLocal = {
@@ -27,65 +22,142 @@ type UpdateLocal = {
 	showing?: string
 }
 
-const localImages = localImagesStorage()
 let localIsLoading = false
 
-export default async function localBackgrounds(event?: UpdateLocal) {
+export default async function localBackgrounds(init?: Local.Storage, event?: UpdateLocal) {
 	if (event) {
 		updateLocalBackgrounds(event)
 		return
 	}
 
-	try {
-		initLocalBackgrounds()
-	} catch (error) {
-		errorMessage(error)
+	if (init) {
+		initLocalBackgrounds(init)
 	}
 }
 
-async function initLocalBackgrounds() {
-	let { ids, selected, freq, last } = await localImages.get()
+async function initLocalBackgrounds(local: Local.Storage) {
+	const sync = await storage.sync.get()
+
+	if (!local.localFiles) {
+		local.localFiles = { ids: [], selected: '' }
+	}
+
+	const { ids, selected } = local.localFiles
+	const lastChange = local?.backgroundLastChange ?? ''
+	const freq = sync.backgrounds.frequency
+	const last = new Date(lastChange).getTime()
 	const needNewImage = freqControl.get(freq, last) && ids.length > 1
 
 	if (ids.length === 0) {
-		const data = await storage.sync.get('unsplash')
-		const local = await storage.local.get('unsplashCache')
-		unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
+		// ?
 		return
 	}
 
 	if (needNewImage) {
 		const idsNoSelection = ids.filter((l: string) => !l.includes(selected))
 		const randomId = Math.floor(Math.random() * idsNoSelection.length)
-		selected = idsNoSelection[randomId]
-		localImages.update({ selected, last: freqControl.set() })
+
+		local.localFiles.selected = idsNoSelection[randomId]
+		local.backgroundLastChange = new Date().toISOString()
+
+		storage.local.set(local)
 	}
 
-	displayCustomBackground(await getBlob(selected, 'background'))
+	displayCustomBackground(await getFile(local.localFiles.selected))
 	onSettingsLoad(() => handleSettingsOptions())
 }
 
-async function handleSettingsOptions() {
-	const loadedThumbIds = [...document.querySelectorAll<Element>('.thumbnail')].map((el) => el.id)
-	const i_freq = document.getElementById('i_freq') as HTMLSelectElement
-	const images = await localImages.get()
-	let ids = images.ids
+//
+//	Settings Options
+//
 
-	if (i_freq) {
-		i_freq.value = images.freq
-	}
+async function handleSettingsOptions() {
+	const local = await storage.local.get('localFiles')
+	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
+	const thumbIds = Object.values(thumbs).map((el) => el.id)
+	let ids = local.localFiles?.ids ?? []
 
 	if (ids.length > 9) {
 		ids = ids.slice(0, 9)
 		document.getElementById('thumbnail-show-buttons')?.classList.add('shown')
 	}
 
-	if (loadedThumbIds.length > 0) {
-		ids = ids.filter((id) => loadedThumbIds.includes(id) === false)
+	if (thumbIds.length > 0) {
+		ids = ids.filter((id) => thumbIds.includes(id) === false)
 	}
 
 	// <!> must stay at the end (ids mutation)
-	addThumbnailsToDom(ids, images.selected)
+	addThumbnailsToDom(ids, local.localFiles?.selected)
+
+	document.getElementById('thumbnail-remove')?.onclickdown(thumbnailRemove)
+	document.getElementById('thumbnail-zoom')?.onclickdown(thumbnailGridZoom)
+	document.getElementById('thumbnail-position')?.onclickdown(thumbnailTogglePosition)
+	document.getElementById('i_background-zoom')?.addEventListener('input', thumbnailPosition)
+	document.getElementById('i_background-vertical')?.addEventListener('input', thumbnailPosition)
+	document.getElementById('i_background-horizontal')?.addEventListener('input', thumbnailPosition)
+}
+
+function thumbnailGridZoom() {
+	const container = document.getElementById('thumbnails-container')!
+	const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
+	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 2)
+	container.style.setProperty('--thumbnails-columns', newZoom.toString())
+}
+
+function thumbnailTogglePosition() {
+	const domoptions = document.getElementById('background-position-options')
+	domoptions?.classList.toggle('shown')
+}
+
+function thumbnailPosition(this: HTMLInputElement) {
+	const wrapper = document.getElementById('image-background-wrapper')
+	const { id, value } = this
+
+	if (!wrapper) {
+		console.log(new Error('?'))
+		return
+	}
+
+	if (id === 'i_background-zoom') {
+		wrapper.style.setProperty('--background-zoom', value === '100' ? 'cover' : `${value}%`)
+	}
+	if (id === 'i_background-vertical') {
+		wrapper.style.setProperty('--background-position-y', `${value}%`)
+	}
+	if (id === 'i_background-horizontal') {
+		wrapper.style.setProperty('--background-position-x', `${value}%`)
+	}
+}
+
+async function thumbnailRemove(event: Event) {
+	const local = await storage.local.get()
+	const thumbnail = document.querySelector<HTMLElement>('.thumbnail.selected')
+	const id = thumbnail?.id ?? ''
+
+	if (localIsLoading || !thumbnail || !id || !local.localFiles) {
+		return
+	}
+
+	const newIdList = local.localFiles.ids.filter((s) => !s.includes(id))
+	const currIndex = local.localFiles.ids.indexOf(id)
+	const newIndex = Math.min(currIndex, newIdList.length - 1)
+	const newId = newIdList[newIndex] ?? ''
+
+	local.localFiles.ids = newIdList
+	local.localFiles.selected = newId
+
+	storage.local.set(local)
+	idb.del(id)
+
+	if (newId) {
+		displayCustomBackground(await getFile(newId))
+		selectThumbnail(newId)
+	} else {
+		// Show black screen
+	}
+
+	thumbnail.classList.toggle('hiding', true)
+	setTimeout(() => thumbnail.remove(), 100)
 }
 
 //
@@ -93,8 +165,11 @@ async function handleSettingsOptions() {
 //
 
 async function updateLocalBackgrounds(event: UpdateLocal) {
+	const sync = await storage.sync.get('backgrounds')
+	const local = await storage.local.get()
+
 	if (event?.newfile) {
-		addNewImage(event.newfile)
+		addNewImage(event.newfile, local)
 	}
 
 	if (event?.refresh) {
@@ -106,76 +181,71 @@ async function updateLocalBackgrounds(event: UpdateLocal) {
 	}
 
 	if (isEvery(event?.freq)) {
-		localImages.update({ freq: event?.freq })
+		// localImages.update({ freq: event?.freq })
 	}
 }
 
-async function addNewImage(filelist: FileList) {
-	const thumbnailsContainer = document.getElementById('thumbnails-container')
-	let { ids, selected } = await localImages.get()
-	const blobs: { [key: string]: Blobs } = {}
-	const newIds: string[] = []
-
+async function addNewImage(filelist: FileList, local: Local.Storage) {
+	local.localFiles = local.localFiles ?? { ids: [], selected: '' }
 	localIsLoading = true
 
-	// change type si premier local
-	if (ids.length === 0) {
-		storage.sync.set({ background_type: 'local' })
-	}
+	const thumbnailsContainer = document.getElementById('thumbnails-container')
+	const filesData: Record<string, LocalFileData> = {}
+	const newIds: string[] = []
 
 	for (const file of filelist) {
 		const id = randomString(8)
+		local.localFiles.selected = id
 		newIds.push(id)
-		selected = id
 
-		const thumbnail = await compressThumbnail(file)
+		const small = await compressThumbnail(file)
 
-		blobs[id] = {
-			thumbnail: thumbnail,
-			background: file,
+		filesData[id] = {
+			file: file,
+			small: small,
+			position: { zoom: 'cover', x: '50', y: '50' },
 		}
 
-		thumbnailsContainer?.appendChild(createThumbnail(thumbnail, id, false))
+		thumbnailsContainer?.appendChild(createThumbnail(small, id, false))
 
-		await idb.set(id, blobs[id])
+		await idb.set(id, filesData[id])
 	}
 
-	localImages.update({ ids: ids.concat(newIds), selected })
 	localIsLoading = false
 
-	displayCustomBackground(blobs[selected].background)
-	selectThumbnail(selected)
+	displayCustomBackground(filesData[local.localFiles.selected])
+	selectThumbnail(local.localFiles.selected)
+
+	local.localFiles.ids = local.localFiles.ids.concat(newIds)
+	storage.local.set(local)
 }
 
 function refreshCustom(button: HTMLSpanElement) {
-	localImages.update({ last: 0 })
-	turnRefreshButton(button, true)
-	setTimeout(() => localBackgrounds(), 100)
+	// localImages.update({ last: 0 })
+	// turnRefreshButton(button, true)
+	// setTimeout(() => localBackgrounds(), 100)
 }
 
 async function updateThumbnailAmount(showing?: string) {
-	const thumbnailsContainer = document.getElementById('thumbnails-container') as HTMLElement
-	const thumbsAmount = thumbnailsContainer?.childElementCount || 0
-	const images = await localImages.get()
-	const ids: string[] = []
-
-	if (showing === 'all') ids.push(...images.ids)
-	if (showing === 'more') ids.push(...images.ids.filter((_, i) => i < thumbsAmount + 9))
-
-	if (ids.length === images.ids.length) {
-		document.getElementById('thumbnail-show-buttons')?.classList.remove('shown')
-	}
-
-	addThumbnailsToDom(ids, images.selected)
+	// const thumbnailsContainer = document.getElementById('thumbnails-container') as HTMLElement
+	// const thumbsAmount = thumbnailsContainer?.childElementCount || 0
+	// const images = await localImages.get()
+	// const ids: string[] = []
+	// if (showing === 'all') ids.push(...images.ids)
+	// if (showing === 'more') ids.push(...images.ids.filter((_, i) => i < thumbsAmount + 9))
+	// if (ids.length === images.ids.length) {
+	// 	document.getElementById('thumbnail-show-buttons')?.classList.remove('shown')
+	// }
+	// addThumbnailsToDom(ids, images.selected)
 }
 
 //
 //	Background & Thumbnails
 //
 
-async function displayCustomBackground(blob?: Blob) {
-	if (blob) {
-		imgBackground(URL.createObjectURL(blob))
+async function displayCustomBackground(data?: LocalFileData) {
+	if (data?.file) {
+		applyBackground({ image: { url: URL.createObjectURL(data.file), page: '', username: '' } })
 		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
 	}
@@ -184,11 +254,6 @@ async function displayCustomBackground(blob?: Blob) {
 function selectThumbnail(id: string) {
 	document.querySelector('.thumbnail.selected')?.classList.remove('selected')
 	document.getElementById(id)?.classList?.add('selected')
-}
-
-async function getBlob(id: string, which: 'background' | 'thumbnail') {
-	const blobs = await idb.get(id)
-	return blobs ? (blobs[which] as Blob) : undefined
 }
 
 async function compressThumbnail(blob: Blob) {
@@ -201,10 +266,7 @@ async function compressThumbnail(blob: Blob) {
 
 	await new Promise((resolve) => {
 		img.onload = () => {
-			// canvas proportionné à l'image
-			// rétréci suivant le taux de compression
-			// si thumbnail, toujours 140px
-			const height = 140 * window.devicePixelRatio
+			const height = 300 * window.devicePixelRatio
 			const scaleFactor = height / img.height
 
 			canvas.width = img.width * scaleFactor
@@ -222,9 +284,7 @@ async function compressThumbnail(blob: Blob) {
 
 function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean): HTMLButtonElement {
 	const thb = document.createElement('button')
-	const rem = document.createElement('button')
 	const thbimg = document.createElement('img')
-	const remspan = document.createElement('span')
 
 	if (!blob) {
 		return thb
@@ -234,88 +294,39 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 	thbimg.src = URL.createObjectURL(blob)
 	thb.className = 'thumbnail' + (isSelected ? ' selected' : '')
 
-	rem.classList.toggle('b_removethumb', true)
-	rem.classList.toggle('hidden', !IS_MOBILE)
-
 	thb.setAttribute('aria-label', 'Select this background')
-	rem.setAttribute('aria-label', 'Remove this background')
 
 	thbimg.setAttribute('alt', '')
 	thbimg.setAttribute('draggable', 'false')
 
-	remspan.textContent = '✕'
-	rem.appendChild(remspan)
-
 	thb.appendChild(thbimg)
-	thb.appendChild(rem)
 
-	thbimg.addEventListener('click', applyThisBackground)
-	rem.addEventListener('click', deleteThisBackground)
+	thbimg.onclickdown(function (e, target) {
+		const isLeftClick = (e as MouseEvent).button === 0
 
-	async function applyThisBackground(this: HTMLImageElement, e: MouseEvent) {
-		if (e.button !== 0 || localIsLoading) return
-
-		const userImages = await localImages.get()
-		const thumbnail = this?.parentElement
-		const id = thumbnail?.id
-		const notAlreadySelected = id && id !== userImages.selected
-
-		if (notAlreadySelected) {
-			localIsLoading = false
-			localImages.update({ selected: id })
-
-			selectThumbnail(id)
-			displayCustomBackground(await getBlob(id, 'background'))
+		if (isLeftClick && !localIsLoading) {
+			const thumbnail = target?.parentElement
+			const id = thumbnail?.id ?? ''
+			applyThumbnailBackground(id)
 		}
-	}
-
-	async function deleteThisBackground(this: HTMLButtonElement, e: MouseEvent) {
-		if (e.button !== 0 || localIsLoading || !e.target) return
-
-		let { ids, selected } = await localImages.get()
-		const thumbnail = this?.parentElement
-		const id = thumbnail?.id
-
-		if (id) {
-			thumbnail?.classList.toggle('hiding', true)
-			setTimeout(() => thumbnail?.remove(), 100)
-
-			// Pop background from list
-			ids = ids.filter((s) => !s.includes(id))
-			localImages.update({ ids })
-
-			idb.del(id)
-		}
-
-		if (id !== selected) {
-			return
-		}
-
-		// Draw new image if displayed is removed to another custom
-		if (ids.length > 0) {
-			selected = ids[0]
-			localImages.update({ selected })
-
-			const blob = await getBlob(selected, 'background')
-
-			selectThumbnail(selected)
-			displayCustomBackground(blob)
-			return
-		}
-
-		// back to unsplash
-		storage.sync.set({ background_type: 'unsplash' })
-		localImages.update({ ids: [], selected: '' })
-
-		setTimeout(async () => {
-			document.getElementById('credit-container')?.classList.toggle('shown', true)
-			const data = await storage.sync.get('unsplash')
-			const local = await storage.local.get('unsplashCache')
-			unsplashBackgrounds({ unsplash: data.unsplash, cache: local.unsplashCache })
-		}, 100)
-	}
+	})
 
 	return thb
+}
+
+async function applyThumbnailBackground(id: string, local?: Local.Storage) {
+	local = local ?? (await storage.local.get())
+	const notAlreadySelected = id && id !== local.localFiles?.selected
+
+	if (notAlreadySelected && local.localFiles) {
+		localIsLoading = false
+		local.localFiles.selected = id
+
+		storage.local.set(local)
+
+		selectThumbnail(id)
+		displayCustomBackground(await getFile(id))
+	}
 }
 
 async function addThumbnailsToDom(ids: string[], selected?: string) {
@@ -325,37 +336,15 @@ async function addThumbnailsToDom(ids: string[], selected?: string) {
 
 	for (const id of idsToAdd) {
 		const isSelected = id === selected
-		const blob = await getBlob(id, 'thumbnail')
+		const blob = (await getFile(id))?.small
 		fragment.appendChild(createThumbnail(blob, id, isSelected))
 	}
 
 	thumbnailsContainer.appendChild(fragment)
 }
 
-//
-// 	IndexedDB storage
-//
+//	idb
 
-function localImagesStorage() {
-	async function get() {
-		const res = (await idb.get('localImages')) as LocalImages
-		const userImages = {
-			selected: res?.selected ?? '',
-			freq: res?.freq ?? 'pause',
-			ids: res?.ids ?? [],
-			last: res?.last ?? 0,
-		}
-
-		return userImages
-	}
-
-	function set(val: LocalImages) {
-		idb.set('localImages', val)
-	}
-
-	function update(val: Partial<LocalImages>) {
-		idb.update('localImages', (prev) => ({ ...prev, ...val }))
-	}
-
-	return { get, set, update }
+async function getFile(id: string): Promise<LocalFileData> {
+	return (await idb.get(id)) as LocalFileData
 }

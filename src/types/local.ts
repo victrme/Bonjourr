@@ -2,20 +2,34 @@ declare namespace Local {
 	type Storage = {
 		fonts?: FontList
 		fontface?: string
-		selectedId: string
-		idsList: string[]
 		userQuoteSelection: number
 		quotesCache: Quotes.Item[]
-		unsplashCache: Unsplash.Local
 		translations?: Translations
 		lastWeather?: Weather.Local
 		operaExplained?: true
+
+		// Sync
 		gistId?: string
 		gistToken?: string
 		distantUrl?: string
 		pastebinToken?: string
 		syncStorage?: Sync.Storage
+		syncType?: SyncType
+
+		// Backgrounds
+		customCollection?: CustomCollection
+		daylightCollection?: DaylightCollection
+		backgroundPreloading?: true
+		backgroundLastChange?: string
+		localFiles?: LocalFiles
+
+		// Unused - Old
+		unsplashCache: Unsplash.Local
+		selectedId: string
+		idsList: string[]
 	}
+
+	type SyncType = 'browser' | 'gist' | 'url' | 'off'
 
 	type Translations = {
 		lang: string
@@ -27,4 +41,45 @@ declare namespace Local {
 		weights: string[]
 		variable: boolean
 	}[]
+
+	interface LocalFiles {
+		ids: string[]
+		selected: string
+	}
+
+	//
+
+	interface CustomCollection {
+		images: {
+			unsplash: Backgrounds.Image[]
+			pixabay: Backgrounds.Image[]
+		}
+		videos: {
+			pixabay: Backgrounds.Video[]
+		}
+	}
+
+	interface DaylightCollection {
+		images: {
+			unsplash: DaylightImages
+			pixabay: DaylightImages
+		}
+		videos: {
+			pixabay: DaylightVideos
+		}
+	}
+
+	interface DaylightImages {
+		night: Backgrounds.Image[]
+		noon: Backgrounds.Image[]
+		day: Backgrounds.Image[]
+		evening: Backgrounds.Image[]
+	}
+
+	interface DaylightVideos {
+		night: Backgrounds.Video[]
+		noon: Backgrounds.Video[]
+		day: Backgrounds.Video[]
+		evening: Backgrounds.Video[]
+	}
 }

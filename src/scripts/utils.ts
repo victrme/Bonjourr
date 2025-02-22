@@ -1,4 +1,5 @@
 import suntime from './utils/suntime'
+import userDate from './utils/userdate'
 
 export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
 	try {
@@ -63,12 +64,12 @@ export function periodOfDay(time?: number) {
 
 export const freqControl = {
 	set: () => {
-		return new Date().getTime()
+		return userDate().getTime()
 	},
 
 	get: (every: string, last: number) => {
-		const nowDate = new Date()
-		const lastDate = new Date(last || 0)
+		const nowDate = userDate()
+		const lastDate = last ? new Date(last) : nowDate
 		const changed = {
 			date: nowDate.getDate() !== lastDate.getDate(),
 			hour: nowDate.getHours() !== lastDate.getHours(),
@@ -125,7 +126,7 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 		canTurn
 			? [{ transform: 'rotate(360deg)' }]
 			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],
-		animationOptions,
+		animationOptions
 	)
 }
 

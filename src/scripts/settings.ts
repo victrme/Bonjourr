@@ -10,10 +10,9 @@ import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
 import localBackgrounds from './features/backgrounds/local'
+import { backgroundUpdate } from './features/backgrounds'
 import { supportersNotifications } from './features/supporters'
 import { changeGroupTitle, initGroups } from './features/links/groups'
-import { backgroundFilter, updateBackgroundOption } from './features/backgrounds'
-import unsplashBackgrounds, { bonjourrCollections } from './features/backgrounds/unsplash'
 import customFont, { fontIsAvailableInSubset, systemfont } from './features/fonts'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 
@@ -113,17 +112,21 @@ function settingsToggle() {
 function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	const domsettings = document.getElementById('settings') as HTMLElement
 	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
-	const unsplashCollec = data?.unsplash?.lastCollec === 'user' ? 'day' : data?.unsplash?.lastCollec
 
-	setInput('i_blur', data.background_blur ?? 15)
-	setInput('i_bright', data.background_bright ?? 0.8)
+	setInput('i_blur', data.backgrounds.blur ?? 15)
+	setInput('i_bright', data.backgrounds.bright ?? 0.8)
+	setInput('i_fadein', data.backgrounds.fadein ?? 400)
 	setInput('i_row', data.linksrow || 8)
 	setInput('i_linkstyle', data.linkstyle || 'default')
-	setInput('i_type', data.background_type || 'unsplash')
-	setInput('i_freq', data.unsplash?.every)
+	setInput('i_type', data.backgrounds.type || 'images')
+	setInput('i_freq', data.backgrounds?.frequency || 'hour')
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
+	setInput('i_solid-background', data.backgrounds.color ?? '#654')
+	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
+	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
+	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
 	setInput('i_pagewidth', data.pagewidth || 1600)
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
@@ -157,9 +160,8 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_weight', data.font?.weight || '300')
 	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
 	setInput('i_announce', data.announcements ?? 'major')
-	setInput('i_synctype', data.settingssync?.type ?? (PLATFORM === 'online' ? 'off' : 'auto'))
+	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
 
-	setFormInput('i_collection', bonjourrCollections[unsplashCollec], data.unsplash?.collection)
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
 	setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
@@ -245,10 +247,6 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
 	})()
-
-	// Backgrounds options init
-	paramId('local_options')?.classList.toggle('shown', data.background_type === 'local')
-	paramId('unsplash_options')?.classList.toggle('shown', data.background_type === 'unsplash')
 
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
@@ -386,44 +384,67 @@ function initOptionsEvents() {
 	// Backgrounds
 
 	paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
-		selectBackgroundType(this.value)
+		backgroundUpdate({ type: this.value })
+	})
+
+	paramId('i_solid-background').addEventListener('input', function () {
+		backgroundUpdate({ color: this.value })
+	})
+
+	paramId('i_background-collection').addEventListener('input', function () {
+		backgroundUpdate({ collection: this.value })
+	})
+
+	paramId('i_background-user-coll').addEventListener('change', function () {
+		backgroundUpdate({ query: this.value })
+	})
+
+	paramId('i_background-user-tags').addEventListener('change', function () {
+		backgroundUpdate({ query: this.value })
 	})
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
-		updateBackgroundOption({ freq: this.value })
+		backgroundUpdate({ freq: this.value })
 	})
 
 	paramId('i_refresh').onclickdown(function (_, target) {
-		updateBackgroundOption({ refresh: target.children[0] as HTMLSpanElement })
-	})
-
-	paramId('f_collection').addEventListener('submit', function (this, event) {
-		event.preventDefault()
-		unsplashBackgrounds(undefined, {
-			collection: stringMaxSize(paramId('i_collection').value, 256),
-		})
+		backgroundUpdate({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
 	// Custom backgrounds
 
-	paramId('b_background-upload').onclickdown(function (this: HTMLInputElement) {
-		paramId('background-upload')?.click()
-	})
-
-	paramId('background-upload').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds({ newfile: this.files })
+	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
+		localBackgrounds(undefined, { newfile: this.files })
 	})
 
 	paramId('b_thumbnail-all').onclickdown(function () {
-		localBackgrounds({ showing: 'all' })
+		localBackgrounds(undefined, { showing: 'all' })
+	})
+
+	// Background filters
+
+	paramId('i_texture').addEventListener('change', function (this: HTMLInputElement) {
+		backgroundUpdate({ texture: this.value })
+	})
+
+	paramId('i_texture-size').addEventListener('input', function (this: HTMLInputElement) {
+		backgroundUpdate({ texturesize: this.value })
+	})
+
+	paramId('i_texture-opacity').addEventListener('input', function (this: HTMLInputElement) {
+		backgroundUpdate({ textureopacity: this.value })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter({ blur: parseFloat(this.value), isEvent: true })
+		backgroundUpdate({ blur: this.value })
 	})
 
 	paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
-		backgroundFilter({ brightness: parseFloat(this.value), isEvent: true })
+		backgroundUpdate({ bright: this.value })
+	})
+
+	paramId('i_fadein').addEventListener('input', function (this: HTMLInputElement) {
+		backgroundUpdate({ fadein: this.value })
 	})
 
 	// Time and date
@@ -487,6 +508,9 @@ function initOptionsEvents() {
 
 	paramId('i_ampm').onclickdown(function (_, target) {
 		clock(undefined, { ampm: target.checked })
+
+		// shows/hides ampm_label option
+		paramId('ampm_label')?.classList.toggle('shown', target.checked)
 	})
 
 	paramId('i_ampm-label').onclickdown(function (_, target) {
@@ -776,7 +800,7 @@ function initOptionsEvents() {
 		loadImportFile(this)
 	})
 
-	paramId('b_settings-copy').onclickdown(function () {
+	paramId('b_settings-copy').addEventListener('click', function () {
 		copySettings()
 	})
 
@@ -913,38 +937,6 @@ function showall(val: boolean, event: boolean) {
 	}
 }
 
-async function selectBackgroundType(cat: string) {
-	document.getElementById('local_options')?.classList.toggle('shown', cat === 'local')
-	document.getElementById('unsplash_options')?.classList.toggle('shown', cat === 'unsplash')
-
-	if (cat === 'local') {
-		localBackgrounds({ settings: document.getElementById('settings') as HTMLElement })
-		setTimeout(() => localBackgrounds(), 100)
-
-		storage.sync.set({ background_type: 'local' })
-	}
-
-	if (cat === 'unsplash') {
-		const data = await storage.sync.get()
-		const local = await storage.local.get('unsplashCache')
-
-		if (!data.unsplash) return
-
-		document.querySelector<HTMLSelectElement>('#i_freq')!.value = data.unsplash.every || 'hour'
-		document.getElementById('credit-container')?.classList.toggle('shown', true)
-		setTimeout(
-			() =>
-				unsplashBackgrounds({
-					unsplash: data.unsplash,
-					cache: local.unsplashCache,
-				}),
-			100
-		)
-
-		storage.sync.set({ background_type: 'unsplash' })
-	}
-}
-
 function settingsFooter() {
 	const one = document.querySelector<HTMLAnchorElement>('#signature-one')
 	const two = document.querySelector<HTMLAnchorElement>('#signature-two')
@@ -1071,14 +1063,14 @@ async function copySettings() {
 	const pre = document.getElementById('settings-data')
 
 	try {
-		await navigator.clipboard.writeText(pre?.textContent ?? '{}')
+		navigator.clipboard.writeText(pre?.textContent ?? '{}')
 
 		if (copybtn) {
-			copybtn.textContent = tradThis('Copied')
+			copybtn.textContent = tradThis('Copied!')
 			setTimeout(() => (copybtn.textContent = tradThis('Copy')), 1000)
 		}
-	} catch (_) {
-		// ..
+	} catch (error) {
+		console.error(`Failed when copying: ${error}`)
 	}
 }
 

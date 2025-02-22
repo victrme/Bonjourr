@@ -163,6 +163,7 @@ function styles() {
 			minify: ENV_PROD,
 			loader: {
 				'.svg': 'dataurl',
+				'.png': 'file',
 			},
 		})
 	} catch (_) {
