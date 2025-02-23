@@ -1,0 +1,73 @@
+#credit-container,
+#show-settings {
+	position: fixed;
+	pointer-events: all;
+	transition: opacity 0.4s;
+}
+
+#credit-container {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	opacity: 0;
+	padding-left: 2.2em;
+	padding-bottom: 2.2em;
+	max-width: 50%;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
+}
+
+#credit-container.shown {
+	opacity: 1;
+	pointer-events: all;
+}
+
+#credit-container.shown:hover .exif,
+#credit-container.shown:hover .save {
+	opacity: 1;
+}
+
+#credit {
+	text-align: left;
+	font-size: 13px;
+	line-height: 18px;
+	color: #fff9;
+}
+
+#credit a {
+	color: #fff9;
+	text-decoration: none;
+}
+
+#credit a:hover {
+	color: #fffe;
+}
+
+.exif,
+.save {
+	opacity: 0;
+	transition: opacity 0.4s;
+}
+
+.save {
+	display: inline-block;
+	cursor: pointer;
+	margin-left: 10px;
+	width: 16px;
+	height: 15px;
+	background-color: #fff9;
+	-webkit-mask-image: url('../../assets/interface/download.svg');
+	mask-image: url('../../assets/interface/download.svg');
+}
+
+.save:hover {
+	background-color: #fffe;
+}
+
+.save.loading {
+	pointer-events: none;
+	--icon: url('../../assets/interface/loading.svg');
+}

@@ -1,0 +1,49 @@
+aside {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	z-index: 2;
+	right: -450px;
+	height: 100vh;
+	min-width: 333px;
+	width: 450px;
+	padding: 0 21px;
+	background-color: var(--color-settings);
+	color: var(--color-text);
+	font-size: 15px;
+	font-weight: 400;
+	text-shadow: none;
+	text-align: initial;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	touch-action: pan-y;
+	box-sizing: border-box;
+	transition: transform 0.33s, background-color 0.33s;
+}
+
+aside.shown {
+	-webkit-transform: translateX(-100%);
+	transform: translateX(-100%);
+	box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
+}
+
+aside.see-through {
+	opacity: 0.2;
+}
+
+aside.init .dropdown {
+	transition: max-height 0s;
+}
+
+.dropdown {
+	max-height: 0;
+	overflow: hidden;
+	visibility: hidden;
+	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0.3s;
+}
+
+.all .as,
+.dropdown.shown {
+	visibility: visible;
+	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
+}

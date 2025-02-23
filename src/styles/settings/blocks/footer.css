@@ -1,0 +1,36 @@
+#settings-footer {
+	width: 75%;
+	font-size: 14px;
+	margin: 50px auto 100px;
+	color: var(--color-light-text);
+}
+
+@supports (-webkit-touch-callout: none) {
+	#settings-footer {
+		margin-bottom: 150px;
+	}
+}
+
+#settings-footer > div:first-child {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+#settings-footer > div:nth-child(2) {
+	margin: 1.5em 0;
+}
+
+#settings-footer svg {
+	height: 1.25em;
+	fill: var(--color-blue);
+}
+
+#settings-footer-links a {
+	margin: 0 6px;
+}
+
+#settings-footer-links a:hover {
+	text-decoration: none;
+	opacity: 0.8;
+}

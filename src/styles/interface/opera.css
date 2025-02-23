@@ -1,0 +1,39 @@
+#opera-explainer {
+	opacity: 0;
+	outline: none;
+	color: #ddd;
+	max-width: 30em;
+	padding: 1em 2em;
+	line-height: 1.5em;
+	transition: opacity 0.4s 1s;
+}
+
+#opera-explainer::backdrop {
+	transition: background-color 6s;
+}
+
+#opera-explainer li {
+	list-style-type: circle;
+}
+
+#opera-explainer div {
+	padding: 1em 0;
+	text-align: initial;
+}
+
+#opera-explainer a {
+	color: var(--color-blue);
+	text-decoration: none;
+}
+
+#opera-explainer a:hover {
+	text-decoration: underline;
+}
+
+#opera-explainer.shown {
+	opacity: 1;
+}
+
+#opera-explainer.shown::backdrop {
+	background-color: rgba(0, 0, 0, 0.6);
+}

@@ -1,0 +1,62 @@
+#show-settings {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding-right: 1.5em;
+	padding-bottom: 1.5em;
+	z-index: 3;
+	transition: opacity 0.15s var(--out-cubic);
+}
+
+#show-settings button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 4em;
+	width: 4em;
+	padding: 0;
+	border-radius: 13px;
+	background-color: transparent;
+	backdrop-filter: blur(0);
+	-webkit-backdrop-filter: blur(0);
+	cursor: pointer;
+	transition: background-color 0.15s var(--out-cubic);
+}
+
+#show-settings img {
+	width: 2.6em;
+	transition: transform 0.3s var(--out-cubic);
+}
+
+#show-settings.he_hidden {
+	display: flex;
+	opacity: 0;
+}
+
+#show-settings.he_hidden.shown {
+	opacity: 0.5;
+}
+
+#show-settings.he_hidden:hover {
+	opacity: 1;
+}
+
+#show-settings:hover img {
+	transform: rotate(15deg);
+}
+
+#show-settings.shown button {
+	background-color: rgba(170, 170, 170, 0.4);
+	backdrop-filter: blur(1em);
+	-webkit-backdrop-filter: blur(1em);
+	border: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+#show-settings.shown button:hover {
+	opacity: 1;
+	background-color: rgba(102, 102, 102, 0.4);
+}
+
+#show-settings.shown img {
+	transform: rotate(60deg);
+}

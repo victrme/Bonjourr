@@ -1,0 +1,118 @@
+/*  Favicons  */
+
+#i_favicon {
+	width: 33%;
+	padding: 0;
+	text-align: center;
+}
+
+#i_favicon::placeholder {
+	opacity: 0.7;
+	filter: grayscale(0.35);
+}
+
+#i_tabtitle {
+	width: 100%;
+}
+
+/*  Links  */
+
+#f_addlink > div > div {
+	display: flex;
+	gap: 4px;
+}
+
+#f_addlink {
+	width: 66%;
+}
+
+#i_addlink-title {
+	width: 40%;
+}
+
+#b_showtitles,
+#b_showbackgrounds {
+	opacity: 0.7;
+	padding: 0 4px;
+	min-width: 30px;
+	font-size: 14px;
+	font-weight: bold;
+	font-family: serif;
+	text-align: center;
+	background-color: transparent;
+}
+
+#b_showbackgrounds {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#b_showtitles span,
+#b_showbackgrounds span {
+	justify-content: center;
+	align-items: center;
+}
+
+#b_showbackgrounds span {
+	width: 14px;
+	height: 14px;
+	display: block;
+	border-radius: 4px;
+	border: 2px solid var(--color-text);
+	box-sizing: border-box;
+}
+
+[data-theme='light'] #b_showtitles,
+[data-theme='light'] #b_showbackgrounds span {
+	color: var(--color-light-text);
+	border-color: var(--color-light-text);
+}
+
+#b_showtitles.on,
+#b_showbackgrounds.on {
+	opacity: 1;
+	background-color: var(--color-input);
+}
+
+/*  Others  */
+
+#worldclocks_options .wrapper {
+	padding: 0 0 0 4px;
+}
+
+#worldclocks-list {
+	width: 66%;
+}
+
+#worldclocks-list .split-inputs {
+	width: 100%;
+	padding: 2px;
+	box-sizing: border-box;
+}
+
+#worldclocks-list input,
+#worldclocks-list select {
+	width: 100%;
+}
+
+#i_city {
+	text-transform: capitalize;
+}
+
+#quotes_userlist .wrapper {
+	flex-wrap: wrap;
+}
+
+#i_customfont {
+	text-transform: capitalize;
+}
+
+#i_weight option.hidden {
+	display: none;
+}
+
+#e_weight,
+#e_size {
+	width: 50px;
+}

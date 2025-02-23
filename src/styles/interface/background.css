@@ -1,0 +1,88 @@
+#background-texture,
+#background-overlay {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	min-height: var(--app-height);
+	min-height: 100lvh;
+	overflow: hidden;
+}
+
+#background-overlay {
+	z-index: -1;
+	transition: transform var(--fade-in), opacity var(--fade-in);
+}
+
+#background-overlay.hidden {
+	opacity: 0;
+}
+
+#image-background-wrapper {
+	--background-position-x: 50%;
+	--background-position-y: 50%;
+	--background-zoom: cover;
+}
+
+#image-background-wrapper div {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background-size: var(--background-zoom);
+	background-position-x: var(--background-position-x);
+	background-position-y: var(--background-position-y);
+	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
+	transition: opacity 1.2s;
+}
+
+[data-browser='safari'] #image-background-wrapper div {
+	transform: scale(1.1) translateX(0px) translate3d(0, 0, 0);
+}
+
+#video-background-wrapper video {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
+	transition: opacity 4s;
+}
+
+#image-background-wrapper div,
+#video-background-wrapper video {
+	filter: blur(var(--blur)) brightness(var(--brightness));
+}
+
+#solid-background {
+	position: fixed;
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	background-color: var(--solid-background);
+}
+
+#background-texture {
+	background-position: center center;
+}
+
+#background-texture[data-texture='grain'] {
+	opacity: var(--texture-opacity);
+	background-size: var(--texture-size);
+	background-image: url('../../assets/interface/grain.png');
+	background-repeat: repeat;
+}
+
+#background-texture[data-texture='dots'] {
+	opacity: var(--texture-opacity);
+	background-size: var(--texture-size) var(--texture-size);
+	background-image: radial-gradient(white 1px, transparent 0);
+}
+
+#background-texture[data-texture='topographic'] {
+	opacity: var(--texture-opacity);
+	background-size: var(--texture-size);
+	background-image: url('../../assets/interface/topographic.png');
+	background-repeat: repeat;
+	filter: invert(1);
+}
