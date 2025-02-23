@@ -66,6 +66,10 @@
 	transition: opacity 1.2s;
 }
 
+[data-browser='safari'] #image-background-wrapper div {
+	transform: scale(1.1) translateX(0px) translate3d(0, 0, 0);
+}
+
 #video-background-wrapper video {
 	position: absolute;
 	top: 0;
@@ -90,9 +94,10 @@
 	background-color: var(--solid-background);
 }
 
-[data-browser='safari'] #image-background-bis,
-[data-browser='safari'] #image-background {
-	transform: scale(1.1) translateX(0px) translate3d(0, 0, 0);
+/* Background textures */
+
+#background-texture {
+	background-position: center center;
 }
 
 #background-texture[data-texture='grain'] {
@@ -116,7 +121,7 @@
 	filter: invert(1);
 }
 
-/* Credits + Show settings */
+/* Credits */
 
 #credit-container,
 #show-settings {

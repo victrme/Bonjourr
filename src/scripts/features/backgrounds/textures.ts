@@ -23,7 +23,7 @@ const textureRanges: Record<Sync.TextureType, TextureRanges> = {
 		size: {
 			min: '10',
 			max: '100',
-			step: '5',
+			step: '1',
 			value: '30',
 		},
 	},
