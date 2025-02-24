@@ -16,6 +16,7 @@ type ClockUpdate = {
 	seconds?: boolean
 	dateformat?: string
 	greeting?: string
+	greetingsize?: string
 	timezone?: string
 	shape?: string
 	face?: string
@@ -83,6 +84,10 @@ async function clockUpdate(update: ClockUpdate) {
 		data.greeting = stringMaxSize(update.greeting, 64)
 		greetings(data.greeting)
 		storage.sync.set({ greeting: data.greeting })
+	}
+
+	if (update.greetingsize !== undefined) {
+		greetingSize(update.greetingsize)
 	}
 
 	if (update.timezone !== undefined) {
@@ -186,8 +191,12 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	time.style.setProperty('--analog-background', style.background)
 }
 
-function clockSize(size = 1) {
+function clockSize(size = 5) {
 	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
+}
+
+function greetingSize(size = '3') {
+	document.documentElement.style.setProperty('--greeting-size', size + 'em')
 }
 
 //	Clock
