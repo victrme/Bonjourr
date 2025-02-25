@@ -97,8 +97,8 @@
 		<p class="tooltiptext dropdown tthidesettingsicon">
 			<!-- prettier-ignore -->
 			<span class="trn"
-				>When this is enabled, clicking the bottom right corner will still open settings.</span
-			>
+			>When this is enabled, clicking the bottom right corner will still
+				open settings.</span>
 			<a class="trn" href="https://bonjourr.fr/docs/overview/#hide-settings" rel="noreferrer noopener" target="_blank"
 				>Learn more</a
 			>
@@ -1120,9 +1120,7 @@
 
 			<p class="tooltiptext dropdown ttsearchengine">
 				<!-- prettier-ignore -->
-				<span class="trn"
-				>Change the endpoint of the search bar.</span
-			>
+				<span class="trn">Change the endpoint of the search bar.</span>
 				<a class="trn" href="https://bonjourr.fr/docs/overview/#searchbar" rel="noreferrer noopener" target="_blank"
 					>Learn more</a
 				>
@@ -1351,9 +1349,7 @@
 
 		<p class="tooltiptext dropdown ttfontfamily">
 			<!-- prettier-ignore -->
-			<span class="trn"
-				>These fonts come from Fontsource.</span
-			>
+			<span class="trn">These fonts come from Fontsource.</span>
 			<a class="trn" href="https://fontsource.org/" rel="noreferrer noopener" target="_blank">Preview fonts</a>
 		</p>
 
@@ -1397,7 +1393,7 @@
 
 	<div class="param">
 		<div class="wrapper">
-			<span style="padding: 8px 4px">Click on "Unlock" to allow widgets to move, then select a widget on the page.</span>
+			<span style="padding: 8px 4px">Click "Edit" to allow widgets to move, then select a widget on the page.</span>
 
 			<button id="b_movetips" class="input-btn">&times;</button>
 		</div>
@@ -1408,271 +1404,207 @@
 			<label for="b_editmove" class="trn">Widgets</label>
 
 			<div>
-				<button id="b_editmove" class="param-btn trn">Unlock</button>
-				<button id="b_reset-pos" class="param-btn btn-red">Reset</button>
+				<button id="b_editmove" class="param-btn trn">Edit</button>
+				<button id="b_reset-pos" class="param-btn">
+					<img src="src/assets/labels/arrow-top-right.svg" height="14" alt="" />
+					<span>Detach</span>
+				</button>
+			</div>
+		</div>
+
+		<!-- style="opacity: .3; filter: grayscale(1); pointer-events: none" -->
+		<div id="move_options" class="dropdown shown" style="opacity: 0.3; filter: grayscale(1); pointer-events: none">
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Position</span>
+				<div>
+					<button class="input-btn">
+						<img src="src/assets/move/arrow-up.svg" alt="" draggable="false" height="22" style="padding-top: 2px" />
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/arrow-down.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/arrow-left.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/arrow-right.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+				</div>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
-				<label for="b_detach-move" class="trn">Detach options</label>
-				<button id="b_detach-move" class="param-btn trn">Detach</button>
-			</div>
-
-			<!-- style="opacity: .3; filter: grayscale(1); pointer-events: none" -->
-			<div id="move_options" class="dropdown shown" style="opacity: 0.3; filter: grayscale(1); pointer-events: none">
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Position</span>
-					<div>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/arrow-up.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/arrow-down.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/arrow-left.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/arrow-right.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-					</div>
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Box alignment</span>
-					<div style="display: flex; gap: 4px">
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-top.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-middle.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-bottom.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-
-						<span>&nbsp;</span>
-
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-left.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-center.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-right.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-					</div>
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Text alignment</span>
-					<div>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-left.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-center.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-						<button class="input-btn">
-							<img
-								src="src/assets/move/align-right.svg"
-								alt=""
-								draggable="false"
-								height="22"
-								style="padding-top: 2px"
-							/>
-						</button>
-					</div>
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<span class="trn">Fill</span>
-					<div>
-						<button class="param-btn">Fill column</button>
-						<button class="param-btn">Fill row</button>
-					</div>
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<label for="i_pagegap" class="trn">Box margin</label>
-					<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
-				</div>
-
-				<hr />
-
-				<div class="wrapper">
-					<label for="i_pagewidth" class="trn">Minimum width</label>
-					<input
-						id="i_pagewidth"
-						type="range"
-						name="page_width"
-						min="600"
-						max="2200"
-						value="1600"
-						step="100"
-						class="range"
-					/>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="as as_css dropdown cssEditor">
-		<div class="settings-title">
-			<h2 id="lbl-css" class="trn">Custom Style</h2>
-
-			<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
-
-			<p class="tooltiptext dropdown ttcss">
-				<span class="trn">Make cool things happen with CSS. </span>
-				<span class="trn instructions">Check out our </span>
-				<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank"
-					>CSS snippets.</a
-				>
-			</p>
-		</div>
-
-		<div class="param" id="css-editor"></div>
-	</div>
-
-	<div class="as as_updates">
-		<div class="settings-title">
-			<h2 class="trn">Updates</h2>
-		</div>
-
-		<div class="param">
-			<div class="wrapper">
-				<span>
-					<label for="i_announce" class="trn">Announcements</label>
-					<button
-						class="tooltip ttannouncements"
-						title="What are announcements?"
-						aria-label="What are announcements?"
-					>
-						?
+				<span class="trn">Box alignment</span>
+				<div style="display: flex; gap: 4px">
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-top.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
 					</button>
-				</span>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-middle.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-bottom.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
 
-				<select id="i_announce">
-					<option class="trn" value="all">All updates</option>
-					<option class="trn" value="major">Major updates</option>
-					<option class="trn" value="off">Disabled</option>
-				</select>
+					<span>&nbsp;</span>
+
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-left.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-center.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-right.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+				</div>
 			</div>
 
-			<p class="tooltiptext dropdown ttannouncements">
-				<span class="trn">Decide when to get notified about Bonjourr updates.</span>
-			</p>
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Text alignment</span>
+				<div>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-left.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-center.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+					<button class="input-btn">
+						<img
+							src="src/assets/move/align-right.svg"
+							alt=""
+							draggable="false"
+							height="22"
+							style="padding-top: 2px"
+						/>
+					</button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<span class="trn">Fill</span>
+				<div>
+					<button class="param-btn">Fill column</button>
+					<button class="param-btn">Fill row</button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pagegap" class="trn">Box margin</label>
+				<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pagewidth" class="trn">Minimum width</label>
+				<input
+					id="i_pagewidth"
+					type="range"
+					name="page_width"
+					min="600"
+					max="2200"
+					value="1600"
+					step="100"
+					class="range"
+				/>
+			</div>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="b_detach-move" class="trn">Reset position</label>
+			<button id="b_detach-move" class="param-btn btn-red trn">Reset</button>
 		</div>
 	</div>
+</div>
 
+<div class="as as_css dropdown cssEditor">
 	<div class="settings-title">
-		<h2 class="trn">Settings management</h2>
+		<h2 id="lbl-css" class="trn">Custom Style</h2>
 
-		<button class="tooltip ttexport" title="Tips on imports & exports" aria-label="Tips on imports & exports">?</button>
-
-		<<<<<<< HEAD
-		<p class="tooltiptext dropdown ttexport">
-			<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
-			<a
-				class="trn"
-				href="https://bonjourr.fr/docs/overview/#settings-management"
-				rel="noreferrer noopener"
-				target="_blank"
-				>Learn more</a
-			>
-			=======
-		</p>
+		<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
 
 		<p class="tooltiptext dropdown ttcss">
-			<span class="trn">Make cool things happen with CSS.</span>
+			<span class="trn">Make cool things happen with CSS. </span>
 			<span class="trn instructions">Check out our </span>
 			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank">CSS snippets.</a>
-			>>>>>>> backgrounds
 		</p>
 	</div>
 
@@ -1715,8 +1647,8 @@
 		<p class="tooltiptext dropdown ttsupporters">
 			<!-- prettier-ignore -->
 			<span class="trn"
-				>The supporters notification appears at the top of your settings to thank those who donate and support our work.</span
-			>
+			>The supporters notification appears at the top of your settings to
+				thank those who donate and support our work.</span>
 			<a
 				class="trn"
 				href="https://bonjourr.fr/docs/overview/#supporters-notification"
@@ -1747,7 +1679,7 @@
 			<label for="i_synctype" class="trn">Synchronization type</label>
 
 			<select id="i_synctype">
-				<option class="trn not-online not-safari" value="browser" selected>Browser</option>
+				<option class="trn not-online" value="browser" selected>Browser</option>
 				<option value="gist">Github Gist</option>
 				<option class="trn" value="url">Distant URL</option>
 				<option class="trn" value="off">Disabled</option>
@@ -1790,7 +1722,7 @@
 			<hr />
 
 			<div class="wrapper">
-				<span class="trn">Github Gist</span>
+				<span class="trn">Synchronize</span>
 
 				<div id="gist-sync-actions">
 					<button id="b_gistdown" class="param-btn" disabled>
@@ -1801,45 +1733,17 @@
 						<img src="src/assets/labels/upload.svg" height="16" alt="" />
 						<span class="trn">Send</span>
 					</button>
-					<!-- <button id="b_giststatus" class="param-btn">
-					<img src="src/assets/labels/info.svg" height="16" alt="" />
-					<span class="trn">Status</span>
-				</button> -->
 				</div>
 			</div>
 
-			<!-- <div id="gist-sync-status" class="sync-status dropdown">
-			<p>
-				<span class="status-icon status-valid"></span>
-				<span class="trn">Authentification token</span>
-			</p>
-			<div>
-				<p>Token is not working because of this reason. Follow instructions <a href="://">on this link</a>.</p>
-			</div>
-			<p>
-				<span class="status-icon status-valid"></span>
-				<span class="trn">Gist file</span>
-			</p>
-			<div>
-				<p>File name must be "bonjourr-export.json". Follow instructions <a href="://">on this link</a>.</p>
-			</div>
-			<p>
-				<span class="status-icon status-valid"></span>
-				<span class="trn">File content</span>
-			</p>
-			<div>
-				<p>If it looks like valid JSON, a " or , might be missing somewhere.</p>
-			</div>
+			<hr />
 
-			<p class="sync-status-time">
-				<span class="status-icon status-none"></span>
-				<span class="trn">Last sync %time% ago</span>
-			</p>
-			<p class="sync-status-time">
-				<span class="status-icon status-none"></span>
-				<span class="trn">Saved config is %age% old</span>
-			</p>
-		</div> -->
+			<div class="wrapper">
+				<span class="trn">Server status</span>
+				<div id="gist-sync-status-wrapper">
+					<span id="gist-sync-status-base"></span>
+				</div>
+			</div>
 		</div>
 
 		<div id="url-sync" class="dropdown">
@@ -1880,431 +1784,465 @@
 			</div>
 		</div>
 
-		<!-- <div id="sync-freq" class="dropdown">
 		<hr />
-
-		<div class="wrapper">
-			<span>
-				<label for="i_syncfreq" class="trn">Updates</label>
-			</span>
-
-			<select id="i_syncfreq">
-				<option class="trn" value="newtabs">On new tabs</option>
-				<option class="trn" value="start">On browser start</option>
-				<option class="trn" value="manual">Manually</option>
-			</select>
-		</div>
-	</div> -->
-
-		<hr />
-
-		<a id="file-download" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
-		<input id="file-import" type="file" name="file-import" accept="application/json, text/plain" />
 	</div>
 
-	<div class="param" id="reset-settings">
-		<div id="reset-first" class="wrapper shown">
-			<label for="b_reset-first" class="trn">Reset all settings</label>
+	<a id="file-download" href="" download="" aria-hidden="true" tabindex="-1">export download link</a>
+	<input id="file-import" type="file" name="file-import" accept="application/json, text/plain" />
 
-			<div>
-				<button id="b_reset-first" class="param-btn" title="Reset all settings" aria-label="Reset all settings">
-					<span class="trn">Reset</span>
-				</button>
-			</div>
-		</div>
+	<textarea id="settings-data" spellcheck="false"></textarea>
 
-		<div id="reset-conf" class="wrapper">
-			<span class="trn">Are you sure?</span>
-
-			<div>
-				<button id="b_reset-apply" class="param-btn trn">I am sure</button>
-				<button id="b_reset-cancel" class="param-btn btn-red trn">No, go back</button>
-			</div>
-		</div>
+	<div id="settings-changes-options" class="wrapper hidden">
+		<button id="b_settings-cancel" class="param-btn btn-red" title="Cancel changes" aria-label="Cancel changes">
+			<span class="trn">Cancel</span>
+		</button>
+		<button
+			id="b_settings-apply"
+			class="param-btn"
+			title="Load Bonjourr with these settings"
+			aria-label="Load Bonjourr with these settings"
+			disabled
+		>
+			<span class="trn">Apply changes</span>
+		</button>
 	</div>
 
-	<div id="settings-footer">
-		<div>
-			<p>
-				<span>Bonjourr</span>
-				<a id="version" href="https://github.com/victrme/Bonjourr/releases" rel="noreferrer noopener">0.0.0</a>
-			</p>
-
-			<div id="settings-footer-links">
-				<a href="https://bonjourr.fr" title="Bonjourr's website" rel="noreferrer noopener">
-					<svg
-						version="1.1"
-						viewBox="0 0 16 16"
-						xml:space="preserve"
-						xmlns="http://www.w3.org/2000/svg"
-						xmlns:xlink="http://www.w3.org/1999/xlink"
-					>
-						<path
-							d="M15.4 7 14 5.6V2c0-.6-.5-1-1-1h-1a1 1 0 0 0-1 1v.6l-2-2C8.7.3 8.5 0 8 0s-.7.3-1 .6L.5 7c-.3.3-.5.6-.5 1 0 .6.4 1 1 1h1v6c0 .6.5 1 1 1h3v-5c0-.6.5-1 1-1h2c.6 0 1 .5 1 1v5h3c.6 0 1-.5 1-1V9h1c.6 0 1-.4 1-1 0-.4-.2-.7-.6-1z"
-						/>
-					</svg>
-				</a>
-				<a href="https://bsky.app/profile/bonjourr.fr" title="Join us on Bluesky" rel="noreferrer noopener">
-					<svg
-						clip-rule="evenodd"
-						fill-rule="evenodd"
-						stroke-linejoin="round"
-						stroke-miterlimit="2"
-						viewBox="0 0 581 511"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.38-3.69-10.832-3.708-7.896-.017-2.936-1.193.516-3.707 7.896-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.449-163.25-81.433-5.957-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"
-							fill-rule="nonzero"
-						></path>
-					</svg>
-				</a>
-				<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository" rel="noreferrer noopener">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 96">
-						<path
-							fill-rule="evenodd"
-							clip-rule="evenodd"
-							d="M48.9 0a49.2 49.2 0 0 0-15.4 96c2.3.4 3.2-1.2 3.2-2.5v-9c-13.6 2.9-16.5-6-16.5-6-2.2-5.7-5.4-7.1-5.4-7.1-4.4-3 .3-3 .3-3 5 .3 7.5 5 7.5 5 4.4 7.5 11.5 5.4 14.3 4 .4-3 1.7-5.3 3-6.5-10.8-1.1-22.2-5.4-22.2-24.3 0-5.4 2-9.8 5-13.2-.5-1.2-2.2-6.3.5-13 0 0 4.1-1.3 13.4 5A47 47 0 0 1 49 23.8c4 0 8.3.6 12.2 1.6 9.3-6.3 13.4-5 13.4-5 2.7 6.7 1 11.8.5 13 3.1 3.4 5 7.8 5 13.2 0 19-11.4 23-22.3 24.3 1.7 1.5 3.3 4.5 3.3 9.1v13.5c0 1.3.8 2.9 3.2 2.4a49.2 49.2 0 0 0 33.4-46.7A49 49 0 0 0 49 0z"
-						/>
-					</svg>
-				</a>
-				<a href="https://bonjourr.fr/docs/" title="Bonjourr's documentation" rel="noreferrer noopener">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-						<path
-							d="M448 360V24c0-13-11-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13 0 24-11 24-24v-16c0-7-3-14-9-19-4-15-4-59 0-74 6-5 9-11 9-19zM128 134c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm0 64c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm253 250H96a32 32 0 1 1 0-64h285c-2 17-2 47 0 64z"
-						/>
-					</svg>
-				</a>
-			</div>
-		</div>
+	<div id="settings-files-options" class="wrapper">
+		<button
+			id="b_settings-copy"
+			class="param-btn"
+			title="Copy settings data to clipboard"
+			aria-label="Copy settings data to clipboard"
+		>
+			<img src="src/assets/labels/copy.svg" height="14" alt="" />
+			<span class="trn">Copy</span>
+		</button>
 
 		<div>
-			<p class="trn">Made in France with ❤️</p>
-			<p>
-				<span class="trn">by</span>
-				<a id="signature-one" href="#" rel="noreferrer noopener"></a>
-				<span> & </span>
-				<a id="signature-two" href="#" rel="noreferrer noopener"></a>
-			</p>
-		</div>
-
-		<div id="donate" class="not-safari">
-			<p>
-				<span class="trn">Consider</span>
-				<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>
-				<span class="trn">if you love Bonjourr</span> 😊
-			</p>
+			<button
+				id="b_file-load"
+				class="param-btn"
+				title="Import an existing settings file"
+				aria-label="Import an existing settings file"
+			>
+				<img src="src/assets/labels/download.svg" height="16" alt="" />
+				<span class="trn">Import</span>
+			</button>
+			<button
+				id="b_file-save"
+				class="param-btn not-safari"
+				title="Export a new settings file"
+				aria-label="Export a new settings file"
+			>
+				<img src="src/assets/labels/upload.svg" height="16" alt="" />
+				<span class="trn">Export</span>
+			</button>
 		</div>
 	</div>
-
-	<template id="timezones-select-template">
-		<select>
-			<optgroup label="Coordinated Universal Time">
-				<option value="-10">HST -10</option>
-				<option value="-9">AKST -9</option>
-				<option value="-8">PST -8</option>
-				<option value="-7">MST -7</option>
-				<option value="-6">CST -6</option>
-				<option value="-5">EST -5</option>
-				<option value="-4">AST -4</option>
-				<option value="-3">CLST -3</option>
-				<option value="+0">GMT</option>
-				<option value="+1">CET +1</option>
-				<option value="+2">EET +2</option>
-				<option value="+3">MSK +3</option>
-				<option value="+3.30">GMT +3:30</option>
-				<option value="+4">AST +4</option>
-				<option value="+4.30">GMT</option>
-				<option value="+5">PKT +5</option>
-				<option value="+5.30">GMT +5:30</option>
-				<option value="+5.45">GMT +5:45</option>
-				<option value="+6">IST +6</option>
-				<option value="+6.30">GMT +6:30</option>
-				<option value="+7">ICT +7</option>
-				<option value="+8">CST +8</option>
-				<option value="+8.30">GMT +8:30</option>
-				<option value="+9">KST +9</option>
-				<option value="+10">AEST +10</option>
-				<option value="+11">AEDT +11</option>
-				<option value="+12">NZDT +12</option>
-			</optgroup>
-			<optgroup label="Europe">
-				<option value="Europe/Andorra">Europe/Andorra</option>
-				<option value="Europe/Athens">Europe/Athens</option>
-				<option value="Europe/Belgrade">Europe/Belgrade</option>
-				<option value="Europe/Berlin">Europe/Berlin</option>
-				<option value="Europe/Brussels">Europe/Brussels</option>
-				<option value="Europe/Bucharest">Europe/Bucharest</option>
-				<option value="Europe/Budapest">Europe/Budapest</option>
-				<option value="Europe/Chisinau">Europe/Chisinau</option>
-				<option value="Europe/Dublin">Europe/Dublin</option>
-				<option value="Europe/Gibraltar">Europe/Gibraltar</option>
-				<option value="Europe/Helsinki">Europe/Helsinki</option>
-				<option value="Europe/Istanbul">Europe/Istanbul</option>
-				<option value="Europe/Kyiv">Europe/Kyiv</option>
-				<option value="Europe/Lisbon">Europe/Lisbon</option>
-				<option value="Europe/London">Europe/London</option>
-				<option value="Europe/Madrid">Europe/Madrid</option>
-				<option value="Europe/Malta">Europe/Malta</option>
-				<option value="Europe/Minsk">Europe/Minsk</option>
-				<option value="Europe/Paris">Europe/Paris</option>
-				<option value="Europe/Prague">Europe/Prague</option>
-				<option value="Europe/Riga">Europe/Riga</option>
-				<option value="Europe/Rome">Europe/Rome</option>
-				<option value="Europe/Samara">Europe/Samara</option>
-				<option value="Europe/Saratov">Europe/Saratov</option>
-				<option value="Europe/Sofia">Europe/Sofia</option>
-				<option value="Europe/Tallinn">Europe/Tallinn</option>
-				<option value="Europe/Tirane">Europe/Tirane</option>
-				<option value="Europe/Vienna">Europe/Vienna</option>
-				<option value="Europe/Vilnius">Europe/Vilnius</option>
-				<option value="Europe/Warsaw">Europe/Warsaw</option>
-				<option value="Europe/Zurich">Europe/Zurich</option>
-			</optgroup>
-			<optgroup label="West Asia">
-				<option value="Asia/Almaty">Asia/Almaty</option>
-				<option value="Asia/Ashgabat">Asia/Ashgabat</option>
-				<option value="Asia/Baku">Asia/Baku</option>
-				<option value="Asia/Baghdad">Asia/Baghdad</option>
-				<option value="Asia/Beirut">Asia/Beirut</option>
-				<option value="Asia/Damascus">Asia/Damascus</option>
-				<option value="Asia/Dushanbe">Asia/Dushanbe</option>
-				<option value="Asia/Gaza">Asia/Gaza</option>
-				<option value="Asia/Hebron">Asia/Hebron</option>
-				<option value="Asia/Jerusalem">Asia/Jerusalem</option>
-				<option value="Asia/Kabul">Asia/Kabul</option>
-				<option value="Asia/Karachi">Asia/Karachi</option>
-				<option value="Asia/Qatar">Asia/Qatar</option>
-				<option value="Asia/Riyadh">Asia/Riyadh</option>
-				<option value="Asia/Samarkand">Asia/Samarkand</option>
-				<option value="Asia/Tbilisi">Asia/Tbilisi</option>
-				<option value="Asia/Tehran">Asia/Tehran</option>
-				<option value="Asia/Yerevan">Asia/Yerevan</option>
-			</optgroup>
-			<optgroup label="Central and east Asia">
-				<option value="Asia/Bangkok">Asia/Bangkok</option>
-				<option value="Asia/Bishkek">Asia/Bishkek</option>
-				<option value="Asia/Choibalsan">Asia/Choibalsan</option>
-				<option value="Asia/Colombo">Asia/Colombo</option>
-				<option value="Asia/Dhaka">Asia/Dhaka</option>
-				<option value="Asia/Dili">Asia/Dili</option>
-				<option value="Asia/Dubai">Asia/Dubai</option>
-				<option value="Asia/Famagusta">Asia/Famagusta</option>
-				<option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</option>
-				<option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
-				<option value="Asia/Hovd">Asia/Hovd</option>
-				<option value="Asia/Jakarta">Asia/Jakarta</option>
-				<option value="Asia/Jayapura">Asia/Jayapura</option>
-				<option value="Asia/Kathmandu">Asia/Kathmandu</option>
-				<option value="Asia/Kolkata">Asia/Kolkata</option>
-				<option value="Asia/Kuching">Asia/Kuching</option>
-				<option value="Asia/Macau">Asia/Macau</option>
-				<option value="Asia/Makassar">Asia/Makassar</option>
-				<option value="Asia/Manila">Asia/Manila</option>
-				<option value="Asia/Nicosia">Asia/Nicosia</option>
-				<option value="Asia/Pontianak">Asia/Pontianak</option>
-				<option value="Asia/Pyongyang">Asia/Pyongyang</option>
-				<option value="Asia/Seoul">Asia/Seoul</option>
-				<option value="Asia/Shanghai">Asia/Shanghai</option>
-				<option value="Asia/Singapore">Asia/Singapore</option>
-				<option value="Asia/Taipei">Asia/Taipei</option>
-				<option value="Asia/Tashkent">Asia/Tashkent</option>
-				<option value="Asia/Thimphu">Asia/Thimphu</option>
-				<option value="Asia/Tokyo">Asia/Tokyo</option>
-				<option value="Asia/Ulaanbaatar">Asia/Ulaanbaatar</option>
-				<option value="Asia/Urumqi">Asia/Urumqi</option>
-				<option value="Asia/Yangon">Asia/Yangon</option>
-			</optgroup>
-			<optgroup label="America">
-				<option value="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires</option>
-				<option value="America/Argentina/Cordoba">America/Argentina/Cordoba</option>
-				<option value="America/Asuncion">America/Asuncion</option>
-				<option value="America/Belize">America/Belize</option>
-				<option value="America/Bogota">America/Bogota</option>
-				<option value="America/Caracas">America/Caracas</option>
-				<option value="America/Cayenne">America/Cayenne</option>
-				<option value="America/Costa_Rica">America/Costa_Rica</option>
-				<option value="America/Cuiaba">America/Cuiaba</option>
-				<option value="America/El_Salvador">America/El_Salvador</option>
-				<option value="America/Grand_Turk">America/Grand_Turk</option>
-				<option value="America/Guatemala">America/Guatemala</option>
-				<option value="America/Guayaquil">America/Guayaquil</option>
-				<option value="America/Guyana">America/Guyana</option>
-				<option value="America/Havana">America/Havana</option>
-				<option value="America/Jamaica">America/Jamaica</option>
-				<option value="America/La_Paz">America/La_Paz</option>
-				<option value="America/Lima">America/Lima</option>
-				<option value="America/Managua">America/Managua</option>
-				<option value="America/Martinique">America/Martinique</option>
-				<option value="America/Miquelon">America/Miquelon</option>
-				<option value="America/Montevideo">America/Montevideo</option>
-				<option value="America/Noronha">America/Noronha</option>
-				<option value="America/Nuuk">America/Nuuk</option>
-				<option value="America/Panama">America/Panama</option>
-				<option value="America/Paramaribo">America/Paramaribo</option>
-				<option value="America/Port-au-Prince">America/Port-au-Prince</option>
-				<option value="America/Punta_Arenas">America/Punta_Arenas</option>
-				<option value="America/Santiago">America/Santiago</option>
-				<option value="America/Santo_Domingo">America/Santo_Domingo</option>
-				<option value="America/Scoresbysund">America/Scoresbysund</option>
-				<option value="America/Tegucigalpa">America/Tegucigalpa</option>
-				<option value="America/Thule">America/Thule</option>
-			</optgroup>
-			<optgroup label="Africa">
-				<option value="Africa/Abidjan">Africa/Abidjan</option>
-				<option value="Africa/Algiers">Africa/Algiers</option>
-				<option value="Africa/Cairo">Africa/Cairo</option>
-				<option value="Africa/Casablanca">Africa/Casablanca</option>
-				<option value="Africa/El_Aaiun">Africa/El_Aaiun</option>
-				<option value="Africa/Johannesburg">Africa/Johannesburg</option>
-				<option value="Africa/Lagos">Africa/Lagos</option>
-				<option value="Africa/Maputo">Africa/Maputo</option>
-				<option value="Africa/Monrovia">Africa/Monrovia</option>
-				<option value="Africa/Nairobi">Africa/Nairobi</option>
-				<option value="Africa/Ndjamena">Africa/Ndjamena</option>
-				<option value="Africa/Sao_Tome">Africa/Sao_Tome</option>
-				<option value="Africa/Tripoli">Africa/Tripoli</option>
-				<option value="Africa/Tunis">Africa/Tunis</option>
-				<option value="Africa/Windhoek">Africa/Windhoek</option>
-			</optgroup>
-			<optgroup label="Russia">
-				<option value="Europe/Astrakhan">Europe/Astrakhan</option>
-				<option value="Europe/Kaliningrad">Europe/Kaliningrad</option>
-				<option value="Europe/Moscow">Europe/Moscow</option>
-				<option value="Europe/Ulyanovsk">Europe/Ulyanovsk</option>
-				<option value="Asia/Anadyr">Asia/Anadyr</option>
-				<option value="Asia/Barnaul">Asia/Barnaul</option>
-				<option value="Asia/Chita">Asia/Chita</option>
-				<option value="Asia/Irkutsk">Asia/Irkutsk</option>
-				<option value="Asia/Kamchatka">Asia/Kamchatka</option>
-				<option value="Asia/Khandyga">Asia/Khandyga</option>
-				<option value="Asia/Krasnoyarsk">Asia/Krasnoyarsk</option>
-				<option value="Asia/Magadan">Asia/Magadan</option>
-				<option value="Asia/Novosibirsk">Asia/Novosibirsk</option>
-				<option value="Asia/Omsk">Asia/Omsk</option>
-				<option value="Asia/Sakhalin">Asia/Sakhalin</option>
-				<option value="Asia/Tomsk">Asia/Tomsk</option>
-				<option value="Asia/Vladivostok">Asia/Vladivostok</option>
-				<option value="Asia/Yakutsk">Asia/Yakutsk</option>
-				<option value="Asia/Yekaterinburg">Asia/Yekaterinburg</option>
-			</optgroup>
-			<optgroup label="Australia">
-				<option value="Australia/Adelaide">Australia/Adelaide</option>
-				<option value="Australia/Brisbane">Australia/Brisbane</option>
-				<option value="Australia/Broken_Hill">Australia/Broken_Hill</option>
-				<option value="Australia/Darwin">Australia/Darwin</option>
-				<option value="Australia/Eucla">Australia/Eucla</option>
-				<option value="Australia/Hobart">Australia/Hobart</option>
-				<option value="Australia/Lindeman">Australia/Lindeman</option>
-				<option value="Australia/Lord_Howe">Australia/Lord_Howe</option>
-				<option value="Australia/Perth">Australia/Perth</option>
-				<option value="Australia/Sydney">Australia/Sydney</option>
-			</optgroup>
-			<optgroup label="Canada">
-				<option value="America/Dawson">America/Dawson</option>
-				<option value="America/Edmonton">America/Edmonton</option>
-				<option value="America/Fort_Nelson">America/Fort_Nelson</option>
-				<option value="America/Halifax">America/Halifax</option>
-				<option value="America/Inuvik">America/Inuvik</option>
-				<option value="America/Iqaluit">America/Iqaluit</option>
-				<option value="America/Regina">America/Regina</option>
-				<option value="America/St_Johns">America/St_Johns</option>
-				<option value="America/Toronto">America/Toronto</option>
-				<option value="America/Vancouver">America/Vancouver</option>
-				<option value="America/Whitehorse">America/Whitehorse</option>
-				<option value="America/Winnipeg">America/Winnipeg</option>
-			</optgroup>
-			<optgroup label="United States">
-				<option value="America/Adak">America/Adak</option>
-				<option value="America/Anchorage">America/Anchorage</option>
-				<option value="America/Boise">America/Boise</option>
-				<option value="America/Chicago">America/Chicago</option>
-				<option value="America/Denver">America/Denver</option>
-				<option value="America/Detroit">America/Detroit</option>
-				<option value="America/Indiana/Indianapolis">America/Indiana/Indianapolis</option>
-				<option value="America/Kentucky/Louisville">America/Kentucky/Louisville</option>
-				<option value="America/Los_Angeles">America/Los_Angeles</option>
-				<option value="America/Menominee">America/Menominee</option>
-				<option value="America/New_York">America/New_York</option>
-				<option value="America/North_Dakota/Center">America/North_Dakota/Center</option>
-				<option value="America/Phoenix">America/Phoenix</option>
-				<option value="America/Puerto_Rico">America/Puerto_Rico</option>
-				<option value="America/Sitka">America/Sitka</option>
-			</optgroup>
-			<optgroup label="Mexico">
-				<option value="America/Bahia_Banderas">America/Bahia_Banderas</option>
-				<option value="America/Cancun">America/Cancun</option>
-				<option value="America/Chihuahua">America/Chihuahua</option>
-				<option value="America/Ciudad_Juarez">America/Ciudad_Juarez</option>
-				<option value="America/Hermosillo">America/Hermosillo</option>
-				<option value="America/Matamoros">America/Matamoros</option>
-				<option value="America/Mazatlan">America/Mazatlan</option>
-				<option value="America/Mexico_City">America/Mexico_City</option>
-				<option value="America/Ojinaga">America/Ojinaga</option>
-				<option value="America/Tijuana">America/Tijuana</option>
-			</optgroup>
-			<optgroup label="Brazil">
-				<option value="America/Araguaina">America/Araguaina</option>
-				<option value="America/Bahia">America/Bahia</option>
-				<option value="America/Belem">America/Belem</option>
-				<option value="America/Boa_Vista">America/Boa_Vista</option>
-				<option value="America/Campo_Grande">America/Campo_Grande</option>
-				<option value="America/Eirunepe">America/Eirunepe</option>
-				<option value="America/Fortaleza">America/Fortaleza</option>
-				<option value="America/Manaus">America/Manaus</option>
-				<option value="America/Porto_Velho">America/Porto_Velho</option>
-				<option value="America/Recife">America/Recife</option>
-				<option value="America/Rio_Branco">America/Rio_Branco</option>
-				<option value="America/Santarem">America/Santarem</option>
-				<option value="America/Sao_Paulo">America/Sao_Paulo</option>
-			</optgroup>
-			<optgroup label="Atlantic ocean">
-				<option value="Atlantic/Azores">Atlantic/Azores</option>
-				<option value="Atlantic/Bermuda">Atlantic/Bermuda</option>
-				<option value="Atlantic/Canary">Atlantic/Canary</option>
-				<option value="Atlantic/Cape_Verde">Atlantic/Cape_Verde</option>
-				<option value="Atlantic/Faroe">Atlantic/Faroe</option>
-				<option value="Atlantic/Madeira">Atlantic/Madeira</option>
-				<option value="Atlantic/South_Georgia">Atlantic/South_Georgia</option>
-				<option value="Atlantic/Stanley">Atlantic/Stanley</option>
-			</optgroup>
-			<optgroup label="Pacific ocean">
-				<option value="Pacific/Apia">Pacific/Apia</option>
-				<option value="Pacific/Auckland">Pacific/Auckland</option>
-				<option value="Pacific/Bougainville">Pacific/Bougainville</option>
-				<option value="Pacific/Chatham">Pacific/Chatham</option>
-				<option value="Pacific/Easter">Pacific/Easter</option>
-				<option value="Pacific/Efate">Pacific/Efate</option>
-				<option value="Pacific/Fakaofo">Pacific/Fakaofo</option>
-				<option value="Pacific/Fiji">Pacific/Fiji</option>
-				<option value="Pacific/Galapagos">Pacific/Galapagos</option>
-				<option value="Pacific/Gambier">Pacific/Gambier</option>
-				<option value="Pacific/Guadalcanal">Pacific/Guadalcanal</option>
-				<option value="Pacific/Guam">Pacific/Guam</option>
-				<option value="Pacific/Honolulu">Pacific/Honolulu</option>
-				<option value="Pacific/Kanton">Pacific/Kanton</option>
-				<option value="Pacific/Kiritimati">Pacific/Kiritimati</option>
-				<option value="Pacific/Kosrae">Pacific/Kosrae</option>
-				<option value="Pacific/Kwajalein">Pacific/Kwajalein</option>
-				<option value="Pacific/Marquesas">Pacific/Marquesas</option>
-				<option value="Pacific/Nauru">Pacific/Nauru</option>
-				<option value="Pacific/Niue">Pacific/Niue</option>
-				<option value="Pacific/Norfolk">Pacific/Norfolk</option>
-				<option value="Pacific/Noumea">Pacific/Noumea</option>
-				<option value="Pacific/Pago_Pago">Pacific/Pago_Pago</option>
-				<option value="Pacific/Palau">Pacific/Palau</option>
-				<option value="Pacific/Pitcairn">Pacific/Pitcairn</option>
-				<option value="Pacific/Port_Moresby">Pacific/Port_Moresby</option>
-				<option value="Pacific/Rarotonga">Pacific/Rarotonga</option>
-				<option value="Pacific/Tahiti">Pacific/Tahiti</option>
-				<option value="Pacific/Tarawa">Pacific/Tarawa</option>
-				<option value="Pacific/Tongatapu">Pacific/Tongatapu</option>
-			</optgroup>
-			<optgroup label="Indian ocean">
-				<option value="Indian/Chagos">Indian/Chagos</option>
-				<option value="Indian/Maldives">Indian/Maldives</option>
-				<option value="Indian/Mauritius">Indian/Mauritius</option>
-			</optgroup>
-		</select>
-	</template>
 </div>
+
+<div class="param" id="reset-settings">
+	<div id="reset-first" class="wrapper shown">
+		<label for="b_reset-first" class="trn">Reset all settings</label>
+
+		<div>
+			<button id="b_reset-first" class="param-btn" title="Reset all settings" aria-label="Reset all settings">
+				<span class="trn">Reset</span>
+			</button>
+		</div>
+	</div>
+
+	<div id="reset-conf" class="wrapper">
+		<span class="trn">Are you sure?</span>
+
+		<div>
+			<button id="b_reset-apply" class="param-btn trn">I am sure</button>
+			<button id="b_reset-cancel" class="param-btn btn-red trn">No, go back</button>
+		</div>
+	</div>
+</div>
+
+<div id="settings-footer">
+	<div>
+		<p>
+			<span>Bonjourr</span>
+			<a id="version" href="https://github.com/victrme/Bonjourr/releases" rel="noreferrer noopener">0.0.0</a>
+		</p>
+
+		<div id="settings-footer-links">
+			<a href="https://bonjourr.fr" title="Bonjourr's website" rel="noreferrer noopener">
+				<svg
+					version="1.1"
+					viewBox="0 0 16 16"
+					xml:space="preserve"
+					xmlns="http://www.w3.org/2000/svg"
+					xmlns:xlink="http://www.w3.org/1999/xlink"
+				>
+					<path
+						d="M15.4 7 14 5.6V2c0-.6-.5-1-1-1h-1a1 1 0 0 0-1 1v.6l-2-2C8.7.3 8.5 0 8 0s-.7.3-1 .6L.5 7c-.3.3-.5.6-.5 1 0 .6.4 1 1 1h1v6c0 .6.5 1 1 1h3v-5c0-.6.5-1 1-1h2c.6 0 1 .5 1 1v5h3c.6 0 1-.5 1-1V9h1c.6 0 1-.4 1-1 0-.4-.2-.7-.6-1z"
+					/>
+				</svg>
+			</a>
+			<a href="https://bsky.app/profile/bonjourr.fr" title="Join us on Bluesky" rel="noreferrer noopener">
+				<svg
+					clip-rule="evenodd"
+					fill-rule="evenodd"
+					stroke-linejoin="round"
+					stroke-miterlimit="2"
+					viewBox="0 0 581 511"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.38-3.69-10.832-3.708-7.896-.017-2.936-1.193.516-3.707 7.896-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.449-163.25-81.433-5.957-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"
+						fill-rule="nonzero"
+					></path>
+				</svg>
+			</a>
+			<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository" rel="noreferrer noopener">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 96">
+					<path
+						fill-rule="evenodd"
+						clip-rule="evenodd"
+						d="M48.9 0a49.2 49.2 0 0 0-15.4 96c2.3.4 3.2-1.2 3.2-2.5v-9c-13.6 2.9-16.5-6-16.5-6-2.2-5.7-5.4-7.1-5.4-7.1-4.4-3 .3-3 .3-3 5 .3 7.5 5 7.5 5 4.4 7.5 11.5 5.4 14.3 4 .4-3 1.7-5.3 3-6.5-10.8-1.1-22.2-5.4-22.2-24.3 0-5.4 2-9.8 5-13.2-.5-1.2-2.2-6.3.5-13 0 0 4.1-1.3 13.4 5A47 47 0 0 1 49 23.8c4 0 8.3.6 12.2 1.6 9.3-6.3 13.4-5 13.4-5 2.7 6.7 1 11.8.5 13 3.1 3.4 5 7.8 5 13.2 0 19-11.4 23-22.3 24.3 1.7 1.5 3.3 4.5 3.3 9.1v13.5c0 1.3.8 2.9 3.2 2.4a49.2 49.2 0 0 0 33.4-46.7A49 49 0 0 0 49 0z"
+					/>
+				</svg>
+			</a>
+			<a href="https://bonjourr.fr/docs/" title="Bonjourr's documentation" rel="noreferrer noopener">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+					<path
+						d="M448 360V24c0-13-11-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13 0 24-11 24-24v-16c0-7-3-14-9-19-4-15-4-59 0-74 6-5 9-11 9-19zM128 134c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm0 64c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm253 250H96a32 32 0 1 1 0-64h285c-2 17-2 47 0 64z"
+					/>
+				</svg>
+			</a>
+		</div>
+	</div>
+
+	<div>
+		<p class="trn">Made in France with ❤️</p>
+		<p>
+			<span class="trn">by</span>
+			<a id="signature-one" href="#" rel="noreferrer noopener"></a>
+			<span> & </span>
+			<a id="signature-two" href="#" rel="noreferrer noopener"></a>
+		</p>
+	</div>
+
+	<div id="donate" class="not-safari">
+		<p>
+			<span class="trn">Consider</span>
+			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>
+			<span class="trn">if you love Bonjourr</span> 😊
+		</p>
+	</div>
+</div>
+
+<template id="timezones-select-template">
+	<select>
+		<optgroup label="Coordinated Universal Time">
+			<option value="-10">HST -10</option>
+			<option value="-9">AKST -9</option>
+			<option value="-8">PST -8</option>
+			<option value="-7">MST -7</option>
+			<option value="-6">CST -6</option>
+			<option value="-5">EST -5</option>
+			<option value="-4">AST -4</option>
+			<option value="-3">CLST -3</option>
+			<option value="+0">GMT</option>
+			<option value="+1">CET +1</option>
+			<option value="+2">EET +2</option>
+			<option value="+3">MSK +3</option>
+			<option value="+3.30">GMT +3:30</option>
+			<option value="+4">AST +4</option>
+			<option value="+4.30">GMT</option>
+			<option value="+5">PKT +5</option>
+			<option value="+5.30">GMT +5:30</option>
+			<option value="+5.45">GMT +5:45</option>
+			<option value="+6">IST +6</option>
+			<option value="+6.30">GMT +6:30</option>
+			<option value="+7">ICT +7</option>
+			<option value="+8">CST +8</option>
+			<option value="+8.30">GMT +8:30</option>
+			<option value="+9">KST +9</option>
+			<option value="+10">AEST +10</option>
+			<option value="+11">AEDT +11</option>
+			<option value="+12">NZDT +12</option>
+		</optgroup>
+		<optgroup label="Europe">
+			<option value="Europe/Andorra">Europe/Andorra</option>
+			<option value="Europe/Athens">Europe/Athens</option>
+			<option value="Europe/Belgrade">Europe/Belgrade</option>
+			<option value="Europe/Berlin">Europe/Berlin</option>
+			<option value="Europe/Brussels">Europe/Brussels</option>
+			<option value="Europe/Bucharest">Europe/Bucharest</option>
+			<option value="Europe/Budapest">Europe/Budapest</option>
+			<option value="Europe/Chisinau">Europe/Chisinau</option>
+			<option value="Europe/Dublin">Europe/Dublin</option>
+			<option value="Europe/Gibraltar">Europe/Gibraltar</option>
+			<option value="Europe/Helsinki">Europe/Helsinki</option>
+			<option value="Europe/Istanbul">Europe/Istanbul</option>
+			<option value="Europe/Kyiv">Europe/Kyiv</option>
+			<option value="Europe/Lisbon">Europe/Lisbon</option>
+			<option value="Europe/London">Europe/London</option>
+			<option value="Europe/Madrid">Europe/Madrid</option>
+			<option value="Europe/Malta">Europe/Malta</option>
+			<option value="Europe/Minsk">Europe/Minsk</option>
+			<option value="Europe/Paris">Europe/Paris</option>
+			<option value="Europe/Prague">Europe/Prague</option>
+			<option value="Europe/Riga">Europe/Riga</option>
+			<option value="Europe/Rome">Europe/Rome</option>
+			<option value="Europe/Samara">Europe/Samara</option>
+			<option value="Europe/Saratov">Europe/Saratov</option>
+			<option value="Europe/Sofia">Europe/Sofia</option>
+			<option value="Europe/Tallinn">Europe/Tallinn</option>
+			<option value="Europe/Tirane">Europe/Tirane</option>
+			<option value="Europe/Vienna">Europe/Vienna</option>
+			<option value="Europe/Vilnius">Europe/Vilnius</option>
+			<option value="Europe/Warsaw">Europe/Warsaw</option>
+			<option value="Europe/Zurich">Europe/Zurich</option>
+		</optgroup>
+		<optgroup label="West Asia">
+			<option value="Asia/Almaty">Asia/Almaty</option>
+			<option value="Asia/Ashgabat">Asia/Ashgabat</option>
+			<option value="Asia/Baku">Asia/Baku</option>
+			<option value="Asia/Baghdad">Asia/Baghdad</option>
+			<option value="Asia/Beirut">Asia/Beirut</option>
+			<option value="Asia/Damascus">Asia/Damascus</option>
+			<option value="Asia/Dushanbe">Asia/Dushanbe</option>
+			<option value="Asia/Gaza">Asia/Gaza</option>
+			<option value="Asia/Hebron">Asia/Hebron</option>
+			<option value="Asia/Jerusalem">Asia/Jerusalem</option>
+			<option value="Asia/Kabul">Asia/Kabul</option>
+			<option value="Asia/Karachi">Asia/Karachi</option>
+			<option value="Asia/Qatar">Asia/Qatar</option>
+			<option value="Asia/Riyadh">Asia/Riyadh</option>
+			<option value="Asia/Samarkand">Asia/Samarkand</option>
+			<option value="Asia/Tbilisi">Asia/Tbilisi</option>
+			<option value="Asia/Tehran">Asia/Tehran</option>
+			<option value="Asia/Yerevan">Asia/Yerevan</option>
+		</optgroup>
+		<optgroup label="Central and east Asia">
+			<option value="Asia/Bangkok">Asia/Bangkok</option>
+			<option value="Asia/Bishkek">Asia/Bishkek</option>
+			<option value="Asia/Choibalsan">Asia/Choibalsan</option>
+			<option value="Asia/Colombo">Asia/Colombo</option>
+			<option value="Asia/Dhaka">Asia/Dhaka</option>
+			<option value="Asia/Dili">Asia/Dili</option>
+			<option value="Asia/Dubai">Asia/Dubai</option>
+			<option value="Asia/Famagusta">Asia/Famagusta</option>
+			<option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</option>
+			<option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
+			<option value="Asia/Hovd">Asia/Hovd</option>
+			<option value="Asia/Jakarta">Asia/Jakarta</option>
+			<option value="Asia/Jayapura">Asia/Jayapura</option>
+			<option value="Asia/Kathmandu">Asia/Kathmandu</option>
+			<option value="Asia/Kolkata">Asia/Kolkata</option>
+			<option value="Asia/Kuching">Asia/Kuching</option>
+			<option value="Asia/Macau">Asia/Macau</option>
+			<option value="Asia/Makassar">Asia/Makassar</option>
+			<option value="Asia/Manila">Asia/Manila</option>
+			<option value="Asia/Nicosia">Asia/Nicosia</option>
+			<option value="Asia/Pontianak">Asia/Pontianak</option>
+			<option value="Asia/Pyongyang">Asia/Pyongyang</option>
+			<option value="Asia/Seoul">Asia/Seoul</option>
+			<option value="Asia/Shanghai">Asia/Shanghai</option>
+			<option value="Asia/Singapore">Asia/Singapore</option>
+			<option value="Asia/Taipei">Asia/Taipei</option>
+			<option value="Asia/Tashkent">Asia/Tashkent</option>
+			<option value="Asia/Thimphu">Asia/Thimphu</option>
+			<option value="Asia/Tokyo">Asia/Tokyo</option>
+			<option value="Asia/Ulaanbaatar">Asia/Ulaanbaatar</option>
+			<option value="Asia/Urumqi">Asia/Urumqi</option>
+			<option value="Asia/Yangon">Asia/Yangon</option>
+		</optgroup>
+		<optgroup label="America">
+			<option value="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires</option>
+			<option value="America/Argentina/Cordoba">America/Argentina/Cordoba</option>
+			<option value="America/Asuncion">America/Asuncion</option>
+			<option value="America/Belize">America/Belize</option>
+			<option value="America/Bogota">America/Bogota</option>
+			<option value="America/Caracas">America/Caracas</option>
+			<option value="America/Cayenne">America/Cayenne</option>
+			<option value="America/Costa_Rica">America/Costa_Rica</option>
+			<option value="America/Cuiaba">America/Cuiaba</option>
+			<option value="America/El_Salvador">America/El_Salvador</option>
+			<option value="America/Grand_Turk">America/Grand_Turk</option>
+			<option value="America/Guatemala">America/Guatemala</option>
+			<option value="America/Guayaquil">America/Guayaquil</option>
+			<option value="America/Guyana">America/Guyana</option>
+			<option value="America/Havana">America/Havana</option>
+			<option value="America/Jamaica">America/Jamaica</option>
+			<option value="America/La_Paz">America/La_Paz</option>
+			<option value="America/Lima">America/Lima</option>
+			<option value="America/Managua">America/Managua</option>
+			<option value="America/Martinique">America/Martinique</option>
+			<option value="America/Miquelon">America/Miquelon</option>
+			<option value="America/Montevideo">America/Montevideo</option>
+			<option value="America/Noronha">America/Noronha</option>
+			<option value="America/Nuuk">America/Nuuk</option>
+			<option value="America/Panama">America/Panama</option>
+			<option value="America/Paramaribo">America/Paramaribo</option>
+			<option value="America/Port-au-Prince">America/Port-au-Prince</option>
+			<option value="America/Punta_Arenas">America/Punta_Arenas</option>
+			<option value="America/Santiago">America/Santiago</option>
+			<option value="America/Santo_Domingo">America/Santo_Domingo</option>
+			<option value="America/Scoresbysund">America/Scoresbysund</option>
+			<option value="America/Tegucigalpa">America/Tegucigalpa</option>
+			<option value="America/Thule">America/Thule</option>
+		</optgroup>
+		<optgroup label="Africa">
+			<option value="Africa/Abidjan">Africa/Abidjan</option>
+			<option value="Africa/Algiers">Africa/Algiers</option>
+			<option value="Africa/Cairo">Africa/Cairo</option>
+			<option value="Africa/Casablanca">Africa/Casablanca</option>
+			<option value="Africa/El_Aaiun">Africa/El_Aaiun</option>
+			<option value="Africa/Johannesburg">Africa/Johannesburg</option>
+			<option value="Africa/Lagos">Africa/Lagos</option>
+			<option value="Africa/Maputo">Africa/Maputo</option>
+			<option value="Africa/Monrovia">Africa/Monrovia</option>
+			<option value="Africa/Nairobi">Africa/Nairobi</option>
+			<option value="Africa/Ndjamena">Africa/Ndjamena</option>
+			<option value="Africa/Sao_Tome">Africa/Sao_Tome</option>
+			<option value="Africa/Tripoli">Africa/Tripoli</option>
+			<option value="Africa/Tunis">Africa/Tunis</option>
+			<option value="Africa/Windhoek">Africa/Windhoek</option>
+		</optgroup>
+		<optgroup label="Russia">
+			<option value="Europe/Astrakhan">Europe/Astrakhan</option>
+			<option value="Europe/Kaliningrad">Europe/Kaliningrad</option>
+			<option value="Europe/Moscow">Europe/Moscow</option>
+			<option value="Europe/Ulyanovsk">Europe/Ulyanovsk</option>
+			<option value="Asia/Anadyr">Asia/Anadyr</option>
+			<option value="Asia/Barnaul">Asia/Barnaul</option>
+			<option value="Asia/Chita">Asia/Chita</option>
+			<option value="Asia/Irkutsk">Asia/Irkutsk</option>
+			<option value="Asia/Kamchatka">Asia/Kamchatka</option>
+			<option value="Asia/Khandyga">Asia/Khandyga</option>
+			<option value="Asia/Krasnoyarsk">Asia/Krasnoyarsk</option>
+			<option value="Asia/Magadan">Asia/Magadan</option>
+			<option value="Asia/Novosibirsk">Asia/Novosibirsk</option>
+			<option value="Asia/Omsk">Asia/Omsk</option>
+			<option value="Asia/Sakhalin">Asia/Sakhalin</option>
+			<option value="Asia/Tomsk">Asia/Tomsk</option>
+			<option value="Asia/Vladivostok">Asia/Vladivostok</option>
+			<option value="Asia/Yakutsk">Asia/Yakutsk</option>
+			<option value="Asia/Yekaterinburg">Asia/Yekaterinburg</option>
+		</optgroup>
+		<optgroup label="Australia">
+			<option value="Australia/Adelaide">Australia/Adelaide</option>
+			<option value="Australia/Brisbane">Australia/Brisbane</option>
+			<option value="Australia/Broken_Hill">Australia/Broken_Hill</option>
+			<option value="Australia/Darwin">Australia/Darwin</option>
+			<option value="Australia/Eucla">Australia/Eucla</option>
+			<option value="Australia/Hobart">Australia/Hobart</option>
+			<option value="Australia/Lindeman">Australia/Lindeman</option>
+			<option value="Australia/Lord_Howe">Australia/Lord_Howe</option>
+			<option value="Australia/Perth">Australia/Perth</option>
+			<option value="Australia/Sydney">Australia/Sydney</option>
+		</optgroup>
+		<optgroup label="Canada">
+			<option value="America/Dawson">America/Dawson</option>
+			<option value="America/Edmonton">America/Edmonton</option>
+			<option value="America/Fort_Nelson">America/Fort_Nelson</option>
+			<option value="America/Halifax">America/Halifax</option>
+			<option value="America/Inuvik">America/Inuvik</option>
+			<option value="America/Iqaluit">America/Iqaluit</option>
+			<option value="America/Regina">America/Regina</option>
+			<option value="America/St_Johns">America/St_Johns</option>
+			<option value="America/Toronto">America/Toronto</option>
+			<option value="America/Vancouver">America/Vancouver</option>
+			<option value="America/Whitehorse">America/Whitehorse</option>
+			<option value="America/Winnipeg">America/Winnipeg</option>
+		</optgroup>
+		<optgroup label="United States">
+			<option value="America/Adak">America/Adak</option>
+			<option value="America/Anchorage">America/Anchorage</option>
+			<option value="America/Boise">America/Boise</option>
+			<option value="America/Chicago">America/Chicago</option>
+			<option value="America/Denver">America/Denver</option>
+			<option value="America/Detroit">America/Detroit</option>
+			<option value="America/Indiana/Indianapolis">America/Indiana/Indianapolis</option>
+			<option value="America/Kentucky/Louisville">America/Kentucky/Louisville</option>
+			<option value="America/Los_Angeles">America/Los_Angeles</option>
+			<option value="America/Menominee">America/Menominee</option>
+			<option value="America/New_York">America/New_York</option>
+			<option value="America/North_Dakota/Center">America/North_Dakota/Center</option>
+			<option value="America/Phoenix">America/Phoenix</option>
+			<option value="America/Puerto_Rico">America/Puerto_Rico</option>
+			<option value="America/Sitka">America/Sitka</option>
+		</optgroup>
+		<optgroup label="Mexico">
+			<option value="America/Bahia_Banderas">America/Bahia_Banderas</option>
+			<option value="America/Cancun">America/Cancun</option>
+			<option value="America/Chihuahua">America/Chihuahua</option>
+			<option value="America/Ciudad_Juarez">America/Ciudad_Juarez</option>
+			<option value="America/Hermosillo">America/Hermosillo</option>
+			<option value="America/Matamoros">America/Matamoros</option>
+			<option value="America/Mazatlan">America/Mazatlan</option>
+			<option value="America/Mexico_City">America/Mexico_City</option>
+			<option value="America/Ojinaga">America/Ojinaga</option>
+			<option value="America/Tijuana">America/Tijuana</option>
+		</optgroup>
+		<optgroup label="Brazil">
+			<option value="America/Araguaina">America/Araguaina</option>
+			<option value="America/Bahia">America/Bahia</option>
+			<option value="America/Belem">America/Belem</option>
+			<option value="America/Boa_Vista">America/Boa_Vista</option>
+			<option value="America/Campo_Grande">America/Campo_Grande</option>
+			<option value="America/Eirunepe">America/Eirunepe</option>
+			<option value="America/Fortaleza">America/Fortaleza</option>
+			<option value="America/Manaus">America/Manaus</option>
+			<option value="America/Porto_Velho">America/Porto_Velho</option>
+			<option value="America/Recife">America/Recife</option>
+			<option value="America/Rio_Branco">America/Rio_Branco</option>
+			<option value="America/Santarem">America/Santarem</option>
+			<option value="America/Sao_Paulo">America/Sao_Paulo</option>
+		</optgroup>
+		<optgroup label="Atlantic ocean">
+			<option value="Atlantic/Azores">Atlantic/Azores</option>
+			<option value="Atlantic/Bermuda">Atlantic/Bermuda</option>
+			<option value="Atlantic/Canary">Atlantic/Canary</option>
+			<option value="Atlantic/Cape_Verde">Atlantic/Cape_Verde</option>
+			<option value="Atlantic/Faroe">Atlantic/Faroe</option>
+			<option value="Atlantic/Madeira">Atlantic/Madeira</option>
+			<option value="Atlantic/South_Georgia">Atlantic/South_Georgia</option>
+			<option value="Atlantic/Stanley">Atlantic/Stanley</option>
+		</optgroup>
+		<optgroup label="Pacific ocean">
+			<option value="Pacific/Apia">Pacific/Apia</option>
+			<option value="Pacific/Auckland">Pacific/Auckland</option>
+			<option value="Pacific/Bougainville">Pacific/Bougainville</option>
+			<option value="Pacific/Chatham">Pacific/Chatham</option>
+			<option value="Pacific/Easter">Pacific/Easter</option>
+			<option value="Pacific/Efate">Pacific/Efate</option>
+			<option value="Pacific/Fakaofo">Pacific/Fakaofo</option>
+			<option value="Pacific/Fiji">Pacific/Fiji</option>
+			<option value="Pacific/Galapagos">Pacific/Galapagos</option>
+			<option value="Pacific/Gambier">Pacific/Gambier</option>
+			<option value="Pacific/Guadalcanal">Pacific/Guadalcanal</option>
+			<option value="Pacific/Guam">Pacific/Guam</option>
+			<option value="Pacific/Honolulu">Pacific/Honolulu</option>
+			<option value="Pacific/Kanton">Pacific/Kanton</option>
+			<option value="Pacific/Kiritimati">Pacific/Kiritimati</option>
+			<option value="Pacific/Kosrae">Pacific/Kosrae</option>
+			<option value="Pacific/Kwajalein">Pacific/Kwajalein</option>
+			<option value="Pacific/Marquesas">Pacific/Marquesas</option>
+			<option value="Pacific/Nauru">Pacific/Nauru</option>
+			<option value="Pacific/Niue">Pacific/Niue</option>
+			<option value="Pacific/Norfolk">Pacific/Norfolk</option>
+			<option value="Pacific/Noumea">Pacific/Noumea</option>
+			<option value="Pacific/Pago_Pago">Pacific/Pago_Pago</option>
+			<option value="Pacific/Palau">Pacific/Palau</option>
+			<option value="Pacific/Pitcairn">Pacific/Pitcairn</option>
+			<option value="Pacific/Port_Moresby">Pacific/Port_Moresby</option>
+			<option value="Pacific/Rarotonga">Pacific/Rarotonga</option>
+			<option value="Pacific/Tahiti">Pacific/Tahiti</option>
+			<option value="Pacific/Tarawa">Pacific/Tarawa</option>
+			<option value="Pacific/Tongatapu">Pacific/Tongatapu</option>
+		</optgroup>
+		<optgroup label="Indian ocean">
+			<option value="Indian/Chagos">Indian/Chagos</option>
+			<option value="Indian/Maldives">Indian/Maldives</option>
+			<option value="Indian/Mauritius">Indian/Mauritius</option>
+		</optgroup>
+	</select>
+</template>

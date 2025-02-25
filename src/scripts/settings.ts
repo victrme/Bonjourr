@@ -722,22 +722,22 @@ function initOptionsEvents() {
 		})
 	})
 
-	paramId('i_pagecolumns').addEventListener('change', function () {
-		moveElements(undefined, { layout: this.value, toggle: true })
-	})
+	// paramId('i_pagecolumns').addEventListener('change', function () {
+	// 	moveElements(undefined, { layout: this.value, toggle: true })
+	// })
 
-	paramId('i_pagewidth').addEventListener('input', function () {
-		pageControl({ width: parseInt(this.value) }, true)
-	})
+	// paramId('i_pagewidth').addEventListener('input', function () {
+	// 	pageControl({ width: parseInt(this.value) }, true)
+	// })
 
-	paramId('i_pagegap').addEventListener('input', function () {
-		pageControl({ gap: parseFloat(this.value) }, true)
-	})
+	// paramId('i_pagegap').addEventListener('input', function () {
+	// 	pageControl({ gap: parseFloat(this.value) }, true)
+	// })
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), { passive: true })
-	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
-	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
-	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
+	// paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), { passive: true })
+	// paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
+	// paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
+	// paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
 	// Updates
 
