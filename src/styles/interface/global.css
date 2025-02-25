@@ -1,0 +1,58 @@
+#interface {
+	position: relative;
+	display: grid;
+	width: 100%;
+	gap: var(--page-gap);
+	max-width: var(--page-width);
+	min-height: 100dvh;
+	padding: 4em 1em 6em 1em;
+	margin: 0 auto;
+	box-sizing: border-box;
+	will-change: transform;
+	font-size: var(--font-size);
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
+	transition: opacity var(--load-time-transition), transform 0.33s;
+	text-shadow: 1px 2px 6px rgba(0, 0, 0, var(--text-shadow-alpha));
+	grid-template-areas: var(--grid);
+}
+
+@supports not (min-height: 100dvh) {
+	#image-background-overlay,
+	#interface {
+		min-height: 100vh;
+	}
+}
+
+#interface.pushed {
+	transform: translateX(-100px);
+}
+
+.move-edit #main,
+.move-edit #time,
+.move-edit #linkblocks,
+.move-edit #sb_container,
+.move-edit #notes_container,
+.move-edit #quotes_container {
+	z-index: 3;
+	cursor: pointer;
+	pointer-events: none;
+}
+
+.move-edit #main > *,
+.move-edit #time > *,
+.move-edit #linkblocks > *,
+.move-edit #sb_container > *,
+.move-edit #notes_container > *,
+.move-edit #quotes_container > * {
+	user-select: none;
+}
+
+#main,
+#time,
+#linkblocks,
+#sb_container,
+#notes_container,
+#quotes_container {
+	place-self: center;
+}

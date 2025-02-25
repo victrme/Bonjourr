@@ -311,50 +311,32 @@
 		</div>
 	</div>
 
+	<hr />
+
+	<div class="wrapper">
+		<label for="i_texture" class="trn">Texture</label>
+
+		<select id="i_texture">
+			<option value="none" class="trn">None</option>
+			<option value="grain" class="trn">Grain</option>
+			<option value="dots" class="trn">Dots</option>
+			<option value="topographic" class="trn">Topographic</option>
+		</select>
+	</div>
+
 	<div id="background-texture-options" class="dropdown shown">
 		<hr />
 
 		<div class="wrapper">
-			<label for="i_texture" class="trn">Texture</label>
-
-			<select id="i_texture">
-				<option value="none" class="trn">None</option>
-				<option value="grain" class="trn">Grain</option>
-				<option value="dots" class="trn">Dots</option>
-				<option value="topographic" class="trn">Topographic</option>
-			</select>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
 			<label for="i_texture-opacity" class="trn">Texture opacity</label>
-			<input
-				id="i_texture-opacity"
-				name="texture-opacity"
-				class="range"
-				type="range"
-				min="0"
-				max="1"
-				step=".01"
-				value=".08"
-			/>
+			<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
 		</div>
 
 		<hr />
 
 		<div class="wrapper">
 			<label for="i_texture-size" class="trn">Texture size</label>
-			<input
-				id="i_texture-size"
-				name="texture-size"
-				class="range"
-				type="range"
-				min="100"
-				max="400"
-				step="20"
-				value="220"
-			/>
+			<input id="i_texture-size" name="texture-size" class="range" type="range" />
 		</div>
 	</div>
 
@@ -370,7 +352,7 @@
 
 		<div class="wrapper">
 			<label for="i_bright" class="trn">Brightness</label>
-			<input id="i_bright" type="range" class="range" name="background_bright" min="0" max="1" value=".80" step=".01" />
+			<input id="i_bright" type="range" class="range" name="background_bright" min=".2" max="1" value=".80" step=".01" />
 		</div>
 
 		<hr />
@@ -988,11 +970,25 @@
 			<input id="i_greethide" class="switch" type="checkbox" />
 		</div>
 
+		<!-- <hr />
+
+		<div class="wrapper">
+			<label for="i_detach" class="trn">Detach from weather</label>
+			<input id="i_detach" class="switch" type="checkbox" />
+		</div> -->
+
 		<hr />
 
 		<div class="wrapper">
 			<label for="i_greeting" class="trn">Greeting name</label>
 			<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="64" placeholder="Name" />
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_greetsize" class="trn">Greeting size</label>
+			<input id="i_greetsize" type="range" name="greetsize" min="1.5" max="5" value="3" step=".2" class="range" />
 		</div>
 	</div>
 </div>

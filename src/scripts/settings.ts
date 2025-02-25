@@ -588,6 +588,10 @@ function initOptionsEvents() {
 		paramId('i_greeting').blur()
 	})
 
+	paramId('i_greetsize').addEventListener('input', function (this: HTMLInputElement) {
+		clock(undefined, { greetingsize: this.value })
+	})
+
 	// Notes
 
 	paramId('i_notes').onclickdown(function (_, target) {

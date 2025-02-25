@@ -1,11 +1,42 @@
+/* <!> Global must be imported first */
 @import '_global';
-@import '_settings';
-@import '_interface';
 
+/*
+ * "Global" is the interface itself and its classes
+ *  Other files are blocks and dialogs that appears on the interface
+ */
+@import './interface/global.css';
+@import './interface/background.css';
+@import './interface/showsettings.css';
+@import './interface/credits.css';
+@import './interface/error.css';
+@import './interface/opera.css';
+
+/* 
+ * "Global" is the settings menu itself and its classes
+ * "Other" are not reused small single styling 
+ * "Blocks" are not reusable parts of the settings menu
+ * "Reusables" are inputs, hr, titles, etc
+ * "Dedicated" dropdowns folder for easy update
+ */
+@import './settings/global.css';
+@import './settings/other.css';
+@import './settings/blocks/dragzone.css';
+@import './settings/blocks/notifications.css';
+@import './settings/blocks/backgrounds.css';
+@import './settings/blocks/management.css';
+@import './settings/blocks/footer.css';
+@import './settings/reusables/inputs.css';
+@import './settings/reusables/tooltips.css';
+@import './settings/dropdowns/allsettings.css';
+@import './settings/dropdowns/options.css';
+
+/* Components that can be used anywhere (interface or settings) */
 @import 'components/popup';
 @import 'components/dialog';
 @import 'components/networkform';
 
+/* Baked-in features and dialogs */
 @import 'features/time';
 @import 'features/main';
 @import 'features/searchbar';
@@ -18,4 +49,5 @@
 @import 'features/csseditor';
 @import 'features/supporters';
 
+/* <!> Responsive must be imported last */
 @import '_responsive';
