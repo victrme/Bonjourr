@@ -7,6 +7,10 @@
 	max-height: 180px;
 }
 
+#move_options.shown {
+	max-height: 540px;
+}
+
 #local_options.shown {
 	max-height: 500px;
 }
