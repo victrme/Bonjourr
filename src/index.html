@@ -188,64 +188,11 @@
 		</dialog>
 
 		<dialog id="element-mover" class="hidden">
-			<div id="grid-selection">
-				<p class="trn">Editing</p>
-				<h3 id="mover-title" class="trn">No selection</h3>
-			</div>
-
-			<div>
-				<p class="trn">Grid position</p>
-				<div id="grid-mover" class="mover">
-					<button type="button" data-row="-1">
-						<i class="chevron rotate-half"></i>
-					</button>
-					<button type="button" data-col="-1">
-						<i class="chevron rotate-quart"></i>
-					</button>
-					<button type="button" data-col="1">
-						<i class="chevron rotate-quart-r"></i>
-					</button>
-					<button type="button" data-row="1">
-						<i class="chevron"></i>
-					</button>
-				</div>
-			</div>
 			<div id="grid-spanner-container">
 				<button class="grid-spanner trn" id="grid-span-rows">Fill row</button>
 				<button class="grid-spanner trn" id="grid-span-cols">Fill column</button>
 			</div>
-			<div>
-				<p class="trn">Box alignment</p>
-				<div id="box-alignment-mover" class="mover">
-					<button type="button" data-align="baseline">
-						<i class="box-corner"></i>
-					</button>
-					<button type="button" data-align="baseline center">
-						<i class="box-side rotate-half"></i>
-					</button>
-					<button type="button" data-align="baseline end">
-						<i class="box-corner rotate-quart"></i>
-					</button>
-					<button type="button" data-align="center baseline">
-						<i class="box-side rotate-quart"></i>
-					</button>
-					<button type="button" data-align="center">
-						<i class="box-center"></i>
-					</button>
-					<button type="button" data-align="center end">
-						<i class="box-side rotate-quart-r"></i>
-					</button>
-					<button type="button" data-align="end baseline">
-						<i class="box-corner rotate-quart-r"></i>
-					</button>
-					<button type="button" data-align="end center">
-						<i class="box-side"></i>
-					</button>
-					<button type="button" data-align="end">
-						<i class="box-corner rotate-half"></i>
-					</button>
-				</div>
-			</div>
+
 			<div>
 				<p class="trn">Text alignment</p>
 				<div id="text-alignment-mover" class="mover">
@@ -261,11 +208,17 @@
 				</div>
 			</div>
 
-			<div id="close-mover-wrapper">
-				<hr />
+			<div>
+				<p class="trn">Fill</p>
+				<div>
+					<button class="param-btn">Fill column</button>
+					<button class="param-btn">Fill row</button>
+				</div>
+			</div>
 
-				<button id="b_resetlayout" class="trn btn-red">Reset layout</button>
-				<button id="close-mover" class="trn">Done</button>
+			<div>
+				<p class="trn">Box margin</p>
+				<input type="range" name="box-margin" id="i_box-margin" min="0" max="1" value="0" step=".1" />
 			</div>
 		</dialog>
 
