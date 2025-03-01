@@ -1,14 +1,16 @@
 declare namespace Backgrounds {
-	type Item = Backgrounds.Video & Backgrounds.Image
-
 	/**
 	 * Unified schema returned for Bonjourr Images
 	 */
 	interface Image {
-		/* All providers */
-		url: string
+		format: 'image'
 		page: string
 		username: string
+		urls: {
+			full: string
+			medium: string
+			small: string
+		}
 
 		/* Unsplash only */
 		color?: string
@@ -30,15 +32,15 @@ declare namespace Backgrounds {
 	 * Unified schema returned for Bonjourr Videos
 	 */
 	interface Video {
+		format: 'video'
 		page: string
 		username: string
 		duration: number
 		thumbnail: string
 		urls: {
-			large: string
+			full: string
 			medium: string
 			small: string
-			tiny: string
 		}
 	}
 }

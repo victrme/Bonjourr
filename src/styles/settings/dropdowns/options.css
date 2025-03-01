@@ -37,6 +37,7 @@
 #weather_provider.shown,
 #searchbar_request.shown,
 #background-freq-option.shown,
+#background-provider-option.shown,
 #background-user-coll-option.shown,
 #background-user-tags-option.shown,
 #worldclocks-list .dropdown.shown,
@@ -45,7 +46,6 @@
 }
 
 #background-position-options.shown,
-#background-collection-option.shown,
 #location_options.shown,
 #digital_options.shown,
 #unsplash_options.shown,
@@ -53,6 +53,7 @@
 	max-height: 120px;
 }
 
+#background-collection-option.shown,
 #url-sync.shown,
 #gist-sync.shown {
 	max-height: 220px;

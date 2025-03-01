@@ -61,25 +61,16 @@ declare namespace Local {
 
 	interface DaylightCollection {
 		images: {
-			unsplash: DaylightImages
-			pixabay: DaylightImages
+			night: Backgrounds.Image[]
+			noon: Backgrounds.Image[]
+			day: Backgrounds.Image[]
+			evening: Backgrounds.Image[]
 		}
 		videos: {
-			pixabay: DaylightVideos
+			night: Backgrounds.Video[]
+			noon: Backgrounds.Video[]
+			day: Backgrounds.Video[]
+			evening: Backgrounds.Video[]
 		}
-	}
-
-	interface DaylightImages {
-		night: Backgrounds.Image[]
-		noon: Backgrounds.Image[]
-		day: Backgrounds.Image[]
-		evening: Backgrounds.Image[]
-	}
-
-	interface DaylightVideos {
-		night: Backgrounds.Video[]
-		noon: Backgrounds.Video[]
-		day: Backgrounds.Video[]
-		evening: Backgrounds.Video[]
 	}
 }

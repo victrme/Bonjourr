@@ -202,24 +202,30 @@ export const LOCAL_DEFAULT: Local.Storage = {
 	selectedId: '',
 	idsList: [],
 	quotesCache: [],
-	unsplashCache: {
-		noon: [],
-		day: [],
-		evening: [],
-		night: [],
-		user: [],
-	},
 	daylightCollection: {
 		images: {
-			unsplash: { noon: [], day: [], evening: [], night: [] },
-			pixabay: { noon: [], day: [], evening: [], night: [] },
+			day: [],
+			noon: [],
+			night: [],
+			evening: [],
 		},
 		videos: {
-			pixabay: { noon: [], day: [], evening: [], night: [] },
+			day: [],
+			noon: [],
+			night: [],
+			evening: [],
 		},
 	},
 	localFiles: {
 		selected: '',
 		ids: [],
+	},
+	// old
+	unsplashCache: {
+		day: [],
+		user: [],
+		noon: [],
+		night: [],
+		evening: [],
 	},
 }
