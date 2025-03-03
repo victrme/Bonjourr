@@ -261,17 +261,16 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 		}
 	}
 
-	const type = backgrounds.type
 	const data = backgrounds[backgrounds.type]
-	const category = data.collection.includes('daylight') ? 'daylight' : 'user'
-	const provider = data.collection.includes('daylight') ? '' : data.collection.split('-')[0]
+	const [provider, type, category] = data.collection.split('-')
 
 	const base = 'https://services.bonjourr.fr/backgrounds'
-	const path = `/${category}/${type}/${provider}`
+	const path = `/${provider}/${type}/${category}`
 	let search = ''
 
-	if (data.collection.includes('coll')) search += `?collections=${data.query}`
-	if (data.collection.includes('tags')) search += `?tags=${data.query}`
+	if (data.query) {
+		search = `?query=${data.query}`
+	}
 
 	const url = base + path + search
 	const resp = await fetch(url)

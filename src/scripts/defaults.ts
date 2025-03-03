@@ -119,10 +119,10 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		color: '#654',
 		urls: [],
 		images: {
-			collection: 'daylight-images',
+			collection: 'bonjourr-images-daylight',
 		},
 		videos: {
-			collection: 'daylight-videos',
+			collection: 'bonjourr-videos-daylight',
 		},
 		texture: {
 			type: 'none',

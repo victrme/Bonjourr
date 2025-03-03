@@ -4,7 +4,7 @@ const IMAGES: Provider[] = [
 		options: [
 			{
 				name: 'Bonjourr Daylight',
-				value: 'daylight-images',
+				value: 'bonjourr-images-daylight',
 			},
 		],
 	},
@@ -38,7 +38,7 @@ const VIDEOS: Provider[] = [
 		options: [
 			{
 				name: 'Bonjourr Daylight',
-				value: 'daylight-videos',
+				value: 'bonjourr-videos-daylight',
 			},
 		],
 	},
