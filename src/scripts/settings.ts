@@ -391,8 +391,8 @@ function initOptionsEvents() {
 		backgroundUpdate({ color: this.value })
 	})
 
-	paramId('i_background-collection').addEventListener('input', function () {
-		backgroundUpdate({ collection: this.value })
+	paramId('i_background-provider').addEventListener('input', function () {
+		backgroundUpdate({ provider: this.value })
 	})
 
 	paramId('i_background-user-coll').addEventListener('change', function () {

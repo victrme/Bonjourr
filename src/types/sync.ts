@@ -81,18 +81,16 @@ declare namespace Sync {
 		color: string
 		urls: string[]
 		images: {
-			provider: 'unsplash' | 'pixabay'
-			collection: 'daylight' | 'usercoll' | 'usertags'
-			paused?: Backgrounds.Image
+			collection: string
+			query?: string
 			last?: Date
-			user?: { coll: string; tags: string }
+			paused?: Backgrounds.Image
 		}
 		videos: {
-			provider: 'pixabay'
-			collection: 'daylight' | 'usercoll' | 'usertags'
-			paused?: Backgrounds.Video
+			collection: string
+			query?: string
 			last?: Date
-			user?: { coll: string; tags: string }
+			paused?: Backgrounds.Video
 		}
 		texture: {
 			type: TextureType

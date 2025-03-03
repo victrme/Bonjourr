@@ -17,16 +17,15 @@ declare namespace Local {
 		syncType?: SyncType
 
 		// Backgrounds
-		customCollection?: CustomCollection
-		daylightCollection?: DaylightCollection
+		backgroundCollections: Record<string, Backgrounds.Item[]>
+		localFiles?: { ids: string[]; selected: string }
 		backgroundPreloading?: true
 		backgroundLastChange?: string
-		localFiles?: LocalFiles
 
 		// Unused - Old
-		unsplashCache: Unsplash.Local
-		selectedId: string
-		idsList: string[]
+		// unsplashCache: Unsplash.Local
+		// selectedId: string
+		// idsList: string[]
 	}
 
 	type SyncType = 'browser' | 'gist' | 'url' | 'off'
@@ -41,36 +40,4 @@ declare namespace Local {
 		weights: string[]
 		variable: boolean
 	}[]
-
-	interface LocalFiles {
-		ids: string[]
-		selected: string
-	}
-
-	//
-
-	interface CustomCollection {
-		images: {
-			unsplash: Backgrounds.Image[]
-			pixabay: Backgrounds.Image[]
-		}
-		videos: {
-			pixabay: Backgrounds.Video[]
-		}
-	}
-
-	interface DaylightCollection {
-		images: {
-			night: Backgrounds.Image[]
-			noon: Backgrounds.Image[]
-			day: Backgrounds.Image[]
-			evening: Backgrounds.Image[]
-		}
-		videos: {
-			night: Backgrounds.Video[]
-			noon: Backgrounds.Video[]
-			day: Backgrounds.Video[]
-			evening: Backgrounds.Video[]
-		}
-	}
 }

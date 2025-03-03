@@ -118,9 +118,15 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		frequency: 'hour',
 		color: '#654',
 		urls: [],
-		images: { provider: 'unsplash', collection: 'daylight' },
-		videos: { provider: 'pixabay', collection: 'daylight' },
-		texture: { type: 'none' },
+		images: {
+			collection: 'daylight-images',
+		},
+		videos: {
+			collection: 'daylight-videos',
+		},
+		texture: {
+			type: 'none',
+		},
 	},
 	clock: {
 		size: 1,
@@ -199,33 +205,7 @@ export const LOCAL_DEFAULT: Local.Storage = {
 	syncType: PLATFORM === 'online' ? 'off' : 'browser',
 	userQuoteSelection: 0,
 	translations: undefined,
-	selectedId: '',
-	idsList: [],
 	quotesCache: [],
-	daylightCollection: {
-		images: {
-			day: [],
-			noon: [],
-			night: [],
-			evening: [],
-		},
-		videos: {
-			day: [],
-			noon: [],
-			night: [],
-			evening: [],
-		},
-	},
-	localFiles: {
-		selected: '',
-		ids: [],
-	},
-	// old
-	unsplashCache: {
-		day: [],
-		user: [],
-		noon: [],
-		night: [],
-		evening: [],
-	},
+	backgroundCollections: {},
+	localFiles: { selected: '', ids: [] },
 }

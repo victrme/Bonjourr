@@ -10,7 +10,12 @@
 
 #background-overlay {
 	z-index: -1;
-	transition: transform var(--fade-in), opacity var(--fade-in);
+	transition: opacity var(--fade-in);
+}
+
+body.init #image-background-wrapper div,
+body.init #video-background-wrapper video {
+	transition: none;
 }
 
 #background-overlay.hidden {

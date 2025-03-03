@@ -1,4 +1,6 @@
 declare namespace Backgrounds {
+	type Item = Image | Video
+
 	/**
 	 * Unified schema returned for Bonjourr Images
 	 */
@@ -43,4 +45,6 @@ declare namespace Backgrounds {
 			small: string
 		}
 	}
+
+	type Api = Record<string, Backgrounds.Item[]>
 }

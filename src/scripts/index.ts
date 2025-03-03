@@ -151,7 +151,7 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 		return
 	}
 
-	loadtime = Math.min(performance.now() - loadtime, 400)
+	loadtime = Math.min(performance.now() - loadtime, 333)
 	loadtime = loadtime > 33 ? loadtime : 0
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 	document.body.classList.remove('loading')
