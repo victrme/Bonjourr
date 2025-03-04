@@ -245,7 +245,19 @@ async function updateThumbnailAmount(showing?: string) {
 
 async function displayCustomBackground(data?: LocalFileData) {
 	if (data?.file) {
-		applyBackground({ image: { url: URL.createObjectURL(data.file), page: '', username: '' } })
+		const objURL = URL.createObjectURL(data.file)
+		const image: Backgrounds.Image = {
+			format: 'image',
+			page: '',
+			username: '',
+			urls: {
+				full: objURL,
+				medium: objURL,
+				small: objURL,
+			},
+		}
+
+		applyBackground({ image })
 		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
 	}

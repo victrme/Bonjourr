@@ -37,6 +37,7 @@ const colorUpdateDebounce = debounce(solidUpdate, 600)
 export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
 		onSettingsLoad(() => {
+			createProviderSelect(sync.backgrounds)
 			handleBackgroundOptions(sync.backgrounds)
 		})
 	}
@@ -90,6 +91,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (isBackgroundType(update.type)) {
 		data.backgrounds.type = update.type
 		storage.sync.set({ backgrounds: data.backgrounds })
+		createProviderSelect(data.backgrounds)
 		handleBackgroundOptions(data.backgrounds)
 		backgroundsInit(data, local)
 	}
@@ -110,19 +112,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		colorUpdateDebounce(update.color)
 	}
 
-	if (update.query !== undefined) {
-		switch (data.backgrounds.type) {
-			case 'files':
-			case 'urls':
-			case 'color': {
-				throw new Error('Can only fetch with "images" or "videos" type')
-			}
-		}
-
-		data.backgrounds[data.backgrounds.type].query = update.query
-		storage.sync.set({ backgrounds: data.backgrounds })
-		handleBackgroundOptions(data.backgrounds)
-	}
+	// Textures
 
 	if (update.textureopacity !== undefined) {
 		data.backgrounds.texture.opacity = parseFloat(update.textureopacity)
@@ -141,6 +131,30 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		storage.sync.set({ backgrounds: data.backgrounds })
 		handleBackgroundOptions(data.backgrounds)
 		applyTexture(data.backgrounds.texture)
+	}
+
+	// Images & Videos only
+
+	switch (data.backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			return
+		}
+	}
+
+	if (update.provider) {
+		data.backgrounds[data.backgrounds.type].collection = update.provider
+		storage.sync.set({ backgrounds: data.backgrounds })
+		handleBackgroundOptions(data.backgrounds)
+		backgroundFrequencyControl(data.backgrounds, local)
+	}
+
+	if (update.query !== undefined) {
+		data.backgrounds[data.backgrounds.type].query = update.query
+		storage.sync.set({ backgrounds: data.backgrounds })
+		handleBackgroundOptions(data.backgrounds)
+		backgroundFrequencyControl(data.backgrounds, local)
 	}
 }
 
@@ -449,7 +463,7 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 	}
 }
 
-export function preloadBackground({ image, video }: ApplyBackgroundOptions) {
+function preloadBackground({ image, video }: ApplyBackgroundOptions) {
 	const blurred = document.body.className.includes('blurred')
 	const img = document.createElement('img')
 
@@ -477,7 +491,16 @@ export function preloadBackground({ image, video }: ApplyBackgroundOptions) {
 	}
 }
 
-export function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+function removeBackgrounds(): void {
+	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
+	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
+	setTimeout(() => imageWrapper.querySelector('div')?.setAttribute('style', 'opacity: 0'))
+	setTimeout(() => videoWrapper.querySelector('video')?.setAttribute('style', 'opacity: 0'))
+	setTimeout(() => imageWrapper.firstChild?.remove(), 1300)
+	setTimeout(() => videoWrapper.firstChild?.remove(), 1300)
+}
+
+function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 	if (blur !== undefined) {
 		document.documentElement.style.setProperty('--blur', blur + 'px')
 		document.body.classList.toggle('blurred', blur >= 15)
@@ -562,20 +585,35 @@ function handleProviderOptions(backgrounds: Sync.Backgrounds) {
 		}
 	}
 
+	document.getElementById('background-provider-option')?.classList.add('shown')
+
 	const data = backgrounds[backgrounds.type]
+	const hasCollections = data.collection.includes('coll')
+	const hasTags = data.collection.includes('tags')
 
-	// Create Provider list
+	const domusercoll = document.querySelector<HTMLInputElement>('#i_background-user-coll')!
+	const domusertags = document.querySelector<HTMLInputElement>('#i_background-user-tags')!
+	const domusercolloption = document.querySelector<HTMLElement>('#background-user-coll-option')!
+	const domusertagsoption = document.querySelector<HTMLElement>('#background-user-tags-option')!
 
-	const i_backgroundProvider = document.querySelector<HTMLSelectElement>('#i_background-provider')!
+	domusercolloption.classList.toggle('shown', hasCollections)
+	domusertagsoption.classList.toggle('shown', hasTags)
+
+	if (hasCollections) domusercoll.value = backgrounds[backgrounds.type].query ?? ''
+	if (hasTags) domusertags.value = backgrounds[backgrounds.type].query ?? ''
+}
+
+function createProviderSelect(backgrounds: Sync.Backgrounds) {
+	const backgroundProvider = document.querySelector<HTMLSelectElement>('#i_background-provider')!
 	const providersType = backgrounds.type === 'images' ? 'IMAGES' : 'VIDEOS'
 	const providersList = PROVIDERS[providersType]
 
-	Object.values(i_backgroundProvider.children).forEach((node) => node.remove())
+	Object.values(backgroundProvider.children).forEach((node) => node.remove())
 
 	for (const provider of providersList) {
 		const optgroup = document.createElement('optgroup')
 		optgroup.label = provider.optgroup
-		i_backgroundProvider.appendChild(optgroup)
+		backgroundProvider.appendChild(optgroup)
 
 		for (const option of provider.options) {
 			const opt = document.createElement('option')
@@ -585,20 +623,11 @@ function handleProviderOptions(backgrounds: Sync.Backgrounds) {
 		}
 	}
 
-	// Handling Queries
-
-	const hasColls = data.collection.includes('coll')
-	const hasTags = data.collection.includes('tags')
-	const domusercoll = document.querySelector<HTMLInputElement>('#i_background-user-coll')!
-	const domusertags = document.querySelector<HTMLInputElement>('#i_background-user-tags')!
-
-	document.getElementById('background-user-coll-option')?.classList.toggle('shown', hasColls)
-	document.getElementById('background-user-tags-option')?.classList.toggle('shown', hasTags)
-
-	domusercoll.value = backgrounds[backgrounds.type].query ?? ''
-	domusertags.value = backgrounds[backgrounds.type].query ?? ''
-
-	document.getElementById('background-provider-option')?.classList.add('shown')
+	switch (backgrounds.type) {
+		case 'images':
+		case 'videos':
+			backgroundProvider.value = backgrounds[backgrounds.type].collection
+	}
 }
 
 //  Helpers
