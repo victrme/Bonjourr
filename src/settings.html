@@ -166,21 +166,43 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<div id="thumbnails-container"></div>
-
-		<div id="thumbnail-show-buttons">
-			<button class="param-btn trn" id="b_thumbnail-all" aria-label="Show all backgrounds">Show all</button>
-		</div>
-
-		<div id="thumbnail-action-buttons" class="wrapper">
+		<div class="wrapper">
 			<div>
-				<button id="thumbnail-position" class="trn param-btn">Change position</button>
-				<button id="thumbnail-remove" class="trn param-btn btn-red">Remove</button>
+				<button id="b_thumbnail-zoom" class="trn param-btn">
+					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
+					<span>Zoom</span>
+				</button>
+				<button id="b_thumbnail-all" class="param-btn trn" aria-label="Show all backgrounds">
+					<img src="src/assets/labels/eye.svg" height="15" alt="" />
+					<span class="trn">Show all</span>
+				</button>
 			</div>
 
-			<button id="thumbnail-zoom" class="trn param-btn">
-				<img src="src/assets/labels/zoom-out.svg" height="16" alt="" />
-			</button>
+			<label id="lbl_background-upload">
+				<span class="param-btn">
+					<img src="src/assets/labels/add.svg" height="13" alt="" />
+					Add files
+				</span>
+				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+			</label>
+		</div>
+
+		<div id="thumbnails-container"></div>
+
+		<div id="thumbnail-action-buttons" class="dropdown">
+			<div class="wrapper">
+				<div>
+					<button id="b_thumbnail-position" class="trn param-btn">
+						<img src="src/assets/labels/move.svg" height="15" alt="" />
+						<span class="trn">Move</span>
+					</button>
+					<button id="b_thumbnail-remove" class="param-btn btn-red">
+						<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
+						<span>&times;</span>
+						<span class="trn">Remove</span>
+					</button>
+				</div>
+			</div>
 		</div>
 
 		<div id="background-position-options" class="dropdown">
@@ -225,17 +247,6 @@
 					class="range"
 				/>
 			</div>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<span class="trn">Add backgrounds</span>
-
-			<label id="lbl_background-upload">
-				<span class="param-btn trn">Select files</span>
-				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
-			</label>
 		</div>
 	</div>
 

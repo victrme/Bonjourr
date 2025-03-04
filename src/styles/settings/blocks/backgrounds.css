@@ -80,21 +80,10 @@
 	object-fit: cover;
 }
 
-#thumbnail-show-buttons {
-	display: none;
-	text-align: center;
-	padding-top: 0.5em;
-}
-
-#thumbnail-show-buttons.shown {
-	display: block;
-}
-
 #thumbnail-action-buttons {
-	margin-top: 4px;
 	column-gap: 8px;
 }
 
-#background-position-options {
-	margin-top: 8px;
+#thumbnail-action-buttons .wrapper {
+	justify-content: center;
 }

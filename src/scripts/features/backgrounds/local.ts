@@ -1,8 +1,9 @@
-import { randomString, turnRefreshButton, freqControl, isEvery } from '../../utils'
-import { applyBackground } from './index'
+import { randomString, freqControl, isEvery } from '../../utils'
+import { applyBackground, removeBackgrounds } from './index'
 import onSettingsLoad from '../../utils/onsettingsload'
 import storage from '../../storage'
 import * as idb from 'idb-keyval'
+import { IS_MOBILE } from '../../defaults'
 
 type LocalFileData = {
 	file: File
@@ -32,6 +33,10 @@ export default async function localBackgrounds(init?: Local.Storage, event?: Upd
 
 	if (init) {
 		initLocalBackgrounds(init)
+		onSettingsLoad(() => {
+			initSettingsOptions()
+			handleSettingsOptions()
+		})
 	}
 }
 
@@ -64,34 +69,41 @@ async function initLocalBackgrounds(local: Local.Storage) {
 	}
 
 	displayCustomBackground(await getFile(local.localFiles.selected))
-	onSettingsLoad(() => handleSettingsOptions())
 }
 
-//
 //	Settings Options
-//
 
 async function handleSettingsOptions() {
 	const local = await storage.local.get('localFiles')
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
-	let ids = local.localFiles?.ids ?? []
+	const fileIds = local.localFiles?.ids ?? []
 
-	if (ids.length > 9) {
-		ids = ids.slice(0, 9)
-		document.getElementById('thumbnail-show-buttons')?.classList.add('shown')
+	const actionButtons = document.getElementById('thumbnail-action-buttons')
+	const thmbShowAll = document.getElementById('b_thumbnail-all')
+	const thmbZoom = document.getElementById('b_thumbnail-zoom')
+
+	// Buttons states
+
+	fileIds.length === 0 ? actionButtons?.classList.remove('shown') : actionButtons?.classList.add('shown')
+	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
+	fileIds.length <= 9 ? thmbShowAll?.setAttribute('disabled', '') : thmbShowAll?.removeAttribute('disabled')
+
+	if (!IS_MOBILE) {
+		thmbShowAll?.remove()
 	}
 
-	if (thumbIds.length > 0) {
-		ids = ids.filter((id) => thumbIds.includes(id) === false)
-	}
+	// Thumbnails display
 
-	// <!> must stay at the end (ids mutation)
+	const ids = fileIds.slice(0, 9).filter((id) => thumbIds.includes(id) === false)
+
 	addThumbnailsToDom(ids, local.localFiles?.selected)
+}
 
-	document.getElementById('thumbnail-remove')?.onclickdown(thumbnailRemove)
-	document.getElementById('thumbnail-zoom')?.onclickdown(thumbnailGridZoom)
-	document.getElementById('thumbnail-position')?.onclickdown(thumbnailTogglePosition)
+function initSettingsOptions() {
+	document.getElementById('b_thumbnail-remove')?.onclickdown(thumbnailRemove)
+	document.getElementById('b_thumbnail-zoom')?.onclickdown(thumbnailGridZoom)
+	document.getElementById('b_thumbnail-position')?.onclickdown(thumbnailTogglePosition)
 	document.getElementById('i_background-zoom')?.addEventListener('input', thumbnailPosition)
 	document.getElementById('i_background-vertical')?.addEventListener('input', thumbnailPosition)
 	document.getElementById('i_background-horizontal')?.addEventListener('input', thumbnailPosition)
@@ -153,11 +165,12 @@ async function thumbnailRemove(event: Event) {
 		displayCustomBackground(await getFile(newId))
 		selectThumbnail(newId)
 	} else {
-		// Show black screen
+		removeBackgrounds()
 	}
 
 	thumbnail.classList.toggle('hiding', true)
 	setTimeout(() => thumbnail.remove(), 100)
+	setTimeout(() => handleSettingsOptions())
 }
 
 //
@@ -218,6 +231,8 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 
 	local.localFiles.ids = local.localFiles.ids.concat(newIds)
 	storage.local.set(local)
+
+	setTimeout(() => handleSettingsOptions())
 }
 
 function refreshCustom(button: HTMLSpanElement) {

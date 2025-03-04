@@ -491,7 +491,7 @@ function preloadBackground({ image, video }: ApplyBackgroundOptions) {
 	}
 }
 
-function removeBackgrounds(): void {
+export function removeBackgrounds(): void {
 	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
 	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
 	setTimeout(() => imageWrapper.querySelector('div')?.setAttribute('style', 'opacity: 0'))
