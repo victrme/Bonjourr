@@ -157,6 +157,7 @@
 	"Approximate": "近似",
 	"Precise": "精確",
 	"Location": "都市の場所",
+	"Manual location": "手動の場所",
 	"Cannot find correct city": "正しい都市が見つかりません",
 	"No internet connection": "インターネット接続なし",
 	"Cannot reach weather service": "天気予報サービスにアクセスできません",

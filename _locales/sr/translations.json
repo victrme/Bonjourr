@@ -157,6 +157,7 @@
 	"Approximate": "Приближно",
 	"Precise": "Тачан",
 	"Location": "Локација града",
+	"Manual location": "Ручна локација",
 	"Cannot find correct city": "Није могуће пронаћи тачан град",
 	"No internet connection": "Нема интернет везе",
 	"Cannot reach weather service": "Није могуће приступити метеоролошкој служби",

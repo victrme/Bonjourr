@@ -157,6 +157,7 @@
 	"Approximate": "粗略",
 	"Precise": "精确",
 	"Location": "城市位置",
+	"Manual location": "手动位置",
 	"Cannot find correct city": "找不到正确的城市",
 	"No internet connection": "没有互联网连接",
 	"Cannot reach weather service": "无法联系气象服务",

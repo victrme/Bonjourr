@@ -157,6 +157,7 @@
 	"Approximate": "근사",
 	"Precise": "정밀",
 	"Location": "위치",
+	"Manual location": "수동 위치",
 	"Cannot find correct city": "정확한 도시를 찾을 수 없습니다",
 	"No internet connection": "인터넷 연결이 되어있지 않습니다",
 	"Cannot reach weather service": "날씨 서비스에 접근할 수 없습니다",

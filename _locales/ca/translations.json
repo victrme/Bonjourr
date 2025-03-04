@@ -157,6 +157,7 @@
 	"Approximate": "Aproximat",
 	"Precise": "Precís",
 	"Location": "Ubicació de la ciutat",
+	"Manual location": "Ubicació manual",
 	"Cannot find correct city": "No es pot trobar la ciutat correcta",
 	"No internet connection": "Sense connexió a Internet",
 	"Cannot reach weather service": "No es pot arribar al servei meteorològic",

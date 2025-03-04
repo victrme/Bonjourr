@@ -157,6 +157,7 @@
 	"Approximate": "Приблизительный",
 	"Precise": "Точный",
 	"Location": "Расположение города",
+	"Manual location": "Расположение вручную",
 	"Cannot find correct city": "Не удалось найти правильный город.",
 	"No internet connection": "Нет подключения к интернету",
 	"Cannot reach weather service": "Невозможно связаться со службой погоды",

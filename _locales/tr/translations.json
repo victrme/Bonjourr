@@ -157,6 +157,7 @@
 	"Approximate": "Yaklaşık",
 	"Precise": "Kesin",
 	"Location": "Şehir konumu",
+	"Manual location": "Elle konum",
 	"Cannot find correct city": "Doğru şehir bulunamadı",
 	"No internet connection": "İnternet bağlantısı yok",
 	"Cannot reach weather service": "Hava durumu servisine ulaşılamıyor",

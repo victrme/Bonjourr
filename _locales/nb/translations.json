@@ -157,6 +157,7 @@
 	"Approximate": "Tilnærmet",
 	"Precise": "Nøyaktig",
 	"Location": "Byens beliggenhet",
+	"Manual location": "Manuell plassering",
 	"Cannot find correct city": "Finner ikke riktig by",
 	"No internet connection": "Ingen internettforbindelse",
 	"Cannot reach weather service": "Kan ikke nå værtjenesten",
