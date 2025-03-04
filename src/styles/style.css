@@ -21,6 +21,7 @@
  */
 @import './settings/global.css';
 @import './settings/other.css';
+@import './settings/dropdowns.css';
 @import './settings/blocks/dragzone.css';
 @import './settings/blocks/notifications.css';
 @import './settings/blocks/backgrounds.css';
@@ -28,8 +29,6 @@
 @import './settings/blocks/footer.css';
 @import './settings/reusables/inputs.css';
 @import './settings/reusables/tooltips.css';
-@import './settings/dropdowns/allsettings.css';
-@import './settings/dropdowns/options.css';
 
 /* Components that can be used anywhere (interface or settings) */
 @import 'components/popup';

@@ -1,0 +1,194 @@
+/* Dropdowns: Options */
+
+#supporters-notif-container.shown {
+	max-height: 180px;
+}
+
+/* Dropdowns: Background Options */
+
+#solid_options.shown {
+	max-height: 400px;
+}
+
+#local_options.shown {
+	max-height: 500px;
+}
+
+#background-urls-option.shown {
+	max-height: 450px;
+}
+
+#background-provider-option.shown {
+	max-height: 200px;
+}
+
+#background-user-coll-option.shown {
+	max-height: 60px;
+}
+
+#background-user-tags-option.shown {
+	max-height: 60px;
+}
+
+#background-position-options.shown {
+	max-height: 120px;
+}
+
+#thumbnail-action-buttons.shown {
+	max-height: 60px;
+}
+
+#background-freq-option.shown {
+	max-height: 60px;
+}
+
+#background-filters-options.shown {
+	max-height: 300px;
+}
+
+#background-texture-options.shown {
+	max-height: 180px;
+}
+
+/* Dropdowns: Time & Date Options */
+
+#time_options.shown {
+	max-height: 920px;
+}
+
+#digital_options.shown {
+	max-height: 120px;
+}
+
+#analog_options.shown {
+	max-height: 280px;
+}
+
+#ampm_label.shown {
+	max-height: 60px;
+}
+
+#worldclocks_options.shown {
+	max-height: 200px;
+}
+
+#worldclocks-list .dropdown.shown {
+	max-height: 60px;
+}
+
+/* Dropdowns: Weather Options */
+
+#main_options.shown {
+	max-height: 630px;
+}
+
+#weather_provider.shown {
+	max-height: 60px;
+}
+
+#location_options.shown {
+	max-height: 120px;
+}
+
+/* Dropdowns: Quicklinks, Notes, Searchbar, and Quotes Options */
+
+#quicklinks_options.shown {
+	max-height: 460px;
+}
+
+#notes_options.shown {
+	max-height: 200px;
+}
+
+#searchbar_options.shown {
+	max-height: 440px;
+}
+
+#searchbar_request.shown {
+	max-height: 60px;
+}
+
+#quotes_options.shown {
+	max-height: 450px;
+}
+
+#quotes_url.shown {
+	max-height: 120px;
+}
+
+#quotes_userlist.shown {
+	max-height: 450px;
+}
+
+/* Dropdowns: Settings management Options */
+
+#disabled-sync.shown {
+	max-height: 60px;
+}
+
+#url-sync.shown {
+	max-height: 220px;
+}
+
+#gist-sync.shown {
+	max-height: 220px;
+}
+
+/* Dropdowns: All settings */
+
+.all .as_visuals {
+	max-height: 285px;
+}
+
+.all .as_link {
+	max-height: 360px;
+}
+
+.all .as_collection {
+	max-height: 130px;
+}
+
+.all .as_timedate {
+	max-height: 430px;
+}
+
+.all .as_searchbar {
+	max-height: 320px;
+}
+
+.all .as_weather {
+	max-height: 345px;
+}
+
+.all .as_clocktype {
+	max-height: 300px;
+}
+
+.all .as_fonts {
+	max-height: 350px;
+}
+
+.all .as_page {
+	max-height: 400px;
+}
+
+.all .as_css {
+	max-height: 3100px;
+	padding-top: 4px;
+}
+
+.all .as_quote_type {
+	max-height: 380px;
+}
+
+.all .as_notes {
+	max-height: 210px;
+}
+
+.all .as_updates {
+	max-height: 280px;
+}
+
+.all .as_sync {
+	max-height: 280px;
+}
