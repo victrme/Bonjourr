@@ -45,6 +45,7 @@
 .thumbnail {
 	position: relative;
 	height: calc(230px / var(--thumbnails-columns));
+	image-rendering: pixelated;
 	margin: 3px;
 	padding: 0;
 	overflow: hidden;

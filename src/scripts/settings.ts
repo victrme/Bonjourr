@@ -411,14 +411,8 @@ function initOptionsEvents() {
 		backgroundUpdate({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
-	// Custom backgrounds
-
 	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
 		localBackgrounds(undefined, { newfile: this.files })
-	})
-
-	paramId('b_thumbnail-all').onclickdown(function () {
-		localBackgrounds(undefined, { showing: 'all' })
 	})
 
 	// Background filters

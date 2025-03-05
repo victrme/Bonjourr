@@ -1,4 +1,4 @@
-import localBackgrounds from './local'
+import localBackgrounds, { initThumbnailEvents } from './local'
 import TEXTURE_RANGES from './textures'
 import { credits } from './credits'
 import PROVIDERS from './providers'
@@ -37,6 +37,7 @@ const colorUpdateDebounce = debounce(solidUpdate, 600)
 export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
 		onSettingsLoad(() => {
+			initThumbnailEvents()
 			createProviderSelect(sync.backgrounds)
 			handleBackgroundOptions(sync.backgrounds)
 		})

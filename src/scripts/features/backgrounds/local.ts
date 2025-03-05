@@ -1,6 +1,7 @@
 import { randomString, freqControl, isEvery } from '../../utils'
 import { applyBackground, removeBackgrounds } from './index'
 import onSettingsLoad from '../../utils/onsettingsload'
+import userDate from '../../utils/userdate'
 import storage from '../../storage'
 import * as idb from 'idb-keyval'
 import { IS_MOBILE } from '../../defaults'
@@ -33,30 +34,24 @@ export default async function localBackgrounds(init?: Local.Storage, event?: Upd
 
 	if (init) {
 		initLocalBackgrounds(init)
-		onSettingsLoad(() => {
-			initSettingsOptions()
-			handleSettingsOptions()
-		})
+		onSettingsLoad(() => handleSettingsOptions())
 	}
 }
 
 async function initLocalBackgrounds(local: Local.Storage) {
-	const sync = await storage.sync.get()
+	local.localFiles = local.localFiles ?? { ids: [], selected: '' }
 
-	if (!local.localFiles) {
-		local.localFiles = { ids: [], selected: '' }
+	if (local.localFiles.ids.length === 0) {
+		removeBackgrounds()
+		return
 	}
 
+	const sync = await storage.sync.get()
 	const { ids, selected } = local.localFiles
 	const lastChange = local?.backgroundLastChange ?? ''
 	const freq = sync.backgrounds.frequency
 	const last = new Date(lastChange).getTime()
 	const needNewImage = freqControl.get(freq, last) && ids.length > 1
-
-	if (ids.length === 0) {
-		// ?
-		return
-	}
 
 	if (needNewImage) {
 		const idsNoSelection = ids.filter((l: string) => !l.includes(selected))
@@ -80,27 +75,22 @@ async function handleSettingsOptions() {
 	const fileIds = local.localFiles?.ids ?? []
 
 	const actionButtons = document.getElementById('thumbnail-action-buttons')
-	const thmbShowAll = document.getElementById('b_thumbnail-all')
 	const thmbZoom = document.getElementById('b_thumbnail-zoom')
 
 	// Buttons states
 
 	fileIds.length === 0 ? actionButtons?.classList.remove('shown') : actionButtons?.classList.add('shown')
 	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
-	fileIds.length <= 9 ? thmbShowAll?.setAttribute('disabled', '') : thmbShowAll?.removeAttribute('disabled')
-
-	if (!IS_MOBILE) {
-		thmbShowAll?.remove()
-	}
 
 	// Thumbnails display
 
-	const ids = fileIds.slice(0, 9).filter((id) => thumbIds.includes(id) === false)
-
+	const ids = fileIds.filter((id) => thumbIds.includes(id) === false)
 	addThumbnailsToDom(ids, local.localFiles?.selected)
 }
 
-function initSettingsOptions() {
+//	Thumbnail events
+
+export function initThumbnailEvents() {
 	document.getElementById('b_thumbnail-remove')?.onclickdown(thumbnailRemove)
 	document.getElementById('b_thumbnail-zoom')?.onclickdown(thumbnailGridZoom)
 	document.getElementById('b_thumbnail-position')?.onclickdown(thumbnailTogglePosition)
@@ -169,32 +159,34 @@ async function thumbnailRemove(event: Event) {
 	}
 
 	thumbnail.classList.toggle('hiding', true)
-	setTimeout(() => thumbnail.remove(), 100)
-	setTimeout(() => handleSettingsOptions())
+
+	setTimeout(() => {
+		thumbnail.remove()
+		handleSettingsOptions()
+	}, 100)
 }
 
-//
 //	Update
-//
 
-async function updateLocalBackgrounds(event: UpdateLocal) {
+async function updateLocalBackgrounds(update: UpdateLocal) {
 	const sync = await storage.sync.get('backgrounds')
 	const local = await storage.local.get()
 
-	if (event?.newfile) {
-		addNewImage(event.newfile, local)
+	if (update.newfile) {
+		addNewImage(update.newfile, local)
 	}
 
-	if (event?.refresh) {
-		refreshCustom(event.refresh)
+	if (update.refresh) {
+		refreshCustom(update.refresh)
 	}
 
-	if (event?.showing) {
-		updateThumbnailAmount(event.showing)
+	if (update.showing) {
+		updateThumbnailAmount(update.showing)
 	}
 
-	if (isEvery(event?.freq)) {
-		// localImages.update({ freq: event?.freq })
+	if (isEvery(update.freq)) {
+		sync.backgrounds.frequency = update.freq
+		storage.sync.set({ backgrounds: sync.backgrounds })
 	}
 }
 
@@ -236,9 +228,13 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 }
 
 function refreshCustom(button: HTMLSpanElement) {
-	// localImages.update({ last: 0 })
-	// turnRefreshButton(button, true)
-	// setTimeout(() => localBackgrounds(), 100)
+	storage.local.get().then((local) => {
+		local.backgroundLastChange = userDate().toISOString()
+		storage.local.set(local)
+
+		localBackgrounds()
+		// turnRefreshButton(button, true)
+	})
 }
 
 async function updateThumbnailAmount(showing?: string) {
@@ -254,9 +250,7 @@ async function updateThumbnailAmount(showing?: string) {
 	// addThumbnailsToDom(ids, images.selected)
 }
 
-//
 //	Background & Thumbnails
-//
 
 async function displayCustomBackground(data?: LocalFileData) {
 	if (data?.file) {
@@ -293,7 +287,7 @@ async function compressThumbnail(blob: Blob) {
 
 	await new Promise((resolve) => {
 		img.onload = () => {
-			const height = 300 * window.devicePixelRatio
+			const height = 6
 			const scaleFactor = height / img.height
 
 			canvas.width = img.width * scaleFactor
