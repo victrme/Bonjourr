@@ -21,7 +21,6 @@ type UpdateLocal = {
 	refresh?: HTMLSpanElement
 	newfile?: FileList | null
 	freq?: string
-	showing?: string
 }
 
 let localIsLoading = false
@@ -39,53 +38,75 @@ export default async function localBackgrounds(init?: Local.Storage, event?: Upd
 }
 
 async function initLocalBackgrounds(local: Local.Storage) {
-	local.localFiles = local.localFiles ?? { ids: [], selected: '' }
+	const idbKeys = (await idb.keys()).map((key) => key.toString())
+	const localFiles = controlLocalFiles(local, idbKeys)
+	const sync = await storage.sync.get('frequency')
 
-	if (local.localFiles.ids.length === 0) {
-		removeBackgrounds()
+	if (!localFiles) {
 		return
 	}
 
-	const sync = await storage.sync.get()
-	const { ids, selected } = local.localFiles
 	const lastChange = local?.backgroundLastChange ?? ''
 	const freq = sync.backgrounds.frequency
 	const last = new Date(lastChange).getTime()
-	const needNewImage = freqControl.get(freq, last) && ids.length > 1
+	const hasMultipleImages = localFiles.ids.length > 1
+	const needNewImage = freqControl.get(freq, last)
 
-	if (needNewImage) {
-		const idsNoSelection = ids.filter((l: string) => !l.includes(selected))
+	if (needNewImage && hasMultipleImages) {
+		const idsNoSelection = localFiles.ids.filter((l) => !l.includes(localFiles.selected))
 		const randomId = Math.floor(Math.random() * idsNoSelection.length)
+		const newSelection = idsNoSelection[randomId]
 
-		local.localFiles.selected = idsNoSelection[randomId]
-		local.backgroundLastChange = new Date().toISOString()
+		localFiles.selected = newSelection
 
-		storage.local.set(local)
+		storage.local.set({
+			localFiles: localFiles,
+			backgroundLastChange: new Date().toISOString(),
+		})
 	}
 
-	displayCustomBackground(await getFile(local.localFiles.selected))
+	if (local.localFiles?.selected) {
+		displayCustomBackground(await getFile(local.localFiles.selected))
+	} else {
+		removeBackgrounds()
+	}
+}
+
+function controlLocalFiles(local: Local.Storage, idbKeys: string[]): Local.Storage['localFiles'] {
+	const localFiles = local.localFiles ?? { ids: [], selected: '' }
+	const idsAreAllInDB = localFiles.ids.every((id) => idbKeys.includes(id))
+
+	if (idsAreAllInDB === false) {
+		localFiles.ids = idbKeys
+		localFiles.selected = idbKeys[0]
+		storage.local.set({ localFiles })
+	}
+
+	return localFiles
 }
 
 //	Settings Options
 
-async function handleSettingsOptions() {
-	const local = await storage.local.get('localFiles')
+async function handleSettingsOptions(local?: Local.Storage) {
+	local = local ?? (await storage.local.get('localFiles'))
+
+	const actionButtons = document.getElementById('thumbnail-action-buttons')
+	const thmbContainer = document.getElementById('thumbnails-container')!
+	const thmbZoom = document.getElementById('b_thumbnail-zoom')
+
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = local.localFiles?.ids ?? []
-
-	const actionButtons = document.getElementById('thumbnail-action-buttons')
-	const thmbZoom = document.getElementById('b_thumbnail-zoom')
-
-	// Buttons states
+	const columnsAmount = Math.min(fileIds.length, 5).toString()
 
 	fileIds.length === 0 ? actionButtons?.classList.remove('shown') : actionButtons?.classList.add('shown')
 	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
 
-	// Thumbnails display
-
 	const ids = fileIds.filter((id) => thumbIds.includes(id) === false)
+
 	addThumbnailsToDom(ids, local.localFiles?.selected)
+
+	thmbContainer.style.setProperty('--thumbnails-columns', columnsAmount)
 }
 
 //	Thumbnail events
@@ -102,7 +123,7 @@ export function initThumbnailEvents() {
 function thumbnailGridZoom() {
 	const container = document.getElementById('thumbnails-container')!
 	const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
-	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 2)
+	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 1)
 	container.style.setProperty('--thumbnails-columns', newZoom.toString())
 }
 
@@ -111,8 +132,10 @@ function thumbnailTogglePosition() {
 	domoptions?.classList.toggle('shown')
 }
 
-function thumbnailPosition(this: HTMLInputElement) {
+async function thumbnailPosition(this: HTMLInputElement) {
 	const wrapper = document.getElementById('image-background-wrapper')
+	const selection = getThumbnailSelection()[0]
+	const fileData = await getFile(selection)
 	const { id, value } = this
 
 	if (!wrapper) {
@@ -121,20 +144,27 @@ function thumbnailPosition(this: HTMLInputElement) {
 	}
 
 	if (id === 'i_background-zoom') {
-		wrapper.style.setProperty('--background-zoom', value === '100' ? 'cover' : `${value}%`)
+		fileData.position.zoom = value === '100' ? 'cover' : `${value}%`
+		wrapper.style.setProperty('--background-zoom', fileData.position.zoom)
 	}
+
 	if (id === 'i_background-vertical') {
-		wrapper.style.setProperty('--background-position-y', `${value}%`)
+		fileData.position.y = `${value}%`
+		wrapper.style.setProperty('--background-position-y', fileData.position.y)
 	}
+
 	if (id === 'i_background-horizontal') {
-		wrapper.style.setProperty('--background-position-x', `${value}%`)
+		fileData.position.x = `${value}%`
+		wrapper.style.setProperty('--background-position-x', fileData.position.x)
 	}
+
+	await idb.set(selection, fileData)
 }
 
 async function thumbnailRemove(event: Event) {
 	const local = await storage.local.get()
 	const thumbnail = document.querySelector<HTMLElement>('.thumbnail.selected')
-	const id = thumbnail?.id ?? ''
+	const id = getThumbnailSelection()[0]
 
 	if (localIsLoading || !thumbnail || !id || !local.localFiles) {
 		return
@@ -162,8 +192,14 @@ async function thumbnailRemove(event: Event) {
 
 	setTimeout(() => {
 		thumbnail.remove()
-		handleSettingsOptions()
+		handleSettingsOptions(local)
 	}, 100)
+}
+
+function getThumbnailSelection(): string[] {
+	const thmbs = document.querySelectorAll<HTMLElement>('.thumbnail.selected')
+	const ids = Object.values(thmbs).map((thmb) => thmb?.id ?? '')
+	return ids
 }
 
 //	Update
@@ -178,10 +214,6 @@ async function updateLocalBackgrounds(update: UpdateLocal) {
 
 	if (update.refresh) {
 		refreshCustom(update.refresh)
-	}
-
-	if (update.showing) {
-		updateThumbnailAmount(update.showing)
 	}
 
 	if (isEvery(update.freq)) {
@@ -208,7 +240,7 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 		filesData[id] = {
 			file: file,
 			small: small,
-			position: { zoom: 'cover', x: '50', y: '50' },
+			position: { zoom: 'cover', x: '50%', y: '50%' },
 		}
 
 		thumbnailsContainer?.appendChild(createThumbnail(small, id, false))
@@ -223,8 +255,7 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 
 	local.localFiles.ids = local.localFiles.ids.concat(newIds)
 	storage.local.set(local)
-
-	setTimeout(() => handleSettingsOptions())
+	handleSettingsOptions(local)
 }
 
 function refreshCustom(button: HTMLSpanElement) {
@@ -237,23 +268,11 @@ function refreshCustom(button: HTMLSpanElement) {
 	})
 }
 
-async function updateThumbnailAmount(showing?: string) {
-	// const thumbnailsContainer = document.getElementById('thumbnails-container') as HTMLElement
-	// const thumbsAmount = thumbnailsContainer?.childElementCount || 0
-	// const images = await localImages.get()
-	// const ids: string[] = []
-	// if (showing === 'all') ids.push(...images.ids)
-	// if (showing === 'more') ids.push(...images.ids.filter((_, i) => i < thumbsAmount + 9))
-	// if (ids.length === images.ids.length) {
-	// 	document.getElementById('thumbnail-show-buttons')?.classList.remove('shown')
-	// }
-	// addThumbnailsToDom(ids, images.selected)
-}
-
 //	Background & Thumbnails
 
 async function displayCustomBackground(data?: LocalFileData) {
 	if (data?.file) {
+		const wrapper = document.getElementById('image-background-wrapper')!
 		const objURL = URL.createObjectURL(data.file)
 		const image: Backgrounds.Image = {
 			format: 'image',
@@ -266,7 +285,13 @@ async function displayCustomBackground(data?: LocalFileData) {
 			},
 		}
 
+		const { zoom, x, y } = data.position
+		wrapper.style.setProperty('--background-zoom', zoom)
+		wrapper.style.setProperty('--background-position-y', y)
+		wrapper.style.setProperty('--background-position-x', x)
+
 		applyBackground({ image })
+
 		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
 	}
@@ -287,18 +312,30 @@ async function compressThumbnail(blob: Blob) {
 
 	await new Promise((resolve) => {
 		img.onload = () => {
-			const height = 6
-			const scaleFactor = height / img.height
+			const size = 20
+			const orientation = img.height > img.width ? 'portrait' : 'landscape'
+			let ratio = 0
+			let x = 0
+			let y = 0
 
-			canvas.width = img.width * scaleFactor
-			canvas.height = height
+			if (orientation === 'landscape') {
+				ratio = size / img.height
+				canvas.height = y = size
+				canvas.width = x = img.width * ratio
+			}
 
-			ctx?.drawImage(img, 0, 0, img.width * scaleFactor, height)
+			if (orientation === 'portrait') {
+				ratio = size / img.width
+				canvas.height = y = img.height * ratio
+				canvas.width = x = size
+			}
+
+			ctx?.drawImage(img, 0, 0, x, y)
 			resolve(true)
 		}
 	})
 
-	const newBlob = await new Promise((resolve) => ctx?.canvas.toBlob(resolve, 'image/webp', 80))
+	const newBlob = await new Promise((resolve) => ctx?.canvas.toBlob(resolve, 'image/png'))
 
 	return newBlob as Blob
 }
