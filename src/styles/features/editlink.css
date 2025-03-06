@@ -39,6 +39,7 @@
 	opacity: 1;
 }
 
+#editlink select,
 #editlink input {
 	color: var(--color-text);
 	width: 100%;

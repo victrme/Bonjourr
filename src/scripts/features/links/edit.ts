@@ -256,6 +256,7 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 queueMicrotask(() => {
 	document.addEventListener('close-edit', closeEditDialog)
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
+	document.getElementById('e-icon-type')?.addEventListener('change', toggleIconType)
 	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
@@ -275,6 +276,10 @@ queueMicrotask(() => {
 	}
 })
 
+function toggleIconType(event: Event) {
+	console.log(event.target.value)
+}
+
 function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
 	const { container, target, group, selected, selectall } = editStates
@@ -288,6 +293,8 @@ function submitChanges(event: SubmitEvent) {
 	}
 
 	if (change === 'edit-inputs') {
+		console.log('toggle icon type')
+
 		applyLinkChanges('inputs')
 		event.preventDefault()
 		return
