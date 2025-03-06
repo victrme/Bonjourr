@@ -10,7 +10,7 @@ type LocalFileData = {
 	file: File
 	small: Blob
 	position: {
-		zoom: string
+		size: string
 		x: string
 		y: string
 	}
@@ -98,15 +98,26 @@ async function handleSettingsOptions(local?: Local.Storage) {
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = local.localFiles?.ids ?? []
 	const columnsAmount = Math.min(fileIds.length, 5).toString()
+	const missingThumbnailIds = fileIds.filter((id) => !thumbIds.includes(id))
+	const selected = local.localFiles?.selected ?? ''
 
 	fileIds.length === 0 ? actionButtons?.classList.remove('shown') : actionButtons?.classList.add('shown')
 	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
 
-	const ids = fileIds.filter((id) => thumbIds.includes(id) === false)
-
-	addThumbnailsToDom(ids, local.localFiles?.selected)
-
+	handleBackgroundMoveOptions(selected)
+	addThumbnailsToDom(missingThumbnailIds, selected)
 	thmbContainer.style.setProperty('--thumbnails-columns', columnsAmount)
+}
+
+async function handleBackgroundMoveOptions(selection: string) {
+	const backgroundSize = document.querySelector<HTMLInputElement>('#i_background-size')!
+	const backgroundVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')!
+	const backgroundHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')!
+	const position = (await getFile(selection))?.position ?? { zoom: 'cover', x: '50%', y: '50%' }
+
+	backgroundSize.value = (position.size === 'cover' ? '100' : position.size).replace('%', '')
+	backgroundVertical.value = position.y.replace('%', '')
+	backgroundHorizontal.value = position.x.replace('%', '')
 }
 
 //	Thumbnail events
@@ -115,7 +126,7 @@ export function initThumbnailEvents() {
 	document.getElementById('b_thumbnail-remove')?.onclickdown(thumbnailRemove)
 	document.getElementById('b_thumbnail-zoom')?.onclickdown(thumbnailGridZoom)
 	document.getElementById('b_thumbnail-position')?.onclickdown(thumbnailTogglePosition)
-	document.getElementById('i_background-zoom')?.addEventListener('input', thumbnailPosition)
+	document.getElementById('i_background-size')?.addEventListener('input', thumbnailPosition)
 	document.getElementById('i_background-vertical')?.addEventListener('input', thumbnailPosition)
 	document.getElementById('i_background-horizontal')?.addEventListener('input', thumbnailPosition)
 }
@@ -133,29 +144,29 @@ function thumbnailTogglePosition() {
 }
 
 async function thumbnailPosition(this: HTMLInputElement) {
-	const wrapper = document.getElementById('image-background-wrapper')
+	const img = document.querySelector<HTMLElement>('#image-background-wrapper div')
 	const selection = getThumbnailSelection()[0]
 	const fileData = await getFile(selection)
 	const { id, value } = this
 
-	if (!wrapper) {
+	if (!img) {
 		console.log(new Error('?'))
 		return
 	}
 
-	if (id === 'i_background-zoom') {
-		fileData.position.zoom = value === '100' ? 'cover' : `${value}%`
-		wrapper.style.setProperty('--background-zoom', fileData.position.zoom)
+	if (id === 'i_background-size') {
+		fileData.position.size = value === '100' ? 'cover' : `${value}%`
+		img.style.backgroundSize = fileData.position.size
 	}
 
 	if (id === 'i_background-vertical') {
 		fileData.position.y = `${value}%`
-		wrapper.style.setProperty('--background-position-y', fileData.position.y)
+		img.style.backgroundPositionY = fileData.position.y
 	}
 
 	if (id === 'i_background-horizontal') {
 		fileData.position.x = `${value}%`
-		wrapper.style.setProperty('--background-position-x', fileData.position.x)
+		img.style.backgroundPositionX = fileData.position.x
 	}
 
 	await idb.set(selection, fileData)
@@ -240,7 +251,7 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 		filesData[id] = {
 			file: file,
 			small: small,
-			position: { zoom: 'cover', x: '50%', y: '50%' },
+			position: { size: 'cover', x: '50%', y: '50%' },
 		}
 
 		thumbnailsContainer?.appendChild(createThumbnail(small, id, false))
@@ -272,25 +283,21 @@ function refreshCustom(button: HTMLSpanElement) {
 
 async function displayCustomBackground(data?: LocalFileData) {
 	if (data?.file) {
-		const wrapper = document.getElementById('image-background-wrapper')!
-		const objURL = URL.createObjectURL(data.file)
-		const image: Backgrounds.Image = {
-			format: 'image',
-			page: '',
-			username: '',
-			urls: {
-				full: objURL,
-				medium: objURL,
-				small: objURL,
+		const url = URL.createObjectURL(data.file)
+
+		applyBackground({
+			image: {
+				format: 'image',
+				page: '',
+				username: '',
+				urls: {
+					full: url,
+					medium: url,
+					small: url,
+				},
 			},
-		}
-
-		const { zoom, x, y } = data.position
-		wrapper.style.setProperty('--background-zoom', zoom)
-		wrapper.style.setProperty('--background-position-y', y)
-		wrapper.style.setProperty('--background-position-x', x)
-
-		applyBackground({ image })
+			position: data.position,
+		})
 
 		document.getElementById('credit-container')?.classList.remove('shown')
 		localIsLoading = false
@@ -366,6 +373,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 			const thumbnail = target?.parentElement
 			const id = thumbnail?.id ?? ''
 			applyThumbnailBackground(id)
+			handleBackgroundMoveOptions(id)
 		}
 	})
 
