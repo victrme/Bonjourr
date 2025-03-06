@@ -120,8 +120,14 @@ export default async function openEditDialog(event: Event) {
 
 		if (link && !link.folder) {
 			const icon = link.icon ?? ''
+			const type = icon.startsWith('svg:') ? 'svg' : icon.startsWith('file:') ? 'file' : 'url'
+
 			domurl.value = link.url ?? ''
 			domicon.value = Number.isNaN(parseInt(icon)) ? icon : ''
+
+			document.getElementById('edit-icon-url')?.classList.toggle('on', type === 'url')
+			document.getElementById('edit-icon-svg')?.classList.toggle('on', type === 'svg')
+			document.getElementById('edit-icon-file')?.classList.toggle('on', type === 'file')
 		}
 	}
 
@@ -254,10 +260,10 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 //
 
 queueMicrotask(() => {
+	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
 	document.addEventListener('close-edit', closeEditDialog)
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
 	document.getElementById('e-icon-type')?.addEventListener('change', toggleIconType)
-	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
 		const handleLongPress = debounce(function (event: TouchEvent) {
@@ -277,7 +283,10 @@ queueMicrotask(() => {
 })
 
 function toggleIconType(event: Event) {
-	console.log(event.target.value)
+	const value = event.target.value
+	document.getElementById('edit-icon-url')?.classList.toggle('on', value === 'url')
+	document.getElementById('edit-icon-svg')?.classList.toggle('on', value === 'svg')
+	document.getElementById('edit-icon-file')?.classList.toggle('on', value === 'file')
 }
 
 function submitChanges(event: SubmitEvent) {

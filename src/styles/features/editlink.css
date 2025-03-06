@@ -51,6 +51,10 @@
 	background-color: transparent;
 }
 
+#editlink input[type='file'] {
+	line-height: 30px;
+}
+
 #editlink input::placeholder {
 	color: var(--color-dialog-input-text);
 }
