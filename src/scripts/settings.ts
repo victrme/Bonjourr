@@ -415,6 +415,10 @@ function initOptionsEvents() {
 		localBackgrounds(undefined, { newfile: this.files })
 	})
 
+	paramId('b_background-urls').onclickdown(function () {
+		backgroundUpdate({ urlsapply: true })
+	})
+
 	// Background filters
 
 	paramId('i_texture').addEventListener('change', function (this: HTMLInputElement) {

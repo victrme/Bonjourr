@@ -1,6 +1,6 @@
 import { tradThis } from '../../utils/translations'
 
-export function credits(image?: Backgrounds.Image) {
+export default function credits(image?: Backgrounds.Image) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 

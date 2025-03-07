@@ -1,7 +1,8 @@
 import localBackgrounds, { initThumbnailEvents } from './local'
+import { applyUrls, initBackgroundUrls, toggleUrlsButton } from './urls'
 import TEXTURE_RANGES from './textures'
-import { credits } from './credits'
 import PROVIDERS from './providers'
+import credits from './credits'
 
 import { freqControl, periodOfDay, rgbToHex } from '../../utils'
 import onSettingsLoad from '../../utils/onsettingsload'
@@ -19,6 +20,8 @@ interface BackgroundUpdate {
 	bright?: string
 	fadein?: string
 	refresh?: HTMLSpanElement
+	urlsapply?: true
+	urlschanges?: true
 	texture?: string
 	provider?: string
 	texturesize?: string
@@ -43,6 +46,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	if (init) {
 		onSettingsLoad(() => {
 			initThumbnailEvents()
+			initBackgroundUrls(sync.backgrounds)
 			createProviderSelect(sync.backgrounds)
 			handleBackgroundOptions(sync.backgrounds)
 		})
@@ -116,6 +120,14 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (update.color) {
 		applyBackground({ solid: update.color })
 		colorUpdateDebounce(update.color)
+	}
+
+	if (update.urlschanges) {
+		toggleUrlsButton(data.backgrounds)
+	}
+
+	if (update.urlsapply) {
+		applyUrls(data.backgrounds)
 	}
 
 	// Textures
