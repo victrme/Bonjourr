@@ -79,7 +79,7 @@ declare namespace Sync {
 		bright: number
 		blur: number
 		color: string
-		urls: string[]
+		urls: string
 		images: {
 			collection: string
 			query?: string

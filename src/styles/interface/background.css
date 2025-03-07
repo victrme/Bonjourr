@@ -28,6 +28,7 @@ body.init #video-background-wrapper video {
 	height: 100%;
 	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
 	transition: opacity 1.2s;
+	background-size: cover;
 }
 
 [data-browser='safari'] #image-background-wrapper div {

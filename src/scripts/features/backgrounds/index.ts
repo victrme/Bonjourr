@@ -21,7 +21,6 @@ interface BackgroundUpdate {
 	fadein?: string
 	refresh?: HTMLSpanElement
 	urlsapply?: true
-	urlschanges?: true
 	texture?: string
 	provider?: string
 	texturesize?: string
@@ -58,7 +57,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 
 	switch (sync.backgrounds.type) {
 		case 'urls':
-			// not yet
+			applyBackground({ solid: sync.backgrounds.color })
 			break
 
 		case 'color':
@@ -120,10 +119,6 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (update.color) {
 		applyBackground({ solid: update.color })
 		colorUpdateDebounce(update.color)
-	}
-
-	if (update.urlschanges) {
-		toggleUrlsButton(data.backgrounds)
 	}
 
 	if (update.urlsapply) {
