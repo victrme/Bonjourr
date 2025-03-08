@@ -1,0 +1,10 @@
+{
+	"extensionName": {
+		"message": "Bonjourr · Minimalistyczna strona główna",
+		"description": "extension name"
+	},
+	"extensionDesc": {
+		"message": "Ulepsz swoje przeglądanie sieci za pomocą Bonjurr, pięknej, konfigurowalnej i lekkiej strony startowej.",
+		"description": "extension description"
+	}
+}
