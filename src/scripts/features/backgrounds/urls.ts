@@ -7,7 +7,11 @@ import type { PrismEditor } from 'prism-code-editor'
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
 
-export async function initBackgroundUrls(backgrounds: Sync.Backgrounds) {
+export default async function backgroundUrls(backgrounds: Sync.Backgrounds) {
+	checkUrlStates(backgrounds.urls)
+}
+
+export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
 	globalUrlValue = backgrounds.urls
 
 	const { createBackgroundUrlsEditor } = await import('../csseditor')
@@ -52,4 +56,47 @@ export function applyUrls(backgrounds: Sync.Backgrounds) {
 	backgrounds.urls = globalUrlValue = backgroundUrlsEditor.value
 	toggleUrlsButton('osef', 'osef')
 	storage.sync.set({ backgrounds })
+}
+
+async function checkUrlStates(urls: string): Promise<void> {
+	const states: Record<string, 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE' | 'OK'> = {}
+	const list = urls.split('\n')
+
+	for (const item of list) {
+		let url: URL
+		let resp: Response
+
+		// check URL type
+		try {
+			url = new URL(item)
+		} catch (_) {
+			states[item] = 'NOT_URL'
+			continue
+		}
+
+		// check if reachable
+		try {
+			resp = await fetch(item, { method: 'HEAD' })
+		} catch (_) {
+			states[item] = 'CANT_REACH'
+			continue
+		}
+
+		// check if reachable
+		// try {
+		// 	resp = await fetch('https://services.bonjourr.fr/backgrounds/proxy/' + item)
+		// } catch (_) {
+		// 	states[item] = 'CANT_REACH'
+		// 	continue
+		// }
+
+		// check if image type
+		if (resp.headers.get('content-type')?.includes('image/')) {
+			states[item] = 'OK'
+		} else {
+			states[item] = 'NOT_IMAGE'
+		}
+	}
+
+	console.log(states)
 }

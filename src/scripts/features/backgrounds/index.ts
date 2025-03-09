@@ -1,5 +1,5 @@
 import localBackgrounds, { initThumbnailEvents } from './local'
-import { applyUrls, initBackgroundUrls, toggleUrlsButton } from './urls'
+import backgroundUrls, { applyUrls, initUrlsEditor } from './urls'
 import TEXTURE_RANGES from './textures'
 import PROVIDERS from './providers'
 import credits from './credits'
@@ -45,7 +45,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	if (init) {
 		onSettingsLoad(() => {
 			initThumbnailEvents()
-			initBackgroundUrls(sync.backgrounds)
+			initUrlsEditor(sync.backgrounds)
 			createProviderSelect(sync.backgrounds)
 			handleBackgroundOptions(sync.backgrounds)
 		})
@@ -57,7 +57,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 
 	switch (sync.backgrounds.type) {
 		case 'urls':
-			applyBackground({ solid: sync.backgrounds.color })
+			backgroundUrls(sync.backgrounds)
 			break
 
 		case 'color':
