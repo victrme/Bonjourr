@@ -1,15 +1,31 @@
+import { applyBackground } from '.'
 import storage from '../../storage'
 import { stringMaxSize } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
 
 import type { PrismEditor } from 'prism-code-editor'
 
+type UrlState = 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE' | 'OK'
+
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
 
 export default async function backgroundUrls(backgrounds: Sync.Backgrounds) {
-	checkUrlStates(backgrounds.urls)
+	applyBackground({
+		image: {
+			format: 'image',
+			page: '',
+			username: '',
+			urls: {
+				full: backgrounds.urls.split('\n')[0],
+				medium: backgrounds.urls.split('\n')[0],
+				small: backgrounds.urls.split('\n')[0],
+			},
+		},
+	})
 }
+
+// Editor
 
 export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
 	globalUrlValue = backgrounds.urls
@@ -42,6 +58,13 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
 	}
 }
 
+function highlightUrlsEditorLine(state: UrlState, i: number) {
+	const line = backgroundUrlsEditor.wrapper.querySelector(`.pce-line:nth-child(${i + 2})`)
+	line?.classList.toggle('good', state === 'OK')
+	line?.classList.toggle('warn', state !== 'OK' && state !== 'NOT_IMAGE')
+	line?.classList.toggle('error', state === 'NOT_IMAGE')
+}
+
 export function toggleUrlsButton(storage: string, value: string) {
 	const button = document.querySelector<HTMLButtonElement>('#b_background-urls')
 
@@ -54,49 +77,53 @@ export function toggleUrlsButton(storage: string, value: string) {
 
 export function applyUrls(backgrounds: Sync.Backgrounds) {
 	backgrounds.urls = globalUrlValue = backgroundUrlsEditor.value
-	toggleUrlsButton('osef', 'osef')
 	storage.sync.set({ backgrounds })
+
+	toggleUrlsButton('osef', 'osef')
+	checkUrlStates(backgrounds.urls)
 }
 
-async function checkUrlStates(urls: string): Promise<void> {
-	const states: Record<string, 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE' | 'OK'> = {}
-	const list = urls.split('\n')
+function checkUrlStates(urls = ''): void {
+	urls.split('\n').forEach((item, i) => {
+		getState(item).then((state) => {
+			highlightUrlsEditorLine(state, i)
+		})
+	})
+}
 
-	for (const item of list) {
-		let url: URL
-		let resp: Response
+async function getState(item: string): Promise<UrlState> {
+	const isImage = (resp: Response) => resp.headers.get('content-type')?.includes('image/')
+	const proxy = 'https://services.bonjourr.fr/backgrounds/proxy/'
+	let resp: Response
+	let url: URL
 
-		// check URL type
-		try {
-			url = new URL(item)
-		} catch (_) {
-			states[item] = 'NOT_URL'
-			continue
+	try {
+		url = new URL(item)
+	} catch (_) {
+		return 'NOT_URL'
+	}
+
+	try {
+		resp = await fetch(url)
+
+		if (isImage(resp) === false) {
+			return 'NOT_IMAGE'
 		}
-
-		// check if reachable
+	} catch (_) {
 		try {
-			resp = await fetch(item, { method: 'HEAD' })
+			resp = await fetch(proxy + url)
+
+			if (isImage(resp) === false) {
+				return 'NOT_IMAGE'
+			}
 		} catch (_) {
-			states[item] = 'CANT_REACH'
-			continue
-		}
-
-		// check if reachable
-		// try {
-		// 	resp = await fetch('https://services.bonjourr.fr/backgrounds/proxy/' + item)
-		// } catch (_) {
-		// 	states[item] = 'CANT_REACH'
-		// 	continue
-		// }
-
-		// check if image type
-		if (resp.headers.get('content-type')?.includes('image/')) {
-			states[item] = 'OK'
-		} else {
-			states[item] = 'NOT_IMAGE'
+			return 'CANT_REACH'
 		}
 	}
 
-	console.log(states)
+	if (resp.headers.get('content-type')?.includes('image/')) {
+		return 'OK'
+	}
+
+	return 'NOT_IMAGE'
 }

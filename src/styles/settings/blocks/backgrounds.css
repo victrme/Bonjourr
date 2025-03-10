@@ -53,7 +53,10 @@
 	outline: 3px solid transparent;
 	outline-offset: -3px;
 	background-color: var(--color-input);
-	transition: opacity 0.05s, filter 0.05s, outline 0.05s;
+	transition:
+		opacity 0.05s,
+		filter 0.05s,
+		outline 0.05s;
 }
 
 .thumbnail.hiding {
@@ -89,10 +92,24 @@
 	justify-content: center;
 }
 
+/* Background URLs */
+
 #background-urls-editor > div {
 	background-color: var(--color-input);
 	font-size: 13px;
 	min-height: 200px;
 	margin-top: 8px;
 	padding: 12px 16px;
+}
+
+#background-urls-editor .pce-line.warn {
+	background-color: rgba(255, 255, 0, 0.3);
+}
+
+#background-urls-editor .pce-line.error {
+	background-color: rgba(255, 0, 0, 0.3);
+}
+
+#background-urls-editor .pce-line.good {
+	background-color: rgba(0, 255, 0, 0.3);
 }
