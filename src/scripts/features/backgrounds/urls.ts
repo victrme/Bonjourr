@@ -3,9 +3,9 @@ import storage from '../../storage'
 import { stringMaxSize } from '../../utils'
 import { eventDebounce } from '../../utils/debounce'
 
-import type { PrismEditor } from 'prism-code-editor'
+import type { EditorOptions, PrismEditor } from 'prism-code-editor'
 
-type UrlState = 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE' | 'OK'
+type UrlState = 'LOADING' | 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE' | 'OK'
 
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
@@ -32,10 +32,8 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
 
 	const { createBackgroundUrlsEditor } = await import('../csseditor')
 
-	const options = {
+	const options: EditorOptions = {
 		language: 'uri',
-		lineNumbers: false,
-		insertSpaces: false,
 		value: backgrounds.urls || '',
 	}
 
@@ -60,9 +58,10 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
 
 function highlightUrlsEditorLine(state: UrlState, i: number) {
 	const line = backgroundUrlsEditor.wrapper.querySelector(`.pce-line:nth-child(${i + 2})`)
-	line?.classList.toggle('good', state === 'OK')
-	line?.classList.toggle('warn', state !== 'OK' && state !== 'NOT_IMAGE')
+	line?.classList.toggle('loading', state === 'LOADING')
 	line?.classList.toggle('error', state === 'NOT_IMAGE')
+	line?.classList.toggle('good', state === 'OK')
+	line?.classList.toggle('warn', state === 'CANT_REACH' || state === 'NOT_URL')
 }
 
 export function toggleUrlsButton(storage: string, value: string) {
@@ -85,6 +84,8 @@ export function applyUrls(backgrounds: Sync.Backgrounds) {
 
 function checkUrlStates(urls = ''): void {
 	urls.split('\n').forEach((item, i) => {
+		highlightUrlsEditorLine('LOADING', i)
+
 		getState(item).then((state) => {
 			highlightUrlsEditorLine(state, i)
 		})
