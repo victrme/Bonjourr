@@ -79,7 +79,7 @@ export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 	}
 
 	if (init.old && (init.review === -1 || init.review > 30)) {
-		const major = (s: string) => parseInt(s.split('.')[0])
+		const major = (s: string) => Number.parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
 		const isNewVersion = init.new !== init.old && init.new === ANNOUNCEMENT_VERSION
 

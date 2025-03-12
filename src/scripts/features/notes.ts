@@ -43,7 +43,7 @@ async function updateNotes(event: NotesEvent) {
 	}
 
 	if (event?.width !== undefined) {
-		notes.width = parseInt(event.width)
+		notes.width = Number.parseInt(event.width)
 		handleWidth(notes.width)
 	}
 

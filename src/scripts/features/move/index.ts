@@ -84,8 +84,8 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	if (!widget) return
 
 	// Get button move amount
-	const y = parseInt(gridpos?.y || '0')
-	const x = parseInt(gridpos?.x || '0')
+	const y = Number.parseInt(gridpos?.y || '0')
+	const x = Number.parseInt(gridpos?.x || '0')
 
 	const layout = getLayout(move)
 	const positions = gridFind(layout.grid, widget)

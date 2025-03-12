@@ -161,7 +161,7 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	const time = document.getElementById('time') as HTMLElement
 	const spans = document.querySelectorAll<HTMLSpanElement>('.analog .analog-face span')
 
-	const backgroundAlpha = parseInt(style.background.slice(4), 16)
+	const backgroundAlpha = Number.parseInt(style.background.slice(4), 16)
 	const isWhiteOpaque = style.background?.includes('fff') && backgroundAlpha > 7
 	const isTransparent = backgroundAlpha === 0
 

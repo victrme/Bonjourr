@@ -401,7 +401,7 @@ function serviceWorker() {
 	navigator.serviceWorker.register('service-worker.js')
 
 	let promptEvent // PWA install trigger (30s interaction default)
-	window.addEventListener('beforeinstallprompt', function (e) {
+	window.addEventListener('beforeinstallprompt', (e) => {
 		promptEvent = e
 		return promptEvent
 	})
@@ -416,7 +416,7 @@ function setPotatoComputerMode() {
 
 	const fourHours = 1000 * 60 * 60 * 4
 	const isPotato = localStorage.potato === 'yes'
-	const expirationTime = Date.now() - parseInt(localStorage.lastPotatoCheck ?? '0')
+	const expirationTime = Date.now() - Number.parseInt(localStorage.lastPotatoCheck ?? '0')
 
 	if (expirationTime < fourHours) {
 		document.body.classList.toggle('potato', isPotato)

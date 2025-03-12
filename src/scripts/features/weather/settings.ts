@@ -97,7 +97,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	locationForm.load()
 
 	const currentWeather = { ...weather, city }
-	let newWeather: Weather.Local | undefined = undefined
+	let newWeather: Weather.Local | undefined 
 
 	try {
 		newWeather = await requestNewWeather(currentWeather, lastWeather)

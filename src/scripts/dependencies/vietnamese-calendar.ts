@@ -187,12 +187,12 @@ function convertSolar2Lunar(dd: number, mm: number, yy: number, timeZone: number
 	}
 
 	lunarDay = dayNumber - monthStart + 1
-	let diff = INT((monthStart - a11) / 29)
+	const diff = INT((monthStart - a11) / 29)
 	lunarLeap = 0
 	lunarMonth = diff + 11
 
 	if (b11 - a11 > 365) {
-		let leapMonthDiff = getLeapMonthOffset(a11, timeZone)
+		const leapMonthDiff = getLeapMonthOffset(a11, timeZone)
 		if (diff >= leapMonthDiff) {
 			lunarMonth = diff + 10
 			if (diff == leapMonthDiff) {

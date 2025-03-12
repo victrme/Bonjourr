@@ -187,10 +187,10 @@ function validateLinkGroups(current: Sync.Storage): Sync.Storage {
 	const { groups, pinned, synced, selected } = current.linkgroups
 
 	// Transform default from old "" or undefined to new "default"
-	current.linkgroups.selected = !selected ? 'default' : selected
-	current.linkgroups.groups = groups.map((val) => (!val ? 'default' : val))
-	current.linkgroups.pinned = pinned.map((val) => (!val ? 'default' : val))
-	current.linkgroups.synced = synced.map((val) => (!val ? 'default' : val))
+	current.linkgroups.selected = selected ? selected : 'default'
+	current.linkgroups.groups = groups.map((val) => (val ? val : 'default'))
+	current.linkgroups.pinned = pinned.map((val) => (val ? val : 'default'))
+	current.linkgroups.synced = synced.map((val) => (val ? val : 'default'))
 
 	for (const link of links) {
 		if (!link?.parent) {

@@ -134,7 +134,7 @@ export function initThumbnailEvents() {
 function thumbnailGridZoom() {
 	const container = document.getElementById('thumbnails-container')!
 	const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
-	const newZoom = Math.max((parseInt(currentZoom) + 1) % 6, 1)
+	const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
 	container.style.setProperty('--thumbnails-columns', newZoom.toString())
 }
 
@@ -366,7 +366,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 
 	thb.appendChild(thbimg)
 
-	thbimg.onclickdown(function (e, target) {
+	thbimg.onclickdown((e, target) => {
 		const isLeftClick = (e as MouseEvent).button === 0
 
 		if (isLeftClick && !localIsLoading) {

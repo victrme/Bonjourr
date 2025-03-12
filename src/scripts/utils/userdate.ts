@@ -23,7 +23,7 @@ export default function userDate(timezone?: string): Date {
 		let minutes
 
 		if (timezone.split('.')[1]) {
-			minutes = utcMinutes + parseInt(timezone.split('.')[1])
+			minutes = utcMinutes + Number.parseInt(timezone.split('.')[1])
 
 			if (minutes > -30) {
 				utcHour++
@@ -32,7 +32,7 @@ export default function userDate(timezone?: string): Date {
 			minutes = date.getMinutes()
 		}
 
-		date.setHours(utcHour + parseInt(timezone), minutes)
+		date.setHours(utcHour + Number.parseInt(timezone), minutes)
 
 		return date
 	}

@@ -3,7 +3,7 @@ export default function throttle<F extends (...args: Parameters<F>) => ReturnTyp
 	let inThrottle: boolean
 	let lastTime: number
 
-	return function (...args: Parameters<F>) {
+	return (...args: Parameters<F>) => {
 		if (!inThrottle) {
 			callback(...args)
 

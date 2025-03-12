@@ -77,20 +77,20 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 
 export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> {
 	if (update.blur !== undefined) {
-		applyFilters({ blur: parseFloat(update.blur) })
-		propertiesUpdateDebounce({ blur: parseFloat(update.blur) })
+		applyFilters({ blur: Number.parseFloat(update.blur) })
+		propertiesUpdateDebounce({ blur: Number.parseFloat(update.blur) })
 		return
 	}
 
 	if (update.bright !== undefined) {
-		applyFilters({ bright: parseFloat(update.bright) })
-		propertiesUpdateDebounce({ bright: parseFloat(update.bright) })
+		applyFilters({ bright: Number.parseFloat(update.bright) })
+		propertiesUpdateDebounce({ bright: Number.parseFloat(update.bright) })
 		return
 	}
 
 	if (update.fadein !== undefined) {
-		applyFilters({ fadein: parseInt(update.fadein) })
-		propertiesUpdateDebounce({ fadein: parseFloat(update.fadein) })
+		applyFilters({ fadein: Number.parseInt(update.fadein) })
+		propertiesUpdateDebounce({ fadein: Number.parseFloat(update.fadein) })
 		return
 	}
 
@@ -128,13 +128,13 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	// Textures
 
 	if (update.textureopacity !== undefined) {
-		data.backgrounds.texture.opacity = parseFloat(update.textureopacity)
+		data.backgrounds.texture.opacity = Number.parseFloat(update.textureopacity)
 		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
 		applyTexture(data.backgrounds.texture)
 	}
 
 	if (update.texturesize !== undefined) {
-		data.backgrounds.texture.size = parseInt(update.texturesize)
+		data.backgrounds.texture.size = Number.parseInt(update.texturesize)
 		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
 		applyTexture(data.backgrounds.texture)
 	}
@@ -409,7 +409,7 @@ export function applyBackground({ image, video, solid, position }: ApplyBackgrou
 			}
 
 			if (BROWSER === 'safari' && color) {
-				const fadein = parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
+				const fadein = Number.parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
 				document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 				setTimeout(() => document.documentElement.style.setProperty('--average-color', color!), fadein)
 			}
@@ -433,7 +433,7 @@ export function applyBackground({ image, video, solid, position }: ApplyBackgrou
 		const div = document.createElement('div')
 		const img = new Image()
 
-		img.addEventListener('load', function () {
+		img.addEventListener('load', () => {
 			applyLoadedImage()
 			applySafariThemeColor(image.color)
 		})
@@ -487,7 +487,7 @@ function preloadBackground({ image, video }: ApplyBackgroundOptions) {
 	const img = document.createElement('img')
 
 	if (image) {
-		img.addEventListener('load', function () {
+		img.addEventListener('load', () => {
 			storage.local.remove('backgroundPreloading')
 			img.remove()
 		})
@@ -498,7 +498,7 @@ function preloadBackground({ image, video }: ApplyBackgroundOptions) {
 	if (video) {
 		const vid = document.createElement('video')
 
-		vid.addEventListener('progress', function (e) {
+		vid.addEventListener('progress', (e) => {
 			setTimeout(() => {
 				storage.local.remove('backgroundPreloading')
 				vid.remove()

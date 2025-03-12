@@ -1,4 +1,4 @@
-import { EditorOptions, createEditor } from 'prism-code-editor'
+import { type EditorOptions, createEditor } from 'prism-code-editor'
 import { defaultCommands } from 'prism-code-editor/commands'
 import 'prism-code-editor/prism/languages/css-extras'
 import 'prism-code-editor/prism/languages/uri'

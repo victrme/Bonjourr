@@ -83,7 +83,7 @@ export default function startDrag(event: PointerEvent) {
 	// START RANT
 	// HOW DO I CENTER THE DRAGGED GROUP ON THE CURSOR
 	// AFTER UPDATING THEIR WIDTH ????????????????????
-	let groupSizeOffsets: Map<string, number> = new Map()
+	const groupSizeOffsets: Map<string, number> = new Map()
 
 	if (isMini) {
 		const beforeMap: Map<string, number> = new Map()
@@ -292,7 +292,7 @@ function applyDragMoveBlocks(id: string) {
 
 function applyDragChangeParent(id: string, type: DropType) {
 	const propertyValue = getComputedStyle(domlinkblocks).getPropertyValue('--drop-delay')
-	const dropDelay = type === 'group' ? 0 : parseInt(propertyValue || '120')
+	const dropDelay = type === 'group' ? 0 : Number.parseInt(propertyValue || '120')
 
 	clearTimeout(dragChangeParentTimeout)
 

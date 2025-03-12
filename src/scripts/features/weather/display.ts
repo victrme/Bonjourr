@@ -1,4 +1,4 @@
-import { LastWeather, getSunsetHour } from './index'
+import { type LastWeather, getSunsetHour } from './index'
 import { getLang, tradThis } from '../../utils/translations'
 import { minutator } from '../../utils'
 import userDate from '../../utils/userdate'
@@ -47,7 +47,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 	}
 
 	const handleWidget = () => {
-		let condition = lastWeather.icon_id
+		const condition = lastWeather.icon_id
 
 		if (!tempContainer) {
 			return

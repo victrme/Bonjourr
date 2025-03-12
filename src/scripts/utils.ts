@@ -34,7 +34,7 @@ export async function apiFetch(path: string): Promise<Response | undefined> {
 	}
 }
 
-export function stringMaxSize(str: string = '', size: number) {
+export function stringMaxSize(str = '', size: number) {
 	return str.length > size ? str.slice(0, size) : str
 }
 
@@ -196,7 +196,7 @@ export function getSplitRangeData(id: string): { range?: string; button?: string
 export function hexColorFromSplitRange(id: string): string {
 	const { range, button } = getSplitRangeData(id)
 
-	const opacity = parseInt(range ?? '0')
+	const opacity = Number.parseInt(range ?? '0')
 	const color = button === 'dark' ? '#000' : '#fff'
 	const alpha = opacity.toString(16)
 
@@ -204,7 +204,7 @@ export function hexColorFromSplitRange(id: string): string {
 }
 
 export function opacityFromHex(hex: string) {
-	return parseInt(hex.slice(4), 16)
+	return Number.parseInt(hex.slice(4), 16)
 }
 
 export function toggleDisabled(element: Element | null, force?: boolean) {

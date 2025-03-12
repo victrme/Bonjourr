@@ -84,7 +84,7 @@ function storageTypeFn() {
 		}
 
 		if (type === 'sync') {
-			chrome.storage.local.remove('syncStorage').then(function () {
+			chrome.storage.local.remove('syncStorage').then(() => {
 				chrome.storage.sync.set(data)
 			})
 		}
@@ -288,7 +288,7 @@ async function init(): Promise<AllStorage> {
 		globalThis.pageReady = true
 
 		await new Promise((resolve) => {
-			document.addEventListener('webextstorage', function (event: CustomEventInit) {
+			document.addEventListener('webextstorage', (event: CustomEventInit) => {
 				if (event.detail === 'sync') store.sync = globalThis.startupStorage.sync
 				if (event.detail === 'local') store.local = globalThis.startupStorage.local
 				if (webextStoreReady()) resolve(true)

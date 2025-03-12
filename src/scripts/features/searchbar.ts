@@ -94,7 +94,7 @@ async function updateSearchbar({ engine, newtab, background, placeholder, reques
 	}
 
 	if (width !== undefined) {
-		searchbar.width = parseInt(width)
+		searchbar.width = Number.parseInt(width)
 		setWidth(searchbar.width)
 	}
 
@@ -299,7 +299,7 @@ function initSuggestions() {
 	async function createSuggestionSocket() {
 		socket = await apiWebSocket('suggestions')
 
-		socket?.addEventListener('message', function (event: MessageEvent) {
+		socket?.addEventListener('message', (event: MessageEvent) => {
 			const data = parse<Suggestions | { error: string }>(event.data)
 
 			if (Array.isArray(data)) {

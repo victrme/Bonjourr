@@ -131,8 +131,8 @@ export function gridButtons(id: Widgets) {
 
 	// link button to correct limit, apply disable attr
 	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {
-		const c = parseInt(button.dataset.col || '0')
-		const r = parseInt(button.dataset.row || '0')
+		const c = Number.parseInt(button.dataset.col || '0')
+		const r = Number.parseInt(button.dataset.row || '0')
 		let limit = false
 
 		if (r === -1) limit = top
