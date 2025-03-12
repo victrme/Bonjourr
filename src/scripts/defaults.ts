@@ -12,33 +12,33 @@ export const SYSTEM_OS =
 	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
 		? 'ios'
 		: window.navigator.appVersion.includes('Macintosh')
-		? 'mac'
-		: window.navigator.appVersion.includes('Windows')
-		? 'windows'
-		: window.navigator.userAgent.toLowerCase().includes('Android')
-		? 'android'
-		: 'unknown'
+			? 'mac'
+			: window.navigator.appVersion.includes('Windows')
+				? 'windows'
+				: window.navigator.userAgent.toLowerCase().includes('Android')
+					? 'android'
+					: 'unknown'
 
 export const PLATFORM =
 	window.location.protocol === 'moz-extension:'
 		? 'firefox'
 		: window.location.protocol === 'chrome-extension:'
-		? 'chrome'
-		: window.location.protocol === 'safari-web-extension:'
-		? 'safari'
-		: 'online'
+			? 'chrome'
+			: window.location.protocol === 'safari-web-extension:'
+				? 'safari'
+				: 'online'
 
 export const BROWSER = window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
 	? 'edge'
 	: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
-	? 'opera'
-	: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
-	? 'chrome'
-	: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
-	? 'firefox'
-	: window.navigator.userAgent.toLowerCase().indexOf('safari') > -1
-	? 'safari'
-	: 'other'
+		? 'opera'
+		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
+			? 'chrome'
+			: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
+				? 'firefox'
+				: window.navigator.userAgent.toLowerCase().indexOf('safari') > -1
+					? 'safari'
+					: 'other'
 
 export const EXTENSION: typeof chrome | typeof browser | undefined =
 	PLATFORM === 'online' ? undefined : PLATFORM === 'firefox' ? browser : chrome
@@ -117,7 +117,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		bright: 0.8,
 		frequency: 'hour',
 		color: '#654',
-		urls: [],
+		urls: '',
 		images: {
 			collection: 'bonjourr-images-daylight',
 		},
@@ -206,6 +206,7 @@ export const LOCAL_DEFAULT: Local.Storage = {
 	userQuoteSelection: 0,
 	translations: undefined,
 	quotesCache: [],
+	backgroundUrls: {},
+	backgroundFiles: {},
 	backgroundCollections: {},
-	localFiles: { selected: '', ids: [] },
 }

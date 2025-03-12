@@ -9,11 +9,6 @@ import { IS_MOBILE } from '../../defaults'
 type LocalFileData = {
 	file: File
 	small: Blob
-	position: {
-		size: string
-		x: string
-		y: string
-	}
 }
 
 type UpdateLocal = {
@@ -39,56 +34,60 @@ export default async function localBackgrounds(init?: Local.Storage, event?: Upd
 
 async function initLocalBackgrounds(local: Local.Storage) {
 	const idbKeys = (await idb.keys()).map((key) => key.toString())
-	const localFiles = controlLocalFiles(local, idbKeys)
+	const backgroundFiles = controlBackgroundFiles(local, idbKeys)
 	const sync = await storage.sync.get('frequency')
 
-	if (!localFiles) {
+	if (!backgroundFiles) {
 		return
 	}
 
 	const lastChange = local?.backgroundLastChange ?? ''
 	const freq = sync.backgrounds.frequency
 	const last = new Date(lastChange).getTime()
-	const hasMultipleImages = localFiles.ids.length > 1
+	const hasMultipleImages = Object.keys(backgroundFiles).length > 1
 	const needNewImage = freqControl.get(freq, last)
 
 	if (needNewImage && hasMultipleImages) {
-		const idsNoSelection = localFiles.ids.filter((l) => !l.includes(localFiles.selected))
+		const idsNoSelection = backgroundFiles.ids.filter((l) => !l.includes(backgroundFiles.selected))
 		const randomId = Math.floor(Math.random() * idsNoSelection.length)
 		const newSelection = idsNoSelection[randomId]
 
-		localFiles.selected = newSelection
+		backgroundFiles.selected = newSelection
 
 		storage.local.set({
-			localFiles: localFiles,
+			backgroundFiles: backgroundFiles,
 			backgroundLastChange: new Date().toISOString(),
 		})
 	}
 
-	if (local.localFiles?.selected) {
-		displayCustomBackground(await getFile(local.localFiles.selected))
+	if (local.backgroundFiles?.selected) {
+		displayCustomBackground(await getFile(local.backgroundFiles.selected))
 	} else {
 		removeBackgrounds()
 	}
 }
 
-function controlLocalFiles(local: Local.Storage, idbKeys: string[]): Local.Storage['localFiles'] {
-	const localFiles = local.localFiles ?? { ids: [], selected: '' }
-	const idsAreAllInDB = localFiles.ids.every((id) => idbKeys.includes(id))
+function controlBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local.Storage['backgroundFiles'] {
+	const backgroundFiles = local.backgroundFiles ?? {}
+	const idsAreAllInDB = Object.keys(backgroundFiles).every((id) => idbKeys.includes(id))
 
 	if (idsAreAllInDB === false) {
-		localFiles.ids = idbKeys
-		localFiles.selected = idbKeys[0]
-		storage.local.set({ localFiles })
+		const date = userDate().toISOString()
+
+		for (const key of idbKeys) {
+			backgroundFiles[key] = { lastUsed: date }
+		}
+
+		storage.local.set({ backgroundFiles })
 	}
 
-	return localFiles
+	return backgroundFiles
 }
 
 //	Settings Options
 
 async function handleSettingsOptions(local?: Local.Storage) {
-	local = local ?? (await storage.local.get('localFiles'))
+	local = local ?? (await storage.local.get('backgroundFiles'))
 
 	const actionButtons = document.getElementById('thumbnail-action-buttons')
 	const thmbContainer = document.getElementById('thumbnails-container')!
@@ -96,10 +95,10 @@ async function handleSettingsOptions(local?: Local.Storage) {
 
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
-	const fileIds = local.localFiles?.ids ?? []
+	const fileIds = local.backgroundFiles?.ids ?? []
 	const columnsAmount = Math.min(fileIds.length, 5).toString()
 	const missingThumbnailIds = fileIds.filter((id) => !thumbIds.includes(id))
-	const selected = local.localFiles?.selected ?? ''
+	const selected = local.backgroundFiles?.selected ?? ''
 
 	fileIds.length === 0 ? actionButtons?.classList.remove('shown') : actionButtons?.classList.add('shown')
 	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
@@ -177,17 +176,17 @@ async function thumbnailRemove(event: Event) {
 	const thumbnail = document.querySelector<HTMLElement>('.thumbnail.selected')
 	const id = getThumbnailSelection()[0]
 
-	if (localIsLoading || !thumbnail || !id || !local.localFiles) {
+	if (localIsLoading || !thumbnail || !id || !local.backgroundFiles) {
 		return
 	}
 
-	const newIdList = local.localFiles.ids.filter((s) => !s.includes(id))
-	const currIndex = local.localFiles.ids.indexOf(id)
+	const newIdList = local.backgroundFiles.ids.filter((s) => !s.includes(id))
+	const currIndex = local.backgroundFiles.ids.indexOf(id)
 	const newIndex = Math.min(currIndex, newIdList.length - 1)
 	const newId = newIdList[newIndex] ?? ''
 
-	local.localFiles.ids = newIdList
-	local.localFiles.selected = newId
+	local.backgroundFiles.ids = newIdList
+	local.backgroundFiles.selected = newId
 
 	storage.local.set(local)
 	idb.del(id)
@@ -213,6 +212,35 @@ function getThumbnailSelection(): string[] {
 	return ids
 }
 
+async function getFilesAsCollection(local: Local.Storage): Promise<Backgrounds.Image[]> {
+	const ids = Object.keys(local.backgroundFiles)
+	const files = await getAllFiles(ids)
+	const images: Backgrounds.Image[] = []
+
+	// Create image objects
+
+	for (const { file } of files) {
+		const url = URL.createObjectURL(file)
+
+		images.push({
+			format: 'image',
+			page: '',
+			username: '',
+			urls: {
+				full: url,
+				medium: url,
+				small: url,
+			},
+		})
+	}
+
+	// Order by last used
+
+	// ...
+
+	return images
+}
+
 //	Update
 
 async function updateLocalBackgrounds(update: UpdateLocal) {
@@ -234,7 +262,7 @@ async function updateLocalBackgrounds(update: UpdateLocal) {
 }
 
 async function addNewImage(filelist: FileList, local: Local.Storage) {
-	local.localFiles = local.localFiles ?? { ids: [], selected: '' }
+	local.backgroundFiles = local.backgroundFiles ?? { ids: [], selected: '' }
 	localIsLoading = true
 
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
@@ -243,7 +271,7 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 
 	for (const file of filelist) {
 		const id = randomString(8)
-		local.localFiles.selected = id
+		local.backgroundFiles.selected = id
 		newIds.push(id)
 
 		const small = await compressThumbnail(file)
@@ -261,10 +289,10 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 
 	localIsLoading = false
 
-	displayCustomBackground(filesData[local.localFiles.selected])
-	selectThumbnail(local.localFiles.selected)
+	displayCustomBackground(filesData[local.backgroundFiles.selected])
+	selectThumbnail(local.backgroundFiles.selected)
 
-	local.localFiles.ids = local.localFiles.ids.concat(newIds)
+	local.backgroundFiles.ids = local.backgroundFiles.ids.concat(newIds)
 	storage.local.set(local)
 	handleSettingsOptions(local)
 }
@@ -382,11 +410,11 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 
 async function applyThumbnailBackground(id: string, local?: Local.Storage) {
 	local = local ?? (await storage.local.get())
-	const notAlreadySelected = id && id !== local.localFiles?.selected
+	const notAlreadySelected = id && id !== local.backgroundFiles?.selected
 
-	if (notAlreadySelected && local.localFiles) {
+	if (notAlreadySelected && local.backgroundFiles) {
 		localIsLoading = false
-		local.localFiles.selected = id
+		local.backgroundFiles.selected = id
 
 		storage.local.set(local)
 
@@ -413,4 +441,8 @@ async function addThumbnailsToDom(ids: string[], selected?: string) {
 
 async function getFile(id: string): Promise<LocalFileData> {
 	return (await idb.get(id)) as LocalFileData
+}
+
+async function getAllFiles(ids: string[]): Promise<LocalFileData[]> {
+	return (await idb.getMany(ids)) as LocalFileData[]
 }

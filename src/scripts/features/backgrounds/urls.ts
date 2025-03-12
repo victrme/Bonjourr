@@ -1,40 +1,40 @@
-import { applyBackground } from '.'
-import storage from '../../storage'
 import { stringMaxSize } from '../../utils'
-import { eventDebounce } from '../../utils/debounce'
+import userDate from '../../utils/userdate'
+import storage from '../../storage'
 
 import type { EditorOptions, PrismEditor } from 'prism-code-editor'
-
-type UrlState = 'LOADING' | 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE' | 'OK'
 
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
 
-export default async function backgroundUrls(backgrounds: Sync.Backgrounds) {
-	applyBackground({
-		image: {
-			format: 'image',
-			page: '',
-			username: '',
-			urls: {
-				full: backgrounds.urls.split('\n')[0],
-				medium: backgrounds.urls.split('\n')[0],
-				small: backgrounds.urls.split('\n')[0],
-			},
+export function getUrlsAsCollection(local: Local.Storage): Backgrounds.Image[] {
+	const entries = Object.entries(local.backgroundUrls)
+	const working = entries.filter((entry) => entry[1].state === 'OK')
+	const sorted = working.toSorted((a, b) => new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime())
+	const urls = sorted.map(([key]) => key)
+
+	return urls.map((url) => ({
+		format: 'image',
+		page: '',
+		username: '',
+		urls: {
+			full: url,
+			medium: url,
+			small: url,
 		},
-	})
+	}))
 }
 
 // Editor
 
-export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
+export async function initUrlsEditor(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	globalUrlValue = backgrounds.urls
 
 	const { createBackgroundUrlsEditor } = await import('../csseditor')
 
 	const options: EditorOptions = {
 		language: 'uri',
-		value: backgrounds.urls || '',
+		value: backgrounds.urls,
 	}
 
 	backgroundUrlsEditor = createBackgroundUrlsEditor(options)
@@ -43,7 +43,7 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
 
 	backgroundUrlsEditor.textarea.id = 'background-urls-editor-textarea'
 	backgroundUrlsEditor.textarea.maxLength = 8080
-	backgroundUrlsEditor.textarea.placeholder = 'https://picsum.photos/200\nhttps://picsum.photos/600/400'
+	backgroundUrlsEditor.textarea.placeholder = 'https://picsum.photos/200\n'
 
 	backgroundUrlsEditor.addListener('update', (value) => {
 		value = stringMaxSize(value, 8080)
@@ -54,10 +54,21 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds) {
 		if (document.body.matches('.tabbing')) return false
 		return tabCommand?.(e, selection, value)
 	}
+
+	for (const [url, { state }] of Object.entries(local.backgroundUrls)) {
+		highlightUrlsEditorLine(url, state)
+	}
 }
 
-function highlightUrlsEditorLine(state: UrlState, i: number) {
-	const line = backgroundUrlsEditor.wrapper.querySelector(`.pce-line:nth-child(${i + 2})`)
+function highlightUrlsEditorLine(url: string, state: Local.BackgroundUrlState) {
+	const lines = backgroundUrlsEditor.wrapper.querySelectorAll('.pce-line')
+	const line = lines.values().find((l) => l.textContent === `${url}\n`)
+	const noContent = !line?.textContent?.replace('\n', '')
+
+	if (noContent) {
+		state = 'NONE'
+	}
+
 	line?.classList.toggle('loading', state === 'LOADING')
 	line?.classList.toggle('error', state === 'NOT_IMAGE')
 	line?.classList.toggle('good', state === 'OK')
@@ -75,24 +86,37 @@ export function toggleUrlsButton(storage: string, value: string) {
 }
 
 export function applyUrls(backgrounds: Sync.Backgrounds) {
-	backgrounds.urls = globalUrlValue = backgroundUrlsEditor.value
+	const editorValue = backgroundUrlsEditor.value
+	const backgroundUrls: Local.Storage['backgroundUrls'] = {}
+
+	for (const url of editorValue.split('\n')) {
+		backgroundUrls[url] = { lastUsed: userDate().toISOString(), state: 'NONE' }
+	}
+
+	globalUrlValue = backgrounds.urls = editorValue
+	storage.local.set({ backgroundUrls })
 	storage.sync.set({ backgrounds })
 
 	toggleUrlsButton('osef', 'osef')
-	checkUrlStates(backgrounds.urls)
+	checkUrlStates(backgroundUrls)
 }
 
-function checkUrlStates(urls = ''): void {
-	urls.split('\n').forEach((item, i) => {
-		highlightUrlsEditorLine('LOADING', i)
+async function checkUrlStates(backgroundUrls: Local.Storage['backgroundUrls']) {
+	const entries = Object.entries(backgroundUrls)
 
-		getState(item).then((state) => {
-			highlightUrlsEditorLine(state, i)
-		})
+	entries.forEach(([url, _]) => {
+		highlightUrlsEditorLine(url, 'LOADING')
+	})
+
+	entries.forEach(async ([url, item]) => {
+		item.state = await getState(url)
+		backgroundUrls[url] = item
+		highlightUrlsEditorLine(url, item.state)
+		storage.local.set({ backgroundUrls: backgroundUrls })
 	})
 }
 
-async function getState(item: string): Promise<UrlState> {
+async function getState(item: string): Promise<Local.BackgroundUrlState> {
 	const isImage = (resp: Response) => resp.headers.get('content-type')?.includes('image/')
 	const proxy = 'https://services.bonjourr.fr/backgrounds/proxy/'
 	let resp: Response

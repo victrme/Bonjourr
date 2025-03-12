@@ -18,7 +18,8 @@ declare namespace Local {
 
 		// Backgrounds
 		backgroundCollections: Record<string, Backgrounds.Item[]>
-		localFiles?: { ids: string[]; selected: string }
+		backgroundUrls: Record<string, { lastUsed: string; state: BackgroundUrlState }>
+		backgroundFiles: Record<string, { lastUsed: string; position: BackgroundFilePosition }>
 		backgroundPreloading?: true
 		backgroundLastChange?: string
 
@@ -27,6 +28,14 @@ declare namespace Local {
 		// selectedId: string
 		// idsList: string[]
 	}
+
+	interface BackgroundFilePosition {
+		size: string
+		x: string
+		y: string
+	}
+
+	type BackgroundUrlState = 'NONE' | 'LOADING' | 'OK' | 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE'
 
 	type SyncType = 'browser' | 'gist' | 'url' | 'off'
 

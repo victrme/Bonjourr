@@ -1,5 +1,5 @@
 import localBackgrounds, { initThumbnailEvents } from './local'
-import backgroundUrls, { applyUrls, initUrlsEditor } from './urls'
+import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
 import TEXTURE_RANGES from './textures'
 import PROVIDERS from './providers'
 import credits from './credits'
@@ -45,7 +45,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	if (init) {
 		onSettingsLoad(() => {
 			initThumbnailEvents()
-			initUrlsEditor(sync.backgrounds)
+			initUrlsEditor(sync.backgrounds, local)
 			createProviderSelect(sync.backgrounds)
 			handleBackgroundOptions(sync.backgrounds)
 		})
@@ -56,10 +56,6 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	document.getElementById('background-overlay')?.setAttribute('data-type', sync.backgrounds.type)
 
 	switch (sync.backgrounds.type) {
-		case 'urls':
-			backgroundUrls(sync.backgrounds)
-			break
-
 		case 'color':
 			applyBackground({ solid: sync.backgrounds.color })
 			break
@@ -191,12 +187,16 @@ async function solidUpdate(value: string) {
 //	Cache & network
 
 async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage): Promise<void> {
+	const isImagesOrVideos = backgrounds.type === 'images' || backgrounds.type === 'videos'
+	const isFilesOrUrls = backgrounds.type === 'files' || backgrounds.type === 'urls'
+
 	// 1. Find correct list to use
 
 	let list: Backgrounds.Video[] | Backgrounds.Image[] = []
 
 	if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
 	if (backgrounds.type === 'videos') list = getCollection(backgrounds, local).videos()
+	if (backgrounds.type === 'urls') list = getUrlsAsCollection(local)
 
 	// 2. Control change for specified list
 
@@ -204,6 +204,11 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 	const needNew = freqControl.get(backgrounds.frequency, lastTime)
 
 	if (list.length === 0) {
+		if (isFilesOrUrls) {
+			removeBackgrounds()
+			return
+		}
+
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
@@ -244,8 +249,11 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 	}
 
 	if (backgrounds.frequency === 'pause') {
-		if (backgrounds.type === 'images') backgrounds.images.paused = list[0] as Backgrounds.Image
-		if (backgrounds.type === 'videos') backgrounds.videos.paused = list[0] as Backgrounds.Video
+		if (isImagesOrVideos) {
+			if (backgrounds.type === 'images') backgrounds.images.paused = list[0] as Backgrounds.Image
+			if (backgrounds.type === 'videos') backgrounds.videos.paused = list[0] as Backgrounds.Video
+			storage.sync.set({ backgrounds })
+		}
 	}
 
 	if (list.length > 1 && navigator.onLine) {
@@ -258,6 +266,10 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 	// End of cache, get & save new list
 	if (list.length === 1 && navigator.onLine) {
+		if (isFilesOrUrls) {
+			return
+		}
+
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
@@ -275,8 +287,6 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 	if (isVideo(list[0])) applyBackground({ video: list[0] })
 	if (isImage(list[0])) applyBackground({ image: list[0] })
-
-	storage.sync.set({ backgrounds })
 }
 
 async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backgrounds.Api> {
