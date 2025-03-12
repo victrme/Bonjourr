@@ -1,14 +1,10 @@
 {
 	"compilerOptions": {
-		"module": "ES2022",
-		"target": "ESNext",
-		"types": ["user-agent-data-types", "web-ext-types", "chrome"],
 		"strict": true,
-		"noEmit": true,
-		"allowJs": true,
-		"esModuleInterop": true,
-		"moduleResolution": "Bundler",
-		"forceConsistentCasingInFileNames": true
+		"module": "ESNext",
+		"target": "ESNext",
+		"moduleResolution": "bundler",
+		"types": ["user-agent-data-types", "web-ext-types", "chrome"]
 	},
 	"include": ["src"]
 }
