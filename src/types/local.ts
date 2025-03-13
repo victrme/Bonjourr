@@ -18,21 +18,30 @@ declare namespace Local {
 
 		// Backgrounds
 		backgroundCollections: Record<string, Backgrounds.Item[]>
-		backgroundUrls: Record<string, { lastUsed: string; state: BackgroundUrlState }>
-		backgroundFiles: Record<string, { lastUsed: string; position: BackgroundFilePosition }>
+		backgroundUrls: Record<string, BackgroundUrl>
+		backgroundFiles: Record<string, BackgroundFile>
 		backgroundPreloading?: true
 		backgroundLastChange?: string
 
 		// Unused - Old
 		// unsplashCache: Unsplash.Local
-		// selectedId: string
+		// selected?: boolean, dId: string
 		// idsList: string[]
 	}
 
-	interface BackgroundFilePosition {
-		size: string
-		x: string
-		y: string
+	interface BackgroundUrl {
+		lastUsed: string
+		state: BackgroundUrlState
+	}
+
+	interface BackgroundFile {
+		lastUsed: string
+		selected?: boolean
+		position: {
+			size: string
+			x: string
+			y: string
+		}
 	}
 
 	type BackgroundUrlState = 'NONE' | 'LOADING' | 'OK' | 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE'

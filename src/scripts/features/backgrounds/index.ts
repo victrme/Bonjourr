@@ -1,4 +1,4 @@
-import localBackgrounds, { initThumbnailEvents } from './local'
+import { getFilesAsCollection, initThumbnailEvents, handleFilesSettingsOptions } from './local'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
 import TEXTURE_RANGES from './textures'
 import PROVIDERS from './providers'
@@ -45,6 +45,7 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	if (init) {
 		onSettingsLoad(() => {
 			initThumbnailEvents()
+			handleFilesSettingsOptions(local)
 			initUrlsEditor(sync.backgrounds, local)
 			createProviderSelect(sync.backgrounds)
 			handleBackgroundOptions(sync.backgrounds)
@@ -55,18 +56,12 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	applyTexture(sync.backgrounds.texture)
 	document.getElementById('background-overlay')?.setAttribute('data-type', sync.backgrounds.type)
 
-	switch (sync.backgrounds.type) {
-		case 'color':
-			applyBackground({ solid: sync.backgrounds.color })
-			break
-
-		case 'files':
-			localBackgrounds(local)
-			break
-
-		default:
-			backgroundFrequencyControl(sync.backgrounds, local)
+	if (sync.backgrounds.type) {
+		applyBackground({ solid: sync.backgrounds.color })
+		return
 	}
+
+	backgroundFrequencyControl(sync.backgrounds, local)
 }
 
 // 	Storage update
@@ -196,6 +191,7 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 	if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
 	if (backgrounds.type === 'videos') list = getCollection(backgrounds, local).videos()
+	if (backgrounds.type === 'files') list = await getFilesAsCollection(local)
 	if (backgrounds.type === 'urls') list = getUrlsAsCollection(local)
 
 	// 2. Control change for specified list
@@ -213,7 +209,7 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 		if (json) {
 			local = setCollection(backgrounds, local).fromApi(json)
-			local.backgroundLastChange = userDate().toISOString()
+			local.backgroundLastChange = userDate().toString()
 			storage.local.set(local)
 
 			if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()

@@ -6,15 +6,15 @@ declare namespace Backgrounds {
 	 */
 	interface Image {
 		format: 'image'
-		page: string
-		username: string
 		urls: {
 			full: string
 			medium: string
 			small: string
 		}
 
-		/* Unsplash only */
+		/* Credits */
+		page?: string
+		username?: string
 		color?: string
 		name?: string
 		city?: string
@@ -28,6 +28,11 @@ declare namespace Backgrounds {
 			focal_length: string
 			iso: number
 		}
+
+		/* Background position */
+		size?: string
+		x?: string
+		y?: string
 	}
 
 	/**
@@ -35,10 +40,10 @@ declare namespace Backgrounds {
 	 */
 	interface Video {
 		format: 'video'
-		page: string
-		username: string
 		duration: number
-		thumbnail: string
+		page?: string
+		username?: string
+		thumbnail?: string
 		urls: {
 			full: string
 			medium: string

@@ -9,7 +9,6 @@ import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
-import localBackgrounds from './features/backgrounds/local'
 import { backgroundUpdate } from './features/backgrounds'
 import { supportersNotifications } from './features/supporters'
 import { changeGroupTitle, initGroups } from './features/links/groups'
@@ -30,6 +29,7 @@ import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
 import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
 
 import type { Langs } from '../types/langs'
+import { updateLocalBackgrounds } from './features/backgrounds/local'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -199,7 +199,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	// Change edit tips on mobile
 	if (IS_MOBILE) {
 		domsettings.querySelector('.tooltiptext .instructions')!.textContent = tradThis(
-			`Edit your Quick Links by long-pressing the icon.`
+			`Edit your Quick Links by long-pressing the icon.`,
 		)
 	}
 
@@ -412,7 +412,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds(undefined, { newfile: this.files })
+		updateLocalBackgrounds({ newfile: this.files })
 	})
 
 	paramId('b_background-urls').onclickdown(() => {
