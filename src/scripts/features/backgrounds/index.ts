@@ -56,12 +56,12 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	applyTexture(sync.backgrounds.texture)
 	document.getElementById('background-overlay')?.setAttribute('data-type', sync.backgrounds.type)
 
-	if (sync.backgrounds.type) {
+	if (sync.backgrounds.type === 'color') {
 		applyBackground({ solid: sync.backgrounds.color })
 		return
 	}
 
-	backgroundFrequencyControl(sync.backgrounds, local)
+	backgroundCacheControl(sync.backgrounds, local)
 }
 
 // 	Storage update
@@ -102,7 +102,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.refresh) {
-		local.backgroundLastChange = userDate().toISOString()
+		local.backgroundLastChange = userDate().toString()
 		storage.local.set({ backgroundLastChange: local.backgroundLastChange })
 		backgroundsInit(data, local)
 	}
@@ -151,14 +151,14 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		data.backgrounds[data.backgrounds.type].collection = update.provider
 		storage.sync.set({ backgrounds: data.backgrounds })
 		handleBackgroundOptions(data.backgrounds)
-		backgroundFrequencyControl(data.backgrounds, local)
+		backgroundCacheControl(data.backgrounds, local)
 	}
 
 	if (update.query !== undefined) {
 		data.backgrounds[data.backgrounds.type].query = update.query
 		storage.sync.set({ backgrounds: data.backgrounds })
 		handleBackgroundOptions(data.backgrounds)
-		backgroundFrequencyControl(data.backgrounds, local)
+		backgroundCacheControl(data.backgrounds, local)
 	}
 }
 
@@ -181,23 +181,48 @@ async function solidUpdate(value: string) {
 
 //	Cache & network
 
-async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage): Promise<void> {
+async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Local.Storage): Promise<void> {
+	if (backgrounds.type === 'color') {
+		console.log('is color')
+		return
+	}
+
 	const isImagesOrVideos = backgrounds.type === 'images' || backgrounds.type === 'videos'
 	const isFilesOrUrls = backgrounds.type === 'files' || backgrounds.type === 'urls'
 
 	// 1. Find correct list to use
 
 	let list: Backgrounds.Video[] | Backgrounds.Image[] = []
+	let keys: string[] = []
 
-	if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
-	if (backgrounds.type === 'videos') list = getCollection(backgrounds, local).videos()
-	if (backgrounds.type === 'files') list = await getFilesAsCollection(local)
-	if (backgrounds.type === 'urls') list = getUrlsAsCollection(local)
+	switch (backgrounds.type) {
+		case 'files': {
+			const [k, l] = await getFilesAsCollection(local)
+			keys = k
+			list = l
+			break
+		}
+
+		case 'urls':
+			const [k, l] = getUrlsAsCollection(local)
+			keys = k
+			list = l
+			break
+
+		case 'images':
+			list = getCollection(backgrounds, local).images()
+			break
+
+		case 'videos':
+			list = getCollection(backgrounds, local).videos()
+			break
+	}
 
 	// 2. Control change for specified list
 
 	const lastTime = new Date(local.backgroundLastChange ?? '').getTime()
 	const needNew = freqControl.get(backgrounds.frequency, lastTime)
+	const isPaused = backgrounds.frequency === 'pause'
 
 	if (list.length === 0) {
 		if (isFilesOrUrls) {
@@ -220,7 +245,7 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		}
 	}
 
-	if (local.backgroundPreloading) {
+	if (isImagesOrVideos && local.backgroundPreloading) {
 		if (isVideo(list[0])) applyBackground({ video: list[0] })
 		if (isImage(list[0])) applyBackground({ image: list[0] })
 		if (isVideo(list[1])) preloadBackground({ video: list[1] })
@@ -228,13 +253,13 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		return
 	}
 
-	if (!needNew && backgrounds.frequency === 'pause') {
+	if (isImagesOrVideos && !needNew && isPaused) {
 		if (backgrounds.images?.paused) applyBackground({ image: backgrounds.images.paused })
 		if (backgrounds.videos?.paused) applyBackground({ video: backgrounds.videos.paused })
 		return
 	}
 
-	if (!needNew && backgrounds.frequency !== 'pause') {
+	if (!needNew) {
 		if (isVideo(list[0])) applyBackground({ video: list[0] })
 		if (isImage(list[0])) applyBackground({ image: list[0] })
 		return
@@ -244,33 +269,30 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		list.shift()
 	}
 
-	if (backgrounds.frequency === 'pause') {
-		if (isImagesOrVideos) {
-			if (backgrounds.type === 'images') backgrounds.images.paused = list[0] as Backgrounds.Image
-			if (backgrounds.type === 'videos') backgrounds.videos.paused = list[0] as Backgrounds.Video
-			storage.sync.set({ backgrounds })
-		}
+	if (isImagesOrVideos && backgrounds.frequency === 'pause') {
+		if (backgrounds.type === 'images') backgrounds.images.paused = list[0] as Backgrounds.Image
+		if (backgrounds.type === 'videos') backgrounds.videos.paused = list[0] as Backgrounds.Video
+		storage.sync.set({ backgrounds })
 	}
 
-	if (list.length > 1 && navigator.onLine) {
+	if (list.length > 1) {
 		if (isVideo(list[1])) preloadBackground({ video: list[1] })
 		if (isImage(list[1])) preloadBackground({ image: list[1] })
 
-		local = setCollection(backgrounds, local).fromList(list)
+		if (isImagesOrVideos) local = setCollection(backgrounds, local).fromList(list)
+		if (isFilesOrUrls) local = setLastUsed(backgrounds, local, keys)
+
 		storage.local.set(local)
 	}
 
-	// End of cache, get & save new list
-	if (list.length === 1 && navigator.onLine) {
-		if (isFilesOrUrls) {
-			return
-		}
+	// 3. Get a new set of images if needed
 
+	if (isImagesOrVideos && list.length === 1 && navigator.onLine) {
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
 			local = setCollection(backgrounds, local).fromApi(json)
-			local.backgroundLastChange = userDate().toISOString()
+			local.backgroundLastChange = userDate().toString()
 			storage.local.set(local)
 
 			if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
@@ -370,7 +392,7 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 		case 'files':
 		case 'urls':
 		case 'color': {
-			throw new Error('Can only update with "images" or "videos" type')
+			throw new Error('Cannot update with this type')
 		}
 	}
 
@@ -390,6 +412,25 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	}
 
 	return { fromList, fromApi }
+}
+
+function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: string[]): Local.Storage {
+	switch (backgrounds.type) {
+		case 'images':
+		case 'videos':
+		case 'color': {
+			throw new Error('Cannot update with this type')
+		}
+	}
+
+	if (backgrounds.type === 'urls') {
+		local.backgroundUrls[keys[0]].lastUsed = userDate().toString()
+	}
+	if (backgrounds.type === 'files') {
+		local.backgroundFiles[keys[0]].lastUsed = userDate().toString()
+	}
+
+	return local
 }
 
 // 	Apply to DOM

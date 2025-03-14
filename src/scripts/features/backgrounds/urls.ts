@@ -7,22 +7,27 @@ import type { EditorOptions, PrismEditor } from 'prism-code-editor'
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
 
-export function getUrlsAsCollection(local: Local.Storage): Backgrounds.Image[] {
+export function getUrlsAsCollection(local: Local.Storage): [string[], Backgrounds.Image[]] {
 	const entries = Object.entries(local.backgroundUrls)
 	const working = entries.filter((entry) => entry[1].state === 'OK')
 	const sorted = working.toSorted((a, b) => new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime())
 	const urls = sorted.map(([key]) => key)
 
-	return urls.map((url) => ({
-		format: 'image',
-		page: '',
-		username: '',
-		urls: {
-			full: url,
-			medium: url,
-			small: url,
-		},
-	}))
+	console.log(sorted.map((entry) => entry[1].lastUsed))
+
+	return [
+		urls,
+		urls.map((url) => ({
+			format: 'image',
+			page: '',
+			username: '',
+			urls: {
+				full: url,
+				medium: url,
+				small: url,
+			},
+		})),
+	]
 }
 
 // Editor
@@ -90,7 +95,7 @@ export function applyUrls(backgrounds: Sync.Backgrounds) {
 	const backgroundUrls: Local.Storage['backgroundUrls'] = {}
 
 	for (const url of editorValue.split('\n')) {
-		backgroundUrls[url] = { lastUsed: userDate().toISOString(), state: 'NONE' }
+		backgroundUrls[url] = { lastUsed: userDate().toString(), state: 'NONE' }
 	}
 
 	globalUrlValue = backgrounds.urls = editorValue

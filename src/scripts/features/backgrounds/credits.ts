@@ -4,7 +4,7 @@ export default function credits(image?: Backgrounds.Image) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 
-	if (!domcontainer || !domcredit || !image) {
+	if (!domcontainer || !domcredit || !image?.page) {
 		// also remove credits
 		return
 	}
