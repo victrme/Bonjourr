@@ -31,11 +31,6 @@ interface ApplyBackgroundOptions {
 	image?: Backgrounds.Image
 	video?: Backgrounds.Video
 	solid?: string
-	position?: {
-		size: string
-		y: string
-		x: string
-	}
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
@@ -435,7 +430,7 @@ function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: 
 
 // 	Apply to DOM
 
-export function applyBackground({ image, video, solid, position }: ApplyBackgroundOptions) {
+export function applyBackground({ image, video, solid }: ApplyBackgroundOptions) {
 	const overlay = document.getElementById('background-overlay') as HTMLDivElement
 	const solidBackground = document.getElementById('solid-background') as HTMLDivElement
 	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
@@ -491,11 +486,9 @@ export function applyBackground({ image, video, solid, position }: ApplyBackgrou
 		div.style.backgroundImage = `url(${src})`
 		div.style.opacity = '0'
 
-		if (position) {
-			div.style.backgroundSize = position.size
-			div.style.backgroundPositionX = position.x
-			div.style.backgroundPositionY = position.y
-		}
+		if (image.size) div.style.backgroundSize = image.size
+		if (image.x) div.style.backgroundPositionX = image.x
+		if (image.y) div.style.backgroundPositionY = image.y
 	}
 
 	if (video) {

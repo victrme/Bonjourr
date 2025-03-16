@@ -19,7 +19,7 @@ export default function credits(image?: Backgrounds.Image) {
 		// ⚠️ In this order !
 		if (model) exif += `${model} - `
 		if (aperture) exif += `f/${aperture} `
-		if (exposure_time) exif += `${aperture}s `
+		if (exposure_time) exif += `${exposure_time}s `
 		if (iso) exif += `${iso}ISO `
 		if (focal_length) exif += `${focal_length}mm`
 	}
