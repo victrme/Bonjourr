@@ -1,9 +1,12 @@
-import { apiFetch, equalsCaseInsensitive, freqControl, isEvery } from '../utils'
+import { equalsCaseInsensitive } from '../shared/generic'
+import { needsChange, userDate } from '../shared/time'
 import { displayInterface } from '../index'
-import networkForm from '../utils/networkform'
+import { tradThis } from '../utils/translations'
+import { apiFetch } from '../shared/api'
+import { isEvery } from '../shared/assert'
+import networkForm from '../shared/form'
 import storage from '../storage'
 import parse from '../utils/parse'
-import { tradThis } from '../utils/translations'
 
 type Quote = Quotes.Item
 
@@ -36,7 +39,7 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	}
 
 	const { lang, quotes } = init.sync
-	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last ?? 0)
+	const needsNewQuote = needsChange(quotes.frequency, quotes.last ?? 0)
 
 	const selection = init.local?.userQuoteSelection ?? 0
 	let list = init.local?.quotesCache ?? []
@@ -56,7 +59,7 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	}
 
 	if (needsNewQuote) {
-		quotes.last = freqControl.set()
+		quotes.last = userDate().getTime()
 		quote = controlCacheList(list, lang, quotes.type, quotes.url)
 		storage.sync.set({ quotes })
 	}
@@ -92,7 +95,7 @@ async function updateQuotes({ author, frequency, type, userlist, url, refresh }:
 	}
 
 	if (refresh) {
-		data.quotes.last = freqControl.set()
+		data.quotes.last = userDate().getTime()
 		refreshQuotes(data, local?.quotesCache)
 	}
 

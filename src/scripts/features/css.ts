@@ -1,4 +1,4 @@
-import { stringMaxSize } from '../utils'
+import { stringMaxSize } from '../shared/generic'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'

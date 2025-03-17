@@ -3,10 +3,9 @@ import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { SYSTEM_OS } from '../defaults'
-import errorMessage from '../utils/errormessage'
-import { apiFetch } from '../utils'
+import { apiFetch } from '../shared/api'
 import { subsets } from '../langs'
-import networkForm from '../utils/networkform'
+import networkForm from '../shared/form'
 import storage from '../storage'
 import clock from './clock'
 
@@ -60,8 +59,8 @@ export default function customFont(init?: Font, event?: CustomFontUpdate) {
 			onSettingsLoad(() => {
 				initFontSettings(init)
 			})
-		} catch (e) {
-			errorMessage(e)
+		} catch (_) {
+			console.warn(new Error('Error with custom fonts'))
 		}
 	}
 }

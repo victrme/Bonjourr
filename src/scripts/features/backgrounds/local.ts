@@ -1,7 +1,7 @@
 import { applyBackground, removeBackgrounds } from './index'
-import { randomString, isEvery } from '../../utils'
-import onSettingsLoad from '../../utils/onsettingsload'
-import userDate from '../../utils/userdate'
+import { randomString } from '../../shared/generic'
+import { userDate } from '../../shared/time'
+import { isEvery } from '../../shared/assert'
 import storage from '../../storage'
 import * as idb from 'idb-keyval'
 
@@ -13,7 +13,6 @@ type LocalFileData = {
 
 type UpdateLocal = {
 	settings?: HTMLElement
-	refresh?: HTMLSpanElement
 	newfile?: FileList | null
 	freq?: string
 }
@@ -211,10 +210,6 @@ export async function updateLocalBackgrounds(update: UpdateLocal) {
 		addNewImage(update.newfile, local)
 	}
 
-	if (update.refresh) {
-		refreshCustom(update.refresh)
-	}
-
 	if (isEvery(update.freq)) {
 		sync.backgrounds.frequency = update.freq
 		storage.sync.set({ backgrounds: sync.backgrounds })
@@ -271,12 +266,6 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 	applyBackground({ image })
 	handleFilesSettingsOptions(local)
 	storage.local.set(local)
-}
-
-function refreshCustom(button: HTMLSpanElement) {
-	const lastChange = userDate().toString()
-	storage.local.set({ backgroundLastChange: lastChange })
-	// turnRefreshButton(button, true)
 }
 
 //	Background & Thumbnails

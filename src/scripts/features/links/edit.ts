@@ -1,10 +1,11 @@
-import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
-import { getComposedPath, stringMaxSize } from '../../utils'
-import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { getSelectedIds, getLink } from './helpers'
 import { togglePinGroup } from './groups'
+import quickLinks from './index'
+
+import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { getComposedPath } from '../../shared/dom'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
-import quickLinks from '.'
 import debounce from '../../utils/debounce'
 import storage from '../../storage'
 

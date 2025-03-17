@@ -19,17 +19,18 @@ import storage from './storage'
 import langList from './langs'
 import parse from './utils/parse'
 import debounce from './utils/debounce'
-import filterImports from './utils/filterimports'
+import filterImports from './imports'
 import getPermissions from './utils/permissions'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
+import { opacityFromHex } from './shared/generic'
 import { settingsNotifications } from './utils/notifications'
-import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
-import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
+import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import type { Langs } from '../types/langs'
 import { updateLocalBackgrounds } from './features/backgrounds/local'
+import { getHTMLTemplate, inputThrottle, turnRefreshButton, fadeOut } from './shared/dom'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -199,7 +200,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	// Change edit tips on mobile
 	if (IS_MOBILE) {
 		domsettings.querySelector('.tooltiptext .instructions')!.textContent = tradThis(
-			`Edit your Quick Links by long-pressing the icon.`,
+			`Edit your Quick Links by long-pressing the icon.`
 		)
 	}
 

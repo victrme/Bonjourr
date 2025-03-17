@@ -4,11 +4,12 @@ import TEXTURE_RANGES from './textures'
 import PROVIDERS from './providers'
 import credits from './credits'
 
-import { freqControl, periodOfDay, rgbToHex } from '../../utils'
+import { userDate, daylightPeriod, needsChange } from '../../shared/time'
+import { turnRefreshButton } from '../../shared/dom'
 import onSettingsLoad from '../../utils/onsettingsload'
+import { rgbToHex } from '../../shared/generic'
 import { BROWSER } from '../../defaults'
 import debounce from '../../utils/debounce'
-import userDate from '../../utils/userdate'
 import storage from '../../storage'
 
 interface BackgroundUpdate {
@@ -53,10 +54,9 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 
 	if (sync.backgrounds.type === 'color') {
 		applyBackground({ solid: sync.backgrounds.color })
-		return
+	} else {
+		backgroundCacheControl(sync.backgrounds, local)
 	}
-
-	backgroundCacheControl(sync.backgrounds, local)
 }
 
 // 	Storage update
@@ -97,9 +97,9 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.refresh) {
-		local.backgroundLastChange = userDate().toString()
-		storage.local.set({ backgroundLastChange: local.backgroundLastChange })
+		local.backgroundLastChange = new Date(0).toString()
 		backgroundsInit(data, local)
+		turnRefreshButton(update.refresh, true)
 	}
 
 	if (update.color) {
@@ -215,8 +215,8 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 
 	// 2. Control change for specified list
 
-	const lastTime = new Date(local.backgroundLastChange ?? '').getTime()
-	const needNew = freqControl.get(backgrounds.frequency, lastTime)
+	const lastTime = new Date(local.backgroundLastChange ?? '01/01/1971').getTime()
+	const needNew = needsChange(backgrounds.frequency, lastTime)
 	const isPaused = backgrounds.frequency === 'pause'
 
 	if (list.length === 0) {
@@ -277,6 +277,7 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 		if (isImagesOrVideos) local = setCollection(backgrounds, local).fromList(list)
 		if (isFilesOrUrls) local = setLastUsed(backgrounds, local, keys)
 
+		local.backgroundLastChange = userDate().toString()
 		storage.local.set(local)
 	}
 
@@ -342,7 +343,7 @@ function findCollectionName(backgrounds: Sync.Backgrounds): string {
 	const isDaylight = collection.includes('daylight')
 
 	if (isDaylight) {
-		const period = periodOfDay(userDate().getTime())
+		const period = daylightPeriod(userDate().getTime())
 		return `${collection}-${period}`
 	}
 

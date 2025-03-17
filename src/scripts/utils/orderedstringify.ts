@@ -1,5 +1,5 @@
 import { SYNC_DEFAULT } from '../defaults'
-import { bundleLinks } from '../utils'
+import { bundleLinks } from '../utils/bundlelinks'
 
 // https://stackoverflow.com/a/53593328
 export default function orderedStringify(data: Sync.Storage) {

@@ -1,8 +1,8 @@
 import { retrieveGist, sendGist, findGistId, isGistTokenValid, setGistStatus } from './gist'
 import { isDistantUrlValid, receiveFromURL } from './url'
 import onSettingsLoad from '../../utils/onsettingsload'
-import networkForm from '../../utils/networkform'
-import { fadeOut } from '../../utils'
+import networkForm from '../../shared/form'
+import { fadeOut } from '../../shared/dom'
 import storage from '../../storage'
 
 interface SyncUpdate {

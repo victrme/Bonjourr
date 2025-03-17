@@ -1,5 +1,4 @@
 import storage from '../storage'
-import { countryCodeToLanguageCode } from '../utils'
 
 let trns: Local.Translations | undefined
 let currentTrnsLang = 'en'
@@ -80,5 +79,16 @@ export function getLang(): string {
 }
 
 export function tradThis(str: string): string {
-	return trns ? (trns[str] ?? str) : str
+	return trns ? trns[str] ?? str : str
+}
+
+export function countryCodeToLanguageCode(lang: string): string {
+	if (lang.includes('ES')) lang = 'es'
+	if (lang === 'gr') lang = 'el'
+	if (lang === 'jp') lang = 'ja'
+	if (lang === 'cz') lang = 'cs'
+
+	lang = lang.replace('_', '-')
+
+	return lang
 }

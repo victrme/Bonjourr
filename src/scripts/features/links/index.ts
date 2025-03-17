@@ -6,9 +6,9 @@ import displayEditDialog from './edit'
 import { folderClick } from './folders'
 import startDrag from './drag'
 
-import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
+import { randomString, stringMaxSize } from '../../shared/generic'
+import { getHTMLTemplate } from '../../shared/dom'
 import { eventDebounce } from '../../utils/debounce'
-import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
 import storage from '../../storage'
 
@@ -99,7 +99,7 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	}
 
 	if (!init) {
-		errorMessage('No data for quick links !')
+		console.warn(new Error('No data for quick links !'))
 		return
 	}
 

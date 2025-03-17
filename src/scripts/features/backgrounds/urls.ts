@@ -1,5 +1,5 @@
-import { stringMaxSize } from '../../utils'
-import userDate from '../../utils/userdate'
+import { stringMaxSize } from '../../shared/generic'
+import { userDate } from '../../shared/time'
 import storage from '../../storage'
 
 import type { EditorOptions, PrismEditor } from 'prism-code-editor'

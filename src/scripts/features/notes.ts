@@ -1,5 +1,6 @@
-import { hexColorFromSplitRange, opacityFromHex } from '../utils'
+import { hexColorFromSplitRange } from '../shared/dom'
 import { getLang, tradThis } from '../utils/translations'
+import { opacityFromHex } from '../shared/generic'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import PocketEditor from 'pocket-editor'

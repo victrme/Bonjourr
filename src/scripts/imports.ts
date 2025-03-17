@@ -1,8 +1,10 @@
-import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from '../features/move/helpers'
-import { randomString, bundleLinks, countryCodeToLanguageCode } from '../utils'
-import { API_DOMAIN, SYNC_DEFAULT } from '../defaults'
+import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from './features/move/helpers'
+import { countryCodeToLanguageCode } from './utils/translations'
+import { API_DOMAIN, SYNC_DEFAULT } from './defaults'
+import { oldJSONToCSV } from './features/quotes'
+import { randomString } from './shared/generic'
 import { deepmergeAll } from '@victr/deepmerge'
-import { oldJSONToCSV } from '../features/quotes'
+import { bundleLinks } from './utils/bundlelinks'
 
 type Import = Partial<Sync.Storage>
 

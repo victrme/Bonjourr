@@ -1,6 +1,6 @@
 import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers'
 import { updateMoveElement } from '.'
-import { toggleDisabled } from '../../utils'
+import { toggleDisabled } from '../../shared/dom'
 import { tradThis } from '../../utils/translations'
 
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
