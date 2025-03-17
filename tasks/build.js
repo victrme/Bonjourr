@@ -62,10 +62,6 @@ const paths = {
 
 console.clear()
 
-if (args.includes('translate')) {
-	updateTranslations()
-}
-
 if ((ENV_DEV || ENV_TEST) && PLATFORM_ONLINE) {
 	liveServer()
 }
@@ -84,11 +80,17 @@ if (ENV_PROD && platform === undefined) {
 		fs.rmSync('./release/', { recursive: true })
 	}
 
-	for (const platform of PLATFORMS) {
-		exec(`node ./build.config.js ${platform} prod`, (error, stdout, _) => {
-			error ? console.error(error) : console.log(`${stdout.replace('\n', '')} <- ${platform}`)
-		})
-	}
+	exec('biome lint', (err, _stdout, stderr) => {
+		console.warn(stderr)
+
+		if (!err) {
+			for (const platform of PLATFORMS) {
+				exec(`node ./tasks/build.js ${platform} prod`, (error, stdout, _) => {
+					error ? console.error(error) : console.log(`${stdout.replace('\n', '')} <- ${platform}`)
+				})
+			}
+		}
+	})
 }
 
 // Build or Watch
@@ -307,99 +309,4 @@ function liveServer() {
 function copyDir(...args) {
 	// cosmetic abstraction, i'm sure its fine
 	cp(...args, { recursive: true })
-}
-
-//	Auto translator tool
-
-async function updateTranslations() {
-	const langs = readdirSync('./_locales/')
-	const englishDict = JSON.parse(readFileSync(`./_locales/en/translations.json`, 'utf8'))
-	const files = []
-
-	for (const lang of langs) {
-		const isCorrect = lang.length === 2 || (lang.length === 5 && lang[2] === '-')
-		const isNotEnglish = lang !== 'en'
-
-		if (isCorrect && isNotEnglish) {
-			files.push(translateFile(lang))
-		}
-	}
-
-	await Promise.all(files)
-
-	/**
-	 * @param {string} lang
-	 * @returns {Promise<void>}
-	 */
-	async function translateFile(lang) {
-		const translations = readFileSync(`./_locales/${lang}/translations.json`, 'utf8')
-		const newDict = {}
-		let removed = 0
-		let added = 0
-		let langDict
-
-		try {
-			langDict = JSON.parse(translations)
-		} catch (_) {
-			return console.log('Cannot translate ' + lang)
-		}
-
-		// Remove keys not found in "english" translation file
-		for (const key of Object.keys(langDict)) {
-			if (englishDict[key]) {
-				newDict[key] = langDict[key]
-				continue
-			}
-
-			removed++
-		}
-
-		// Add keys & translate new stuff
-		const missingKeys = Object.keys(englishDict).filter((key) => newDict[key] === undefined)
-
-		if (missingKeys.length > 0) {
-			const message = lang + '\n' + missingKeys.join('\n')
-			const translations = await claudeTranslation(message)
-
-			for (const key of missingKeys) {
-				newDict[key] = translations.get(key)
-				added++
-			}
-		}
-
-		// Order translations
-		const keylist = new Set()
-		const enKeys = [...Object.keys(englishDict)]
-		const sortOrder = (a, b) => enKeys.indexOf(a) - enKeys.indexOf(b)
-
-		JSON.stringify(newDict, (key, value) => {
-			return keylist.add(key), value
-		})
-
-		const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
-
-		// Write to file
-		writeFileSync(`./_locales/${lang}/translations.json`, stringified)
-
-		// Log
-		console.log(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
-	}
-
-	/**
-	 * @param {string} message
-	 * @returns {Promise<Map<string, string>>}
-	 */
-	async function claudeTranslation(message) {
-		const init = { body: message, method: 'POST' }
-		const path = `https://claude-translator.victr.workers.dev/`
-		const json = await (await fetch(path, init)).json()
-		const trns = JSON.parse(json.content[0].text)
-		const map = new Map()
-
-		for (const [en, trn] of trns) {
-			map.set(en, trn)
-		}
-
-		return map
-	}
 }
