@@ -9,7 +9,6 @@ import hideElements from './features/hide'
 import moveElements from './features/move'
 import interfacePopup from './features/popup'
 import synchronization from './features/synchronization'
-import localBackgrounds from './features/backgrounds/local'
 import { backgroundUpdate } from './features/backgrounds'
 import { supportersNotifications } from './features/supporters'
 import { changeGroupTitle, initGroups } from './features/links/groups'
@@ -20,16 +19,18 @@ import storage from './storage'
 import langList from './langs'
 import parse from './utils/parse'
 import debounce from './utils/debounce'
-import filterImports from './utils/filterimports'
+import filterImports from './imports'
 import getPermissions from './utils/permissions'
 import orderedStringify from './utils/orderedstringify'
 import { loadCallbacks } from './utils/onsettingsload'
+import { opacityFromHex } from './shared/generic'
 import { settingsNotifications } from './utils/notifications'
-import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
-import { fadeOut, getHTMLTemplate, inputThrottle, opacityFromHex, stringMaxSize, turnRefreshButton } from './utils'
+import { traduction, tradThis, toggleTraduction } from './utils/translations'
 
 import type { Langs } from '../types/langs'
+import { updateLocalBackgrounds } from './features/backgrounds/local'
+import { getHTMLTemplate, inputThrottle, turnRefreshButton, fadeOut } from './shared/dom'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -111,7 +112,7 @@ function settingsToggle() {
 
 function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	const domsettings = document.getElementById('settings') as HTMLElement
-	const userQuotes = !data.quotes?.userlist?.[0] ? undefined : data.quotes?.userlist
+	const userQuotes = data.quotes?.userlist?.[0] ? data.quotes?.userlist : undefined
 
 	setInput('i_blur', data.backgrounds.blur ?? 15)
 	setInput('i_bright', data.backgrounds.bright ?? 0.8)
@@ -285,7 +286,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 }
 
 function initOptionsEvents() {
-	paramId('b_accept-permissions').onclickdown(async function () {
+	paramId('b_accept-permissions').onclickdown(async () => {
 		await getPermissions('topSites', 'bookmarks')
 
 		const data = await storage.sync.get()
@@ -297,7 +298,7 @@ function initOptionsEvents() {
 
 	// General
 
-	paramId('i_showall').onclickdown(function (_, target) {
+	paramId('i_showall').onclickdown((_, target) => {
 		showall(target.checked, true)
 	})
 
@@ -325,13 +326,13 @@ function initOptionsEvents() {
 		darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
 	})
 
-	paramId('i_settingshide').onclickdown(function (_, target) {
+	paramId('i_settingshide').onclickdown((_, target) => {
 		hideElements({ settingsicon: target.checked }, { isEvent: true })
 	})
 
 	// Quick links
 
-	paramId('i_quicklinks').onclickdown(function (_, target) {
+	paramId('i_quicklinks').onclickdown((_, target) => {
 		moveElements(undefined, { widget: ['quicklinks', target.checked] })
 	})
 
@@ -352,11 +353,11 @@ function initOptionsEvents() {
 		this.classList.remove('valid')
 	})
 
-	paramId('i_linkgroups').onclickdown(function (_, target) {
+	paramId('i_linkgroups').onclickdown((_, target) => {
 		quickLinks(undefined, { groups: target.checked })
 	})
 
-	paramId('i_linknewtab').onclickdown(function (_, target) {
+	paramId('i_linknewtab').onclickdown((_, target) => {
 		quickLinks(undefined, { newtab: target.checked })
 	})
 
@@ -364,11 +365,11 @@ function initOptionsEvents() {
 		quickLinks(undefined, { styles: { style: this.value } })
 	})
 
-	paramId('b_showtitles').onclickdown(function (_, target) {
+	paramId('b_showtitles').onclickdown((_, target) => {
 		quickLinks(undefined, { styles: { titles: !target.classList.contains('on') } })
 	})
 
-	paramId('b_showbackgrounds').onclickdown(function (_, target) {
+	paramId('b_showbackgrounds').onclickdown((_, target) => {
 		quickLinks(undefined, { styles: { backgrounds: !target.classList.contains('on') } })
 	})
 
@@ -376,7 +377,7 @@ function initOptionsEvents() {
 		quickLinks(undefined, { row: this.value })
 	})
 
-	paramId('b_importbookmarks').onclickdown(async function () {
+	paramId('b_importbookmarks').onclickdown(async () => {
 		await getPermissions('topSites', 'bookmarks')
 		linksImport()
 	})
@@ -391,8 +392,8 @@ function initOptionsEvents() {
 		backgroundUpdate({ color: this.value })
 	})
 
-	paramId('i_background-collection').addEventListener('input', function () {
-		backgroundUpdate({ collection: this.value })
+	paramId('i_background-provider').addEventListener('input', function () {
+		backgroundUpdate({ provider: this.value })
 	})
 
 	paramId('i_background-user-coll').addEventListener('change', function () {
@@ -407,18 +408,16 @@ function initOptionsEvents() {
 		backgroundUpdate({ freq: this.value })
 	})
 
-	paramId('i_refresh').onclickdown(function (_, target) {
+	paramId('i_refresh').onclickdown((_, target) => {
 		backgroundUpdate({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
-	// Custom backgrounds
-
 	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
-		localBackgrounds(undefined, { newfile: this.files })
+		updateLocalBackgrounds({ newfile: this.files })
 	})
 
-	paramId('b_thumbnail-all').onclickdown(function () {
-		localBackgrounds(undefined, { showing: 'all' })
+	paramId('b_background-urls').onclickdown(() => {
+		backgroundUpdate({ urlsapply: true })
 	})
 
 	// Background filters
@@ -449,19 +448,19 @@ function initOptionsEvents() {
 
 	// Time and date
 
-	paramId('i_time').onclickdown(function (_, target) {
+	paramId('i_time').onclickdown((_, target) => {
 		moveElements(undefined, { widget: ['time', target.checked] })
 	})
 
-	paramId('i_analog').onclickdown(function (_, target) {
+	paramId('i_analog').onclickdown((_, target) => {
 		clock(undefined, { analog: target.checked })
 	})
 
-	paramId('i_seconds').onclickdown(function (_, target) {
+	paramId('i_seconds').onclickdown((_, target) => {
 		clock(undefined, { seconds: target.checked })
 	})
 
-	paramId('i_worldclocks').onclickdown(function (_, target) {
+	paramId('i_worldclocks').onclickdown((_, target) => {
 		paramId('worldclocks_options')?.classList.toggle('shown', target.checked)
 		clock(undefined, { worldclocks: target.checked })
 	})
@@ -490,11 +489,11 @@ function initOptionsEvents() {
 		clock(undefined, { background: 'opacity' })
 	})
 
-	paramId('i_analog-border-shade').addEventListener('click', function () {
+	paramId('i_analog-border-shade').addEventListener('click', () => {
 		clock(undefined, { border: 'shade' })
 	})
 
-	paramId('i_analog-background-shade').addEventListener('click', function () {
+	paramId('i_analog-background-shade').addEventListener('click', () => {
 		clock(undefined, { background: 'shade' })
 	})
 
@@ -503,17 +502,17 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
-		clock(undefined, { size: parseFloat(this.value) })
+		clock(undefined, { size: Number.parseFloat(this.value) })
 	})
 
-	paramId('i_ampm').onclickdown(function (_, target) {
+	paramId('i_ampm').onclickdown((_, target) => {
 		clock(undefined, { ampm: target.checked })
 
 		// shows/hides ampm_label option
 		paramId('ampm_label')?.classList.toggle('shown', target.checked)
 	})
 
-	paramId('i_ampm-label').onclickdown(function (_, target) {
+	paramId('i_ampm-label').onclickdown((_, target) => {
 		clock(undefined, { ampmlabel: target.checked })
 	})
 
@@ -531,7 +530,7 @@ function initOptionsEvents() {
 
 	// Weather
 
-	paramId('i_main').onclickdown(function (_, target) {
+	paramId('i_main').onclickdown((_, target) => {
 		moveElements(undefined, { widget: ['main', target.checked] })
 	})
 
@@ -576,7 +575,7 @@ function initOptionsEvents() {
 		weather(undefined, { unhide: true })
 	})
 
-	paramId('i_greethide').onclickdown(function (_, target) {
+	paramId('i_greethide').onclickdown((_, target) => {
 		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 
@@ -584,7 +583,7 @@ function initOptionsEvents() {
 		clock(undefined, { greeting: this.value })
 	})
 
-	paramId('i_greeting').addEventListener('change', function () {
+	paramId('i_greeting').addEventListener('change', () => {
 		paramId('i_greeting').blur()
 	})
 
@@ -594,7 +593,7 @@ function initOptionsEvents() {
 
 	// Notes
 
-	paramId('i_notes').onclickdown(function (_, target) {
+	paramId('i_notes').onclickdown((_, target) => {
 		moveElements(undefined, { widget: ['notes', target.checked] })
 	})
 
@@ -610,13 +609,13 @@ function initOptionsEvents() {
 		notes(undefined, { background: true })
 	})
 
-	paramId('i_notes-shade').onclickdown(function () {
+	paramId('i_notes-shade').onclickdown(() => {
 		notes(undefined, { background: true })
 	})
 
 	// Searchbar
 
-	paramId('i_sb').onclickdown(function (_, target) {
+	paramId('i_sb').onclickdown((_, target) => {
 		moveElements(undefined, { widget: ['searchbar', target.checked] })
 		getPermissions('search')
 	})
@@ -629,7 +628,7 @@ function initOptionsEvents() {
 		searchbar(undefined, { background: true })
 	})
 
-	paramId('i_sb-shade').addEventListener('click', function () {
+	paramId('i_sb-shade').addEventListener('click', () => {
 		searchbar(undefined, { background: true })
 	})
 
@@ -641,11 +640,11 @@ function initOptionsEvents() {
 		searchbar(undefined, { request: this })
 	})
 
-	paramId('i_sbnewtab').onclickdown(function (_, target) {
+	paramId('i_sbnewtab').onclickdown((_, target) => {
 		searchbar(undefined, { newtab: target.checked })
 	})
 
-	paramId('i_sbsuggestions').onclickdown(function (_, target) {
+	paramId('i_sbsuggestions').onclickdown((_, target) => {
 		searchbar(undefined, { suggestions: target.checked })
 	})
 
@@ -653,13 +652,13 @@ function initOptionsEvents() {
 		searchbar(undefined, { placeholder: this.value })
 	})
 
-	paramId('i_sbplaceholder').addEventListener('change', function () {
+	paramId('i_sbplaceholder').addEventListener('change', () => {
 		paramId('i_sbplaceholder').blur()
 	})
 
 	// Quotes
 
-	paramId('i_quotes').onclickdown(function (_, target) {
+	paramId('i_quotes').onclickdown((_, target) => {
 		moveElements(undefined, { widget: ['quotes', target.checked] })
 	})
 
@@ -671,13 +670,13 @@ function initOptionsEvents() {
 		quotes(undefined, { type: this.value })
 	})
 
-	paramId('i_qtrefresh').onclickdown(function (_, target) {
+	paramId('i_qtrefresh').onclickdown((_, target) => {
 		inputThrottle(target)
 		turnRefreshButton(target.children[0] as HTMLSpanElement, true)
 		quotes(undefined, { refresh: true })
 	})
 
-	paramId('i_qtauthor').onclickdown(function (_, target) {
+	paramId('i_qtauthor').onclickdown((_, target) => {
 		quotes(undefined, { author: target.checked })
 	})
 
@@ -693,11 +692,11 @@ function initOptionsEvents() {
 
 	// Custom fonts
 
-	paramId('i_customfont').addEventListener('pointerenter', function () {
+	paramId('i_customfont').addEventListener('pointerenter', () => {
 		customFont(undefined, { autocomplete: true })
 	})
 
-	paramId('f_customfont').addEventListener('submit', function (event) {
+	paramId('f_customfont').addEventListener('submit', (event) => {
 		customFont(undefined, { family: paramId('i_customfont').value })
 		event.preventDefault()
 	})
@@ -711,12 +710,12 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_textshadow').addEventListener('input', function () {
-		textShadow(undefined, parseFloat(this.value))
+		textShadow(undefined, Number.parseFloat(this.value))
 	})
 
 	// Page layout
 
-	paramId('b_editmove').onclickdown(function () {
+	paramId('b_editmove').onclickdown(() => {
 		moveElements(undefined, {
 			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
 		})
@@ -727,11 +726,11 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_pagewidth').addEventListener('input', function () {
-		pageControl({ width: parseInt(this.value) }, true)
+		pageControl({ width: Number.parseInt(this.value) }, true)
 	})
 
 	paramId('i_pagegap').addEventListener('input', function () {
-		pageControl({ gap: parseFloat(this.value) }, true)
+		pageControl({ gap: Number.parseFloat(this.value) }, true)
 	})
 
 	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), { passive: true })
@@ -745,7 +744,7 @@ function initOptionsEvents() {
 		interfacePopup(undefined, { announcements: this.value })
 	})
 
-	paramId('i_supporters_notif').onclickdown(function (_, target) {
+	paramId('i_supporters_notif').onclickdown((_, target) => {
 		supportersNotifications(undefined, { enabled: target.checked })
 	})
 
@@ -765,30 +764,30 @@ function initOptionsEvents() {
 		synchronization(undefined, { url: paramId('i_urlsync').value })
 	})
 
-	paramId('b_storage-persist').onclickdown(async function () {
+	paramId('b_storage-persist').onclickdown(async () => {
 		const persists = await navigator.storage.persist()
 		synchronization(undefined, { firefoxPersist: persists })
 	})
 
-	paramId('b_gistup').onclickdown(function () {
+	paramId('b_gistup').onclickdown(() => {
 		synchronization(undefined, { up: true })
 	})
 
-	paramId('b_gistdown').onclickdown(function () {
+	paramId('b_gistdown').onclickdown(() => {
 		synchronization(undefined, { down: true })
 	})
 
-	paramId('b_urldown').onclickdown(function () {
+	paramId('b_urldown').onclickdown(() => {
 		synchronization(undefined, { down: true })
 	})
 
 	// Settings managment
 
-	paramId('settings-managment').addEventListener('dragenter', function () {
+	paramId('settings-managment').addEventListener('dragenter', () => {
 		paramId('settings-managment').classList.add('dragging-file')
 	})
 
-	paramId('file-import').addEventListener('dragleave', function () {
+	paramId('file-import').addEventListener('dragleave', () => {
 		paramId('settings-managment').classList.remove('dragging-file')
 	})
 
@@ -796,7 +795,7 @@ function initOptionsEvents() {
 		paramId('file-import')?.click()
 	})
 
-	paramId('b_file-save').addEventListener('click', function () {
+	paramId('b_file-save').addEventListener('click', () => {
 		saveImportFile()
 	})
 
@@ -804,40 +803,40 @@ function initOptionsEvents() {
 		loadImportFile(this)
 	})
 
-	paramId('b_settings-copy').addEventListener('click', function () {
+	paramId('b_settings-copy').addEventListener('click', () => {
 		copySettings()
 	})
 
-	paramId('settings-data').addEventListener('input', function (event) {
+	paramId('settings-data').addEventListener('input', (event) => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('settings-data').addEventListener('focus', function (event) {
+	paramId('settings-data').addEventListener('focus', (event) => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('settings-data').addEventListener('blur', function (event) {
+	paramId('settings-data').addEventListener('blur', (event) => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('b_settings-cancel').onclickdown(function () {
+	paramId('b_settings-cancel').onclickdown(() => {
 		toggleSettingsChangesButtons('cancel')
 	})
 
-	paramId('b_settings-apply').onclickdown(function () {
+	paramId('b_settings-apply').onclickdown(() => {
 		const val = paramId('settings-data').value
 		importSettings(parse<Partial<Sync.Storage>>(val) ?? {})
 	})
 
-	paramId('b_reset-first').onclickdown(function () {
+	paramId('b_reset-first').onclickdown(() => {
 		resetSettings('first')
 	})
 
-	paramId('b_reset-apply').onclickdown(function () {
+	paramId('b_reset-apply').onclickdown(() => {
 		resetSettings('yes')
 	})
 
-	paramId('b_reset-cancel').onclickdown(function () {
+	paramId('b_reset-cancel').onclickdown(() => {
 		resetSettings('no')
 	})
 
@@ -864,7 +863,7 @@ function initOptionsEvents() {
 	})
 
 	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
-		elem.onclickdown(function () {
+		elem.onclickdown(() => {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
 			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
 		})
@@ -1014,7 +1013,7 @@ function drawerDragEvents() {
 	}
 
 	function dragMove(e: Event) {
-		let clientY: number = 0
+		let clientY = 0
 
 		// Get mouse / touch y position
 		if (e.type === 'pointermove') clientY = (e as MouseEvent).clientY
@@ -1032,7 +1031,7 @@ function drawerDragEvents() {
 	}
 
 	function dragEnd(e: Event) {
-		let clientY: number = 0
+		let clientY = 0
 
 		// Get mouse / touch y position
 		if (e.type === 'pointerup') clientY = (e as MouseEvent).clientY

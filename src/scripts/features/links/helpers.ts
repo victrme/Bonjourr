@@ -1,4 +1,4 @@
-import { stringMaxSize } from '../../utils'
+import { stringMaxSize } from '../../shared/generic'
 import { API_DOMAIN } from '../../defaults'
 import { tradThis } from '../../utils/translations'
 

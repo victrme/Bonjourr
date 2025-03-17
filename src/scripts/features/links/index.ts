@@ -6,9 +6,9 @@ import displayEditDialog from './edit'
 import { folderClick } from './folders'
 import startDrag from './drag'
 
-import { getHTMLTemplate, randomString, stringMaxSize } from '../../utils'
+import { randomString, stringMaxSize } from '../../shared/generic'
+import { getHTMLTemplate } from '../../shared/dom'
 import { eventDebounce } from '../../utils/debounce'
-import errorMessage from '../../utils/errormessage'
 import { tradThis } from '../../utils/translations'
 import storage from '../../storage'
 
@@ -99,7 +99,7 @@ export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	}
 
 	if (!init) {
-		errorMessage('No data for quick links !')
+		console.warn(new Error('No data for quick links !'))
 		return
 	}
 
@@ -145,7 +145,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 
 	// Remove links that didn't make the cut
 	const divs = activeGroups.map((g) => g.div)
-	const usedLis = activeGroups.map((group) => group.lis).flat()
+	const usedLis = activeGroups.flatMap((group) => group.lis)
 
 	document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group').forEach((div) => {
 		div.querySelectorAll<HTMLLIElement>('li').forEach((li) => {
@@ -260,7 +260,7 @@ function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
 
 	if (style !== 'text') {
 		const iconurl = link.icon ?? ''
-		const refresh = new Date(parseInt(iconurl))?.getTime()
+		const refresh = new Date(Number.parseInt(iconurl))?.getTime()
 		const isDefaultRefreshed = Number.isInteger(refresh)
 		const isUserDefined = !isDefaultRefreshed && !!link.icon
 
@@ -672,7 +672,7 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 
 function setRows(row: string) {
 	const style = [...domlinkblocks.classList].filter(isLinkStyle)[0] ?? 'large'
-	const val = parseInt(row ?? '6')
+	const val = Number.parseInt(row ?? '6')
 	initRows(val, style)
 	eventDebounce({ linksrow: row })
 }

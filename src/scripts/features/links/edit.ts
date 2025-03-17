@@ -1,10 +1,11 @@
-import { getSelectedIds, getLink, getDefaultIcon, createTitle } from './helpers'
-import { getComposedPath, stringMaxSize } from '../../utils'
-import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { getSelectedIds, getLink } from './helpers'
 import { togglePinGroup } from './groups'
+import quickLinks from './index'
+
+import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
+import { getComposedPath } from '../../shared/dom'
 import { tradThis } from '../../utils/translations'
 import transitioner from '../../utils/transitioner'
-import quickLinks from '.'
 import debounce from '../../utils/debounce'
 import storage from '../../storage'
 
@@ -121,7 +122,7 @@ export default async function openEditDialog(event: Event) {
 		if (link && !link.folder) {
 			const icon = link.icon ?? ''
 			domurl.value = link.url ?? ''
-			domicon.value = Number.isNaN(parseInt(icon)) ? icon : ''
+			domicon.value = Number.isNaN(Number.parseInt(icon)) ? icon : ''
 		}
 	}
 
@@ -259,15 +260,15 @@ queueMicrotask(() => {
 	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
 
 	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
-		const handleLongPress = debounce(function (event: TouchEvent) {
+		const handleLongPress = debounce((event: TouchEvent) => {
 			openEditDialog(event)
 		}, 500)
 
-		domlinkblocks?.addEventListener('touchstart', function (event) {
+		domlinkblocks?.addEventListener('touchstart', (event) => {
 			handleLongPress(event)
 		})
 
-		domlinkblocks?.addEventListener('touchend', function () {
+		domlinkblocks?.addEventListener('touchend', () => {
 			handleLongPress.cancel()
 		})
 

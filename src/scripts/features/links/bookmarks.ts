@@ -1,10 +1,13 @@
-import { bundleLinks, getHTMLTemplate, randomString, toggleDisabled } from '../../utils'
-import { getLang, tradThis, traduction } from '../../utils/translations'
-import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults'
-import quickLinks, { validateLink } from '.'
-import { settingsNotifications } from '../../utils/notifications'
-import getPermissions from '../../utils/permissions'
+import quickLinks, { validateLink } from './index'
 import { isLink } from './helpers'
+
+import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults'
+import { getHTMLTemplate, toggleDisabled } from '../../shared/dom'
+import { getLang, tradThis, traduction } from '../../utils/translations'
+import { settingsNotifications } from '../../utils/notifications'
+import { randomString } from '../../shared/generic'
+import { bundleLinks } from '../../utils/bundlelinks'
+import getPermissions from '../../utils/permissions'
 import storage from '../../storage'
 
 type Treenode = chrome.bookmarks.BookmarkTreeNode

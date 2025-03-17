@@ -1,13 +1,10 @@
-import storage from '../../storage'
-import suntime from '../../utils/suntime'
-import { weatherFetch } from '../../utils'
-import { tradThis, getLang } from '../../utils/translations'
-
-import { getSunsetHour } from './index'
-import { handleGeolOption } from './settings'
+import { type Weather, type LastWeather, type Coords, getSunsetHour } from './index'
 import { handleForecastDisplay, displayWeather } from './display'
 
-import type { Weather, LastWeather, Coords } from './index'
+import { tradThis, getLang } from '../../utils/translations'
+import { handleGeolOption } from './settings'
+import { suntime } from '../../shared/time'
+import storage from '../../storage'
 
 export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	handleForecastDisplay(data.forecast)
@@ -147,8 +144,8 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 				},
 				() => {
 					resolve(false)
-				},
-			),
+				}
+			)
 		)
 	}
 

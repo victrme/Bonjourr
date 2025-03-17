@@ -1,9 +1,9 @@
 import storage from '../../storage'
 import debounce from '../../utils/debounce'
-import networkForm from '../../utils/networkform'
+import networkForm from '../../shared/form'
 import { tradThis } from '../../utils/translations'
 import onSettingsLoad from '../../utils/onsettingsload'
-import { stringMaxSize } from '../../utils'
+import { stringMaxSize } from '../../shared/generic'
 
 import { weatherCacheControl, requestNewWeather, getGeolocation } from './request'
 import type { Weather, WeatherUpdate, MeteoGeo, LastWeather } from './index'
@@ -97,7 +97,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	locationForm.load()
 
 	const currentWeather = { ...weather, city }
-	let newWeather: Weather.Local | undefined = undefined
+	let newWeather: Weather.Local | undefined
 
 	try {
 		newWeather = await requestNewWeather(currentWeather, lastWeather)

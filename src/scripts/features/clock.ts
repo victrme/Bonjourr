@@ -1,12 +1,12 @@
-import { hexColorFromSplitRange, stringMaxSize } from '../utils'
+import { hexColorFromSplitRange } from '../shared/dom'
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
+import { stringMaxSize } from '../shared/generic'
 import { SYNC_DEFAULT } from '../defaults'
 import onSettingsLoad from '../utils/onsettingsload'
 import getVnCalendar from '../dependencies/vietnamese-calendar'
-import errorMessage from '../utils/errormessage'
-import userDate from '../utils/userdate'
+import { userDate } from '../shared/time'
 import storage from '../storage'
 
 type ClockUpdate = {
@@ -60,7 +60,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		displayInterface('clock')
 		onSettingsLoad(toggleWorldClocksOptions)
 	} catch (e) {
-		errorMessage(e)
+		console.warn(new Error('Error when loading clock'))
 	}
 }
 
@@ -161,7 +161,7 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	const time = document.getElementById('time') as HTMLElement
 	const spans = document.querySelectorAll<HTMLSpanElement>('.analog .analog-face span')
 
-	const backgroundAlpha = parseInt(style.background.slice(4), 16)
+	const backgroundAlpha = Number.parseInt(style.background.slice(4), 16)
 	const isWhiteOpaque = style.background?.includes('fff') && backgroundAlpha > 7
 	const isTransparent = backgroundAlpha === 0
 

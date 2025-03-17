@@ -1,5 +1,5 @@
 import { getLiFromEvent, getLinksInFolder } from './helpers'
-import { initblocks } from '.'
+import { initblocks } from './index'
 import transitioner from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
 import storage from '../../storage'

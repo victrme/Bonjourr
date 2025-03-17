@@ -1,4 +1,4 @@
-import { stringMaxSize } from '../utils'
+import { stringMaxSize } from '../shared/generic'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
@@ -21,7 +21,7 @@ export default function customCss(init?: string, event?: { styling: string }) {
 	}
 
 	onSettingsLoad(async () => {
-		const { create } = await import('./csseditor')
+		const { createCssEditor } = await import('./csseditor')
 
 		const options = {
 			language: 'css',
@@ -31,7 +31,7 @@ export default function customCss(init?: string, event?: { styling: string }) {
 			value: init || '',
 		}
 
-		const editor = create(options)
+		const editor = createCssEditor(options)
 		const tabCommand = editor.keyCommandMap.Tab
 
 		editor.textarea.id = 'css-editor-textarea'

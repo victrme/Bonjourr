@@ -1,8 +1,8 @@
-import { stringMaxSize, minutator } from '../utils'
 import { BROWSER, SYNC_DEFAULT } from '../defaults'
+import { suntime, minutator } from '../shared/time'
 import { eventDebounce } from '../utils/debounce'
+import { stringMaxSize } from '../shared/generic'
 import { tradThis } from '../utils/translations'
-import suntime from '../utils/suntime'
 import storage from '../storage'
 
 export function favicon(val?: string, isEvent?: true) {

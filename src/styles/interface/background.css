@@ -10,28 +10,25 @@
 
 #background-overlay {
 	z-index: -1;
-	transition: transform var(--fade-in), opacity var(--fade-in);
+	transition: opacity var(--fade-in);
+}
+
+body.init #image-background-wrapper div,
+body.init #video-background-wrapper video {
+	transition: none;
 }
 
 #background-overlay.hidden {
 	opacity: 0;
 }
 
-#image-background-wrapper {
-	--background-position-x: 50%;
-	--background-position-y: 50%;
-	--background-zoom: cover;
-}
-
 #image-background-wrapper div {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	background-size: var(--background-zoom);
-	background-position-x: var(--background-position-x);
-	background-position-y: var(--background-position-y);
 	transform: scale(1.1); /* moved translate3d safari fix to script in features/backgrounds/ */
 	transition: opacity 1.2s;
+	background-size: cover;
 }
 
 [data-browser='safari'] #image-background-wrapper div {

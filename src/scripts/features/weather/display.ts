@@ -1,10 +1,6 @@
-import { LastWeather, getSunsetHour } from './index'
+import { type LastWeather, type Weather, getSunsetHour } from './index'
+import { userDate, minutator, suntime } from '../../shared/time'
 import { getLang, tradThis } from '../../utils/translations'
-import { minutator } from '../../utils'
-import userDate from '../../utils/userdate'
-import suntime from '../../utils/suntime'
-
-import type { Weather } from '.'
 
 let weatherFirstStart = true
 
@@ -47,7 +43,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 	}
 
 	const handleWidget = () => {
-		let condition = lastWeather.icon_id
+		const condition = lastWeather.icon_id
 
 		if (!tempContainer) {
 			return

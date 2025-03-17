@@ -1,10 +1,10 @@
 import { tradThis } from '../../utils/translations'
 
-export function credits(image?: Backgrounds.Image) {
+export default function credits(image?: Backgrounds.Image) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 
-	if (!domcontainer || !domcredit || !image) {
+	if (!domcontainer || !domcredit || !image?.page) {
 		// also remove credits
 		return
 	}
@@ -19,7 +19,7 @@ export function credits(image?: Backgrounds.Image) {
 		// ⚠️ In this order !
 		if (model) exif += `${model} - `
 		if (aperture) exif += `f/${aperture} `
-		if (exposure_time) exif += `${aperture}s `
+		if (exposure_time) exif += `${exposure_time}s `
 		if (iso) exif += `${iso}ISO `
 		if (focal_length) exif += `${focal_length}mm`
 	}

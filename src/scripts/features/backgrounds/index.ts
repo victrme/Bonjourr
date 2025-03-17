@@ -1,15 +1,16 @@
-import localBackgrounds from './local'
-import textureRanges from './textures'
-import { credits } from './credits'
+import { getFilesAsCollection, initThumbnailEvents, handleFilesSettingsOptions } from './local'
+import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
+import TEXTURE_RANGES from './textures'
+import PROVIDERS from './providers'
+import credits from './credits'
 
-import { freqControl, periodOfDay, rgbToHex } from '../../utils'
+import { userDate, daylightPeriod, needsChange } from '../../shared/time'
+import { turnRefreshButton } from '../../shared/dom'
 import onSettingsLoad from '../../utils/onsettingsload'
+import { rgbToHex } from '../../shared/generic'
 import { BROWSER } from '../../defaults'
 import debounce from '../../utils/debounce'
-import userDate from '../../utils/userdate'
 import storage from '../../storage'
-
-type BackgroundApiResponse = Backgrounds.Item[] & Local.DaylightImages & Local.DaylightVideos
 
 interface BackgroundUpdate {
 	freq?: string
@@ -20,8 +21,9 @@ interface BackgroundUpdate {
 	bright?: string
 	fadein?: string
 	refresh?: HTMLSpanElement
-	collection?: string
+	urlsapply?: true
 	texture?: string
+	provider?: string
 	texturesize?: string
 	textureopacity?: string
 }
@@ -38,6 +40,10 @@ const colorUpdateDebounce = debounce(solidUpdate, 600)
 export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
 		onSettingsLoad(() => {
+			initThumbnailEvents()
+			handleFilesSettingsOptions(local)
+			initUrlsEditor(sync.backgrounds, local)
+			createProviderSelect(sync.backgrounds)
 			handleBackgroundOptions(sync.backgrounds)
 		})
 	}
@@ -46,21 +52,10 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 	applyTexture(sync.backgrounds.texture)
 	document.getElementById('background-overlay')?.setAttribute('data-type', sync.backgrounds.type)
 
-	switch (sync.backgrounds.type) {
-		case 'urls':
-			// not yet
-			break
-
-		case 'color':
-			applyBackground({ solid: sync.backgrounds.color })
-			break
-
-		case 'files':
-			localBackgrounds(local)
-			break
-
-		default:
-			backgroundFrequencyControl(sync.backgrounds, local)
+	if (sync.backgrounds.type === 'color') {
+		applyBackground({ solid: sync.backgrounds.color })
+	} else {
+		backgroundCacheControl(sync.backgrounds, local)
 	}
 }
 
@@ -68,20 +63,20 @@ export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage
 
 export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> {
 	if (update.blur !== undefined) {
-		applyFilters({ blur: parseFloat(update.blur) })
-		propertiesUpdateDebounce({ blur: parseFloat(update.blur) })
+		applyFilters({ blur: Number.parseFloat(update.blur) })
+		propertiesUpdateDebounce({ blur: Number.parseFloat(update.blur) })
 		return
 	}
 
 	if (update.bright !== undefined) {
-		applyFilters({ bright: parseFloat(update.bright) })
-		propertiesUpdateDebounce({ bright: parseFloat(update.bright) })
+		applyFilters({ bright: Number.parseFloat(update.bright) })
+		propertiesUpdateDebounce({ bright: Number.parseFloat(update.bright) })
 		return
 	}
 
 	if (update.fadein !== undefined) {
-		applyFilters({ fadein: parseInt(update.fadein) })
-		propertiesUpdateDebounce({ fadein: parseFloat(update.fadein) })
+		applyFilters({ fadein: Number.parseInt(update.fadein) })
+		propertiesUpdateDebounce({ fadein: Number.parseFloat(update.fadein) })
 		return
 	}
 
@@ -91,6 +86,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (isBackgroundType(update.type)) {
 		data.backgrounds.type = update.type
 		storage.sync.set({ backgrounds: data.backgrounds })
+		createProviderSelect(data.backgrounds)
 		handleBackgroundOptions(data.backgrounds)
 		backgroundsInit(data, local)
 	}
@@ -101,9 +97,9 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.refresh) {
-		local.backgroundLastChange = userDate().toISOString()
-		storage.local.set({ backgroundLastChange: local.backgroundLastChange })
+		local.backgroundLastChange = new Date(0).toString()
 		backgroundsInit(data, local)
+		turnRefreshButton(update.refresh, true)
 	}
 
 	if (update.color) {
@@ -111,37 +107,20 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		colorUpdateDebounce(update.color)
 	}
 
-	if (isCollection(update.collection)) {
-		const type = data.backgrounds.type === 'videos' ? 'videos' : 'images'
-		data.backgrounds[type].collection = update.collection
-		storage.sync.set({ backgrounds: data.backgrounds })
-		handleBackgroundOptions(data.backgrounds)
+	if (update.urlsapply) {
+		applyUrls(data.backgrounds)
 	}
 
-	if (update.query !== undefined) {
-		const type = data.backgrounds.type
-		const isImageOrVideos = type === 'images' || type === 'videos'
-
-		if (isImageOrVideos) {
-			const user = data.backgrounds[type]?.user ?? { coll: '', tags: '' }
-
-			if (data.backgrounds[type].collection === 'usercoll') user.coll = update.query
-			if (data.backgrounds[type].collection === 'usertags') user.tags = update.query
-
-			data.backgrounds[type].user = user
-			storage.sync.set({ backgrounds: data.backgrounds })
-			handleBackgroundOptions(data.backgrounds)
-		}
-	}
+	// Textures
 
 	if (update.textureopacity !== undefined) {
-		data.backgrounds.texture.opacity = parseFloat(update.textureopacity)
+		data.backgrounds.texture.opacity = Number.parseFloat(update.textureopacity)
 		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
 		applyTexture(data.backgrounds.texture)
 	}
 
 	if (update.texturesize !== undefined) {
-		data.backgrounds.texture.size = parseInt(update.texturesize)
+		data.backgrounds.texture.size = Number.parseInt(update.texturesize)
 		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
 		applyTexture(data.backgrounds.texture)
 	}
@@ -151,6 +130,30 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		storage.sync.set({ backgrounds: data.backgrounds })
 		handleBackgroundOptions(data.backgrounds)
 		applyTexture(data.backgrounds.texture)
+	}
+
+	// Images & Videos only
+
+	switch (data.backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			return
+		}
+	}
+
+	if (update.provider) {
+		data.backgrounds[data.backgrounds.type].collection = update.provider
+		storage.sync.set({ backgrounds: data.backgrounds })
+		handleBackgroundOptions(data.backgrounds)
+		backgroundCacheControl(data.backgrounds, local)
+	}
+
+	if (update.query !== undefined) {
+		data.backgrounds[data.backgrounds.type].query = update.query
+		storage.sync.set({ backgrounds: data.backgrounds })
+		handleBackgroundOptions(data.backgrounds)
+		backgroundCacheControl(data.backgrounds, local)
 	}
 }
 
@@ -173,25 +176,60 @@ async function solidUpdate(value: string) {
 
 //	Cache & network
 
-async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: Local.Storage): Promise<void> {
+async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Local.Storage): Promise<void> {
+	if (backgrounds.type === 'color') {
+		console.log('is color')
+		return
+	}
+
+	const isImagesOrVideos = backgrounds.type === 'images' || backgrounds.type === 'videos'
+	const isFilesOrUrls = backgrounds.type === 'files' || backgrounds.type === 'urls'
+
 	// 1. Find correct list to use
 
 	let list: Backgrounds.Video[] | Backgrounds.Image[] = []
+	let keys: string[] = []
 
-	if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
-	if (backgrounds.type === 'videos') list = getCollection(backgrounds, local).videos()
+	switch (backgrounds.type) {
+		case 'files': {
+			const [k, l] = await getFilesAsCollection(local)
+			keys = k
+			list = l
+			break
+		}
+
+		case 'urls':
+			const [k, l] = getUrlsAsCollection(local)
+			keys = k
+			list = l
+			break
+
+		case 'images':
+			list = getCollection(backgrounds, local).images()
+			break
+
+		case 'videos':
+			list = getCollection(backgrounds, local).videos()
+			break
+	}
 
 	// 2. Control change for specified list
 
-	const lastTime = new Date(local.backgroundLastChange ?? '').getTime()
-	const needNew = freqControl.get(backgrounds.frequency, lastTime)
+	const lastTime = new Date(local.backgroundLastChange ?? '01/01/1971').getTime()
+	const needNew = needsChange(backgrounds.frequency, lastTime)
+	const isPaused = backgrounds.frequency === 'pause'
 
 	if (list.length === 0) {
+		if (isFilesOrUrls) {
+			removeBackgrounds()
+			return
+		}
+
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
 			local = setCollection(backgrounds, local).fromApi(json)
-			local.backgroundLastChange = userDate().toISOString()
+			local.backgroundLastChange = userDate().toString()
 			storage.local.set(local)
 
 			if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
@@ -202,7 +240,7 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		}
 	}
 
-	if (local.backgroundPreloading) {
+	if (isImagesOrVideos && local.backgroundPreloading) {
 		if (isVideo(list[0])) applyBackground({ video: list[0] })
 		if (isImage(list[0])) applyBackground({ image: list[0] })
 		if (isVideo(list[1])) preloadBackground({ video: list[1] })
@@ -210,13 +248,13 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		return
 	}
 
-	if (!needNew && backgrounds.frequency === 'pause') {
+	if (isImagesOrVideos && !needNew && isPaused) {
 		if (backgrounds.images?.paused) applyBackground({ image: backgrounds.images.paused })
 		if (backgrounds.videos?.paused) applyBackground({ video: backgrounds.videos.paused })
 		return
 	}
 
-	if (!needNew && backgrounds.frequency !== 'pause') {
+	if (!needNew) {
 		if (isVideo(list[0])) applyBackground({ video: list[0] })
 		if (isImage(list[0])) applyBackground({ image: list[0] })
 		return
@@ -226,26 +264,31 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 		list.shift()
 	}
 
-	if (backgrounds.frequency === 'pause') {
+	if (isImagesOrVideos && backgrounds.frequency === 'pause') {
 		if (backgrounds.type === 'images') backgrounds.images.paused = list[0] as Backgrounds.Image
 		if (backgrounds.type === 'videos') backgrounds.videos.paused = list[0] as Backgrounds.Video
+		storage.sync.set({ backgrounds })
 	}
 
-	if (list.length > 1 && navigator.onLine) {
+	if (list.length > 1) {
 		if (isVideo(list[1])) preloadBackground({ video: list[1] })
 		if (isImage(list[1])) preloadBackground({ image: list[1] })
 
-		local = setCollection(backgrounds, local).fromList(list)
+		if (isImagesOrVideos) local = setCollection(backgrounds, local).fromList(list)
+		if (isFilesOrUrls) local = setLastUsed(backgrounds, local, keys)
+
+		local.backgroundLastChange = userDate().toString()
 		storage.local.set(local)
 	}
 
-	// End of cache, get & save new list
-	if (list.length === 1 && navigator.onLine) {
+	// 3. Get a new set of images if needed
+
+	if (isImagesOrVideos && list.length === 1 && navigator.onLine) {
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
 			local = setCollection(backgrounds, local).fromApi(json)
-			local.backgroundLastChange = userDate().toISOString()
+			local.backgroundLastChange = userDate().toString()
 			storage.local.set(local)
 
 			if (backgrounds.type === 'images') list = getCollection(backgrounds, local).images()
@@ -258,11 +301,9 @@ async function backgroundFrequencyControl(backgrounds: Sync.Backgrounds, local: 
 
 	if (isVideo(list[0])) applyBackground({ video: list[0] })
 	if (isImage(list[0])) applyBackground({ image: list[0] })
-
-	storage.sync.set({ backgrounds })
 }
 
-async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<BackgroundApiResponse> {
+async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backgrounds.Api> {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -271,107 +312,72 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 		}
 	}
 
-	const type = backgrounds.type
-	const infos = type === 'images' ? backgrounds.images : backgrounds.videos
-	const category = infos.collection === 'daylight' ? 'daylight' : 'user'
-	const provider = infos.provider
+	const data = backgrounds[backgrounds.type]
+	const [provider, type, category] = data.collection.split('-')
 
-	const path = `https://services.bonjourr.fr/backgrounds/${category}/${type}/${provider}`
-	const resp = await fetch(path)
-	const json = (await resp.json()) as BackgroundApiResponse
+	const base = 'https://services.bonjourr.fr/backgrounds'
+	const path = `/${provider}/${type}/${category}`
+	let search = ''
 
-	const isResponseDaylightImage = json?.day[0]?.url
-	const isResponseDaylightVideo = json?.day[0]?.duration
-	const isResponseCustomImage = json[0]?.url
-	const isResponseCustomVideo = json[0]?.duration
+	if (data.query) {
+		search = `?query=${data.query}`
+	}
 
-	const isDaylightImage = isResponseDaylightImage && category === 'daylight' && type === 'images'
-	const isDaylightVideo = isResponseDaylightVideo && category === 'daylight' && type === 'videos'
-	const isCustomImage = isResponseCustomImage && category === 'user' && type === 'images'
-	const isCustomVideo = isResponseCustomVideo && category === 'user' && type === 'videos'
+	const url = base + path + search
+	const resp = await fetch(url)
+	const json = (await resp.json()) as Backgrounds.Api
 
-	if (isDaylightImage || isDaylightVideo || isCustomImage || isCustomVideo) {
+	const areImages = type === 'images' && Object.keys(json)?.every((key) => key.includes('images'))
+	const areVideos = type === 'videos' && Object.keys(json)?.every((key) => key.includes('videos'))
+
+	if (areImages || areVideos) {
 		return json
 	}
 
 	throw new Error('Received JSON is bad')
 }
 
+function findCollectionName(backgrounds: Sync.Backgrounds): string {
+	const type = backgrounds.type === 'images' ? 'images' : 'videos'
+	const collection = backgrounds[type].collection
+	const isDaylight = collection.includes('daylight')
+
+	if (isDaylight) {
+		const period = daylightPeriod(userDate().getTime())
+		return `${collection}-${period}`
+	}
+
+	return collection
+}
+
 function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
-	const date = userDate()
-	const period = periodOfDay(date.getTime())
-
-	function daylightImages(): Backgrounds.Image[] {
-		if (!local.daylightCollection) {
-			throw new Error('Empty daylight collection !')
-		}
-		if (backgrounds.type !== 'images') {
-			throw new Error('Selected background type is not "images"')
-		}
-
-		const provider = backgrounds.images.provider
-		const images = local.daylightCollection.images
-
-		return images[provider][period]
-	}
-
-	function daylightVideos(): Backgrounds.Video[] {
-		if (!local.daylightCollection) {
-			throw new Error('Empty daylight collection !')
-		}
-		if (backgrounds.type !== 'videos') {
-			throw new Error('Selected background type is not "videos"')
-		}
-
-		const provider = backgrounds.videos.provider
-		const videos = local.daylightCollection.videos
-
-		return videos[provider][period]
-	}
-
-	function customImages(): Backgrounds.Image[] {
-		if (!local.customCollection) {
-			console.log(new Error('Empty custom collection storage !'))
-			return daylightImages()
-		}
-		if (backgrounds.type !== 'images') {
-			throw new Error('Selected background type is not "images"')
-		}
-
-		const provider = backgrounds.images.provider
-		const images = local.customCollection.images
-
-		return images[provider]
-	}
-
-	function customVideos(): Backgrounds.Video[] {
-		if (!local.customCollection) {
-			console.log(new Error('Empty custom collection storage !'))
-			return daylightVideos()
-		}
-		if (backgrounds.type !== 'videos') {
-			throw new Error('Selected background type is not "videos"')
-		}
-
-		const provider = backgrounds.videos.provider
-		const videos = local.customCollection.videos
-		return videos[provider]
-	}
-
-	function images(): Backgrounds.Image[] {
-		if (backgrounds.images.collection === 'daylight') {
-			return daylightImages()
-		} else {
-			return customImages()
+	switch (backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			throw new Error('Can only fetch with "images" or "videos" type')
 		}
 	}
 
-	function videos(): Backgrounds.Video[] {
-		if (backgrounds.videos.collection === 'daylight') {
-			return daylightVideos()
-		} else {
-			return customVideos()
-		}
+	// Check collection storage
+
+	const collectionName = findCollectionName(backgrounds)
+	const collection = local.backgroundCollections[collectionName] ?? []
+
+	if (collection.length === 0) {
+		console.log(new Error('Empty collection'))
+	}
+
+	// Check collection format
+
+	const images = () => {
+		if (areOnlyImages(collection)) return collection
+		else throw new Error('Wrong background format')
+	}
+
+	const videos = () => {
+		if (areOnlyVideos(collection)) return collection
+		else throw new Error('Wrong background format')
 	}
 
 	return { images, videos }
@@ -382,60 +388,45 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 		case 'files':
 		case 'urls':
 		case 'color': {
-			throw new Error('Can only update with "images" or "videos" type')
+			throw new Error('Cannot update with this type')
 		}
 	}
 
-	const date = userDate()
-	const period = periodOfDay(date.getTime())
-	const imageProvider = backgrounds.images?.provider
-	const videoProvider = backgrounds.videos?.provider
-
-	function fromApi(json: BackgroundApiResponse): Local.Storage {
-		const isDaylightImage = backgrounds.images && json?.day[0]?.url
-		const isDaylightVideo = backgrounds.videos && json?.day[0]?.duration
-		const isCustomImage = backgrounds.images?.collection !== 'daylight' && json[0]?.url
-		const isCustomVideo = backgrounds.videos?.collection !== 'daylight' && json[0]?.duration
-
-		if (isDaylightImage && local.daylightCollection) {
-			local.daylightCollection.images[imageProvider] = json
-		}
-		if (isDaylightVideo && local.daylightCollection) {
-			local.daylightCollection.videos[videoProvider] = json
-		}
-		if (isCustomImage && local.customCollection) {
-			local.customCollection.images[imageProvider] = json
-		}
-		if (isCustomVideo && local.customCollection) {
-			local.customCollection.videos[videoProvider] = json
+	function fromApi(json: Backgrounds.Api): Local.Storage {
+		for (const [key, list] of Object.entries(json)) {
+			local.backgroundCollections[key] = list
 		}
 
 		return local
 	}
 
-	function fromList(list: Backgrounds.Image[] | Backgrounds.Video[]): Local.Storage {
-		const isDaylightImage = backgrounds.images && (list[0] as Backgrounds.Image)?.url
-		const isDaylightVideo = backgrounds.videos && (list[0] as Backgrounds.Video)?.duration
-		const isCustomImage = backgrounds.images?.collection !== 'daylight'
-		const isCustomVideo = backgrounds.videos?.collection !== 'daylight'
-
-		if (isDaylightImage && local.daylightCollection && isImage(list[0])) {
-			local.daylightCollection.images[imageProvider][period] = list as Backgrounds.Image[]
-		}
-		if (isDaylightVideo && local.daylightCollection && isVideo(list[0])) {
-			local.daylightCollection.videos[videoProvider][period] = list as Backgrounds.Video[]
-		}
-		if (isCustomImage && local.customCollection && isImage(list[0])) {
-			local.customCollection.images[imageProvider] = list as Backgrounds.Image[]
-		}
-		if (isCustomVideo && local.customCollection && isVideo(list[0])) {
-			local.customCollection.videos[videoProvider] = list as Backgrounds.Video[]
-		}
+	function fromList(list: Backgrounds.Item[]): Local.Storage {
+		const collectionName = findCollectionName(backgrounds)
+		local.backgroundCollections[collectionName] = list
 
 		return local
 	}
 
 	return { fromList, fromApi }
+}
+
+function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: string[]): Local.Storage {
+	switch (backgrounds.type) {
+		case 'images':
+		case 'videos':
+		case 'color': {
+			throw new Error('Cannot update with this type')
+		}
+	}
+
+	if (backgrounds.type === 'urls') {
+		local.backgroundUrls[keys[0]].lastUsed = userDate().toString()
+	}
+	if (backgrounds.type === 'files') {
+		local.backgroundFiles[keys[0]].lastUsed = userDate().toString()
+	}
+
+	return local
 }
 
 // 	Apply to DOM
@@ -445,6 +436,7 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 	const solidBackground = document.getElementById('solid-background') as HTMLDivElement
 	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
 	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
+	const blurred = document.body.className.includes('blurred')
 
 	solidBackground.style.display = solid ? 'block' : 'none'
 	imageWrapper.style.display = image ? 'block' : 'none'
@@ -460,7 +452,7 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 			}
 
 			if (BROWSER === 'safari' && color) {
-				const fadein = parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
+				const fadein = Number.parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
 				document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 				setTimeout(() => document.documentElement.style.setProperty('--average-color', color!), fadein)
 			}
@@ -471,7 +463,7 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 
 			setTimeout(() => {
 				div.style.removeProperty('opacity')
-			}, 10)
+			}, 1)
 
 			if (imageWrapper.childElementCount > 1) {
 				setTimeout(() => {
@@ -480,32 +472,38 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 			}
 		}
 
+		const src = blurred ? image.urls.small : image.urls.full
 		const div = document.createElement('div')
 		const img = new Image()
 
-		img.addEventListener('load', function () {
+		img.addEventListener('load', () => {
 			applyLoadedImage()
 			applySafariThemeColor(image.color)
 		})
 
-		img.src = image.url
+		img.src = src
 		img.remove()
 
-		div.style.backgroundImage = `url(${image.url})`
+		div.style.backgroundImage = `url(${src})`
 		div.style.opacity = '0'
+
+		if (image.size) div.style.backgroundSize = image.size
+		if (image.x) div.style.backgroundPositionX = image.x
+		if (image.y) div.style.backgroundPositionY = image.y
 	}
 
 	if (video) {
 		const opacity = 4 //s
 		const duration = 1000 * (video.duration - opacity)
+		const src = blurred ? video.urls.small : video.urls.full
 
 		const createVideo = () => {
 			const vid = document.createElement('video')
-			vid.src = video.urls.tiny
+			vid.addEventListener('progress', () => overlay.classList.remove('hidden'))
+			vid.src = src
 			vid.muted = true
 			vid.autoplay = true
 			videoWrapper?.prepend(vid)
-			setTimeout(() => overlay.classList.remove('hidden'))
 		}
 
 		const rerunVideo = () => {
@@ -522,38 +520,47 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 
 	if (solid) {
 		document.documentElement.style.setProperty('--solid-background', solid)
-		overlay.classList.remove('hidden')
 	}
 }
 
-export function preloadBackground({ image, video }: ApplyBackgroundOptions) {
+function preloadBackground({ image, video }: ApplyBackgroundOptions) {
+	const blurred = document.body.className.includes('blurred')
 	const img = document.createElement('img')
 
 	if (image) {
-		img.addEventListener('load', function () {
+		img.addEventListener('load', () => {
 			storage.local.remove('backgroundPreloading')
 			img.remove()
 		})
-		img.src = image.url
+		img.src = blurred ? image.urls.small : image.urls.full
 		storage.local.set({ backgroundPreloading: true })
 	}
 
 	if (video) {
 		const vid = document.createElement('video')
 
-		vid.addEventListener('progress', function (e) {
+		vid.addEventListener('progress', (e) => {
 			setTimeout(() => {
 				storage.local.remove('backgroundPreloading')
 				vid.remove()
 			}, 200)
 		})
 
-		vid.src = video.urls.tiny
+		vid.src = blurred ? video.urls.small : video.urls.full
 		storage.local.set({ backgroundPreloading: true })
 	}
 }
 
-export function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+export function removeBackgrounds(): void {
+	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
+	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
+	setTimeout(() => imageWrapper.querySelector('div')?.setAttribute('style', 'opacity: 0'))
+	setTimeout(() => videoWrapper.querySelector('video')?.setAttribute('style', 'opacity: 0'))
+	setTimeout(() => imageWrapper.firstChild?.remove(), 1300)
+	setTimeout(() => videoWrapper.firstChild?.remove(), 1300)
+}
+
+function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 	if (blur !== undefined) {
 		document.documentElement.style.setProperty('--blur', blur + 'px')
 		document.body.classList.toggle('blurred', blur >= 15)
@@ -576,7 +583,7 @@ function applyTexture(texture: Sync.Backgrounds['texture']): void {
 		return
 	}
 
-	const ranges = textureRanges[texture.type]
+	const ranges = TEXTURE_RANGES[texture.type]
 	const size = texture.size ?? ranges.size.value
 	const opacity = texture.opacity ?? ranges.opacity.value
 
@@ -596,10 +603,9 @@ async function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
-	// document.getElementById('background-provider-option')?.classList.toggle('shown', type === 'images')
 
 	handleTextureOptions(backgrounds)
-	handleCollectionOptions(backgrounds)
+	handleProviderOptions(backgrounds)
 }
 
 function handleTextureOptions(backgrounds: Sync.Backgrounds) {
@@ -610,7 +616,7 @@ function handleTextureOptions(backgrounds: Sync.Backgrounds) {
 	if (hasTexture) {
 		const i_opacity = document.querySelector<HTMLInputElement>('#i_texture-opacity')
 		const i_size = document.querySelector<HTMLInputElement>('#i_texture-size')
-		const ranges = textureRanges[backgrounds.texture.type]
+		const ranges = TEXTURE_RANGES[backgrounds.texture.type]
 		const { opacity, size } = backgrounds.texture
 
 		if (i_opacity) {
@@ -629,27 +635,59 @@ function handleTextureOptions(backgrounds: Sync.Backgrounds) {
 	}
 }
 
-function handleCollectionOptions(backgrounds: Sync.Backgrounds) {
-	const type = backgrounds.type
-	const isImageOrVideos = type === 'images' || type === 'videos'
-
-	if (isImageOrVideos) {
-		const hasColls = backgrounds[type].collection === 'usercoll'
-		const hasTags = backgrounds[type].collection === 'usertags'
-
-		document.getElementById('background-user-coll-option')?.classList.toggle('shown', hasColls)
-		document.getElementById('background-user-tags-option')?.classList.toggle('shown', hasTags)
-
-		const domcollection = document.querySelector<HTMLSelectElement>('#i_background-collection')!
-		const domusercoll = document.querySelector<HTMLInputElement>('#i_background-user-coll')!
-		const domusertags = document.querySelector<HTMLInputElement>('#i_background-user-tags')!
-
-		domcollection.value = hasColls ? 'usercoll' : hasTags ? 'usertags' : 'daylight'
-		domusercoll.value = backgrounds[type].user?.coll ?? ''
-		domusertags.value = backgrounds[type].user?.tags ?? ''
+function handleProviderOptions(backgrounds: Sync.Backgrounds) {
+	switch (backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			document.getElementById('background-provider-option')?.classList.remove('shown')
+			return
+		}
 	}
 
-	document.getElementById('background-collection-option')?.classList.toggle('shown', isImageOrVideos)
+	document.getElementById('background-provider-option')?.classList.add('shown')
+
+	const data = backgrounds[backgrounds.type]
+	const hasCollections = data.collection.includes('coll')
+	const hasTags = data.collection.includes('tags')
+
+	const domusercoll = document.querySelector<HTMLInputElement>('#i_background-user-coll')!
+	const domusertags = document.querySelector<HTMLInputElement>('#i_background-user-tags')!
+	const domusercolloption = document.querySelector<HTMLElement>('#background-user-coll-option')!
+	const domusertagsoption = document.querySelector<HTMLElement>('#background-user-tags-option')!
+
+	domusercolloption.classList.toggle('shown', hasCollections)
+	domusertagsoption.classList.toggle('shown', hasTags)
+
+	if (hasCollections) domusercoll.value = backgrounds[backgrounds.type].query ?? ''
+	if (hasTags) domusertags.value = backgrounds[backgrounds.type].query ?? ''
+}
+
+function createProviderSelect(backgrounds: Sync.Backgrounds) {
+	const backgroundProvider = document.querySelector<HTMLSelectElement>('#i_background-provider')!
+	const providersType = backgrounds.type === 'images' ? 'IMAGES' : 'VIDEOS'
+	const providersList = PROVIDERS[providersType]
+
+	Object.values(backgroundProvider.children).forEach((node) => node.remove())
+
+	for (const provider of providersList) {
+		const optgroup = document.createElement('optgroup')
+		optgroup.label = provider.optgroup
+		backgroundProvider.appendChild(optgroup)
+
+		for (const option of provider.options) {
+			const opt = document.createElement('option')
+			opt.textContent = option.name
+			opt.value = option.value
+			optgroup.appendChild(opt)
+		}
+	}
+
+	switch (backgrounds.type) {
+		case 'images':
+		case 'videos':
+			backgroundProvider.value = backgrounds[backgrounds.type].collection
+	}
 }
 
 //  Helpers
@@ -709,15 +747,19 @@ function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] 
 function isBackgroundTexture(str = ''): str is Sync.Storage['backgrounds']['texture']['type'] {
 	return ['none', 'grain', 'dots', 'topographic'].includes(str)
 }
-function isCollection(str = ''): str is Sync.Storage['backgrounds']['images']['collection'] {
-	return ['daylight', 'usercoll', 'usertags'].includes(str)
-}
 function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)
 }
+
 function isVideo(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Video {
-	return Object.keys(item).includes('duration')
+	return item.format === 'video'
 }
 function isImage(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Image {
-	return Object.keys(item).includes('url')
+	return item.format === 'image'
+}
+function areOnlyImages(list: Backgrounds.Item[]): list is Backgrounds.Image[] {
+	return list?.every((item) => item.format === 'image')
+}
+function areOnlyVideos(list: Backgrounds.Item[]): list is Backgrounds.Video[] {
+	return list?.every((item) => item.format === 'video')
 }

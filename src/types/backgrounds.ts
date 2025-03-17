@@ -1,16 +1,20 @@
 declare namespace Backgrounds {
-	type Item = Backgrounds.Video & Backgrounds.Image
+	type Item = Image | Video
 
 	/**
 	 * Unified schema returned for Bonjourr Images
 	 */
 	interface Image {
-		/* All providers */
-		url: string
-		page: string
-		username: string
+		format: 'image'
+		urls: {
+			full: string
+			medium: string
+			small: string
+		}
 
-		/* Unsplash only */
+		/* Credits */
+		page?: string
+		username?: string
 		color?: string
 		name?: string
 		city?: string
@@ -24,21 +28,28 @@ declare namespace Backgrounds {
 			focal_length: string
 			iso: number
 		}
+
+		/* Background position */
+		size?: string
+		x?: string
+		y?: string
 	}
 
 	/**
 	 * Unified schema returned for Bonjourr Videos
 	 */
 	interface Video {
-		page: string
-		username: string
+		format: 'video'
 		duration: number
-		thumbnail: string
+		page?: string
+		username?: string
+		thumbnail?: string
 		urls: {
-			large: string
+			full: string
 			medium: string
 			small: string
-			tiny: string
 		}
 	}
+
+	type Api = Record<string, Backgrounds.Item[]>
 }

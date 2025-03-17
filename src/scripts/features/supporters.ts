@@ -97,14 +97,14 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		initSupportersModal()
 		translateNotif()
 
-		supportersNotif?.onclickdown(function (e) {
+		supportersNotif?.onclickdown((e) => {
 			if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
 				toggleSupportersModal(true)
 				loadModalData()
 			}
 		})
 
-		notifClose?.onclickdown(function () {
+		notifClose?.onclickdown(() => {
 			delete document.documentElement.dataset.supporters
 			supportersNotif.classList.remove('shown')
 			updateSupportersOption({ closed: true })
@@ -168,12 +168,12 @@ function initSupportersModal() {
 		document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supportersModal)
 
 		// close button event
-		close.addEventListener('click', function () {
+		close.addEventListener('click', () => {
 			toggleSupportersModal(false)
 		})
 
 		// close when click on background
-		supportersModal.addEventListener('click', function (event) {
+		supportersModal.addEventListener('click', (event) => {
 			if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
 				toggleSupportersModal(false)
 			}
@@ -217,7 +217,7 @@ export async function loadModalData() {
 	}
 
 	function injectError(string: string) {
-		let main = document.querySelector('#supporters-modal main')
+		const main = document.querySelector('#supporters-modal main')
 		if (main) main.innerHTML = `<i>${string}</i>`
 	}
 
@@ -247,10 +247,10 @@ export async function loadModalData() {
 		let supporters: SupportersAPI[] = []
 		response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
 
-		if (!response.ok) {
-			console.error(`HTTP error when fetching supporters list! status: ${response.status}`)
-		} else {
+		if (response.ok) {
 			supporters = await response.json()
+		} else {
+			console.error(`HTTP error when fetching supporters list! status: ${response.status}`)
 		}
 
 		// removes loader
@@ -376,7 +376,7 @@ function initGlitter() {
 	snowfall.animate = () => {
 		requestAnimationFrame(snowfall.animate)
 		snowfall.context.clearRect(0, 0, snowfall.canvas.width, snowfall.canvas.height)
-		for (let snowflake of snowfall.flakes) {
+		for (const snowflake of snowfall.flakes) {
 			snowflake.draw()
 		}
 	}

@@ -122,31 +122,15 @@
 		</select>
 	</div>
 
-	<div id="background-provider-option" class="dropdown">
+	<div id="background-provider-option" class="dropdown shown">
 		<hr />
 
 		<div class="wrapper">
 			<label for="i_background-provider" class="trn">Provider</label>
-			<select id="i_background-provider" disabled>
-				<option value="unsplash">Unsplash</option>
-				<option value="pixabay">Pixabay</option>
-			</select>
-		</div>
-	</div>
-
-	<div id="background-collection-option" class="dropdown shown">
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_background-collection" class="trn">Collection</label>
-			<select id="i_background-collection">
-				<option value="daylight">Bonjourr daylight</option>
-				<option value="usercoll">Custom collection</option>
-				<option value="usertags">Custom tags</option>
-			</select>
+			<select id="i_background-provider"></select>
 		</div>
 
-		<div id="background-user-coll-option" class="dropdown shown">
+		<div id="background-user-coll-option" class="dropdown">
 			<hr />
 
 			<div class="wrapper">
@@ -182,21 +166,37 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<div id="thumbnails-container"></div>
+		<div class="wrapper">
+			<button id="b_thumbnail-zoom" class="trn param-btn">
+				<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
+				<span>Zoom</span>
+			</button>
 
-		<div id="thumbnail-show-buttons">
-			<button class="param-btn trn" id="b_thumbnail-all" aria-label="Show all backgrounds">Show all</button>
+			<label id="lbl_background-upload">
+				<span class="param-btn">
+					<img src="src/assets/labels/add.svg" height="13" alt="" />
+					Add files
+				</span>
+				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+			</label>
 		</div>
 
-		<div id="thumbnail-action-buttons" class="wrapper">
-			<div>
-				<button id="thumbnail-position" class="trn param-btn">Change position</button>
-				<button id="thumbnail-remove" class="trn param-btn btn-red">Remove</button>
-			</div>
+		<div id="thumbnails-container"></div>
 
-			<button id="thumbnail-zoom" class="trn param-btn">
-				<img src="src/assets/labels/zoom-out.svg" height="16" alt="" />
-			</button>
+		<div id="thumbnail-action-buttons" class="dropdown">
+			<div class="wrapper">
+				<div>
+					<button id="b_thumbnail-position" class="trn param-btn">
+						<img src="src/assets/labels/move.svg" height="15" alt="" />
+						<span class="trn">Move</span>
+					</button>
+					<button id="b_thumbnail-remove" class="param-btn btn-red">
+						<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
+						<span>&times;</span>
+						<span class="trn">Remove</span>
+					</button>
+				</div>
+			</div>
 		</div>
 
 		<div id="background-position-options" class="dropdown">
@@ -229,10 +229,10 @@
 			</div>
 
 			<div class="wrapper">
-				<label for="i_background-zoom" class="trn">Zoom</label>
+				<label for="i_background-size" class="trn">Size</label>
 				<input
-					id="i_background-zoom"
-					name="background-zoom"
+					id="i_background-size"
+					name="background-size"
 					type="range"
 					min="100"
 					max="200"
@@ -241,17 +241,6 @@
 					class="range"
 				/>
 			</div>
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<span class="trn">Add backgrounds</span>
-
-			<label id="lbl_background-upload">
-				<span class="param-btn trn">Select files</span>
-				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
-			</label>
 		</div>
 	</div>
 
@@ -291,15 +280,12 @@
 	<div id="background-urls-option" class="dropdown">
 		<hr />
 
-		<label for="i_background-urls" class="trn">Background URLs</label>
-		<textarea
-			id="i_background-urls"
-			name="background-urls"
-			type="text"
-			class="param-textarea"
-			placeholder="https://picsum.photos/200&#10;https://picsum.photos/600/400"
-			maxlength="8000"
-		></textarea>
+		<div class="wrapper">
+			<label for="b_background-urls" class="trn">Background URLs</label>
+			<button id="b_background-urls" class="param-btn" disabled>Apply changes</button>
+		</div>
+
+		<div id="background-urls-editor"></div>
 	</div>
 
 	<div id="solid_options" class="dropdown">
@@ -1094,7 +1080,7 @@
 
 			<div class="wrapper">
 				<span>
-					<label for="i_searchengine" class="trn">Search engine</label>
+					<label for="i_sbengine" class="trn">Search engine</label>
 					<button
 						class="tooltip ttsearchengine"
 						title="I want more info on search engines"

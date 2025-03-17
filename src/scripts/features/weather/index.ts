@@ -1,10 +1,10 @@
-import onSettingsLoad from '../../utils/onsettingsload'
-import suntime from '../../utils/suntime'
-import storage from '../../storage'
-
 import { weatherCacheControl } from './request'
 import { handleGeolOption } from './settings'
 import { weatherUpdate } from './settings'
+
+import onSettingsLoad from '../../utils/onsettingsload'
+import { suntime } from '../../shared/time'
+import storage from '../../storage'
 
 export type Weather = Weather.Sync
 export type LastWeather = Weather.Local

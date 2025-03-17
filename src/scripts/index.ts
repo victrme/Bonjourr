@@ -1,28 +1,25 @@
-import notes from './features/notes'
-import clock from './features/clock'
-import quotes from './features/quotes'
-import weather from './features/weather/index'
-import customCss from './features/css'
-import searchbar from './features/searchbar'
-import customFont from './features/fonts'
-import quickLinks from './features/links'
-import backgrounds from './features/backgrounds'
+import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
+import { supportersNotifications } from './features/supporters'
+import synchronization from './features/synchronization'
+import interfacePopup from './features/popup'
 import moveElements from './features/move'
 import hideElements from './features/hide'
-import interfacePopup from './features/popup'
-import synchronization from './features/synchronization'
-import { settingsPreload } from './settings'
-import { supportersNotifications } from './features/supporters'
-import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
+import backgrounds from './features/backgrounds'
+import customFont from './features/fonts'
+import quickLinks from './features/links'
+import searchbar from './features/searchbar'
+import customCss from './features/css'
+import weather from './features/weather/index'
+import quotes from './features/quotes'
+import notes from './features/notes'
+import clock from './features/clock'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
-import { freqControl } from './utils'
+import { needsChange, userDate, suntime } from './shared/time'
+import { settingsPreload } from './settings'
 import onSettingsLoad from './utils/onsettingsload'
-import filterImports from './utils/filterimports'
-import errorMessage from './utils/errormessage'
-import userDate from './utils/userdate'
-import suntime from './utils/suntime'
+import filterImports from './imports'
 import storage from './storage'
 import 'clickdown'
 
@@ -39,8 +36,8 @@ try {
 	startup()
 	serviceWorker()
 	onlineAndMobile()
-} catch (error) {
-	errorMessage(error)
+} catch (_) {
+	console.warn(new Error('General error'))
 }
 
 async function startup() {
@@ -48,7 +45,7 @@ async function startup() {
 	const OLD_VERSION = sync?.about?.version
 
 	if (!sync || !local) {
-		errorMessage('Storage failed 😥')
+		console.warn(new Error('Storage failed'))
 		return
 	}
 
@@ -151,14 +148,17 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 		return
 	}
 
-	loadtime = Math.min(performance.now() - loadtime, 400)
+	loadtime = Math.min(performance.now() - loadtime, 333)
 	loadtime = loadtime > 33 ? loadtime : 0
 	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
 	document.body.classList.remove('loading')
 
-	setTimeout(() => {
-		onInterfaceDisplay()
-	}, Math.max(333, loadtime))
+	setTimeout(
+		() => {
+			onInterfaceDisplay()
+		},
+		Math.max(333, loadtime),
+	)
 }
 
 function onInterfaceDisplay(callback?: () => undefined): void {
@@ -350,13 +350,13 @@ function onlineAndMobile() {
 		visibilityHasChanged = false
 
 		const data = await storage.sync.get()
-		const local = await storage.local.get(['unsplashCache', 'lastWeather'])
+		const local = await storage.local.get()
 
 		if (!data?.clock || !data?.weather) {
 			return
 		}
 
-		const frequency = freqControl.get(data.unsplash.every, data.unsplash.time ?? Date.now())
+		const frequency = needsChange(data.unsplash.every, data.unsplash.time ?? Date.now())
 		const needNewImage = data.background_type === 'unsplash' && frequency
 
 		if (needNewImage && data.unsplash) {
@@ -401,7 +401,7 @@ function serviceWorker() {
 	navigator.serviceWorker.register('service-worker.js')
 
 	let promptEvent // PWA install trigger (30s interaction default)
-	window.addEventListener('beforeinstallprompt', function (e) {
+	window.addEventListener('beforeinstallprompt', (e) => {
 		promptEvent = e
 		return promptEvent
 	})
@@ -416,7 +416,7 @@ function setPotatoComputerMode() {
 
 	const fourHours = 1000 * 60 * 60 * 4
 	const isPotato = localStorage.potato === 'yes'
-	const expirationTime = Date.now() - parseInt(localStorage.lastPotatoCheck ?? '0')
+	const expirationTime = Date.now() - Number.parseInt(localStorage.lastPotatoCheck ?? '0')
 
 	if (expirationTime < fourHours) {
 		document.body.classList.toggle('potato', isPotato)

@@ -3,10 +3,9 @@ import { displayInterface } from '../index'
 import { eventDebounce } from '../utils/debounce'
 import onSettingsLoad from '../utils/onsettingsload'
 import { SYSTEM_OS } from '../defaults'
-import errorMessage from '../utils/errormessage'
-import { apiFetch } from '../utils'
+import { apiFetch } from '../shared/api'
 import { subsets } from '../langs'
-import networkForm from '../utils/networkform'
+import networkForm from '../shared/form'
 import storage from '../storage'
 import clock from './clock'
 
@@ -29,7 +28,7 @@ type CustomFontUpdate = {
 
 const familyForm = networkForm('f_customfont')
 
-export const systemfont = (function () {
+export const systemfont = (() => {
 	const fonts = {
 		fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
 		windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
@@ -60,8 +59,8 @@ export default function customFont(init?: Font, event?: CustomFontUpdate) {
 			onSettingsLoad(() => {
 				initFontSettings(init)
 			})
-		} catch (e) {
-			errorMessage(e)
+		} catch (_) {
+			console.warn(new Error('Error with custom fonts'))
 		}
 	}
 }
@@ -205,7 +204,7 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 
 function displayFont({ family, size, weight, system }: Font) {
 	// Weight: default bonjourr lowers font weight on clock (because we like it)
-	const clockWeight = parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
+	const clockWeight = Number.parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
 	const subset = getRequiredSubset()
 	const id = family.toLocaleLowerCase().replaceAll(' ', '-')
 
@@ -230,7 +229,7 @@ function displayFont({ family, size, weight, system }: Font) {
 }
 
 function setFontSize(size: string) {
-	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
+	document.documentElement.style.setProperty('--font-size', Number.parseInt(size) / 16 + 'em')
 }
 
 //

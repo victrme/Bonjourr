@@ -1,8 +1,9 @@
-import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
 import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
+import { opacityFromHex, stringMaxSize } from '../shared/generic'
+import { hexColorFromSplitRange } from '../shared/dom'
 import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errormessage'
+import { apiWebSocket } from '../shared/api'
 import storage from '../storage'
 import parse from '../utils/parse'
 
@@ -65,8 +66,8 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
 		document.addEventListener('keydown', searchbarShortcut)
-	} catch (e) {
-		errorMessage(e)
+	} catch (_) {
+		console.warn(new Error('Search bar error'))
 	}
 }
 
@@ -94,7 +95,7 @@ async function updateSearchbar({ engine, newtab, background, placeholder, reques
 	}
 
 	if (width !== undefined) {
-		searchbar.width = parseInt(width)
+		searchbar.width = Number.parseInt(width)
 		setWidth(searchbar.width)
 	}
 
@@ -299,7 +300,7 @@ function initSuggestions() {
 	async function createSuggestionSocket() {
 		socket = await apiWebSocket('suggestions')
 
-		socket?.addEventListener('message', function (event: MessageEvent) {
+		socket?.addEventListener('message', (event: MessageEvent) => {
 			const data = parse<Suggestions | { error: string }>(event.data)
 
 			if (Array.isArray(data)) {

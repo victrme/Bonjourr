@@ -1,4 +1,5 @@
 import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
+import deepEqual from './dependencies/deepequal'
 import parse from './utils/parse'
 
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
@@ -50,8 +51,7 @@ const storage: Storage = {
 
 export default storage
 
-//	Storage type   //
-// --------------- //
+//	Storage type
 
 function storageTypeFn() {
 	let type: StorageType = 'webext-sync'
@@ -84,7 +84,7 @@ function storageTypeFn() {
 		}
 
 		if (type === 'sync') {
-			chrome.storage.local.remove('syncStorage').then(function () {
+			chrome.storage.local.remove('syncStorage').then(() => {
 				chrome.storage.sync.set(data)
 			})
 		}
@@ -93,8 +93,7 @@ function storageTypeFn() {
 	return { init, get, change }
 }
 
-//	Synced data  //
-// ------------- //
+//	Synced data
 
 async function syncGet(key?: string | string[]): Promise<Sync.Storage> {
 	switch (storage.type.get()) {
@@ -188,8 +187,7 @@ async function syncClear() {
 	}
 }
 
-//	Local data  //
-// ------------ //
+//	Local data
 
 function localSet(value: Record<string, unknown>) {
 	switch (storage.type.get()) {
@@ -281,8 +279,7 @@ async function localClear() {
 	}
 }
 
-//	Init data  //
-// ----------- //
+//	Init data
 
 async function init(): Promise<AllStorage> {
 	const store: AllStorage = globalThis.startupStorage ?? {}
@@ -291,7 +288,7 @@ async function init(): Promise<AllStorage> {
 		globalThis.pageReady = true
 
 		await new Promise((resolve) => {
-			document.addEventListener('webextstorage', function (event: CustomEventInit) {
+			document.addEventListener('webextstorage', (event: CustomEventInit) => {
 				if (event.detail === 'sync') store.sync = globalThis.startupStorage.sync
 				if (event.detail === 'local') store.local = globalThis.startupStorage.local
 				if (webextStoreReady()) resolve(true)
@@ -339,8 +336,7 @@ async function init(): Promise<AllStorage> {
 	}
 }
 
-//	Clear all data  //
-// ---------------- //
+//	Clear all data
 
 async function clearall() {
 	sessionStorage.clear()
@@ -374,8 +370,7 @@ async function clearall() {
 	}
 }
 
-//	Helpers  //
-// --------- //
+//	Helpers
 
 export async function getSyncDefaults(): Promise<Sync.Storage> {
 	try {
@@ -398,34 +393,6 @@ export function isStorageDefault(data: Sync.Storage): boolean {
 	current.quotes.last = SYNC_DEFAULT.quotes.last
 
 	return deepEqual(current, SYNC_DEFAULT)
-
-	// https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
-	function deepEqual(object1: Record<string, unknown>, object2: Record<string, unknown>) {
-		const keys1 = Object.keys(object1)
-		const keys2 = Object.keys(object2)
-
-		if (keys1.length !== keys2.length) {
-			return false
-		}
-
-		for (const key of keys1) {
-			const val1 = object1[key]
-			const val2 = object2[key]
-			const areObjects = isObject(val1) && isObject(val2)
-			const areDifferent = (areObjects && !deepEqual(val1, val2)) || (!areObjects && val1 !== val2)
-
-			if (areDifferent) {
-				console.log(val1, val2)
-				return false
-			}
-		}
-
-		return true
-	}
-
-	function isObject(object: unknown) {
-		return object != null && typeof object === 'object'
-	}
 }
 
 function verifyDataAsSync(data: Record<string, unknown>) {

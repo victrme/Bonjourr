@@ -5,7 +5,7 @@ globalThis.startupStorage = {
 	local: undefined,
 }
 
-chrome.storage.sync.get().then(function (data) {
+chrome.storage.sync.get().then((data) => {
 	globalThis.startupStorage.sync = data
 
 	if (globalThis.pageReady) {
@@ -13,7 +13,7 @@ chrome.storage.sync.get().then(function (data) {
 	}
 })
 
-chrome.storage.local.get().then(function (data) {
+chrome.storage.local.get().then((data) => {
 	globalThis.startupStorage.local = data
 
 	if (globalThis.pageReady) {
@@ -21,10 +21,10 @@ chrome.storage.local.get().then(function (data) {
 	}
 })
 
-chrome.bookmarks?.getTree().then(function (data) {
+chrome.bookmarks?.getTree().then((data) => {
 	globalThis.startupBookmarks = data
 })
 
-chrome.topSites?.get().then(function (data) {
+chrome.topSites?.get().then((data) => {
 	globalThis.startupTopsites = data
 })
