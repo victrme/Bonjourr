@@ -1,3 +1,5 @@
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+
 const langs = readdirSync('./_locales/')
 const englishDict = JSON.parse(readFileSync('./_locales/en/translations.json', 'utf8'))
 const files = []

@@ -20,17 +20,23 @@ export default function transitioner(): Transitioner {
 	} = {}
 
 	return {
-		first: (cb: Func) => (steps.first = cb),
+		first: (cb: Func) => {
+			steps.first = cb
+		},
 
-		finally: (cb: Func) => (steps.finally = cb),
+		finally: (cb: Func) => {
+			steps.finally = cb
+		},
 
-		then: (cb: AsyncFunc) => (steps.then = cb),
+		then: (cb: AsyncFunc) => {
+			steps.then = cb
+		},
 
 		cancel: () => clearTimeout(waitTimeout),
 
-		transition: async (timeout: number) => {
+		transition: async (timeout: number, ...rest) => {
 			if (steps.first) {
-				steps.first(...arguments)
+				steps.first(rest)
 			}
 
 			await new Promise((r) => {
@@ -38,16 +44,16 @@ export default function transitioner(): Transitioner {
 			})
 
 			if (steps.then) {
-				await steps.then(...arguments)
+				await steps.then(rest)
 			}
 
 			if (steps.finally) {
-				steps.finally(...arguments)
+				steps.finally(rest)
 			}
 
-			delete steps.first
-			delete steps.then
-			delete steps.finally
+			steps.first = undefined
+			steps.then = undefined
+			steps.finally = undefined
 		},
 	}
 }

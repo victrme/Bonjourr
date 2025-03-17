@@ -57,13 +57,18 @@ export async function toggleTraduction(lang: string) {
 
 	// old lang is 'en'
 	if (newDict && currentDict?.lang === undefined) {
-		Object.keys(newDict).forEach((key) => (currentDict[key] = key))
+		Object.keys(newDict).forEach((key) => {
+			currentDict[key] = key
+		})
 	}
 
 	// {en: fr} & {en: sv} ==> {fr: sv}
 	for (const [key, val] of Object.entries(currentDict)) {
-		if (lang === 'en') toggleDict[val] = key
-		else if (newDict) toggleDict[val] = newDict[key]
+		if (lang === 'en') {
+			toggleDict[val] = key
+		} else if (newDict) {
+			toggleDict[val] = newDict[key]
+		}
 	}
 
 	for (const tag of tags) {
@@ -79,14 +84,22 @@ export function getLang(): string {
 }
 
 export function tradThis(str: string): string {
-	return trns ? trns[str] ?? str : str
+	return trns ? (trns[str] ?? str) : str
 }
 
 export function countryCodeToLanguageCode(lang: string): string {
-	if (lang.includes('ES')) lang = 'es'
-	if (lang === 'gr') lang = 'el'
-	if (lang === 'jp') lang = 'ja'
-	if (lang === 'cz') lang = 'cs'
+	if (lang.includes('ES')) {
+		lang = 'es'
+	}
+	if (lang === 'gr') {
+		lang = 'el'
+	}
+	if (lang === 'jp') {
+		lang = 'ja'
+	}
+	if (lang === 'cz') {
+		lang = 'cs'
+	}
 
 	lang = lang.replace('_', '-')
 

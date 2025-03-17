@@ -129,10 +129,17 @@ function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 
 export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 	if (data) {
-		if (data?.font?.family) features.push('fonts')
-		if (data?.quotes?.on) features.push('quotes')
+		if (data?.font?.family) {
+			features.push('fonts')
+		}
+		if (data?.quotes?.on) {
+			features.push('quotes')
+		}
+
 		return
-	} else if (!ready) {
+	}
+
+	if (!ready) {
 		return
 	}
 
@@ -150,7 +157,7 @@ export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
 
 	loadtime = Math.min(performance.now() - loadtime, 333)
 	loadtime = loadtime > 33 ? loadtime : 0
-	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
+	document.documentElement.style.setProperty('--load-time-transition', `${loadtime}ms`)
 	document.body.classList.remove('loading')
 
 	setTimeout(
@@ -352,7 +359,7 @@ function onlineAndMobile() {
 		const data = await storage.sync.get()
 		const local = await storage.local.get()
 
-		if (!data?.clock || !data?.weather) {
+		if (!(data?.clock && data?.weather)) {
 			return
 		}
 
@@ -400,7 +407,8 @@ function serviceWorker() {
 
 	navigator.serviceWorker.register('service-worker.js')
 
-	let promptEvent // PWA install trigger (30s interaction default)
+	let promptEvent: Event // PWA install trigger (30s interaction default)
+
 	window.addEventListener('beforeinstallprompt', (e) => {
 		promptEvent = e
 		return promptEvent
@@ -432,8 +440,8 @@ function setPotatoComputerMode() {
 		return
 	}
 
-	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0) + ''
-	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0) + ''
+	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0).toString()
+	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0).toString()
 	const detectedPotato = vendor.includes('Google') && renderer.includes('SwiftShader')
 
 	localStorage.potato = detectedPotato ? 'yes' : 'no'

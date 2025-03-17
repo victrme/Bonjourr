@@ -199,9 +199,12 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 
 	// Change edit tips on mobile
 	if (IS_MOBILE) {
-		domsettings.querySelector('.tooltiptext .instructions')!.textContent = tradThis(
-			`Edit your Quick Links by long-pressing the icon.`
-		)
+		const tooltiptext = domsettings.querySelector('.tooltiptext .instructions')
+		const text = tradThis('Edit your Quick Links by long-pressing the icon.')
+
+		if (tooltiptext) {
+			tooltiptext.textContent = text
+		}
 	}
 
 	// inserts languages in select
@@ -865,7 +868,7 @@ function initOptionsEvents() {
 	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
 		elem.onclickdown(() => {
 			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
-			document.querySelector('.tooltiptext.' + cl)?.classList.toggle('shown') // toggle tt text
+			document.querySelector(`.tooltiptext.${cl}`)?.classList.toggle('shown') // toggle tt text
 		})
 	})
 
@@ -994,14 +997,22 @@ function drawerDragEvents() {
 		e.preventDefault()
 
 		// prevents touchEvent and pointerEvent from firing at the same time
-		if (settingsDom.classList.contains('dragging-mobile-settings')) return
+		if (settingsDom.classList.contains('dragging-mobile-settings')) {
+			return
+		}
 
 		// Get mouse / touch y position
-		if (e.type === 'pointerdown') startTouchY = (e as MouseEvent).clientY
-		if (e.type === 'touchstart') startTouchY = (e as TouchEvent).touches[0].clientY
+		if (e.type === 'pointerdown') {
+			startTouchY = (e as MouseEvent).clientY
+		}
+		if (e.type === 'touchstart') {
+			startTouchY = (e as TouchEvent).touches[0].clientY
+		}
 
 		// First time dragging, sets maximum y pos at which to block
-		if (firstPos === 0) firstPos = startTouchY
+		if (firstPos === 0) {
+			firstPos = startTouchY
+		}
 
 		// Add mouse / touch moves events
 		window.addEventListener('touchmove', dragMove)
@@ -1016,8 +1027,12 @@ function drawerDragEvents() {
 		let clientY = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'pointermove') clientY = (e as MouseEvent).clientY
-		if (e.type === 'touchmove') clientY = (e as TouchEvent).touches[0].clientY
+		if (e.type === 'pointermove') {
+			clientY = (e as MouseEvent).clientY
+		}
+		if (e.type === 'touchmove') {
+			clientY = (e as TouchEvent).touches[0].clientY
+		}
 
 		// element is below max height: move
 		if (clientY > 60) {
@@ -1026,7 +1041,7 @@ function drawerDragEvents() {
 
 			settingsVh = +inverseHeight.toFixed(2)
 			settingsDom.style.transform = `translateY(-${settingsVh}dvh)`
-			settingsDom.style.transition = `transform .0s`
+			settingsDom.style.transition = 'transform .0s'
 		}
 	}
 
@@ -1034,8 +1049,12 @@ function drawerDragEvents() {
 		let clientY = 0
 
 		// Get mouse / touch y position
-		if (e.type === 'pointerup') clientY = (e as MouseEvent).clientY
-		if (e.type === 'touchend') clientY = (e as TouchEvent).changedTouches[0].clientY
+		if (e.type === 'pointerup') {
+			clientY = (e as MouseEvent).clientY
+		}
+		if (e.type === 'touchend') {
+			clientY = (e as TouchEvent).changedTouches[0].clientY
+		}
 
 		window.removeEventListener('touchmove', dragMove)
 		window.removeEventListener('pointermove', dragMove)
@@ -1045,7 +1064,7 @@ function drawerDragEvents() {
 		startTouchY = 0
 
 		const footer = document.getElementById('settings-footer') as HTMLDivElement
-		footer.style.paddingBottom = 100 - Math.abs(settingsVh) + 'dvh'
+		footer.style.paddingBottom = `${100 - Math.abs(settingsVh)}dvh`
 
 		settingsDom.style.removeProperty('padding')
 		settingsDom.style.removeProperty('width')
@@ -1070,7 +1089,9 @@ async function copySettings() {
 
 		if (copybtn) {
 			copybtn.textContent = tradThis('Copied!')
-			setTimeout(() => (copybtn.textContent = tradThis('Copy')), 1000)
+			setTimeout(() => {
+				copybtn.textContent = tradThis('Copy')
+			}, 1000)
 		}
 	} catch (error) {
 		console.error(`Failed when copying: ${error}`)
@@ -1079,11 +1100,14 @@ async function copySettings() {
 
 async function saveImportFile() {
 	const a = document.getElementById('file-download')
-	if (!a) return
+
+	if (!a) {
+		return
+	}
 
 	const date = new Date()
 	const data = ((await storage.sync.get()) as Sync.Storage) ?? {}
-	const zero = (n: number) => (n.toString().length === 1 ? '0' + n : n.toString())
+	const zero = (n: number) => (n.toString().length === 1 ? `0${n}` : n.toString())
 	const YYYYMMDD = date.toISOString().slice(0, 10)
 	const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 

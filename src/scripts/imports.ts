@@ -37,16 +37,16 @@ export default function filterImports(current: Sync.Storage, target: Partial<Syn
 	// current = removeLinkDuplicates(current, target) // all
 	current = toggleMoveWidgets(current, target) // all
 
-	delete current.settingssync
-	delete current.custom_every
-	delete current.custom_time
-	delete current.searchbar_newtab
-	delete current.searchbar_newtab
-	delete current.searchbar_engine
-	delete current.cssHeight
-	delete current.linktabs
-	delete current.links
-	delete current.dynamic
+	current.settingssync = undefined
+	current.custom_every = undefined
+	current.custom_time = undefined
+	current.searchbar_newtab = undefined
+	current.searchbar_newtab = undefined
+	current.searchbar_engine = undefined
+	current.cssHeight = undefined
+	current.linktabs = undefined
+	current.links = undefined
+	current.dynamic = undefined
 
 	return current
 }
@@ -100,7 +100,7 @@ function linkListToFlatObjects(data: Import): Import {
 		}
 
 		data.links?.forEach(({ title, url, icon }: Links.Elem, i: number) => {
-			const id = 'links' + randomString(6)
+			const id = `links${randomString(6)}`
 			const filteredIcon = icon?.startsWith('alias:') ? data[icon] : icon
 
 			data[id] = {
@@ -122,8 +122,8 @@ function linkListToFlatObjects(data: Import): Import {
 function newFontSystem(data: Import): Import {
 	if (data.font) {
 		data.font.weightlist = data.font?.availWeights ?? []
-		delete data.font.url
-		delete data.font.availWeights
+		data.font.url = undefined
+		data.font.availWeights = undefined
 
 		// Always assume it is NOT a system font, unless specified
 		if (data.font.system === undefined) {
@@ -248,7 +248,7 @@ function linksDataMigration(data: Import): Import {
 
 	list.forEach((link) => {
 		if (link.icon?.startsWith(notfoundicon)) {
-			link.icon = API_DOMAIN + '/favicon/blob/'
+			link.icon = `${API_DOMAIN}/favicon/blob/`
 			data[link._id] = link
 		}
 	})
@@ -258,8 +258,12 @@ function linksDataMigration(data: Import): Import {
 
 function dynamicToUnsplash(data: Import): Import {
 	// Dynamic/Custom becomes unsplash/local
-	if ((data.background_type as string) === 'dynamic') data.background_type = 'unsplash'
-	if ((data.background_type as string) === 'custom') data.background_type = 'local'
+	if ((data.background_type as string) === 'dynamic') {
+		data.background_type = 'unsplash'
+	}
+	if ((data.background_type as string) === 'custom') {
+		data.background_type = 'local'
+	}
 
 	// dynamic data renamed to unsplash
 	if (data.dynamic as Unsplash.Sync) {
@@ -279,13 +283,11 @@ function improvedWeather(data: Import): Import {
 		data.weather.geolocation = 'approximate'
 		data.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
 
-		delete data.weather.location
+		data.weather.location = undefined
 		//@ts-expect-error -> old types
-		delete data.weather.lastState
+		data.weather.lastState = undefined
 		//@ts-expect-error -> old types
-		delete data.weather.lastCall
-
-		delete data.weather.location
+		data.weather.lastCall = undefined
 	}
 
 	return data
@@ -344,9 +346,16 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 		current.time = area.includes('time')
 		current.main = area.includes('main')
 		current.quicklinks = area.includes('quicklinks')
-		if (current.notes) current.notes.on = area.includes('notes')
-		if (current.quotes) current.quotes.on = area.includes('quotes')
-		if (current.searchbar) current.searchbar.on = area.includes('searchbar')
+
+		if (current.notes) {
+			current.notes.on = area.includes('notes')
+		}
+		if (current.quotes) {
+			current.quotes.on = area.includes('quotes')
+		}
+		if (current.searchbar) {
+			current.searchbar.on = area.includes('searchbar')
+		}
 
 		return current
 	}
@@ -355,7 +364,7 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 		const importStates = {
 			time: imported.time ?? current.time,
 			main: imported.main ?? current.main,
-			notes: imported.notes?.on ?? (current.notes?.on || false),
+			notes: imported.notes?.on ?? current.notes?.on,
 			quotes: imported.quotes?.on ?? current.quotes?.on,
 			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
 			quicklinks: imported.quicklinks ?? current.quicklinks,

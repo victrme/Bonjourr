@@ -1,4 +1,4 @@
-export function stringMaxSize(str = '', size: number) {
+export function stringMaxSize(str: string, size: number) {
 	return str.length > size ? str.slice(0, size) : str
 }
 
@@ -16,10 +16,10 @@ export function opacityFromHex(hex: string): number {
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-	return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
+	return `#${componentToHex(r)}${componentToHex(g)}${componentToHex(b)}`
 }
 
 function componentToHex(c: number): string {
 	const hex = c.toString(16)
-	return hex.length == 1 ? '0' + hex : hex
+	return hex.length === 1 ? `${0}hex` : hex
 }

@@ -10,17 +10,13 @@ let dusk = 60
 
 let userSetDate: Date
 
-export function userDate(timezone?: string): Date {
-	if (!timezone && userSetDate) {
-		return userSetDate
-	}
-
-	if (!timezone) {
-		timezone = 'auto'
-	}
-
+export function userDate(timezone = 'auto'): Date {
 	const isUTC = (timezone.includes('+') || timezone.includes('-')) && timezone.length < 6
 	const date = new Date()
+
+	if (timezone === 'auto' && userSetDate) {
+		return userSetDate
+	}
 
 	if (timezone === 'auto') {
 		return date
@@ -30,7 +26,7 @@ export function userDate(timezone?: string): Date {
 		const offset = date.getTimezoneOffset() / 60 // hour
 		let utcHour = date.getHours() + offset
 		const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
-		let minutes
+		let minutes: number
 
 		if (timezone.split('.')[1]) {
 			minutes = utcMinutes + Number.parseInt(timezone.split('.')[1])
@@ -120,7 +116,7 @@ export function needsChange(every: string, last: number): boolean {
 			return last === 0
 
 		case 'period': {
-			return last === 0 ? true : daylightPeriod() !== daylightPeriod(+lastDate) || false
+			return last === 0 ? true : daylightPeriod() !== daylightPeriod(+lastDate)
 		}
 
 		default:
