@@ -158,6 +158,7 @@
 	"Approximate": "Приблизна",
 	"Precise": "Точна",
 	"Location": "Розташування",
+	"Manual location": "Ручне розташування",
 	"Cannot find correct city": "Не можу знайти правильне місто",
 	"No internet connection": "Немає підключення до Інтернету",
 	"Cannot reach weather service": "Не вдається зв’язатися зі службою погоди",

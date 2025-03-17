@@ -158,6 +158,7 @@
 	"Approximate": "Gần đúng",
 	"Precise": "Chính xác",
 	"Location": "Vị trí thành phố",
+	"Manual location": "Vị trí thủ công",
 	"Cannot find correct city": "Không tìm thấy thành phố chính xác",
 	"No internet connection": "Không có kết nối internet",
 	"Cannot reach weather service": "Không thể liên lạc được với dịch vụ thời tiết",

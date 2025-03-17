@@ -172,6 +172,7 @@
 	"Approximate": "Approximate",
 	"Precise": "Precise",
 	"Location": "Location",
+	"Manual location": "Manual location",
 	"Cannot find correct city": "Cannot find correct city",
 	"No internet connection": "No internet connection",
 	"Cannot reach weather service": "Cannot reach weather service",

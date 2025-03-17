@@ -158,6 +158,7 @@
 	"Approximate": "تقريبي",
 	"Precise": "دقيق",
 	"Location": "موقع المدينة",
+	"Manual location": "الموقع اليدوي",
 	"Cannot find correct city": "لا يمكن العثور على المدينة الصحيحة",
 	"No internet connection": "لا يوجد اتصال بالإنترنت",
 	"Cannot reach weather service": "لا يمكن الوصول إلى خدمة الطقس",

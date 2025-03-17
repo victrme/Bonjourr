@@ -158,6 +158,7 @@
 	"Approximate": "Aproximativă",
 	"Precise": "Precisă",
 	"Location": "Locația orașului",
+	"Manual location": "Locație manuală",
 	"Cannot find correct city": "Nu pot găsi orașul corect",
 	"No internet connection": "Fără conexiune la internet",
 	"Cannot reach weather service": "Nu se poate ajunge la serviciul meteo",

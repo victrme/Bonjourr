@@ -158,6 +158,7 @@
 	"Approximate": "Noin",
 	"Precise": "Tarkka",
 	"Location": "Kaupungin sijainti",
+	"Manual location": "Manuaalinen sijainti",
 	"Cannot find correct city": "Oikeaa kaupunkia ei löydy",
 	"No internet connection": "Ei internetyhteyttä",
 	"Cannot reach weather service": "Sääpalveluun ei saada yhteyttä",

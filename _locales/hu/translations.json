@@ -158,6 +158,7 @@
 	"Approximate": "Hozzávetőleges",
 	"Precise": "Precíz",
 	"Location": "Városi elhelyezkedés",
+	"Manual location": "Kézi elhelyezés",
 	"Cannot find correct city": "Nem található a megfelelő város",
 	"No internet connection": "Nincs internet kapcsolat",
 	"Cannot reach weather service": "Nem érhető el az időjárási szolgálat",

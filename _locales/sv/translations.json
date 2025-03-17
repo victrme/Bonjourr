@@ -158,6 +158,7 @@
 	"Approximate": "Ungefär",
 	"Precise": "Exakt",
 	"Location": "Stadens läge",
+	"Manual location": "Manuell plats",
 	"Cannot find correct city": "Kan inte hitta rätt stad",
 	"No internet connection": "Ingen internetuppkoppling",
 	"Cannot reach weather service": "Kan inte nå vädertjänsten",
