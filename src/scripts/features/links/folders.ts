@@ -16,7 +16,7 @@ export async function folderClick(event: MouseEvent) {
 	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
-	if (!(li && inFolder ) || rightClick || isSelectAll) {
+	if (!(li && inFolder) || rightClick || isSelectAll) {
 		return
 	}
 
@@ -80,7 +80,7 @@ async function closeFolder() {
 	transition.transition(40)
 
 	function hide() {
-		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach((group) => {
+		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach(group => {
 			group.classList.add('hiding')
 			group.dataset.folder = ''
 		})
@@ -92,7 +92,7 @@ async function closeFolder() {
 	}
 
 	function show() {
-		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
+		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach(group => {
 			group.classList.remove('in-folder')
 			group.classList.remove('hiding')
 		})
@@ -102,7 +102,7 @@ async function closeFolder() {
 function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
 	const links = getLinksInFolder(data, li.id)
 
-	links.forEach((link) => window.open(link.url, '_blank')?.focus())
+	links.forEach(link => window.open(link.url, '_blank')?.focus())
 	window.open(window.location.href, '_blank')?.focus()
 	window.close()
 }

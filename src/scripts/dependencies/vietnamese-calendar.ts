@@ -106,9 +106,9 @@ function SunLongitude(jdn: number) {
 	const dr = Math.PI / 180 // degree to radian
 	const M = 357.5291 + 35999.0503 * T - 0.0001559 * T2 - 0.00000048 * T * T2 // mean anomaly, degree
 	const L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2 // mean longitude, degree
-	let DL = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M)
-	DL = DL + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.00029 * Math.sin(dr * 3 * M)
-	let L = L0 + DL // true longitude, degree
+	let dl = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M)
+	dl = dl + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.00029 * Math.sin(dr * 3 * M)
+	let L = L0 + dl // true longitude, degree
 	L *= dr
 	L -= Math.PI * 2 * INT(L / (Math.PI * 2)) // Normalize to (0, 2*PI)
 
@@ -213,7 +213,13 @@ function convertSolar2Lunar(dd: number, mm: number, yy: number, timeZone: number
 }
 
 /* Convert a lunar date to the corresponding solar date */
-function _convertLunar2Solar(lunarDay: number, lunarMonth: number, lunarYear: number, lunarLeap: number, timeZone: number) {
+function _convertLunar2Solar(
+	lunarDay: number,
+	lunarMonth: number,
+	lunarYear: number,
+	lunarLeap: number,
+	timeZone: number,
+) {
 	let a11: number
 	let b11: number
 
@@ -255,11 +261,11 @@ function _convertLunar2Solar(lunarDay: number, lunarMonth: number, lunarYear: nu
 }
 
 export default function getVnCalendar(date: Date) {
-	const CAN = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý']
-	const CHI = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi']
+	const can = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý']
+	const chi = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi']
 
 	const ld = convertSolar2Lunar(date.getDate(), date.getMonth() + 1, date.getFullYear(), 7)
-	const yearCanChi = `${CAN[(ld[2] + 6) % 10]} ${CHI[(ld[2] + 8) % 12]}`
+	const yearCanChi = `${can[(ld[2] + 6) % 10]} ${chi[(ld[2] + 8) % 12]}`
 	const leapText = ld[3] ? ' (nhuận)' : ''
 
 	return `Âm lịch: ${ld[0]} tháng ${ld[1]}${leapText} năm ${yearCanChi}`

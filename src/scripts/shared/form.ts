@@ -11,7 +11,7 @@ export default function networkForm(targetId: string) {
 		button = form?.querySelector('button:last-of-type') as HTMLButtonElement
 		message = form?.querySelector('small') as HTMLSpanElement
 
-		form.querySelectorAll('input').forEach((input) => {
+		form.querySelectorAll('input').forEach(input => {
 			input?.addEventListener('input', () => {
 				const placeholder = input.getAttribute('placeholder')
 				const isSame = placeholder === input.value

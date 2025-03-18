@@ -30,7 +30,7 @@ export async function getFilesAsCollection(local: Local.Storage): Promise<[strin
 	})
 
 	const images: Backgrounds.Image[] = []
-	const keys = sorted.map((entry) => entry[0])
+	const keys = sorted.map(entry => entry[0])
 
 	for (const [key, file] of sorted) {
 		const data = filesData[key]
@@ -87,10 +87,10 @@ export async function handleFilesSettingsOptions(local?: Local.Storage) {
 	const thmbZoom = document.getElementById('b_thumbnail-zoom')
 
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
-	const thumbIds = Object.values(thumbs).map((el) => el.id)
+	const thumbIds = Object.values(thumbs).map(el => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
 	const columnsAmount = Math.min(fileIds.length, 5).toString()
-	const missingThumbnailIds = fileIds.filter((id) => !thumbIds.includes(id))
+	const missingThumbnailIds = fileIds.filter(id => !thumbIds.includes(id))
 
 	fileIds.length === 0 ? actionButtons?.classList.remove('shown') : actionButtons?.classList.add('shown')
 	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
@@ -149,7 +149,6 @@ async function thumbnailPosition(this: HTMLInputElement) {
 	const { id, value } = this
 
 	if (!(img && file)) {
-		console.warn(new Error('?'))
 		return
 	}
 
@@ -204,7 +203,7 @@ async function thumbnailRemove(_e: Event) {
 
 function getThumbnailSelection(): string[] {
 	const thmbs = document.querySelectorAll<HTMLElement>('.thumbnail.selected')
-	const ids = Object.values(thmbs).map((thmb) => thmb?.id ?? '')
+	const ids = Object.values(thmbs).map(thmb => thmb?.id ?? '')
 	return ids
 }
 
@@ -284,14 +283,14 @@ function selectThumbnail(id: string) {
 }
 
 async function compressThumbnail(blob: Blob, size: number) {
-	const blobURL = window.URL.createObjectURL(blob)
+	const blobUrl = window.URL.createObjectURL(blob)
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
 	const img = new Image()
 
-	img.src = blobURL
+	img.src = blobUrl
 
-	await new Promise((resolve) => {
+	await new Promise(resolve => {
 		img.onload = () => {
 			const orientation = img.height > img.width ? 'portrait' : 'landscape'
 			let ratio = 0
@@ -315,7 +314,7 @@ async function compressThumbnail(blob: Blob, size: number) {
 		}
 	})
 
-	const newBlob = await new Promise((resolve) => ctx?.canvas.toBlob(resolve, 'image/png'))
+	const newBlob = await new Promise(resolve => ctx?.canvas.toBlob(resolve, 'image/png'))
 
 	return newBlob as Blob
 }
@@ -375,7 +374,7 @@ async function applyThumbnailBackground(id: string, local?: Local.Storage) {
 async function addThumbnailsToDom(ids: string[], selected?: string) {
 	const thumbnailsContainer = document.getElementById('thumbnails-container') as HTMLElement
 	const fragment = document.createDocumentFragment()
-	const idsToAdd = ids.filter((id) => !document.getElementById(id))
+	const idsToAdd = ids.filter(id => !document.getElementById(id))
 
 	for (const id of idsToAdd) {
 		const isSelected = id === selected

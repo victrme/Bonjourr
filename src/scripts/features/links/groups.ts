@@ -10,7 +10,7 @@ const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
 export function initGroups(data: Sync.Storage, init?: true) {
 	if (!init) {
-		document.querySelectorAll('#link-mini button')?.forEach((node) => {
+		document.querySelectorAll('#link-mini button')?.forEach(node => {
 			node.remove()
 		})
 	}
@@ -78,7 +78,7 @@ function changeGroup(event: Event) {
 		const data = await storage.sync.get()
 		const group = button.dataset.group ?? data.linkgroups.groups[0]
 
-		buttons?.forEach((div) => div.classList.remove('selected-group'))
+		buttons?.forEach(div => div.classList.remove('selected-group'))
 		button.classList.add('selected-group')
 		data.linkgroups.selected = group
 		storage.sync.set(data)
@@ -163,9 +163,9 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 	}
 
 	data.linkgroups.selected = group === selected || pinned.includes(group) ? groups[0] : selected
-	data.linkgroups.pinned = pinned.filter((p) => p !== group)
-	data.linkgroups.synced = synced.filter((g) => g !== group)
-	data.linkgroups.groups = groups.filter((g) => g !== group)
+	data.linkgroups.pinned = pinned.filter(p => p !== group)
+	data.linkgroups.synced = synced.filter(g => g !== group)
+	data.linkgroups.groups = groups.filter(g => g !== group)
 
 	if (groups.length === 2) {
 		data.linkgroups.pinned = []
@@ -178,7 +178,7 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 }
 
 export function moveGroups(mini: string[], data: Sync.Storage) {
-	const userMini = mini.filter((name) => name !== '+')
+	const userMini = mini.filter(name => name !== '+')
 
 	data.linkgroups.groups = data.linkgroups.pinned.concat(userMini)
 	initGroups(data)
@@ -190,11 +190,15 @@ export async function togglePinGroup(group: string, action: 'pin' | 'unpin') {
 	const data = await storage.sync.get()
 	const { groups, pinned } = data.linkgroups
 
-	if (action === 'pin') { data.linkgroups.pinned.push(group) }
-	if (action === 'unpin') { data.linkgroups.pinned = pinned.filter((pinned) => pinned !== group) }
+	if (action === 'pin') {
+		data.linkgroups.pinned.push(group)
+	}
+	if (action === 'unpin') {
+		data.linkgroups.pinned = pinned.filter(pinned => pinned !== group)
+	}
 
 	if (group === data.linkgroups.selected) {
-		const unpinned = groups.filter((id) => pinned.includes(id) === false)
+		const unpinned = groups.filter(id => pinned.includes(id) === false)
 		data.linkgroups.selected = unpinned[0]
 	}
 

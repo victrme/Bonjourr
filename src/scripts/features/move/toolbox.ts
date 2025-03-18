@@ -22,19 +22,19 @@ export function toolboxEvents() {
 		element?.onclickdown(() => updateMoveElement({ select: key }), { propagate: false })
 	})
 
-	moverBtns.forEach((button) => {
+	moverBtns.forEach(button => {
 		button.onclickdown(() => {
 			updateMoveElement({ grid: { x: button.dataset.col, y: button.dataset.row } })
 		})
 	})
 
-	boxAlignBtns.forEach((button) => {
+	boxAlignBtns.forEach(button => {
 		button.onclickdown(() => {
 			updateMoveElement({ box: button.dataset.align })
 		})
 	})
 
-	textAlignBtns.forEach((button) => {
+	textAlignBtns.forEach(button => {
 		button.onclickdown(() => {
 			updateMoveElement({ text: button.dataset.align })
 		})
@@ -95,7 +95,7 @@ export function toolboxEvents() {
 }
 
 export function layoutButtons(selection: Sync.MoveSelection) {
-	document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((button) => {
+	document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach(button => {
 		button.classList.toggle('selected', button.dataset.layout === selection)
 	})
 }
@@ -104,7 +104,9 @@ export function gridButtons(id: Widgets) {
 	const property = document.documentElement?.style.getPropertyValue('--grid') || ''
 	const grid = gridParse(property)
 
-	if (grid.length === 0) { return }
+	if (grid.length === 0) {
+		return
+	}
 
 	let top = false
 	let bottom = false
@@ -117,28 +119,46 @@ export function gridButtons(id: Widgets) {
 
 	// Detect if element is on array limits
 	positions.forEach(([col, row]) => {
-		if (row === 0) { top = true }
-		if (col === 0) { left = true }
-		if (col === rightLimit) { right = true }
-		if (row === widgetBottomLimit) { bottom = true }
+		if (row === 0) {
+			top = true
+		}
+		if (col === 0) {
+			left = true
+		}
+		if (col === rightLimit) {
+			right = true
+		}
+		if (row === widgetBottomLimit) {
+			bottom = true
+		}
 
 		// Bottom limit when last elem on last line
 		if (row === grid.length - 1) {
-			const idOnlyRow = grid.at(row)?.filter((id) => id !== '.')
-			if (new Set(idOnlyRow).size === 1) { bottom = true }
+			const idOnlyRow = grid.at(row)?.filter(id => id !== '.')
+			if (new Set(idOnlyRow).size === 1) {
+				bottom = true
+			}
 		}
 	})
 
 	// link button to correct limit, apply disable attr
-	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach((button) => {
+	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach(button => {
 		const c = Number.parseInt(button.dataset.col || '0')
 		const r = Number.parseInt(button.dataset.row || '0')
 		let limit = false
 
-		if (r === -1) { limit = top }
-		if (r === 1) { limit = bottom }
-		if (c === -1) { limit = left }
-		if (c === 1) { limit = right }
+		if (r === -1) {
+			limit = top
+		}
+		if (r === 1) {
+			limit = bottom
+		}
+		if (c === -1) {
+			limit = left
+		}
+		if (c === 1) {
+			limit = right
+		}
 
 		toggleDisabled(button, limit)
 	})
@@ -162,7 +182,7 @@ export function spanButtons(id: Widgets) {
 	}
 
 	const [posCol, posRow] = gridFind(grid, id)[0]
-	const col = grid.map((g) => g[posCol])
+	const col = grid.map(g => g[posCol])
 	const row = [...grid[posRow]]
 
 	const hasColumnDuplicates = hasDuplicateInArray(col, id)
@@ -177,27 +197,27 @@ export function alignButtons(align?: Sync.MoveAlign) {
 	const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 	const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
-	boxBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (box || 'center')))
-	textBtns.forEach((b) => b.classList.toggle('selected', b.dataset.align === (text || 'center')))
+	boxBtns.forEach(b => b.classList.toggle('selected', b.dataset.align === (box || 'center')))
+	textBtns.forEach(b => b.classList.toggle('selected', b.dataset.align === (text || 'center')))
 }
 
 export function resetButton(): boolean {
-	const b_resetlayout = document.getElementById('b_resetlayout') as HTMLButtonElement
-	const confirm = !!b_resetlayout.dataset.confirm
+	const bResetlayout = document.getElementById('b_resetlayout') as HTMLButtonElement
+	const confirm = !!bResetlayout.dataset.confirm
 
 	clearTimeout(resetTimeout)
 
 	if (confirm === false) {
-		b_resetlayout.textContent = tradThis('Are you sure?')
-		b_resetlayout.dataset.confirm = 'true'
+		bResetlayout.textContent = tradThis('Are you sure?')
+		bResetlayout.dataset.confirm = 'true'
 
 		resetTimeout = setTimeout(() => {
-			b_resetlayout.textContent = tradThis('Reset layout')
-			b_resetlayout.dataset.confirm = ''
+			bResetlayout.textContent = tradThis('Reset layout')
+			bResetlayout.dataset.confirm = ''
 		}, 1000)
 	} else {
-		b_resetlayout.textContent = tradThis('Reset layout')
-		b_resetlayout.dataset.confirm = ''
+		bResetlayout.textContent = tradThis('Reset layout')
+		bResetlayout.dataset.confirm = ''
 	}
 
 	return confirm

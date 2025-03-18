@@ -32,7 +32,7 @@ declare namespace Unsplash {
 		}
 	}
 
-	interface API {
+	interface Api {
 		color: string
 		blur_hash: string
 		description: string

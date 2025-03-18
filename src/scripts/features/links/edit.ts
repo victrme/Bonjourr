@@ -42,10 +42,10 @@ let editStates: EditStates
 
 export default async function openEditDialog(event: Event) {
 	const path = getComposedPath(event.target)
-	const classNames = path.map((element) => element.className ?? '')
-	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
-	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
-	const linktitle = path.find((el) => el?.className?.includes('link-title'))
+	const classNames = path.map(element => element.className ?? '')
+	const linkelem = path.find(el => el?.className?.includes('link') && el?.tagName === 'LI')
+	const linkgroup = path.find(el => el?.className?.includes('link-group'))
+	const linktitle = path.find(el => el?.className?.includes('link-title'))
 
 	const pointer = event as PointerEvent
 	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
@@ -56,21 +56,21 @@ export default async function openEditDialog(event: Event) {
 	}
 
 	const container: EditStates['container'] = {
-		mini: path.some((element) => element?.id?.includes('link-mini')),
-		group: classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
-		folder: classNames.some((cl) => cl.includes('link-group') && cl.includes('in-folder')),
+		mini: path.some(element => element?.id?.includes('link-mini')),
+		group: classNames.some(cl => cl.includes('link-group') && !cl.includes('in-folder')),
+		folder: classNames.some(cl => cl.includes('link-group') && cl.includes('in-folder')),
 	}
 
 	const target: EditStates['target'] = {
-		link: classNames.some((cl) => cl.includes('link-elem')),
-		folder: classNames.some((cl) => cl.includes('link-folder')),
-		title: classNames.some((cl) => cl.includes('link-title')),
-		synced: classNames.some((cl) => cl.includes('synced')),
-		addgroup: classNames.some((cl) => cl.includes('add-group')),
+		link: classNames.some(cl => cl.includes('link-elem')),
+		folder: classNames.some(cl => cl.includes('link-folder')),
+		title: classNames.some(cl => cl.includes('link-title')),
+		synced: classNames.some(cl => cl.includes('synced')),
+		addgroup: classNames.some(cl => cl.includes('add-group')),
 	}
 
-	const selectall = classNames.some((cl) => cl.includes('select-all'))
-	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
+	const selectall = classNames.some(cl => cl.includes('select-all'))
+	const dragging = classNames.some(cl => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
 	editStates = {
@@ -107,12 +107,16 @@ export default async function openEditDialog(event: Event) {
 		const onlyOneTitleUnpinned = groups.length - pinned.length < 2
 		const onlyOneTitleLeft = groups.length < 2
 
-		if (onlyOneTitleUnpinned) { document.getElementById('edit-pin')?.setAttribute('disabled', '') }
-		if (onlyOneTitleLeft) { document.getElementById('edit-delete')?.setAttribute('disabled', '') }
+		if (onlyOneTitleUnpinned) {
+			document.getElementById('edit-pin')?.setAttribute('disabled', '')
+		}
+		if (onlyOneTitleLeft) {
+			document.getElementById('edit-delete')?.setAttribute('disabled', '')
+		}
 	}
 
 	if (target.folder || target.link) {
-		const pathLis = path.filter((el) => el.tagName === 'LI')
+		const pathLis = path.filter(el => el.tagName === 'LI')
 		const li = pathLis[0]
 		const id = li?.id
 		const link = getLink(data, id)
@@ -127,7 +131,9 @@ export default async function openEditDialog(event: Event) {
 	}
 
 	if (!selectall) {
-		document.querySelectorAll('.link-title.selected, .link.selected')?.forEach((node) => node.classList.remove('selected'))
+		document
+			.querySelectorAll('.link-title.selected, .link.selected')
+			?.forEach(node => node.classList.remove('selected'))
 		;(target.title ? linktitle : linkelem)?.classList.add('selected')
 	}
 
@@ -150,7 +156,7 @@ function toggleEditInputs(): string[] {
 	const { container, target, selectall } = editStates
 	let inputs: string[] = []
 
-	domeditlink.querySelectorAll('label, button, hr').forEach((node) => {
+	domeditlink.querySelectorAll('label, button, hr').forEach(node => {
 		node.classList.remove('on')
 	})
 
@@ -162,26 +168,43 @@ function toggleEditInputs(): string[] {
 	domtitle.value = ''
 
 	if (container.mini) {
-		if (target.synced) { inputs = ['pin', 'delete'] }
-		else if (target.addgroup) { inputs = ['title', 'add'] }
-		else if (target.title) { inputs = ['title', 'delete', 'pin', 'apply'] }
+		if (target.synced) {
+			inputs = ['pin', 'delete']
+		} else if (target.addgroup) {
+			inputs = ['title', 'add']
+		} else if (target.title) {
+			inputs = ['title', 'delete', 'pin', 'apply']
+		}
 	}
 
 	if (container.group) {
-		if (target.synced && !target.title) { inputs = ['synced'] }
-		else if (target.synced && target.title) { inputs = ['unpin', 'delete'] }
-		else if (selectall) { inputs = ['delete', 'refresh', 'add'] }
-		else if (target.title) { inputs = ['title', 'delete', 'unpin', 'apply'] }
-		else if (target.folder) { inputs = ['title', 'delete', 'apply'] }
-		else if (target.link) { inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply'] }
-		else { inputs = ['title', 'url', 'add'] }
+		if (target.synced && !target.title) {
+			inputs = ['synced']
+		} else if (target.synced && target.title) {
+			inputs = ['unpin', 'delete']
+		} else if (selectall) {
+			inputs = ['delete', 'refresh', 'add']
+		} else if (target.title) {
+			inputs = ['title', 'delete', 'unpin', 'apply']
+		} else if (target.folder) {
+			inputs = ['title', 'delete', 'apply']
+		} else if (target.link) {
+			inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply']
+		} else {
+			inputs = ['title', 'url', 'add']
+		}
 	}
 
 	if (container.folder) {
-		if (target.title) { inputs = [] }
-		else if (selectall) { inputs = ['delete', 'unfolder'] }
-		else if (target.link) { inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder'] }
-		else { inputs = ['title', 'url', 'add'] }
+		if (target.title) {
+			inputs = []
+		} else if (selectall) {
+			inputs = ['delete', 'unfolder']
+		} else if (target.link) {
+			inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
+		} else {
+			inputs = ['title', 'url', 'add']
+		}
 	}
 
 	for (const id of inputs) {
@@ -278,7 +301,7 @@ queueMicrotask(() => {
 			openEditDialog(event)
 		}, 500)
 
-		domlinkblocks?.addEventListener('touchstart', (event) => {
+		domlinkblocks?.addEventListener('touchstart', event => {
 			handleLongPress(event)
 		})
 
@@ -387,7 +410,7 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 	}
 
 	if (origin === 'inputs') {
-		inputs.forEach((node) => node.blur())
+		inputs.forEach(node => node.blur())
 	}
 
 	quickLinks(undefined, {
@@ -402,7 +425,9 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 
 function closeEditDialog() {
 	if (domeditlink.open) {
-		document.querySelectorAll('.link-title.selected, .link.selected').forEach((node) => node?.classList.remove('selected'))
+		document
+			.querySelectorAll('.link-title.selected, .link.selected')
+			.forEach(node => node?.classList.remove('selected'))
 		domeditlink.removeAttribute('data-tab')
 		domeditlink.classList.remove('shown')
 		domeditlink.close()

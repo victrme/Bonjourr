@@ -43,7 +43,7 @@ let domlinkgroup: HTMLDivElement
 
 export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as HTMLElement[]
-	const type = path.some((element) => element?.className?.includes('link-title')) ? 'mini' : 'link'
+	const type = path.some(element => element?.className?.includes('link-title')) ? 'mini' : 'link'
 	const isMini = type === 'mini'
 
 	if (event.button > 0) {
@@ -66,14 +66,14 @@ export default function startDrag(event: PointerEvent) {
 
 	//
 
-	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
+	domlinkgroup = path.find(node => node?.classList?.contains('link-group')) as HTMLDivElement
 	domlinkgroups = document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group')
 	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
 	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
 	dragContainers = document.querySelectorAll<HTMLElement>(isMini ? '#link-mini' : '.link-group')
 
 	const tagName = isMini ? 'BUTTON' : 'LI'
-	const target = path.find((node) => node.tagName === tagName)
+	const target = path.find(node => node.tagName === tagName)
 	const pos = getPosFromEvent(event)
 
 	draggedId = findIdFromElement(target)
@@ -235,8 +235,8 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 		}
 
 		if (targetGroup === draggedGroup) {
-			blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
-			groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+			blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+			groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 		}
 
 		return
@@ -249,7 +249,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	if (curr === '') {
 		lastdropAreas.push('')
 		clearTimeout(dragChangeParentTimeout)
-		blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+		blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 		return
 	}
 
@@ -319,8 +319,8 @@ function applyDragChangeParent(id: string, type: DropType) {
 
 		targetId = id
 
-		groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
-		blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+		groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+		blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 		blocks.get(draggedId)?.classList.toggle('drop-source', true)
 
 		if (type === 'group') {
@@ -356,7 +356,7 @@ function endDrag(event: Event) {
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
 
-	dragContainers.forEach((container) => {
+	dragContainers.forEach(container => {
 		container?.classList.replace('dragging', 'dropping')
 	})
 
@@ -366,7 +366,7 @@ function endDrag(event: Event) {
 		deplaceElem(block, coord.x, coord.y)
 	}
 
-	groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+	groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 
 	setTimeout(() => {
 		const targetIsFolder = blocks.get(targetId)?.classList.contains('link-folder')
@@ -406,11 +406,11 @@ function endDrag(event: Event) {
 		// Yield to functions above to avoid flickering
 		// Do not remove this setTimeout (or else)
 		setTimeout(() => {
-			dragContainers.forEach((container) => {
+			dragContainers.forEach(container => {
 				container?.removeAttribute('style')
 				container?.classList.remove('in-drag', 'dropping')
 
-				container.querySelectorAll('li, button').forEach((element) => {
+				container.querySelectorAll('li, button').forEach(element => {
 					element.removeAttribute('style')
 				})
 			})
@@ -461,9 +461,15 @@ function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 
 
 			let area: DropArea = ''
 
-			if (isInLeftEdge) { area = 'left' }
-			if (isInRightEdge) { area = 'right' }
-			if (isInCenter) { area = 'center' }
+			if (isInLeftEdge) {
+				area = 'left'
+			}
+			if (isInRightEdge) {
+				area = 'right'
+			}
+			if (isInCenter) {
+				area = 'center'
+			}
 
 			if (area) {
 				return { area, id }

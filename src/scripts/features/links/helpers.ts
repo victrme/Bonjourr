@@ -12,12 +12,12 @@ export function getDefaultIcon(url: string, refresh?: number) {
 
 export function getSelectedIds(): string[] {
 	const selected = document.querySelectorAll<HTMLLIElement>('li.selected')
-	return Object.values(selected).map((li) => li.id)
+	return Object.values(selected).map(li => li.id)
 }
 
 export function getLiFromEvent(event: Event): HTMLLIElement | undefined {
 	const path = event.composedPath() as Element[]
-	const li = path.find((el) => el.tagName === 'LI' && el.className?.includes('link'))
+	const li = path.find(el => el.tagName === 'LI' && el.className?.includes('link'))
 
 	if (li) {
 		return li as HTMLLIElement
@@ -26,7 +26,7 @@ export function getLiFromEvent(event: Event): HTMLLIElement | undefined {
 
 export function getTitleFromEvent(event: Event): HTMLElement | undefined {
 	const path = event.composedPath() as Element[]
-	const title = path.find((el) => el.className?.includes('link-title'))
+	const title = path.find(el => el.className?.includes('link-title'))
 
 	if (title) {
 		return title as HTMLElement
@@ -37,7 +37,7 @@ export function createTitle(link: Links.Link): string {
 	const isInline = document.getElementById('linkblocks')?.className.includes('inline')
 	const isText = document.getElementById('linkblocks')?.className.includes('text')
 
-	if ((!(isInline || isText)) || link.title !== '') {
+	if (!(isInline || isText) || link.title !== '') {
 		return stringMaxSize(link.title, 64)
 	}
 

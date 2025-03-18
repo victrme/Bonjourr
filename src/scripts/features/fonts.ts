@@ -34,7 +34,10 @@ export const systemfont = (() => {
 		windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
 		android: { placeholder: 'Roboto', weights: ['100', '300', '400', '500', '700', '900'] },
 		linux: { placeholder: 'Fira Sans', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-		apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
+		apple: {
+			placeholder: 'SF Pro Display',
+			weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+		},
 	}
 
 	if (SYSTEM_OS === 'windows') {
@@ -68,9 +71,7 @@ export default function customFont(init?: Font, event?: CustomFontUpdate) {
 			onSettingsLoad(() => {
 				initFontSettings(font)
 			})
-		} catch (_) {
-			console.warn(new Error('Error with custom fonts'))
-		}
+		} catch (_) {}
 	}
 }
 
@@ -109,7 +110,7 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
 }
 
 async function updateFontFamily(data: Sync.Storage, family: string): Promise<Font> {
-	const i_weight = document.getElementById('i_weight') as HTMLInputElement
+	const iWeight = document.getElementById('i_weight') as HTMLInputElement
 	const familyType = family.length === 0 ? 'none' : systemFontChecker(family) ? 'system' : 'fontsource'
 
 	let font: Font = {
@@ -156,7 +157,7 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 
 	clock(undefined, {})
 	setWeightSettings(font.weightlist)
-	i_weight.value = font.weight
+	iWeight.value = font.weight
 
 	return font
 }
@@ -201,7 +202,7 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 		font.weight = '400'
 		font.system = false
 		font.family = newfamily
-		font.weightlist = newfont.weights.map((w) => w.toString())
+		font.weightlist = newfont.weights.map(w => w.toString())
 		return font
 	}
 
@@ -212,7 +213,8 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 
 function displayFont({ family, size, weight, system }: Font) {
 	// Weight: default bonjourr lowers font weight on clock (because we like it)
-	const clockWeight = Number.parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
+	const clockWeight =
+		Number.parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
 	const subset = getRequiredSubset()
 	const id = family.toLocaleLowerCase().replaceAll(' ', '-')
 	const fontfacedom = document.getElementById('fontface')
@@ -254,13 +256,13 @@ function initFontSettings(font?: Font) {
 }
 
 async function setAutocompleteSettings(isLangSwitch?: boolean) {
-	const dl_fontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
+	const dlFontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
 
 	if (isLangSwitch) {
-		dl_fontfamily?.childNodes.forEach((node) => node.remove())
+		dlFontfamily?.childNodes.forEach(node => node.remove())
 	}
 
-	if (dl_fontfamily?.childElementCount === 0) {
+	if (dlFontfamily?.childElementCount === 0) {
 		const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
 		const fragment = new DocumentFragment()
 		const requiredSubset = getRequiredSubset()
@@ -274,7 +276,7 @@ async function setAutocompleteSettings(isLangSwitch?: boolean) {
 			}
 		}
 
-		dl_fontfamily?.appendChild(fragment)
+		dlFontfamily?.appendChild(fragment)
 	}
 }
 
@@ -292,7 +294,7 @@ function setWeightSettings(weights: string[]) {
 
 export async function fontIsAvailableInSubset(lang?: string, family?: string) {
 	const fontlist = (await (await apiFetch('/fonts'))?.json()) as Fontsource[]
-	const font = fontlist?.find((item) => item.family === family)
+	const font = fontlist?.find(item => item.family === family)
 	const subset = getRequiredSubset(lang)
 
 	return font?.subsets.includes(subset)
@@ -308,11 +310,11 @@ function systemFontChecker(family: string): boolean {
 	p.textContent = `mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890${tradThis('New tab')}`
 	document.getElementById('interface')?.prepend(p)
 
-	const first_w = p.getBoundingClientRect().width
+	const firstW = p.getBoundingClientRect().width
 	p.style.fontFamily = `'${family}'`
 
-	const second_w = p.getBoundingClientRect().width
-	const hasLoadedFont = first_w !== second_w
+	const secondW = p.getBoundingClientRect().width
+	const hasLoadedFont = firstW !== secondW
 
 	p.remove()
 
@@ -320,7 +322,7 @@ function systemFontChecker(family: string): boolean {
 }
 
 function waitForFontLoad(family: string): Promise<boolean> {
-	return new Promise((resolve) => {
+	return new Promise(resolve => {
 		let limitcounter = 0
 		let hasLoadedFont = systemFontChecker(family)
 

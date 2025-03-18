@@ -45,7 +45,7 @@ export function isEditing(): boolean {
 }
 
 export function hasDuplicateInArray(arr: string[], id?: string): boolean {
-	return arr.filter((a) => a === id).length > 1
+	return arr.filter(a => a === id).length > 1
 }
 
 export function getLayout(data: Sync.Move | Sync.Storage, selection?: Sync.MoveSelection): Sync.MoveLayout {
@@ -64,14 +64,14 @@ export function getLayout(data: Sync.Move | Sync.Storage, selection?: Sync.MoveS
 
 function gridValidate(grid: Grid): boolean {
 	const cells = grid.flat()
-	const cellsAreWidgets = cells.every((val) => val === '.' || MOVE_WIDGETS.includes(val))
+	const cellsAreWidgets = cells.every(val => val === '.' || MOVE_WIDGETS.includes(val))
 	return cellsAreWidgets
 }
 
 export function gridParse(area = ''): Grid {
 	const stringToGrid = (split: string): string[][] => {
-		const rows = area.split(split).filter((a) => a.length > 1)
-		const grid = rows.map((r) => r.split(' '))
+		const rows = area.split(split).filter(a => a.length > 1)
+		const grid = rows.map(r => r.split(' '))
 		return grid
 	}
 
@@ -150,7 +150,7 @@ export function isRowEmpty(grid: Grid, index: number) {
 	const row = grid[index]
 	let empty = true
 
-	row.forEach((cell) => {
+	row.forEach(cell => {
 		if (cell !== '.' && getSpanDirection(grid, cell) !== 'columns') {
 			empty = false
 		}
@@ -159,7 +159,11 @@ export function isRowEmpty(grid: Grid, index: number) {
 	return empty
 }
 
-export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
+export function spansInGridArea(
+	grid: Grid,
+	id: Widgets,
+	{ toggle, remove }: { toggle?: 'row' | 'col'; remove?: true },
+) {
 	function addSpans(row: string[]) {
 		const target = row.indexOf(id)
 		const stopper = [false, false]
@@ -189,7 +193,7 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 
 	function removeSpans(arr: string[]) {
 		let keepfirst = true
-		return arr.map((a) => {
+		return arr.map(a => {
 			if (a === id) {
 				if (keepfirst) {
 					keepfirst = false
@@ -208,7 +212,7 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 	*/
 
 	const [x, y] = gridFind(grid, id)[0]
-	let col = grid.map((g) => g[x])
+	let col = grid.map(g => g[x])
 	let row = [...grid[y]]
 
 	if (remove) {
@@ -290,7 +294,7 @@ export function getGridWidgets(area: string): Widgets[] {
 
 export function addGridWidget(grid: string, id: Widgets, selection: Sync.MoveSelection): string {
 	const newrow = addGridRow(selection, id)
-	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
+	let rows = grid.split("'").filter(row => !(row === ' ' || row === ''))
 	let position = 0
 
 	if (grid === '') {
@@ -320,16 +324,16 @@ export function addGridWidget(grid: string, id: Widgets, selection: Sync.MoveSel
 	}
 
 	rows.splice(position, 0, newrow)
-	rows = rows.map((row) => `'${row}'`)
+	rows = rows.map(row => `'${row}'`)
 
 	return rows.join(' ')
 }
 
 export function removeGridWidget(grid: string, id: Widgets, _: Sync.MoveSelection): string {
-	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
+	let rows = grid.split("'").filter(row => !(row === ' ' || row === ''))
 
-	rows = rows.filter((row) => !row.includes(id))
-	rows = rows.map((row) => `'${row}'`)
+	rows = rows.filter(row => !row.includes(id))
+	rows = rows.map(row => `'${row}'`)
 
 	return rows.join(' ')
 }

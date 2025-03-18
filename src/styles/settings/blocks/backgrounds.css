@@ -53,10 +53,7 @@
 	outline: 3px solid transparent;
 	outline-offset: -3px;
 	background-color: var(--color-input);
-	transition:
-		opacity 0.05s,
-		filter 0.05s,
-		outline 0.05s;
+	transition: opacity 0.05s, filter 0.05s, outline 0.05s;
 }
 
 .thumbnail.hiding {

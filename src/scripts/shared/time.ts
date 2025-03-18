@@ -11,7 +11,7 @@ let dusk = 60
 let userSetDate: Date
 
 export function userDate(timezone = 'auto'): Date {
-	const isUTC = (timezone.includes('+') || timezone.includes('-')) && timezone.length < 6
+	const isUtc = (timezone.includes('+') || timezone.includes('-')) && timezone.length < 6
 	const date = new Date()
 
 	if (timezone === 'auto' && userSetDate) {
@@ -22,7 +22,7 @@ export function userDate(timezone = 'auto'): Date {
 		return date
 	}
 
-	if (isUTC) {
+	if (isUtc) {
 		const offset = date.getTimezoneOffset() / 60 // hour
 		let utcHour = date.getHours() + offset
 		const utcMinutes = date.getMinutes() + date.getTimezoneOffset()

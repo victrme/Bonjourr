@@ -3,7 +3,7 @@ import onSettingsLoad from '../utils/onsettingsload'
 import debounce from '../utils/debounce'
 import storage from '../storage'
 
-interface SupportersAPI {
+interface SupportersApi {
 	date: string
 	name: string
 	amount: number
@@ -97,7 +97,7 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		initSupportersModal()
 		translateNotif()
 
-		supportersNotif?.onclickdown((e) => {
+		supportersNotif?.onclickdown(e => {
 			if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
 				toggleSupportersModal(true)
 				loadModalData()
@@ -173,14 +173,14 @@ function initSupportersModal() {
 		})
 
 		// close when click on background
-		supportersModal.addEventListener('click', (event) => {
+		supportersModal.addEventListener('click', event => {
 			if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
 				toggleSupportersModal(false)
 			}
 		})
 
 		// close when esc key
-		document.addEventListener('keyup', (event) => {
+		document.addEventListener('keyup', event => {
 			if (event.key === 'Escape' && document.documentElement.dataset.supportersModal !== undefined) {
 				toggleSupportersModal(false)
 			}
@@ -191,13 +191,19 @@ function initSupportersModal() {
 function toggleSupportersModal(toggle: boolean) {
 	document.dispatchEvent(new Event('toggle-settings'))
 
-	if (toggle) { document.documentElement.dataset.supportersModal = '' }
-	if (!toggle) { delete document.documentElement.dataset.supportersModal }
+	if (toggle) {
+		document.documentElement.dataset.supportersModal = ''
+	}
+	if (!toggle) {
+		delete document.documentElement.dataset.supportersModal
+	}
 }
 
 let modalDataLoaded = false
 export async function loadModalData() {
-	if (modalDataLoaded) { return }
+	if (modalDataLoaded) {
+		return
+	}
 
 	if (!document.body.className.includes('potato')) {
 		initGlitter()
@@ -218,17 +224,19 @@ export async function loadModalData() {
 
 	function injectError(string: string) {
 		const main = document.querySelector('#supporters-modal main')
-		if (main) { main.innerHTML = `<i>${string}</i>` }
+		if (main) {
+			main.innerHTML = `<i>${string}</i>`
+		}
 	}
 
-	function injectData(supporters: SupportersAPI[] = []) {
+	function injectData(supporters: SupportersApi[] = []) {
 		// sorts in descending order
 		supporters.sort((a, b) => b.amount - a.amount)
 
 		const monthlyFragment = document.createDocumentFragment()
 		const onceFragment = document.createDocumentFragment()
 
-		supporters.forEach((supporter) => {
+		supporters.forEach(supporter => {
 			const li = document.createElement('li')
 			li.innerHTML = supporter.name
 
@@ -238,19 +246,16 @@ export async function loadModalData() {
 
 		document.querySelector('#supporters-modal #monthly #list')?.appendChild(monthlyFragment)
 		document.querySelector('#supporters-modal #once #list')?.appendChild(onceFragment)
-
-		console.info(`Loaded supporters data from ${monthToGet}/${yearToGet}.`)
 	}
 
 	try {
 		let response: Response | undefined
-		let supporters: SupportersAPI[] = []
+		let supporters: SupportersApi[] = []
 		response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
 
 		if (response.ok) {
 			supporters = await response.json()
 		} else {
-			console.error(`HTTP error when fetching supporters list! status: ${response.status}`)
 		}
 
 		// removes loader
@@ -259,11 +264,9 @@ export async function loadModalData() {
 		if (supporters.length > 0) {
 			injectData(supporters)
 		} else {
-			console.error(`No supporters data found for ${monthToGet}/${yearToGet}`)
 			injectError('An error occured or there were no supporters last month.')
 		}
-	} catch (error) {
-		console.error('An error occurred:', error)
+	} catch (_error) {
 		injectError('An Internet connection is required to see the supporters names.')
 	}
 
@@ -276,7 +279,6 @@ function tradTemplateString(doc: DocumentFragment, selector: string, text: strin
 	if (toTranslate) {
 		toTranslate.innerText = tradThis(text)
 	} else {
-		console.error(`Error when trying to translate "${selector}"`)
 	}
 }
 

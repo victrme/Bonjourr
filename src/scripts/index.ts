@@ -36,20 +36,17 @@ try {
 	startup()
 	serviceWorker()
 	onlineAndMobile()
-} catch (_) {
-	console.warn(new Error('General error'))
-}
+} catch (_) {}
 
 async function startup() {
 	let { sync, local } = await storage.init()
-	const OLD_VERSION = sync?.about?.version
+	const oldVersion = sync?.about?.version
 
 	if (!(sync && local)) {
-		console.warn(new Error('Storage failed'))
 		return
 	}
 
-	if (OLD_VERSION !== CURRENT_VERSION) {
+	if (oldVersion !== CURRENT_VERSION) {
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
 
@@ -104,7 +101,7 @@ async function startup() {
 		})
 
 		interfacePopup({
-			old: OLD_VERSION,
+			old: oldVersion,
 			new: CURRENT_VERSION,
 			review: sync.review ?? 0,
 			announce: sync.announcements,
@@ -236,19 +233,19 @@ function userActionsEvents() {
 
 		const open = isOpen()
 		const composedPath = (event.composedPath() as Element[]) ?? [document.body]
-		const path = composedPath.filter((node) => node?.className?.includes)
-		const pathIds = path.map((el) => (el as HTMLElement).id)
+		const path = composedPath.filter(node => node?.className?.includes)
+		const pathIds = path.map(el => (el as HTMLElement).id)
 
 		const on = {
 			body: (path[0] as HTMLElement).tagName === 'BODY',
-			link: path.some((el) => el.classList.contains('link')),
-			linkfolder: path.some((el) => el.className.includes('folder')),
-			addgroup: path.some((el) => el.className.includes('add-group')),
-			folder: path.some((el) => el.className.includes('in-folder')),
+			link: path.some(el => el.classList.contains('link')),
+			linkfolder: path.some(el => el.className.includes('folder')),
+			addgroup: path.some(el => el.className.includes('add-group')),
+			folder: path.some(el => el.className.includes('in-folder')),
 			interface: pathIds.includes('interface'),
 			editlink: pathIds.includes('editlink'),
-			settings: path.some((el) => el.id === 'settings'),
-			showsettings: path.some((el) => el.id === 'show-settings'),
+			settings: path.some(el => el.id === 'settings'),
+			showsettings: path.some(el => el.id === 'show-settings'),
 		}
 
 		if (document.body.classList.contains('tabbing')) {
@@ -314,9 +311,9 @@ function userActionsEvents() {
 
 function onlineAndMobile() {
 	const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
-	const onlineSafariIOS = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
+	const onlineSafariIos = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
 	let visibilityHasChanged = false
-	let firefoxRAFTimeout: number
+	let firefoxRafTimeout: number
 
 	if (IS_MOBILE) {
 		document.addEventListener('visibilitychange', updateOnVisibilityChange)
@@ -332,11 +329,11 @@ function onlineAndMobile() {
 		// Fix for opening tabs Firefox iOS
 		if (SYSTEM_OS === 'ios') {
 			window.requestAnimationFrame(triggerAnimationFrame)
-			setTimeout(() => cancelAnimationFrame(firefoxRAFTimeout), 500)
+			setTimeout(() => cancelAnimationFrame(firefoxRafTimeout), 500)
 		}
 	}
 
-	if (onlineSafariIOS) {
+	if (onlineSafariIos) {
 		onSettingsLoad(() => {
 			const inputs = document.querySelectorAll('input[type="text"], input[type="url"], textarea')
 
@@ -375,7 +372,7 @@ function onlineAndMobile() {
 
 	function triggerAnimationFrame() {
 		updateAppHeight()
-		firefoxRAFTimeout = requestAnimationFrame(triggerAnimationFrame)
+		firefoxRafTimeout = requestAnimationFrame(triggerAnimationFrame)
 	}
 
 	function updateAppHeight() {
@@ -408,7 +405,7 @@ function serviceWorker() {
 
 	let promptEvent: Event // PWA install trigger (30s interaction default)
 
-	window.addEventListener('beforeinstallprompt', (e) => {
+	window.addEventListener('beforeinstallprompt', e => {
 		promptEvent = e
 		return promptEvent
 	})

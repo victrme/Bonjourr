@@ -132,7 +132,7 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 
 		case 'localstorage': {
 			if (typeof keyval !== 'object') {
-				return console.warn('Value is not an object: ', keyval)
+				return
 			}
 
 			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
@@ -231,7 +231,7 @@ async function localGet(keys?: string | string[]): Promise<Local.Storage> {
 			let filteredKeys: string[] = []
 
 			if (keys === undefined) {
-				filteredKeys = [...Object.keys(localStorage).filter((k) => k !== 'bonjourr')]
+				filteredKeys = [...Object.keys(localStorage).filter(k => k !== 'bonjourr')]
 			} //
 			else if (typeof keys === 'string') {
 				filteredKeys = [keys]
@@ -303,7 +303,7 @@ async function init(): Promise<AllStorage> {
 	if (PLATFORM !== 'online' && !webextStoreReady()) {
 		globalThis.pageReady = true
 
-		await new Promise((resolve) => {
+		await new Promise(resolve => {
 			document.addEventListener('webextstorage', (event: CustomEventInit) => {
 				if (event.detail === 'sync') {
 					store.sync = globalThis.startupStorage.sync
@@ -403,9 +403,7 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 	try {
 		const json = await (await fetch('config.json')).json()
 		return verifyDataAsSync(json)
-	} catch (_) {
-		console.warn(new Error('No config'))
-	}
+	} catch (_) {}
 
 	return SYNC_DEFAULT
 }

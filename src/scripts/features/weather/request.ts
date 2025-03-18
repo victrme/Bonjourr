@@ -67,19 +67,19 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	const { temp, feels } = json.now
 	const { description, icon } = json.now
 
-	let forecasted_high = lastWeather?.forecasted_high ?? -273.15
-	let forecasted_timestamp = lastWeather?.forecasted_timestamp ?? 0
+	let forecastedHigh = lastWeather?.forecasted_high ?? -273.15
+	let forecastedTimestamp = lastWeather?.forecasted_timestamp ?? 0
 
 	if (json.daily) {
 		const [today, tomorrow] = json.daily
 		const date = new Date()
 
 		if (date.getHours() > getSunsetHour()) {
-			forecasted_high = tomorrow.high
-			forecasted_timestamp = new Date(tomorrow.time).getTime()
+			forecastedHigh = tomorrow.high
+			forecastedTimestamp = new Date(tomorrow.time).getTime()
 		} else {
-			forecasted_high = today.high
-			forecasted_timestamp = new Date(today.time).getTime()
+			forecastedHigh = today.high
+			forecastedTimestamp = new Date(today.time).getTime()
 		}
 	}
 
@@ -99,8 +99,8 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 
 	return {
 		timestamp: Date.now(),
-		forecasted_timestamp,
-		forecasted_high,
+		forecasted_timestamp: forecastedTimestamp,
+		forecasted_high: forecastedHigh,
 		description,
 		feels_like: feels,
 		icon_id: icon,
@@ -136,9 +136,9 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 	const location = { lat: 0, lon: 0 }
 
 	if (type === 'precise') {
-		await new Promise((resolve) =>
+		await new Promise(resolve =>
 			navigator.geolocation.getCurrentPosition(
-				(geo) => {
+				geo => {
 					location.lat = geo.coords.latitude
 					location.lon = geo.coords.longitude
 					resolve(true)

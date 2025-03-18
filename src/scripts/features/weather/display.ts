@@ -87,7 +87,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 			return
 		}
 
-		const URLs = {
+		const urLs = {
 			accu: lastWeather.link ?? 'https://www.accuweather.com/',
 			msnw: tradThis('https://www.msn.com/en-xl/weather/forecast/'),
 			yhw: 'https://www.yahoo.com/news/weather/',
@@ -95,8 +95,8 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 			custom: data.provider ?? '',
 		}
 
-		if ((data.moreinfo || '') in URLs) {
-			weatherdom?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
+		if ((data.moreinfo || '') in urLs) {
+			weatherdom?.setAttribute('href', urLs[data.moreinfo as keyof typeof urLs])
 		}
 	}
 

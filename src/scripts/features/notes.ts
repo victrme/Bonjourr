@@ -70,7 +70,7 @@ function initNotes(init: Sync.Notes) {
 
 	init.text = init.text ?? translateNotesText()
 
-	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput((content) => {
+	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput(content => {
 		updateNotes({ text: content })
 	})
 }

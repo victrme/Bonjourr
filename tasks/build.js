@@ -43,7 +43,10 @@ const paths = {
 	extension: {
 		manifest: [`src/manifests/${platform}.json`, `release/${platform}/manifest.json`],
 		scripts: {
-			serviceworker: ['src/scripts/services/service-worker.js', `release/${platform}/src/scripts/service-worker.js`],
+			serviceworker: [
+				'src/scripts/services/service-worker.js',
+				`release/${platform}/src/scripts/service-worker.js`,
+			],
 			storage: ['src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`],
 		},
 	},
@@ -108,11 +111,11 @@ function builder() {
 }
 
 function watcher() {
-	watchTasks('_locales', (filename) => {
+	watchTasks('_locales', filename => {
 		locales()
 	})
 
-	watchTasks('src', (filename) => {
+	watchTasks('src', filename => {
 		if (filename.includes('.html')) html()
 		if (filename.includes('styles/')) styles()
 		if (filename.includes('assets/')) assets()
@@ -225,7 +228,7 @@ function manifests() {
 }
 
 function locales() {
-	const langs = readdirSync('_locales').filter((dir) => dir !== '.DS_Store')
+	const langs = readdirSync('_locales').filter(dir => dir !== '.DS_Store')
 	const [input, output] = paths.shared.locales
 
 	for (const lang of langs) {
@@ -279,7 +282,7 @@ function liveServer() {
 		const path = `release/online/${req.url === '/' ? 'index.html' : req.url}`
 		const filePath = new URL(path, import.meta.url)
 
-		fs.access(filePath, fs.constants.F_OK, (err) => {
+		fs.access(filePath, fs.constants.F_OK, err => {
 			if (err) {
 				res.writeHead(404, { 'Content-Type': 'text/plain' })
 				res.end('Not Found')

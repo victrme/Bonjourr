@@ -90,7 +90,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 		return
 	}
 
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
 		document.documentElement.dataset.theme = event.matches ? 'dark' : 'light'
 	})
 }

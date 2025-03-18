@@ -39,11 +39,11 @@ async function updateCache() {
 
 function retrieveCache(event) {
 	const url = event.request.url
-	const isAPI = API_URLS.some((api) => url.includes(api))
+	const isApi = API_URLS.some(api => url.includes(api))
 
 	event.respondWith(
 		(async () => {
-			if (isAPI) {
+			if (isApi) {
 				return fetch(event.request)
 			}
 
@@ -57,6 +57,6 @@ function retrieveCache(event) {
 			cache.add(event.request.url)
 
 			return fetch(event.request)
-		})()
+		})(),
 	)
 }

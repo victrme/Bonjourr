@@ -43,7 +43,7 @@ async function translateFile(lang) {
 	}
 
 	// Add keys & translate new stuff
-	const missingKeys = Object.keys(englishDict).filter((key) => newDict[key] === undefined)
+	const missingKeys = Object.keys(englishDict).filter(key => newDict[key] === undefined)
 
 	if (missingKeys.length > 0) {
 		const message = lang + '\n' + missingKeys.join('\n')

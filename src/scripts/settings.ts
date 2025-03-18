@@ -192,7 +192,10 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
 
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
-	paramId('i_analog-background-shade')?.classList.toggle('on', (data.analogstyle?.background ?? '#fff').includes('#000'))
+	paramId('i_analog-background-shade')?.classList.toggle(
+		'on',
+		(data.analogstyle?.background ?? '#fff').includes('#000'),
+	)
 	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
 	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 
@@ -210,12 +213,12 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	}
 
 	// inserts languages in select
-	const i_lang = paramId('i_lang')
+	const iLang = paramId('i_lang')
 	Object.entries(langList).forEach(([code, title]) => {
 		const option = document.createElement('option')
 		option.value = code
 		option.text = title
-		i_lang.appendChild(option)
+		iLang.appendChild(option)
 	})
 
 	// must be init after children appening
@@ -236,7 +239,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 
 	// Page layout
-	domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach((b) => {
+	domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach(b => {
 		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
 		b?.classList.toggle('selected', selectedLayout)
 	})
@@ -259,19 +262,19 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
 	paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
 
-	document.querySelectorAll<HTMLFormElement>('#settings form').forEach((form) => {
-		form.querySelectorAll<HTMLInputElement>('input').forEach((input) => {
+	document.querySelectorAll<HTMLFormElement>('#settings form').forEach(form => {
+		form.querySelectorAll<HTMLInputElement>('input').forEach(input => {
 			input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
 		})
 	})
 
 	// Add massive timezones to <select>
 
-	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach((select) => {
+	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach(select => {
 		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
 		const optgroups = template.querySelectorAll('optgroup')
 
-		optgroups.forEach((group) => {
+		optgroups.forEach(group => {
 			select.appendChild(group)
 		})
 	})
@@ -371,11 +374,15 @@ function initOptionsEvents() {
 	})
 
 	paramId('b_showtitles').onclickdown((_, target) => {
-		quickLinks(undefined, { styles: { titles: !target.classList.contains('on') } })
+		quickLinks(undefined, {
+			styles: { titles: !target.classList.contains('on') },
+		})
 	})
 
 	paramId('b_showbackgrounds').onclickdown((_, target) => {
-		quickLinks(undefined, { styles: { backgrounds: !target.classList.contains('on') } })
+		quickLinks(undefined, {
+			styles: { backgrounds: !target.classList.contains('on') },
+		})
 	})
 
 	paramId('i_row').addEventListener('input', function (this) {
@@ -475,7 +482,11 @@ function initOptionsEvents() {
 	})
 
 	document.querySelectorAll<HTMLInputElement>('select[name="worldclock-timezone"]')?.forEach((select, i) => {
-		select.addEventListener('change', () => clock(undefined, { world: { index: i, timezone: select.value } }))
+		select.addEventListener('change', () =>
+			clock(undefined, {
+				world: { index: i, timezone: select.value },
+			}),
+		)
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
@@ -701,7 +712,7 @@ function initOptionsEvents() {
 		customFont(undefined, { autocomplete: true })
 	})
 
-	paramId('f_customfont').addEventListener('submit', (event) => {
+	paramId('f_customfont').addEventListener('submit', event => {
 		customFont(undefined, { family: paramId('i_customfont').value })
 		event.preventDefault()
 	})
@@ -738,7 +749,9 @@ function initOptionsEvents() {
 		pageControl({ gap: Number.parseFloat(this.value) }, true)
 	})
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), { passive: true })
+	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), {
+		passive: true,
+	})
 	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
 	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
 	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
@@ -812,15 +825,15 @@ function initOptionsEvents() {
 		copySettings()
 	})
 
-	paramId('settings-data').addEventListener('input', (event) => {
+	paramId('settings-data').addEventListener('input', event => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('settings-data').addEventListener('focus', (event) => {
+	paramId('settings-data').addEventListener('focus', event => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('settings-data').addEventListener('blur', (event) => {
+	paramId('settings-data').addEventListener('blur', event => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
@@ -849,15 +862,20 @@ function initOptionsEvents() {
 
 	if (IS_MOBILE) {
 		// Reduces opacity to better see interface appearance changes
-		const touchHandler = (touch: boolean) => document.getElementById('settings')?.classList.toggle('see-through', touch)
+		const touchHandler = (touch: boolean) =>
+			document.getElementById('settings')?.classList.toggle('see-through', touch)
 		document.querySelectorAll("input[type='range'").forEach((input: Element) => {
-			input.addEventListener('touchstart', () => touchHandler(true), { passive: true })
-			input.addEventListener('touchend', () => touchHandler(false), { passive: true })
+			input.addEventListener('touchstart', () => touchHandler(true), {
+				passive: true,
+			})
+			input.addEventListener('touchend', () => touchHandler(false), {
+				passive: true,
+			})
 		})
 	}
 
 	// TODO: drag event not working ?
-	document.querySelectorAll<HTMLInputElement>('input[type="file"]').forEach((input) => {
+	document.querySelectorAll<HTMLInputElement>('input[type="file"]').forEach(input => {
 		const toggleDrag = (_: DragEvent) => {
 			input.classList.toggle('dragover')
 		}
@@ -867,14 +885,14 @@ function initOptionsEvents() {
 		input?.addEventListener('drop', toggleDrag)
 	})
 
-	document.querySelectorAll<HTMLElement>('.tooltip').forEach((elem) => {
+	document.querySelectorAll<HTMLElement>('.tooltip').forEach(elem => {
 		elem.onclickdown(() => {
-			const cl = [...elem.classList].filter((c) => c.startsWith('tt'))[0] // get tt class
+			const cl = [...elem.classList].filter(c => c.startsWith('tt'))[0] // get tt class
 			document.querySelector(`.tooltiptext.${cl}`)?.classList.toggle('shown') // toggle tt text
 		})
 	})
 
-	document.querySelectorAll<HTMLButtonElement>('.split-range button')?.forEach((button) => {
+	document.querySelectorAll<HTMLButtonElement>('.split-range button')?.forEach(button => {
 		button.onclickdown(() => button.classList.toggle('on'))
 	})
 }
@@ -992,8 +1010,12 @@ function drawerDragEvents() {
 	let firstPos = 0
 	let startTouchY = 0
 
-	mobileDragZone?.addEventListener('touchstart', dragStart, { passive: false })
-	mobileDragZone?.addEventListener('pointerdown', dragStart, { passive: false })
+	mobileDragZone?.addEventListener('touchstart', dragStart, {
+		passive: false,
+	})
+	mobileDragZone?.addEventListener('pointerdown', dragStart, {
+		passive: false,
+	})
 
 	function dragStart(e: Event) {
 		e.preventDefault()
@@ -1095,9 +1117,7 @@ async function copySettings() {
 				copybtn.textContent = tradThis('Copy')
 			}, 1000)
 		}
-	} catch (error) {
-		console.error(`Failed when copying: ${error}`)
-	}
+	} catch (_error) {}
 }
 
 async function saveImportFile() {
@@ -1110,8 +1130,8 @@ async function saveImportFile() {
 	const date = new Date()
 	const data = ((await storage.sync.get()) as Sync.Storage) ?? {}
 	const zero = (n: number) => (n.toString().length === 1 ? `0${n}` : n.toString())
-	const YYYYMMDD = date.toISOString().slice(0, 10)
-	const HHMMSS = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
+	const yyyymmdd = date.toISOString().slice(0, 10)
+	const hhmmss = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 
 	const bytes = new TextEncoder().encode(orderedStringify(data))
 	const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
@@ -1119,7 +1139,7 @@ async function saveImportFile() {
 
 	a.setAttribute('href', href)
 	a.setAttribute('tabindex', '-1')
-	a.setAttribute('download', `bonjourr-${data?.about?.version} ${YYYYMMDD} ${HHMMSS}.json`)
+	a.setAttribute('download', `bonjourr-${data?.about?.version} ${yyyymmdd} ${hhmmss}.json`)
 	a.click()
 }
 
@@ -1158,7 +1178,7 @@ function loadImportFile(target: HTMLInputElement) {
 		const importData = decodeExportFile(reader.result)
 
 		// data has at least one valid key from default sync storage => import
-		if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
+		if (Object.keys(SYNC_DEFAULT).filter(key => key in importData).length > 0) {
 			importSettings(importData as Sync.Storage)
 		}
 	}

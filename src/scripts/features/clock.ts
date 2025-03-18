@@ -60,9 +60,7 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		clockSize(clock.size)
 		displayInterface('clock')
 		onSettingsLoad(toggleWorldClocksOptions)
-	} catch (_) {
-		console.warn(new Error('Error when loading clock'))
-	}
+	} catch (_) {}
 }
 
 //	Update

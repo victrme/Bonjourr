@@ -50,7 +50,7 @@ export function addOverlay(id: Widgets) {
 export function removeOverlay(id?: Widgets) {
 	id
 		? document.querySelector(`#move-overlay-${id}`)?.remove()
-		: document.querySelectorAll('.move-overlay').forEach((d) => d.remove())
+		: document.querySelectorAll('.move-overlay').forEach(d => d.remove())
 }
 
 export function removeSelection() {
@@ -59,7 +59,7 @@ export function removeSelection() {
 		'.move-overlay, #grid-mover button, .grid-spanner, #element-mover button',
 	)
 
-	elements.forEach((elem) => {
+	elements.forEach(elem => {
 		elem.classList.remove('selected')
 		elem.removeAttribute('disabled')
 	})

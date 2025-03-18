@@ -169,21 +169,21 @@ async function toggleSyncSettingsOption(local?: Local.Storage) {
 	const distantUrl = local?.distantUrl
 	const type = local?.syncType
 
-	const i_gistsync = document.querySelector<HTMLInputElement>('#i_gistsync')
-	const i_urlsync = document.querySelector<HTMLInputElement>('#i_urlsync')
-	const b_gistdown = document.querySelector<HTMLInputElement>('#b_gistdown')
-	const b_gistup = document.querySelector<HTMLInputElement>('#b_gistup')
-	const b_urldown = document.querySelector<HTMLInputElement>('#b_urldown')
+	const iGistsync = document.querySelector<HTMLInputElement>('#i_gistsync')
+	const iUrlsync = document.querySelector<HTMLInputElement>('#i_urlsync')
+	const bGistdown = document.querySelector<HTMLInputElement>('#b_gistdown')
+	const bGistup = document.querySelector<HTMLInputElement>('#b_gistup')
+	const bUrldown = document.querySelector<HTMLInputElement>('#b_urldown')
 
-	b_gistdown?.setAttribute('disabled', '')
-	b_urldown?.setAttribute('disabled', '')
-	b_gistup?.setAttribute('disabled', '')
+	bGistdown?.setAttribute('disabled', '')
+	bUrldown?.setAttribute('disabled', '')
+	bGistup?.setAttribute('disabled', '')
 
-	if (i_gistsync && gistToken) {
-		i_gistsync.value = gistToken
+	if (iGistsync && gistToken) {
+		iGistsync.value = gistToken
 	}
-	if (i_urlsync && distantUrl) {
-		i_urlsync.value = distantUrl
+	if (iUrlsync && distantUrl) {
+		iUrlsync.value = distantUrl
 	}
 
 	const choseStoragePersistence = localStorage.choseStoragePersistence === 'true'
@@ -206,8 +206,8 @@ async function toggleSyncSettingsOption(local?: Local.Storage) {
 			const isValid = await isGistTokenValid(gistToken)
 
 			if (isValid) {
-				b_gistdown?.removeAttribute('disabled')
-				b_gistup?.removeAttribute('disabled')
+				bGistdown?.removeAttribute('disabled')
+				bGistup?.removeAttribute('disabled')
 			}
 
 			setGistStatus(gistToken, gistId)
@@ -221,7 +221,7 @@ async function toggleSyncSettingsOption(local?: Local.Storage) {
 			document.getElementById('disabled-sync')?.classList.remove('shown')
 
 			if (await isDistantUrlValid(distantUrl)) {
-				b_urldown?.removeAttribute('disabled')
+				bUrldown?.removeAttribute('disabled')
 			}
 
 			break
