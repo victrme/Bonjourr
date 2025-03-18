@@ -46,7 +46,7 @@ export async function initBookmarkSync(data: Sync.Storage) {
 	if (!permission) {
 		try {
 			permission = await getPermissions('topSites', 'bookmarks')
-		} catch (error) {
+		} catch (_error) {
 			settingsNotifications({ 'accept-permissions': true })
 		}
 	}
@@ -104,7 +104,7 @@ function createBookmarksDialog() {
 		const ol = folder.querySelector('ol')
 		const h2 = folder.querySelector('.bookmarks-folder-title-content')
 
-		if (!ol || !h2) {
+		if (!(ol && h2)) {
 			continue
 		}
 
@@ -129,7 +129,7 @@ function createBookmarksDialog() {
 			const li_url = li.querySelector('.bookmark-url')
 			const li_img = li.querySelector('img')
 
-			if (!li_title || !li_button || !li_url || !li_img || !bookmark.url.startsWith('http')) {
+			if (!((((li_title && li_button ) && li_url ) && li_img ) && bookmark.url.startsWith('http'))) {
 				continue
 			}
 

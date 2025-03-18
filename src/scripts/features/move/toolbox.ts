@@ -104,7 +104,7 @@ export function gridButtons(id: Widgets) {
 	const property = document.documentElement?.style.getPropertyValue('--grid') || ''
 	const grid = gridParse(property)
 
-	if (grid.length === 0) return
+	if (grid.length === 0) { return }
 
 	let top = false
 	let bottom = false
@@ -117,15 +117,15 @@ export function gridButtons(id: Widgets) {
 
 	// Detect if element is on array limits
 	positions.forEach(([col, row]) => {
-		if (row === 0) top = true
-		if (col === 0) left = true
-		if (col === rightLimit) right = true
-		if (row === widgetBottomLimit) bottom = true
+		if (row === 0) { top = true }
+		if (col === 0) { left = true }
+		if (col === rightLimit) { right = true }
+		if (row === widgetBottomLimit) { bottom = true }
 
 		// Bottom limit when last elem on last line
 		if (row === grid.length - 1) {
 			const idOnlyRow = grid.at(row)?.filter((id) => id !== '.')
-			if (new Set(idOnlyRow).size === 1) bottom = true
+			if (new Set(idOnlyRow).size === 1) { bottom = true }
 		}
 	})
 
@@ -135,10 +135,10 @@ export function gridButtons(id: Widgets) {
 		const r = Number.parseInt(button.dataset.row || '0')
 		let limit = false
 
-		if (r === -1) limit = top
-		if (r === 1) limit = bottom
-		if (c === -1) limit = left
-		if (c === 1) limit = right
+		if (r === -1) { limit = top }
+		if (r === 1) { limit = bottom }
+		if (c === -1) { limit = left }
+		if (c === 1) { limit = right }
 
 		toggleDisabled(button, limit)
 	})

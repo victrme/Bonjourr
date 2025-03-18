@@ -68,7 +68,9 @@ export async function settingsPreload() {
 }
 
 export async function settingsInit() {
-	if (document.getElementById('settings')) return
+	if (document.getElementById('settings')) {
+		return
+	}
 
 	const sync = await storage.sync.get()
 	const local = await storage.local.get()
@@ -171,7 +173,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_quicklinks', data.quicklinks)
-	setCheckbox('i_linkgroups', data?.linkgroups?.on || false)
+	setCheckbox('i_linkgroups', data?.linkgroups?.on)
 	setCheckbox('i_linknewtab', data.linknewtab)
 	setCheckbox('i_time', data.time)
 	setCheckbox('i_analog', data.clock?.analog ?? false)
@@ -228,7 +230,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
 	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
-	paramId('notes_options')?.classList.toggle('shown', data.notes?.on || false)
+	paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
 	paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
 	paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
@@ -246,7 +248,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	// Time & main hide elems
 	;(function initHideInputs() {
 		const { clock, date, weatherdesc, weathericon } = data.hide || {}
-		const time = !clock && !date ? 'all' : clock ? 'clock' : 'date'
+		const time = clock || date ? (clock ? 'clock' : 'date') : 'all'
 		const weather = weatherdesc && weathericon ? 'disabled' : weatherdesc ? 'desc' : weathericon ? 'icon' : 'all'
 		setInput('i_timehide', time)
 		setInput('i_weatherhide', weather)
@@ -1149,7 +1151,9 @@ function loadImportFile(target: HTMLInputElement) {
 	const reader = new FileReader()
 
 	reader.onload = () => {
-		if (typeof reader.result !== 'string') return false
+		if (typeof reader.result !== 'string') {
+			return false
+		}
 
 		const importData = decodeExportFile(reader.result)
 
@@ -1185,8 +1189,8 @@ async function importSettings(imported: Partial<Sync.Storage>) {
 		storage.sync.clear()
 		storage.sync.set(data)
 		fadeOut()
-	} catch (e) {
-		console.log(e)
+	} catch (_) {
+		// ...
 	}
 }
 

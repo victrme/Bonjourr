@@ -13,8 +13,6 @@ export function getUrlsAsCollection(local: Local.Storage): [string[], Background
 	const sorted = working.toSorted((a, b) => new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime())
 	const urls = sorted.map(([key]) => key)
 
-	console.log(sorted.map((entry) => entry[1].lastUsed))
-
 	return [
 		urls,
 		urls.map((url) => ({

@@ -16,7 +16,7 @@ export async function folderClick(event: MouseEvent) {
 	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
-	if (!li || !inFolder || rightClick || isSelectAll) {
+	if (!(li && inFolder ) || rightClick || isSelectAll) {
 		return
 	}
 

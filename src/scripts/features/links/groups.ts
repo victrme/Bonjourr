@@ -171,8 +171,6 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 		data.linkgroups.pinned = []
 	}
 
-	console.log(data.linkgroups)
-
 	storage.sync.clear()
 	initblocks(data)
 	initGroups(data)
@@ -192,8 +190,8 @@ export async function togglePinGroup(group: string, action: 'pin' | 'unpin') {
 	const data = await storage.sync.get()
 	const { groups, pinned } = data.linkgroups
 
-	if (action === 'pin') data.linkgroups.pinned.push(group)
-	if (action === 'unpin') data.linkgroups.pinned = pinned.filter((pinned) => pinned !== group)
+	if (action === 'pin') { data.linkgroups.pinned.push(group) }
+	if (action === 'unpin') { data.linkgroups.pinned = pinned.filter((pinned) => pinned !== group) }
 
 	if (group === data.linkgroups.selected) {
 		const unpinned = groups.filter((id) => pinned.includes(id) === false)

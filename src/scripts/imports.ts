@@ -65,12 +65,12 @@ function addSupporters(data: Import): Import {
 
 function hideArrayToObject(data: Import): Import {
 	if (Array.isArray(data.hide)) {
-		if (data.hide[0][0]) data.hide.clock = true
-		if (data.hide[0][1]) data.hide.date = true
-		if (data.hide[1][0]) data.hide.greetings = true
-		if (data.hide[1][1]) data.hide.weatherdesc = true
-		if (data.hide[1][2]) data.hide.weathericon = true
-		if (data.hide[3][0]) data.hide.settingsicon = true
+		if (data.hide[0][0]) { data.hide.clock = true }
+		if (data.hide[0][1]) { data.hide.date = true }
+		if (data.hide[1][0]) { data.hide.greetings = true }
+		if (data.hide[1][1]) { data.hide.weatherdesc = true }
+		if (data.hide[1][2]) { data.hide.weathericon = true }
+		if (data.hide[3][0]) { data.hide.settingsicon = true }
 
 		data.time = !(data.hide.clock && data.hide.date)
 		data.main = !(data.hide.weatherdesc && data.hide.weathericon && data.hide.weathericon)
@@ -84,7 +84,7 @@ function booleanSearchbarToObject(data: Import): Import {
 		data.searchbar = {
 			...SYNC_DEFAULT.searchbar,
 			on: data.searchbar as boolean,
-			newtab: (data.searchbar_newtab as boolean) || false,
+			newtab: (data.searchbar_newtab as boolean),
 			engine: ((data.searchbar_engine as string | undefined)?.replace('s_', '') || 'google') as Sync.Searchbar['engine'],
 			suggestions: false,
 		}

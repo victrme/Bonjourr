@@ -107,8 +107,8 @@ export default async function openEditDialog(event: Event) {
 		const onlyOneTitleUnpinned = groups.length - pinned.length < 2
 		const onlyOneTitleLeft = groups.length < 2
 
-		if (onlyOneTitleUnpinned) document.getElementById('edit-pin')?.setAttribute('disabled', '')
-		if (onlyOneTitleLeft) document.getElementById('edit-delete')?.setAttribute('disabled', '')
+		if (onlyOneTitleUnpinned) { document.getElementById('edit-pin')?.setAttribute('disabled', '') }
+		if (onlyOneTitleLeft) { document.getElementById('edit-delete')?.setAttribute('disabled', '') }
 	}
 
 	if (target.folder || target.link) {
@@ -162,26 +162,26 @@ function toggleEditInputs(): string[] {
 	domtitle.value = ''
 
 	if (container.mini) {
-		if (target.synced) inputs = ['pin', 'delete']
-		else if (target.addgroup) inputs = ['title', 'add']
-		else if (target.title) inputs = ['title', 'delete', 'pin', 'apply']
+		if (target.synced) { inputs = ['pin', 'delete'] }
+		else if (target.addgroup) { inputs = ['title', 'add'] }
+		else if (target.title) { inputs = ['title', 'delete', 'pin', 'apply'] }
 	}
 
 	if (container.group) {
-		if (target.synced && !target.title) inputs = ['synced']
-		else if (target.synced && target.title) inputs = ['unpin', 'delete']
-		else if (selectall) inputs = ['delete', 'refresh', 'add']
-		else if (target.title) inputs = ['title', 'delete', 'unpin', 'apply']
-		else if (target.folder) inputs = ['title', 'delete', 'apply']
-		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply']
-		else inputs = ['title', 'url', 'add']
+		if (target.synced && !target.title) { inputs = ['synced'] }
+		else if (target.synced && target.title) { inputs = ['unpin', 'delete'] }
+		else if (selectall) { inputs = ['delete', 'refresh', 'add'] }
+		else if (target.title) { inputs = ['title', 'delete', 'unpin', 'apply'] }
+		else if (target.folder) { inputs = ['title', 'delete', 'apply'] }
+		else if (target.link) { inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply'] }
+		else { inputs = ['title', 'url', 'add'] }
 	}
 
 	if (container.folder) {
-		if (target.title) inputs = []
-		else if (selectall) inputs = ['delete', 'unfolder']
-		else if (target.link) inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
-		else inputs = ['title', 'url', 'add']
+		if (target.title) { inputs = [] }
+		else if (selectall) { inputs = ['delete', 'unfolder'] }
+		else if (target.link) { inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder'] }
+		else { inputs = ['title', 'url', 'add'] }
 	}
 
 	for (const id of inputs) {

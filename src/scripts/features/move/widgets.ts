@@ -12,7 +12,7 @@ import {
 } from './helpers'
 
 export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
-	if (!widget) return
+	if (!widget) { return }
 
 	const [id, on] = widget
 	const gridToggle = on ? addGridWidget : removeGridWidget

@@ -63,7 +63,7 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 	const currentMonth = new Date().getMonth() + 1
 
 	// Do not show supporters with or before review popup
-	if (!hasClosedReview && !closed) {
+	if (!(hasClosedReview || closed)) {
 		updateSupportersOption({ closed: true })
 		return
 	}
@@ -191,13 +191,13 @@ function initSupportersModal() {
 function toggleSupportersModal(toggle: boolean) {
 	document.dispatchEvent(new Event('toggle-settings'))
 
-	if (toggle) document.documentElement.dataset.supportersModal = ''
-	if (!toggle) delete document.documentElement.dataset.supportersModal
+	if (toggle) { document.documentElement.dataset.supportersModal = '' }
+	if (!toggle) { delete document.documentElement.dataset.supportersModal }
 }
 
 let modalDataLoaded = false
 export async function loadModalData() {
-	if (modalDataLoaded) return
+	if (modalDataLoaded) { return }
 
 	if (!document.body.className.includes('potato')) {
 		initGlitter()
@@ -211,14 +211,14 @@ export async function loadModalData() {
 	if (currentMonth === 1) {
 		// january exception
 		monthToGet = 12
-		yearToGet = yearToGet - 1
+		yearToGet -= 1
 	} else {
 		monthToGet = currentMonth - 1
 	}
 
 	function injectError(string: string) {
 		const main = document.querySelector('#supporters-modal main')
-		if (main) main.innerHTML = `<i>${string}</i>`
+		if (main) { main.innerHTML = `<i>${string}</i>` }
 	}
 
 	function injectData(supporters: SupportersAPI[] = []) {
@@ -256,7 +256,7 @@ export async function loadModalData() {
 		// removes loader
 		document.querySelector('#supporters-modal')?.classList.add('loaded')
 
-		if (supporters.length !== 0) {
+		if (supporters.length > 0) {
 			injectData(supporters)
 		} else {
 			console.error(`No supporters data found for ${monthToGet}/${yearToGet}`)

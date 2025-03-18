@@ -66,22 +66,22 @@ export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
 export async function updateMoveElement(event: UpdateMove) {
 	const data = await storage.sync.get()
 
-	if (!data.move) data.move = structuredClone(SYNC_DEFAULT.move)
+	if (!data.move) { data.move = structuredClone(SYNC_DEFAULT.move) }
 
-	if (event.grid) gridChange(data.move, event.grid)
-	if (event.span) toggleGridSpans(data.move, event.span)
-	if (event.layout) layoutChange(data, event.layout)
-	if (event.reset) layoutReset(data)
-	if (event.widget) toggleWidget(data, event.widget)
-	if (event.select) elementSelection(data.move, event.select)
-	if (event.box !== undefined) alignChange(data.move, event.box, 'box')
-	if (event.text !== undefined) alignChange(data.move, event.text, 'text')
-	if (event.toggle !== undefined) toggleMoveStatus(data, event.toggle)
-	if (event.overlay !== undefined) pageWidthOverlay(data.move, event.overlay)
+	if (event.grid) { gridChange(data.move, event.grid) }
+	if (event.span) { toggleGridSpans(data.move, event.span) }
+	if (event.layout) { layoutChange(data, event.layout) }
+	if (event.reset) { layoutReset(data) }
+	if (event.widget) { toggleWidget(data, event.widget) }
+	if (event.select) { elementSelection(data.move, event.select) }
+	if (event.box !== undefined) { alignChange(data.move, event.box, 'box') }
+	if (event.text !== undefined) { alignChange(data.move, event.text, 'text') }
+	if (event.toggle !== undefined) { toggleMoveStatus(data, event.toggle) }
+	if (event.overlay !== undefined) { pageWidthOverlay(data.move, event.overlay) }
 }
 
 function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
-	if (!widget) return
+	if (!widget) { return }
 
 	// Get button move amount
 	const y = Number.parseInt(gridpos?.y || '0')
@@ -96,9 +96,9 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	const isGridOverflowing = positions.some(([col]) => grid[col + y] === undefined)
 
 	if (isGridOverflowing) {
-		if (move.selection === 'single') grid.push(['.'])
-		if (move.selection === 'double') grid.push(['.', '.'])
-		if (move.selection === 'triple') grid.push(['.', '.', '.'])
+		if (move.selection === 'single') { grid.push(['.']) }
+		if (move.selection === 'double') { grid.push(['.', '.']) }
+		if (move.selection === 'triple') { grid.push(['.', '.', '.']) }
 	}
 
 	// step 1: Find elements affected by grid change
@@ -151,8 +151,8 @@ function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
 	const layout = getLayout(move)
 	const align = layout.items[widget] ?? { box: '', text: '' }
 
-	if (type === 'box') align.box = value
-	if (type === 'text') align.text = value
+	if (type === 'box') { align.box = value }
+	if (type === 'text') { align.text = value }
 
 	layout.items[widget] = align
 	move.layouts[move.selection] = layout
@@ -252,7 +252,7 @@ function elementSelection(move: Sync.Move, select: string) {
 	removeSelection()
 
 	// Remove selection modifiers and quit if failed to get id
-	if (!isEditing() || !select) {
+	if (!(isEditing() && select)) {
 		return
 	}
 

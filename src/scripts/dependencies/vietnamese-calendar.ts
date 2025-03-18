@@ -79,7 +79,7 @@ function NewMoon(k: number) {
 
 	let C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M)
 	C1 = C1 - 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr)
-	C1 = C1 - 0.0004 * Math.sin(dr * 3 * Mpr)
+	C1 -= 0.0004 * Math.sin(dr * 3 * Mpr)
 	C1 = C1 + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr))
 	C1 = C1 - 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M))
 	C1 = C1 - 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr))
@@ -109,8 +109,8 @@ function SunLongitude(jdn: number) {
 	let DL = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M)
 	DL = DL + (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.00029 * Math.sin(dr * 3 * M)
 	let L = L0 + DL // true longitude, degree
-	L = L * dr
-	L = L - Math.PI * 2 * INT(L / (Math.PI * 2)) // Normalize to (0, 2*PI)
+	L *= dr
+	L -= Math.PI * 2 * INT(L / (Math.PI * 2)) // Normalize to (0, 2*PI)
 
 	return L
 }

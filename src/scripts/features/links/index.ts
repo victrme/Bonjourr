@@ -566,7 +566,7 @@ function concatFolders({ target, source }: MoveToFolder, data: Sync): Sync {
 	const linktarget = data[target] as Links.Link
 	const linksource = data[source] as Links.Link
 
-	if (!linktarget.folder || !linksource.folder) {
+	if (!(linktarget.folder && linksource.folder)) {
 		return data
 	}
 

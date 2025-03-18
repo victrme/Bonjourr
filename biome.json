@@ -5,12 +5,19 @@
 		"include": ["src"],
 		"rules": {
 			"all": true,
-			"suspicious": { "noConsole": "off" },
-			"complexity": { "noForEach": "off" },
-			"correctness": { "useImportExtensions": "off" },
+			"suspicious": {
+				"noConsole": "info"
+			},
+			"complexity": {
+				"noForEach": "info"
+			},
+			"correctness": {
+				"useImportExtensions": "off",
+				"noUndeclaredVariables": "info"
+			},
 			"style": {
 				"noNamespace": "off",
-				"useNamingConvention": "off"
+				"useNamingConvention": "info"
 			}
 		}
 	},

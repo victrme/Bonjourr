@@ -277,7 +277,7 @@ function insertToDom(quote?: Quote) {
 	const quoteDOM = document.getElementById('quote')
 	const authorDOM = document.getElementById('author')
 
-	if (!quote || !quoteDOM || !authorDOM) {
+	if (!((quote && quoteDOM ) && authorDOM)) {
 		return
 	}
 
@@ -325,7 +325,7 @@ function isQuotesType(type = ''): type is Quotes.Types {
 const urlRegEx = /^https?:\/\//i
 
 function canStoreUrl(url: string | undefined) {
-	if (url === undefined) return false
+	if (url === undefined) { return false }
 
 	return url === '' || urlRegEx.test(url)
 }
@@ -333,8 +333,8 @@ function canStoreUrl(url: string | undefined) {
 function determineUrlApiResponseType(response: Response): 'json' | 'csv' {
 	const contentType = response.headers.get('content-type')?.split(';', 2)[0]
 
-	if (contentType === 'application/json') return 'json'
-	if (contentType === 'text/csv') return 'csv'
+	if (contentType === 'application/json') { return 'json' }
+	if (contentType === 'text/csv') { return 'csv' }
 
 	const url = new URL(response.url)
 	const parts = url.pathname.split('.')

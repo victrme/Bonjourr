@@ -461,9 +461,9 @@ function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 
 
 			let area: DropArea = ''
 
-			if (isInLeftEdge) area = 'left'
-			if (isInRightEdge) area = 'right'
-			if (isInCenter) area = 'center'
+			if (isInLeftEdge) { area = 'left' }
+			if (isInRightEdge) { area = 'right' }
+			if (isInCenter) { area = 'center' }
 
 			if (area) {
 				return { area, id }

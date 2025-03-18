@@ -44,13 +44,12 @@ async function startup() {
 	let { sync, local } = await storage.init()
 	const OLD_VERSION = sync?.about?.version
 
-	if (!sync || !local) {
+	if (!(sync && local)) {
 		console.warn(new Error('Storage failed'))
 		return
 	}
 
 	if (OLD_VERSION !== CURRENT_VERSION) {
-		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
 

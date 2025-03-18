@@ -20,7 +20,6 @@ export default function deepEqual(object1: Record<string, unknown>, object2: Rec
 			(!areObjects && val1 !== val2)
 
 		if (areDifferent) {
-			console.log(val1, val2)
 			return false
 		}
 	}
