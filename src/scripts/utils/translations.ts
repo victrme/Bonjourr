@@ -3,8 +3,8 @@ import storage from '../storage'
 let trns: Local.Translations | undefined
 let currentTrnsLang = 'en'
 
-export async function setTranslationCache(lang: string, local?: Local.Storage) {
-	lang = countryCodeToLanguageCode(lang)
+export async function setTranslationCache(language: string, local?: Local.Storage) {
+	const lang = countryCodeToLanguageCode(language)
 
 	if (lang === 'en') {
 		storage.local.remove('translations')
@@ -88,20 +88,22 @@ export function tradThis(str: string): string {
 }
 
 export function countryCodeToLanguageCode(lang: string): string {
+	let sanitizedLang = lang
+
 	if (lang.includes('ES')) {
-		lang = 'es'
+		sanitizedLang = 'es'
 	}
 	if (lang === 'gr') {
-		lang = 'el'
+		sanitizedLang = 'el'
 	}
 	if (lang === 'jp') {
-		lang = 'ja'
+		sanitizedLang = 'ja'
 	}
 	if (lang === 'cz') {
-		lang = 'cs'
+		sanitizedLang = 'cs'
 	}
 
-	lang = lang.replace('_', '-')
+	sanitizedLang = sanitizedLang.replace('_', '-')
 
-	return lang
+	return sanitizedLang
 }

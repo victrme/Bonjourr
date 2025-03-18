@@ -38,6 +38,7 @@ const defaultAnalogStyle: Sync.AnalogStyle = {
 	background: '#fff2',
 }
 
+const sinogramRegex = /zh-CN|zh-HK|ja/
 const defaultTimezones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
 const defaultRegions = ['Paris', 'New York', 'Tokyo', 'Lisbon', 'Los Angeles']
 const oneInFive = Math.random() > 0.8 ? 1 : 0
@@ -113,8 +114,12 @@ async function clockUpdate(update: ClockUpdate) {
 		analogstyle[option] = hexColorFromSplitRange(`#analog-${option}-range`)
 		analogStyle(analogstyle)
 
-		if (update?.[option] === 'opacity') eventDebounce({ analogstyle })
-		if (update?.[option] === 'shade') storage.sync.set({ analogstyle })
+		if (update?.[option] === 'opacity') {
+			eventDebounce({ analogstyle })
+		}
+		if (update?.[option] === 'shade') {
+			storage.sync.set({ analogstyle })
+		}
 
 		return
 	}
@@ -125,8 +130,12 @@ async function clockUpdate(update: ClockUpdate) {
 		const worldclock = data.worldclocks?.[index] ?? baseclock
 		const { region, timezone } = update.world
 
-		if (region !== undefined) worldclock.region = region
-		if (timezone !== undefined) worldclock.timezone = timezone
+		if (region !== undefined) {
+			worldclock.region = region
+		}
+		if (timezone !== undefined) {
+			worldclock.timezone = timezone
+		}
 
 		data.worldclocks[index] = worldclock
 		toggleWorldClocksOptions()
@@ -154,8 +163,7 @@ async function clockUpdate(update: ClockUpdate) {
 	clockSize(data.clock.size)
 }
 
-function analogStyle(style?: Sync.AnalogStyle) {
-	style = style ?? structuredClone(defaultAnalogStyle)
+function analogStyle(style: Sync.AnalogStyle = structuredClone(defaultAnalogStyle)) {
 	const { face, shape, hands } = style
 
 	const time = document.getElementById('time') as HTMLElement
@@ -168,16 +176,26 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	let faceNumbers = ['12', '3', '6', '9']
 	const lang = getLang()
 
-	if (lang === 'am') faceNumbers = ['Գ', 'Զ', 'Թ', 'ԺԲ']
-	else if (lang === 'ar') faceNumbers = ['٣', '٦', '٩', '١٢']
-	else if (lang === 'fa') faceNumbers = ['۳', '۶', '۹', '۱۲']
-	else if (lang.match(/zh-CN|zh-HK|ja/)) faceNumbers = ['三', '六', '九', '十二']
+	if (lang === 'am') {
+		faceNumbers = ['Գ', 'Զ', 'Թ', 'ԺԲ']
+	} else if (lang === 'ar') {
+		faceNumbers = ['٣', '٦', '٩', '١٢']
+	} else if (lang === 'fa') {
+		faceNumbers = ['۳', '۶', '۹', '۱۲']
+	} else if (lang.match(sinogramRegex)) {
+		faceNumbers = ['三', '六', '九', '十二']
+	}
 
 	spans.forEach((span, i) => {
-		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i % 4]
-		else if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i % 4]
-		else if (face === 'number') span.textContent = faceNumbers[i % 4]
-		else span.textContent = ''
+		if (face === 'roman') {
+			span.textContent = ['XII', 'III', 'VI', 'IX'][i % 4]
+		} else if (face === 'marks') {
+			span.textContent = ['│', '―', '│', '―'][i % 4]
+		} else if (face === 'number') {
+			span.textContent = faceNumbers[i % 4]
+		} else {
+			span.textContent = ''
+		}
 	})
 
 	time.dataset.face = face === 'swiss' || face === 'braun' ? face : ''
@@ -192,11 +210,11 @@ function analogStyle(style?: Sync.AnalogStyle) {
 }
 
 function clockSize(size = 5) {
-	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
+	document.documentElement.style.setProperty('--clock-size', `${size.toString()}em`)
 }
 
 function greetingSize(size = '3') {
-	document.documentElement.style.setProperty('--greeting-size', size + 'em')
+	document.documentElement.style.setProperty('--greeting-size', `${size}em`)
 }
 
 //	Clock
@@ -291,11 +309,17 @@ function digital(wrapper: HTMLElement, clock: Sync.Clock) {
 		return
 	}
 
-	if (clock.ampmlabel) domclock.dataset.ampmLabel = ''
-	else delete domclock.dataset.ampmLabel
+	if (clock.ampmlabel) {
+		domclock.dataset.ampmLabel = ''
+	} else {
+		domclock.dataset.ampmLabel = undefined
+	}
 
-	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 12 ? 'am' : 'pm'
-	else delete domclock.dataset.ampm
+	if (clock.ampm) {
+		domclock.dataset.ampm = date.getHours() < 12 ? 'am' : 'pm'
+	} else {
+		domclock.dataset.ampm = undefined
+	}
 
 	if (clock.ampm && h === 0) {
 		h = 12
@@ -393,11 +417,17 @@ function greetings(name?: string) {
 	const hour = date.getHours()
 	let period: 'night' | 'morning' | 'afternoon' | 'evening'
 
-	if (hour < 3) period = 'evening'
-	else if (hour < 5) period = 'night'
-	else if (hour < 12) period = 'morning'
-	else if (hour < 18) period = 'afternoon'
-	else period = 'evening'
+	if (hour < 3) {
+		period = 'evening'
+	} else if (hour < 5) {
+		period = 'night'
+	} else if (hour < 12) {
+		period = 'morning'
+	} else if (hour < 18) {
+		period = 'afternoon'
+	} else {
+		period = 'evening'
+	}
 
 	const greetings = {
 		morning: 'Good morning',
@@ -416,7 +446,7 @@ function greetings(name?: string) {
 // World clocks
 
 function toggleWorldClocksOptions() {
-	const parents = document.querySelectorAll<HTMLElement>(`.worldclocks-item`)
+	const parents = document.querySelectorAll<HTMLElement>('.worldclocks-item')
 	const inputs = document.querySelectorAll<HTMLInputElement>(`.worldclocks-item [name="worldclock-city"]`)
 
 	parents.forEach((parent, i) => {

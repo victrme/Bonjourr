@@ -136,7 +136,7 @@ export default async function openEditDialog(event: Event) {
 
 	const contextmenuTransition = transitioner()
 	contextmenuTransition.first(() => domeditlink?.show())
-	contextmenuTransition.then(async () => domeditlink?.classList?.add('shown'))
+	contextmenuTransition.after(async () => domeditlink?.classList?.add('shown'))
 	contextmenuTransition.transition(10)
 
 	const { x, y } = newEditDialogPosition(event)
@@ -192,16 +192,25 @@ function toggleEditInputs(): string[] {
 	domeditlink.querySelector('hr')?.classList.toggle('on', hasLabels)
 
 	if (deleteButtonTxt) {
-		if (selectall) deleteButtonTxt.textContent = tradThis('Delete selected')
-		else if (target.folder) deleteButtonTxt.textContent = tradThis('Delete folder')
-		else if (target.link) deleteButtonTxt.textContent = tradThis('Delete link')
-		else if (target.title) deleteButtonTxt.textContent = tradThis('Delete group')
+		if (selectall) {
+			deleteButtonTxt.textContent = tradThis('Delete selected')
+		} else if (target.folder) {
+			deleteButtonTxt.textContent = tradThis('Delete folder')
+		} else if (target.link) {
+			deleteButtonTxt.textContent = tradThis('Delete link')
+		} else if (target.title) {
+			deleteButtonTxt.textContent = tradThis('Delete group')
+		}
 	}
 
 	if (addButtonTxt) {
-		if (selectall) addButtonTxt.textContent = tradThis('Create new folder')
-		else if (target.title) addButtonTxt.textContent = tradThis('Add new group')
-		else addButtonTxt.textContent = tradThis('Add new link')
+		if (selectall) {
+			addButtonTxt.textContent = tradThis('Create new folder')
+		} else if (target.title) {
+			addButtonTxt.textContent = tradThis('Add new group')
+		} else {
+			addButtonTxt.textContent = tradThis('Add new link')
+		}
 	}
 
 	return inputs
@@ -240,8 +249,13 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const w = editRects.width + 30
 	const h = editRects.height + 30
 
-	if (x + w > innerWidth) x -= x + w - innerWidth
-	if (y + h > innerHeight) y -= h
+	if (x + w > innerWidth) {
+		x -= x + w - innerWidth
+	}
+
+	if (y + h > innerHeight) {
+		y -= h
+	}
 
 	if (rightToLeft) {
 		x *= -1
@@ -355,20 +369,20 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 		closeEditDialog()
 		return
 	}
-	//
-	else if (editStates.target.title) {
+
+	if (editStates.target.title) {
 		quickLinks(undefined, { groupTitle: { old: domeditlink.dataset.group ?? '', new: domtitle.value } })
 		closeEditDialog()
 		return
 	}
-	//
-	else if (editStates.container.group && !editStates.target.link && !editStates.target.folder) {
+
+	if (editStates.container.group && !editStates.target.link && !editStates.target.folder) {
 		quickLinks(undefined, { addLinks: [{ group: editStates.group, title: domtitle.value, url: domurl.value }] })
 		closeEditDialog()
 		return
 	}
 
-	if (!id || !li) {
+	if (!(id && li)) {
 		return
 	}
 

@@ -63,13 +63,15 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const day = date.getHours() > getSunsetHour() ? 'tomorrow' : 'today'
 		let string = ''
 
-		if (day === 'today') string = tradThis('with a high of <temp1>° today')
+		if (day === 'today') {
+			string = tradThis('with a high of <temp1>° today')
+		}
 		if (day === 'tomorrow') {
 			string = tradThis('with a high of <temp1>° tomorrow')
 		}
 
 		string = string.replace('<temp1>', lastWeather.forecasted_high.toString())
-		string = string + dot
+		string += dot
 
 		if (forecastdom) {
 			forecastdom.textContent = string

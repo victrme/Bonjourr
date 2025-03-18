@@ -26,6 +26,7 @@ type Suggestions = {
 type UndefinedElement = Element | undefined | null
 
 let socket: WebSocket | undefined
+const domainPattern = /^(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -39,7 +40,7 @@ const setRequest = (value = '') => domcontainer?.setAttribute('data-request', st
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
 const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
-const setWidth = (value = 30) => document.documentElement.style.setProperty('--searchbar-width', value.toString() + 'em')
+const setWidth = (value = 30) => document.documentElement.style.setProperty('--searchbar-width', `${value.toString()}em`)
 const setBackground = (value = '#fff2') => {
 	document.documentElement.style.setProperty('--searchbar-background', value)
 	document.getElementById('sb_container')?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
@@ -128,8 +129,7 @@ async function updateSearchbar({ engine, newtab, background, placeholder, reques
 
 function isValidURL(string: string): boolean {
 	try {
-		const url = new URL(string.startsWith('http') ? string : 'https://' + string)
-		const domainPattern = /^(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
+		const url = new URL(string.startsWith('http') ? string : `https://${string}`)
 		return domainPattern.test(url.host)
 	} catch (_) {
 		return false
@@ -188,7 +188,7 @@ function submitSearch(e: Event) {
 
 	engine = engine.replace('default', 'google')
 
-	const domainURL = val.startsWith('http') ? val : 'https://' + val
+	const domainURL = val.startsWith('http') ? val : `https://${val}`
 	const searchURL = createSearchURL(val, engine)
 	const url = isValidURL(val) ? domainURL : searchURL
 	const target = newtab ? '_blank' : '_self'
@@ -207,7 +207,10 @@ function initSuggestions() {
 	}
 
 	function applyResultContentToInput(elem: UndefinedElement) {
-		if (!elem || !domsearchbar) return
+		if (!(elem && domsearchbar)) {
+			return
+		}
+
 		domsearchbar.value = elem?.querySelector('.suggest-result')?.textContent ?? ''
 	}
 
@@ -328,14 +331,20 @@ function suggestions(results: Suggestions) {
 
 	liList.forEach((li, i) => {
 		const result = results[i]
-		if (!result) return
+		const resultdom = li.querySelector('.suggest-result')
+		const descdom = li.querySelector('.suggest-desc')
+
+		if (!(result && resultdom && descdom)) {
+			return
+		}
 
 		const searchIcon = 'src/assets/interface/magnifying-glass.svg'
 		const image = result.image ?? searchIcon
 		const desc = result.desc ?? ''
 
-		const resultdom = li.querySelector('.suggest-result')
-		resultdom!.textContent = result.text
+		if (resultdom) {
+			resultdom.textContent = result.text
+		}
 
 		if (result.text.includes(input.value)) {
 			const queryIndex = result.text.indexOf(input.value)
@@ -347,17 +356,17 @@ function suggestions(results: Suggestions) {
 			querydom.textContent = result.text.slice(queryIndex, input.value.length)
 			enddom.textContent = result.text.slice(input.value.length)
 
-			resultdom!.textContent = ''
-			resultdom?.appendChild(startdom)
-			resultdom?.appendChild(querydom)
-			resultdom?.appendChild(enddom)
+			resultdom.textContent = ''
+			resultdom.appendChild(startdom)
+			resultdom.appendChild(querydom)
+			resultdom.appendChild(enddom)
 		}
 
 		const imgdom = li.querySelector('img') as HTMLImageElement
 		imgdom.classList.toggle('default-search-icon', image === searchIcon)
 		imgdom.src = image
 
-		li.querySelector('.suggest-desc')!.textContent = desc
+		descdom.textContent = desc
 		li.classList.toggle('shown', !!result)
 
 		// This cuts results short if it overflows the interface

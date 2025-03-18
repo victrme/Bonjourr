@@ -81,15 +81,14 @@ function controlBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local.
 //	Settings Options
 
 export async function handleFilesSettingsOptions(local?: Local.Storage) {
-	local = local ?? (await storage.local.get('backgroundFiles'))
-
+	const backgroundFiles = local?.backgroundFiles ?? (await storage.local.get('backgroundFiles'))?.backgroundFiles
 	const actionButtons = document.getElementById('thumbnail-action-buttons')
-	const thmbContainer = document.getElementById('thumbnails-container')!
+	const thmbContainer = document.getElementById('thumbnails-container')
 	const thmbZoom = document.getElementById('b_thumbnail-zoom')
 
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
-	const fileIds = Object.keys(local.backgroundFiles) ?? []
+	const fileIds = Object.keys(backgroundFiles) ?? []
 	const columnsAmount = Math.min(fileIds.length, 5).toString()
 	const missingThumbnailIds = fileIds.filter((id) => !thumbIds.includes(id))
 
@@ -97,17 +96,23 @@ export async function handleFilesSettingsOptions(local?: Local.Storage) {
 	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
 
 	addThumbnailsToDom(missingThumbnailIds, '')
-	thmbContainer.style.setProperty('--thumbnails-columns', columnsAmount)
+
+	if (thmbContainer) {
+		thmbContainer.style.setProperty('--thumbnails-columns', columnsAmount)
+	}
 }
 
-async function handleBackgroundMoveOptions(file: Local.BackgroundFile) {
-	const backgroundSize = document.querySelector<HTMLInputElement>('#i_background-size')!
-	const backgroundVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')!
-	const backgroundHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')!
+function handleBackgroundMoveOptions(file: Local.BackgroundFile) {
+	const backgroundSize = document.querySelector<HTMLInputElement>('#i_background-size')
+	const backgroundVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
+	const backgroundHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
+	const rangesExist = backgroundSize && backgroundVertical && backgroundHorizontal
 
-	backgroundSize.value = (file.position.size === 'cover' ? '100' : file.position.size).replace('%', '')
-	backgroundVertical.value = file.position.y.replace('%', '')
-	backgroundHorizontal.value = file.position.x.replace('%', '')
+	if (rangesExist) {
+		backgroundSize.value = (file.position.size === 'cover' ? '100' : file.position.size).replace('%', '')
+		backgroundVertical.value = file.position.y.replace('%', '')
+		backgroundHorizontal.value = file.position.x.replace('%', '')
+	}
 }
 
 //	Thumbnail events
@@ -122,10 +127,13 @@ export function initThumbnailEvents() {
 }
 
 function thumbnailGridZoom() {
-	const container = document.getElementById('thumbnails-container')!
-	const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
-	const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
-	container.style.setProperty('--thumbnails-columns', newZoom.toString())
+	const container = document.getElementById('thumbnails-container')
+
+	if (container) {
+		const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
+		const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
+		container.style.setProperty('--thumbnails-columns', newZoom.toString())
+	}
 }
 
 function thumbnailTogglePosition() {
@@ -140,8 +148,8 @@ async function thumbnailPosition(this: HTMLInputElement) {
 	const file = local.backgroundFiles[selection]
 	const { id, value } = this
 
-	if (!img || !file) {
-		console.log(new Error('?'))
+	if (!(img && file)) {
+		console.warn(new Error('?'))
 		return
 	}
 
@@ -322,7 +330,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 
 	thb.id = id
 	thbimg.src = URL.createObjectURL(blob)
-	thb.className = 'thumbnail' + (isSelected ? ' selected' : '')
+	thb.className = `thumbnail${isSelected ? ' selected' : ''}`
 	thbimg.setAttribute('alt', '')
 	thbimg.setAttribute('draggable', 'false')
 	thb.setAttribute('aria-label', 'Select this background')
@@ -355,12 +363,12 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 }
 
 async function applyThumbnailBackground(id: string, local?: Local.Storage) {
-	local = local ?? (await storage.local.get())
+	const { backgroundFiles } = local ?? (await storage.local.get('backgroundFiles'))
 	const notAlreadySelected = id
 
-	if (notAlreadySelected && local.backgroundFiles) {
+	if (notAlreadySelected && backgroundFiles) {
 		localIsLoading = false
-		storage.local.set(local)
+		storage.local.set({ backgroundFiles })
 	}
 }
 

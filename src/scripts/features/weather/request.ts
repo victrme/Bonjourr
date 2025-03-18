@@ -14,7 +14,7 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
 		return
 	}
 
-	const now = new Date().getTime()
+	const now = Date.now()
 	const last = lastWeather?.timestamp ?? 0
 	const isAnHourLater = now > last + 3600000
 
@@ -22,8 +22,9 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
 		const newWeather = await requestNewWeather(data, lastWeather)
 
 		if (newWeather) {
-			lastWeather = newWeather
-			storage.local.set({ lastWeather })
+			storage.local.set({ lastWeather: newWeather })
+			displayWeather(data, newWeather)
+			return
 		}
 	}
 
@@ -43,7 +44,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	url.searchParams.set('lang', getLang())
 	url.searchParams.set('unit', data.unit === 'metric' ? 'C' : 'F')
 
-	if (coords && coords.lat && coords.lon) {
+	if (coords?.lat && coords?.lon) {
 		url.searchParams.set('lat', coords.lat.toString())
 		url.searchParams.set('lon', coords.lon.toString())
 	}
@@ -97,7 +98,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	}
 
 	return {
-		timestamp: new Date().getTime(),
+		timestamp: Date.now(),
 		forecasted_timestamp,
 		forecasted_high,
 		description,
@@ -144,8 +145,8 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 				},
 				() => {
 					resolve(false)
-				}
-			)
+				},
+			),
 		)
 	}
 

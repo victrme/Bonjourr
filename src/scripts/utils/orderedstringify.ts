@@ -7,7 +7,9 @@ export default function orderedStringify(data: Sync.Storage) {
 
 	// Recursively get all keys
 	const keylist = new Set<string>()
-	JSON.stringify(data, (key, value) => (keylist.add(key), value))
+
+	// ???????????
+	// JSON.stringify(data, (key, value) => (keylist.add(key), value))
 
 	// Add links after other links data
 	const links = bundleLinks(data)

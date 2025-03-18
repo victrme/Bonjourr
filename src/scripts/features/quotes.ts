@@ -158,10 +158,10 @@ function handleUserListChange(input: string): string | undefined {
 
 	// old json format
 	if (input.startsWith('[[')) {
-		input = oldJSONToCSV(parse<Quotes.UserInput>(input) ?? [])
+		array = csvUserInputToQuotes(oldJSONToCSV(parse<Quotes.UserInput>(input) ?? []))
+	} else {
+		array = csvUserInputToQuotes(input)
 	}
-
-	array = csvUserInputToQuotes(input)
 
 	if (array.length > 0) {
 		insertToDom({
@@ -176,12 +176,14 @@ function handleUserListChange(input: string): string | undefined {
 	return input
 }
 
-function refreshQuotes(data: Sync.Storage, list: Local.Storage['quotesCache'] = []) {
-	if (data.quotes.type === 'user' && data.quotes.userlist) {
-		list = csvUserInputToQuotes(data.quotes.userlist)
-	}
+function refreshQuotes(sync: Sync.Storage, quoteslist: Local.Storage['quotesCache'] = []) {
+	const { lang, quotes } = sync
+	const { type, url, userlist } = quotes
 
-	insertToDom(controlCacheList(list, data.lang, data.quotes.type, data.quotes.url))
+	const hasUserQuotes = type === 'user' && userlist
+	const list = hasUserQuotes ? csvUserInputToQuotes(userlist) : quoteslist
+
+	insertToDom(controlCacheList(list, lang, type, url))
 }
 
 // ─── API & STORAGE
@@ -214,7 +216,8 @@ async function fetchQuotes(lang: string, type: Quotes.Sync['type'], url: string 
 		return []
 	}
 
-	const query = `/quotes/${type}` + (type === 'classic' ? `/${lang}` : '')
+	const endpoint = type === 'classic' ? `${lang}` : ''
+	const query = `/quotes/${type}/${endpoint}`
 
 	response = await apiFetch(query)
 	validateResponse(response)
@@ -291,7 +294,7 @@ function csvUserInputToQuotes(csv?: string | Quotes.UserInput): Quote[] {
 
 	// convert <1.19.0 json format to csv
 	if (Array.isArray(csv)) {
-		csv = oldJSONToCSV(csv)
+		return csvToQuotes(oldJSONToCSV(csv))
 	}
 
 	return csvToQuotes(csv)

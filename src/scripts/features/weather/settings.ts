@@ -18,7 +18,7 @@ export async function weatherUpdate(update: WeatherUpdate) {
 	const { weather, hide } = await storage.sync.get(['weather', 'hide'])
 	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
-	if (!weather || !hide) {
+	if (!(weather && hide)) {
 		return
 	}
 
@@ -112,14 +112,13 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	}
 
 	if (newWeather) {
-		lastWeather = newWeather
 		weather.city = city ?? 'Paris'
 		locationForm.accept('i_city', weather.city)
 
 		storage.sync.set({ weather })
 		storage.local.set({ lastWeather })
 
-		displayWeather(weather, lastWeather)
+		displayWeather(weather, newWeather)
 	}
 }
 
@@ -138,16 +137,16 @@ async function updateGeolocation(geol: string, weather: Weather, lastWeather?: L
 		weather.geolocation = geol
 	}
 
-	lastWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
+	const newWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
 
 	geolForm.accept()
 	handleGeolOption(weather)
 
 	storage.sync.set({ weather })
 
-	if (lastWeather) {
+	if (newWeather) {
 		storage.local.set({ lastWeather })
-		displayWeather(weather, lastWeather)
+		displayWeather(weather, newWeather)
 	}
 }
 
@@ -169,7 +168,7 @@ function updateSuggestions(updateEvent: Event) {
 	const i_city = document.querySelector<HTMLInputElement>('#i_city')
 	const event = updateEvent as InputEvent
 
-	if (!f_location || !i_city) {
+	if (!(f_location && i_city)) {
 		return
 	}
 

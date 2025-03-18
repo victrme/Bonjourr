@@ -4,13 +4,12 @@ export default async function hideElements(hide: Sync.Hide = {}, options?: { isE
 	//
 	if (options?.isEvent) {
 		const sync = await storage.sync.get('hide')
-
-		hide = {
+		const newhide = {
 			...sync.hide, // ⚠️ sync must be first. If not, event doesn't save
 			...hide,
 		}
 
-		storage.sync.set({ hide })
+		storage.sync.set({ hide: newhide })
 	}
 
 	for (const [key, val] of Object.entries(hide)) {

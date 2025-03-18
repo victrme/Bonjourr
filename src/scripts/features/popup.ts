@@ -67,7 +67,7 @@ const REVIEW_URLS = {
 }
 
 export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
-	if (event?.announcements) {
+	if (isAnnouncement(event?.announcements)) {
 		storage.sync.set({ announcements: event?.announcements })
 		return
 	}
@@ -128,7 +128,7 @@ function displayPopup(type: 'review' | 'announce') {
 	if (type === 'announce') {
 		const lang = getLang() as keyof typeof ANNOUNCEMENT_TRNS
 		const description = ANNOUNCEMENT_TRNS[lang] ?? ANNOUNCEMENT_TRNS.en
-		const buttontext = tradThis('Read the release notes') + ' 📝'
+		const buttontext = `${tradThis('Read the release notes')} 📝`
 		desc.innerHTML = description
 		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, buttontext))
 	}
@@ -167,4 +167,8 @@ function closePopup() {
 	setTimeout(() => document.getElementById('credit-container')?.removeAttribute('style'), 600)
 	document.getElementById('popup')?.classList.remove('shown')
 	removePopupTrigger()
+}
+
+function isAnnouncement(str = ''): str is Sync.Storage['announcements'] {
+	return ['all', 'major', 'off'].includes(str)
 }

@@ -4,7 +4,7 @@ export default function credits(image?: Backgrounds.Image) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 
-	if (!domcontainer || !domcredit || !image?.page) {
+	if (!(domcontainer && domcredit && image?.page && image?.username)) {
 		// also remove credits
 		return
 	}
@@ -47,7 +47,7 @@ export default function credits(image?: Backgrounds.Image) {
 	domspacer.textContent = hasLocation ? ' - ' : ' '
 	domrest.textContent = rest
 
-	domlocation.href = `${image.url}?utm_source=Bonjourr&utm_medium=referral`
+	domlocation.href = `${image.urls.full}?utm_source=Bonjourr&utm_medium=referral`
 	domartist.href = `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`
 
 	domcredit.textContent = ''
@@ -77,16 +77,20 @@ function appendSaveLink(domcredit: HTMLElement, image: Backgrounds.Image) {
 async function saveImage(domsave: HTMLAnchorElement, image: Backgrounds.Image) {
 	domsave.classList.add('loading')
 	try {
-		const downloadUrl = new URL(image.download!)
-		const apiDownloadUrl = 'https://services.bonjourr.fr/unsplash' + downloadUrl.pathname + downloadUrl.search
+		const downloadUrl = new URL(image.download ?? '')
+		const apiDownloadUrl = `https://services.bonjourr.fr/unsplash${downloadUrl.pathname}${downloadUrl.search}`
 		const downloadResponse = await fetch(apiDownloadUrl)
 
-		if (!downloadResponse) return
+		if (!downloadResponse) {
+			return
+		}
 
 		const data: { url: string } = await downloadResponse.json()
 		const imageResponse = await fetch(data.url)
 
-		if (!imageResponse.ok) return
+		if (!imageResponse.ok) {
+			return
+		}
 
 		const blob = await imageResponse.blob()
 

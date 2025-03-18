@@ -41,7 +41,7 @@ const dominterface = document.querySelector<HTMLElement>('#interface')
 let widget: Widgets | undefined
 
 export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
-	if (!init && !events) {
+	if (!(init || events)) {
 		updateMoveElement({ reset: true })
 		return
 	}
@@ -184,8 +184,8 @@ function layoutChange(data: Sync.Storage, column: string) {
 		['quicklinks', widgetsInGrid.includes('quicklinks')],
 	]
 
-	data = updateWidgetsStorage(list, data)
-	storage.sync.set(data)
+	const newdata = updateWidgetsStorage(list, data)
+	storage.sync.set(newdata)
 
 	const interfaceTransition = transitioner()
 
@@ -193,12 +193,12 @@ function layoutChange(data: Sync.Storage, column: string) {
 		interfaceFade('out')
 	})
 
-	interfaceTransition.then(async () => {
-		const layout = getLayout(data)
+	interfaceTransition.after(async () => {
+		const layout = getLayout(newdata)
 		setAllAligns(layout.items)
 		setGridAreas(layout.grid)
-		layoutButtons(data.move.selection)
-		showSpanButtons(data.move.selection)
+		layoutButtons(newdata.move.selection)
+		showSpanButtons(newdata.move.selection)
 		removeSelection()
 
 		toggleWidgetInSettings(list)
@@ -262,7 +262,7 @@ function elementSelection(move: Sync.Move, select: string) {
 	spanButtons(widget)
 	gridButtons(widget)
 
-	document.getElementById('move-overlay-' + widget)!.classList.add('selected')
+	document.getElementById(`ove-overlay-${widget}`)?.classList.add('selected')
 	document.getElementById('element-mover')?.classList.add('active')
 }
 

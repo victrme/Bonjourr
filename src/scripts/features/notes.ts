@@ -86,7 +86,7 @@ function handleAlign(value: string) {
 
 function handleWidth(value?: number) {
 	if (value) {
-		document.documentElement.style.setProperty('--notes-width', value.toString() + 'em')
+		document.documentElement.style.setProperty('--notes-width', `${value.toString()}em`)
 	}
 }
 

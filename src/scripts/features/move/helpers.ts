@@ -41,18 +41,23 @@ export const defaultLayouts: Defaults = {
 }
 
 export function isEditing(): boolean {
-	return document.getElementById('interface')?.classList.contains('move-edit') || false
+	return document.getElementById('interface')?.classList.contains('move-edit') ?? false
 }
 
 export function hasDuplicateInArray(arr: string[], id?: string): boolean {
 	return arr.filter((a) => a === id).length > 1
 }
 
-export function getLayout(move: Sync.Move | Sync.Storage, selection?: Sync.MoveSelection): Sync.MoveLayout {
-	move = (move as Sync.Storage)?.move ? (move as Sync.Storage).move : (move as Sync.Move)
-	selection = selection ?? move.selection
+export function getLayout(data: Sync.Move | Sync.Storage, selection?: Sync.MoveSelection): Sync.MoveLayout {
+	if ('move' in data) {
+		const layouts = data.move.layouts
+		const selec = selection ?? data.move.selection
+		return layouts[selec] ?? defaultLayouts[selec]
+	}
 
-	return move.layouts?.[selection] ?? defaultLayouts[selection]
+	const layouts = data.layouts
+	const selec = selection ?? data.selection
+	return layouts?.[selec] ?? defaultLayouts[selec]
 }
 
 //	Grid
@@ -74,16 +79,21 @@ export function gridParse(area = ''): Grid {
 
 	if (gridValidate(result)) {
 		return result
-	} else {
-		return stringToGrid(`\"`)
 	}
+
+	return stringToGrid(`\"`)
 }
 
 export function gridStringify(grid: Grid) {
-	let areas = ``
+	let areas = ''
 
-	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`) // 2
-	grid.forEach((row: string[]) => (areas += `'${itemListToString(row)}' `)) // 1
+	// 2
+	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`)
+
+	// 1
+	grid.forEach((row: string[]) => {
+		areas += `'${itemListToString(row)}' `
+	})
 
 	return areas.trimEnd()
 }
@@ -92,7 +102,9 @@ export function gridFind(grid: Grid, id: string): [number, number][] {
 	const positions: [number, number][] = []
 
 	grid.flat().forEach((a, i) => {
-		if (a !== id) return
+		if (a !== id) {
+			return
+		}
 
 		const column = i % grid[0].length
 		const row = Math.floor(i / grid[0].length)
@@ -120,13 +132,20 @@ function getSpanDirection(grid: Grid, id: string): 'none' | 'columns' | 'rows' {
 	const poses = gridFind(grid, id)
 	const rows = Object.values(poses).map(([_, row]) => row)
 
-	if (poses.length < 2) return 'none'
-	if (rows[0] !== rows[1]) return 'columns'
-	else return 'rows'
+	if (poses.length < 2) {
+		return 'none'
+	}
+	if (rows[0] !== rows[1]) {
+		return 'columns'
+	}
+
+	return 'rows'
 }
 
 export function isRowEmpty(grid: Grid, index: number) {
-	if (grid[index] === undefined) return false
+	if (grid[index] === undefined) {
+		return false
+	}
 
 	const row = grid[index]
 	let empty = true
@@ -141,16 +160,19 @@ export function isRowEmpty(grid: Grid, index: number) {
 }
 
 export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true }) {
-	function addSpans(arr: string[]) {
-		const target = arr.indexOf(id)
+	function addSpans(row: string[]) {
+		const target = row.indexOf(id)
 		const stopper = [false, false]
+		let arr = row
 
 		function replaceWithId(a: string[], i: number, lim: number) {
 			// not stopping and elem exit
 			if (!stopper[lim] && a[i]) {
-				if (a[i] === '.')
+				if (a[i] === '.') {
 					a[i] = id // replaces dot with id
-				else if (a[i] !== id) stopper[lim] = true // other ? stop
+				} else if (a[i] !== id) {
+					stopper[lim] = true // other ? stop
+				}
 			}
 
 			return a
@@ -169,8 +191,10 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 		let keepfirst = true
 		return arr.map((a) => {
 			if (a === id) {
-				if (keepfirst) keepfirst = false
-				else return '.'
+				if (keepfirst) {
+					keepfirst = false
+				}
+				return '.'
 			}
 			return a
 		})
@@ -178,9 +202,9 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 
 	/*
 		For columns and rows:
-		mutate column by adding / removing duplicates 
+		mutate column by adding / removing duplicates
 		mutate grid with new column
-		update buttons with recheck duplication (don't assume duped work everytime) 
+		update buttons with recheck duplication (don't assume duped work everytime)
 	*/
 
 	const [x, y] = gridFind(grid, id)[0]
@@ -193,12 +217,21 @@ export function spansInGridArea(grid: Grid, id: Widgets, { toggle, remove }: { t
 	}
 
 	if (toggle) {
-		if (toggle === 'col') col = hasDuplicateInArray(col, id) ? removeSpans(col) : addSpans(col)
-		if (toggle === 'row') row = hasDuplicateInArray(row, id) ? removeSpans(row) : addSpans(row)
+		if (toggle === 'col') {
+			col = hasDuplicateInArray(col, id) ? removeSpans(col) : addSpans(col)
+		}
+		if (toggle === 'row') {
+			row = hasDuplicateInArray(row, id) ? removeSpans(row) : addSpans(row)
+		}
 	}
 
-	grid.forEach((_, i) => (grid[i][x] = col[i])) // Row changes
-	grid[y].forEach((_, i) => (grid[y][i] = row[i])) // Column changes
+	grid.forEach((_, i) => {
+		grid[i][x] = col[i] // Row changes
+	})
+
+	grid[y].forEach((_, i) => {
+		grid[y][i] = row[i] // Column changes
+	})
 
 	return grid
 }
@@ -224,13 +257,26 @@ export function getWidgetsStorage(data: Sync.Storage): Widgets[] {
 
 export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync.Storage): Sync.Storage {
 	//
+
 	for (const [id, on] of states) {
-		if (id === 'time') data.time = on
-		if (id === 'main') data.main = on
-		if (id === 'quicklinks') data.quicklinks = on
-		if (id === 'quotes') data.quotes = { ...data.quotes, on: on }
-		if (id === 'searchbar') data.searchbar = { ...data.searchbar, on: on }
-		if (id === 'notes' && data.notes) data.notes = { ...data.notes, on: on }
+		if (id === 'time') {
+			data.time = on
+		}
+		if (id === 'main') {
+			data.main = on
+		}
+		if (id === 'quicklinks') {
+			data.quicklinks = on
+		}
+		if (id === 'quotes') {
+			data.quotes = { ...data.quotes, on: on }
+		}
+		if (id === 'searchbar') {
+			data.searchbar = { ...data.searchbar, on: on }
+		}
+		if (id === 'notes' && data.notes) {
+			data.notes = { ...data.notes, on: on }
+		}
 	}
 
 	return data
@@ -254,18 +300,29 @@ export function addGridWidget(grid: string, id: Widgets, selection: Sync.MoveSel
 	const isFirstWidgetTime = rows[0].includes('time')
 	const isLastWidgetQuotes = rows.at(-1)?.includes('quotes')
 
-	if (id === 'time') position = 0
-	if (id === 'main') position = isFirstWidgetTime ? 1 : 0
-	if (id === 'notes') position = rows.length === 1 ? 1 : 2
-	if (id === 'searchbar') position = rows.length === 1 ? 1 : 2
-	if (id === 'quicklinks') position = rows.length - (isLastWidgetQuotes ? 1 : 0)
-	if (id === 'quotes') position = rows.length
+	if (id === 'time') {
+		position = 0
+	}
+	if (id === 'main') {
+		position = isFirstWidgetTime ? 1 : 0
+	}
+	if (id === 'notes') {
+		position = rows.length === 1 ? 1 : 2
+	}
+	if (id === 'searchbar') {
+		position = rows.length === 1 ? 1 : 2
+	}
+	if (id === 'quicklinks') {
+		position = rows.length - (isLastWidgetQuotes ? 1 : 0)
+	}
+	if (id === 'quotes') {
+		position = rows.length
+	}
 
 	rows.splice(position, 0, newrow)
 	rows = rows.map((row) => `'${row}'`)
-	grid = rows.join(' ')
 
-	return grid
+	return rows.join(' ')
 }
 
 export function removeGridWidget(grid: string, id: Widgets, _: Sync.MoveSelection): string {
@@ -273,9 +330,8 @@ export function removeGridWidget(grid: string, id: Widgets, _: Sync.MoveSelectio
 
 	rows = rows.filter((row) => !row.includes(id))
 	rows = rows.map((row) => `'${row}'`)
-	grid = rows.join(' ')
 
-	return grid
+	return rows.join(' ')
 }
 
 function addGridRow(selection: Sync.MoveSelection, id: Widgets): string {

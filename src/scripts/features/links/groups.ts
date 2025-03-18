@@ -69,7 +69,7 @@ function changeGroup(event: Event) {
 	}
 
 	transition.first(hideCurrentGroup)
-	transition.then(recreateLinksFromNewGroup)
+	transition.after(recreateLinksFromNewGroup)
 	transition.finally(showNewGroup)
 	transition.transition(100)
 
@@ -180,9 +180,9 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 }
 
 export function moveGroups(mini: string[], data: Sync.Storage) {
-	mini = mini.filter((name) => name !== '+')
+	const userMini = mini.filter((name) => name !== '+')
 
-	data.linkgroups.groups = data.linkgroups.pinned.concat(mini)
+	data.linkgroups.groups = data.linkgroups.pinned.concat(userMini)
 	initGroups(data)
 
 	return data

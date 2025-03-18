@@ -135,7 +135,7 @@ async function updateSupportersOption(update: SupportersUpdate) {
 
 function translateNotif() {
 	const currentMonthLocale = new Date().toLocaleDateString(getLang(), { month: 'long' })
-	const introString = `This <currentMonth>, Bonjourr is brought to you by our lovely supporters.`
+	const introString = 'This <currentMonth>, Bonjourr is brought to you by our lovely supporters.'
 	const notifTitle = document?.getElementById('supporters-notif-title')
 	const notifButton = document.getElementById('supporters-notif-button')
 
@@ -155,7 +155,7 @@ function initSupportersModal() {
 		tradTemplateString(
 			doc,
 			'#desc',
-			'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.'
+			'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.',
 		)
 		tradTemplateString(doc, '#monthly #title', 'Our monthly supporters')
 		tradTemplateString(doc, '#once #title', 'Our one-time supporters')
@@ -282,7 +282,7 @@ function tradTemplateString(doc: DocumentFragment, selector: string, text: strin
 
 // glitter animation based off this: github.com/pweth/javascript-snow
 function initGlitter() {
-	const snowfall: {
+	interface Snowfall {
 		canvas: HTMLCanvasElement
 		context: CanvasRenderingContext2D
 		snowflake: new () => {
@@ -298,8 +298,11 @@ function initGlitter() {
 		}
 		setup: () => void
 		animate: () => void
-		flakes: Array<InstanceType<typeof snowfall.snowflake>>
-	} = {} as any
+		flakes: InstanceType<typeof snowfall.snowflake>[]
+	}
+
+	//@ts-expect-error: Type '{}' is missing properties from type Snowfall ...
+	const snowfall: Snowfall = {}
 
 	snowfall.canvas = document.getElementById('glitter') as HTMLCanvasElement
 	snowfall.context = snowfall.canvas.getContext('2d') as CanvasRenderingContext2D

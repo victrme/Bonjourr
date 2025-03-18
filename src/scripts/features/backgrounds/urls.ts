@@ -51,12 +51,14 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds, local: Local
 	backgroundUrlsEditor.textarea.placeholder = 'https://picsum.photos/200\n'
 
 	backgroundUrlsEditor.addListener('update', (value) => {
-		value = stringMaxSize(value, 8080)
-		toggleUrlsButton(globalUrlValue, value)
+		toggleUrlsButton(globalUrlValue, stringMaxSize(value, 8080))
 	})
 
 	backgroundUrlsEditor.keyCommandMap.Tab = (e, selection, value) => {
-		if (document.body.matches('.tabbing')) return false
+		if (document.body.matches('.tabbing')) {
+			return false
+		}
+
 		return tabCommand?.(e, selection, value)
 	}
 
@@ -69,15 +71,12 @@ function highlightUrlsEditorLine(url: string, state: Local.BackgroundUrlState) {
 	const lines = backgroundUrlsEditor.wrapper.querySelectorAll('.pce-line')
 	const line = lines.values().find((l) => l.textContent === `${url}\n`)
 	const noContent = !line?.textContent?.replace('\n', '')
+	const lineState = noContent ? 'NONE' : state
 
-	if (noContent) {
-		state = 'NONE'
-	}
-
-	line?.classList.toggle('loading', state === 'LOADING')
-	line?.classList.toggle('error', state === 'NOT_IMAGE')
-	line?.classList.toggle('good', state === 'OK')
-	line?.classList.toggle('warn', state === 'CANT_REACH' || state === 'NOT_URL')
+	line?.classList.toggle('loading', lineState === 'LOADING')
+	line?.classList.toggle('error', lineState === 'NOT_IMAGE')
+	line?.classList.toggle('good', lineState === 'OK')
+	line?.classList.toggle('warn', lineState === 'CANT_REACH' || lineState === 'NOT_URL')
 }
 
 export function toggleUrlsButton(storage: string, value: string) {

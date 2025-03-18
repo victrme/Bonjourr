@@ -226,6 +226,8 @@ async function toggleSyncSettingsOption(local?: Local.Storage) {
 
 			break
 		}
+
+		default:
 	}
 }
 

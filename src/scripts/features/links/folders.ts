@@ -33,14 +33,18 @@ export async function folderClick(event: MouseEvent) {
 	}
 }
 
-function openFolder(data: Sync.Storage, li: HTMLLIElement) {
-	const linkgroup = li.parentNode!.parentNode as HTMLElement
+function openFolder(data: Sync.Storage, li: HTMLLIElement): void {
+	if (!li.parentNode) {
+		return
+	}
+
+	const linkgroup = li.parentNode.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
 	const folder = data[li.id] as Links.Folder
 
 	const transition = transitioner()
 	transition.first(hide)
-	transition.then(changeToFolder)
+	transition.after(changeToFolder)
 	transition.finally(show)
 	transition.transition(40)
 
@@ -51,7 +55,7 @@ function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	async function changeToFolder() {
-		await initblocks(data)
+		initblocks(data)
 
 		if (linktitle) {
 			linktitle.textContent = folder?.title || tradThis('Folder')
@@ -71,7 +75,7 @@ async function closeFolder() {
 	const data = await storage.sync.get()
 	const transition = transitioner()
 	transition.first(hide)
-	transition.then(changeToTab)
+	transition.after(changeToTab)
 	transition.finally(show)
 	transition.transition(40)
 
@@ -84,7 +88,7 @@ async function closeFolder() {
 
 	async function changeToTab() {
 		domlinkblocks.classList.toggle('with-groups', data.linkgroups.on)
-		await initblocks(data)
+		initblocks(data)
 	}
 
 	function show() {

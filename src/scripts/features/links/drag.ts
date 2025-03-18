@@ -124,16 +124,20 @@ export default function startDrag(event: PointerEvent) {
 
 	for (const container of Object.values(dragContainers)) {
 		const elements = container.querySelectorAll<HTMLElement>(tagName)
-		const wrapper = isMini ? container : container.querySelector('.link-list')!
+		const wrapper = isMini ? container : container.querySelector('.link-list')
 		const rect = wrapper?.getBoundingClientRect()
+
+		if (!rect) {
+			continue
+		}
 
 		for (const element of elements) {
 			const type = findTypeFromElement(element)
 			const id = findIdFromElement(element, type)
 			let { x, y, w, h } = dropzones[type].get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
 
-			x = x - rect?.x
-			y = y - rect?.y
+			x -= rect?.x
+			y -= rect?.y
 
 			ids.push(id)
 			initids.push(id)
@@ -154,8 +158,8 @@ export default function startDrag(event: PointerEvent) {
 			}
 		}
 
-		container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
-		container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
+		container.style.setProperty('--drag-width', `${Math.floor(rect?.width ?? 0)}px`)
+		container.style.setProperty('--drag-height', `${Math.floor(rect?.height ?? 0)}px`)
 		container.classList.add('in-drag', 'dragging')
 	}
 
@@ -497,25 +501,39 @@ function getPosFromEvent(event: TouchEvent | PointerEvent) {
 			const { x, y } = event as PointerEvent
 			return { x, y }
 		}
-	}
 
-	return { x: 0, y: 0 }
+		default: {
+			return { x: 0, y: 0 }
+		}
+	}
 }
 
 function findTypeFromElement(element?: HTMLElement): 'link' | 'mini' | 'group' {
-	if (element?.classList.contains('link')) return 'link'
-	if (element?.classList.contains('link-title')) return 'mini'
-	if (element?.classList.contains('link-group')) return 'group'
+	if (element?.classList.contains('link')) {
+		return 'link'
+	}
+	if (element?.classList.contains('link-title')) {
+		return 'mini'
+	}
+	if (element?.classList.contains('link-group')) {
+		return 'group'
+	}
 
-	throw 'No valid type found for specified element'
+	throw new Error('No valid type found for specified element')
 }
 
 function findIdFromElement(element?: HTMLElement, type?: 'link' | 'mini' | 'group'): string {
-	type = type ?? findTypeFromElement(element)
+	const elementType = type ?? findTypeFromElement(element)
 
-	if (type === 'link') return element?.id ?? ''
-	if (type === 'mini') return element?.dataset.group ?? ''
-	if (type === 'group') return element?.dataset.group ?? ''
+	if (elementType === 'link') {
+		return element?.id ?? ''
+	}
+	if (elementType === 'mini') {
+		return element?.dataset.group ?? ''
+	}
+	if (elementType === 'group') {
+		return element?.dataset.group ?? ''
+	}
 
-	throw 'No valid type found for specified element'
+	throw new Error('No valid type found for specified element')
 }

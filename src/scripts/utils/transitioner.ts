@@ -4,7 +4,7 @@ type AsyncFunc = (...args: unknown[]) => Promise<void>
 type Transitioner = {
 	first: (cb: Func) => void
 	finally: (cb: Func) => void
-	then: (cb: AsyncFunc) => void
+	after: (cb: AsyncFunc) => void
 	cancel: () => void
 	transition: (timeout: number) => Promise<void>
 }
@@ -15,7 +15,7 @@ export default function transitioner(): Transitioner {
 
 	const steps: {
 		first?: Func
-		then?: AsyncFunc
+		after?: AsyncFunc
 		finally?: Func
 	} = {}
 
@@ -28,8 +28,8 @@ export default function transitioner(): Transitioner {
 			steps.finally = cb
 		},
 
-		then: (cb: AsyncFunc) => {
-			steps.then = cb
+		after: (cb: AsyncFunc) => {
+			steps.after = cb
 		},
 
 		cancel: () => clearTimeout(waitTimeout),
@@ -43,8 +43,8 @@ export default function transitioner(): Transitioner {
 				waitTimeout = setTimeout(() => r(true), Math.min(timeout, 2000))
 			})
 
-			if (steps.then) {
-				await steps.then(rest)
+			if (steps.after) {
+				await steps.after(rest)
 			}
 
 			if (steps.finally) {
@@ -52,7 +52,7 @@ export default function transitioner(): Transitioner {
 			}
 
 			steps.first = undefined
-			steps.then = undefined
+			steps.after = undefined
 			steps.finally = undefined
 		},
 	}

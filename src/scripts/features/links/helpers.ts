@@ -5,9 +5,9 @@ import { tradThis } from '../../utils/translations'
 export function getDefaultIcon(url: string, refresh?: number) {
 	if (refresh) {
 		return `${API_DOMAIN}/favicon/blob/${url}?r=${refresh}`
-	} else {
-		return `${API_DOMAIN}/favicon/blob/${url}`
 	}
+
+	return `${API_DOMAIN}/favicon/blob/${url}`
 }
 
 export function getSelectedIds(): string[] {
@@ -65,12 +65,11 @@ export function getLink(data: Sync.Storage, id: string): Links.Link | undefined 
 }
 
 export function getLinksInGroup(data: Sync.Storage, group?: string): Links.Link[] {
+	const groupName = group ?? data.linkgroups.selected
 	const links: Links.Link[] = []
 
-	group = group ?? data.linkgroups.selected
-
 	for (const value of Object.values(data)) {
-		if (isLink(value) && (value?.parent ?? 0) === group) {
+		if (isLink(value) && (value?.parent ?? 0) === groupName) {
 			links.push(value)
 		}
 	}

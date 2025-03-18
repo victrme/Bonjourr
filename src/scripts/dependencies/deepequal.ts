@@ -15,7 +15,9 @@ export default function deepEqual(object1: Record<string, unknown>, object2: Rec
 		const val1 = object1[key]
 		const val2 = object2[key]
 		const areObjects = isObject(val1) && isObject(val2)
-		const areDifferent = (areObjects && !deepEqual(val1, val2)) || (!areObjects && val1 !== val2)
+		const areDifferent =
+			(areObjects && !deepEqual(val1 as Record<string, unknown>, val2 as Record<string, unknown>)) ||
+			(!areObjects && val1 !== val2)
 
 		if (areDifferent) {
 			console.log(val1, val2)
