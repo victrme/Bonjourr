@@ -16,7 +16,7 @@ export async function folderClick(event: MouseEvent) {
 	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
-	if (!li || !inFolder || rightClick || isSelectAll) {
+	if (!(li && inFolder) || rightClick || isSelectAll) {
 		return
 	}
 
@@ -33,14 +33,18 @@ export async function folderClick(event: MouseEvent) {
 	}
 }
 
-function openFolder(data: Sync.Storage, li: HTMLLIElement) {
-	const linkgroup = li.parentNode!.parentNode as HTMLElement
+function openFolder(data: Sync.Storage, li: HTMLLIElement): void {
+	if (!li.parentNode) {
+		return
+	}
+
+	const linkgroup = li.parentNode.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
 	const folder = data[li.id] as Links.Folder
 
 	const transition = transitioner()
 	transition.first(hide)
-	transition.then(changeToFolder)
+	transition.after(changeToFolder)
 	transition.finally(show)
 	transition.transition(40)
 
@@ -51,7 +55,7 @@ function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 	}
 
 	async function changeToFolder() {
-		await initblocks(data)
+		initblocks(data)
 
 		if (linktitle) {
 			linktitle.textContent = folder?.title || tradThis('Folder')
@@ -71,12 +75,12 @@ async function closeFolder() {
 	const data = await storage.sync.get()
 	const transition = transitioner()
 	transition.first(hide)
-	transition.then(changeToTab)
+	transition.after(changeToTab)
 	transition.finally(show)
 	transition.transition(40)
 
 	function hide() {
-		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach((group) => {
+		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach(group => {
 			group.classList.add('hiding')
 			group.dataset.folder = ''
 		})
@@ -84,11 +88,11 @@ async function closeFolder() {
 
 	async function changeToTab() {
 		domlinkblocks.classList.toggle('with-groups', data.linkgroups.on)
-		await initblocks(data)
+		initblocks(data)
 	}
 
 	function show() {
-		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
+		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach(group => {
 			group.classList.remove('in-folder')
 			group.classList.remove('hiding')
 		})
@@ -98,7 +102,7 @@ async function closeFolder() {
 function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
 	const links = getLinksInFolder(data, li.id)
 
-	links.forEach((link) => window.open(link.url, '_blank')?.focus())
+	links.forEach(link => window.open(link.url, '_blank')?.focus())
 	window.open(window.location.href, '_blank')?.focus()
 	window.close()
 }

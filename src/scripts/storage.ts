@@ -66,7 +66,7 @@ function storageTypeFn() {
 			return 'localstorage'
 		}
 
-		if (!!(globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
+		if ((globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
 			type = 'webext-local'
 			return 'webext-local'
 		}
@@ -107,7 +107,7 @@ async function syncGet(key?: string | string[]): Promise<Sync.Storage> {
 			return verifyDataAsSync(data)
 		}
 
-		case 'localstorage': {
+		default: {
 			return verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
 		}
 	}
@@ -132,7 +132,7 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 
 		case 'localstorage': {
 			if (typeof keyval !== 'object') {
-				return console.warn('Value is not an object: ', keyval)
+				return
 			}
 
 			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
@@ -143,7 +143,10 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 
 			localStorage.bonjourr = JSON.stringify(data ?? {})
 			window.dispatchEvent(new Event('storage'))
+			return
 		}
+
+		default:
 	}
 }
 
@@ -159,12 +162,15 @@ async function syncRemove(key: string) {
 			await chrome.storage.local.remove('syncStorage')
 			delete data[key]
 			chrome.storage.local.set({ syncStorage: data })
+			return
 		}
 
 		case 'localstorage': {
 			localStorage.removeItem(key)
 			return
 		}
+
+		default:
 	}
 }
 
@@ -184,6 +190,8 @@ async function syncClear() {
 			localStorage.removeItem('bonjourr')
 			return
 		}
+
+		default:
 	}
 }
 
@@ -197,14 +205,15 @@ function localSet(value: Record<string, unknown>) {
 			return
 		}
 
-		case 'localstorage': {
+		default: {
 			for (const [key, val] of Object.entries(value)) {
 				if (typeof val === 'string') {
 					return localStorage.setItem(key, val)
-				} else {
-					return localStorage.setItem(key, JSON.stringify(val))
 				}
+
+				return localStorage.setItem(key, JSON.stringify(val))
 			}
+			return
 		}
 	}
 }
@@ -217,17 +226,18 @@ async function localGet(keys?: string | string[]): Promise<Local.Storage> {
 			return data as Local.Storage
 		}
 
-		case 'localstorage': {
+		default: {
 			const res: Record<string, unknown> = {}
+			let filteredKeys: string[] = []
 
 			if (keys === undefined) {
-				keys = [...Object.keys(localStorage).filter((k) => k !== 'bonjourr')]
+				filteredKeys = [...Object.keys(localStorage).filter(k => k !== 'bonjourr')]
 			} //
 			else if (typeof keys === 'string') {
-				keys = [keys]
+				filteredKeys = [keys]
 			}
 
-			for (const key of keys) {
+			for (const key of filteredKeys) {
 				const item = localStorage.getItem(key) ?? ''
 				const isJson = item.startsWith('{') || item.startsWith('[')
 				const val = isJson ? parse<Partial<Local.Storage>>(item) : item
@@ -253,7 +263,10 @@ function localRemove(key: string) {
 			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
 			delete data[key]
 			localStorage.bonjourr = JSON.stringify(data ?? {})
+			return
 		}
+
+		default:
 	}
 }
 
@@ -275,7 +288,10 @@ async function localClear() {
 			for (const key of Object.keys(LOCAL_DEFAULT)) {
 				localStorage.removeItem(key)
 			}
+			return
 		}
+
+		default:
 	}
 }
 
@@ -287,11 +303,17 @@ async function init(): Promise<AllStorage> {
 	if (PLATFORM !== 'online' && !webextStoreReady()) {
 		globalThis.pageReady = true
 
-		await new Promise((resolve) => {
+		await new Promise(resolve => {
 			document.addEventListener('webextstorage', (event: CustomEventInit) => {
-				if (event.detail === 'sync') store.sync = globalThis.startupStorage.sync
-				if (event.detail === 'local') store.local = globalThis.startupStorage.local
-				if (webextStoreReady()) resolve(true)
+				if (event.detail === 'sync') {
+					store.sync = globalThis.startupStorage.sync
+				}
+				if (event.detail === 'local') {
+					store.local = globalThis.startupStorage.local
+				}
+				if (webextStoreReady()) {
+					resolve(true)
+				}
 			})
 		})
 	}
@@ -316,6 +338,8 @@ async function init(): Promise<AllStorage> {
 			store.local = await localGet()
 			break
 		}
+
+		default:
 	}
 
 	if (Object.keys(store.sync ?? {})?.length === 0) {
@@ -330,7 +354,8 @@ async function init(): Promise<AllStorage> {
 		local,
 	}
 
-	/** This waits for chrome.storage to be stored in a global variable, that is created in file `webext-storage.js` */
+	/** This waits for chrome.storage to be stored in a global variable,
+		that is created in file `webext-storage.js` */
 	function webextStoreReady(): boolean {
 		return !!store.sync && !!store.local
 	}
@@ -342,8 +367,8 @@ async function clearall() {
 	sessionStorage.clear()
 	localStorage.clear()
 
-	//@ts-expect-error: The operand of a 'delete' operator must be optional.
-	delete globalThis.startupStorage
+	//@ts-expect-error: Type 'undefined' is not assignable to type ...
+	globalThis.startupStorage = undefined
 
 	switch (storage.type.get()) {
 		case 'webext-sync': {
@@ -367,6 +392,8 @@ async function clearall() {
 
 			return
 		}
+
+		default:
 	}
 }
 
@@ -376,9 +403,7 @@ export async function getSyncDefaults(): Promise<Sync.Storage> {
 	try {
 		const json = await (await fetch('config.json')).json()
 		return verifyDataAsSync(json)
-	} catch (error) {
-		console.log((error as Error).stack)
-	}
+	} catch (_) {}
 
 	return SYNC_DEFAULT
 }
@@ -395,9 +420,7 @@ export function isStorageDefault(data: Sync.Storage): boolean {
 	return deepEqual(current, SYNC_DEFAULT)
 }
 
-function verifyDataAsSync(data: Record<string, unknown>) {
-	data = data ?? {}
-
+function verifyDataAsSync(data: Record<string, unknown> = {}) {
 	for (const key in SYNC_DEFAULT) {
 		const notAbout = key !== 'about'
 		const missingKey = !(key in data)
@@ -410,9 +433,7 @@ function verifyDataAsSync(data: Record<string, unknown>) {
 	return data as Sync.Storage
 }
 
-function verifyDataAsLocal(data: Record<string, unknown>) {
-	data = data ?? {}
-
+function verifyDataAsLocal(data: Record<string, unknown> = {}) {
 	for (const key in LOCAL_DEFAULT) {
 		if (!(key in data)) {
 			data[key] = LOCAL_DEFAULT[key as keyof typeof LOCAL_DEFAULT]

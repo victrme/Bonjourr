@@ -8,7 +8,7 @@ import storage from '../storage'
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
 		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		const defaulticon = '/src/assets/' + (BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico')
+		const defaulticon = `/src/assets/${BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico'}`
 		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
 
 		domfavicon.href = emoji ? svg : defaulticon
@@ -37,13 +37,21 @@ export function tabTitle(val = '', isEvent?: true) {
 
 export function pageControl(val: { width?: number; gap?: number }, isEvent?: true) {
 	if (val.width) {
-		document.documentElement.style.setProperty('--page-width', (val.width ?? SYNC_DEFAULT.pagewidth) + 'px')
-		if (isEvent) eventDebounce({ pagewidth: val.width })
+		const property = `${val.width ?? SYNC_DEFAULT.pagewidth}px`
+		document.documentElement.style.setProperty('--page-width', property)
+
+		if (isEvent) {
+			eventDebounce({ pagewidth: val.width })
+		}
 	}
 
 	if (typeof val.gap === 'number') {
-		document.documentElement.style.setProperty('--page-gap', (val.gap ?? SYNC_DEFAULT.pagegap) + 'em')
-		if (isEvent) eventDebounce({ pagegap: val.gap })
+		const property = `${val.gap ?? SYNC_DEFAULT.pagegap}em`
+		document.documentElement.style.setProperty('--page-gap', property)
+
+		if (isEvent) {
+			eventDebounce({ pagegap: val.gap })
+		}
 	}
 }
 
@@ -64,11 +72,10 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 			theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 			break
 
-		case 'auto': {
+		default: {
 			const now = minutator(new Date())
 			const { sunrise, sunset } = suntime()
 			theme = now <= sunrise || now > sunset ? 'dark' : 'light'
-			break
 		}
 	}
 
@@ -83,7 +90,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 		return
 	}
 
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
 		document.documentElement.dataset.theme = event.matches ? 'dark' : 'light'
 	})
 }

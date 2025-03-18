@@ -14,7 +14,7 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
 		return
 	}
 
-	const now = new Date().getTime()
+	const now = Date.now()
 	const last = lastWeather?.timestamp ?? 0
 	const isAnHourLater = now > last + 3600000
 
@@ -22,8 +22,9 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
 		const newWeather = await requestNewWeather(data, lastWeather)
 
 		if (newWeather) {
-			lastWeather = newWeather
-			storage.local.set({ lastWeather })
+			storage.local.set({ lastWeather: newWeather })
+			displayWeather(data, newWeather)
+			return
 		}
 	}
 
@@ -43,7 +44,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	url.searchParams.set('lang', getLang())
 	url.searchParams.set('unit', data.unit === 'metric' ? 'C' : 'F')
 
-	if (coords && coords.lat && coords.lon) {
+	if (coords?.lat && coords?.lon) {
 		url.searchParams.set('lat', coords.lat.toString())
 		url.searchParams.set('lon', coords.lon.toString())
 	}
@@ -66,19 +67,19 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	const { temp, feels } = json.now
 	const { description, icon } = json.now
 
-	let forecasted_high = lastWeather?.forecasted_high ?? -273.15
-	let forecasted_timestamp = lastWeather?.forecasted_timestamp ?? 0
+	let forecastedHigh = lastWeather?.forecasted_high ?? -273.15
+	let forecastedTimestamp = lastWeather?.forecasted_timestamp ?? 0
 
 	if (json.daily) {
 		const [today, tomorrow] = json.daily
 		const date = new Date()
 
 		if (date.getHours() > getSunsetHour()) {
-			forecasted_high = tomorrow.high
-			forecasted_timestamp = new Date(tomorrow.time).getTime()
+			forecastedHigh = tomorrow.high
+			forecastedTimestamp = new Date(tomorrow.time).getTime()
 		} else {
-			forecasted_high = today.high
-			forecasted_timestamp = new Date(today.time).getTime()
+			forecastedHigh = today.high
+			forecastedTimestamp = new Date(today.time).getTime()
 		}
 	}
 
@@ -97,9 +98,9 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	}
 
 	return {
-		timestamp: new Date().getTime(),
-		forecasted_timestamp,
-		forecasted_high,
+		timestamp: Date.now(),
+		forecasted_timestamp: forecastedTimestamp,
+		forecasted_high: forecastedHigh,
 		description,
 		feels_like: feels,
 		icon_id: icon,
@@ -135,17 +136,17 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 	const location = { lat: 0, lon: 0 }
 
 	if (type === 'precise') {
-		await new Promise((resolve) =>
+		await new Promise(resolve =>
 			navigator.geolocation.getCurrentPosition(
-				(geo) => {
+				geo => {
 					location.lat = geo.coords.latitude
 					location.lon = geo.coords.longitude
 					resolve(true)
 				},
 				() => {
 					resolve(false)
-				}
-			)
+				},
+			),
 		)
 	}
 

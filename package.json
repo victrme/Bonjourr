@@ -13,14 +13,15 @@
 	],
 	"type": "module",
 	"scripts": {
-		"build": "node build.config.js",
-		"edge": "node build.config.js edge dev",
-		"chrome": "node build.config.js chrome dev",
-		"firefox": "node build.config.js firefox dev",
-		"safari": "node build.config.js safari dev",
-		"online": "node build.config.js online dev",
-		"online:docker": "node build.config.js online prod",
-		"translate": "node build.config.js translate"
+		"build": "node ./tasks/build.js",
+		"edge": "node ./tasks/build.js edge dev",
+		"chrome": "node ./tasks/build.js chrome dev",
+		"firefox": "node ./tasks/build.js firefox dev",
+		"safari": "node ./tasks/build.js safari dev",
+		"online": "node ./tasks/build.js online dev",
+		"docker": "node ./tasks/build.js online prod",
+		"translate": "node ./tasks/translate.js",
+		"check": "biome check --write --unsafe"
 	},
 	"dependencies": {
 		"@victr/deepmerge": "^1.3.2",
@@ -36,15 +37,7 @@
 		"user-agent-data-types": "^0.4.2",
 		"web-ext-types": "^3.2.1"
 	},
-	"prettier": {
-		"tabWidth": 4,
-		"useTabs": true,
-		"semi": false,
-		"singleQuote": true,
-		"printWidth": 128
-	},
 	"engines": {
-		"node": ">=18.20.2",
-		"pnpm": ">=7"
+		"node": ">=18.20.2"
 	}
 }

@@ -1,10 +1,12 @@
 export function toggleDisabled(element: Element | null, force?: boolean) {
 	if (element) {
-		if (force === undefined) {
-			force = typeof element.getAttribute('disabled') === 'string'
-		}
+		const toggle = force !== undefined ? force : typeof element.getAttribute('disabled') === 'string'
 
-		force ? element.setAttribute('disabled', '') : element.removeAttribute('disabled')
+		if (toggle) {
+			element.setAttribute('disabled', '')
+		} else {
+			element.removeAttribute('disabled')
+		}
 	}
 }
 
@@ -51,7 +53,7 @@ export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
 		canTurn
 			? [{ transform: 'rotate(360deg)' }]
 			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],
-		animationOptions
+		animationOptions,
 	)
 }
 
@@ -59,8 +61,14 @@ export function fadeOut() {
 	const dominterface = document.getElementById('interface') as HTMLElement
 	dominterface.click()
 	dominterface.style.transition = 'opacity .4s'
-	setTimeout(() => (dominterface.style.opacity = '0'))
-	setTimeout(() => location.reload(), 400)
+
+	setTimeout(() => {
+		dominterface.style.opacity = '0'
+	})
+
+	setTimeout(() => {
+		location.reload()
+	}, 400)
 }
 
 export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
@@ -71,7 +79,9 @@ export const inputThrottle = (elem: HTMLInputElement, time = 800) => {
 		elem.removeAttribute('disabled')
 	}, time)
 
-	if (isThrottled) elem.setAttribute('disabled', '')
+	if (isThrottled) {
+		elem.setAttribute('disabled', '')
+	}
 }
 
 export function hexColorFromSplitRange(id: string): string {

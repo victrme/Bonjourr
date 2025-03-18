@@ -3,8 +3,8 @@ import storage from '../storage'
 let trns: Local.Translations | undefined
 let currentTrnsLang = 'en'
 
-export async function setTranslationCache(lang: string, local?: Local.Storage) {
-	lang = countryCodeToLanguageCode(lang)
+export async function setTranslationCache(language: string, local?: Local.Storage) {
+	const lang = countryCodeToLanguageCode(language)
 
 	if (lang === 'en') {
 		storage.local.remove('translations')
@@ -57,13 +57,18 @@ export async function toggleTraduction(lang: string) {
 
 	// old lang is 'en'
 	if (newDict && currentDict?.lang === undefined) {
-		Object.keys(newDict).forEach((key) => (currentDict[key] = key))
+		Object.keys(newDict).forEach(key => {
+			currentDict[key] = key
+		})
 	}
 
 	// {en: fr} & {en: sv} ==> {fr: sv}
 	for (const [key, val] of Object.entries(currentDict)) {
-		if (lang === 'en') toggleDict[val] = key
-		else if (newDict) toggleDict[val] = newDict[key]
+		if (lang === 'en') {
+			toggleDict[val] = key
+		} else if (newDict) {
+			toggleDict[val] = newDict[key]
+		}
 	}
 
 	for (const tag of tags) {
@@ -79,16 +84,26 @@ export function getLang(): string {
 }
 
 export function tradThis(str: string): string {
-	return trns ? trns[str] ?? str : str
+	return trns ? (trns[str] ?? str) : str
 }
 
 export function countryCodeToLanguageCode(lang: string): string {
-	if (lang.includes('ES')) lang = 'es'
-	if (lang === 'gr') lang = 'el'
-	if (lang === 'jp') lang = 'ja'
-	if (lang === 'cz') lang = 'cs'
+	let sanitizedLang = lang
 
-	lang = lang.replace('_', '-')
+	if (lang.includes('ES')) {
+		sanitizedLang = 'es'
+	}
+	if (lang === 'gr') {
+		sanitizedLang = 'el'
+	}
+	if (lang === 'jp') {
+		sanitizedLang = 'ja'
+	}
+	if (lang === 'cz') {
+		sanitizedLang = 'cs'
+	}
 
-	return lang
+	sanitizedLang = sanitizedLang.replace('_', '-')
+
+	return sanitizedLang
 }

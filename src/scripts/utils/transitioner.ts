@@ -4,7 +4,7 @@ type AsyncFunc = (...args: unknown[]) => Promise<void>
 type Transitioner = {
 	first: (cb: Func) => void
 	finally: (cb: Func) => void
-	then: (cb: AsyncFunc) => void
+	after: (cb: AsyncFunc) => void
 	cancel: () => void
 	transition: (timeout: number) => Promise<void>
 }
@@ -15,39 +15,45 @@ export default function transitioner(): Transitioner {
 
 	const steps: {
 		first?: Func
-		then?: AsyncFunc
+		after?: AsyncFunc
 		finally?: Func
 	} = {}
 
 	return {
-		first: (cb: Func) => (steps.first = cb),
+		first: (cb: Func) => {
+			steps.first = cb
+		},
 
-		finally: (cb: Func) => (steps.finally = cb),
+		finally: (cb: Func) => {
+			steps.finally = cb
+		},
 
-		then: (cb: AsyncFunc) => (steps.then = cb),
+		after: (cb: AsyncFunc) => {
+			steps.after = cb
+		},
 
 		cancel: () => clearTimeout(waitTimeout),
 
-		transition: async (timeout: number) => {
+		transition: async (timeout: number, ...rest) => {
 			if (steps.first) {
-				steps.first(...arguments)
+				steps.first(rest)
 			}
 
-			await new Promise((r) => {
+			await new Promise(r => {
 				waitTimeout = setTimeout(() => r(true), Math.min(timeout, 2000))
 			})
 
-			if (steps.then) {
-				await steps.then(...arguments)
+			if (steps.after) {
+				await steps.after(rest)
 			}
 
 			if (steps.finally) {
-				steps.finally(...arguments)
+				steps.finally(rest)
 			}
 
-			delete steps.first
-			delete steps.then
-			delete steps.finally
+			steps.first = undefined
+			steps.after = undefined
+			steps.finally = undefined
 		},
 	}
 }

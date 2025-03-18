@@ -17,7 +17,8 @@
 	margin: auto;
 	border-radius: 4px;
 	background-color: var(--color-focused);
-	transition: width 0.15s cubic-bezier(0.215, 0.61, 0.355, 1), background-color 0.15s cubic-bezier(0.215, 0.61, 0.355, 1);
+	transition: width 0.15s cubic-bezier(0.215, 0.61, 0.355, 1), background-color 0.15s
+		cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 #mobile-drag-zone:active div {

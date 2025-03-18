@@ -12,7 +12,9 @@ import {
 } from './helpers'
 
 export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
-	if (!widget) return
+	if (!widget) {
+		return
+	}
 
 	const [id, on] = widget
 	const gridToggle = on ? addGridWidget : removeGridWidget
@@ -22,16 +24,16 @@ export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boole
 	const grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
 
 	data.move.layouts[selection] = { items: layout.items, grid: grid }
-	data = updateWidgetsStorage([widget], data)
-	storage.sync.set(data)
+	const newdata = updateWidgetsStorage([widget], data)
+	storage.sync.set(newdata)
 
 	interfaceTransition.first(() => {
 		toggleWidgetInSettings([[id, on]])
 		interfaceFade('out')
 	})
 
-	interfaceTransition.then(async () => {
-		const layout = getLayout(data)
+	interfaceTransition.after(async () => {
+		const layout = getLayout(newdata)
 		setGridAreas(layout.grid)
 		setAllAligns(layout.items)
 		toggleWidgetOnInterface([[id, on]])
@@ -62,7 +64,7 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 
 	for (const [widget, on] of states) {
 		const input = document.getElementById(inputids[widget]) as HTMLInputElement
-		const option = document.getElementById(widget + '_options')
+		const option = document.getElementById(`${widget}_options`)
 
 		option?.classList.toggle('shown', on)
 		input.checked = on

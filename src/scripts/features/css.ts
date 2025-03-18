@@ -39,14 +39,16 @@ export default function customCss(init?: string, event?: { styling: string }) {
 		editor.textarea.setAttribute('aria-labelledby', 'lbl-css')
 		editor.textarea.placeholder = tradThis('Type in your custom CSS')
 
-		editor.addListener('update', (value) => {
-			value = stringMaxSize(value, 8080)
-			eventDebounce({ css: value })
-			stylelink.textContent = value
+		editor.addListener('update', value => {
+			eventDebounce({ css: stringMaxSize(value, 8080) })
+			stylelink.textContent = stringMaxSize(value, 8080)
 		})
 
 		editor.keyCommandMap.Tab = (e, selection, value) => {
-			if (document.body.matches('.tabbing')) return false
+			if (document.body.matches('.tabbing')) {
+				return false
+			}
+
 			return tabCommand?.(e, selection, value)
 		}
 	})

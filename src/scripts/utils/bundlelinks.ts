@@ -3,7 +3,9 @@ export function bundleLinks(data: Sync.Storage): Links.Link[] {
 	const res: Links.Link[] = []
 
 	Object.entries(data).map(([key, val]) => {
-		if (key.length === 11 && key.startsWith('links')) res.push(val as Links.Link)
+		if (key.length === 11 && key.startsWith('links')) {
+			res.push(val as Links.Link)
+		}
 	})
 
 	return res

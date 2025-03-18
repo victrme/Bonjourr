@@ -57,7 +57,7 @@ export const subsets = {
 	tr: 'latin-ext',
 	hu: 'latin-ext',
 	vi: 'latin-ext',
-  az: 'latin-ext', 
+	az: 'latin-ext',
 	ja: 'japanese',
 	hy: 'armenian',
 	'zh-CN': 'chinese-simplified',

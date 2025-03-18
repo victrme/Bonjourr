@@ -43,7 +43,7 @@ let domlinkgroup: HTMLDivElement
 
 export default function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as HTMLElement[]
-	const type = path.some((element) => element?.className?.includes('link-title')) ? 'mini' : 'link'
+	const type = path.some(element => element?.className?.includes('link-title')) ? 'mini' : 'link'
 	const isMini = type === 'mini'
 
 	if (event.button > 0) {
@@ -66,14 +66,14 @@ export default function startDrag(event: PointerEvent) {
 
 	//
 
-	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
+	domlinkgroup = path.find(node => node?.classList?.contains('link-group')) as HTMLDivElement
 	domlinkgroups = document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group')
 	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
 	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
 	dragContainers = document.querySelectorAll<HTMLElement>(isMini ? '#link-mini' : '.link-group')
 
 	const tagName = isMini ? 'BUTTON' : 'LI'
-	const target = path.find((node) => node.tagName === tagName)
+	const target = path.find(node => node.tagName === tagName)
 	const pos = getPosFromEvent(event)
 
 	draggedId = findIdFromElement(target)
@@ -124,16 +124,20 @@ export default function startDrag(event: PointerEvent) {
 
 	for (const container of Object.values(dragContainers)) {
 		const elements = container.querySelectorAll<HTMLElement>(tagName)
-		const wrapper = isMini ? container : container.querySelector('.link-list')!
+		const wrapper = isMini ? container : container.querySelector('.link-list')
 		const rect = wrapper?.getBoundingClientRect()
+
+		if (!rect) {
+			continue
+		}
 
 		for (const element of elements) {
 			const type = findTypeFromElement(element)
 			const id = findIdFromElement(element, type)
 			let { x, y, w, h } = dropzones[type].get(id) ?? { x: 0, y: 0, w: 0, h: 0 }
 
-			x = x - rect?.x
-			y = y - rect?.y
+			x -= rect?.x
+			y -= rect?.y
 
 			ids.push(id)
 			initids.push(id)
@@ -154,8 +158,8 @@ export default function startDrag(event: PointerEvent) {
 			}
 		}
 
-		container.style.setProperty('--drag-width', Math.floor(rect?.width ?? 0) + 'px')
-		container.style.setProperty('--drag-height', Math.floor(rect?.height ?? 0) + 'px')
+		container.style.setProperty('--drag-width', `${Math.floor(rect?.width ?? 0)}px`)
+		container.style.setProperty('--drag-height', `${Math.floor(rect?.height ?? 0)}px`)
 		container.classList.add('in-drag', 'dragging')
 	}
 
@@ -231,8 +235,8 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 		}
 
 		if (targetGroup === draggedGroup) {
-			blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
-			groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+			blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+			groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 		}
 
 		return
@@ -245,7 +249,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	if (curr === '') {
 		lastdropAreas.push('')
 		clearTimeout(dragChangeParentTimeout)
-		blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+		blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 		return
 	}
 
@@ -315,8 +319,8 @@ function applyDragChangeParent(id: string, type: DropType) {
 
 		targetId = id
 
-		groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
-		blocks.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+		groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+		blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 		blocks.get(draggedId)?.classList.toggle('drop-source', true)
 
 		if (type === 'group') {
@@ -352,7 +356,7 @@ function endDrag(event: Event) {
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
 
-	dragContainers.forEach((container) => {
+	dragContainers.forEach(container => {
 		container?.classList.replace('dragging', 'dropping')
 	})
 
@@ -362,7 +366,7 @@ function endDrag(event: Event) {
 		deplaceElem(block, coord.x, coord.y)
 	}
 
-	groups.forEach((block) => block.classList.remove('drop-target', 'drop-source'))
+	groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
 
 	setTimeout(() => {
 		const targetIsFolder = blocks.get(targetId)?.classList.contains('link-folder')
@@ -402,11 +406,11 @@ function endDrag(event: Event) {
 		// Yield to functions above to avoid flickering
 		// Do not remove this setTimeout (or else)
 		setTimeout(() => {
-			dragContainers.forEach((container) => {
+			dragContainers.forEach(container => {
 				container?.removeAttribute('style')
 				container?.classList.remove('in-drag', 'dropping')
 
-				container.querySelectorAll('li, button').forEach((element) => {
+				container.querySelectorAll('li, button').forEach(element => {
 					element.removeAttribute('style')
 				})
 			})
@@ -457,9 +461,15 @@ function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 
 
 			let area: DropArea = ''
 
-			if (isInLeftEdge) area = 'left'
-			if (isInRightEdge) area = 'right'
-			if (isInCenter) area = 'center'
+			if (isInLeftEdge) {
+				area = 'left'
+			}
+			if (isInRightEdge) {
+				area = 'right'
+			}
+			if (isInCenter) {
+				area = 'center'
+			}
 
 			if (area) {
 				return { area, id }
@@ -497,25 +507,39 @@ function getPosFromEvent(event: TouchEvent | PointerEvent) {
 			const { x, y } = event as PointerEvent
 			return { x, y }
 		}
-	}
 
-	return { x: 0, y: 0 }
+		default: {
+			return { x: 0, y: 0 }
+		}
+	}
 }
 
 function findTypeFromElement(element?: HTMLElement): 'link' | 'mini' | 'group' {
-	if (element?.classList.contains('link')) return 'link'
-	if (element?.classList.contains('link-title')) return 'mini'
-	if (element?.classList.contains('link-group')) return 'group'
+	if (element?.classList.contains('link')) {
+		return 'link'
+	}
+	if (element?.classList.contains('link-title')) {
+		return 'mini'
+	}
+	if (element?.classList.contains('link-group')) {
+		return 'group'
+	}
 
-	throw 'No valid type found for specified element'
+	throw new Error('No valid type found for specified element')
 }
 
 function findIdFromElement(element?: HTMLElement, type?: 'link' | 'mini' | 'group'): string {
-	type = type ?? findTypeFromElement(element)
+	const elementType = type ?? findTypeFromElement(element)
 
-	if (type === 'link') return element?.id ?? ''
-	if (type === 'mini') return element?.dataset.group ?? ''
-	if (type === 'group') return element?.dataset.group ?? ''
+	if (elementType === 'link') {
+		return element?.id ?? ''
+	}
+	if (elementType === 'mini') {
+		return element?.dataset.group ?? ''
+	}
+	if (elementType === 'group') {
+		return element?.dataset.group ?? ''
+	}
 
-	throw 'No valid type found for specified element'
+	throw new Error('No valid type found for specified element')
 }

@@ -1,7 +1,7 @@
 export async function apiWebSocket(path: string): Promise<WebSocket | undefined> {
 	try {
 		const socket = new WebSocket(`wss://services.bonjourr.fr/${path}`)
-		const isOpened = await new Promise((resolve) => {
+		const isOpened = await new Promise(resolve => {
 			socket.onopen = () => resolve(true)
 			socket.onerror = () => resolve(false)
 			socket.onclose = () => resolve(false)

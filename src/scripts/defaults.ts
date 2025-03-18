@@ -28,11 +28,11 @@ export const PLATFORM =
 				? 'safari'
 				: 'online'
 
-export const BROWSER = window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
+export const BROWSER = window.navigator?.userAgentData?.brands.some(b => b.brand === 'Microsoft Edge')
 	? 'edge'
-	: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+	: window.navigator?.userAgentData?.brands.some(b => b.brand === 'Opera')
 		? 'opera'
-		: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
+		: window.navigator?.userAgentData?.brands.some(b => b.brand === 'Chromium')
 			? 'chrome'
 			: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
 				? 'firefox'

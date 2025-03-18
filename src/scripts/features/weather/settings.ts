@@ -18,7 +18,7 @@ export async function weatherUpdate(update: WeatherUpdate) {
 	const { weather, hide } = await storage.sync.get(['weather', 'hide'])
 	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
-	if (!weather || !hide) {
+	if (!(weather && hide)) {
 		return
 	}
 
@@ -79,8 +79,8 @@ export async function weatherUpdate(update: WeatherUpdate) {
 }
 
 async function updateManualLocation(weather: Weather, lastWeather?: LastWeather) {
-	const i_city = document.getElementById('i_city') as HTMLInputElement
-	let city = i_city.value
+	const iCity = document.getElementById('i_city') as HTMLInputElement
+	let city = iCity.value
 
 	removeLocationSuggestions()
 
@@ -112,14 +112,13 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	}
 
 	if (newWeather) {
-		lastWeather = newWeather
 		weather.city = city ?? 'Paris'
 		locationForm.accept('i_city', weather.city)
 
 		storage.sync.set({ weather })
 		storage.local.set({ lastWeather })
 
-		displayWeather(weather, lastWeather)
+		displayWeather(weather, newWeather)
 	}
 }
 
@@ -138,26 +137,26 @@ async function updateGeolocation(geol: string, weather: Weather, lastWeather?: L
 		weather.geolocation = geol
 	}
 
-	lastWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
+	const newWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
 
 	geolForm.accept()
 	handleGeolOption(weather)
 
 	storage.sync.set({ weather })
 
-	if (lastWeather) {
+	if (newWeather) {
 		storage.local.set({ lastWeather })
-		displayWeather(weather, lastWeather)
+		displayWeather(weather, newWeather)
 	}
 }
 
 export function handleGeolOption(data: Weather) {
-	const i_city = document.querySelector<HTMLInputElement>('#i_city')
-	const i_geol = document.querySelector<HTMLInputElement>('#i_geol')
+	const iCity = document.querySelector<HTMLInputElement>('#i_city')
+	const iGeol = document.querySelector<HTMLInputElement>('#i_geol')
 
-	if (i_city && i_geol) {
-		i_geol.value = data?.geolocation ?? false
-		i_city.setAttribute('placeholder', data.city ?? 'Paris')
+	if (iCity && iGeol) {
+		iGeol.value = data?.geolocation ?? false
+		iCity.setAttribute('placeholder', data.city ?? 'Paris')
 		document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
 	}
 }
@@ -165,30 +164,30 @@ export function handleGeolOption(data: Weather) {
 // Location suggestions
 
 function updateSuggestions(updateEvent: Event) {
-	const f_location = document.querySelector<HTMLFormElement>('#f_location')
-	const i_city = document.querySelector<HTMLInputElement>('#i_city')
+	const fLocation = document.querySelector<HTMLFormElement>('#f_location')
+	const iCity = document.querySelector<HTMLInputElement>('#i_city')
 	const event = updateEvent as InputEvent
 
-	if (!f_location || !i_city) {
+	if (!(fLocation && iCity)) {
 		return
 	}
 
 	if (event.data !== undefined) {
-		f_location?.classList.toggle('valid', i_city.value.length > 2)
+		fLocation?.classList.toggle('valid', iCity.value.length > 2)
 		removeLocationSuggestions()
 		suggestionsDebounce()
 	}
 }
 
 function removeLocationSuggestions() {
-	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
-	dl_cityfound?.childNodes.forEach((node) => node.remove())
+	const dlCityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+	dlCityfound?.childNodes.forEach(node => node.remove())
 }
 
 async function fillLocationSuggestions() {
-	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
-	const i_city = document.getElementById('i_city') as HTMLInputElement
-	const city = i_city.value
+	const dlCityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+	const iCity = document.getElementById('i_city') as HTMLInputElement
+	const city = iCity.value
 
 	if (city === '') {
 		removeLocationSuggestions()
@@ -213,7 +212,7 @@ async function fillLocationSuggestions() {
 			const option = document.createElement('option')
 			option.value = detail
 			option.textContent = detail
-			dl_cityfound?.appendChild(option)
+			dlCityfound?.appendChild(option)
 		}
 	} catch (_error) {
 		// ...
