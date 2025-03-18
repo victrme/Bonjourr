@@ -1,11 +1,10 @@
-name: Lint
+name: biome
 on:
     push:
-        branches: [workflow]
 
 jobs:
-    lint:
-        runs-on: ubuntu-latest
+    ci:
+        runs-on: alpine-latest
         steps:
             - uses: actions/checkout@v4
             - uses: biomejs/setup-biome@v2
