@@ -84,8 +84,6 @@ if (ENV_PROD && platform === undefined) {
 	}
 
 	exec('biome lint', (err, _stdout, stderr) => {
-		console.warn(stderr)
-
 		if (!err) {
 			for (const platform of PLATFORMS) {
 				exec(`node ./tasks/build.js ${platform} prod`, (error, stdout, _) => {
