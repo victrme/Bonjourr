@@ -81,29 +81,36 @@ async function closeFolder() {
 	transition.transition(40)
 
 	function hide() {
-		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach(group => {
+		const folders = document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')
+
+		for (const group of folders) {
 			group.classList.add('hiding')
 			group.dataset.folder = ''
-		})
+		}
 	}
 
 	async function changeToTab() {
 		domlinkblocks.classList.toggle('with-groups', data.linkgroups.on)
-		initblocks(data)
+		await initblocks(data)
 	}
 
 	function show() {
-		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach(group => {
+		const groups = document.querySelectorAll<HTMLDivElement>('.link-group')
+
+		for (const group of groups) {
 			group.classList.remove('in-folder')
 			group.classList.remove('hiding')
-		})
+		}
 	}
 }
 
 function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
-	const links = getLinksInFolder(data, li.id)
+	const linksInFolder = getLinksInFolder(data, li.id)
 
-	links.forEach(link => window.open(link.url, '_blank')?.focus())
+	for (const link of linksInFolder) {
+		window.open(link.url, '_blank')?.focus()
+	}
+
 	window.open(window.location.href, '_blank')?.focus()
 	window.close()
 }

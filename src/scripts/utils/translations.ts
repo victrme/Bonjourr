@@ -57,9 +57,9 @@ export async function toggleTraduction(lang: string) {
 
 	// old lang is 'en'
 	if (newDict && currentDict?.lang === undefined) {
-		Object.keys(newDict).forEach(key => {
+		for (const key of Object.keys(newDict)) {
 			currentDict[key] = key
-		})
+		}
 	}
 
 	// {en: fr} & {en: sv} ==> {fr: sv}

@@ -8,16 +8,13 @@
 			"suspicious": {
 				"noConsole": "off"
 			},
-			"complexity": {
-				"noForEach": "info"
-			},
 			"correctness": {
 				"useImportExtensions": "off",
-				"noUndeclaredVariables": "info"
+				"noUndeclaredVariables": "off"
 			},
 			"style": {
 				"noNamespace": "off",
-				"useNamingConvention": "info"
+				"useNamingConvention": "off"
 			}
 		}
 	},

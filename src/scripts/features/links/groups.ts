@@ -11,9 +11,9 @@ const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
 export function initGroups(data: Sync.Storage, init?: true) {
 	if (!init) {
-		document.querySelectorAll('#link-mini button')?.forEach(node => {
+		for (const node of document.querySelectorAll('#link-mini button') ?? []) {
 			node.remove()
-		})
+		}
 	}
 
 	createGroups(data.linkgroups)
@@ -79,7 +79,9 @@ function changeGroup(event: Event) {
 		const data = await storage.sync.get()
 		const group = button.dataset.group ?? data.linkgroups.groups[0]
 
-		buttons?.forEach(div => div.classList.remove('selected-group'))
+		for (const div of buttons ?? []) {
+			div.classList.remove('selected-group')
+		}
 		button.classList.add('selected-group')
 		data.linkgroups.selected = group
 		storage.sync.set(data)

@@ -131,9 +131,9 @@ export async function openEditDialog(event: Event) {
 	}
 
 	if (!selectall) {
-		document
-			.querySelectorAll('.link-title.selected, .link.selected')
-			?.forEach(node => node.classList.remove('selected'))
+		for (const node of document.querySelectorAll('.link-title.selected, .link.selected') ?? []) {
+			node.classList.remove('selected')
+		}
 		;(target.title ? linktitle : linkelem)?.classList.add('selected')
 	}
 
@@ -156,9 +156,9 @@ function toggleEditInputs(): string[] {
 	const { container, target, selectall } = editStates
 	let inputs: string[] = []
 
-	domeditlink.querySelectorAll('label, button, hr').forEach(node => {
+	for (const node of domeditlink.querySelectorAll('label, button, hr')) {
 		node.classList.remove('on')
-	})
+	}
 
 	document.querySelector('#edit-delete')?.removeAttribute('disabled')
 	document.querySelector('#edit-pin')?.removeAttribute('disabled')
@@ -410,7 +410,9 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 	}
 
 	if (origin === 'inputs') {
-		inputs.forEach(node => node.blur())
+		for (const node of inputs) {
+			node.blur()
+		}
 	}
 
 	quickLinks(undefined, {
@@ -425,9 +427,12 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 
 function closeEditDialog() {
 	if (domeditlink.open) {
-		document
-			.querySelectorAll('.link-title.selected, .link.selected')
-			.forEach(node => node?.classList.remove('selected'))
+		const selected = document.querySelectorAll('.link-title.selected, .link.selected')
+
+		for (const node of selected) {
+			node?.classList.remove('selected')
+		}
+
 		domeditlink.removeAttribute('data-tab')
 		domeditlink.classList.remove('shown')
 		domeditlink.close()

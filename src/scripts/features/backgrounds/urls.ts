@@ -106,16 +106,16 @@ export function applyUrls(backgrounds: Sync.Backgrounds) {
 async function checkUrlStates(backgroundUrls: Local.Storage['backgroundUrls']) {
 	const entries = Object.entries(backgroundUrls)
 
-	entries.forEach(([url, _]) => {
+	for (const [url] of entries) {
 		highlightUrlsEditorLine(url, 'LOADING')
-	})
+	}
 
-	entries.forEach(async ([url, item]) => {
+	for (const [url, item] of entries) {
 		item.state = await getState(url)
 		backgroundUrls[url] = item
 		highlightUrlsEditorLine(url, item.state)
 		storage.local.set({ backgroundUrls: backgroundUrls })
-	})
+	}
 }
 
 async function getState(item: string): Promise<Local.BackgroundUrlState> {

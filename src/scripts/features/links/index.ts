@@ -154,17 +154,17 @@ export function initblocks(data: Sync, isInit?: true): true {
 	const divs = activeGroups.map(g => g.div)
 	const usedLis = activeGroups.flatMap(group => group.lis)
 
-	document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group').forEach(div => {
-		div.querySelectorAll<HTMLLIElement>('li').forEach(li => {
+	for (const div of document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group')) {
+		for (const li of div.querySelectorAll<HTMLLIElement>('li')) {
 			if (usedLis.includes(li) === false) {
 				li.remove()
 			}
-		})
+		}
 
 		if (divs.includes(div) === false) {
 			div.remove()
 		}
-	})
+	}
 
 	for (const group of activeGroups) {
 		const linkgroup = group.div ?? getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
@@ -375,7 +375,9 @@ function selectAll(event: MouseEvent) {
 function removeSelectAll() {
 	clearTimeout(selectallTimer)
 	domlinkblocks.classList.remove('select-all')
-	domlinkblocks.querySelectorAll('.link').forEach(li => li.classList.remove('selected'))
+	for (const li of domlinkblocks.querySelectorAll('.link')) {
+		li.classList.remove('selected')
+	}
 }
 
 // Updates
@@ -451,9 +453,9 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 	let newlinks: Link[] = []
 
 	if (type === 'link') {
-		args.links.forEach(link => {
+		for (const link of args.links) {
 			newlinks.push(validateLink(link.title, link.url, link.group))
-		})
+		}
 	}
 
 	if (type === 'folder') {
@@ -614,14 +616,21 @@ function moveToFolder({ target, source }: MoveToFolder, data: Sync): Sync {
 }
 
 function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: Sync): Sync {
-	for (const id of ids) {
-		;(data[id] as Link).parent = group
-		;(data[id] as Link).order = Date.now()
-	}
+	// Get the current links in the target group to determine the next order
+	const linksInGroup = getLinksInGroup(data, group);
+	const maxOrder = linksInGroup.length > 0 
+		? Math.max(...linksInGroup.map(link => link.order))
+		: -1;
 
-	const correctdata = correctLinksOrder(data)
-	initblocks(correctdata)
-	return correctdata
+	// Update each link's parent and order
+	ids.forEach((id, index) => {
+		(data[id] as Link).parent = group;
+		(data[id] as Link).order = maxOrder + index + 1;
+	});
+
+	const correctdata = correctLinksOrder(data);
+	initblocks(correctdata);
+	return correctdata;
 }
 
 function deleteLinks(ids: string[], data: Sync): Sync {
@@ -629,9 +638,9 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 		const link = data[id] as Link
 
 		if (link.folder) {
-			getLinksInFolder(data, link._id).forEach(child => {
+			for (const child of getLinksInFolder(data, link._id)) {
 				delete data[child._id]
-			})
+			}
 		}
 
 		delete data[id]
@@ -711,9 +720,9 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 
 		// remove from DOM to re-draw icons
 		if (wasText) {
-			document.querySelectorAll('#link-list li')?.forEach(el => {
+			for (const el of document.querySelectorAll('#link-list li') ?? []) {
 				el.remove()
-			})
+			}
 		}
 
 		initRows(data.linksrow, style)
@@ -778,19 +787,19 @@ function correctLinksOrder(data: Sync): Sync {
 	for (const folderId of folderIds) {
 		const linksInFolder = getLinksInFolder(data, folderId)
 
-		linksInFolder.forEach((link, i) => {
+		for (const [i, link] of linksInFolder.entries()) {
 			link.order = i
 			data[link._id]
-		})
+		}
 	}
 
 	for (const group of data.linkgroups.groups) {
 		const linksInGroup = getLinksInGroup(data, group)
 
-		linksInGroup.forEach((link, i) => {
+		for (const [i, link] of linksInGroup.entries()) {
 			link.order = i
 			data[link._id]
-		})
+		}
 	}
 
 	return data

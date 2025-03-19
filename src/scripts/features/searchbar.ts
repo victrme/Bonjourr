@@ -306,7 +306,9 @@ function initSuggestions() {
 
 	function hideResultsAndSuggestions() {
 		const children = Object.values(domsuggestions?.children ?? [])
-		children.forEach(child => child.classList.remove('shown'))
+		for (const child of children) {
+			child.classList.remove('shown')
+		}
 		domsuggestions?.classList.remove('shown')
 	}
 
@@ -408,7 +410,9 @@ function handleUserInput(e: Event) {
 	}
 
 	if (value === '') {
-		document.querySelectorAll('#sb-suggestions li.shown')?.forEach(li => li.classList.remove('shown'))
+		for (const li of document.querySelectorAll('#sb-suggestions li.shown') ?? []) {
+			li.classList.remove('shown')
+		}
 		domsuggestions?.classList.remove('shown')
 		return
 	}

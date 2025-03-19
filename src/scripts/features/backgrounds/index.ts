@@ -757,7 +757,9 @@ function createProviderSelect(backgrounds: Sync.Backgrounds) {
 		throw new Error('Cannot find #i_background-provider')
 	}
 
-	Object.values(backgroundProvider.children).forEach(node => node.remove())
+	for (const node of Object.values(backgroundProvider.children)) {
+		node.remove()
+	}
 
 	for (const provider of providersList) {
 		const optgroup = document.createElement('optgroup')

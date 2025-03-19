@@ -71,7 +71,9 @@ export function customFont(init?: Font, event?: CustomFontUpdate) {
 			onSettingsLoad(() => {
 				initFontSettings(font)
 			})
-		} catch (_) {}
+		} catch (_) {
+			// ...
+		}
 	}
 }
 
@@ -258,8 +260,10 @@ function initFontSettings(font?: Font) {
 async function setAutocompleteSettings(isLangSwitch?: boolean) {
 	const dlFontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
 
-	if (isLangSwitch) {
-		dlFontfamily?.childNodes.forEach(node => node.remove())
+	if (isLangSwitch && dlFontfamily?.childNodes) {
+		for (const node of dlFontfamily.childNodes) {
+			node.remove()
+		}
 	}
 
 	if (dlFontfamily?.childElementCount === 0) {

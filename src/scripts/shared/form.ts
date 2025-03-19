@@ -11,7 +11,7 @@ export function networkForm(targetId: string) {
 		button = form?.querySelector('button:last-of-type') as HTMLButtonElement
 		message = form?.querySelector('small') as HTMLSpanElement
 
-		form.querySelectorAll('input').forEach(input => {
+		for (const input of form.querySelectorAll('input')) {
 			input?.addEventListener('input', () => {
 				const placeholder = input.getAttribute('placeholder')
 				const isSame = placeholder === input.value
@@ -21,7 +21,7 @@ export function networkForm(targetId: string) {
 				form.classList.toggle('valid', isValid)
 				form.classList.toggle('remove', isValid && (isSame || isEmpty))
 			})
-		})
+		}
 
 		form?.addEventListener('input', () => {
 			if (form.classList.contains('warn')) {

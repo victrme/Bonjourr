@@ -236,13 +236,13 @@ export async function loadModalData() {
 		const monthlyFragment = document.createDocumentFragment()
 		const onceFragment = document.createDocumentFragment()
 
-		supporters.forEach(supporter => {
+		for (const supporter of supporters) {
 			const li = document.createElement('li')
 			li.innerHTML = supporter.name
 
 			const targetFragment = supporter.monthly ? monthlyFragment : onceFragment
 			targetFragment.appendChild(li)
-		})
+		}
 
 		document.querySelector('#supporters-modal #monthly #list')?.appendChild(monthlyFragment)
 		document.querySelector('#supporters-modal #once #list')?.appendChild(onceFragment)

@@ -3,8 +3,8 @@ import { customFont, fontIsAvailableInSubset, systemfont } from './features/font
 import { changeGroupTitle, initGroups } from './features/links/groups'
 import { supportersNotifications } from './features/supporters'
 import { updateLocalBackgrounds } from './features/backgrounds/local'
-import { synchronization } from './features/synchronization'
 import { backgroundUpdate } from './features/backgrounds'
+import { synchronization } from './features/synchronization'
 import { interfacePopup } from './features/popup'
 import { moveElements } from './features/move'
 import { hideElements } from './features/hide'
@@ -84,7 +84,7 @@ export async function settingsInit() {
 	showall(sync.showall, false)
 	initOptionsValues(sync, local)
 	initOptionsEvents()
-	updateSettingsJSON(sync)
+	updateSettingsJson(sync)
 	updateSettingsEvent()
 	settingsDrawerBar()
 	settingsFooter()
@@ -213,13 +213,14 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	}
 
 	// inserts languages in select
-	const iLang = paramId('i_lang')
-	Object.entries(langList).forEach(([code, title]) => {
+	const langInput = paramId('i_lang')
+
+	for (const [code, title] of Object.entries(langList)) {
 		const option = document.createElement('option')
 		option.value = code
 		option.text = title
-		iLang.appendChild(option)
-	})
+		langInput.appendChild(option)
+	}
 
 	// must be init after children appening
 	setInput('i_lang', data.lang || 'en')
@@ -239,10 +240,12 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 
 	// Page layout
-	domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach(b => {
-		const selectedLayout = b.dataset.layout === (data.move?.selection || 'single')
-		b?.classList.toggle('selected', selectedLayout)
-	})
+	const gridLayoutButtons = domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button')
+	const selectedLayout = data.move?.selection || 'single'
+
+	for (const button of gridLayoutButtons) {
+		button?.classList.toggle('selected', button.dataset.layout === selectedLayout)
+	}
 
 	// Link show title
 	paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
@@ -262,22 +265,30 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
 	paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
 
-	document.querySelectorAll<HTMLFormElement>('#settings form').forEach(form => {
-		form.querySelectorAll<HTMLInputElement>('input').forEach(input => {
-			input.addEventListener('input', () => form.classList.toggle('valid', form.checkValidity()))
-		})
-	})
+	const settingsForms = document.querySelectorAll<HTMLFormElement>('#settings form')
+
+	for (const form of settingsForms) {
+		const inputs = form.querySelectorAll<HTMLInputElement>('input')
+
+		for (const input of inputs) {
+			input.addEventListener('input', () => {
+				form.classList.toggle('valid', form.checkValidity())
+			})
+		}
+	}
 
 	// Add massive timezones to <select>
+	const timezoneSelectsQuery = 'select[name="worldclock-timezone"], #i_timezone'
+	const timezoneSelects = document.querySelectorAll<HTMLSelectElement>(timezoneSelectsQuery)
 
-	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"], #i_timezone').forEach(select => {
+	for (const select of timezoneSelects) {
 		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
 		const optgroups = template.querySelectorAll('optgroup')
 
-		optgroups.forEach(group => {
+		for (const group of optgroups) {
 			select.appendChild(group)
-		})
-	})
+		}
+	}
 
 	document.querySelectorAll<HTMLSelectElement>('select[name="worldclock-timezone"]').forEach((select, i) => {
 		const zones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
@@ -861,21 +872,22 @@ function initOptionsEvents() {
 	// Other
 
 	if (IS_MOBILE) {
-		// Reduces opacity to better see interface appearance changes
-		const touchHandler = (touch: boolean) =>
-			document.getElementById('settings')?.classList.toggle('see-through', touch)
-		document.querySelectorAll("input[type='range'").forEach((input: Element) => {
-			input.addEventListener('touchstart', () => touchHandler(true), {
-				passive: true,
-			})
-			input.addEventListener('touchend', () => touchHandler(false), {
-				passive: true,
-			})
-		})
+		const rangeInputs = document.querySelectorAll<HTMLInputElement>("input[type='range'")
+
+		const reduceSettingsOpacity = (event: TouchEvent) => {
+			document.getElementById('settings')?.classList.toggle('see-through', event.type === 'touchstart')
+		}
+
+		for (const input of rangeInputs) {
+			input.addEventListener('touchstart', reduceSettingsOpacity, { passive: true })
+			input.addEventListener('touchend', reduceSettingsOpacity, { passive: true })
+		}
 	}
 
 	// TODO: drag event not working ?
-	document.querySelectorAll<HTMLInputElement>('input[type="file"]').forEach(input => {
+	const fileInputs = document.querySelectorAll<HTMLInputElement>('input[type="file"]')
+
+	for (const input of fileInputs) {
 		const toggleDrag = (_: DragEvent) => {
 			input.classList.toggle('dragover')
 		}
@@ -883,18 +895,27 @@ function initOptionsEvents() {
 		input?.addEventListener('dragenter', toggleDrag)
 		input?.addEventListener('dragleave', toggleDrag)
 		input?.addEventListener('drop', toggleDrag)
-	})
+	}
 
-	document.querySelectorAll<HTMLElement>('.tooltip').forEach(elem => {
-		elem.onclickdown(() => {
-			const cl = [...elem.classList].filter(c => c.startsWith('tt'))[0] // get tt class
-			document.querySelector(`.tooltiptext.${cl}`)?.classList.toggle('shown') // toggle tt text
+	const tooltips = document.querySelectorAll<HTMLElement>('.tooltip')
+
+	for (const tooltip of tooltips) {
+		tooltip.onclickdown(() => {
+			const classes = [...tooltip.classList]
+			const ttclass = classes.filter(cl => cl.startsWith('tt'))[0]
+			const tttext = document.querySelector(`.tooltiptext.${ttclass}`)
+
+			tttext?.classList.toggle('shown')
 		})
-	})
+	}
 
-	document.querySelectorAll<HTMLButtonElement>('.split-range button')?.forEach(button => {
-		button.onclickdown(() => button.classList.toggle('on'))
-	})
+	const splitRangeButtons = document.querySelectorAll<HTMLButtonElement>('.split-range button')
+
+	for (const button of splitRangeButtons) {
+		button.onclickdown(() => {
+			button.classList.toggle('on')
+		})
+	}
 }
 
 function translatePlaceholders() {
@@ -1224,7 +1245,7 @@ function resetSettings(action: 'yes' | 'no' | 'first') {
 	document.getElementById('reset-conf')?.classList.toggle('shown', action === 'first')
 }
 
-export function updateSettingsJSON(data?: Sync.Storage) {
+export function updateSettingsJson(data?: Sync.Storage) {
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
 	function updateTextArea(data: Sync.Storage) {
@@ -1242,7 +1263,7 @@ export function updateSettingsJSON(data?: Sync.Storage) {
 function updateSettingsEvent() {
 	// On settings changes, update export code
 	// beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
-	const storageUpdate = () => updateSettingsJSON()
+	const storageUpdate = () => updateSettingsJson()
 	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
 
 	if (PLATFORM === 'online') {

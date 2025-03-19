@@ -115,7 +115,7 @@ function linkListToFlatObjects(data: Import): Import {
 			data.quicklinks = true
 		}
 
-		data.links?.forEach(({ title, url, icon }: Links.Elem, i: number) => {
+		data.links?.forEach(({ title, url, icon }, i) => {
 			const id = `links${randomString(6)}`
 			const filteredIcon = icon?.startsWith('alias:') ? data[icon] : icon
 
@@ -129,7 +129,10 @@ function linkListToFlatObjects(data: Import): Import {
 		})
 
 		const aliasKeyList = Object.keys(data).filter(key => key.match('alias:'))
-		aliasKeyList.forEach(key => delete data[key])
+
+		for (const key of aliasKeyList) {
+			data[key] = undefined
+		}
 	}
 
 	return data
@@ -262,12 +265,12 @@ function linksDataMigration(data: Import): Import {
 	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
 	const list = (bundleLinks(data as Sync.Storage) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
-	list.forEach(link => {
+	for (const link of list) {
 		if (link.icon?.startsWith(notfoundicon)) {
 			link.icon = `${API_DOMAIN}/favicon/blob/`
 			data[link._id] = link
 		}
-	})
+	}
 
 	return data
 }
@@ -410,13 +413,13 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 		}
 
 		// mutate grid: add or remove widgets that are different from current data
-		diffEntries.forEach(([key, _]) => {
+		for (const [key] of diffEntries) {
 			const id = key as Widgets
 			const state = importStates[id]
 			const gridToggle = state ? addGridWidget : removeGridWidget
 
 			layout.grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
-		})
+		}
 
 		current.move.layouts[selection] = layout
 	}

@@ -31,9 +31,9 @@ let browserBookmarkFolders: BookmarksFolder[] = []
 export async function linksImport() {
 	const data = await storage.sync.get()
 
-	document.querySelectorAll('#bookmarks-container > *')?.forEach(node => {
+	for (const node of document.querySelectorAll('#bookmarks-container > *') ?? []) {
 		node.remove()
-	})
+	}
 
 	await initBookmarkSync(data)
 	createBookmarksDialog()
@@ -177,7 +177,7 @@ function importSelectedBookmarks() {
 	const links: { title: string; url: string; group?: string }[] = []
 	const groups: { title: string; sync: boolean }[] = []
 
-	folders.forEach(folder => {
+	for (const folder of folders) {
 		const isFolderSelected = folderIds.includes(folder.title)
 		const isFolderSynced = syncedIds.includes(folder.title)
 
@@ -189,10 +189,10 @@ function importSelectedBookmarks() {
 		}
 
 		if (isFolderSynced && folder.title !== 'topsites') {
-			return
+			continue
 		}
 
-		folder.bookmarks.forEach(bookmark => {
+		for (const bookmark of folder.bookmarks) {
 			const isBookmarkSelected = linksIds.includes(bookmark.id)
 			const group = isFolderSelected ? folder.title : undefined
 			const title = bookmark.title
@@ -201,8 +201,8 @@ function importSelectedBookmarks() {
 			if (isFolderSelected || isBookmarkSelected) {
 				links.push({ title, url, group })
 			}
-		})
-	})
+		}
+	}
 
 	storage.sync.get('linkgroups').then(({ linkgroups }) => {
 		const iLinkgroups = document.querySelector<HTMLInputElement>('#i_linkgroups')
@@ -243,7 +243,9 @@ function closeDialog(event?: Event) {
 
 		bookmarksdom?.close()
 		bookmarksdom?.classList.remove('shown')
-		bookmarksdom?.querySelectorAll('.selected')?.forEach(node => node.classList.remove('selected'))
+		for (const node of bookmarksdom?.querySelectorAll('.selected') ?? []) {
+			node.classList.remove('selected')
+		}
 	}
 }
 
@@ -261,7 +263,9 @@ function toggleFolderSelect(folder: HTMLElement) {
 		syncButton?.setAttribute('disabled', '')
 	} else {
 		folder.classList.add('selected')
-		folder.querySelectorAll('li').forEach(li => li?.classList.remove('selected'))
+		for (const li of folder.querySelectorAll('li')) {
+			li?.classList.remove('selected')
+		}
 		syncButton?.removeAttribute('disabled')
 	}
 

@@ -196,7 +196,7 @@ function beforeStartDrag(event: PointerEvent, type: 'mini' | 'link') {
 		const ox = Math.abs(cox - event.offsetX)
 		const oy = Math.abs(coy - event.offsetY)
 
-		const isEndEvents = event.type.match(/pointerup|touchend/)
+		const isEndEvents = event.type.includes('pointerup') || event.type.includes('touchend')
 		const isHalfOutside = ox > precision / 2 || oy > precision / 2
 		const isOutside = ox > precision || oy > precision
 
@@ -235,8 +235,13 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 		}
 
 		if (targetGroup === draggedGroup) {
-			blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
-			groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+			for (const block of blocks.values()) {
+				block.classList.remove('drop-target', 'drop-source')
+			}
+
+			for (const block of groups.values()) {
+				block.classList.remove('drop-target', 'drop-source')
+			}
 		}
 
 		return
@@ -249,7 +254,15 @@ function moveDrag(event: TouchEvent | PointerEvent) {
 	if (curr === '') {
 		lastdropAreas.push('')
 		clearTimeout(dragChangeParentTimeout)
-		blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+
+		for (const block of blocks.values()) {
+			block.classList.remove('drop-target', 'drop-source')
+		}
+
+		for (const block of groups.values()) {
+			block.classList.remove('drop-target', 'drop-source')
+		}
+
 		return
 	}
 
@@ -319,8 +332,12 @@ function applyDragChangeParent(id: string, type: DropType) {
 
 		targetId = id
 
-		groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
-		blocks.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+		for (const block of blocks.values()) {
+			block.classList.remove('drop-target', 'drop-source')
+		}
+		for (const block of groups.values()) {
+			block.classList.remove('drop-target', 'drop-source')
+		}
 		blocks.get(draggedId)?.classList.toggle('drop-source', true)
 
 		if (type === 'group') {
@@ -356,9 +373,9 @@ function endDrag(event: Event) {
 	window.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
 
-	dragContainers.forEach(container => {
+	for (const container of dragContainers) {
 		container?.classList.replace('dragging', 'dropping')
-	})
+	}
 
 	if (outOfFolder || toFolder || toTab) {
 		blocks.get(draggedId)?.classList.add('removed')
@@ -366,7 +383,9 @@ function endDrag(event: Event) {
 		deplaceElem(block, coord.x, coord.y)
 	}
 
-	groups.forEach(block => block.classList.remove('drop-target', 'drop-source'))
+	for (const block of groups.values()) {
+		block.classList.remove('drop-target', 'drop-source')
+	}
 
 	setTimeout(() => {
 		const targetIsFolder = blocks.get(targetId)?.classList.contains('link-folder')
@@ -406,14 +425,16 @@ function endDrag(event: Event) {
 		// Yield to functions above to avoid flickering
 		// Do not remove this setTimeout (or else)
 		setTimeout(() => {
-			dragContainers.forEach(container => {
+			for (const container of dragContainers) {
+				const elements = container.querySelectorAll('li, button')
+
+				for (const element of elements) {
+					element.removeAttribute('style')
+				}
+
 				container?.removeAttribute('style')
 				container?.classList.remove('in-drag', 'dropping')
-
-				container.querySelectorAll('li, button').forEach(element => {
-					element.removeAttribute('style')
-				})
-			})
+			}
 		}, 1)
 	}, 200)
 }
