@@ -1,6 +1,6 @@
 import { EXTENSION } from '../defaults'
 
-export default async function getPermissions(...args: string[]): Promise<boolean> {
+export async function getPermissions(...args: string[]): Promise<boolean> {
 	if (!EXTENSION) {
 		return true
 	}

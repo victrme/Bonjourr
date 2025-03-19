@@ -1,13 +1,13 @@
-import storage from '../../storage'
-import debounce from '../../utils/debounce'
-import networkForm from '../../shared/form'
-import { tradThis } from '../../utils/translations'
-import onSettingsLoad from '../../utils/onsettingsload'
-import { stringMaxSize } from '../../shared/generic'
-
 import { weatherCacheControl, requestNewWeather, getGeolocation } from './request'
 import type { Weather, WeatherUpdate, MeteoGeo, LastWeather } from './index'
 import { displayWeather } from './display'
+
+import { onSettingsLoad } from '../../utils/onsettingsload'
+import { stringMaxSize } from '../../shared/generic'
+import { networkForm } from '../../shared/form'
+import { debounce } from '../../utils/debounce'
+import { tradThis } from '../../utils/translations'
+import { storage } from '../../storage'
 
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')

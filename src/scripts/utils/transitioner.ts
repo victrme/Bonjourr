@@ -9,7 +9,7 @@ type Transitioner = {
 	transition: (timeout: number) => Promise<void>
 }
 
-export default function transitioner(): Transitioner {
+export function transitioner(): Transitioner {
 	//
 	let waitTimeout: number
 

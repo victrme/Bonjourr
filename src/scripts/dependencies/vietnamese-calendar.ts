@@ -260,7 +260,7 @@ function _convertLunar2Solar(
 	return jdToDate(monthStart + lunarDay - 1)
 }
 
-export default function getVnCalendar(date: Date) {
+export function getVnCalendar(date: Date) {
 	const can = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý']
 	const chi = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi']
 

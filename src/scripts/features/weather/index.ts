@@ -2,9 +2,9 @@ import { weatherCacheControl } from './request'
 import { handleGeolOption } from './settings'
 import { weatherUpdate } from './settings'
 
-import onSettingsLoad from '../../utils/onsettingsload'
+import { onSettingsLoad } from '../../utils/onsettingsload'
 import { suntime } from '../../shared/time'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 export type Weather = Weather.Sync
 export type LastWeather = Weather.Local
@@ -30,7 +30,7 @@ export type WeatherUpdate = {
 
 let pollingInterval = 0
 
-export default function weather(init?: WeatherInit, update?: WeatherUpdate) {
+export function weather(init?: WeatherInit, update?: WeatherUpdate) {
 	if (update) {
 		weatherUpdate(update)
 		return

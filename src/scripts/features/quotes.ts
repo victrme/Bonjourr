@@ -1,12 +1,12 @@
 import { equalsCaseInsensitive } from '../shared/generic'
 import { needsChange, userDate } from '../shared/time'
 import { displayInterface } from '../index'
+import { networkForm } from '../shared/form'
 import { tradThis } from '../utils/translations'
 import { apiFetch } from '../shared/api'
 import { isEvery } from '../shared/assert'
-import networkForm from '../shared/form'
-import storage from '../storage'
-import parse from '../utils/parse'
+import { storage } from '../storage'
+import { parse } from '../utils/parse'
 
 type Quote = Quotes.Item
 
@@ -28,7 +28,7 @@ type QuotesUpdate = {
 const quotesTypeForm = networkForm('f_qttype')
 const quotesUrlForm = networkForm('f_qturl')
 
-export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
+export async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	if (update) {
 		updateQuotes(update)
 		return

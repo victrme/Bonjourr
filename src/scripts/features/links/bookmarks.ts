@@ -1,14 +1,14 @@
-import quickLinks, { validateLink } from './index'
+import { quickLinks, validateLink } from './index'
 import { isLink } from './helpers'
 
 import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults'
 import { getHTMLTemplate, toggleDisabled } from '../../shared/dom'
 import { getLang, tradThis, traduction } from '../../utils/translations'
 import { settingsNotifications } from '../../utils/notifications'
+import { getPermissions } from '../../utils/permissions'
 import { randomString } from '../../shared/generic'
 import { bundleLinks } from '../../utils/bundlelinks'
-import getPermissions from '../../utils/permissions'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 type Treenode = chrome.bookmarks.BookmarkTreeNode
 
@@ -28,7 +28,7 @@ type BookmarksFolderItem = {
 
 let browserBookmarkFolders: BookmarksFolder[] = []
 
-export default async function linksImport() {
+export async function linksImport() {
 	const data = await storage.sync.get()
 
 	document.querySelectorAll('#bookmarks-container > *')?.forEach(node => {

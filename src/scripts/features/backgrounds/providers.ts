@@ -63,4 +63,4 @@ interface Provider {
 	}[]
 }
 
-export default { IMAGES, VIDEOS }
+export const PROVIDERS = { IMAGES, VIDEOS }

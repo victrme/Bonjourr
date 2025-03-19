@@ -8,47 +8,50 @@ import { bundleLinks } from './utils/bundlelinks'
 
 type Import = Partial<Sync.Storage>
 
-export default function filterImports(current: Sync.Storage, target: Partial<Sync.Storage>) {
+export function filterImports(current: Sync.Storage, target: Partial<Sync.Storage>) {
+	let newtarget = target
+	let newcurrent = current
+
 	// Prepare imported data compatibility
 
-	target = booleanSearchbarToObject(target) // 9.0
-	target = linkListToFlatObjects(target) // 13.0
-	target = hideArrayToObject(target) // 16.0
-	target = dynamicToUnsplash(target) // 17.0
-	target = improvedWeather(target) // 18.1
-	target = newFontSystem(target) // 19.0
-	target = newReviewData(target) // ..
-	target = quotesJsonToCsv(target) // ..
-	target = linksDataMigration(target) // 19.2
-	target = addSupporters(target) // 20.4
+	newtarget = booleanSearchbarToObject(newtarget) // 9.0
+	newtarget = linkListToFlatObjects(newtarget) // 13.0
+	newtarget = hideArrayToObject(newtarget) // 16.0
+	newtarget = dynamicToUnsplash(newtarget) // 17.0
+	newtarget = improvedWeather(newtarget) // 18.1
+	newtarget = newFontSystem(newtarget) // 19.0
+	newtarget = newReviewData(newtarget) // ..
+	newtarget = quotesJsonToCsv(newtarget) // ..
+	newtarget = linksDataMigration(newtarget) // 19.2
+	newtarget = addSupporters(newtarget) // 20.4
 
 	// Merge both settings
 
-	current = deepmergeAll(current, target, { about: structuredClone(SYNC_DEFAULT.about) }) as Sync.Storage
+	newcurrent = deepmergeAll(newcurrent, newtarget, { about: structuredClone(SYNC_DEFAULT.about) }) as Sync.Storage
 
 	// Lastest version transform
 
-	current = analogClockOptions(current) // 20.0
-	current = convertOldCssSelectors(current) // ..
-	current = toIsoLanguageCode(current) // ..
-	current = removeWorldClocksDuplicate(current, target) // ..
-	current = validateLinkGroups(current) // 20.1
+	newcurrent = analogClockOptions(newcurrent) // 20.0
+	newcurrent = convertOldCssSelectors(newcurrent) // ..
+	newcurrent = toIsoLanguageCode(newcurrent) // ..
+	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget) // ..
+	newcurrent = validateLinkGroups(newcurrent) // 20.1
 
-	// current = removeLinkDuplicates(current, target) // all
-	current = toggleMoveWidgets(current, target) // all
+	// newcurrent = removeLinkDuplicates(newcurrent, newtarget) // all
+	newcurrent = toggleMoveWidgets(newcurrent, newtarget) // all
 
-	current.settingssync = undefined
-	current.custom_every = undefined
-	current.custom_time = undefined
-	current.searchbar_newtab = undefined
-	current.searchbar_newtab = undefined
-	current.searchbar_engine = undefined
-	current.cssHeight = undefined
-	current.linktabs = undefined
-	current.links = undefined
-	current.dynamic = undefined
+	newcurrent.settingssync = undefined
+	newcurrent.custom_every = undefined
+	newcurrent.custom_time = undefined
+	newcurrent.searchbar_newtab = undefined
+	newcurrent.searchbar_newtab = undefined
+	newcurrent.searchbar_engine = undefined
+	newcurrent.cssHeight = undefined
+	newcurrent.linktabs = undefined
+	newcurrent.links = undefined
+	newcurrent.dynamic = undefined
 
-	return current
+	return newcurrent
 }
 
 function addSupporters(data: Import): Import {

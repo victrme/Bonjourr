@@ -4,8 +4,8 @@ import { hexColorFromSplitRange } from '../shared/dom'
 import { getLang, tradThis } from '../utils/translations'
 import { eventDebounce } from '../utils/debounce'
 import { apiWebSocket } from '../shared/api'
-import storage from '../storage'
-import parse from '../utils/parse'
+import { storage } from '../storage'
+import { parse } from '../utils/parse'
 
 type SearchbarUpdate = {
 	engine?: string
@@ -49,7 +49,7 @@ const setBackground = (value = '#fff2') => {
 		?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
-export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
+export function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
 		return

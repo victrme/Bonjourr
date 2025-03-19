@@ -1,8 +1,9 @@
 import { getLiFromEvent, getLinksInFolder } from './helpers'
 import { initblocks } from './index'
-import transitioner from '../../utils/transitioner'
+
+import { transitioner } from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 

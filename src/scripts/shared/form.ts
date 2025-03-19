@@ -1,6 +1,6 @@
-import onSettingsLoad from '../utils/onsettingsload'
+import { onSettingsLoad } from '../utils/onsettingsload'
 
-export default function networkForm(targetId: string) {
+export function networkForm(targetId: string) {
 	let form: HTMLFormElement
 	let button: HTMLButtonElement
 	let message: HTMLSpanElement

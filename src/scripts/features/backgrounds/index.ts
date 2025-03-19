@@ -1,16 +1,16 @@
 import { getFilesAsCollection, initThumbnailEvents, handleFilesSettingsOptions } from './local'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
-import TEXTURE_RANGES from './textures'
-import PROVIDERS from './providers'
-import credits from './credits'
+import { TEXTURE_RANGES } from './textures'
+import { PROVIDERS } from './providers'
+import { credits } from './credits'
 
 import { userDate, daylightPeriod, needsChange } from '../../shared/time'
 import { turnRefreshButton } from '../../shared/dom'
-import onSettingsLoad from '../../utils/onsettingsload'
+import { onSettingsLoad } from '../../utils/onsettingsload'
 import { rgbToHex } from '../../shared/generic'
+import { debounce } from '../../utils/debounce'
 import { BROWSER } from '../../defaults'
-import debounce from '../../utils/debounce'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 interface BackgroundUpdate {
 	freq?: string
@@ -37,7 +37,7 @@ interface ApplyBackgroundOptions {
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
 
-export default function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
+export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
 		onSettingsLoad(() => {
 			initThumbnailEvents()
@@ -563,7 +563,7 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 		div.style.backgroundImage = `url(${src})`
 		div.style.opacity = '0'
 
-		if (image.size > 0) {
+		if (image.size) {
 			div.style.backgroundSize = image.size
 		}
 		if (image.x) {

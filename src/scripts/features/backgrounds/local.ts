@@ -2,7 +2,7 @@ import { applyBackground, removeBackgrounds } from './index'
 import { randomString } from '../../shared/generic'
 import { userDate } from '../../shared/time'
 import { isEvery } from '../../shared/assert'
-import storage from '../../storage'
+import { storage } from '../../storage'
 import * as idb from 'idb-keyval'
 
 type LocalFileData = {

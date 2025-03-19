@@ -1,5 +1,5 @@
 import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers'
-import { updateMoveElement } from '.'
+import { updateMoveElement } from './index'
 import { toggleDisabled } from '../../shared/dom'
 import { tradThis } from '../../utils/translations'
 

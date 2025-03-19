@@ -3,7 +3,7 @@ import { suntime, minutator } from '../shared/time'
 import { eventDebounce } from '../utils/debounce'
 import { stringMaxSize } from '../shared/generic'
 import { tradThis } from '../utils/translations'
-import storage from '../storage'
+import { storage } from '../storage'
 
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {

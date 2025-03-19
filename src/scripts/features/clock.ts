@@ -1,13 +1,13 @@
 import { hexColorFromSplitRange } from '../shared/dom'
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
+import { onSettingsLoad } from '../utils/onsettingsload'
 import { eventDebounce } from '../utils/debounce'
 import { stringMaxSize } from '../shared/generic'
+import { getVnCalendar } from '../dependencies/vietnamese-calendar'
 import { SYNC_DEFAULT } from '../defaults'
-import onSettingsLoad from '../utils/onsettingsload'
-import getVnCalendar from '../dependencies/vietnamese-calendar'
 import { userDate } from '../shared/time'
-import storage from '../storage'
+import { storage } from '../storage'
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -45,7 +45,7 @@ const oneInFive = Math.random() > 0.8 ? 1 : 0
 let numberWidths = [1]
 let clockInterval: number
 
-export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
+export function clock(init?: Sync.Storage, event?: ClockUpdate) {
 	if (event) {
 		clockUpdate(event)
 		return

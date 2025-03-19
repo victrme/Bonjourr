@@ -1,5 +1,5 @@
 import { getLiFromEvent, getTitleFromEvent } from './helpers'
-import { linksUpdate } from '.'
+import { linksUpdate } from './index'
 
 type Coords = {
 	x: number
@@ -41,7 +41,7 @@ let domlinktitles: NodeListOf<HTMLButtonElement>
 let domlinkgroups: NodeListOf<HTMLDivElement>
 let domlinkgroup: HTMLDivElement
 
-export default function startDrag(event: PointerEvent) {
+export function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as HTMLElement[]
 	const type = path.some(element => element?.className?.includes('link-title')) ? 'mini' : 'link'
 	const isMini = type === 'mini'

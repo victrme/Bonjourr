@@ -1,13 +1,13 @@
 import { getSelectedIds, getLink } from './helpers'
 import { togglePinGroup } from './groups'
-import quickLinks from './index'
+import { quickLinks } from './index'
 
 import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
 import { getComposedPath } from '../../shared/dom'
+import { transitioner } from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
-import transitioner from '../../utils/transitioner'
-import debounce from '../../utils/debounce'
-import storage from '../../storage'
+import { debounce } from '../../utils/debounce'
+import { storage } from '../../storage'
 
 interface EditStates {
 	group: string
@@ -40,7 +40,7 @@ let editStates: EditStates
 // Display
 //
 
-export default async function openEditDialog(event: Event) {
+export async function openEditDialog(event: Event) {
 	const path = getComposedPath(event.target)
 	const classNames = path.map(element => element.className ?? '')
 	const linkelem = path.find(el => el?.className?.includes('link') && el?.tagName === 'LI')

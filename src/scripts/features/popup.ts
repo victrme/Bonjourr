@@ -1,6 +1,6 @@
 import { getLang, tradThis } from '../utils/translations'
 import { BROWSER } from '../defaults'
-import storage from '../storage'
+import { storage } from '../storage'
 
 type PopupInit = {
 	old?: string
@@ -66,7 +66,7 @@ const REVIEW_URLS = {
 	other: 'https://bonjourr.fr/help#%EF%B8%8F-reviews',
 }
 
-export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
+export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 	if (isAnnouncement(event?.announcements)) {
 		storage.sync.set({ announcements: event?.announcements })
 		return

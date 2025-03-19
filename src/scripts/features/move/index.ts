@@ -1,3 +1,5 @@
+import { setAlign, addOverlay, removeOverlay, setGridAreas, setAllAligns, removeSelection, interfaceFade } from './dom'
+import { toggleWidget, toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets'
 import {
 	toolboxEvents,
 	alignButtons,
@@ -7,13 +9,12 @@ import {
 	spanButtons,
 	showSpanButtons,
 } from './toolbox'
-import { setAlign, addOverlay, removeOverlay, setGridAreas, setAllAligns, removeSelection, interfaceFade } from './dom'
-import toggleWidget, { toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets'
+
+import { onSettingsLoad } from '../../utils/onsettingsload'
+import { transitioner } from '../../utils/transitioner'
 import { SYNC_DEFAULT } from '../../defaults'
-import onSettingsLoad from '../../utils/onsettingsload'
-import transitioner from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 import {
 	isEditing,
@@ -48,7 +49,7 @@ type UpdateMove = {
 const dominterface = document.querySelector<HTMLElement>('#interface')
 let widget: Widgets | undefined
 
-export default function moveElements(init?: Sync.Move, events?: UpdateMove) {
+export function moveElements(init?: Sync.Move, events?: UpdateMove) {
 	if (!(init || events)) {
 		updateMoveElement({ reset: true })
 		return

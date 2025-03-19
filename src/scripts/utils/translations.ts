@@ -1,4 +1,4 @@
-import storage from '../storage'
+import { storage } from '../storage'
 
 let trns: Local.Translations | undefined
 let currentTrnsLang = 'en'

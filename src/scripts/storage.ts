@@ -1,6 +1,6 @@
 import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
-import deepEqual from './dependencies/deepequal'
-import parse from './utils/parse'
+import { deepEqual } from './dependencies/deepequal'
+import { parse } from './utils/parse'
 
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
 
@@ -31,7 +31,7 @@ interface Storage {
 	clearall: () => Promise<void>
 }
 
-const storage: Storage = {
+export const storage: Storage = {
 	sync: {
 		get: syncGet,
 		set: syncSet,

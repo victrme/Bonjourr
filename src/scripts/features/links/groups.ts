@@ -1,10 +1,11 @@
 import { getLinksInGroup } from './helpers'
-import { initblocks } from '.'
-import openEditDialog from './edit'
+import { openEditDialog } from './edit'
+import { initblocks } from './index'
+import { startDrag } from './drag'
+
+import { transitioner } from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
-import transitioner from '../../utils/transitioner'
-import startDrag from './drag'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 

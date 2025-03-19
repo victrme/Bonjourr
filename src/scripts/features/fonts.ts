@@ -1,13 +1,13 @@
 import { getLang, tradThis } from '../utils/translations'
 import { displayInterface } from '../index'
+import { onSettingsLoad } from '../utils/onsettingsload'
 import { eventDebounce } from '../utils/debounce'
-import onSettingsLoad from '../utils/onsettingsload'
+import { networkForm } from '../shared/form'
 import { SYSTEM_OS } from '../defaults'
 import { apiFetch } from '../shared/api'
 import { subsets } from '../langs'
-import networkForm from '../shared/form'
-import storage from '../storage'
-import clock from './clock'
+import { storage } from '../storage'
+import { clock } from './clock'
 
 type Font = Sync.Font
 
@@ -56,7 +56,7 @@ export const systemfont = (() => {
 	return fonts.linux
 })()
 
-export default function customFont(init?: Font, event?: CustomFontUpdate) {
+export function customFont(init?: Font, event?: CustomFontUpdate) {
 	if (event) {
 		updateCustomFont(event)
 		return

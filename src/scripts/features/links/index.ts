@@ -1,3 +1,8 @@
+import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle, moveGroups } from './groups'
+import { initBookmarkSync, syncBookmarks } from './bookmarks'
+import { openEditDialog } from './edit'
+import { folderClick } from './folders'
+import { startDrag } from './drag'
 import {
 	isElem,
 	getLiFromEvent,
@@ -7,18 +12,13 @@ import {
 	getLinksInGroup,
 	getLinksInFolder,
 } from './helpers'
-import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle, moveGroups } from './groups'
-import { initBookmarkSync, syncBookmarks } from './bookmarks'
-import { displayInterface } from '../../index'
-import displayEditDialog from './edit'
-import { folderClick } from './folders'
-import startDrag from './drag'
 
 import { randomString, stringMaxSize } from '../../shared/generic'
+import { displayInterface } from '../../index'
 import { getHTMLTemplate } from '../../shared/dom'
 import { eventDebounce } from '../../utils/debounce'
 import { tradThis } from '../../utils/translations'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 type Link = Links.Link
 type Elem = Links.Elem
@@ -100,7 +100,7 @@ const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
-export default async function quickLinks(init?: Sync, event?: LinksUpdate) {
+export async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
 		return
@@ -196,7 +196,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 				: createFolder(link, linksInFolders, data.linkstyle)
 
 			fragment.appendChild(li)
-			li.addEventListener('keyup', displayEditDialog)
+			li.addEventListener('keyup', openEditDialog)
 
 			if (!group.synced) {
 				li.addEventListener('click', selectAll)

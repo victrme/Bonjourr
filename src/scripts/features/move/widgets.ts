@@ -1,6 +1,6 @@
 import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom'
-import transitioner from '../../utils/transitioner'
-import storage from '../../storage'
+import { transitioner } from '../../utils/transitioner'
+import { storage } from '../../storage'
 import {
 	isEditing,
 	addGridWidget,
@@ -11,7 +11,7 @@ import {
 	getLayout,
 } from './helpers'
 
-export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
+export function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
 	if (!widget) {
 		return
 	}

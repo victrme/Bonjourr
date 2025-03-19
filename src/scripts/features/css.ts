@@ -1,9 +1,9 @@
+import { onSettingsLoad } from '../utils/onsettingsload'
 import { stringMaxSize } from '../shared/generic'
 import { eventDebounce } from '../utils/debounce'
-import onSettingsLoad from '../utils/onsettingsload'
 import { tradThis } from '../utils/translations'
 
-export default function customCss(init?: string, event?: { styling: string }) {
+export function customCss(init?: string, event?: { styling: string }) {
 	const stylelink = document.getElementById('styles') as HTMLStyleElement
 
 	if (event) {

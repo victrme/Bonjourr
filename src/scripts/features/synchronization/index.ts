@@ -1,9 +1,9 @@
 import { retrieveGist, sendGist, findGistId, isGistTokenValid, setGistStatus } from './gist'
 import { isDistantUrlValid, receiveFromURL } from './url'
-import onSettingsLoad from '../../utils/onsettingsload'
-import networkForm from '../../shared/form'
+import { onSettingsLoad } from '../../utils/onsettingsload'
+import { networkForm } from '../../shared/form'
 import { fadeOut } from '../../shared/dom'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 interface SyncUpdate {
 	type?: string
@@ -19,7 +19,7 @@ interface SyncUpdate {
 const gistsyncform = networkForm('f_gistsync')
 const urlsyncform = networkForm('f_urlsync')
 
-export default function synchronization(init?: Local.Storage, update?: SyncUpdate) {
+export function synchronization(init?: Local.Storage, update?: SyncUpdate) {
 	if (init) {
 		onSettingsLoad(() => {
 			toggleSyncSettingsOption(init)

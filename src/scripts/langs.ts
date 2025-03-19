@@ -1,7 +1,7 @@
 // Uses ISO 639
 // https://wikipedia.org/wiki/List_of_ISO_639_language_codes
 
-export default {
+export const langList = {
 	en: 'English',
 	fr: 'Français',
 	de: 'Deutsch',

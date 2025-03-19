@@ -1,5 +1,5 @@
 import { elements, gridStringify } from './helpers'
-import moveElements from '.'
+import { moveElements } from './index'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 

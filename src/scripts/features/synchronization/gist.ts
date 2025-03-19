@@ -1,5 +1,5 @@
-import { isStorageDefault } from '../../storage'
 import { getLang, tradThis } from '../../utils/translations'
+import { isStorageDefault } from '../../storage'
 
 interface GistItem {
 	url: string

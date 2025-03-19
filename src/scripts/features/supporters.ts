@@ -1,7 +1,7 @@
 import { getLang, tradThis } from '../utils/translations'
-import onSettingsLoad from '../utils/onsettingsload'
-import debounce from '../utils/debounce'
-import storage from '../storage'
+import { onSettingsLoad } from '../utils/onsettingsload'
+import { debounce } from '../utils/debounce'
+import { storage } from '../storage'
 
 interface SupportersApi {
 	date: string

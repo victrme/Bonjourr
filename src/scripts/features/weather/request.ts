@@ -4,7 +4,7 @@ import { handleForecastDisplay, displayWeather } from './display'
 import { tradThis, getLang } from '../../utils/translations'
 import { handleGeolOption } from './settings'
 import { suntime } from '../../shared/time'
-import storage from '../../storage'
+import { storage } from '../../storage'
 
 export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	handleForecastDisplay(data.forecast)

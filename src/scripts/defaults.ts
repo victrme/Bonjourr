@@ -1,4 +1,4 @@
-import langList from './langs'
+import { langList } from './langs'
 
 export const CURRENT_VERSION = '20.4.2'
 

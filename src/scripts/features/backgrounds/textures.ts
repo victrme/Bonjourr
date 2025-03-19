@@ -1,4 +1,9 @@
-const TEXTURE_RANGES: Record<Sync.TextureType, TextureRanges> = {
+interface TextureRanges {
+	opacity: TextureRangeInput
+	size: TextureRangeInput
+}
+
+export const TEXTURE_RANGES: Record<Sync.TextureType, TextureRanges> = {
 	grain: {
 		opacity: {
 			min: '0.02',
@@ -64,10 +69,3 @@ interface TextureRangeInput {
 	value: string
 	step: string
 }
-
-interface TextureRanges {
-	opacity: TextureRangeInput
-	size: TextureRangeInput
-}
-
-export default TEXTURE_RANGES

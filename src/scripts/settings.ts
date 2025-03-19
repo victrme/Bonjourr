@@ -1,36 +1,36 @@
-import clock from './features/clock'
-import notes from './features/notes'
-import quotes from './features/quotes'
-import weather from './features/weather/index'
-import searchbar from './features/searchbar'
-import quickLinks from './features/links'
-import linksImport from './features/links/bookmarks'
-import hideElements from './features/hide'
-import moveElements from './features/move'
-import interfacePopup from './features/popup'
-import synchronization from './features/synchronization'
-import { backgroundUpdate } from './features/backgrounds'
-import { supportersNotifications } from './features/supporters'
-import { changeGroupTitle, initGroups } from './features/links/groups'
-import customFont, { fontIsAvailableInSubset, systemfont } from './features/fonts'
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
+import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts'
+import { changeGroupTitle, initGroups } from './features/links/groups'
+import { supportersNotifications } from './features/supporters'
+import { updateLocalBackgrounds } from './features/backgrounds/local'
+import { synchronization } from './features/synchronization'
+import { backgroundUpdate } from './features/backgrounds'
+import { interfacePopup } from './features/popup'
+import { moveElements } from './features/move'
+import { hideElements } from './features/hide'
+import { linksImport } from './features/links/bookmarks'
+import { quickLinks } from './features/links'
+import { searchbar } from './features/searchbar'
+import { weather } from './features/weather/index'
+import { quotes } from './features/quotes'
+import { notes } from './features/notes'
+import { clock } from './features/clock'
 
-import storage from './storage'
-import langList from './langs'
-import parse from './utils/parse'
-import debounce from './utils/debounce'
-import filterImports from './imports'
-import getPermissions from './utils/permissions'
-import orderedStringify from './utils/orderedstringify'
-import { loadCallbacks } from './utils/onsettingsload'
-import { opacityFromHex } from './shared/generic'
-import { settingsNotifications } from './utils/notifications'
-import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
+import { getHTMLTemplate, inputThrottle, turnRefreshButton, fadeOut } from './shared/dom'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
+import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
+import { settingsNotifications } from './utils/notifications'
+import { getPermissions } from './utils/permissions'
+import { opacityFromHex } from './shared/generic'
+import { loadCallbacks } from './utils/onsettingsload'
+import { filterImports } from './imports'
+import { stringify } from './utils/stringify'
+import { debounce } from './utils/debounce'
+import { langList } from './langs'
+import { storage } from './storage'
+import { parse } from './utils/parse'
 
 import type { Langs } from '../types/langs'
-import { updateLocalBackgrounds } from './features/backgrounds/local'
-import { getHTMLTemplate, inputThrottle, turnRefreshButton, fadeOut } from './shared/dom'
 
 export async function settingsPreload() {
 	const domshowsettings = document.getElementById('show-settings')
@@ -1133,7 +1133,7 @@ async function saveImportFile() {
 	const yyyymmdd = date.toISOString().slice(0, 10)
 	const hhmmss = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
 
-	const bytes = new TextEncoder().encode(orderedStringify(data))
+	const bytes = new TextEncoder().encode(stringify(data))
 	const blob = new Blob([bytes], { type: 'application/json;charset=utf-8' })
 	const href = URL.createObjectURL(blob)
 
@@ -1231,8 +1231,10 @@ export function updateSettingsJSON(data?: Sync.Storage) {
 		const pre = document.getElementById('settings-data')
 
 		if (pre && data.about) {
+			const orderedJson = stringify(data)
+
 			data.about.browser = PLATFORM
-			pre.textContent = orderedStringify(data)
+			pre.textContent = orderedJson
 		}
 	}
 }
@@ -1257,11 +1259,11 @@ async function toggleSettingsChangesButtons(action: string) {
 	let hasChanges = false
 
 	if (action === 'input') {
-		const current = orderedStringify(data)
+		const current = stringify(data)
 		let user = ''
 
 		try {
-			user = orderedStringify(JSON.parse(textarea.value ?? '{}') as Sync.Storage)
+			user = stringify(JSON.parse(textarea.value ?? '{}') as Sync.Storage)
 		} catch (_) {
 			//
 		}
@@ -1276,7 +1278,7 @@ async function toggleSettingsChangesButtons(action: string) {
 	}
 
 	if (action === 'cancel') {
-		textarea.value = orderedStringify(data)
+		textarea.value = stringify(data)
 		hasChanges = false
 	}
 

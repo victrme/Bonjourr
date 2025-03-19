@@ -1,11 +1,11 @@
 import { hexColorFromSplitRange } from '../shared/dom'
 import { getLang, tradThis } from '../utils/translations'
 import { opacityFromHex } from '../shared/generic'
+import { onSettingsLoad } from '../utils/onsettingsload'
 import { eventDebounce } from '../utils/debounce'
-import onSettingsLoad from '../utils/onsettingsload'
 import PocketEditor from 'pocket-editor'
-import langList from '../langs'
-import storage from '../storage'
+import { langList } from '../langs'
+import { storage } from '../storage'
 
 type NotesEvent = {
 	text?: string
@@ -16,7 +16,7 @@ type NotesEvent = {
 
 const container = document.getElementById('notes_container')
 
-export default function notes(init?: Sync.Notes, event?: NotesEvent) {
+export function notes(init?: Sync.Notes, event?: NotesEvent) {
 	if (event) {
 		updateNotes(event)
 		return

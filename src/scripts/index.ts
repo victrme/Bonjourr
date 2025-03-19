@@ -1,26 +1,26 @@
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 import { supportersNotifications } from './features/supporters'
-import synchronization from './features/synchronization'
-import interfacePopup from './features/popup'
-import moveElements from './features/move'
-import hideElements from './features/hide'
-import backgrounds from './features/backgrounds'
-import customFont from './features/fonts'
-import quickLinks from './features/links'
-import searchbar from './features/searchbar'
-import customCss from './features/css'
-import weather from './features/weather/index'
-import quotes from './features/quotes'
-import notes from './features/notes'
-import clock from './features/clock'
+import { synchronization } from './features/synchronization'
+import { backgroundsInit } from './features/backgrounds/index'
+import { interfacePopup } from './features/popup'
+import { moveElements } from './features/move'
+import { hideElements } from './features/hide'
+import { customFont } from './features/fonts'
+import { quickLinks } from './features/links'
+import { searchbar } from './features/searchbar'
+import { customCss } from './features/css'
+import { weather } from './features/weather'
+import { quotes } from './features/quotes'
+import { notes } from './features/notes'
+import { clock } from './features/clock'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
 import { traduction, setTranslationCache } from './utils/translations'
 import { needsChange, userDate, suntime } from './shared/time'
 import { settingsPreload } from './settings'
-import onSettingsLoad from './utils/onsettingsload'
-import filterImports from './imports'
-import storage from './storage'
+import { onSettingsLoad } from './utils/onsettingsload'
+import { filterImports } from './imports'
+import { storage } from './storage'
 import 'clickdown'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
@@ -75,7 +75,7 @@ async function startup() {
 	moveElements(sync.move)
 	customCss(sync.css)
 	hideElements(sync.hide)
-	backgrounds(sync, local, true)
+	backgroundsInit(sync, local, true)
 	quickLinks(sync)
 	synchronization(local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
@@ -363,7 +363,7 @@ function onlineAndMobile() {
 		const needNewImage = data.background_type === 'unsplash' && frequency
 
 		if (needNewImage && data.unsplash) {
-			backgrounds(data, local)
+			backgroundsInit(data, local)
 		}
 
 		clock(data)

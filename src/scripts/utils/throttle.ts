@@ -1,4 +1,4 @@
-export default function throttle<F extends (...args: Parameters<F>) => ReturnType<F>>(callback: F, waitFor: number) {
+export function throttle<F extends (...args: Parameters<F>) => ReturnType<F>>(callback: F, waitFor: number) {
 	let timeout: ReturnType<typeof setTimeout>
 	let inThrottle: boolean
 	let lastTime: number
