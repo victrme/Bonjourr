@@ -6,7 +6,7 @@
 		"rules": {
 			"all": true,
 			"suspicious": {
-				"noConsole": "info"
+				"noConsole": "off"
 			},
 			"complexity": {
 				"noForEach": "info"
@@ -33,7 +33,18 @@
 			"quoteStyle": "single",
 			"semicolons": "asNeeded",
 			"arrowParentheses": "asNeeded"
-		}
+		},
+		"globals": [
+			"chrome",
+			"browser",
+			"Sync",
+			"Local",
+			"Backgrounds",
+			"Links",
+			"Weather",
+			"Quotes",
+			"Widgets"
+		]
 	},
 	"css": {
 		"formatter": {
