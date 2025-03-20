@@ -15,9 +15,9 @@ import { notes } from './features/notes'
 import { clock } from './features/clock'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
+import { keyboardSettingsInit, settingsInit } from './settings'
 import { traduction, setTranslationCache } from './utils/translations'
 import { needsChange, userDate, suntime } from './shared/time'
-import { settingsPreload } from './settings'
 import { onSettingsLoad } from './utils/onsettingsload'
 import { filterImports } from './imports'
 import { storage } from './storage'
@@ -36,7 +36,9 @@ try {
 	startup()
 	serviceWorker()
 	onlineAndMobile()
-} catch (_) {}
+} catch (_) {
+	// ...
+}
 
 async function startup() {
 	let { sync, local } = await storage.init()
@@ -91,7 +93,6 @@ async function startup() {
 	onInterfaceDisplay(() => {
 		document.body.classList.remove('init')
 
-		settingsPreload()
 		userActionsEvents()
 		setPotatoComputerMode()
 
@@ -106,6 +107,10 @@ async function startup() {
 			review: sync.review ?? 0,
 			announce: sync.announcements,
 		})
+
+		document.getElementById('show-settings')?.addEventListener('mouseenter', settingsInit)
+		document.getElementById('show-settings')?.addEventListener('touchstart', settingsInit)
+		document.body.addEventListener('keydown', keyboardSettingsInit)
 	})
 }
 

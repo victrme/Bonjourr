@@ -31,6 +31,10 @@ aside.see-through {
 	opacity: 0.2;
 }
 
+aside.init {
+	display: none;
+}
+
 aside.init .dropdown {
 	transition: max-height 0s;
 }

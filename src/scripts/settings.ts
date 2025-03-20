@@ -32,66 +32,40 @@ import { parse } from './utils/parse'
 
 import type { Langs } from '../types/langs'
 
-export async function settingsPreload() {
-	const domshowsettings = document.getElementById('show-settings')
-	const innerHtml = await (await fetch('settings.html')).text()
-	const outerHtml = `<aside id="settings" class="init">${innerHtml}</aside>`
-	const template = document.querySelector<HTMLTemplateElement>('#settings-template')
-
-	if (template) {
-		template.innerHTML = outerHtml
-	}
-
-	// detects mobile devices with a touch screen, excludes laptops with one
-	const isTouchOnly = window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(pointer: fine)').matches
-
-	if (isTouchOnly) {
-		settingsInit()
-		return
-	}
-
-	domshowsettings?.addEventListener('mouseenter', triggerSettingsInit)
-	domshowsettings?.addEventListener('pointerdown', triggerSettingsInit)
-	document.body.addEventListener('keydown', triggerSettingsInit)
-
-	function triggerSettingsInit(event: Event) {
-		const keyboard = (event as KeyboardEvent)?.code === 'Escape'
-		const pointer = event?.type.includes('key') === false
-
-		if (keyboard || pointer) {
-			domshowsettings?.removeEventListener('mouseenter', triggerSettingsInit)
-			domshowsettings?.removeEventListener('pointerdown', triggerSettingsInit)
-			document.body.removeEventListener('keydown', triggerSettingsInit)
-			settingsInit()
-		}
-	}
-}
-
 export async function settingsInit() {
-	if (document.getElementById('settings')) {
-		return
-	}
-
 	const sync = await storage.sync.get()
 	const local = await storage.local.get()
-	const settingsDom = getHTMLTemplate<HTMLElement>('settings-template', '#settings')
 
-	document.body.appendChild(settingsDom)
+	const domshowsettings = document.getElementById('show-settings')
+	const domsettings = document.getElementById('settings')
 
+	traduction(domsettings, sync.lang)
+	showall(sync.showall, false)
+	settingsDrawerBar()
 	translateAriaLabels()
 	translatePlaceholders()
-	traduction(settingsDom, sync.lang)
-	showall(sync.showall, false)
-	initOptionsValues(sync, local)
 	initOptionsEvents()
+	initOptionsValues(sync, local)
 	updateSettingsJson(sync)
 	updateSettingsEvent()
-	settingsDrawerBar()
 	settingsFooter()
 	loadCallbacks()
 
 	document.dispatchEvent(new Event('settings'))
 	document.addEventListener('toggle-settings', settingsToggle)
+
+	domsettings?.classList.remove('init')
+	domsettings?.removeAttribute('style')
+
+	domshowsettings?.removeEventListener('mouseenter', settingsInit)
+	domshowsettings?.removeEventListener('touchstart', settingsInit)
+	document.body.removeEventListener('keydown', keyboardSettingsInit)
+}
+
+export function keyboardSettingsInit(event: KeyboardEvent) {
+	if (event.code === 'Escape') {
+		settingsInit()
+	}
 }
 
 function settingsToggle() {
@@ -101,7 +75,6 @@ function settingsToggle() {
 	const domedit = document.getElementById('editlink')
 	const isClosed = domsettings?.classList.contains('shown') === false
 
-	domsettings?.classList.toggle('init', false)
 	domsettings?.classList.toggle('shown', isClosed)
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
@@ -1026,7 +999,6 @@ function settingsDrawerBar() {
 function drawerDragEvents() {
 	const mobileDragZone = document.getElementById('mobile-drag-zone') as HTMLElement
 	const settingsDom = document.getElementById('settings') as HTMLElement
-	const dragZoneHeight = mobileDragZone.getBoundingClientRect().height
 	let settingsVh = -75
 	let firstPos = 0
 	let startTouchY = 0
@@ -1081,7 +1053,7 @@ function drawerDragEvents() {
 
 		// element is below max height: move
 		if (clientY > 60) {
-			const touchPosition = clientY - dragZoneHeight / 2
+			const touchPosition = clientY - 25
 			const inverseHeight = 100 - (touchPosition / window.innerHeight) * 100
 
 			settingsVh = +inverseHeight.toFixed(2)

@@ -140,6 +140,7 @@ function addDirectories() {
 
 function html() {
 	let data = readFileSync(paths.shared.htmls.index[0], 'utf8')
+	let settings = readFileSync(paths.shared.htmls.settings[0], 'utf8')
 
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
@@ -150,8 +151,9 @@ function html() {
 	if (PLATFORM_EXT) data = data.replace('<!-- webext-storage -->', storage)
 	if (PLATFORM_EDGE) data = data.replace('favicon.ico', 'monochrome.png')
 
+	data = data.replace('<!-- settings -->', settings)
+
 	writeFile(paths.shared.htmls.index[1], data)
-	copyFile(...paths.shared.htmls.settings)
 }
 
 function styles() {

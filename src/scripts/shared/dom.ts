@@ -27,6 +27,7 @@ export function getSplitRangeData(id: string): { range?: string; button?: string
 export function getHTMLTemplate<T>(id: string, selector: string): T {
 	const template = document.getElementById(id) as HTMLTemplateElement
 	const clone = template?.content.cloneNode(true) as Element
+
 	return clone?.querySelector(selector) as T
 }
 
