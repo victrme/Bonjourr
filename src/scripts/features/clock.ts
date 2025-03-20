@@ -310,13 +310,13 @@ function digital(wrapper: HTMLElement, clock: Sync.Clock) {
 	if (clock.ampmlabel) {
 		domclock.dataset.ampmLabel = ''
 	} else {
-		domclock.dataset.ampmLabel = undefined
+		delete domclock.dataset.ampmLabel
 	}
 
 	if (clock.ampm) {
 		domclock.dataset.ampm = date.getHours() < 12 ? 'am' : 'pm'
 	} else {
-		domclock.dataset.ampm = undefined
+		delete domclock.dataset.ampm
 	}
 
 	if (clock.ampm && h === 0) {

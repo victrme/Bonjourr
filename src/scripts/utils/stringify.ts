@@ -1,13 +1,22 @@
 import { SYNC_DEFAULT } from '../defaults'
 import { bundleLinks } from './bundlelinks'
 
-// https://stackoverflow.com/a/53593328
 export function stringify(data: Sync.Storage) {
-	const linkids = bundleLinks(data).map(link => link._id)
-	const keys = flattenKeys(SYNC_DEFAULT).concat(linkids)
-	const compare = (a = '', b = '') => keys.indexOf(a) - keys.indexOf(b)
+	const defaultSyncData = structuredClone(SYNC_DEFAULT)
 
-	return JSON.stringify(data, keys.sort(compare), 2)
+	// 1. Add links to defaults
+	for (const link of bundleLinks(data)) {
+		defaultSyncData[link._id] = link
+	}
+
+	// 2. Recursively get all keys in storage
+	const keys = flattenKeys(defaultSyncData)
+
+	// 3. Stringify, ordered by the "keys" array
+	const compare = (a = '', b = '') => keys.indexOf(a) - keys.indexOf(b)
+	const string = JSON.stringify(data, keys.sort(compare), 2)
+
+	return string
 }
 
 function flattenKeys(obj: object): string[] {
