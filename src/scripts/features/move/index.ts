@@ -141,37 +141,37 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	}
 
 	// step 1: Find elements affected by grid change
-	positions.forEach(([col, row]) => {
+	for (const [col, row] of positions) {
 		const newposition = grid[row + y][col + x]
 
 		if (newposition !== '.') {
 			affectedIds.push(newposition as Widgets)
 		}
-	})
+	}
 
 	// step 2: remove conflicting fillings on affected elements
-	affectedIds.forEach(id => {
+	for (const id of affectedIds) {
 		if (gridFind(grid, id).length > 1) {
 			grid = spansInGridArea(grid, id, { remove: true })
 		}
-	})
+	}
 
 	// step 3: replace all active position with affected
-	positions.forEach(([col, row]) => {
+	for (const [col, row] of positions) {
 		const newRow = Math.min(Math.max(row + y, 0), grid.length - 1)
 		const newCol = Math.min(Math.max(col + x, 0), grid[0].length - 1)
 
 		const tempItem = grid[row][col]
 		grid[row][col] = grid[newRow][newCol]
 		grid[newRow][newCol] = tempItem
-	})
+	}
 
 	// step 4: remove empty lines
-	grid.forEach((_, i) => {
+	for (let i = 0; i < grid.length; i++) {
 		if (isRowEmpty(grid, i)) {
 			grid.splice(i, 1)
 		}
-	})
+	}
 
 	// step 5: profit ??????????????
 	layout.grid = grid
@@ -268,9 +268,9 @@ function layoutReset(data: Sync.Storage) {
 		return
 	}
 
-	enabledWidgets.forEach(id => {
+	for (const id of enabledWidgets) {
 		grid = addGridWidget(grid, id, data.move.selection)
-	})
+	}
 
 	data.move.layouts[data.move.selection] = {
 		grid: gridParse(grid),
@@ -328,7 +328,9 @@ function toggleMoveStatus(data: Sync.Storage, force?: boolean) {
 		bEditmove.textContent = tradThis('Close')
 		dominterface?.classList.add('move-edit')
 		mover.classList.remove('hidden')
-		getWidgetsStorage(data).forEach(id => addOverlay(id))
+		for (const id of getWidgetsStorage(data)) {
+			addOverlay(id)
+		}
 	}
 
 	mover?.classList.remove('active')

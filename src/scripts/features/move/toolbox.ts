@@ -18,27 +18,27 @@ export function toolboxEvents() {
 	const resetBtn = document.querySelector<HTMLElement>('#b_resetlayout')
 	const closeBtn = document.querySelector<HTMLElement>('#close-mover')
 
-	elementEntries.forEach(([key, element]) => {
+	for (const [key, element] of elementEntries) {
 		element?.onclickdown(() => updateMoveElement({ select: key }), { propagate: false })
-	})
+	}
 
-	moverBtns.forEach(button => {
+	for (const button of moverBtns) {
 		button.onclickdown(() => {
 			updateMoveElement({ grid: { x: button.dataset.col, y: button.dataset.row } })
 		})
-	})
+	}
 
-	boxAlignBtns.forEach(button => {
+	for (const button of boxAlignBtns) {
 		button.onclickdown(() => {
 			updateMoveElement({ box: button.dataset.align })
 		})
-	})
+	}
 
-	textAlignBtns.forEach(button => {
+	for (const button of textAlignBtns) {
 		button.onclickdown(() => {
 			updateMoveElement({ text: button.dataset.align })
 		})
-	})
+	}
 
 	spanColsBtn?.onclickdown(() => updateMoveElement({ span: 'col' }))
 	spanRowsBtn?.onclickdown(() => updateMoveElement({ span: 'row' }))
@@ -95,9 +95,9 @@ export function toolboxEvents() {
 }
 
 export function layoutButtons(selection: Sync.MoveSelection) {
-	document.querySelectorAll<HTMLButtonElement>('#grid-layout button').forEach(button => {
+	for (const button of document.querySelectorAll<HTMLButtonElement>('#grid-layout button')) {
 		button.classList.toggle('selected', button.dataset.layout === selection)
-	})
+	}
 }
 
 export function gridButtons(id: Widgets) {
@@ -118,7 +118,7 @@ export function gridButtons(id: Widgets) {
 	const rightLimit = grid[0].length - 1
 
 	// Detect if element is on array limits
-	positions.forEach(([col, row]) => {
+	for (const [col, row] of positions) {
 		if (row === 0) {
 			top = true
 		}
@@ -139,10 +139,10 @@ export function gridButtons(id: Widgets) {
 				bottom = true
 			}
 		}
-	})
+	}
 
 	// link button to correct limit, apply disable attr
-	document.querySelectorAll<HTMLButtonElement>('#grid-mover button').forEach(button => {
+	for (const button of document.querySelectorAll<HTMLButtonElement>('#grid-mover button')) {
 		const c = Number.parseInt(button.dataset.col || '0')
 		const r = Number.parseInt(button.dataset.row || '0')
 		let limit = false
@@ -161,7 +161,7 @@ export function gridButtons(id: Widgets) {
 		}
 
 		toggleDisabled(button, limit)
-	})
+	}
 }
 
 export function spanButtons(id: Widgets) {
@@ -197,8 +197,12 @@ export function alignButtons(align?: Sync.MoveAlign) {
 	const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 	const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
 
-	boxBtns.forEach(b => b.classList.toggle('selected', b.dataset.align === (box || 'center')))
-	textBtns.forEach(b => b.classList.toggle('selected', b.dataset.align === (text || 'center')))
+	for (const b of boxBtns) {
+		b.classList.toggle('selected', b.dataset.align === (box || 'center'))
+	}
+	for (const b of textBtns) {
+		b.classList.toggle('selected', b.dataset.align === (text || 'center'))
+	}
 }
 
 export function resetButton(): boolean {

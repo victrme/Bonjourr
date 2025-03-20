@@ -91,9 +91,7 @@ export function gridStringify(grid: Grid) {
 	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`)
 
 	// 1
-	grid.forEach((row: string[]) => {
-		areas += `'${itemListToString(row)}' `
-	})
+	areas = grid.map(row => `'${itemListToString(row)}'`).join(' ')
 
 	return areas.trimEnd()
 }
@@ -150,7 +148,7 @@ export function isRowEmpty(grid: Grid, index: number) {
 	const row = grid[index]
 	let empty = true
 
-	row.forEach(cell => {
+	row.some(cell => {
 		if (cell !== '.' && getSpanDirection(grid, cell) !== 'columns') {
 			empty = false
 		}

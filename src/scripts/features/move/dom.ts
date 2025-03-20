@@ -48,9 +48,13 @@ export function addOverlay(id: Widgets) {
 }
 
 export function removeOverlay(id?: Widgets) {
-	id
-		? document.querySelector(`#move-overlay-${id}`)?.remove()
-		: document.querySelectorAll('.move-overlay').forEach(d => d.remove())
+	if (id) {
+		document.querySelector(`#move-overlay-${id}`)?.remove()
+	} else {
+		for (const overlay of document.querySelectorAll('.move-overlay')) {
+			overlay.remove()
+		}
+	}
 }
 
 export function removeSelection() {
@@ -59,10 +63,10 @@ export function removeSelection() {
 		'.move-overlay, #grid-mover button, .grid-spanner, #element-mover button',
 	)
 
-	elements.forEach(elem => {
+	for (const elem of elements) {
 		elem.classList.remove('selected')
 		elem.removeAttribute('disabled')
-	})
+	}
 
 	toolbox?.classList.remove('active')
 }

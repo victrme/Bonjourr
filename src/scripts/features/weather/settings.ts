@@ -180,8 +180,11 @@ function updateSuggestions(updateEvent: Event) {
 }
 
 function removeLocationSuggestions() {
-	const dlCityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
-	dlCityfound?.childNodes.forEach(node => node.remove())
+	const datalist = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+	const nodelist = datalist?.children ?? []
+	for (const node of nodelist) {
+		node.remove()
+	}
 }
 
 async function fillLocationSuggestions() {
