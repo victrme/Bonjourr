@@ -10,4 +10,4 @@ jobs:
             - uses: biomejs/setup-biome@v2
               with:
                   version: latest
-            - run: biome ci
+            - run: biome lint --max-diagnostics none

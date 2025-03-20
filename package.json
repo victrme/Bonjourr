@@ -21,7 +21,8 @@
 		"online": "node ./tasks/build.js online dev",
 		"docker": "node ./tasks/build.js online prod",
 		"translate": "node ./tasks/translate.js",
-		"check": "biome check --write --unsafe"
+		"lint": "biome lint --diagnostic-level error --max-diagnostics none",
+		"lint:fix": "biome check --write --unsafe"
 	},
 	"dependencies": {
 		"@victr/deepmerge": "^1.3.2",
