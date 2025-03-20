@@ -29,7 +29,8 @@ async function translateFile(lang) {
 	try {
 		langDict = JSON.parse(translations)
 	} catch (_) {
-		return console.log('Cannot translate ' + lang)
+		console.error(`Cannot translate ${lang}`)
+		return
 	}
 
 	// Remove keys not found in "english" translation file
@@ -46,7 +47,7 @@ async function translateFile(lang) {
 	const missingKeys = Object.keys(englishDict).filter(key => newDict[key] === undefined)
 
 	if (missingKeys.length > 0) {
-		const message = lang + '\n' + missingKeys.join('\n')
+		const message = `${lang}\n${missingKeys.join('\n')}`
 		const translations = await claudeTranslation(message)
 
 		for (const key of missingKeys) {
@@ -60,8 +61,8 @@ async function translateFile(lang) {
 	const enKeys = [...Object.keys(englishDict)]
 	const sortOrder = (a, b) => enKeys.indexOf(a) - enKeys.indexOf(b)
 
-	JSON.stringify(newDict, (key, value) => {
-		return keylist.add(key), value
+	JSON.stringify(newDict, key => {
+		return keylist.add(key)
 	})
 
 	const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
@@ -69,8 +70,8 @@ async function translateFile(lang) {
 	// Write to file
 	writeFileSync(`./_locales/${lang}/translations.json`, stringified)
 
-	// Log
-	console.log(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
+	// Info
+	console.info(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
 }
 
 /**

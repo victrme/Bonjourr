@@ -2,7 +2,7 @@
 	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
 	"linter": {
 		"enabled": true,
-		"include": ["src"],
+		"include": ["src", "tasks"],
 		"rules": {
 			"all": true,
 			"suspicious": {
@@ -14,7 +14,8 @@
 			},
 			"style": {
 				"noNamespace": "off",
-				"useNamingConvention": "off"
+				"useNamingConvention": "off",
+				"useExplicitLengthCheck": "off"
 			}
 		}
 	},

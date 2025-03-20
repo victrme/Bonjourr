@@ -617,20 +617,18 @@ function moveToFolder({ target, source }: MoveToFolder, data: Sync): Sync {
 
 function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: Sync): Sync {
 	// Get the current links in the target group to determine the next order
-	const linksInGroup = getLinksInGroup(data, group);
-	const maxOrder = linksInGroup.length > 0 
-		? Math.max(...linksInGroup.map(link => link.order))
-		: -1;
+	const linksInGroup = getLinksInGroup(data, group)
+	const maxOrder = linksInGroup.length > 0 ? Math.max(...linksInGroup.map(link => link.order)) : -1
 
 	// Update each link's parent and order
 	ids.forEach((id, index) => {
-		(data[id] as Link).parent = group;
-		(data[id] as Link).order = maxOrder + index + 1;
-	});
+		;(data[id] as Link).parent = group
+		;(data[id] as Link).order = maxOrder + index + 1
+	})
 
-	const correctdata = correctLinksOrder(data);
-	initblocks(correctdata);
-	return correctdata;
+	const correctdata = correctLinksOrder(data)
+	initblocks(correctdata)
+	return correctdata
 }
 
 function deleteLinks(ids: string[], data: Sync): Sync {

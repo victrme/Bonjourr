@@ -1,4 +1,4 @@
-import fs, { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import fs, { mkdirSync, readdirSync, readFileSync } from 'node:fs'
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import { extname } from 'node:path'
 import { exec } from 'node:child_process'
@@ -9,9 +9,9 @@ import esbuild from 'esbuild'
 const args = argv.slice(2)
 const platform = args[0]
 const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
-const PLATFORM_FIREFOX = platform === 'firefox'
-const PLATFORM_CHROME = platform === 'chrome'
-const PLATFORM_SAFARI = platform === 'safari'
+const _PLATFORM_FIREFOX = platform === 'firefox'
+const _PLATFORM_CHROME = platform === 'chrome'
+const _PLATFORM_SAFARI = platform === 'safari'
 const PLATFORM_EDGE = platform === 'edge'
 const PLATFORM_ONLINE = platform === 'online'
 const PLATFORM_EXT = !PLATFORM_ONLINE
@@ -83,11 +83,11 @@ if (ENV_PROD && platform === undefined) {
 		fs.rmSync('./release/', { recursive: true })
 	}
 
-	exec('biome lint', (err, _stdout, stderr) => {
+	exec('biome lint', (err, _stdout, _stderr) => {
 		if (!err) {
 			for (const platform of PLATFORMS) {
-				exec(`node ./tasks/build.js ${platform} prod`, (error, stdout, _) => {
-					error ? console.error(error) : console.log(`${stdout.replace('\n', '')} <- ${platform}`)
+				exec(`node ./tasks/build.js ${platform} prod`, (error, _stdout, _) => {
+					error ? console.error(error) : ''
 				})
 			}
 		}
@@ -109,16 +109,26 @@ function builder() {
 }
 
 function watcher() {
-	watchTasks('_locales', filename => {
+	watchTasks('_locales', _filename => {
 		locales()
 	})
 
 	watchTasks('src', filename => {
-		if (filename.includes('.html')) html()
-		if (filename.includes('styles/')) styles()
-		if (filename.includes('assets/')) assets()
-		if (filename.includes('scripts/')) scripts()
-		if (filename.includes('manifests/')) manifests()
+		if (filename.includes('.html')) {
+			html()
+		}
+		if (filename.includes('styles/')) {
+			styles()
+		}
+		if (filename.includes('assets/')) {
+			assets()
+		}
+		if (filename.includes('scripts/')) {
+			scripts()
+		}
+		if (filename.includes('manifests/')) {
+			manifests()
+		}
 	})
 }
 
@@ -127,7 +137,7 @@ function addDirectories() {
 		if (readdirSync('release')?.includes(platform)) {
 			return
 		}
-	} catch (error) {
+	} catch (_) {
 		console.error('First build')
 	}
 
@@ -140,16 +150,24 @@ function addDirectories() {
 
 function html() {
 	let data = readFileSync(paths.shared.htmls.index[0], 'utf8')
-	let settings = readFileSync(paths.shared.htmls.settings[0], 'utf8')
+	const settings = readFileSync(paths.shared.htmls.settings[0], 'utf8')
 
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
 	const storage = '<script src="src/scripts/webext-storage.js"></script>'
 
-	if (PLATFORM_ONLINE) data = data.replace('<!-- icon -->', icon)
-	if (PLATFORM_ONLINE) data = data.replace('<!-- manifest -->', manifest)
-	if (PLATFORM_EXT) data = data.replace('<!-- webext-storage -->', storage)
-	if (PLATFORM_EDGE) data = data.replace('favicon.ico', 'monochrome.png')
+	if (PLATFORM_ONLINE) {
+		data = data.replace('<!-- icon -->', icon)
+	}
+	if (PLATFORM_ONLINE) {
+		data = data.replace('<!-- manifest -->', manifest)
+	}
+	if (PLATFORM_EXT) {
+		data = data.replace('<!-- webext-storage -->', storage)
+	}
+	if (PLATFORM_EDGE) {
+		data = data.replace('favicon.ico', 'monochrome.png')
+	}
 
 	data = data.replace('<!-- settings -->', settings)
 
@@ -172,7 +190,7 @@ function styles() {
 		})
 	} catch (_) {
 		if (ENV_PROD) {
-			throw ''
+			throw new Error('?')
 		}
 
 		return
@@ -197,15 +215,21 @@ function scripts() {
 		})
 	} catch (_) {
 		if (ENV_PROD) {
-			throw ''
+			throw new Error('?')
 		}
 
 		return
 	}
 
-	if (PLATFORM_ONLINE) copyFile(...paths.online.serviceworker)
-	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.serviceworker)
-	if (PLATFORM_EXT) copyFile(...paths.extension.scripts.storage)
+	if (PLATFORM_ONLINE) {
+		copyFile(...paths.online.serviceworker)
+	}
+	if (PLATFORM_EXT) {
+		copyFile(...paths.extension.scripts.serviceworker)
+	}
+	if (PLATFORM_EXT) {
+		copyFile(...paths.extension.scripts.storage)
+	}
 }
 
 function assets() {
@@ -216,15 +240,27 @@ function assets() {
 	copyFile(...paths.shared.assets.favicons[128])
 	copyFile(...paths.shared.assets.favicons[512])
 
-	if (PLATFORM_ONLINE) copyDir(...paths.online.screenshots)
-	if (PLATFORM_ONLINE) copyFile(...paths.online.icon)
-	if (PLATFORM_EDGE) copyFile(...paths.edge.favicon)
-	if (!PLATFORM_EDGE) copyFile(...paths.shared.assets.favicons.ico)
+	if (PLATFORM_ONLINE) {
+		copyDir(...paths.online.screenshots)
+	}
+	if (PLATFORM_ONLINE) {
+		copyFile(...paths.online.icon)
+	}
+	if (PLATFORM_EDGE) {
+		copyFile(...paths.edge.favicon)
+	}
+	if (!PLATFORM_EDGE) {
+		copyFile(...paths.shared.assets.favicons.ico)
+	}
 }
 
 function manifests() {
-	if (PLATFORM_ONLINE) copyFile(...paths.online.manifest)
-	if (PLATFORM_EXT) copyFile(...paths.extension.manifest)
+	if (PLATFORM_ONLINE) {
+		copyFile(...paths.online.manifest)
+	}
+	if (PLATFORM_EXT) {
+		copyFile(...paths.extension.manifest)
+	}
 }
 
 function locales() {
@@ -275,7 +311,7 @@ function liveServer() {
 	}
 
 	server.listen(PORT, () => {
-		console.log(`Live server: http://127.0.0.1:${PORT}`)
+		console.info(`Live server: http://127.0.0.1:${PORT}`)
 	})
 
 	server.on('request', (req, res) => {

@@ -134,7 +134,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_moreinfo', data.weather?.moreinfo || 'none')
 	setInput('i_provider', data.weather?.provider ?? '')
 	setInput('i_weight', data.font?.weight || '300')
-	setInput('i_size', data.font?.size || (IS_MOBILE ? 11 : 14))
+	setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
 

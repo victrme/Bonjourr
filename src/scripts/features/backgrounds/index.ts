@@ -563,7 +563,7 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 		div.style.backgroundImage = `url(${src})`
 		div.style.opacity = '0'
 
-		if (image.size) {
+		if (image.size > 0) {
 			div.style.backgroundSize = image.size
 		}
 		if (image.x) {
