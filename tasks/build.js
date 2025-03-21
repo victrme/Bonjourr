@@ -1,4 +1,4 @@
-import fs, { mkdirSync, readdirSync, readFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, existsSync, rmSync, access, constants } from 'node:fs'
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import { extname } from 'node:path'
 import { exec } from 'node:child_process'
@@ -9,11 +9,8 @@ import esbuild from 'esbuild'
 const args = argv.slice(2)
 const platform = args[0]
 const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
-const _PLATFORM_FIREFOX = platform === 'firefox'
-const _PLATFORM_CHROME = platform === 'chrome'
-const _PLATFORM_SAFARI = platform === 'safari'
-const PLATFORM_EDGE = platform === 'edge'
 const PLATFORM_ONLINE = platform === 'online'
+const PLATFORM_EDGE = platform === 'edge'
 const PLATFORM_EXT = !PLATFORM_ONLINE
 const env = args[1] ?? 'prod'
 const ENV_DEV = env === 'dev'
@@ -79,8 +76,8 @@ if (ENV_PROD && PLATFORMS.includes(platform)) {
 }
 
 if (ENV_PROD && platform === undefined) {
-	if (fs.existsSync('./release')) {
-		fs.rmSync('./release/', { recursive: true })
+	if (existsSync('./release')) {
+		rmSync('./release/', { recursive: true })
 	}
 
 	exec('biome lint', (err, _stdout, _stderr) => {
@@ -318,14 +315,14 @@ function liveServer() {
 		const path = `release/online/${req.url === '/' ? 'index.html' : req.url}`
 		const filePath = new URL(path, import.meta.url)
 
-		fs.access(filePath, fs.constants.F_OK, err => {
+		access(filePath, constants.F_OK, err => {
 			if (err) {
 				res.writeHead(404, { 'Content-Type': 'text/plain' })
 				res.end('Not Found')
 				return
 			}
 
-			fs.readFile(filePath, (err, data) => {
+			readFile(filePath, (err, data) => {
 				if (err) {
 					res.writeHead(500, { 'Content-Type': 'text/html' })
 					res.end('<h1>500 Internal Server Error</h1>')
