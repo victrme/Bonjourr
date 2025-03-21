@@ -32,40 +32,69 @@ import { parse } from './utils/parse'
 
 import type { Langs } from '../types/langs'
 
-export async function settingsInit() {
-	const sync = await storage.sync.get()
-	const local = await storage.local.get()
+// Initialization
 
-	const domshowsettings = document.getElementById('show-settings')
-	const domsettings = document.getElementById('settings')
+let settingsInitSync: Sync.Storage
+let settingsInitLocal: Local.Storage
 
-	traduction(domsettings, sync.lang)
-	showall(sync.showall, false)
-	settingsDrawerBar()
-	translateAriaLabels()
-	translatePlaceholders()
-	initOptionsEvents()
-	initOptionsValues(sync, local)
-	updateSettingsJson(sync)
-	updateSettingsEvent()
-	settingsFooter()
-	loadCallbacks()
+export function settingsInit(sync: Sync.Storage, local: Local.Storage) {
+	const showsettings = document.getElementById('show-settings')
 
-	document.dispatchEvent(new Event('settings'))
-	document.addEventListener('toggle-settings', settingsToggle)
+	settingsInitSync = sync
+	settingsInitLocal = local
 
-	domsettings?.classList.remove('init')
-	domsettings?.removeAttribute('style')
-
-	domshowsettings?.removeEventListener('mouseenter', settingsInit)
-	domshowsettings?.removeEventListener('touchstart', settingsInit)
-	document.body.removeEventListener('keydown', keyboardSettingsInit)
+	document.body?.addEventListener('keydown', settingsInitEvent)
+	showsettings?.addEventListener('pointerdown', settingsInitEvent)
 }
 
-export function keyboardSettingsInit(event: KeyboardEvent) {
-	if (event.code === 'Escape') {
-		settingsInit()
+function settingsInitEvent(event: Event) {
+	const showsettings = document.getElementById('show-settings')
+	const settings = document.getElementById('settings')
+
+	// 1. When to load settings
+
+	const settingsAreHidden = settings?.classList.contains('hidden')
+	const isLeftClick = (event as PointerEvent)?.button === 0
+	const isEscape = (event as KeyboardEvent)?.code === 'Escape'
+	const canOpenSettings = settingsAreHidden && (isEscape || isLeftClick)
+
+	if (!canOpenSettings) {
+		return
 	}
+
+	// 2. To apply now
+
+	const local = settingsInitLocal
+	const sync = settingsInitSync
+
+	settings?.removeAttribute('style')
+	settings?.classList.remove('hidden')
+	document.dispatchEvent(new Event('settings'))
+	document.addEventListener('toggle-settings', settingsToggle)
+	document.body?.removeEventListener('keydown', settingsInitEvent)
+	showsettings?.removeEventListener('pointerdown', settingsInitEvent)
+
+	showall(sync.showall, false)
+	traduction(settings, sync.lang)
+	translatePlaceholders()
+	initOptionsValues(sync, local)
+	initOptionsEvents()
+	settingsFooter()
+
+	// 3. Can be deferred
+
+	setTimeout(() => {
+		initOptionsSelects()
+		updateSettingsJson(sync)
+		updateSettingsEvent()
+		translateAriaLabels()
+		settingsDrawerBar()
+		loadCallbacks()
+	}, 200)
+
+	setTimeout(() => {
+		settings?.classList.remove('init')
+	}, 600)
 }
 
 function settingsToggle() {
@@ -172,9 +201,6 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
 	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 
-	// Input translation
-	translatePlaceholders()
-
 	// Change edit tips on mobile
 	if (IS_MOBILE) {
 		const tooltiptext = domsettings.querySelector('.tooltiptext .instructions')
@@ -247,19 +273,6 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 			input.addEventListener('input', () => {
 				form.classList.toggle('valid', form.checkValidity())
 			})
-		}
-	}
-
-	// Add massive timezones to <select>
-	const timezoneSelectsQuery = 'select[name="worldclock-timezone"], #i_timezone'
-	const timezoneSelects = document.querySelectorAll<HTMLSelectElement>(timezoneSelectsQuery)
-
-	for (const select of timezoneSelects) {
-		const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
-		const optgroups = template.querySelectorAll('optgroup')
-
-		for (const group of optgroups) {
-			select.appendChild(group)
 		}
 	}
 
@@ -891,6 +904,22 @@ function initOptionsEvents() {
 	}
 }
 
+function initOptionsSelects() {
+	// Add massive timezones to <select>
+	const timezoneSelectsQuery = 'select[name="worldclock-timezone"], #i_timezone'
+	const timezoneSelects = document.querySelectorAll<HTMLSelectElement>(timezoneSelectsQuery)
+	const timezoneTemplate = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
+
+	for (const select of timezoneSelects) {
+		const template = timezoneTemplate.cloneNode(true) as HTMLTemplateElement
+		const optgroups = template.querySelectorAll('optgroup')
+
+		for (const group of optgroups) {
+			select.appendChild(group)
+		}
+	}
+}
+
 function translatePlaceholders() {
 	const cases = [
 		['i_title', 'Name'],
@@ -1110,7 +1139,9 @@ async function copySettings() {
 				copybtn.textContent = tradThis('Copy')
 			}, 1000)
 		}
-	} catch (_error) {}
+	} catch (_error) {
+		// ...
+	}
 }
 
 async function saveImportFile() {

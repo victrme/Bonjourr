@@ -15,11 +15,11 @@ import { notes } from './features/notes'
 import { clock } from './features/clock'
 
 import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { keyboardSettingsInit, settingsInit } from './settings'
 import { traduction, setTranslationCache } from './utils/translations'
 import { needsChange, userDate, suntime } from './shared/time'
 import { onSettingsLoad } from './utils/onsettingsload'
 import { filterImports } from './imports'
+import { settingsInit } from './settings'
 import { storage } from './storage'
 import 'clickdown'
 
@@ -80,6 +80,7 @@ async function startup() {
 	backgroundsInit(sync, local, true)
 	quickLinks(sync)
 	synchronization(local)
+	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
@@ -107,10 +108,6 @@ async function startup() {
 			review: sync.review ?? 0,
 			announce: sync.announcements,
 		})
-
-		document.getElementById('show-settings')?.addEventListener('mouseenter', settingsInit)
-		document.getElementById('show-settings')?.addEventListener('touchstart', settingsInit)
-		document.body.addEventListener('keydown', keyboardSettingsInit)
 	})
 }
 
