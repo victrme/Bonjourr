@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync, readFileSync, existsSync, rmSync, access, constants } from 'node:fs'
+import { mkdirSync, readdirSync, readFile, readFileSync, existsSync, rmSync, access, constants } from 'node:fs'
 import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
 import { extname } from 'node:path'
 import { exec } from 'node:child_process'
@@ -312,7 +312,7 @@ function liveServer() {
 	})
 
 	server.on('request', (req, res) => {
-		const path = `release/online/${req.url === '/' ? 'index.html' : req.url}`
+		const path = `../release/online/${req.url === '/' ? 'index.html' : req.url}`
 		const filePath = new URL(path, import.meta.url)
 
 		access(filePath, constants.F_OK, err => {
@@ -325,7 +325,7 @@ function liveServer() {
 			readFile(filePath, (err, data) => {
 				if (err) {
 					res.writeHead(500, { 'Content-Type': 'text/html' })
-					res.end('<h1>500 Internal Server Error</h1>')
+					res.end('Internal Server Error')
 					return
 				}
 
