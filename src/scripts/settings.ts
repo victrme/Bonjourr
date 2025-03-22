@@ -1,9 +1,9 @@
 import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts'
+import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds'
 import { changeGroupTitle, initGroups } from './features/links/groups'
 import { supportersNotifications } from './features/supporters'
 import { updateLocalBackgrounds } from './features/backgrounds/local'
-import { backgroundUpdate } from './features/backgrounds'
 import { synchronization } from './features/synchronization'
 import { interfacePopup } from './features/popup'
 import { moveElements } from './features/move'
@@ -77,6 +77,7 @@ function settingsInitEvent(event: Event) {
 	showall(sync.showall, false)
 	traduction(settings, sync.lang)
 	translatePlaceholders()
+	initBackgroundOptions(sync, local)
 	initOptionsValues(sync, local)
 	initOptionsEvents()
 	settingsFooter()
@@ -90,11 +91,9 @@ function settingsInitEvent(event: Event) {
 		translateAriaLabels()
 		settingsDrawerBar()
 		loadCallbacks()
-	}, 200)
 
-	setTimeout(() => {
 		settings?.classList.remove('init')
-	}, 600)
+	}, 500)
 }
 
 function settingsToggle() {

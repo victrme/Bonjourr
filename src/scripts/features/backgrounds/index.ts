@@ -28,32 +28,26 @@ interface BackgroundUpdate {
 	textureopacity?: string
 }
 
-interface ApplyBackgroundOptions {
-	image?: Backgrounds.Image
-	video?: Backgrounds.Video
-	solid?: string
+interface ApplyOptions {
+	full?: true
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
 
-export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
-	if (init) {
-		onSettingsLoad(() => {
-			initThumbnailEvents()
-			handleFilesSettingsOptions(local)
-			initUrlsEditor(sync.backgrounds, local)
-			createProviderSelect(sync.backgrounds)
-			handleBackgroundOptions(sync.backgrounds)
-		})
-	}
+export function backgroundsInit(sync: Sync.Storage, local: Local.Storage): void {
+	onSettingsLoad(async () => {
+		const sync = await storage.sync.get('backgrounds')
+		const local = await storage.local.get()
+		backgroundCacheControl(sync.backgrounds, local)
+	})
 
 	applyFilters(sync.backgrounds)
 	applyTexture(sync.backgrounds.texture)
 	document.getElementById('background-overlay')?.setAttribute('data-type', sync.backgrounds.type)
 
 	if (sync.backgrounds.type === 'color') {
-		applyBackground({ solid: sync.backgrounds.color })
+		applyBackground(sync.backgrounds.color)
 	} else {
 		backgroundCacheControl(sync.backgrounds, local)
 	}
@@ -103,7 +97,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.color) {
-		applyBackground({ solid: update.color })
+		applyBackground(update.color)
 		colorUpdateDebounce(update.color)
 	}
 
@@ -241,58 +235,35 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 
 		if (json) {
 			const newlocal = setCollection(backgrounds, local).fromApi(json)
+			const newcoll = getCollection(backgrounds, newlocal)
+			const isImage = backgrounds.type === 'images'
 			newlocal.backgroundLastChange = userDate().toString()
 			storage.local.set(newlocal)
 
-			if (backgrounds.type === 'images') {
-				list = getCollection(backgrounds, newlocal).images()
-			}
-			if (backgrounds.type === 'videos') {
-				list = getCollection(backgrounds, newlocal).videos()
-			}
+			list = isImage ? newcoll.images() : newcoll.videos()
 
-			if (isVideo(list[1])) {
-				preloadBackground({ video: list[1] })
-			}
-			if (isImage(list[1])) {
-				preloadBackground({ image: list[1] })
-			}
+			preloadBackground(list[1])
 		}
 	}
 
 	if (isImagesOrVideos && local.backgroundPreloading) {
-		if (isVideo(list[0])) {
-			applyBackground({ video: list[0] })
-		}
-		if (isImage(list[0])) {
-			applyBackground({ image: list[0] })
-		}
-		if (isVideo(list[1])) {
-			preloadBackground({ video: list[1] })
-		}
-		if (isImage(list[1])) {
-			preloadBackground({ image: list[1] })
-		}
+		applyBackground(list[0])
+		preloadBackground(list[1])
 		return
 	}
 
 	if (isImagesOrVideos && !needNew && isPaused) {
 		if (backgrounds.images?.paused) {
-			applyBackground({ image: backgrounds.images.paused })
+			applyBackground(backgrounds.images.paused)
 		}
 		if (backgrounds.videos?.paused) {
-			applyBackground({ video: backgrounds.videos.paused })
+			applyBackground(backgrounds.videos.paused)
 		}
 		return
 	}
 
 	if (!needNew) {
-		if (isVideo(list[0])) {
-			applyBackground({ video: list[0] })
-		}
-		if (isImage(list[0])) {
-			applyBackground({ image: list[0] })
-		}
+		applyBackground(list[0])
 		return
 	}
 
@@ -313,12 +284,7 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 	if (list.length > 1) {
 		let newlocal = local
 
-		if (isVideo(list[1])) {
-			preloadBackground({ video: list[1] })
-		}
-		if (isImage(list[1])) {
-			preloadBackground({ image: list[1] })
-		}
+		preloadBackground(list[1])
 
 		if (isImagesOrVideos) {
 			newlocal = setCollection(backgrounds, local).fromList(list)
@@ -338,31 +304,18 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 
 		if (json) {
 			const newlocal = setCollection(backgrounds, local).fromApi(json)
+			const newcoll = getCollection(backgrounds, newlocal)
+			const isImage = backgrounds.type === 'images'
 			newlocal.backgroundLastChange = userDate().toString()
 			storage.local.set(newlocal)
 
-			if (backgrounds.type === 'images') {
-				list = getCollection(backgrounds, local).images()
-			}
-			if (backgrounds.type === 'videos') {
-				list = getCollection(backgrounds, local).videos()
-			}
+			list = isImage ? newcoll.images() : newcoll.videos()
 
-			if (isVideo(list[1])) {
-				preloadBackground({ video: list[1] })
-			}
-			if (isImage(list[1])) {
-				preloadBackground({ image: list[1] })
-			}
+			preloadBackground(list[1])
 		}
 	}
 
-	if (isVideo(list[0])) {
-		applyBackground({ video: list[0] })
-	}
-	if (isImage(list[0])) {
-		applyBackground({ image: list[0] })
-	}
+	applyBackground(list[0])
 }
 
 async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backgrounds.Api> {
@@ -381,13 +334,14 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 
 	const base = 'https://services.bonjourr.fr/backgrounds'
 	const path = `/${provider}/${type}/${category}`
-	let search = ''
 
-	if (data.query) {
-		search = `?query=${data.query}`
-	}
+	const height = window.screen.height * window.devicePixelRatio
+	const width = window.screen.width * window.devicePixelRatio
+	const screen = `?h=${height}&w=${width}`
 
-	const url = base + path + search
+	const search = data.query ? `&query=${data.query}` : ''
+
+	const url = base + path + screen + search
 	const resp = await fetch(url)
 	const json = (await resp.json()) as Backgrounds.Api
 
@@ -431,6 +385,7 @@ function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	const collection = local.backgroundCollections[collectionName] ?? []
 
 	if (collection.length === 0) {
+		console.warn(new Error('?'))
 	}
 
 	// Check collection format
@@ -504,24 +459,34 @@ function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: 
 
 // 	Apply to DOM
 
-export function applyBackground({ image, video, solid }: ApplyBackgroundOptions) {
+export function applyBackground(media: string | Backgrounds.Item, options?: ApplyOptions): void {
 	const overlay = document.getElementById('background-overlay') as HTMLDivElement
 	const solidBackground = document.getElementById('solid-background') as HTMLDivElement
 	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
 	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
+	const settingsOpened = document.getElementById('settings')?.classList.contains('shown')
 	const blurred = document.body.className.includes('blurred')
+	const canReduceRes = blurred && !options?.full && !settingsOpened
 
-	solidBackground.style.display = solid ? 'block' : 'none'
-	imageWrapper.style.display = image ? 'block' : 'none'
-	videoWrapper.style.display = video ? 'block' : 'none'
-
-	credits(image ? image : undefined)
 	overlay.classList.remove('hidden')
 
-	if (image) {
+	if (typeof media === 'string') {
+		document.documentElement.style.setProperty('--solid-background', media)
+		solidBackground.style.display = 'block'
+		videoWrapper.style.display = 'none'
+		imageWrapper.style.display = 'none'
+		credits(undefined)
+		return
+	}
+
+	if (media.format === 'image') {
+		solidBackground.style.display = 'none'
+		videoWrapper.style.display = 'none'
+		imageWrapper.style.display = 'block'
+
 		const applySafariThemeColor = (color?: string) => {
 			if (BROWSER === 'safari' && !color) {
-				image.color = getAverageColor(img)
+				media.color = getAverageColor(img)
 			}
 
 			if (BROWSER === 'safari' && color) {
@@ -548,13 +513,13 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 			}
 		}
 
-		const src = blurred ? image.urls.small : image.urls.full
+		const src = canReduceRes ? media.urls.small : media.urls.full
 		const div = document.createElement('div')
 		const img = new Image()
 
 		img.addEventListener('load', () => {
 			applyLoadedImage()
-			applySafariThemeColor(image.color)
+			applySafariThemeColor(media.color)
 		})
 
 		img.src = src
@@ -563,21 +528,25 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 		div.style.backgroundImage = `url(${src})`
 		div.style.opacity = '0'
 
-		if (image.size > 0) {
-			div.style.backgroundSize = image.size
+		if (media.size) {
+			div.style.backgroundSize = media.size
 		}
-		if (image.x) {
-			div.style.backgroundPositionX = image.x
+		if (media.x) {
+			div.style.backgroundPositionX = media.x
 		}
-		if (image.y) {
-			div.style.backgroundPositionY = image.y
+		if (media.y) {
+			div.style.backgroundPositionY = media.y
 		}
 	}
 
-	if (video) {
+	if (media.format === 'video') {
+		solidBackground.style.display = 'none'
+		videoWrapper.style.display = 'none'
+		imageWrapper.style.display = 'block'
+
 		const opacity = 4 //s
-		const duration = 1000 * (video.duration - opacity)
-		const src = blurred ? video.urls.small : video.urls.full
+		const duration = 1000 * (media.duration - opacity)
+		const src = canReduceRes ? media.urls.small : media.urls.full
 
 		const createVideo = () => {
 			const vid = document.createElement('video')
@@ -599,26 +568,22 @@ export function applyBackground({ image, video, solid }: ApplyBackgroundOptions)
 		createVideo()
 		setInterval(rerunVideo, duration)
 	}
-
-	if (solid) {
-		document.documentElement.style.setProperty('--solid-background', solid)
-	}
 }
 
-function preloadBackground({ image, video }: ApplyBackgroundOptions) {
+function preloadBackground(media: Backgrounds.Item) {
 	const blurred = document.body.className.includes('blurred')
 	const img = document.createElement('img')
 
-	if (image) {
+	if (media.format === 'image') {
 		img.addEventListener('load', () => {
 			storage.local.remove('backgroundPreloading')
 			img.remove()
 		})
-		img.src = blurred ? image.urls.small : image.urls.full
+		img.src = blurred ? media.urls.small : media.urls.full
 		storage.local.set({ backgroundPreloading: true })
 	}
 
-	if (video) {
+	if (media.format === 'video') {
 		const vid = document.createElement('video')
 
 		vid.addEventListener('progress', _ => {
@@ -628,7 +593,7 @@ function preloadBackground({ image, video }: ApplyBackgroundOptions) {
 			}, 200)
 		})
 
-		vid.src = blurred ? video.urls.small : video.urls.full
+		vid.src = blurred ? media.urls.small : media.urls.full
 		storage.local.set({ backgroundPreloading: true })
 	}
 }
@@ -674,6 +639,14 @@ function applyTexture(texture: Sync.Backgrounds['texture']): void {
 }
 
 // 	Settings options
+
+export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) {
+	initThumbnailEvents()
+	handleFilesSettingsOptions(local)
+	initUrlsEditor(sync.backgrounds, local)
+	createProviderSelect(sync.backgrounds)
+	handleBackgroundOptions(sync.backgrounds)
+}
 
 function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	const type = backgrounds.type
