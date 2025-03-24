@@ -1,11 +1,59 @@
+import { backgroundUpdate } from '.'
 import { tradThis } from '../../utils/translations'
 
-export function credits(image?: Backgrounds.Image) {
+export function initCreditEvents() {
+	document.getElementById('b_interface-background-pause')?.onclickdown(() => {
+		backgroundUpdate({ freq: 'pause' })
+	})
+
+	document.getElementById('b_interface-background-refresh')?.onclickdown(() => {
+		backgroundUpdate({ refresh: true })
+	})
+
+	document.getElementById('a_interface-background-download')?.onclickdown(() => {
+		downloadImage()
+	})
+}
+
+export function toggleCredits(backgrounds: Sync.Backgrounds) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
+	const domsave = document.getElementById('a_interface-background-download')
+
+	switch (backgrounds.type) {
+		case 'color': {
+			domcontainer?.classList.remove('shown')
+			return
+		}
+
+		case 'videos':
+		case 'urls':
+		case 'files': {
+			domcontainer?.classList.add('shown')
+			domcredit?.classList.add('hidden')
+			domsave?.classList.add('hidden')
+			break
+		}
+
+		default: {
+			domcontainer?.classList.add('shown')
+			domcredit?.classList.remove('hidden')
+			domsave?.classList.remove('hidden')
+		}
+	}
+}
+
+export function updateCredits(image?: Backgrounds.Item) {
+	const domcontainer = document.getElementById('credit-container')
+	const domcredit = document.getElementById('credit')
+	const domsave = document.getElementById('a_interface-background-download')
+
+	if (image?.format === 'video') {
+		console.info('No video credits now')
+		return
+	}
 
 	if (!(domcontainer && domcredit && image?.page && image?.username)) {
-		// also remove credits
 		return
 	}
 
@@ -67,28 +115,25 @@ export function credits(image?: Backgrounds.Image) {
 	domcredit.appendChild(domartist)
 	domcredit.appendChild(domrest)
 
-	// cached data may not contain download link
-	if (image.download) {
-		appendSaveLink(domcredit, image)
+	if (image.download && domsave) {
+		domsave.dataset.downloadUrl = image.download
+	}
+}
+
+async function downloadImage() {
+	const domsave = document.querySelector<HTMLAnchorElement>('#a_interface-background-download')
+
+	if (!domsave) {
+		console.warn('?')
+		return
 	}
 
-	domcontainer.classList.toggle('shown', true)
-}
-
-function appendSaveLink(domcredit: HTMLElement, image: Backgrounds.Image) {
-	const domsave = document.createElement('a')
-	domsave.className = 'save'
-	domsave.title = 'Download the current background to your computer'
-	domsave.onclick = () => saveImage(domsave, image)
-
-	domcredit.appendChild(domsave)
-}
-
-async function saveImage(domsave: HTMLAnchorElement, image: Backgrounds.Image) {
 	domsave.classList.add('loading')
+
 	try {
-		const downloadUrl = new URL(image.download ?? '')
-		const apiDownloadUrl = `https://services.bonjourr.fr/unsplash${downloadUrl.pathname}${downloadUrl.search}`
+		const baseUrl = 'https://services.bonjourr.fr/unsplash'
+		const downloadUrl = new URL(domsave.dataset.downloadUrl ?? '')
+		const apiDownloadUrl = baseUrl + downloadUrl.pathname + downloadUrl.search
 		const downloadResponse = await fetch(apiDownloadUrl)
 
 		if (!downloadResponse) {

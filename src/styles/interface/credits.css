@@ -30,6 +30,11 @@
 	opacity: 1;
 }
 
+#a_interface-background-download.hidden,
+#credit.hidden {
+	display: none;
+}
+
 #credit {
 	text-align: left;
 	font-size: 13px;
@@ -46,13 +51,12 @@
 	color: #fffe;
 }
 
-.exif,
-.save {
+.exif {
 	opacity: 0;
 	transition: opacity 0.4s;
 }
 
-.save {
+/* .save {
 	display: inline-block;
 	cursor: pointer;
 	margin-left: 10px;
@@ -70,4 +74,4 @@
 .save.loading {
 	pointer-events: none;
 	--icon: url('../../assets/interface/loading.svg');
-}
+} */

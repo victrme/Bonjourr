@@ -1,8 +1,8 @@
 import { getFilesAsCollection, initThumbnailEvents, handleFilesSettingsOptions } from './local'
+import { initCreditEvents, updateCredits, toggleCredits } from './credits'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
 import { TEXTURE_RANGES } from './textures'
 import { PROVIDERS } from './providers'
-import { credits } from './credits'
 
 import { userDate, daylightPeriod, needsChange } from '../../shared/time'
 import { turnRefreshButton } from '../../shared/dom'
@@ -30,6 +30,7 @@ interface BackgroundUpdate {
 
 interface ApplyOptions {
 	full?: true
+	fast?: true
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
@@ -37,13 +38,14 @@ const colorUpdateDebounce = debounce(solidUpdate, 600)
 
 export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
+		initCreditEvents()
+
 		onSettingsLoad(async () => {
-			const sync = await storage.sync.get('backgrounds')
-			const local = await storage.local.get()
-			backgroundCacheControl(sync.backgrounds, local)
+			preloadBackground(await getCurrentBackground())
 		})
 	}
 
+	toggleCredits(sync.backgrounds)
 	applyFilters(sync.backgrounds)
 	applyTexture(sync.backgrounds.texture)
 	document.getElementById('background-wrapper')?.setAttribute('data-type', sync.backgrounds.type)
@@ -464,30 +466,28 @@ function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: 
 export function applyBackground(media: string | Backgrounds.Item, options?: ApplyOptions): void {
 	const backgroundsWrapper = document.getElementById('background-wrapper') as HTMLDivElement
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-	const settingsOpened = document.getElementById('settings')?.classList.contains('shown')
-	const blurred = document.body.className.includes('blurred')
-	const canReduceRes = blurred && !options?.full && !settingsOpened
+	const reduceRes = canReduceResolution(options?.full)
 
 	backgroundsWrapper.classList.remove('hidden')
 
 	if (typeof media === 'string') {
 		document.documentElement.style.setProperty('--solid-background', media)
-		credits(undefined)
 		return
 	}
 
 	let item: HTMLDivElement
 
 	if (media.format === 'image') {
-		const src = canReduceRes ? media.urls.small : media.urls.full
+		const src = reduceRes ? media.urls.small : media.urls.full
 		item = createImageItem(src, media)
 	} else {
 		const opacity = 4 //s
 		const duration = 1000 * (media.duration - opacity)
-		const src = canReduceRes ? media.urls.small : media.urls.full
+		const src = reduceRes ? media.urls.small : media.urls.full
 		item = createVideoItem(src, duration)
 	}
 
+	item.dataset.res = reduceRes ? 'small' : 'full'
 	mediaWrapper.prepend(item)
 
 	if (mediaWrapper?.childElementCount > 1) {
@@ -502,6 +502,7 @@ function createImageItem(src: string, media: Backgrounds.Image): HTMLDivElement 
 
 	img.addEventListener('load', () => {
 		applySafariThemeColor(media.color)
+		updateCredits(media)
 		console.info(new Error('applySafariThemeColor not working <!>'))
 	})
 
@@ -566,8 +567,8 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 	return div
 }
 
-function preloadBackground(media: Backgrounds.Item) {
-	const blurred = document.body.className.includes('blurred')
+function preloadBackground(media: Backgrounds.Item, options?: ApplyOptions) {
+	const reduceRes = canReduceResolution(options?.full)
 	const img = document.createElement('img')
 
 	if (media.format === 'image') {
@@ -575,7 +576,7 @@ function preloadBackground(media: Backgrounds.Item) {
 			storage.local.remove('backgroundPreloading')
 			img.remove()
 		})
-		img.src = blurred ? media.urls.small : media.urls.full
+		img.src = reduceRes ? media.urls.small : media.urls.full
 		storage.local.set({ backgroundPreloading: true })
 	}
 
@@ -589,7 +590,7 @@ function preloadBackground(media: Backgrounds.Item) {
 			}, 200)
 		})
 
-		vid.src = blurred ? media.urls.small : media.urls.full
+		vid.src = reduceRes ? media.urls.small : media.urls.full
 		storage.local.set({ backgroundPreloading: true })
 	}
 }
@@ -640,6 +641,7 @@ export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) 
 	initUrlsEditor(sync.backgrounds, local)
 	createProviderSelect(sync.backgrounds)
 	handleBackgroundOptions(sync.backgrounds)
+	document.getElementById('i_blur')?.addEventListener('focusin', applyFullResBackground)
 }
 
 function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
@@ -751,7 +753,35 @@ function createProviderSelect(backgrounds: Sync.Backgrounds) {
 	}
 }
 
+function applyFullResBackground() {
+	const currentBackground = document.querySelector<HTMLElement>('#background-media div')
+	const currentIsSmall = currentBackground?.dataset.res === 'small'
+	const reduceRes = canReduceResolution()
+
+	if (currentIsSmall && !reduceRes) {
+		getCurrentBackground().then(media => {
+			applyBackground(media)
+		})
+	}
+}
+
 //  Helpers
+
+async function getCurrentBackground(): Promise<Backgrounds.Item> {
+	const sync = await storage.sync.get('backgrounds')
+	const local = await storage.local.get()
+	const isImage = sync.backgrounds.type === 'images'
+	const lists = getCollection(sync.backgrounds, local)
+	const list = isImage ? lists.images() : lists.videos()
+
+	return list[0]
+}
+
+function canReduceResolution(full = false) {
+	const settingsOpened = document.getElementById('settings')?.classList.contains('shown')
+	const blurred = document.body.className.includes('blurred')
+	return blurred && !full && !settingsOpened
+}
 
 function applySafariThemeColor(color?: string) {
 	if (BROWSER === 'safari' && !color) {
