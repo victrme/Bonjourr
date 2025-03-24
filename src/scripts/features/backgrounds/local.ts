@@ -142,7 +142,7 @@ function thumbnailTogglePosition() {
 }
 
 async function thumbnailPosition(this: HTMLInputElement) {
-	const img = document.querySelector<HTMLElement>('#image-background-wrapper div')
+	const img = document.querySelector<HTMLElement>('background-media div')
 	const selection = getThumbnailSelection()[0]
 	const local = await storage.local.get('backgroundFiles')
 	const file = local.backgroundFiles[selection]
@@ -188,7 +188,7 @@ async function thumbnailRemove(_e: Event) {
 	const [_, collection] = await getFilesAsCollection(local)
 
 	if (collection[0]) {
-		applyBackground({ image: collection[0] })
+		applyBackground(collection[0])
 	} else {
 		removeBackgrounds()
 	}
@@ -270,7 +270,7 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 		},
 	}
 
-	applyBackground({ image })
+	applyBackground(image)
 	handleFilesSettingsOptions(local)
 	storage.local.set(local)
 }
@@ -347,9 +347,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 			const data = await getFile(id)
 
 			if (file && data) {
-				applyBackground({
-					image: imageObjectFromStorage(file, data),
-				})
+				applyBackground(imageObjectFromStorage(file, data))
 			}
 
 			selectThumbnail(id)

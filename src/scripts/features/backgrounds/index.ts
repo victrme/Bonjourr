@@ -35,16 +35,18 @@ interface ApplyOptions {
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
 
-export function backgroundsInit(sync: Sync.Storage, local: Local.Storage): void {
-	onSettingsLoad(async () => {
-		const sync = await storage.sync.get('backgrounds')
-		const local = await storage.local.get()
-		backgroundCacheControl(sync.backgrounds, local)
-	})
+export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
+	if (init) {
+		onSettingsLoad(async () => {
+			const sync = await storage.sync.get('backgrounds')
+			const local = await storage.local.get()
+			backgroundCacheControl(sync.backgrounds, local)
+		})
+	}
 
 	applyFilters(sync.backgrounds)
 	applyTexture(sync.backgrounds.texture)
-	document.getElementById('background-overlay')?.setAttribute('data-type', sync.backgrounds.type)
+	document.getElementById('background-wrapper')?.setAttribute('data-type', sync.backgrounds.type)
 
 	if (sync.backgrounds.type === 'color') {
 		applyBackground(sync.backgrounds.color)
@@ -460,114 +462,108 @@ function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: 
 // 	Apply to DOM
 
 export function applyBackground(media: string | Backgrounds.Item, options?: ApplyOptions): void {
-	const overlay = document.getElementById('background-overlay') as HTMLDivElement
-	const solidBackground = document.getElementById('solid-background') as HTMLDivElement
-	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
-	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
+	const backgroundsWrapper = document.getElementById('background-wrapper') as HTMLDivElement
+	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
 	const settingsOpened = document.getElementById('settings')?.classList.contains('shown')
 	const blurred = document.body.className.includes('blurred')
 	const canReduceRes = blurred && !options?.full && !settingsOpened
 
-	overlay.classList.remove('hidden')
+	backgroundsWrapper.classList.remove('hidden')
 
 	if (typeof media === 'string') {
 		document.documentElement.style.setProperty('--solid-background', media)
-		solidBackground.style.display = 'block'
-		videoWrapper.style.display = 'none'
-		imageWrapper.style.display = 'none'
 		credits(undefined)
 		return
 	}
 
+	let item: HTMLDivElement
+
 	if (media.format === 'image') {
-		solidBackground.style.display = 'none'
-		videoWrapper.style.display = 'none'
-		imageWrapper.style.display = 'block'
-
-		const applySafariThemeColor = (color?: string) => {
-			if (BROWSER === 'safari' && !color) {
-				media.color = getAverageColor(img)
-			}
-
-			if (BROWSER === 'safari' && color) {
-				const fadein = Number.parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
-				document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
-
-				setTimeout(() => {
-					document.documentElement.style.setProperty('--average-color', color)
-				}, fadein)
-			}
-		}
-
-		const applyLoadedImage = () => {
-			imageWrapper?.append(div)
-
-			setTimeout(() => {
-				div.style.removeProperty('opacity')
-			}, 1)
-
-			if (imageWrapper.childElementCount > 1) {
-				setTimeout(() => {
-					imageWrapper.firstChild?.remove()
-				}, 1300)
-			}
-		}
-
 		const src = canReduceRes ? media.urls.small : media.urls.full
-		const div = document.createElement('div')
-		const img = new Image()
-
-		img.addEventListener('load', () => {
-			applyLoadedImage()
-			applySafariThemeColor(media.color)
-		})
-
-		img.src = src
-		img.remove()
-
-		div.style.backgroundImage = `url(${src})`
-		div.style.opacity = '0'
-
-		if (media.size) {
-			div.style.backgroundSize = media.size
-		}
-		if (media.x) {
-			div.style.backgroundPositionX = media.x
-		}
-		if (media.y) {
-			div.style.backgroundPositionY = media.y
-		}
-	}
-
-	if (media.format === 'video') {
-		solidBackground.style.display = 'none'
-		videoWrapper.style.display = 'none'
-		imageWrapper.style.display = 'block'
-
+		item = createImageItem(src, media)
+	} else {
 		const opacity = 4 //s
 		const duration = 1000 * (media.duration - opacity)
 		const src = canReduceRes ? media.urls.small : media.urls.full
+		item = createVideoItem(src, duration)
+	}
 
-		const createVideo = () => {
+	mediaWrapper.prepend(item)
+
+	if (mediaWrapper?.childElementCount > 1) {
+		mediaWrapper?.lastElementChild?.classList.add('hiding')
+		setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
+	}
+}
+
+function createImageItem(src: string, media: Backgrounds.Image): HTMLDivElement {
+	const div = document.createElement('div')
+	const img = new Image()
+
+	img.addEventListener('load', () => {
+		applySafariThemeColor(media.color)
+		console.info(new Error('applySafariThemeColor not working <!>'))
+	})
+
+	img.src = src
+	img.remove()
+
+	div.style.backgroundImage = `url(${src})`
+
+	if (media.size) {
+		div.style.backgroundSize = media.size
+	}
+	if (media.x) {
+		div.style.backgroundPositionX = media.x
+	}
+	if (media.y) {
+		div.style.backgroundPositionY = media.y
+	}
+
+	return div
+}
+
+function createVideoItem(src: string, duration: number): HTMLDivElement {
+	const wrapper = document.getElementById('background-wrapper') as HTMLDivElement
+	const div = document.createElement('div')
+	let videoInterval = 0
+
+	const prependVideo = () => {
+		return new Promise(resolve => {
 			const vid = document.createElement('video')
-			vid.addEventListener('progress', () => overlay.classList.remove('hidden'))
+
+			vid.addEventListener('progress', () => {
+				wrapper.classList.remove('hidden')
+				resolve(true)
+			})
+
 			vid.src = src
 			vid.muted = true
 			vid.autoplay = true
-			videoWrapper?.prepend(vid)
-		}
-
-		const rerunVideo = () => {
-			setTimeout(() => {
-				createVideo()
-				videoWrapper.lastElementChild?.setAttribute('style', 'opacity: 0')
-				setTimeout(() => videoWrapper.lastElementChild?.remove(), 4000)
-			})
-		}
-
-		createVideo()
-		setInterval(rerunVideo, duration)
+			div.prepend(vid)
+		})
 	}
+
+	const removeVideo = () => {
+		div?.lastElementChild?.classList.add('hiding')
+		setTimeout(() => div?.lastElementChild?.remove(), 4000)
+	}
+
+	const loopVideo = async () => {
+		if (div) {
+			await prependVideo()
+			removeVideo()
+			return
+		}
+
+		clearInterval(videoInterval)
+	}
+
+	prependVideo().then(() => {
+		videoInterval = setInterval(loopVideo, duration)
+	})
+
+	return div
 }
 
 function preloadBackground(media: Backgrounds.Item) {
@@ -599,12 +595,9 @@ function preloadBackground(media: Backgrounds.Item) {
 }
 
 export function removeBackgrounds(): void {
-	const imageWrapper = document.getElementById('image-background-wrapper') as HTMLDivElement
-	const videoWrapper = document.getElementById('video-background-wrapper') as HTMLDivElement
-	setTimeout(() => imageWrapper.querySelector('div')?.setAttribute('style', 'opacity: 0'))
-	setTimeout(() => videoWrapper.querySelector('video')?.setAttribute('style', 'opacity: 0'))
-	setTimeout(() => imageWrapper.firstChild?.remove(), 1300)
-	setTimeout(() => videoWrapper.firstChild?.remove(), 1300)
+	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
+	setTimeout(() => document.querySelector('#background-media div')?.classList.add('hiding'))
+	setTimeout(() => mediaWrapper.firstChild?.remove(), 2000)
 }
 
 function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
@@ -623,9 +616,10 @@ function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 }
 
 function applyTexture(texture: Sync.Backgrounds['texture']): void {
+	const wrapper = document.getElementById('background-wrapper')
 	const domtexture = document.getElementById('background-texture')
 
-	if (!domtexture) {
+	if (!(domtexture && wrapper)) {
 		return
 	}
 
@@ -633,7 +627,7 @@ function applyTexture(texture: Sync.Backgrounds['texture']): void {
 	const size = texture.size ?? ranges.size.value
 	const opacity = texture.opacity ?? ranges.opacity.value
 
-	domtexture.dataset.texture = texture.type
+	wrapper.dataset.texture = texture.type
 	document.documentElement.style.setProperty('--texture-opacity', `${opacity}`)
 	document.documentElement.style.setProperty('--texture-size', `${size}px`)
 }
@@ -759,6 +753,21 @@ function createProviderSelect(backgrounds: Sync.Backgrounds) {
 
 //  Helpers
 
+function applySafariThemeColor(color?: string) {
+	if (BROWSER === 'safari' && !color) {
+		color = getAverageColor(img)
+	}
+
+	if (BROWSER === 'safari' && color) {
+		const fadein = Number.parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
+		document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
+
+		setTimeout(() => {
+			document.documentElement.style.setProperty('--average-color', color)
+		}, fadein)
+	}
+}
+
 function getAverageColor(img: HTMLImageElement) {
 	try {
 		// Create a canvas element
@@ -803,7 +812,9 @@ function getAverageColor(img: HTMLImageElement) {
 
 		// Output the average color in RGB format
 		return rgbToHex(r, g, b)
-	} catch (_error) {}
+	} catch (_error) {
+		//...
+	}
 }
 
 function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] {
