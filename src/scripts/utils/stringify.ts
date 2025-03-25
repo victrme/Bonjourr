@@ -4,9 +4,20 @@ import { bundleLinks } from './bundlelinks'
 export function stringify(data: Sync.Storage) {
 	const defaultSyncData = structuredClone(SYNC_DEFAULT)
 
-	// 1. Add links to defaults
+	// 1a. Add links to defaults
 	for (const link of bundleLinks(data)) {
 		defaultSyncData[link._id] = link
+	}
+
+	// 1b. Add missing fields inside default objects
+	for (const key of Object.keys(data)) {
+		const curr = data[key]
+		const def = defaultSyncData[key]
+		const bothObjects = isObject(curr) && isObject(def)
+
+		if (bothObjects) {
+			defaultSyncData[key] = { ...def, ...curr }
+		}
 	}
 
 	// 2. Recursively get all keys in storage
@@ -25,10 +36,14 @@ function flattenKeys(obj: object): string[] {
 	for (const [key, value] of Object.entries(obj)) {
 		result.push(key)
 
-		if (!Array.isArray(value) && typeof value === 'object') {
+		if (isObject(value)) {
 			result.push(...flattenKeys(value))
 		}
 	}
 
 	return result
+}
+
+function isObject(value: unknown): value is object {
+	return !Array.isArray(value) && typeof value === 'object'
 }
