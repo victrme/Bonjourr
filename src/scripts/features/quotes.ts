@@ -237,7 +237,9 @@ function validateResponse(response: Response | undefined): asserts response is R
 async function tryFetchQuotes(lang: string, type: Quotes.Sync['type'], url: string | undefined): Promise<Quote[]> {
 	try {
 		return await fetchQuotes(lang, type, url)
-	} catch (_error) {}
+	} catch (_error) {
+		console.info(_error)
+	}
 
 	return []
 }

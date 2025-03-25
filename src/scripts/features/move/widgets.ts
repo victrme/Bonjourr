@@ -32,7 +32,7 @@ export function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
 		interfaceFade('out')
 	})
 
-	interfaceTransition.after(async () => {
+	interfaceTransition.after(() => {
 		const layout = getLayout(newdata)
 		setGridAreas(layout.grid)
 		setAllAligns(layout.items)

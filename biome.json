@@ -9,6 +9,7 @@
 				"noConsole": "off"
 			},
 			"correctness": {
+				"noNodejsModules": "off",
 				"useImportExtensions": "off",
 				"noUndeclaredVariables": "off"
 			},
@@ -41,7 +42,8 @@
 			"Links",
 			"Weather",
 			"Quotes",
-			"Widgets"
+			"Frequency",
+			"SearchEngines"
 		]
 	},
 	"css": {

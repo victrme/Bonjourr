@@ -142,7 +142,7 @@ export async function openEditDialog(event: Event) {
 
 	const contextmenuTransition = transitioner()
 	contextmenuTransition.first(() => domeditlink?.show())
-	contextmenuTransition.after(async () => domeditlink?.classList?.add('shown'))
+	contextmenuTransition.after(() => domeditlink?.classList?.add('shown'))
 	contextmenuTransition.transition(10)
 
 	const { x, y } = newEditDialogPosition(event)
@@ -245,7 +245,8 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
 	const { innerHeight, innerWidth } = window
 	const isMobileSized = innerWidth < 600
-	const rightToLeft = document.documentElement.lang.match(/ar|fa/)
+	const docLang = document.documentElement.lang
+	const rightToLeft = docLang === 'ar' || docLang === 'fa'
 
 	let x = 0
 	let y = 0

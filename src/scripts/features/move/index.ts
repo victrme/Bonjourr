@@ -236,7 +236,7 @@ function layoutChange(data: Sync.Storage, column: string) {
 		interfaceFade('out')
 	})
 
-	interfaceTransition.after(async () => {
+	interfaceTransition.after(() => {
 		const layout = getLayout(newdata)
 		setAllAligns(layout.items)
 		setGridAreas(layout.grid)

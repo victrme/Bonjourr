@@ -55,7 +55,7 @@ function openFolder(data: Sync.Storage, li: HTMLLIElement): void {
 		linkgroup.classList.remove('in-folder')
 	}
 
-	async function changeToFolder() {
+	function changeToFolder() {
 		initblocks(data)
 
 		if (linktitle) {

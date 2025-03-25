@@ -255,7 +255,6 @@ export async function loadModalData() {
 
 		if (response.ok) {
 			supporters = await response.json()
-		} else {
 		}
 
 		// removes loader
@@ -278,7 +277,6 @@ function tradTemplateString(doc: DocumentFragment, selector: string, text: strin
 
 	if (toTranslate) {
 		toTranslate.innerText = tradThis(text)
-	} else {
 	}
 }
 

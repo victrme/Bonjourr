@@ -861,10 +861,10 @@ function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)
 }
 
-function isVideo(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Video {
+function _isVideo(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Video {
 	return item.format === 'video'
 }
-function isImage(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Image {
+function _isImage(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Image {
 	return item.format === 'image'
 }
 function areOnlyImages(list: Backgrounds.Item[]): list is Backgrounds.Image[] {

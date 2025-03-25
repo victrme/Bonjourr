@@ -27,6 +27,7 @@ type UndefinedElement = Element | undefined | null
 
 let socket: WebSocket | undefined
 const domainPattern = /^(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
+const protocolPattern = /https?:\/?\/?/i
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -70,7 +71,9 @@ export function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
 		document.addEventListener('keydown', searchbarShortcut)
-	} catch (_) {}
+	} catch (_) {
+		//...
+	}
 }
 
 async function updateSearchbar({
@@ -402,7 +405,7 @@ function suggestions(results: Suggestions) {
 
 function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
-	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
+	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(protocolPattern)
 
 	// Button display toggle
 	if (domsearchbar) {

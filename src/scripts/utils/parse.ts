@@ -3,6 +3,7 @@ export function parse<T>(str = ''): T | undefined {
 		return JSON.parse(str)
 	} catch (_error) {
 		if (str !== '') {
+			console.info('Cannot parse')
 		}
 	}
 }

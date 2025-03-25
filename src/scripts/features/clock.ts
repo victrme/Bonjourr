@@ -60,7 +60,9 @@ export function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		clockSize(clock.size)
 		displayInterface('clock')
 		onSettingsLoad(toggleWorldClocksOptions)
-	} catch (_) {}
+	} catch (err) {
+		console.info(err)
+	}
 }
 
 //	Update
