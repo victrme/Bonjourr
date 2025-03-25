@@ -6,11 +6,11 @@ export function initCreditEvents() {
 		backgroundUpdate({ freq: 'pause' })
 	})
 
-	document.getElementById('b_interface-background-refresh')?.onclickdown(() => {
-		backgroundUpdate({ refresh: true })
+	document.getElementById('b_interface-background-refresh')?.onclickdown((_, target) => {
+		backgroundUpdate({ refresh: target })
 	})
 
-	document.getElementById('a_interface-background-download')?.onclickdown(() => {
+	document.getElementById('b_interface-background-download')?.onclickdown(() => {
 		downloadImage()
 	})
 }
@@ -46,7 +46,7 @@ export function toggleCredits(backgrounds: Sync.Backgrounds) {
 export function updateCredits(image?: Backgrounds.Item) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
-	const domsave = document.getElementById('a_interface-background-download')
+	const domsave = document.getElementById('download-background')
 
 	if (image?.format === 'video') {
 		console.info('No video credits now')
@@ -121,14 +121,15 @@ export function updateCredits(image?: Backgrounds.Item) {
 }
 
 async function downloadImage() {
-	const domsave = document.querySelector<HTMLAnchorElement>('#a_interface-background-download')
+	const dombutton = document.querySelector<HTMLButtonElement>('#b_interface-background-download')
+	const domsave = document.querySelector<HTMLAnchorElement>('#download-background')
 
 	if (!domsave) {
 		console.warn('?')
 		return
 	}
 
-	domsave.classList.add('loading')
+	dombutton?.classList.replace('idle', 'loading')
 
 	try {
 		const baseUrl = 'https://services.bonjourr.fr/unsplash'
@@ -149,12 +150,10 @@ async function downloadImage() {
 
 		const blob = await imageResponse.blob()
 
-		domsave.onclick = null
 		domsave.href = URL.createObjectURL(blob)
 		domsave.download = downloadUrl.pathname.split('/')[2]
-
 		domsave.click()
 	} finally {
-		domsave.classList.remove('loading')
+		dombutton?.classList.replace('loading', 'idle')
 	}
 }

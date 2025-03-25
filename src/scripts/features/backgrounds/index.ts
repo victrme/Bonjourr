@@ -92,6 +92,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (isFrequency(update.freq)) {
 		data.backgrounds.frequency = update.freq
 		storage.sync.set({ backgrounds: data.backgrounds })
+		handleBackgroundOptions(data.backgrounds)
 	}
 
 	if (update.refresh) {
@@ -501,9 +502,8 @@ function createImageItem(src: string, media: Backgrounds.Image): HTMLDivElement 
 	const img = new Image()
 
 	img.addEventListener('load', () => {
-		applySafariThemeColor(media.color)
+		applySafariThemeColor(media, img)
 		updateCredits(media)
-		console.info(new Error('applySafariThemeColor not working <!>'))
 	})
 
 	img.src = src
@@ -646,6 +646,7 @@ export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) 
 
 function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	const type = backgrounds.type
+	const freq = backgrounds.frequency
 
 	document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
 	document.getElementById('solid_options')?.classList.toggle('shown', type === 'color')
@@ -653,6 +654,7 @@ function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
+	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
 
 	handleTextureOptions(backgrounds)
 	handleProviderOptions(backgrounds)
@@ -783,7 +785,9 @@ function canReduceResolution(full = false) {
 	return blurred && !full && !settingsOpened
 }
 
-function applySafariThemeColor(color?: string) {
+function applySafariThemeColor(image: Backgrounds.Image, img: HTMLImageElement) {
+	let color = image.color
+
 	if (BROWSER === 'safari' && !color) {
 		color = getAverageColor(img)
 	}

@@ -1,8 +1,9 @@
+#background-actions,
 #credit-container,
 #show-settings {
 	position: fixed;
 	pointer-events: all;
-	transition: opacity 0.4s;
+	transition: opacity 0.05s;
 }
 
 #credit-container {
@@ -54,6 +55,51 @@
 .exif {
 	opacity: 0;
 	transition: opacity 0.4s;
+}
+
+#background-actions {
+	position: fixed;
+	opacity: 0;
+	bottom: 0;
+	left: calc(50% - 60px - 2em);
+	width: 120px;
+	padding: 0em 2em 2em;
+	color: #fff9;
+}
+
+#background-actions:hover {
+	opacity: 1;
+}
+
+#download-background {
+	display: none;
+}
+
+#background-actions button {
+	all: unset;
+	display: inline-block;
+	width: 28px;
+	height: 26px;
+	margin: 0 2px;
+	padding-top: 2px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+#b_interface-background-pause.paused,
+#background-actions button:hover {
+	color: #fffe;
+	background-color: #fff2;
+	backdrop-filter: blur(2em);
+}
+
+#b_interface-background-download.idle span:last-child,
+#b_interface-background-download.loading span:first-child {
+	display: none;
+}
+
+#b_interface-background-pause:active svg {
+	transform: scale(0.9);
 }
 
 /* .save {

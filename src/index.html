@@ -382,14 +382,81 @@
 
 		<div id="credit-container">
 			<div id="credit"></div>
+		</div>
 
-			<div id="background-actions">
-				<a id="a_interface-background-download" class="save" aria-label="Download the current background to your computer">
-					download
-				</a>
-				<button id="b_interface-background-pause" aria-label="Pause on the current background">pause</button>
-				<button id="b_interface-background-refresh" aria-label="Change to another background">refresh</button>
-			</div>
+		<div id="background-actions">
+			<a id="download-background"></a>
+			<button id="b_interface-background-download" aria-label="Download the current background" class="idle">
+				<span id="idle-download">
+					<svg
+					  width="20"
+					  height="24"
+					  viewBox="0 0 24 24"
+					  fill="none"
+					  xmlns="http://www.w3.org/2000/svg"
+					>
+					  <path
+					    d="M11 5C11 4.44772 11.4477 4 12 4C12.5523 4 13 4.44772 13 5V12.1578L16.2428 8.91501L17.657 10.3292L12.0001 15.9861L6.34326 10.3292L7.75748 8.91501L11 12.1575V5Z"
+					    fill="currentColor"
+					  />
+					  <path
+					    d="M4 14H6V18H18V14H20V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V14Z"
+					    fill="currentColor"
+					  />
+					</svg>
+				</span>
+				<span id="is-downloading">
+					<svg
+					  width="20"
+					  height="24"
+					  viewBox="0 0 24 24"
+					  fill="none"
+					  xmlns="http://www.w3.org/2000/svg"
+					>
+					  <path
+					    opacity="0.2"
+					    fill-rule="evenodd"
+					    clip-rule="evenodd"
+					    d="M12 19C15.866 19 19 15.866 19 12C19 8.13401 15.866 5 12 5C8.13401 5 5 8.13401 5 12C5 15.866 8.13401 19 12 19ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+					    fill="currentColor"
+					  />
+					  <path
+					    d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z"
+					    fill="currentColor"
+					  />
+					</svg>
+				</span>
+			</button>
+			<button id="b_interface-background-pause" aria-label="Pause the current background">
+				<span>
+					<svg
+					  width="24"
+					  height="24"
+					  viewBox="0 0 24 24"
+					  fill="none"
+					  xmlns="http://www.w3.org/2000/svg"
+					>
+					  <path d="M11 7H8V17H11V7Z" fill="currentColor" />
+					  <path d="M13 17H16V7H13V17Z" fill="currentColor" />
+					</svg>
+				</span>
+			</button>
+			<button id="b_interface-background-refresh" aria-label="Change to another background">
+				<span>
+					<svg
+					  width="20"
+					  height="24"
+					  viewBox="0 0 24 24"
+					  fill="none"
+					  xmlns="http://www.w3.org/2000/svg"
+					>
+					  <path
+					    d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
+					    fill="currentColor"
+					  />
+					</svg>
+				</span>
+			</button>
 		</div>
 
 		<div id="show-settings" data-hide="settingsicon">
