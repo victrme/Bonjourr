@@ -8,8 +8,8 @@
 	position: fixed;
 	box-sizing: border-box;
 	font-size: 15px;
-	bottom: 4vw;
-	left: 4vw;
+	bottom: 28px;
+	left: 28px;
 	gap: 0.6em;
 	opacity: 0;
 	z-index: 2;

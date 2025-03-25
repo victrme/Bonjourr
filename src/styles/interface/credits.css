@@ -11,8 +11,8 @@
 	bottom: 0;
 	left: 0;
 	opacity: 0;
-	padding-left: 2.2em;
-	padding-bottom: 2.2em;
+	padding-left: 28px;
+	padding-bottom: 28px;
 	max-width: 50%;
 	display: flex;
 	align-items: center;
@@ -61,9 +61,9 @@
 	position: fixed;
 	opacity: 0;
 	bottom: 0;
-	left: calc(50% - 60px - 2em);
+	left: calc(50% - 60px - 20px);
 	width: 120px;
-	padding: 0em 2em 2em;
+	padding: 0 20px 26px;
 	color: #fff9;
 }
 
@@ -90,7 +90,7 @@
 #background-actions button:hover {
 	color: #fffe;
 	background-color: #fff2;
-	backdrop-filter: blur(2em);
+	backdrop-filter: blur(20px);
 }
 
 #b_interface-background-download.idle span:last-child,
