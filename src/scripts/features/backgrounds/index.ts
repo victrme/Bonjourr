@@ -38,10 +38,24 @@ const colorUpdateDebounce = debounce(solidUpdate, 600)
 
 export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
 	if (init) {
+		// Rush background opacity to reduce black frames
+		const type = sync.backgrounds.type
+		const isColor = type === 'color'
+		const noFadeIn = sync.backgrounds.fadein === 0
+		const wrapper = document.getElementById('background-wrapper')
+
+		if (isColor || noFadeIn) {
+			wrapper?.classList.remove('hidden')
+		}
+
 		initCreditEvents()
 
-		onSettingsLoad(async () => {
-			preloadBackground(await getCurrentBackground())
+		onSettingsLoad(() => {
+			if (type === 'images' || type === 'videos') {
+				getCurrentBackground().then(media => {
+					preloadBackground(media)
+				})
+			}
 		})
 	}
 
@@ -93,6 +107,10 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		data.backgrounds.frequency = update.freq
 		storage.sync.set({ backgrounds: data.backgrounds })
 		handleBackgroundOptions(data.backgrounds)
+
+		if (update.freq === 'pause') {
+			backgroundCacheControl(data.backgrounds, local)
+		}
 	}
 
 	if (update.refresh) {
@@ -302,7 +320,9 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 		storage.local.set(newlocal)
 	}
 
-	// 3. Get a new set of images if needed
+	// 3. Apply image and get a new set of images if needed
+
+	applyBackground(list[0])
 
 	if (isImagesOrVideos && list.length === 1 && navigator.onLine) {
 		const json = await fetchNewBackgrounds(backgrounds)
@@ -310,17 +330,14 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 		if (json) {
 			const newlocal = setCollection(backgrounds, local).fromApi(json)
 			const newcoll = getCollection(backgrounds, newlocal)
-			const isImage = backgrounds.type === 'images'
-			newlocal.backgroundLastChange = userDate().toString()
+			const newlist = backgrounds.type === 'images' ? newcoll.images() : newcoll.videos()
+
+			preloadBackground(newlist[0])
+			preloadBackground(newlist[1])
+
 			storage.local.set(newlocal)
-
-			list = isImage ? newcoll.images() : newcoll.videos()
-
-			preloadBackground(list[1])
 		}
 	}
-
-	applyBackground(list[0])
 }
 
 async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backgrounds.Api> {
@@ -465,11 +482,8 @@ function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: 
 // 	Apply to DOM
 
 export function applyBackground(media: string | Backgrounds.Item, options?: ApplyOptions): void {
-	const backgroundsWrapper = document.getElementById('background-wrapper') as HTMLDivElement
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
 	const reduceRes = canReduceResolution(options?.full)
-
-	backgroundsWrapper.classList.remove('hidden')
 
 	if (typeof media === 'string') {
 		document.documentElement.style.setProperty('--solid-background', media)
@@ -498,10 +512,12 @@ export function applyBackground(media: string | Backgrounds.Item, options?: Appl
 }
 
 function createImageItem(src: string, media: Backgrounds.Image): HTMLDivElement {
+	const backgroundsWrapper = document.getElementById('background-wrapper')
 	const div = document.createElement('div')
 	const img = new Image()
 
 	img.addEventListener('load', () => {
+		backgroundsWrapper?.classList.remove('hidden')
 		applySafariThemeColor(media, img)
 		updateCredits(media)
 	})
@@ -525,7 +541,7 @@ function createImageItem(src: string, media: Backgrounds.Image): HTMLDivElement 
 }
 
 function createVideoItem(src: string, duration: number): HTMLDivElement {
-	const wrapper = document.getElementById('background-wrapper') as HTMLDivElement
+	const backgroundsWrapper = document.getElementById('background-wrapper')
 	const div = document.createElement('div')
 	let videoInterval = 0
 
@@ -534,7 +550,7 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 			const vid = document.createElement('video')
 
 			vid.addEventListener('progress', () => {
-				wrapper.classList.remove('hidden')
+				backgroundsWrapper?.classList.remove('hidden')
 				resolve(true)
 			})
 
