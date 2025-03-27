@@ -122,7 +122,7 @@
 		</select>
 	</div>
 
-	<div id="background-provider-option" class="dropdown shown">
+	<div id="background-provider-option" class="as as_provider dropdown">
 		<hr />
 
 		<div class="wrapper">
@@ -297,34 +297,40 @@
 		</div>
 	</div>
 
-	<hr />
 
-	<div class="wrapper">
-		<label for="i_texture" class="trn">Texture</label>
-
-		<select id="i_texture">
-			<option value="none" class="trn">None</option>
-			<option value="grain" class="trn">Grain</option>
-			<option value="dots" class="trn">Dots</option>
-			<option value="topographic" class="trn">Topographic</option>
-		</select>
-	</div>
-
-	<div id="background-texture-options" class="dropdown shown">
+	<div class="as as_texture dropdown">
 		<hr />
 
 		<div class="wrapper">
-			<label for="i_texture-opacity" class="trn">Texture opacity</label>
-			<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
+			<label for="i_texture" class="trn">Texture</label>
+
+			<select id="i_texture">
+				<option value="none" class="trn">None</option>
+				<option value="grain" class="trn">Grain</option>
+				<option value="dots" class="trn">Dots</option>
+				<option value="topographic" class="trn">Topographic</option>
+			</select>
 		</div>
 
-		<hr />
+		<div id="background-texture-options" class="dropdown shown">
+			<hr />
 
-		<div class="wrapper">
-			<label for="i_texture-size" class="trn">Texture size</label>
-			<input id="i_texture-size" name="texture-size" class="range" type="range" />
+			<div class="wrapper">
+				<label for="i_texture-opacity" class="trn">Texture opacity</label>
+				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-size" class="trn">Texture size</label>
+				<input id="i_texture-size" name="texture-size" class="range" type="range" />
+			</div>
 		</div>
 	</div>
+
+
+
 
 	<div id="background-filters-options" class="dropdown">
 		<hr />
@@ -341,20 +347,22 @@
 			<input id="i_bright" type="range" class="range" name="background_bright" min=".2" max="1" value=".80" step=".01" />
 		</div>
 
-		<hr />
+		<div class="as as_fadein dropdown">
+			<hr />
 
-		<div class="wrapper">
-			<label for="i_fadein" class="trn">Fade in</label>
-			<input
-				id="i_fadein"
-				type="range"
-				class="range"
-				name="background_fadein"
-				min="0"
-				max="1200"
-				value="400"
-				step="100"
-			/>
+			<div class="wrapper">
+				<label for="i_fadein" class="trn">Fade in</label>
+				<input
+					id="i_fadein"
+					type="range"
+					class="range"
+					name="background_fadein"
+					min="0"
+					max="1200"
+					value="400"
+					step="100"
+				/>
+			</div>
 		</div>
 	</div>
 </div>
