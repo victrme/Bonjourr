@@ -13,11 +13,11 @@ const IMAGES: Provider[] = [
 		options: [
 			{
 				name: 'Unsplash Collections',
-				value: 'unsplash-images-coll',
+				value: 'unsplash-images-collections',
 			},
 			{
-				name: 'Unsplash Tags',
-				value: 'unsplash-images-tags',
+				name: 'Unsplash Search',
+				value: 'unsplash-images-search',
 			},
 		],
 	},
@@ -25,8 +25,8 @@ const IMAGES: Provider[] = [
 		optgroup: 'Pixabay',
 		options: [
 			{
-				name: 'Pixabay Tags',
-				value: 'pixabay-images-tags',
+				name: 'Pixabay Search',
+				value: 'pixabay-images-search',
 			},
 		],
 	},
@@ -46,8 +46,8 @@ const VIDEOS: Provider[] = [
 		optgroup: 'Pixabay',
 		options: [
 			{
-				name: 'Pixabay Tags',
-				value: 'pixabay-videos-tags',
+				name: 'Pixabay Search',
+				value: 'pixabay-videos-search',
 			},
 		],
 	},

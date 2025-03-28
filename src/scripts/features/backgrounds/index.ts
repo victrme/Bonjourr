@@ -169,8 +169,12 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.query !== undefined) {
+		const collection = data.backgrounds[data.backgrounds.type].collection
+
+		local.backgroundCollections[collection] = []
 		data.backgrounds[data.backgrounds.type].query = update.query
 		storage.sync.set({ backgrounds: data.backgrounds })
+
 		handleBackgroundOptions(data.backgrounds)
 		backgroundCacheControl(data.backgrounds, local)
 	}
@@ -719,19 +723,19 @@ function handleProviderOptions(backgrounds: Sync.Backgrounds) {
 
 	const data = backgrounds[backgrounds.type]
 	const hasCollections = data.collection.includes('coll')
-	const hasTags = data.collection.includes('tags')
+	const hasSearch = data.collection.includes('search')
 
 	const domusercoll = document.querySelector<HTMLInputElement>('#i_background-user-coll')
-	const domusertags = document.querySelector<HTMLInputElement>('#i_background-user-tags')
+	const domusersearch = document.querySelector<HTMLInputElement>('#i_background-user-search')
 	const domusercolloption = document.querySelector<HTMLElement>('#background-user-coll-option')
-	const domusertagsoption = document.querySelector<HTMLElement>('#background-user-tags-option')
-	const optionsExist = domusercoll && domusertags && domusercolloption && domusertagsoption
+	const domusersearchoption = document.querySelector<HTMLElement>('#background-user-search-option')
+	const optionsExist = domusercoll && domusersearch && domusercolloption && domusersearchoption
 
 	if (optionsExist) {
 		domusercolloption.classList.toggle('shown', hasCollections)
-		domusertagsoption.classList.toggle('shown', hasTags)
+		domusersearchoption.classList.toggle('shown', hasSearch)
 		domusercoll.value = backgrounds[backgrounds.type].query ?? ''
-		domusertags.value = backgrounds[backgrounds.type].query ?? ''
+		domusersearch.value = backgrounds[backgrounds.type].query ?? ''
 	}
 }
 

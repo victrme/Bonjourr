@@ -97,9 +97,10 @@ function settingsInitEvent(event: Event) {
 }
 
 function settingsToggle() {
-	const domsettings = document.getElementById('settings')
+	const dombackgroundactions = document.getElementById('background-actions')
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
+	const domsettings = document.getElementById('settings')
 	const domedit = document.getElementById('editlink')
 	const isClosed = domsettings?.classList.contains('shown') === false
 
@@ -107,6 +108,7 @@ function settingsToggle() {
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
 	domshowsettings?.classList.toggle('shown', isClosed)
+	dombackgroundactions?.classList.toggle('pushed', isClosed)
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
@@ -408,7 +410,7 @@ function initOptionsEvents() {
 		backgroundUpdate({ query: this.value })
 	})
 
-	paramId('i_background-user-tags').addEventListener('change', function () {
+	paramId('i_background-user-search').addEventListener('change', function () {
 		backgroundUpdate({ query: this.value })
 	})
 
