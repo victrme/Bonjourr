@@ -80,18 +80,12 @@ declare namespace Sync {
 		blur: number
 		color: string
 		urls: string
-		images: {
-			collection: string
-			query?: string
-			last?: Date
-			paused?: Backgrounds.Image
-		}
-		videos: {
-			collection: string
-			query?: string
-			last?: Date
-			paused?: Backgrounds.Video
-		}
+		images: string
+		videos: string
+		pausedUrl?: string
+		pausedImage?: Backgrounds.Image
+		pausedVideo?: Backgrounds.Video
+		queries: Record<string, string>
 		texture: {
 			type: TextureType
 			size?: number

@@ -105,12 +105,21 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
 	if (isFrequency(update.freq)) {
 		data.backgrounds.frequency = update.freq
-		storage.sync.set({ backgrounds: data.backgrounds })
-		handleBackgroundOptions(data.backgrounds)
 
 		if (update.freq === 'pause') {
-			backgroundCacheControl(data.backgrounds, local)
+			const collection = getCollection(data.backgrounds, local)
+			const type = data.backgrounds.type
+
+			if (type === 'images') {
+				data.backgrounds.pausedImage = collection.images()[0]
+			}
+			if (type === 'videos') {
+				data.backgrounds.pausedVideo = collection.videos()[0]
+			}
 		}
+
+		storage.sync.set({ backgrounds: data.backgrounds })
+		handleBackgroundOptions(data.backgrounds)
 	}
 
 	if (update.refresh) {
@@ -162,17 +171,17 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.provider) {
-		data.backgrounds[data.backgrounds.type].collection = update.provider
+		data.backgrounds[data.backgrounds.type] = update.provider
 		storage.sync.set({ backgrounds: data.backgrounds })
 		handleBackgroundOptions(data.backgrounds)
 		backgroundCacheControl(data.backgrounds, local)
 	}
 
 	if (update.query !== undefined) {
-		const collection = data.backgrounds[data.backgrounds.type].collection
+		const collectionName = data.backgrounds[data.backgrounds.type]
 
-		local.backgroundCollections[collection] = []
-		data.backgrounds[data.backgrounds.type].query = update.query
+		local.backgroundCollections[collectionName] = []
+		data.backgrounds.queries[collectionName] = update.query
 		storage.sync.set({ backgrounds: data.backgrounds })
 
 		handleBackgroundOptions(data.backgrounds)
@@ -280,13 +289,14 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 	}
 
 	if (isImagesOrVideos && !needNew && isPaused) {
-		if (backgrounds.images?.paused) {
-			applyBackground(backgrounds.images.paused)
+		if (backgrounds.pausedImage) {
+			applyBackground(backgrounds.pausedImage)
+			return
 		}
-		if (backgrounds.videos?.paused) {
-			applyBackground(backgrounds.videos.paused)
+		if (backgrounds.pausedVideo) {
+			applyBackground(backgrounds.pausedVideo)
+			return
 		}
-		return
 	}
 
 	if (!needNew) {
@@ -300,10 +310,10 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 
 	if (isImagesOrVideos && backgrounds.frequency === 'pause') {
 		if (backgrounds.type === 'images') {
-			backgrounds.images.paused = list[0] as Backgrounds.Image
+			backgrounds.pausedImage = list[0] as Backgrounds.Image
 		}
 		if (backgrounds.type === 'videos') {
-			backgrounds.videos.paused = list[0] as Backgrounds.Video
+			backgrounds.pausedVideo = list[0] as Backgrounds.Video
 		}
 		storage.sync.set({ backgrounds })
 	}
@@ -355,8 +365,8 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 		default:
 	}
 
-	const data = backgrounds[backgrounds.type]
-	const [provider, type, category] = data.collection.split('-')
+	const collectionName = backgrounds[backgrounds.type]
+	const [provider, type, category] = collectionName.split('-')
 
 	const base = 'https://services.bonjourr.fr/backgrounds'
 	const path = `/${provider}/${type}/${category}`
@@ -365,7 +375,8 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 	const width = window.screen.width * window.devicePixelRatio
 	const screen = `?h=${height}&w=${width}`
 
-	const search = data.query ? `&query=${data.query}` : ''
+	const query = backgrounds.queries[collectionName] ?? ''
+	const search = query ? `&query=${query}` : ''
 
 	const url = base + path + screen + search
 	const resp = await fetch(url)
@@ -382,16 +393,25 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 }
 
 function findCollectionName(backgrounds: Sync.Backgrounds): string {
-	const type = backgrounds.type === 'images' ? 'images' : 'videos'
-	const collection = backgrounds[type].collection
-	const isDaylight = collection.includes('daylight')
+	switch (backgrounds.type) {
+		case 'files':
+		case 'urls':
+		case 'color': {
+			throw new Error('Only collection names with "images" or "videos" type')
+		}
+
+		default:
+	}
+
+	const collectionName = backgrounds[backgrounds.type]
+	const isDaylight = collectionName.includes('daylight')
 
 	if (isDaylight) {
 		const period = daylightPeriod(userDate().getTime())
-		return `${collection}-${period}`
+		return `${collectionName}-${period}`
 	}
 
-	return collection
+	return collectionName
 }
 
 function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
@@ -721,9 +741,9 @@ function handleProviderOptions(backgrounds: Sync.Backgrounds) {
 
 	document.getElementById('background-provider-option')?.classList.add('shown')
 
-	const data = backgrounds[backgrounds.type]
-	const hasCollections = data.collection.includes('coll')
-	const hasSearch = data.collection.includes('search')
+	const collectionName = backgrounds[backgrounds.type]
+	const hasCollections = collectionName.includes('coll')
+	const hasSearch = collectionName.includes('search')
 
 	const domusercoll = document.querySelector<HTMLInputElement>('#i_background-user-coll')
 	const domusersearch = document.querySelector<HTMLInputElement>('#i_background-user-search')
@@ -734,8 +754,8 @@ function handleProviderOptions(backgrounds: Sync.Backgrounds) {
 	if (optionsExist) {
 		domusercolloption.classList.toggle('shown', hasCollections)
 		domusersearchoption.classList.toggle('shown', hasSearch)
-		domusercoll.value = backgrounds[backgrounds.type].query ?? ''
-		domusersearch.value = backgrounds[backgrounds.type].query ?? ''
+		domusercoll.value = backgrounds.queries[collectionName] ?? ''
+		domusersearch.value = backgrounds.queries[collectionName] ?? ''
 	}
 }
 
@@ -767,9 +787,11 @@ function createProviderSelect(backgrounds: Sync.Backgrounds) {
 
 	switch (backgrounds.type) {
 		case 'images':
-		case 'videos':
-			backgroundProvider.value = backgrounds[backgrounds.type].collection
+		case 'videos': {
+			const collectionName = backgrounds[backgrounds.type]
+			backgroundProvider.value = collectionName
 			break
+		}
 
 		default:
 	}

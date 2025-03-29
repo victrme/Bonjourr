@@ -118,12 +118,9 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		frequency: 'hour',
 		color: '#654',
 		urls: '',
-		images: {
-			collection: 'bonjourr-images-daylight',
-		},
-		videos: {
-			collection: 'bonjourr-videos-daylight',
-		},
+		images: 'bonjourr-images-daylight',
+		videos: 'bonjourr-videos-daylight',
+		queries: {},
 		texture: {
 			type: 'none',
 		},
