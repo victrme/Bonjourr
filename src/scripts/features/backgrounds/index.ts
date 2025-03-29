@@ -607,32 +607,42 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 	return div
 }
 
-function preloadBackground(media: Backgrounds.Item, options?: ApplyOptions) {
+async function preloadBackground(media: Backgrounds.Item, options?: ApplyOptions): Promise<true> {
 	const reduceRes = canReduceResolution(options?.full)
-	const img = document.createElement('img')
 
 	if (media.format === 'image') {
-		img.addEventListener('load', () => {
-			storage.local.remove('backgroundPreloading')
-			img.remove()
+		const img = document.createElement('img')
+		const src = reduceRes ? media.urls.small : media.urls.full
+
+		return new Promise(resolve => {
+			img.addEventListener('load', () => {
+				storage.local.remove('backgroundPreloading')
+				img.remove()
+				resolve(true)
+			})
+
+			img.src = src
+			storage.local.set({ backgroundPreloading: true })
 		})
-		img.src = reduceRes ? media.urls.small : media.urls.full
-		storage.local.set({ backgroundPreloading: true })
 	}
 
-	if (media.format === 'video') {
-		const vid = document.createElement('video')
+	// (media.format === 'video')
 
+	const vid = document.createElement('video')
+	const src = reduceRes ? media.urls.small : media.urls.full
+
+	return new Promise(resolve => {
 		vid.addEventListener('progress', _ => {
 			setTimeout(() => {
 				storage.local.remove('backgroundPreloading')
 				vid.remove()
+				resolve(true)
 			}, 200)
 		})
 
-		vid.src = reduceRes ? media.urls.small : media.urls.full
+		vid.src = src
 		storage.local.set({ backgroundPreloading: true })
-	}
+	})
 }
 
 export function removeBackgrounds(): void {
@@ -677,11 +687,11 @@ function applyTexture(texture: Sync.Backgrounds['texture']): void {
 
 export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) {
 	initThumbnailEvents()
+	applyFullResBackground(sync, local)
 	handleFilesSettingsOptions(local)
 	initUrlsEditor(sync.backgrounds, local)
 	createProviderSelect(sync.backgrounds)
 	handleBackgroundOptions(sync.backgrounds)
-	document.getElementById('i_blur')?.addEventListener('focusin', applyFullResBackground)
 }
 
 function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
@@ -797,15 +807,30 @@ function createProviderSelect(backgrounds: Sync.Backgrounds) {
 	}
 }
 
-function applyFullResBackground() {
+async function applyFullResBackground(sync: Sync.Storage, local: Local.Storage) {
 	const currentBackground = document.querySelector<HTMLElement>('#background-media div')
 	const currentIsSmall = currentBackground?.dataset.res === 'small'
-	const reduceRes = canReduceResolution()
 
-	if (currentIsSmall && !reduceRes) {
-		getCurrentBackground().then(media => {
-			applyBackground(media)
-		})
+	if (currentIsSmall) {
+		const collection = getCollection(sync.backgrounds, local)
+
+		if (sync.backgrounds.type === 'images') {
+			const [current, next] = collection.images()
+
+			preloadBackground(current, { full: true }).then(() => {
+				preloadBackground(next, { full: true })
+				applyBackground(current, { full: true })
+			})
+		}
+
+		if (sync.backgrounds.type === 'videos') {
+			const [current, next] = collection.videos()
+
+			preloadBackground(current, { full: true }).then(() => {
+				preloadBackground(next, { full: true })
+				applyBackground(current, { full: true })
+			})
+		}
 	}
 }
 
