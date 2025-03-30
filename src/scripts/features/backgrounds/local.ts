@@ -1,12 +1,12 @@
 import { applyBackground, removeBackgrounds } from './index'
-import { randomString } from '../../shared/generic'
 import { userDate } from '../../shared/time'
+import { hashcode } from '../../utils/hash'
 import { isEvery } from '../../shared/assert'
 import { storage } from '../../storage'
 import * as idb from 'idb-keyval'
 
 type LocalFileData = {
-	file: File
+	full: Blob
 	medium: Blob
 	small: Blob
 }
@@ -48,7 +48,7 @@ function imageObjectFromStorage(file: Local.BackgroundFile, data: LocalFileData)
 		x: file.position.x,
 		y: file.position.y,
 		urls: {
-			full: URL.createObjectURL(data.file),
+			full: URL.createObjectURL(data.full),
 			medium: URL.createObjectURL(data.medium),
 			small: URL.createObjectURL(data.small),
 		},
@@ -82,24 +82,22 @@ function controlBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local.
 
 export async function handleFilesSettingsOptions(local?: Local.Storage) {
 	const backgroundFiles = local?.backgroundFiles ?? (await storage.local.get('backgroundFiles'))?.backgroundFiles
-	const actionButtons = document.getElementById('thumbnail-action-buttons')
-	const thmbContainer = document.getElementById('thumbnails-container')
+
+	const thmbRemove = document.getElementById('b_thumbnail-remove')
+	const thmbMove = document.getElementById('b_thumbnail-position')
 	const thmbZoom = document.getElementById('b_thumbnail-zoom')
 
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map(el => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
-	const columnsAmount = Math.min(fileIds.length, 5).toString()
 	const missingThumbnailIds = fileIds.filter(id => !thumbIds.includes(id))
+	const selected = document.querySelectorAll('.thumbnail.selected').length
 
-	fileIds.length === 0 ? actionButtons?.classList.remove('shown') : actionButtons?.classList.add('shown')
 	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
+	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
+	selected === 0 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
 	addThumbnailsToDom(missingThumbnailIds, '')
-
-	if (thmbContainer) {
-		thmbContainer.style.setProperty('--thumbnails-columns', columnsAmount)
-	}
 }
 
 function handleBackgroundMoveOptions(file: Local.BackgroundFile) {
@@ -233,14 +231,27 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 	let id = ''
 
 	for (const file of filelist) {
-		id = randomString(8)
+		const infosString = file.size.toString() + file.name + file.lastModified.toString()
+		const hashString = hashcode(infosString).toString()
+
+		if (Object.keys(local.backgroundFiles).includes(hashString)) {
+			return
+		}
+
+		id = hashString
 		newIds.push(id)
 
-		const small = await compressThumbnail(file, 40)
-		const medium = await compressThumbnail(file, 300)
+		const isLandscape = window.screen.orientation.type === 'landscape-primary'
+		const sanePixelRatio = window.devicePixelRatio * 0.5
+		const fullSize = (isLandscape ? window.screen.width : window.screen.height) * sanePixelRatio
+		const isFileSmaller = file.size < fullSize ** 2
+
+		const full = isFileSmaller ? (file as Blob) : await compressMedia(file, fullSize)
+		const small = await compressMedia(file, 40)
+		const medium = await compressMedia(file, 300)
 
 		filesData[id] = {
-			file: file,
+			full: full,
 			small: small,
 			medium: medium,
 		}
@@ -264,7 +275,7 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 	const image: Backgrounds.Image = {
 		format: 'image',
 		urls: {
-			full: URL.createObjectURL(filesData[id].file),
+			full: URL.createObjectURL(filesData[id].full),
 			medium: URL.createObjectURL(filesData[id].medium),
 			small: URL.createObjectURL(filesData[id].small),
 		},
@@ -273,6 +284,12 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 	applyBackground(image)
 	handleFilesSettingsOptions(local)
 	storage.local.set(local)
+
+	if (thumbnailsContainer) {
+		const ids = Object.keys(local.backgroundFiles)
+		const columnsAmount = Math.min(ids.length, 5).toString()
+		thumbnailsContainer.style.setProperty('--thumbnails-columns', columnsAmount)
+	}
 }
 
 //	Background & Thumbnails
@@ -282,7 +299,7 @@ function selectThumbnail(id: string) {
 	document.getElementById(id)?.classList?.add('selected')
 }
 
-async function compressThumbnail(blob: Blob, size: number) {
+async function compressMedia(blob: Blob, size: number) {
 	const blobUrl = window.URL.createObjectURL(blob)
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
@@ -353,6 +370,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 			selectThumbnail(id)
 			applyThumbnailBackground(id)
 			handleBackgroundMoveOptions(file)
+			handleFilesSettingsOptions()
 		}
 	})
 

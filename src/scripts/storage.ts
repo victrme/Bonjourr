@@ -1,6 +1,7 @@
 import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
 import { deepEqual } from './dependencies/deepequal'
 import { parse } from './utils/parse'
+import * as idb from 'idb-keyval'
 
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
 
@@ -366,6 +367,7 @@ async function init(): Promise<AllStorage> {
 async function clearall() {
 	sessionStorage.clear()
 	localStorage.clear()
+	idb.clear()
 
 	//@ts-expect-error: Type 'undefined' is not assignable to type ...
 	globalThis.startupStorage = undefined

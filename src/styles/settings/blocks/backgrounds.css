@@ -12,8 +12,9 @@
 	width: 100%;
 }
 
-#local_options label {
-	padding: 0 4px;
+#background-local-actions > div {
+	display: flex;
+	gap: 4px;
 }
 
 #lbl_background-upload {

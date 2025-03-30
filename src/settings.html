@@ -166,36 +166,33 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<div class="wrapper">
-			<button id="b_thumbnail-zoom" class="trn param-btn">
-				<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
-				<span>Zoom</span>
-			</button>
+		<div id="background-local-actions" class="wrapper">
+			<div>
+				<button id="b_thumbnail-remove" class="param-btn btn-red">
+					<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
+					<span>&times;</span>
+					<span class="trn">Remove</span>
+				</button>
 
-			<label id="lbl_background-upload">
-				<span class="param-btn">
-					<img src="src/assets/labels/add.svg" height="13" alt="" />
-					Add files
-				</span>
-				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
-			</label>
-		</div>
+				<button id="b_thumbnail-position" class="trn param-btn">
+					<img src="src/assets/labels/move.svg" height="15" alt="" />
+					<span class="trn">Move</span>
+				</button>
+			</div>
 
-		<div id="thumbnails-container"></div>
+			<div>
+				<button id="b_thumbnail-zoom" class="trn param-btn">
+					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
+					<span>Zoom</span>
+				</button>
 
-		<div id="thumbnail-action-buttons" class="dropdown">
-			<div class="wrapper">
-				<div>
-					<button id="b_thumbnail-position" class="trn param-btn">
-						<img src="src/assets/labels/move.svg" height="15" alt="" />
-						<span class="trn">Move</span>
-					</button>
-					<button id="b_thumbnail-remove" class="param-btn btn-red">
-						<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
-						<span>&times;</span>
-						<span class="trn">Remove</span>
-					</button>
-				</div>
+				<label id="lbl_background-upload">
+					<span class="param-btn">
+						<img src="src/assets/labels/add.svg" height="13" alt="" />
+						Add
+					</span>
+					<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+				</label>
 			</div>
 		</div>
 
@@ -242,6 +239,8 @@
 				/>
 			</div>
 		</div>
+
+		<div id="thumbnails-container"></div>
 	</div>
 
 	<div id="background-freq-option" class="dropdown">
