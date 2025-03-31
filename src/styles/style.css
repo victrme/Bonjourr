@@ -23,13 +23,13 @@
 @import './settings/global.css';
 @import './settings/other.css';
 @import './settings/dropdowns.css';
-@import './settings/blocks/dragzone.css';
-@import './settings/blocks/notifications.css';
-@import './settings/blocks/backgrounds.css';
-@import './settings/blocks/management.css';
-@import './settings/blocks/footer.css';
-@import './settings/reusables/inputs.css';
-@import './settings/reusables/tooltips.css';
+@import './settings/dragzone.css';
+@import './settings/notifications.css';
+@import './settings/backgrounds.css';
+@import './settings/management.css';
+@import './settings/footer.css';
+@import './settings/inputs.css';
+@import './settings/tooltips.css';
 
 /* Components that can be used anywhere (interface or settings) */
 @import './components/dialog';
