@@ -140,7 +140,7 @@ function thumbnailTogglePosition() {
 }
 
 async function thumbnailPosition(this: HTMLInputElement) {
-	const img = document.querySelector<HTMLElement>('background-media div')
+	const img = document.querySelector<HTMLElement>('#background-media div')
 	const selection = getThumbnailSelection()[0]
 	const local = await storage.local.get('backgroundFiles')
 	const file = local.backgroundFiles[selection]
@@ -171,32 +171,31 @@ async function thumbnailPosition(this: HTMLInputElement) {
 
 async function thumbnailRemove(_e: Event) {
 	const local = await storage.local.get()
-	const thumbnail = document.querySelector<HTMLElement>('.thumbnail.selected')
-	const id = getThumbnailSelection()[0]
+	const ids = getThumbnailSelection()
 
-	if (localIsLoading || !thumbnail || !id || !local.backgroundFiles) {
+	if (localIsLoading || ids.length === 0 || !local.backgroundFiles) {
 		return
 	}
 
-	idb.del(id)
-	delete local.backgroundFiles[id]
-	storage.local.remove('backgroundFiles')
-	storage.local.set({ backgroundFiles: local.backgroundFiles })
+	for (const id of ids) {
+		idb.del(id)
+		delete local.backgroundFiles[id]
 
-	const [_, collection] = await getFilesAsCollection(local)
-
-	if (collection[0]) {
-		applyBackground(collection[0])
-	} else {
-		removeBackgrounds()
+		const thumbnail = document.querySelector<HTMLElement>(`#${id}`)
+		thumbnail?.classList.toggle('hiding', true)
+		setTimeout(() => {
+			thumbnail?.remove()
+		}, 100)
 	}
 
-	thumbnail.classList.toggle('hiding', true)
+	const [_, collection] = await getFilesAsCollection(local)
+	const image = collection[0]
 
-	setTimeout(() => {
-		thumbnail.remove()
-		handleFilesSettingsOptions(local)
-	}, 100)
+	image ? applyBackground(image) : removeBackgrounds()
+	handleFilesSettingsOptions(local)
+
+	storage.local.remove('backgroundFiles')
+	storage.local.set({ backgroundFiles: local.backgroundFiles })
 }
 
 function getThumbnailSelection(): string[] {
@@ -354,7 +353,14 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 	thb.appendChild(thbimg)
 
 	thbimg.onclickdown(async (e, target) => {
-		const isLeftClick = (e as MouseEvent).button === 0
+		const mouseEvent = e as MouseEvent
+		const hasCtrl = mouseEvent.ctrlKey || mouseEvent.metaKey
+		const isLeftClick = mouseEvent.button === 0
+
+		if (isLeftClick && hasCtrl) {
+			document.getElementById(id)?.classList?.toggle('selected')
+			return
+		}
 
 		if (isLeftClick && !localIsLoading) {
 			const local = await storage.local.get()
