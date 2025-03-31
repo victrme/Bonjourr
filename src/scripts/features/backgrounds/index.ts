@@ -48,6 +48,11 @@ export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?:
 			wrapper?.classList.remove('hidden')
 		}
 
+		// <!> To clean up
+		const pauseButton = document.getElementById('b_interface-background-pause')
+		const isPaused = sync.backgrounds.frequency === 'pause'
+		pauseButton?.classList.toggle('paused', isPaused)
+
 		initCreditEvents()
 
 		onSettingsLoad(() => {

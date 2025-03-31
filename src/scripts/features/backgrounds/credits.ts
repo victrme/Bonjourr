@@ -1,9 +1,10 @@
 import { backgroundUpdate } from '.'
+import storage from '../../storage'
 import { tradThis } from '../../utils/translations'
 
 export function initCreditEvents() {
 	document.getElementById('b_interface-background-pause')?.onclickdown(() => {
-		backgroundUpdate({ freq: 'pause' })
+		toggleBackgroundPause()
 	})
 
 	document.getElementById('b_interface-background-refresh')?.onclickdown((_, target) => {
@@ -117,6 +118,20 @@ export function updateCredits(image?: Backgrounds.Item) {
 
 	if (image.download && domsave) {
 		domsave.dataset.downloadUrl = image.download
+	}
+}
+
+async function toggleBackgroundPause() {
+	const button = document.getElementById('b_interface-background-pause')
+	const paused = button?.classList.contains('paused')
+	const sync = await storage.sync.get('backgrounds')
+
+	if (paused) {
+		const last = localStorage.lastBackgroundFreq || 'hour'
+		backgroundUpdate({ freq: last })
+	} else {
+		localStorage.lastBackgroundFreq = sync.backgrounds.frequency
+		backgroundUpdate({ freq: 'pause' })
 	}
 }
 

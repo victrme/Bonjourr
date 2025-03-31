@@ -86,7 +86,6 @@
 	cursor: pointer;
 }
 
-#b_interface-background-pause.paused,
 #background-actions button:hover {
 	color: #fffe;
 	background-color: #fff2;
@@ -100,6 +99,16 @@
 
 #b_interface-background-pause:active svg {
 	transform: scale(0.9);
+}
+
+#b_interface-background-pause #interface-background-pause-icon,
+#b_interface-background-pause.paused #interface-background-play-icon {
+	display: initial;
+}
+
+#b_interface-background-pause #interface-background-play-icon,
+#b_interface-background-pause.paused #interface-background-pause-icon {
+	display: none;
 }
 
 /* .save {
