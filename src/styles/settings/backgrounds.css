@@ -46,7 +46,6 @@
 .thumbnail {
 	position: relative;
 	height: calc(230px / var(--thumbnails-columns));
-	image-rendering: pixelated;
 	margin: 3px;
 	padding: 0;
 	overflow: hidden;
@@ -57,6 +56,18 @@
 .thumbnail.hiding {
 	transform: scale(0.9);
 	opacity: 0;
+}
+
+.thumbnail.loading {
+	pointer-events: none;
+	user-select: none;
+}
+
+.thumbnail.loading img {
+	width: 1em;
+	height: 1em;
+	opacity: 0.5;
+	object-fit: unset;
 }
 
 .thumbnail:hover,

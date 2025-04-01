@@ -817,9 +817,8 @@ async function applyFullResBackground(sync: Sync.Storage, local: Local.Storage) 
 	const currentIsSmall = currentBackground?.dataset.res === 'small'
 
 	if (currentIsSmall) {
-		const collection = getCollection(sync.backgrounds, local)
-
 		if (sync.backgrounds.type === 'images') {
+			const collection = getCollection(sync.backgrounds, local)
 			const [current, next] = collection.images()
 
 			preloadBackground(current, { full: true }).then(() => {
@@ -829,6 +828,7 @@ async function applyFullResBackground(sync: Sync.Storage, local: Local.Storage) 
 		}
 
 		if (sync.backgrounds.type === 'videos') {
+			const collection = getCollection(sync.backgrounds, local)
 			const [current, next] = collection.videos()
 
 			preloadBackground(current, { full: true }).then(() => {

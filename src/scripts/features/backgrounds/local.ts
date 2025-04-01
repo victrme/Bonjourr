@@ -9,6 +9,8 @@ type LocalFileData = {
 	full: Blob
 	medium: Blob
 	small: Blob
+	thumb: Blob
+	pixels: Blob
 }
 
 type UpdateLocal = {
@@ -16,8 +18,6 @@ type UpdateLocal = {
 	newfile?: FileList | null
 	freq?: string
 }
-
-let localIsLoading = false
 
 export async function getFilesAsCollection(local: Local.Storage): Promise<[string[], Backgrounds.Image[]]> {
 	const idbKeys = (await idb.keys()) as string[]
@@ -173,7 +173,7 @@ async function thumbnailRemove(_e: Event) {
 	const local = await storage.local.get()
 	const ids = getThumbnailSelection()
 
-	if (localIsLoading || ids.length === 0 || !local.backgroundFiles) {
+	if (ids.length === 0 || !local.backgroundFiles) {
 		return
 	}
 
@@ -221,39 +221,50 @@ export async function updateLocalBackgrounds(update: UpdateLocal) {
 }
 
 async function addNewImage(filelist: FileList, local: Local.Storage) {
-	localIsLoading = true
-
 	const dateString = userDate().toString()
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 	const filesData: Record<string, LocalFileData> = {}
 	const newIds: string[] = []
-	let id = ''
+
+	// 1. Add empty thumbnails
 
 	for (const file of filelist) {
 		const infosString = file.size.toString() + file.name + file.lastModified.toString()
 		const hashString = hashcode(infosString).toString()
 
 		if (Object.keys(local.backgroundFiles).includes(hashString)) {
-			return
+			continue
 		}
 
-		id = hashString
-		newIds.push(id)
+		newIds.push(hashString)
 
+		thumbnailsContainer?.appendChild(createThumbnail(undefined, hashString, false))
+	}
+
+	if (thumbnailsContainer) {
+		const idsAmount = Object.keys(local.backgroundFiles).length + newIds.length
+		const columnsAmount = Math.min(idsAmount, 5).toString()
+		thumbnailsContainer.style.setProperty('--thumbnails-columns', columnsAmount)
+	}
+
+	// 2. Compress files for background & thumbnail use
+
+	for (let i = 0; i < newIds.length; i++) {
+		const file = filelist[i]
+		const id = newIds[i]
 		const isLandscape = window.screen.orientation.type === 'landscape-primary'
 		const sanePixelRatio = window.devicePixelRatio * 0.5
 		const fullSize = (isLandscape ? window.screen.width : window.screen.height) * sanePixelRatio
 		const isFileSmaller = file.size < fullSize ** 2
 
-		const full = isFileSmaller ? (file as Blob) : await compressMedia(file, fullSize)
-		const small = await compressMedia(file, 40)
-		const medium = await compressMedia(file, 300)
+		const full = isFileSmaller ? (file as Blob) : await compressMedia(file, fullSize, 'image/jpeg', 0.9)
+		const medium = await compressMedia(full, fullSize / 3, 'image/jpeg', 0.6)
+		const small = await compressMedia(medium, 360, 'image/jpeg', 0.6)
+		const thumb = await compressMedia(medium, 120, 'image/jpeg', 0.6)
+		const pixels = await compressMedia(medium, 4, 'image/png', 1)
 
-		filesData[id] = {
-			full: full,
-			small: small,
-			medium: medium,
-		}
+		document.querySelector(`#${id} img`)?.setAttribute('src', URL.createObjectURL(small))
+		document.getElementById(id)?.classList.remove('loading')
 
 		local.backgroundFiles[id] = {
 			lastUsed: dateString,
@@ -264,31 +275,26 @@ async function addNewImage(filelist: FileList, local: Local.Storage) {
 			},
 		}
 
-		thumbnailsContainer?.appendChild(createThumbnail(medium, id, false))
+		filesData[id] = { full, medium, small, thumb, pixels }
 
 		await idb.set(id, filesData[id])
+		storage.local.set(local)
 	}
 
-	localIsLoading = false
+	// 3. Apply background
 
+	const lastId = newIds.at(-1) ?? 0
 	const image: Backgrounds.Image = {
 		format: 'image',
 		urls: {
-			full: URL.createObjectURL(filesData[id].full),
-			medium: URL.createObjectURL(filesData[id].medium),
-			small: URL.createObjectURL(filesData[id].small),
+			full: URL.createObjectURL(filesData[lastId].full),
+			medium: URL.createObjectURL(filesData[lastId].medium),
+			small: URL.createObjectURL(filesData[lastId].small),
 		},
 	}
 
 	applyBackground(image)
 	handleFilesSettingsOptions(local)
-	storage.local.set(local)
-
-	if (thumbnailsContainer) {
-		const ids = Object.keys(local.backgroundFiles)
-		const columnsAmount = Math.min(ids.length, 5).toString()
-		thumbnailsContainer.style.setProperty('--thumbnails-columns', columnsAmount)
-	}
 }
 
 //	Background & Thumbnails
@@ -298,7 +304,7 @@ function selectThumbnail(id: string) {
 	document.getElementById(id)?.classList?.add('selected')
 }
 
-async function compressMedia(blob: Blob, size: number) {
+async function compressMedia(blob: Blob, size: number, type = 'image/jpeg', q = 0.8) {
 	const blobUrl = window.URL.createObjectURL(blob)
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
@@ -330,7 +336,7 @@ async function compressMedia(blob: Blob, size: number) {
 		}
 	})
 
-	const newBlob = await new Promise(resolve => ctx?.canvas.toBlob(resolve, 'image/png'))
+	const newBlob = await new Promise(resolve => ctx?.canvas.toBlob(resolve, type, q))
 
 	return newBlob as Blob
 }
@@ -339,13 +345,9 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 	const thb = document.createElement('button')
 	const thbimg = document.createElement('img')
 
-	if (!blob) {
-		return thb
-	}
-
 	thb.id = id
-	thbimg.src = URL.createObjectURL(blob)
-	thb.className = `thumbnail${isSelected ? ' selected' : ''}`
+	thbimg.src = 'src/assets/interface/sand-clock.svg'
+	thb.className = `thumbnail${isSelected ? ' selected' : ''} loading`
 	thbimg.setAttribute('alt', '')
 	thbimg.setAttribute('draggable', 'false')
 	thb.setAttribute('aria-label', 'Select this background')
@@ -362,7 +364,7 @@ function createThumbnail(blob: Blob | undefined, id: string, isSelected: boolean
 			return
 		}
 
-		if (isLeftClick && !localIsLoading) {
+		if (isLeftClick) {
 			const local = await storage.local.get()
 			const thumbnail = target?.parentElement
 			const id = thumbnail?.id ?? ''
@@ -388,7 +390,6 @@ async function applyThumbnailBackground(id: string, local?: Local.Storage) {
 	const notAlreadySelected = id
 
 	if (notAlreadySelected && backgroundFiles) {
-		localIsLoading = false
 		storage.local.set({ backgroundFiles })
 	}
 }
@@ -400,8 +401,14 @@ async function addThumbnailsToDom(ids: string[], selected?: string) {
 
 	for (const id of idsToAdd) {
 		const isSelected = id === selected
-		const blob = (await getFile(id))?.medium
-		fragment.appendChild(createThumbnail(blob, id, isSelected))
+		const blob = (await getFile(id))?.thumb
+		const thumb = createThumbnail(blob, id, isSelected)
+
+		if (blob) {
+			thumb.classList.remove('loading')
+			thumb.querySelector('img')?.setAttribute('src', URL.createObjectURL(blob))
+			fragment.appendChild(thumb)
+		}
 	}
 
 	thumbnailsContainer.appendChild(fragment)
