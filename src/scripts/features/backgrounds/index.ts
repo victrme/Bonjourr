@@ -1,4 +1,4 @@
-import { getFilesAsCollection, initThumbnailEvents, handleFilesSettingsOptions } from './local'
+import { getFilesAsCollection, initFilesSettingsOptions, addLocalBackgrounds } from './local'
 import { initCreditEvents, updateCredits, toggleCredits } from './credits'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
 import { TEXTURE_RANGES } from './textures'
@@ -18,6 +18,7 @@ interface BackgroundUpdate {
 	blur?: string
 	color?: string
 	query?: string
+	files?: FileList | null
 	bright?: string
 	fadein?: string
 	refresh?: HTMLSpanElement
@@ -140,6 +141,10 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
 	if (update.urlsapply) {
 		applyUrls(data.backgrounds)
+	}
+
+	if (update.files) {
+		addLocalBackgrounds(update.files, local)
 	}
 
 	// Textures
@@ -691,9 +696,8 @@ function applyTexture(texture: Sync.Backgrounds['texture']): void {
 // 	Settings options
 
 export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) {
-	initThumbnailEvents()
 	applyFullResBackground(sync, local)
-	handleFilesSettingsOptions(local)
+	initFilesSettingsOptions(local)
 	initUrlsEditor(sync.backgrounds, local)
 	createProviderSelect(sync.backgrounds)
 	handleBackgroundOptions(sync.backgrounds)

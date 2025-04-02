@@ -3,7 +3,6 @@ import { customFont, fontIsAvailableInSubset, systemfont } from './features/font
 import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds'
 import { changeGroupTitle, initGroups } from './features/links/groups'
 import { supportersNotifications } from './features/supporters'
-import { updateLocalBackgrounds } from './features/backgrounds/local'
 import { synchronization } from './features/synchronization'
 import { interfacePopup } from './features/popup'
 import { moveElements } from './features/move'
@@ -423,7 +422,7 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
-		updateLocalBackgrounds({ newfile: this.files })
+		backgroundUpdate({ files: this.files })
 	})
 
 	paramId('b_background-urls').onclickdown(() => {
