@@ -1,5 +1,6 @@
 import { applyBackground, removeBackgrounds } from './index'
 import { compressMedia } from '../../shared/compress'
+import { IS_MOBILE } from '../../defaults'
 import { userDate } from '../../shared/time'
 import { hashcode } from '../../utils/hash'
 import { storage } from '../../storage'
@@ -12,6 +13,8 @@ type LocalFileData = {
 	thumb: Blob
 	pixels: Blob
 }
+
+let thumbnailObserver: IntersectionObserver
 
 // Update
 
@@ -82,6 +85,7 @@ export async function addLocalBackgrounds(filelist: FileList, local: Local.Stora
 	const file = local.backgroundFiles[id]
 	const image = imageObjectFromStorage(file, data)
 
+	unselectAll()
 	applyBackground(image)
 	handleFilesSettingsOptions(local)
 }
@@ -147,6 +151,16 @@ async function updateBackgroundPosition(type: 'size' | 'vertical' | 'horizontal'
 //	Settings options
 
 export function initFilesSettingsOptions(local: Local.Storage) {
+	thumbnailObserver = new IntersectionObserver(intersectionEvent, {
+		root: null,
+		threshold: 0,
+	})
+
+	if (IS_MOBILE) {
+		const container = document.getElementById('thumbnails-container')
+		container?.style.setProperty('--thumbnails-columns', '1')
+	}
+
 	handleFilesSettingsOptions(local)
 
 	document.getElementById('b_thumbnail-remove')?.onclickdown(removeLocalBackgrounds)
@@ -180,12 +194,6 @@ function handleFilesSettingsOptions(local: Local.Storage) {
 			const thumbnail = createThumbnail(id)
 			thumbnailsContainer?.appendChild(thumbnail)
 		}
-
-		getAllFiles(missingThumbnails).then(files => {
-			for (const [id, data] of Object.entries(files)) {
-				addThumbnailImage(id, data)
-			}
-		})
 	}
 }
 
@@ -231,6 +239,20 @@ function handleFilePosition(this: HTMLInputElement) {
 	}
 }
 
+function intersectionEvent(entries: IntersectionObserverEntry[]) {
+	const { target, isIntersecting } = entries[0]
+	const id = target.id ?? ''
+
+	if (isIntersecting && target.classList.contains('loading')) {
+		getFile(id).then(data => {
+			if (data) {
+				addThumbnailImage(id, data)
+				thumbnailObserver.unobserve(target)
+			}
+		})
+	}
+}
+
 // Thumbnails
 
 function createThumbnail(id: string): HTMLButtonElement {
@@ -245,21 +267,33 @@ function createThumbnail(id: string): HTMLButtonElement {
 	thb.setAttribute('aria-label', 'Select this background')
 
 	thb.appendChild(thbimg)
-	thbimg.addEventListener('click', handleThumbnailClick)
+	thb.addEventListener('click', handleThumbnailClick)
+	thumbnailObserver?.observe(thb)
 
 	return thb
 }
 
 function addThumbnailImage(id: string, data: LocalFileData): void {
-	document.querySelector(`#${id} img`)?.setAttribute('src', URL.createObjectURL(data.small))
-	document.getElementById(id)?.classList.remove('loading')
+	const btn = document.querySelector<HTMLButtonElement>(`#${id}`)
+	const img = document.querySelector<HTMLImageElement>(`#${id} img`)
+
+	if (!(img && btn)) {
+		console.warn('?')
+		return
+	}
+
+	img.addEventListener('load', () => {
+		btn.classList.replace('loading', 'loaded')
+		setTimeout(() => btn.classList.remove('loaded'), 2)
+	})
+
+	img.src = URL.createObjectURL(data.small)
 }
 
-async function handleThumbnailClick(this: HTMLImageElement, mouseEvent: MouseEvent) {
+async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEvent) {
 	const hasCtrl = mouseEvent.ctrlKey || mouseEvent.metaKey
 	const isLeftClick = mouseEvent.button === 0
-	const thumbnail = this?.parentElement
-	const id = thumbnail?.id ?? ''
+	const id = this?.id ?? ''
 
 	if (isLeftClick && hasCtrl) {
 		document.getElementById('b_thumbnail-remove')?.removeAttribute('disabled')
@@ -272,17 +306,22 @@ async function handleThumbnailClick(this: HTMLImageElement, mouseEvent: MouseEve
 		const local = await storage.local.get()
 		const file = local.backgroundFiles[id]
 
-		if (file && data) {
-			const image = imageObjectFromStorage(file, data)
-
-			local.backgroundFiles[id].lastUsed = userDate().toString()
-			storage.local.set({ backgroundFiles: local.backgroundFiles })
-
-			document.getElementById(id)?.classList?.add('selected')
-			handleFilesSettingsOptions(local)
-			handleFilesMoveOptions(file)
-			applyBackground(image)
+		if (!(file && data)) {
+			console.warn('?')
+			return
 		}
+
+		const image = imageObjectFromStorage(file, data)
+
+		local.backgroundFiles[id].lastUsed = userDate().toString()
+		storage.local.set({ backgroundFiles: local.backgroundFiles })
+
+		handleFilesSettingsOptions(local)
+		handleFilesMoveOptions(file)
+		applyBackground(image)
+		unselectAll()
+
+		document.getElementById(id)?.classList?.add('selected')
 	}
 }
 
@@ -348,6 +387,12 @@ function validateBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local
 }
 
 //	Helpers
+
+function unselectAll() {
+	for (const node of document.querySelectorAll('.thumbnail.selected')) {
+		node?.classList?.remove('selected')
+	}
+}
 
 function getSelection(): string[] {
 	const thmbs = document.querySelectorAll<HTMLElement>('.thumbnail.selected')

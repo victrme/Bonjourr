@@ -39,6 +39,7 @@
 	display: grid;
 	width: 100%;
 	max-height: 300px;
+	gap: 3px;
 	overflow: auto;
 	grid-template-columns: repeat(var(--thumbnails-columns), 1fr);
 }
@@ -46,7 +47,6 @@
 .thumbnail {
 	position: relative;
 	height: calc(230px / var(--thumbnails-columns));
-	margin: 3px;
 	padding: 0;
 	overflow: hidden;
 	background-color: var(--color-input);
@@ -63,32 +63,48 @@
 	user-select: none;
 }
 
+.thumbnail::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: 8px;
+	box-sizing: border-box;
+}
+
+.thumbnail:hover::after,
+.thumbnail:active::after,
+.thumbnail.selected::after {
+	border: 3px solid var(--color-blue);
+}
+
+.thumbnail:active::after {
+	background-color: rgba(var(--blue), 0.4);
+}
+
+.thumbnail.selected::after {
+	background-color: rgba(var(--blue), 0.2);
+}
+
 .thumbnail.loading img {
 	width: 1em;
 	height: 1em;
 	opacity: 0.5;
 	object-fit: unset;
+	transition: none;
 }
 
-.thumbnail:hover,
-.thumbnail.selected {
-	outline: 3px solid var(--color-blue);
-	background-color: var(--color-blue);
-}
-
-.thumbnail:active {
-	opacity: 0.9;
-}
-
-.thumbnail:hover img,
-.thumbnail.selected img {
-	opacity: 0.8;
+.thumbnail.loaded img {
+	opacity: 0;
 }
 
 .thumbnail img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+	transition: opacity .1s;
 }
 
 #thumbnail-action-buttons {
@@ -122,8 +138,8 @@
 	border: 1px solid;
 	color: #fff4;
 }
-/*
-#background-urls-editor .pce-line.warn > span {
+
+/* #background-urls-editor .pce-line.warn > span {
 	background-color: rgba(255, 255, 0, 0.1);
 }
 
