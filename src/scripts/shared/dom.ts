@@ -48,13 +48,12 @@ export function getComposedPath(target: EventTarget | null): HTMLElement[] {
 	return path
 }
 
-export function turnRefreshButton(button: HTMLSpanElement, canTurn: boolean) {
-	const animationOptions = { duration: 600, easing: 'ease-out' }
-	button.animate(
+export function turnRefreshButton(elem: Element, canTurn: boolean) {
+	elem.animate(
 		canTurn
 			? [{ transform: 'rotate(360deg)' }]
 			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],
-		animationOptions,
+		{ duration: 600, easing: 'ease-out' },
 	)
 }
 

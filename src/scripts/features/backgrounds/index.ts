@@ -21,7 +21,7 @@ interface BackgroundUpdate {
 	files?: FileList | null
 	bright?: string
 	fadein?: string
-	refresh?: HTMLSpanElement
+	refresh?: Element
 	urlsapply?: true
 	texture?: string
 	provider?: string
@@ -68,6 +68,7 @@ export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?:
 	toggleCredits(sync.backgrounds)
 	applyFilters(sync.backgrounds)
 	applyTexture(sync.backgrounds.texture)
+	handleBackgroundActions(sync.backgrounds)
 	document.getElementById('background-wrapper')?.setAttribute('data-type', sync.backgrounds.type)
 
 	if (sync.backgrounds.type === 'color') {
@@ -718,7 +719,6 @@ export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) 
 
 function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	const type = backgrounds.type
-	const freq = backgrounds.frequency
 
 	document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
 	document.getElementById('solid_options')?.classList.toggle('shown', type === 'color')
@@ -726,10 +726,10 @@ function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
-	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
 
 	handleTextureOptions(backgrounds)
 	handleProviderOptions(backgrounds)
+	handleBackgroundActions(backgrounds)
 }
 
 function handleTextureOptions(backgrounds: Sync.Backgrounds) {
@@ -860,6 +860,14 @@ async function applyFullResBackground(sync: Sync.Storage, local: Local.Storage) 
 			applyBackground(image, { full: true })
 		}
 	}
+}
+
+function handleBackgroundActions(backgrounds: Sync.Backgrounds) {
+	const type = backgrounds.type
+	const freq = backgrounds.frequency
+	document.getElementById('background-actions')?.classList.toggle('shown', type !== 'color')
+	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
+	document.getElementById('b_interface-background-download')?.classList.toggle('shown', type === 'images')
 }
 
 //  Helpers

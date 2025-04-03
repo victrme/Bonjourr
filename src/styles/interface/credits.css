@@ -59,12 +59,17 @@
 
 #background-actions {
 	position: fixed;
+	display: none;
 	opacity: 0;
 	bottom: 0;
 	left: calc(50% - 60px - 20px);
 	width: 120px;
 	padding: 0 20px 26px;
 	color: #fff9;
+}
+
+#background-actions.shown {
+	display: unset;
 }
 
 #background-actions:hover {
@@ -90,6 +95,14 @@
 	color: #fffe;
 	background-color: #fff2;
 	backdrop-filter: blur(20px);
+}
+
+#background-actions #b_interface-background-download {
+	display: none;
+}
+
+#background-actions #b_interface-background-download.shown {
+	display: unset;
 }
 
 #b_interface-background-download.idle span:last-child,

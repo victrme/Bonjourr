@@ -8,7 +8,9 @@ export function initCreditEvents() {
 	})
 
 	document.getElementById('b_interface-background-refresh')?.onclickdown((_, target) => {
-		backgroundUpdate({ refresh: target })
+		backgroundUpdate({
+			refresh: target.querySelector('svg') as Element,
+		})
 	})
 
 	document.getElementById('b_interface-background-download')?.onclickdown(() => {
