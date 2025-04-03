@@ -113,14 +113,19 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		data.backgrounds.frequency = update.freq
 
 		if (update.freq === 'pause') {
-			const collection = getCollection(data.backgrounds, local)
 			const type = data.backgrounds.type
 
 			if (type === 'images') {
-				data.backgrounds.pausedImage = collection.images()[0]
+				const collection = getCollection(data.backgrounds, local).images()
+				data.backgrounds.pausedImage = collection[0]
 			}
 			if (type === 'videos') {
-				data.backgrounds.pausedVideo = collection.videos()[0]
+				const collection = getCollection(data.backgrounds, local).videos()
+				data.backgrounds.pausedVideo = collection[0]
+			}
+			if (type === 'urls') {
+				const [_, list] = getUrlsAsCollection(local)
+				data.backgrounds.pausedUrl = list[0].urls.full
 			}
 		}
 
@@ -307,6 +312,11 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 			applyBackground(backgrounds.pausedVideo)
 			return
 		}
+		if (backgrounds.pausedUrl) {
+			const url = backgrounds.pausedUrl
+			const urls = { full: url, medium: url, small: url }
+			applyBackground({ format: 'image', urls: urls })
+		}
 	}
 
 	if (!needNew) {
@@ -324,6 +334,9 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 		}
 		if (backgrounds.type === 'videos') {
 			backgrounds.pausedVideo = list[0] as Backgrounds.Video
+		}
+		if (backgrounds.type === 'videos') {
+			backgrounds.pausedUrl = list[0].urls.full
 		}
 		storage.sync.set({ backgrounds })
 	}
