@@ -840,6 +840,12 @@ async function applyFullResBackground(sync: Sync.Storage, local: Local.Storage) 
 				applyBackground(current, { full: true })
 			})
 		}
+
+		if (sync.backgrounds.type === 'files') {
+			const collection = await getFilesAsCollection(local)
+			const image = collection[1][0]
+			applyBackground(image, { full: true })
+		}
 	}
 }
 

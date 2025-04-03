@@ -10,8 +10,6 @@ type LocalFileData = {
 	full: Blob
 	medium: Blob
 	small: Blob
-	thumb: Blob
-	pixels: Blob
 }
 
 let thumbnailObserver: IntersectionObserver
@@ -58,9 +56,7 @@ export async function addLocalBackgrounds(filelist: FileList, local: Local.Stora
 
 		const full = isFileSmaller ? (file as Blob) : await compressMedia(file, { size: fullSize, q: 0.9 })
 		const medium = await compressMedia(full, { size: fullSize / 3, q: 0.6 })
-		const small = await compressMedia(medium, { size: 360, q: 0.6 })
-		const thumb = await compressMedia(medium, { size: 120, q: 0.6 })
-		const pixels = await compressMedia(medium, { size: 4, type: 'png', q: 1 })
+		const small = await compressMedia(medium, { size: 360, q: 0.4 })
 
 		local.backgroundFiles[id] = {
 			lastUsed: dateString,
@@ -71,7 +67,7 @@ export async function addLocalBackgrounds(filelist: FileList, local: Local.Stora
 			},
 		}
 
-		filesData[id] = { full, medium, small, thumb, pixels }
+		filesData[id] = { full, medium, small }
 
 		addThumbnailImage(id, filesData[id])
 		await idb.set(id, filesData[id])
@@ -158,7 +154,7 @@ export function initFilesSettingsOptions(local: Local.Storage) {
 
 	if (IS_MOBILE) {
 		const container = document.getElementById('thumbnails-container')
-		container?.style.setProperty('--thumbnails-columns', '1')
+		container?.style.setProperty('--thumbnails-columns', '2')
 	}
 
 	handleFilesSettingsOptions(local)
@@ -192,6 +188,7 @@ function handleFilesSettingsOptions(local: Local.Storage) {
 	if (missingThumbnails.length > 0) {
 		for (const id of missingThumbnails) {
 			const thumbnail = createThumbnail(id)
+			thumbnailObserver?.observe(thumbnail)
 			thumbnailsContainer?.appendChild(thumbnail)
 		}
 	}
@@ -240,16 +237,17 @@ function handleFilePosition(this: HTMLInputElement) {
 }
 
 function intersectionEvent(entries: IntersectionObserverEntry[]) {
-	const { target, isIntersecting } = entries[0]
-	const id = target.id ?? ''
+	for (const { target, isIntersecting } of entries) {
+		const id = target.id ?? ''
 
-	if (isIntersecting && target.classList.contains('loading')) {
-		getFile(id).then(data => {
-			if (data) {
-				addThumbnailImage(id, data)
-				thumbnailObserver.unobserve(target)
-			}
-		})
+		if (isIntersecting && target.classList.contains('loading')) {
+			getFile(id).then(data => {
+				if (data) {
+					addThumbnailImage(id, data)
+					thumbnailObserver.unobserve(target)
+				}
+			})
+		}
 	}
 }
 
@@ -268,7 +266,6 @@ function createThumbnail(id: string): HTMLButtonElement {
 
 	thb.appendChild(thbimg)
 	thb.addEventListener('click', handleThumbnailClick)
-	thumbnailObserver?.observe(thb)
 
 	return thb
 }
