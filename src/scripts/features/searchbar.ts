@@ -127,9 +127,10 @@ async function updateSearchbar({ engine, newtab, background, placeholder, reques
 
 function isValidURL(string: string): boolean {
 	try {
-		const url = new URL(string.startsWith('http') ? string : 'https://' + string)
-		const domainPattern = /^(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
-		return domainPattern.test(url.host)
+		let string_with_scheme : string = string.startsWith('http://') || string.startsWith('https://') ? string : 'https://' + string
+		new URL(string_with_scheme) // Throws if invalid
+		const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
+		return domainPattern.test(string)
 	} catch (_) {
 		return false
 	}
