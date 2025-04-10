@@ -19,6 +19,7 @@ interface BackgroundUpdate {
 	color?: string
 	query?: string
 	files?: FileList | null
+	compress?: boolean
 	bright?: string
 	fadein?: string
 	refresh?: Element
@@ -151,6 +152,15 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
 	if (update.files) {
 		addLocalBackgrounds(update.files, local)
+	}
+
+	if (update.compress !== undefined) {
+		local.backgroundCompressFiles = update.compress
+		storage.local.set({ backgroundCompressFiles: update.compress })
+
+		const [_ids, files] = await getFilesAsCollection(local)
+		const image = files[0]
+		applyBackground(image)
 	}
 
 	// Textures

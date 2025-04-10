@@ -7,6 +7,7 @@ import { storage } from '../../storage'
 import * as idb from 'idb-keyval'
 
 type LocalFileData = {
+	raw: File
 	full: Blob
 	medium: Blob
 	small: Blob
@@ -49,14 +50,22 @@ export async function addLocalBackgrounds(filelist: FileList, local: Local.Stora
 	for (let i = 0; i < newids.length; i++) {
 		const file = filelist[i]
 		const id = newids[i]
-		const isLandscape = window.screen.orientation.type === 'landscape-primary'
-		const sanePixelRatio = window.devicePixelRatio * 0.5
-		const fullSize = (isLandscape ? window.screen.width : window.screen.height) * sanePixelRatio
-		const isFileSmaller = file.size < fullSize ** 2
 
-		const full = isFileSmaller ? (file as Blob) : await compressMedia(file, { size: fullSize, q: 0.9 })
-		const medium = await compressMedia(full, { size: fullSize / 3, q: 0.6 })
+		// 2a. This finds a reasonable resolution for compression
+
+		const isLandscape = window.screen.orientation.type === 'landscape-primary'
+		const long = isLandscape ? window.screen.width : window.screen.height
+		const short = isLandscape ? window.screen.height : window.screen.width
+		const density = Math.max(2, window.devicePixelRatio)
+		const ratio = Math.min(1.8, long / short)
+		const averagePixelHeight = short * ratio * density
+
+		const raw = file
+		const full = await compressMedia(file, { size: averagePixelHeight, q: 0.9 })
+		const medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
 		const small = await compressMedia(medium, { size: 360, q: 0.4 })
+
+		// const exif = await getExif(file)
 
 		local.backgroundFiles[id] = {
 			lastUsed: dateString,
@@ -67,7 +76,7 @@ export async function addLocalBackgrounds(filelist: FileList, local: Local.Stora
 			},
 		}
 
-		filesData[id] = { full, medium, small }
+		filesData[id] = { raw, full, medium, small }
 
 		addThumbnailImage(id, filesData[id])
 		await idb.set(id, filesData[id])
@@ -79,7 +88,8 @@ export async function addLocalBackgrounds(filelist: FileList, local: Local.Stora
 	const id = newids[0]
 	const data = filesData[id]
 	const file = local.backgroundFiles[id]
-	const image = imageObjectFromStorage(file, data)
+	const isRaw = local.backgroundCompressFiles
+	const image = imageObjectFromStorage(file, data, isRaw)
 
 	unselectAll()
 	applyBackground(image)
@@ -302,13 +312,14 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 		const data = await getFile(id)
 		const local = await storage.local.get()
 		const file = local.backgroundFiles[id]
+		const isRaw = local.backgroundCompressFiles
 
 		if (!(file && data)) {
 			console.warn('?')
 			return
 		}
 
-		const image = imageObjectFromStorage(file, data)
+		const image = imageObjectFromStorage(file, data, isRaw)
 
 		local.backgroundFiles[id].lastUsed = userDate().toString()
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
@@ -339,21 +350,22 @@ export async function getFilesAsCollection(local: Local.Storage): Promise<[strin
 
 	for (const [key, file] of sorted) {
 		const data = filesData[key]
-		const image = imageObjectFromStorage(file, data)
+		const isRaw = local.backgroundCompressFiles
+		const image = imageObjectFromStorage(file, data, isRaw)
 		images.push(image)
 	}
 
 	return [keys, images]
 }
 
-function imageObjectFromStorage(file: Local.BackgroundFile, data: LocalFileData): Backgrounds.Image {
+function imageObjectFromStorage(file: Local.BackgroundFile, data: LocalFileData, raw?: boolean): Backgrounds.Image {
 	return {
 		format: 'image',
 		size: file.position.size,
 		x: file.position.x,
 		y: file.position.y,
 		urls: {
-			full: URL.createObjectURL(data.full),
+			full: URL.createObjectURL(raw ? data.raw : data.full),
 			medium: URL.createObjectURL(data.medium),
 			small: URL.createObjectURL(data.small),
 		},

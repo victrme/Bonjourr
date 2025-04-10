@@ -174,6 +174,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
+	setCheckbox('i_background-local-compress', local.backgroundCompressFiles ?? true)
 	setCheckbox('i_quicklinks', data.quicklinks)
 	setCheckbox('i_linkgroups', data?.linkgroups?.on)
 	setCheckbox('i_linknewtab', data.linknewtab)
@@ -427,6 +428,10 @@ function initOptionsEvents() {
 
 	paramId('b_background-urls').onclickdown(() => {
 		backgroundUpdate({ urlsapply: true })
+	})
+
+	paramId('i_background-local-compress').onclickdown((_event, target) => {
+		backgroundUpdate({ compress: target.checked })
 	})
 
 	// Background filters

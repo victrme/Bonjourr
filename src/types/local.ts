@@ -22,6 +22,7 @@ declare namespace Local {
 		backgroundFiles: Record<string, BackgroundFile>
 		backgroundPreloading?: true
 		backgroundLastChange?: string
+		backgroundCompressFiles?: boolean
 
 		// Unused - Old
 		// unsplashCache: Unsplash.Local

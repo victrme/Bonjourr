@@ -206,4 +206,5 @@ export const LOCAL_DEFAULT: Local.Storage = {
 	backgroundUrls: {},
 	backgroundFiles: {},
 	backgroundCollections: {},
+	backgroundCompressFiles: true,
 }
