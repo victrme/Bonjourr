@@ -405,10 +405,19 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 	const base = 'https://services.bonjourr.fr/backgrounds'
 	const path = `/${provider}/${type}/${category}`
 
-	const height = window.screen.height * window.devicePixelRatio
-	const width = window.screen.width * window.devicePixelRatio
-	const screen = `?h=${height}&w=${width}`
+	const density = Math.max(2, window.devicePixelRatio)
+	const ratio = window.screen.width / window.screen.height
+	let height = window.screen.height * density
+	let width = window.screen.width * density
 
+	if (ratio >= 2) {
+		width = height * 2
+	}
+	if (ratio <= 0.5) {
+		height = width * 2
+	}
+
+	const screen = `?h=${height}&w=${width}`
 	const query = backgrounds.queries[collectionName] ?? ''
 	const search = query ? `&query=${query}` : ''
 
