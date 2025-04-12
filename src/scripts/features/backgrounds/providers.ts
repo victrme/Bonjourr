@@ -30,6 +30,15 @@ const IMAGES: Provider[] = [
 			},
 		],
 	},
+	{
+		optgroup: 'MET Museum',
+		options: [
+			{
+				name: 'MET Museum paintings',
+				value: 'metmuseum-images-paintings',
+			},
+		],
+	},
 ]
 
 const VIDEOS: Provider[] = [
