@@ -39,6 +39,7 @@ export default {
 	'nan-Hant-TW': '臺灣台語（漢羅）',
 	ko: '한국어',
 	ja: '日本語',
+	te: 'తెలుగు',
 }
 
 // uses basic latin characters if not included
@@ -65,4 +66,5 @@ export const subsets = {
 	'zh-TW': 'chinese-traditional',
 	'nan-Hant-TW': 'chinese-traditional',
 	ko: 'korean',
+	te: 'telugu',
 }
