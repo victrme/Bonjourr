@@ -23,6 +23,7 @@ import { settingsInit } from './settings'
 import { userActions } from './events'
 import { storage } from './storage'
 import 'clickdown'
+import { migrateToNewIdbFormat } from './features/backgrounds/local'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -52,6 +53,7 @@ async function startup() {
 	if (oldVersion !== CURRENT_VERSION) {
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
+		await migrateToNewIdbFormat(local)
 
 		// <!> do not move
 		// <!> must delete old keys before upgrading storage
@@ -225,7 +227,9 @@ function onlineAndMobile() {
 			return
 		}
 
-		const frequency = needsChange(data.unsplash.every, data.unsplash.time ?? Date.now())
+		const last = local.backgroundLastChange
+		const time = (last ? new Date(last) : new Date()).getTime()
+		const frequency = needsChange(data.backgrounds.frequency, time)
 		const needNewImage = data.background_type === 'unsplash' && frequency
 
 		if (needNewImage && data.unsplash) {

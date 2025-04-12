@@ -23,11 +23,6 @@ declare namespace Local {
 		backgroundPreloading?: true
 		backgroundLastChange?: string
 		backgroundCompressFiles?: boolean
-
-		// Unused - Old
-		// unsplashCache: Unsplash.Local
-		// selected?: boolean, dId: string
-		// idsList: string[]
 	}
 
 	interface BackgroundUrl {

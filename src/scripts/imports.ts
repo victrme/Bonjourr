@@ -17,13 +17,13 @@ export function filterImports(current: Sync.Storage, target: Partial<Sync.Storag
 	newtarget = booleanSearchbarToObject(newtarget) // 9.0
 	newtarget = linkListToFlatObjects(newtarget) // 13.0
 	newtarget = hideArrayToObject(newtarget) // 16.0
-	newtarget = dynamicToUnsplash(newtarget) // 17.0
 	newtarget = improvedWeather(newtarget) // 18.1
 	newtarget = newFontSystem(newtarget) // 19.0
 	newtarget = newReviewData(newtarget) // ..
 	newtarget = quotesJsonToCsv(newtarget) // ..
 	newtarget = linksDataMigration(newtarget) // 19.2
 	newtarget = addSupporters(newtarget) // 20.4
+	newtarget = newBackgroundsField(newtarget) // 21.0
 
 	// Merge both settings
 
@@ -50,6 +50,10 @@ export function filterImports(current: Sync.Storage, target: Partial<Sync.Storag
 	newcurrent.linktabs = undefined
 	newcurrent.links = undefined
 	newcurrent.dynamic = undefined
+	newcurrent.unsplash = undefined
+	newcurrent.background_blur = undefined
+	newcurrent.background_bright = undefined
+	newcurrent.background_type = undefined
 
 	return newcurrent
 }
@@ -185,13 +189,15 @@ function validateLinkGroups(current: Sync.Storage): Sync.Storage {
 	let links = bundleLinks(current)
 	let parents = [...new Set(links.map(link => link.parent))]
 	let parentGroups = parents.filter(p => !p?.toString().startsWith('links'))
-	const oldNumberParents = parents.filter(parent => typeof parent === 'number')
 
-	if (current.linktabs && oldNumberParents.length > 0) {
+	const oldNumberParents = parents.filter(parent => typeof parent === 'number')
+	const oldlinktabs = current.linktabs as Old.Sync['linktabs']
+
+	if (oldlinktabs && oldNumberParents.length > 0) {
 		current.linkgroups = {
-			on: current.linktabs.active,
-			selected: current.linktabs.titles[current.linktabs.selected],
-			groups: [...current.linktabs.titles],
+			on: oldlinktabs.active,
+			selected: oldlinktabs.titles[oldlinktabs.selected],
+			groups: [...oldlinktabs.titles],
 			synced: [],
 			pinned: [],
 		}
@@ -275,26 +281,6 @@ function linksDataMigration(data: Import): Import {
 	return data
 }
 
-function dynamicToUnsplash(data: Import): Import {
-	// Dynamic/Custom becomes unsplash/local
-	if ((data.background_type as string) === 'dynamic') {
-		data.background_type = 'unsplash'
-	}
-	if ((data.background_type as string) === 'custom') {
-		data.background_type = 'local'
-	}
-
-	// dynamic data renamed to unsplash
-	if (data.dynamic as Unsplash.Sync) {
-		data.unsplash = {
-			...(data.dynamic as Unsplash.Sync),
-			pausedImage: undefined,
-		}
-	}
-
-	return data
-}
-
 function improvedWeather(data: Import): Import {
 	if (data.weather && data.weather?.geolocation === undefined) {
 		const oldLocation = data.weather?.location ?? []
@@ -307,6 +293,35 @@ function improvedWeather(data: Import): Import {
 		data.weather.lastState = undefined
 		//@ts-expect-error -> old types
 		data.weather.lastCall = undefined
+	}
+
+	return data
+}
+
+/** Version 21: migrate from generic fields to a single object */
+function newBackgroundsField(data: Import): Import {
+	if (data.backgrounds) {
+		return data
+	}
+
+	const olddata = data as Partial<Old.Sync>
+	const defaults = structuredClone(SYNC_DEFAULT)
+
+	data.backgrounds = defaults.backgrounds
+	data.backgrounds.frequency = olddata.unsplash?.every ?? 'hour'
+
+	if (olddata.background_blur !== undefined) {
+		data.backgrounds.blur = olddata.background_blur
+	}
+	if (olddata.background_bright !== undefined) {
+		data.backgrounds.bright = olddata.background_bright
+	}
+	if (olddata.background_type !== undefined) {
+		data.backgrounds.type = olddata.background_type === 'unsplash' ? 'images' : 'files'
+	}
+	if (olddata.unsplash?.collection) {
+		data.backgrounds.images = 'unsplash-images-collections'
+		data.backgrounds.queries = { 'unsplash-images-collections': olddata.unsplash.collection }
 	}
 
 	return data

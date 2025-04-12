@@ -17,7 +17,7 @@ let thumbnailObserver: IntersectionObserver
 
 // Update
 
-export async function addLocalBackgrounds(filelist: FileList, local: Local.Storage) {
+export async function addLocalBackgrounds(filelist: FileList | File[], local: Local.Storage) {
 	const dateString = userDate().toString()
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 	const filesData: Record<string, LocalFileData> = {}
@@ -393,6 +393,44 @@ function validateBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local
 	}
 
 	return backgroundFiles
+}
+
+/**
+ * Local file storage changes in Bonjourr 21, with automatic compression
+ */
+export async function migrateToNewIdbFormat(local: Local.Storage) {
+	type LocalImages = { ids: string[]; selected: string }
+	type LocalImagesItem = { background: File; thumbnail: Blob }
+
+	const localImages = (await idb.get('localImages')) as LocalImages
+	const selectedImage = (await idb.get(localImages?.selected ?? '')) as LocalImagesItem
+
+	if (!(localImages && selectedImage)) {
+		return
+	}
+
+	// 1. Quickly compress and show selected background
+
+	await addLocalBackgrounds([selectedImage.background], local)
+
+	// 2. Defer compression of other images
+
+	setTimeout(async () => {
+		const files: File[] = []
+
+		for (const id of localImages.ids) {
+			const file = await idb.get(id)
+
+			if (file) {
+				console.log(' ??? ')
+				files.push(file)
+			}
+		}
+
+		await addLocalBackgrounds(files, local)
+		idb.delMany(localImages.ids)
+		idb.del('localImages')
+	})
 }
 
 //	Helpers

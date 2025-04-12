@@ -12,7 +12,6 @@ declare namespace Sync {
 		linknewtab: boolean
 		linktitles: boolean
 		linkbackgrounds: boolean
-		linktabs?: LinkTabsOld
 		linkgroups: LinkGroups
 		textShadow: number
 		cssHeight?: number
@@ -33,7 +32,6 @@ declare namespace Sync {
 		clock: Clock
 		analogstyle?: AnalogStyle
 		worldclocks: WorldClocks
-		unsplash: Unsplash.Sync
 		weather: Weather.Sync
 		searchbar: Searchbar
 		quotes: Quotes.Sync
@@ -46,13 +44,6 @@ declare namespace Sync {
 		[key: string]: Links.Link | unknown
 	}
 
-	type LinkTabsOld = {
-		active: boolean
-		selected: number
-		titles: string[]
-		pinned: number[]
-	}
-
 	type LinkGroups = {
 		on: boolean
 		selected: string
@@ -60,8 +51,6 @@ declare namespace Sync {
 		pinned: string[]
 		synced: string[]
 	}
-
-	type HideOld = [[number, number], [number, number, number], [number], [number]]
 
 	type Hide = {
 		clock?: boolean
@@ -103,7 +92,6 @@ declare namespace Sync {
 		size: number
 		ampmlabel: boolean
 		worldclocks: boolean
-		// <20.0
 		face?: 'none' | 'number' | 'roman' | 'marks'
 		style?: 'round' | 'square' | 'transparent'
 	}
@@ -127,11 +115,10 @@ declare namespace Sync {
 		newtab: boolean
 		engine: string
 		request: string
+		opacity?: number
 		suggestions: boolean
 		placeholder: string
 		background?: string
-		// <20.0
-		opacity?: number
 	}
 
 	type Font = {
@@ -140,7 +127,6 @@ declare namespace Sync {
 		weight: string
 		weightlist: string[]
 		system?: boolean
-		// <19.0
 		url?: string
 		availWeights?: string[]
 	}
@@ -151,7 +137,6 @@ declare namespace Sync {
 		text?: string
 		width?: number
 		background?: string
-		// <20.0
 		opacity?: number
 	}
 
