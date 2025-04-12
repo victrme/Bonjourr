@@ -24,6 +24,7 @@ export default {
 	el: 'Ελληνικά',
 	sr: 'Српски (ћирилица)',
 	'sr-YU': 'Srpski (latinica)',
+	be: 'Беларуская',
 	uk: 'Українська',
 	ru: 'Русский',
 	tr: 'Türkçe',
@@ -65,4 +66,5 @@ export const subsets = {
 	'zh-TW': 'chinese-traditional',
 	'nan-Hant-TW': 'chinese-traditional',
 	ko: 'korean',
+	be: 'cyrillic'
 }
