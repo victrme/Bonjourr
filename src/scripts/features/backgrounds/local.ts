@@ -267,9 +267,9 @@ function toggleLocalFileButtons(_: MutationRecord[]) {
 
 	thumbnails === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
 	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
-	selected === 0 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
+	selected === 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
-	if (selected === 0 && domoptions?.classList.contains('shown')) {
+	if (selected === 1 && domoptions?.classList.contains('shown')) {
 		domoptions?.classList.remove('shown')
 	}
 }

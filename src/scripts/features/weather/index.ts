@@ -36,14 +36,11 @@ export function weather(init?: WeatherInit, update?: WeatherUpdate) {
 		return
 	}
 
-	if (init && !(init.sync?.weatherdesc && init.sync?.weathericon)) {
-		weatherCacheControl(init.sync.weather, init.lastWeather)
-	}
+	const hide = init?.sync?.hide
+	const isWeatherHidden = hide?.weatherdesc && hide?.weathericon
 
-	if (init) {
-		onSettingsLoad(() => {
-			handleGeolOption(init.sync.weather)
-		})
+	if (init && !isWeatherHidden) {
+		weatherCacheControl(init.sync.weather, init.lastWeather)
 
 		queueMicrotask(() => {
 			clearInterval(pollingInterval)
@@ -53,6 +50,12 @@ export function weather(init?: WeatherInit, update?: WeatherUpdate) {
 				const local = await storage.local.get('lastWeather')
 				weatherCacheControl(sync.weather, local.lastWeather)
 			}, 1200000) // 20min
+		})
+	}
+
+	if (init) {
+		onSettingsLoad(() => {
+			handleGeolOption(init.sync.weather)
 		})
 	}
 }
