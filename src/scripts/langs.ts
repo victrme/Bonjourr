@@ -40,6 +40,7 @@ export default {
 	'nan-Hant-TW': '臺灣台語（漢羅）',
 	ko: '한국어',
 	ja: '日本語',
+	te: 'తెలుగు',
 }
 
 // uses basic latin characters if not included
@@ -50,6 +51,7 @@ export const subsets = {
 	ru: 'cyrillic',
 	uk: 'cyrillic',
 	sr: 'cyrillic',
+	be: 'cyrillic',  
 	sk: 'latin-ext',
 	hr: 'latin-ext',
 	cs: 'latin-ext',
@@ -61,10 +63,10 @@ export const subsets = {
   az: 'latin-ext', 
 	ja: 'japanese',
 	hy: 'armenian',
+	te: 'telugu',
 	'zh-CN': 'chinese-simplified',
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',
 	'nan-Hant-TW': 'chinese-traditional',
 	ko: 'korean',
-	be: 'cyrillic'
 }
