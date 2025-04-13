@@ -254,13 +254,13 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 			const { region, timezone } = clocks[index]
 			const domclock = getClock(index)
 			const domregion = domclock.querySelector<HTMLElement>('.clock-region')
-			const date = userDate()
+			const date = userDate(timezone)
 			const isNextHour = date.getMinutes() === 0
 
 			if (clock.analog) {
-				analog(domclock, clock)
+				analog(domclock, clock, timezone)
 			} else {
-				digital(domclock, clock)
+				digital(domclock, clock, timezone)
 			}
 
 			if (isNextHour || firstStart) {
@@ -294,8 +294,8 @@ function getClock(index: number): HTMLDivElement {
 	return clone
 }
 
-function digital(wrapper: HTMLElement, clock: Sync.Clock) {
-	const date = userDate()
+function digital(wrapper: HTMLElement, clock: Sync.Clock, timezone: string) {
+	const date = userDate(timezone)
 	const domclock = wrapper.querySelector<HTMLElement>('.digital')
 	const hh = wrapper.querySelector('.digital-hh') as HTMLElement
 	const mm = wrapper.querySelector('.digital-mm') as HTMLElement
@@ -339,8 +339,8 @@ function digital(wrapper: HTMLElement, clock: Sync.Clock) {
 	ss.textContent = s.toString()
 }
 
-function analog(wrapper: HTMLElement, clock: Sync.Clock) {
-	const date = userDate()
+function analog(wrapper: HTMLElement, clock: Sync.Clock, timezone: string) {
+	const date = userDate(timezone)
 	const m = ((date.getMinutes() + date.getSeconds() / 60) * 6).toFixed(1)
 	const h = (((date.getHours() % 12) + date.getMinutes() / 60) * 30).toFixed(1)
 	const s = (date.getSeconds() * 6).toFixed(1)
@@ -447,7 +447,7 @@ function greetings(name?: string) {
 
 function toggleWorldClocksOptions() {
 	const parents = document.querySelectorAll<HTMLElement>('.worldclocks-item')
-	const inputs = document.querySelectorAll<HTMLInputElement>(`.worldclocks-item [name="worldclock-city"]`)
+	const inputs = document.querySelectorAll<HTMLInputElement>('.worldclocks-item input')
 
 	parents.forEach((parent, i) => {
 		const currHasText = !!inputs[i]?.value

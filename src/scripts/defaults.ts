@@ -116,7 +116,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		blur: 15,
 		bright: 0.8,
 		frequency: 'hour',
-		color: '#654',
+		color: '#185A63',
 		urls: '',
 		images: 'bonjourr-images-daylight',
 		videos: 'bonjourr-videos-daylight',

@@ -84,7 +84,7 @@ function settingsInitEvent(event: Event) {
 	// 3. Can be deferred
 
 	setTimeout(() => {
-		initOptionsSelects()
+		initWorldClocksAndTimezone(sync)
 		updateSettingsJson(sync)
 		updateSettingsEvent()
 		translateAriaLabels()
@@ -128,7 +128,7 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	setInput('i_dark', data.dark || 'system')
 	setInput('i_favicon', data.favicon ?? '')
 	setInput('i_tabtitle', data.tabtitle ?? '')
-	setInput('i_solid-background', data.backgrounds.color ?? '#654')
+	setInput('i_solid-background', data.backgrounds.color ?? '#185A63')
 	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
 	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
 	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
@@ -477,18 +477,6 @@ function initOptionsEvents() {
 	paramId('i_worldclocks').onclickdown((_, target) => {
 		paramId('worldclocks_options')?.classList.toggle('shown', target.checked)
 		clock(undefined, { worldclocks: target.checked })
-	})
-
-	document.querySelectorAll<HTMLInputElement>('input[name="worldclock-city"]')?.forEach((input, i) => {
-		input.addEventListener('input', () => clock(undefined, { world: { index: i, region: input.value } }))
-	})
-
-	document.querySelectorAll<HTMLInputElement>('select[name="worldclock-timezone"]')?.forEach((select, i) => {
-		select.addEventListener('change', () =>
-			clock(undefined, {
-				world: { index: i, timezone: select.value },
-			}),
-		)
 	})
 
 	paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
@@ -909,19 +897,66 @@ function initOptionsEvents() {
 	}
 }
 
-function initOptionsSelects() {
-	// Add massive timezones to <select>
-	const timezoneSelectsQuery = 'select[name="worldclock-timezone"], #i_timezone'
-	const timezoneSelects = document.querySelectorAll<HTMLSelectElement>(timezoneSelectsQuery)
-	const timezoneTemplate = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
+function initWorldClocksAndTimezone(data: Sync.Storage) {
+	const template = getHTMLTemplate<HTMLSelectElement>('timezones-select-template', 'select')
 
-	for (const select of timezoneSelects) {
-		const template = timezoneTemplate.cloneNode(true) as HTMLTemplateElement
-		const optgroups = template.querySelectorAll('optgroup')
+	// 1. Init world clocks cities
+
+	const citiesSelector = 'input[name="worldclock-city"]'
+	const cities = document.querySelectorAll<HTMLSelectElement>(citiesSelector)
+
+	cities?.forEach((input, i) => {
+		input.addEventListener('input', () => {
+			clock(undefined, {
+				world: {
+					index: i,
+					region: input.value,
+				},
+			})
+		})
+
+		if (data.worldclocks[i]) {
+			input.value = data.worldclocks[i].region
+		}
+	})
+
+	// 2. Init world clocks timezones
+
+	const timezonesSelector = '.worldclocks-item select'
+	const timezones = document.querySelectorAll<HTMLSelectElement>(timezonesSelector)
+
+	timezones?.forEach((select, i) => {
+		const dom = template.cloneNode(true) as HTMLTemplateElement
+		const optgroups = dom.querySelectorAll('optgroup')
 
 		for (const group of optgroups) {
 			select.appendChild(group)
 		}
+
+		select.addEventListener('change', (event: Event) => {
+			const select = event.target as HTMLSelectElement
+			const timezone = select.value
+			clock(undefined, { world: { index: i, timezone: timezone } })
+		})
+
+		if (data.worldclocks[i]) {
+			select.value = data.worldclocks[i].timezone
+		}
+	})
+
+	// 3. Init main timezone
+
+	const timezone = document.querySelector<HTMLSelectElement>('#i_timezone')
+
+	if (timezone) {
+		const dom = template.cloneNode(true) as HTMLTemplateElement
+		const optgroups = dom.querySelectorAll('optgroup')
+
+		for (const group of optgroups) {
+			timezone?.appendChild(group)
+		}
+
+		timezone.value = data.clock.timezone
 	}
 }
 
