@@ -252,13 +252,30 @@ function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
 	paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
 
 	// Time & main hide elems
-	;(function initHideInputs() {
-		const { clock, date, weatherdesc, weathericon } = data.hide || {}
-		const time = clock || date ? (clock ? 'clock' : 'date') : 'all'
-		const weather = weatherdesc && weathericon ? 'disabled' : weatherdesc ? 'desc' : weathericon ? 'icon' : 'all'
-		setInput('i_timehide', time)
-		setInput('i_weatherhide', weather)
-	})()
+	const disableWeather = data.hide?.weatherdesc && data.hide?.weathericon
+	const descOnly = data.hide?.weatherdesc
+	const iconOnly = data.hide?.weathericon
+	const dateOnly = data.hide?.clock
+	const clockOnly = data.hide?.date
+	let hideTime = 'all'
+	let hideWeather = 'all'
+
+	if (dateOnly) {
+		hideTime = 'date'
+	} else if (clockOnly) {
+		hideTime = 'clock'
+	}
+
+	if (disableWeather) {
+		hideWeather = 'disabled'
+	} else if (descOnly) {
+		hideWeather = 'desc'
+	} else if (iconOnly) {
+		hideWeather = 'icon'
+	}
+
+	setInput('i_timehide', hideTime)
+	setInput('i_weatherhide', hideWeather)
 
 	// Quotes option display
 	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)

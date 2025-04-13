@@ -72,6 +72,7 @@ function clickUserActions(event: MouseEvent) {
 		linkfolder: path.some(el => el.className.includes('folder')),
 		addgroup: path.some(el => el.className.includes('add-group')),
 		folder: path.some(el => el.className.includes('in-folder')),
+		localfiles: path.some(el => el.id === 'local_options'),
 		interface: pathIds.includes('interface'),
 		editlink: pathIds.includes('editlink'),
 		settings: path.some(el => el.id === 'settings'),
@@ -80,6 +81,12 @@ function clickUserActions(event: MouseEvent) {
 
 	if (document.body.classList.contains('tabbing')) {
 		document.body?.classList.toggle('tabbing', false)
+	}
+
+	if (document.querySelectorAll('.thumbnail.selected') && !on.localfiles) {
+		for (const node of document.querySelectorAll('.thumbnail.selected')) {
+			node.classList.remove('selected')
+		}
 	}
 
 	if (on.showsettings) {

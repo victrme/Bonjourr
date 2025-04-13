@@ -13,7 +13,8 @@ type LocalFileData = {
 	small: Blob
 }
 
-let thumbnailObserver: IntersectionObserver
+let thumbnailVisibilityObserver: IntersectionObserver
+let thumbnailSelectionObserver: MutationObserver
 
 // Update
 
@@ -22,6 +23,10 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 	const filesData: Record<string, LocalFileData> = {}
 	const newids: string[] = []
+
+	if (filelist.length === 0) {
+		return
+	}
 
 	// 1. Add empty thumbnails
 
@@ -56,7 +61,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 		const isLandscape = window.screen.orientation.type === 'landscape-primary'
 		const long = isLandscape ? window.screen.width : window.screen.height
 		const short = isLandscape ? window.screen.height : window.screen.width
-		const density = Math.max(2, window.devicePixelRatio)
+		const density = Math.min(2, window.devicePixelRatio)
 		const ratio = Math.min(1.8, long / short)
 		const averagePixelHeight = short * ratio * density
 
@@ -157,10 +162,8 @@ async function updateBackgroundPosition(type: 'size' | 'vertical' | 'horizontal'
 //	Settings options
 
 export function initFilesSettingsOptions(local: Local.Storage) {
-	thumbnailObserver = new IntersectionObserver(intersectionEvent, {
-		root: null,
-		threshold: 0,
-	})
+	thumbnailSelectionObserver = new MutationObserver(toggleLocalFileButtons)
+	thumbnailVisibilityObserver = new IntersectionObserver(intersectionEvent)
 
 	if (IS_MOBILE) {
 		const container = document.getElementById('thumbnails-container')
@@ -181,25 +184,18 @@ function handleFilesSettingsOptions(local: Local.Storage) {
 	const backgroundFiles = local.backgroundFiles
 
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
-	const thmbRemove = document.getElementById('b_thumbnail-remove')
-	const thmbMove = document.getElementById('b_thumbnail-position')
-	const thmbZoom = document.getElementById('b_thumbnail-zoom')
 
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map(el => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
 	const missingThumbnails = fileIds.filter(id => !thumbIds.includes(id))
-	const selected = document.querySelectorAll('.thumbnail.selected').length
-
-	fileIds.length === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
-	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
-	selected === 0 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
 	if (missingThumbnails.length > 0) {
 		for (const id of missingThumbnails) {
 			const thumbnail = createThumbnail(id)
-			thumbnailObserver?.observe(thumbnail)
 			thumbnailsContainer?.appendChild(thumbnail)
+			thumbnailVisibilityObserver?.observe(thumbnail)
+			thumbnailSelectionObserver?.observe(thumbnail, { attributes: true })
 		}
 	}
 }
@@ -254,10 +250,27 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 			getFile(id).then(data => {
 				if (data) {
 					addThumbnailImage(id, data)
-					thumbnailObserver.unobserve(target)
+					thumbnailVisibilityObserver.unobserve(target)
 				}
 			})
 		}
+	}
+}
+
+function toggleLocalFileButtons(_: MutationRecord[]) {
+	const thmbRemove = document.getElementById('b_thumbnail-remove')
+	const thmbMove = document.getElementById('b_thumbnail-position')
+	const thmbZoom = document.getElementById('b_thumbnail-zoom')
+	const thumbnails = document.querySelectorAll('.thumbnail').length
+	const selected = document.querySelectorAll('.thumbnail.selected').length
+	const domoptions = document.getElementById('background-position-options')
+
+	thumbnails === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
+	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
+	selected === 0 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
+
+	if (selected === 0 && domoptions?.classList.contains('shown')) {
+		domoptions?.classList.remove('shown')
 	}
 }
 
@@ -319,6 +332,9 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 			return
 		}
 
+		unselectAll()
+		document.getElementById(id)?.classList?.add('selected')
+
 		const image = imageObjectFromStorage(file, data, isRaw)
 
 		local.backgroundFiles[id].lastUsed = userDate().toString()
@@ -327,9 +343,6 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 		handleFilesSettingsOptions(local)
 		handleFilesMoveOptions(file)
 		applyBackground(image)
-		unselectAll()
-
-		document.getElementById(id)?.classList?.add('selected')
 	}
 }
 
@@ -415,22 +428,19 @@ export async function migrateToNewIdbFormat(local: Local.Storage) {
 
 	// 2. Defer compression of other images
 
-	setTimeout(async () => {
-		const files: File[] = []
+	const files: File[] = []
 
-		for (const id of localImages.ids) {
-			const file = await idb.get(id)
+	for (const id of localImages.ids) {
+		const file = await idb.get(id)
 
-			if (file) {
-				console.log(' ??? ')
-				files.push(file)
-			}
+		if (file) {
+			files.push(file)
 		}
+	}
 
-		await addLocalBackgrounds(files, local)
-		idb.delMany(localImages.ids)
-		idb.del('localImages')
-	})
+	await addLocalBackgrounds(files, local)
+	idb.delMany(localImages.ids)
+	idb.del('localImages')
 }
 
 //	Helpers

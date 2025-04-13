@@ -573,7 +573,11 @@ export function applyBackground(media: string | Backgrounds.Item, options?: Appl
 	mediaWrapper.prepend(item)
 
 	if (mediaWrapper?.childElementCount > 1) {
-		mediaWrapper?.lastElementChild?.classList.add('hiding')
+		const children = Object.values(mediaWrapper?.children)
+		const notHiding = children.filter(child => !child.className.includes('hiding'))
+		const lastVisible = notHiding.at(-1)
+
+		lastVisible?.classList.add('hiding')
 		setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
 	}
 }

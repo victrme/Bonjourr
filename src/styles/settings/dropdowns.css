@@ -140,7 +140,7 @@
 	max-height: 285px;
 }
 
-.all .as_provider {
+.all .as_provider.shown {
 	max-height: 120px;
 }
 
