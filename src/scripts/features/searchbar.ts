@@ -26,8 +26,7 @@ type Suggestions = {
 type UndefinedElement = Element | undefined | null
 
 let socket: WebSocket | undefined
-const domainPattern = /^(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
-const protocolPattern = /https?:\/?\/?/i
+const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -141,8 +140,9 @@ async function updateSearchbar({
 
 function isValidUrl(string: string): boolean {
 	try {
-		const url = new URL(string.startsWith('http') ? string : `https://${string}`)
-		return domainPattern.test(url.host)
+		const basicURL = !!new URL(string)
+		const regexMatch = domainPattern.test(string)
+		return basicURL && regexMatch
 	} catch (_) {
 		return false
 	}
@@ -200,9 +200,10 @@ function submitSearch(e: Event) {
 
 	engine = engine.replace('default', 'google')
 
-	const domainUrl = val.startsWith('http') ? val : `https://${val}`
+	const hasProtocol = val.startsWith('http://') || val.startsWith('https://')
+	const domainUrl = hasProtocol ? val : `https://${val}`
 	const searchUrl = createSearchUrl(val, engine)
-	const url = isValidUrl(val) ? domainUrl : searchUrl
+	const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
 	const target = newtab ? '_blank' : '_self'
 
 	window.open(url, target)
@@ -405,7 +406,9 @@ function suggestions(results: Suggestions) {
 
 function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
-	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(protocolPattern)
+	const hasProtocol = value.startsWith('http://') || value.startsWith('https://')
+	const withProtocol = hasProtocol ? value : `https://${value}`
+	const startsTypingProtocol = 'https://'.startsWith(value) || 'http://'.startsWith(value)
 
 	// Button display toggle
 	if (domsearchbar) {
@@ -420,7 +423,7 @@ function handleUserInput(e: Event) {
 		return
 	}
 
-	if (startsTypingProtocol || isValidUrl(value)) {
+	if (startsTypingProtocol || isValidUrl(withProtocol)) {
 		domsuggestions?.classList.remove('shown')
 		return
 	}
