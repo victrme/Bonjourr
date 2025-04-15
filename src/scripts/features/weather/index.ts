@@ -36,28 +36,32 @@ export function weather(init?: WeatherInit, update?: WeatherUpdate) {
 		return
 	}
 
-	const hide = init?.sync?.hide
-	const isWeatherHidden = hide?.weatherdesc && hide?.weathericon
+	if (!init) {
+		console.warn(new Error('No weather data'))
+		return
+	}
 
-	if (init && !isWeatherHidden) {
+	const mainHidden = !init.sync.main
+	const weatherHidden = init.sync.hide?.weatherdesc && init.sync.hide?.weathericon
+	const canShowWeather = !(weatherHidden || mainHidden)
+
+	if (canShowWeather) {
 		weatherCacheControl(init.sync.weather, init.lastWeather)
-
-		queueMicrotask(() => {
-			clearInterval(pollingInterval)
-
-			pollingInterval = setInterval(async () => {
-				const sync = await storage.sync.get(['weather', 'hide'])
-				const local = await storage.local.get('lastWeather')
-				weatherCacheControl(sync.weather, local.lastWeather)
-			}, 1200000) // 20min
-		})
 	}
 
-	if (init) {
-		onSettingsLoad(() => {
-			handleGeolOption(init.sync.weather)
-		})
-	}
+	onSettingsLoad(() => {
+		handleGeolOption(init.sync.weather)
+	})
+
+	queueMicrotask(() => {
+		clearInterval(pollingInterval)
+
+		pollingInterval = setInterval(async () => {
+			const sync = await storage.sync.get(['weather', 'hide', 'main'])
+			const local = await storage.local.get('lastWeather')
+			weatherCacheControl(sync.weather, local.lastWeather)
+		}, 1200000) // 20min
+	})
 }
 
 export function getSunsetHour(): number {

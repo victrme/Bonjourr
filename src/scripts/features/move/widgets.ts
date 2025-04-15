@@ -1,6 +1,7 @@
 import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom'
 import { transitioner } from '../../utils/transitioner'
 import { storage } from '../../storage'
+import { weather } from '../weather'
 import {
 	isEditing,
 	addGridWidget,
@@ -42,6 +43,13 @@ export function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
 		// add/remove widget overlay only when editing move
 		if (isEditing()) {
 			on ? addOverlay(id) : removeOverlay(id)
+		}
+
+		// Apply weather if re-enabled
+		if (id === 'main' && on === true) {
+			storage.local.get('lastWeather').then(local => {
+				weather({ sync: newdata, lastWeather: local.lastWeather })
+			})
 		}
 	})
 
