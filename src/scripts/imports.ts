@@ -24,6 +24,7 @@ export function filterImports(current: Sync.Storage, target: Partial<Sync.Storag
 	newtarget = linksDataMigration(newtarget) // 19.2
 	newtarget = addSupporters(newtarget) // 20.4
 	newtarget = newBackgroundsField(newtarget) // 21.0
+	newtarget = manualTimezonesToIntl(newtarget) // 21.0
 
 	// Merge both settings
 
@@ -182,6 +183,44 @@ function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync
 	}
 
 	return current
+}
+
+function manualTimezonesToIntl(data: Import): Import {
+	const timezoneMatches: Record<string, string> = {
+		'-10': '-10:00',
+		'-9': '-09:00',
+		'-8': '-08:00',
+		'-7': '-07:00',
+		'-6': '-06:00',
+		'-5': '-05:00',
+		'-4': '-04:00',
+		'-3': '-03:00',
+		'+0': '+00:00',
+		'+1': '+01:00',
+		'+2': '+02:00',
+		'+3': '+03:00',
+		'+5:30': '+05:30',
+		'+8': '+08:00',
+		'+9': '+09:00',
+		'+10': '+10:00',
+		'+12': '+12:00',
+	}
+
+	const oldTimezones = Object.keys(timezoneMatches)
+
+	if (data.clock && oldTimezones.includes(data.clock.timezone)) {
+		data.clock.timezone = timezoneMatches[data.clock.timezone]
+	}
+
+	data.worldclocks?.forEach(({ timezone }, i) => {
+		const isOld = oldTimezones.includes(timezone)
+
+		if (data.worldclocks?.[i] && isOld) {
+			data.worldclocks[i].timezone = timezoneMatches[timezone]
+		}
+	})
+
+	return data
 }
 
 function validateLinkGroups(current: Sync.Storage): Sync.Storage {
