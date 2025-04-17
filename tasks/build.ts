@@ -1,12 +1,8 @@
-import { mkdirSync, readdirSync, readFile, readFileSync, existsSync, rmSync, access, constants } from 'node:fs'
-import { cp, copyFile, writeFile, watch } from 'node:fs/promises'
-import { extname } from 'node:path'
-import { exec } from 'node:child_process'
-import { argv } from 'node:process'
-import http from 'node:http'
-import esbuild from 'esbuild'
+import { ensureDirSync, existsSync } from 'https://deno.land/std@0.224.0/fs/mod.ts'
+import { extname } from 'https://deno.land/std@0.224.0/path/mod.ts'
+import * as esbuild from 'esbuild'
 
-const args = argv.slice(2)
+const args = Deno.args
 const platform = args[0]
 const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
 const PLATFORM_ONLINE = platform === 'online'
@@ -77,18 +73,12 @@ if (ENV_PROD && PLATFORMS.includes(platform)) {
 
 if (ENV_PROD && platform === undefined) {
 	if (existsSync('./release')) {
-		rmSync('./release/', { recursive: true })
+		Deno.removeSync('./release/', { recursive: true })
 	}
 
-	exec('biome lint', (err, _stdout, _stderr) => {
-		if (!err) {
-			for (const platform of PLATFORMS) {
-				exec(`node ./tasks/build.js ${platform} prod`, (error, _stdout, _) => {
-					error ? console.error(error) : ''
-				})
-			}
-		}
-	})
+	for (const platform of PLATFORMS) {
+		// run things
+	}
 }
 
 // Build or Watch
@@ -105,12 +95,12 @@ function builder() {
 	console.timeEnd('Built in')
 }
 
-function watcher() {
-	watchTasks('_locales', _filename => {
+async function watcher() {
+	watchTasks('_locales', (_filename) => {
 		locales()
 	})
 
-	watchTasks('src', filename => {
+	watchTasks('src', (filename) => {
 		if (filename.includes('.html')) {
 			html()
 		}
@@ -131,23 +121,23 @@ function watcher() {
 
 function addDirectories() {
 	try {
-		if (readdirSync('release')?.includes(platform)) {
+		if (existsSync(`release/${platform}`)) {
 			return
 		}
 	} catch (_) {
 		console.error('First build')
 	}
 
-	mkdirSync(`release/${platform}/src/assets`, { recursive: true })
-	mkdirSync(`release/${platform}/src/scripts`, { recursive: true })
-	mkdirSync(`release/${platform}/src/styles`, { recursive: true })
+	ensureDirSync(`release/${platform}/src/assets`)
+	ensureDirSync(`release/${platform}/src/scripts`)
+	ensureDirSync(`release/${platform}/src/styles`)
 }
 
 // Tasks
 
 function html() {
-	let data = readFileSync(paths.shared.htmls.index[0], 'utf8')
-	const settings = readFileSync(paths.shared.htmls.settings[0], 'utf8')
+	let data = Deno.readTextFileSync(paths.shared.htmls.index[0])
+	const settings = Deno.readTextFileSync(paths.shared.htmls.settings[0])
 
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
@@ -168,7 +158,7 @@ function html() {
 
 	data = data.replace('<!-- settings -->', settings)
 
-	writeFile(paths.shared.htmls.index[1], data)
+	Deno.writeTextFileSync(paths.shared.htmls.index[1], data)
 }
 
 function styles() {
@@ -219,13 +209,13 @@ function scripts() {
 	}
 
 	if (PLATFORM_ONLINE) {
-		copyFile(...paths.online.serviceworker)
+		Deno.copyFileSync(...paths.online.serviceworker)
 	}
 	if (PLATFORM_EXT) {
-		copyFile(...paths.extension.scripts.serviceworker)
+		Deno.copyFileSync(...paths.extension.scripts.serviceworker)
 	}
 	if (PLATFORM_EXT) {
-		copyFile(...paths.extension.scripts.storage)
+		Deno.copyFileSync(...paths.extension.scripts.storage)
 	}
 }
 
@@ -233,72 +223,74 @@ function assets() {
 	copyDir(...paths.shared.assets.interface)
 	copyDir(...paths.shared.assets.weather)
 	copyDir(...paths.shared.assets.labels)
-	copyFile(...paths.shared.assets.favicons.ico)
-	copyFile(...paths.shared.assets.favicons[128])
-	copyFile(...paths.shared.assets.favicons[512])
+	Deno.copyFileSync(...paths.shared.assets.favicons.ico)
+	Deno.copyFileSync(...paths.shared.assets.favicons[128])
+	Deno.copyFileSync(...paths.shared.assets.favicons[512])
 
 	if (PLATFORM_ONLINE) {
 		copyDir(...paths.online.screenshots)
 	}
 	if (PLATFORM_ONLINE) {
-		copyFile(...paths.online.icon)
+		Deno.copyFileSync(...paths.online.icon)
 	}
 	if (PLATFORM_EDGE) {
-		copyFile(...paths.edge.favicon)
+		Deno.copyFileSync(...paths.edge.favicon)
 	}
 	if (!PLATFORM_EDGE) {
-		copyFile(...paths.shared.assets.favicons.ico)
+		Deno.copyFileSync(...paths.shared.assets.favicons.ico)
 	}
 }
 
 function manifests() {
 	if (PLATFORM_ONLINE) {
-		copyFile(...paths.online.manifest)
+		Deno.copyFileSync(...paths.online.manifest)
 	}
 	if (PLATFORM_EXT) {
-		copyFile(...paths.extension.manifest)
+		Deno.copyFileSync(...paths.extension.manifest)
 	}
 }
 
 function locales() {
-	const langs = readdirSync('_locales').filter(dir => dir !== '.DS_Store')
+	const langs = Array.from(Deno.readDirSync('_locales'))
+		.filter((entry) => entry.isDirectory && entry.name !== '.DS_Store')
+		.map((entry) => entry.name)
+
 	const [input, output] = paths.shared.locales
 
 	for (const lang of langs) {
-		mkdirSync(output + lang, { recursive: true })
-		copyFile(`${input}${lang}/translations.json`, `${output}${lang}/translations.json`)
+		ensureDirSync(output + lang)
+		Deno.copyFileSync(`${input}${lang}/translations.json`, `${output}${lang}/translations.json`)
 
 		if (PLATFORM_EXT) {
-			copyFile(`${input}${lang}/messages.json`, `${output}${lang}/messages.json`)
+			Deno.copyFileSync(`${input}${lang}/messages.json`, `${output}${lang}/messages.json`)
 		}
 	}
 }
 
-// Node stuff
+// Deno stuff
 
-async function watchTasks(path, callback) {
+async function watchTasks(path: string, callback: (filename: string) => void) {
 	// debounce because IDEs do multiple fast saves which triggers watcher
+	const watcher = Deno.watchFs(path)
+	let debounce: number | null = null
 
-	const events = watch(path, { recursive: true })
-	let debounce = 0
+	for await (const event of watcher) {
+		if (event.paths.length === 0) continue
 
-	for await (const event of events) {
-		clearInterval(debounce)
-		debounce = setTimeout(() => debounceCallback(event.filename), 30)
-	}
+		if (debounce) {
+			clearTimeout(debounce)
+		}
 
-	function debounceCallback(filename) {
-		console.time('Built in')
-		callback(filename.replaceAll('\\', '/')) // windows back slashes :(
-		console.timeEnd('Built in')
+		debounce = setTimeout(() => {
+			console.time('Built in')
+			callback(event.paths[0].replaceAll('\\', '/')) // windows back slashes :(
+			console.timeEnd('Built in')
+		}, 30)
 	}
 }
 
 function liveServer() {
-	const server = http.createServer()
-	const PORT = 8080
-
-	const contentTypeList = {
+	const contentTypeList: Record<string, string> = {
 		'.html': 'text/html',
 		'.css': 'text/css',
 		'.js': 'text/javascript',
@@ -307,42 +299,51 @@ function liveServer() {
 		'.png': 'image/png',
 	}
 
-	server.listen(PORT, () => {
-		console.info(`Live server: http://127.0.0.1:${PORT}`)
-	})
+	console.info(`Live server: http://127.0.0.1:8000`)
 
-	server.on('request', (req, res) => {
-		const path = `../release/online/${req.url === '/' ? 'index.html' : req.url}`
-		const filePath = new URL(path, import.meta.url)
+	Deno.serve(async (req) => {
+		const url = new URL(req.url)
+		const path = `./release/online${url.pathname === '/' ? '/index.html' : url.pathname}`
 
-		access(filePath, constants.F_OK, err => {
-			if (err) {
-				res.writeHead(404, { 'Content-Type': 'text/plain' })
-				res.end('Not Found')
-				return
+		try {
+			// Check if file exists
+			const fileInfo = await Deno.stat(path)
+
+			if (!fileInfo.isFile) {
+				return new Response('Not Found', { status: 404 })
 			}
 
-			readFile(filePath, (err, data) => {
-				if (err) {
-					res.writeHead(500, { 'Content-Type': 'text/html' })
-					res.end('Internal Server Error')
-					return
-				}
+			const data = await Deno.readFile(path)
+			const contentType = contentTypeList[extname(path)] || 'application/octet-stream'
 
-				const contentType = contentTypeList[extname(filePath.toString())]
-
-				res.writeHead(200, {
-					'Content-Type': contentType || 'application/octet-stream',
+			return new Response(data, {
+				status: 200,
+				headers: {
+					'Content-Type': contentType,
 					'cache-control': 'no-cache',
-				})
-
-				res.end(data)
+				},
 			})
-		})
+		} catch (err) {
+			if (err instanceof Deno.errors.NotFound) {
+				return new Response('Not Found', { status: 404 })
+			}
+
+			return new Response('Internal Server Error', { status: 500 })
+		}
 	})
 }
 
-function copyDir(...args) {
-	// cosmetic abstraction, i'm sure its fine
-	cp(...args, { recursive: true })
+function copyDir(source: string, destination: string) {
+	ensureDirSync(destination)
+
+	for (const dirEntry of Deno.readDirSync(source)) {
+		const srcPath = `${source}/${dirEntry.name}`
+		const destPath = `${destination}/${dirEntry.name}`
+
+		if (dirEntry.isDirectory) {
+			copyDir(srcPath, destPath)
+		} else {
+			Deno.copyFileSync(srcPath, destPath)
+		}
+	}
 }
