@@ -2,11 +2,13 @@ import { getLang, tradThis } from '../utils/translations'
 import { BROWSER } from '../defaults'
 import { storage } from '../storage'
 
+import type { Sync } from '../../types/sync'
+
 type PopupInit = {
 	old?: string
 	new: string
 	review: number
-	announce: Sync.Storage['announcements']
+	announce: Sync['announcements']
 }
 
 type PopupUpdate = {

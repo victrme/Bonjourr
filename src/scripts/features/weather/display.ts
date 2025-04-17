@@ -1,6 +1,9 @@
-import { type LastWeather, type Weather, getSunsetHour } from './index'
 import { userDate, minutator, suntime } from '../../shared/time'
 import { getLang, tradThis } from '../../utils/translations'
+import { getSunsetHour } from './index'
+
+import type { LastWeather } from '../../../types/local'
+import type { Weather } from '../../../types/sync'
 
 let weatherFirstStart = true
 

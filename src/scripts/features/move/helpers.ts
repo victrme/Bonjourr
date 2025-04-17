@@ -1,9 +1,12 @@
+import type { Sync, Move, MoveLayout } from '../../../types/sync'
+import type { Widgets } from '../../../types/shared'
+
 type Grid = string[][]
 
 type Defaults = {
-	single: Sync.MoveLayout
-	double: Sync.MoveLayout
-	triple: Sync.MoveLayout
+	single: MoveLayout
+	double: MoveLayout
+	triple: MoveLayout
 }
 
 const MOVE_WIDGETS = ['time', 'main', 'quicklinks', 'notes', 'quotes', 'searchbar']
@@ -48,7 +51,7 @@ export function hasDuplicateInArray(arr: string[], id?: string): boolean {
 	return arr.filter(a => a === id).length > 1
 }
 
-export function getLayout(data: Sync.Move | Sync.Storage, selection?: Sync.MoveSelection): Sync.MoveLayout {
+export function getLayout(data: Move | Sync, selection?: Move['selection']): MoveLayout {
 	if ('move' in data) {
 		const layouts = data.move.layouts
 		const selec = selection ?? data.move.selection
@@ -240,7 +243,7 @@ export function spansInGridArea(
 
 //	Widgets
 
-export function getWidgetsStorage(data: Sync.Storage): Widgets[] {
+export function getWidgetsStorage(data: Sync): Widgets[] {
 	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
 	// Time & main in first place ensures grid size is enough to add quotes & links
 	const displayed = {
@@ -257,7 +260,7 @@ export function getWidgetsStorage(data: Sync.Storage): Widgets[] {
 		.map(([key, _]) => key as Widgets)
 }
 
-export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync.Storage): Sync.Storage {
+export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync): Sync {
 	//
 
 	for (const [id, on] of states) {
@@ -290,7 +293,7 @@ export function getGridWidgets(area: string): Widgets[] {
 	return widgets as Widgets[]
 }
 
-export function addGridWidget(grid: string, id: Widgets, selection: Sync.MoveSelection): string {
+export function addGridWidget(grid: string, id: Widgets, selection: Move['selection']): string {
 	const newrow = addGridRow(selection, id)
 	let rows = grid.split("'").filter(row => !(row === ' ' || row === ''))
 	let position = 0
@@ -327,7 +330,7 @@ export function addGridWidget(grid: string, id: Widgets, selection: Sync.MoveSel
 	return rows.join(' ')
 }
 
-export function removeGridWidget(grid: string, id: Widgets, _: Sync.MoveSelection): string {
+export function removeGridWidget(grid: string, id: Widgets, _: Move['selection']): string {
 	let rows = grid.split("'").filter(row => !(row === ' ' || row === ''))
 
 	rows = rows.filter(row => !row.includes(id))
@@ -336,7 +339,7 @@ export function removeGridWidget(grid: string, id: Widgets, _: Sync.MoveSelectio
 	return rows.join(' ')
 }
 
-function addGridRow(selection: Sync.MoveSelection, id: Widgets): string {
+function addGridRow(selection: Move['selection'], id: Widgets): string {
 	const firstcolumn = selection === 'triple' ? '. ' : ''
 	const lastcolumn = selection === 'triple' || selection === 'double' ? ' .' : ''
 

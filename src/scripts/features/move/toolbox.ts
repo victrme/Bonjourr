@@ -3,6 +3,9 @@ import { updateMoveElement } from './index'
 import { toggleDisabled } from '../../shared/dom'
 import { tradThis } from '../../utils/translations'
 
+import type { Move, MoveAlign } from '../../../types/sync'
+import type { Widgets } from '../../../types/shared'
+
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
 let resetTimeout: number
 let firstPos = { x: 0, y: 0 }
@@ -94,7 +97,7 @@ export function toolboxEvents() {
 	}
 }
 
-export function layoutButtons(selection: Sync.MoveSelection) {
+export function layoutButtons(selection: Move['selection']) {
 	for (const button of document.querySelectorAll<HTMLButtonElement>('#grid-layout button')) {
 		button.classList.toggle('selected', button.dataset.layout === selection)
 	}
@@ -192,7 +195,7 @@ export function spanButtons(id: Widgets) {
 	applyStates('row', hasRowDuplicates)
 }
 
-export function alignButtons(align?: Sync.MoveAlign) {
+export function alignButtons(align?: MoveAlign) {
 	const { box, text } = align ?? { box: '', text: '' }
 	const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 	const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')

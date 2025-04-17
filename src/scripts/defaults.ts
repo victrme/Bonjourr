@@ -1,5 +1,8 @@
 import { langList } from './langs'
 
+import type { Local } from '../types/local'
+import type { Sync } from '../types/sync'
+
 export const CURRENT_VERSION = '21.0.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
@@ -71,7 +74,7 @@ export const SEARCHBAR_ENGINES = <const>[
 	'custom',
 ]
 
-export const SYNC_DEFAULT: Sync.Storage = {
+export const SYNC_DEFAULT: Sync = {
 	about: {
 		browser: PLATFORM,
 		version: CURRENT_VERSION,
@@ -198,7 +201,7 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	},
 }
 
-export const LOCAL_DEFAULT: Local.Storage = {
+export const LOCAL_DEFAULT: Local = {
 	syncType: PLATFORM === 'online' ? 'off' : 'browser',
 	userQuoteSelection: 0,
 	translations: undefined,

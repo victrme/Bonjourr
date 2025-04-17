@@ -1,5 +1,6 @@
 import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
 import { supportersNotifications } from './features/supporters'
+import { migrateToNewIdbFormat } from './features/backgrounds/local'
 import { synchronization } from './features/synchronization'
 import { backgroundsInit } from './features/backgrounds/index'
 import { interfacePopup } from './features/popup'
@@ -23,7 +24,9 @@ import { settingsInit } from './settings'
 import { userActions } from './events'
 import { storage } from './storage'
 import 'clickdown'
-import { migrateToNewIdbFormat } from './features/backgrounds/local'
+
+import type { Local } from '../types/local'
+import type { Sync } from '../types/sync'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -114,11 +117,11 @@ async function startup() {
 	})
 }
 
-function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
+function upgradeSyncStorage(data: Sync): Sync {
 	return filterImports(data, data)
 }
 
-function upgradeLocalStorage(data: Local.Storage): Local.Storage {
+function upgradeLocalStorage(data: Local): Local {
 	data.translations = undefined
 	storage.local.remove('translations')
 
@@ -128,7 +131,7 @@ function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 	return data
 }
 
-export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
+export function displayInterface(ready?: FeaturesToWait, data?: Sync) {
 	if (data) {
 		if (data?.font?.family) {
 			features.push('fonts')

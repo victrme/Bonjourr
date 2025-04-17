@@ -12,7 +12,10 @@ import {
 	getLayout,
 } from './helpers'
 
-export function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
+import type { Widgets } from '../../../types/shared'
+import type { Sync } from '../../../types/sync'
+
+export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
 	if (!widget) {
 		return
 	}

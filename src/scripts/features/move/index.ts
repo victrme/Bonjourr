@@ -30,6 +30,9 @@ import {
 	getLayout,
 } from './helpers'
 
+import type { Move, Sync } from '../../../types/sync'
+import type { Widgets } from '../../../types/shared'
+
 type UpdateMove = {
 	widget?: [Widgets, boolean]
 	span?: 'col' | 'row'
@@ -49,7 +52,7 @@ type UpdateMove = {
 const dominterface = document.querySelector<HTMLElement>('#interface')
 let widget: Widgets | undefined
 
-export function moveElements(init?: Sync.Move, events?: UpdateMove) {
+export function moveElements(init?: Move, events?: UpdateMove) {
 	if (!(init || events)) {
 		updateMoveElement({ reset: true })
 		return
@@ -111,7 +114,7 @@ export async function updateMoveElement(event: UpdateMove) {
 	}
 }
 
-function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
+function gridChange(move: Move, gridpos: { x?: string; y?: string }) {
 	if (!widget) {
 		return
 	}
@@ -182,7 +185,7 @@ function gridChange(move: Sync.Move, gridpos: { x?: string; y?: string }) {
 	gridButtons(widget)
 }
 
-function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
+function alignChange(move: Move, value: string, type: 'box' | 'text') {
 	if (!widget) {
 		return
 	}
@@ -205,7 +208,7 @@ function alignChange(move: Sync.Move, value: string, type: 'box' | 'text') {
 	setAlign(widget, align)
 }
 
-function layoutChange(data: Sync.Storage, column: string) {
+function layoutChange(data: Sync, column: string) {
 	if (column === data.move.selection) {
 		return
 	}
@@ -260,7 +263,7 @@ function layoutChange(data: Sync.Storage, column: string) {
 	interfaceTransition.transition(200)
 }
 
-function layoutReset(data: Sync.Storage) {
+function layoutReset(data: Sync) {
 	const enabledWidgets = getWidgetsStorage(data)
 	let grid = ''
 
@@ -291,7 +294,7 @@ function layoutReset(data: Sync.Storage) {
 	})
 }
 
-function elementSelection(move: Sync.Move, select: string) {
+function elementSelection(move: Move, select: string) {
 	removeSelection()
 
 	// Remove selection modifiers and quit if failed to get id
@@ -309,7 +312,7 @@ function elementSelection(move: Sync.Move, select: string) {
 	document.getElementById('element-mover')?.classList.add('active')
 }
 
-function toggleMoveStatus(data: Sync.Storage, force?: boolean) {
+function toggleMoveStatus(data: Sync, force?: boolean) {
 	const mover = document.getElementById('element-mover') as HTMLElement
 	const bEditmove = document.getElementById('b_editmove') as HTMLButtonElement
 	const isEditing = dominterface?.classList.contains('move-edit')
@@ -337,7 +340,7 @@ function toggleMoveStatus(data: Sync.Storage, force?: boolean) {
 	removeSelection()
 }
 
-function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
+function toggleGridSpans(move: Move, dir: 'col' | 'row') {
 	if (!widget) {
 		return
 	}
@@ -357,7 +360,7 @@ function toggleGridSpans(move: Sync.Move, dir: 'col' | 'row') {
 	spanButtons(widget)
 }
 
-function pageWidthOverlay(move: Sync.Move, overlay?: boolean) {
+function pageWidthOverlay(move: Move, overlay?: boolean) {
 	const isEditing = document.getElementById('interface')?.classList?.contains('move-edit')
 	const hasOverlays = document.querySelector('.move-overlay')
 

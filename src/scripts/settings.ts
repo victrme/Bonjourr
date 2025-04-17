@@ -15,7 +15,7 @@ import { quotes } from './features/quotes'
 import { notes } from './features/notes'
 import { clock } from './features/clock'
 
-import { getHTMLTemplate, inputThrottle, turnRefreshButton, fadeOut } from './shared/dom'
+import { inputThrottle, turnRefreshButton, fadeOut } from './shared/dom'
 import { traduction, tradThis, toggleTraduction } from './utils/translations'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
 import { settingsNotifications } from './utils/notifications'
@@ -29,14 +29,16 @@ import { langList } from './langs'
 import { storage } from './storage'
 import { parse } from './utils/parse'
 
-import type { Langs } from '../types/langs'
+import type { Langs } from '../types/shared'
+import type { Sync } from '../types/sync'
+import type { Local } from '../types/local'
 
 // Initialization
 
-let settingsInitSync: Sync.Storage
-let settingsInitLocal: Local.Storage
+let settingsInitSync: Sync
+let settingsInitLocal: Local
 
-export function settingsInit(sync: Sync.Storage, local: Local.Storage) {
+export function settingsInit(sync: Sync, local: Local) {
 	const showsettings = document.getElementById('show-settings')
 
 	settingsInitSync = sync
@@ -114,7 +116,7 @@ function settingsToggle() {
 	document.dispatchEvent(new Event('close-edit'))
 }
 
-function initOptionsValues(data: Sync.Storage, local: Local.Storage) {
+function initOptionsValues(data: Sync, local: Local) {
 	const domsettings = document.getElementById('settings') as HTMLElement
 	const userQuotes = data.quotes?.userlist?.[0] ? data.quotes?.userlist : undefined
 
@@ -839,7 +841,7 @@ function initOptionsEvents() {
 
 	paramId('b_settings-apply').onclickdown(() => {
 		const val = paramId('settings-data').value
-		importSettings(parse<Partial<Sync.Storage>>(val) ?? {})
+		importSettings(parse<Partial<Sync>>(val) ?? {})
 	})
 
 	paramId('b_reset-first').onclickdown(() => {
@@ -903,7 +905,7 @@ function initOptionsEvents() {
 	}
 }
 
-function initWorldClocksAndTimezone(data: Sync.Storage) {
+function initWorldClocksAndTimezone(data: Sync) {
 	const template = document.getElementById('timezones-select-template') as HTMLTemplateElement
 	const citiesSelector = 'input[name="worldclock-city"]'
 	const timezonesSelector = '.worldclocks-item select'
@@ -1181,7 +1183,7 @@ async function saveImportFile() {
 	}
 
 	const date = new Date()
-	const data = ((await storage.sync.get()) as Sync.Storage) ?? {}
+	const data = ((await storage.sync.get()) as Sync) ?? {}
 	const zero = (n: number) => (n.toString().length === 1 ? `0${n}` : n.toString())
 	const yyyymmdd = date.toISOString().slice(0, 10)
 	const hhmmss = `${zero(date.getHours())}_${zero(date.getMinutes())}_${zero(date.getSeconds())}`
@@ -1197,16 +1199,16 @@ async function saveImportFile() {
 }
 
 function loadImportFile(target: HTMLInputElement) {
-	function decodeExportFile(str: string): Partial<Sync.Storage> {
+	function decodeExportFile(str: string): Partial<Sync> {
 		let result = {}
 
 		try {
 			// Tries to decode base64 from previous versions
-			result = parse<Partial<Sync.Storage>>(atob(str)) ?? {}
+			result = parse<Partial<Sync>>(atob(str)) ?? {}
 		} catch {
 			try {
 				// If base64 failed, parse raw string
-				result = parse<Partial<Sync.Storage>>(str) ?? {}
+				result = parse<Partial<Sync>>(str) ?? {}
 			} catch (_) {
 				// If all failed, return empty object
 				result = {}
@@ -1232,13 +1234,13 @@ function loadImportFile(target: HTMLInputElement) {
 
 		// data has at least one valid key from default sync storage => import
 		if (Object.keys(SYNC_DEFAULT).filter(key => key in importData).length > 0) {
-			importSettings(importData as Sync.Storage)
+			importSettings(importData as Sync)
 		}
 	}
 	reader.readAsText(file)
 }
 
-async function importSettings(imported: Partial<Sync.Storage>) {
+async function importSettings(imported: Partial<Sync>) {
 	try {
 		let data = await storage.sync.get()
 
@@ -1277,10 +1279,10 @@ function resetSettings(action: 'yes' | 'no' | 'first') {
 	document.getElementById('reset-conf')?.classList.toggle('shown', action === 'first')
 }
 
-export function updateSettingsJson(data?: Sync.Storage) {
+export function updateSettingsJson(data?: Sync) {
 	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
 
-	function updateTextArea(data: Sync.Storage) {
+	function updateTextArea(data: Sync) {
 		const pre = document.getElementById('settings-data')
 
 		if (pre && data.about) {
@@ -1316,7 +1318,7 @@ async function toggleSettingsChangesButtons(action: string) {
 		let user = ''
 
 		try {
-			user = stringify(JSON.parse(textarea.value ?? '{}') as Sync.Storage)
+			user = stringify(JSON.parse(textarea.value ?? '{}') as Sync)
 		} catch (_) {
 			//
 		}

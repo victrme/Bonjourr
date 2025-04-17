@@ -6,9 +6,12 @@ import { randomString } from './shared/generic'
 import { deepmergeAll } from '@victr/deepmerge'
 import { bundleLinks } from './utils/bundlelinks'
 
-type Import = Partial<Sync.Storage>
+import type { Sync } from '../types/sync'
+import type { LinkElem, OldSync, Widgets } from '../types/shared'
 
-export function filterImports(current: Sync.Storage, target: Partial<Sync.Storage>) {
+type Import = Partial<Sync>
+
+export function filterImports(current: Sync, target: Partial<Sync>) {
 	let newtarget = target
 	let newcurrent = current
 
@@ -28,7 +31,7 @@ export function filterImports(current: Sync.Storage, target: Partial<Sync.Storag
 
 	// Merge both settings
 
-	newcurrent = deepmergeAll(newcurrent, newtarget, { about: structuredClone(SYNC_DEFAULT.about) }) as Sync.Storage
+	newcurrent = deepmergeAll(newcurrent, newtarget, { about: structuredClone(SYNC_DEFAULT.about) }) as Sync
 
 	// Lastest version transform
 
@@ -105,8 +108,7 @@ function booleanSearchbarToObject(data: Import): Import {
 			...SYNC_DEFAULT.searchbar,
 			on: data.searchbar as boolean,
 			newtab: data.searchbar_newtab as boolean,
-			engine: ((data.searchbar_engine as string | undefined)?.replace('s_', '') ||
-				'google') as Sync.Searchbar['engine'],
+			engine: (data.searchbar_engine as string | undefined)?.replace('s_', '') || 'google',
 			suggestions: false,
 		}
 	}
@@ -172,12 +174,12 @@ function quotesJsonToCsv(data: Import): Import {
 	return data
 }
 
-function toIsoLanguageCode(data: Sync.Storage): Sync.Storage {
+function toIsoLanguageCode(data: Sync): Sync {
 	data.lang = countryCodeToLanguageCode(data.lang ?? 'en')
 	return data
 }
 
-function removeWorldClocksDuplicate(current: Sync.Storage, target: Import): Sync.Storage {
+function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
 	if (target.worldclocks && current.worldclocks) {
 		current.worldclocks = target.worldclocks
 	}
@@ -223,14 +225,14 @@ function manualTimezonesToIntl(data: Import): Import {
 	return data
 }
 
-function validateLinkGroups(current: Sync.Storage): Sync.Storage {
+function validateLinkGroups(current: Sync): Sync {
 	// (1)
 	let links = bundleLinks(current)
 	let parents = [...new Set(links.map(link => link.parent))]
 	let parentGroups = parents.filter(p => !p?.toString().startsWith('links'))
 
 	const oldNumberParents = parents.filter(parent => typeof parent === 'number')
-	const oldlinktabs = current.linktabs as Old.Sync['linktabs']
+	const oldlinktabs = current.linktabs as OldSync['linktabs']
 
 	if (oldlinktabs && oldNumberParents.length > 0) {
 		current.linkgroups = {
@@ -308,7 +310,7 @@ function linksDataMigration(data: Import): Import {
 	}
 
 	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
-	const list = (bundleLinks(data as Sync.Storage) as Links.Elem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+	const list = (bundleLinks(data as Sync) as LinkElem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
 	for (const link of list) {
 		if (link.icon?.startsWith(notfoundicon)) {
@@ -322,11 +324,13 @@ function linksDataMigration(data: Import): Import {
 
 function improvedWeather(data: Import): Import {
 	if (data.weather && data.weather?.geolocation === undefined) {
+		//@ts-expect-error -> old types
 		const oldLocation = data.weather?.location ?? []
 
 		data.weather.geolocation = 'approximate'
 		data.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
 
+		//@ts-expect-error -> old types
 		data.weather.location = undefined
 		//@ts-expect-error -> old types
 		data.weather.lastState = undefined
@@ -343,30 +347,33 @@ function newBackgroundsField(data: Import): Import {
 		return data
 	}
 
-	const olddata = data as Partial<Old.Sync>
+	const olddata = data as Partial<OldSync>
 	const defaults = structuredClone(SYNC_DEFAULT)
 
 	data.backgrounds = defaults.backgrounds
-	data.backgrounds.frequency = olddata.unsplash?.every ?? 'hour'
 
-	if (olddata.background_blur !== undefined) {
-		data.backgrounds.blur = olddata.background_blur
-	}
-	if (olddata.background_bright !== undefined) {
-		data.backgrounds.bright = olddata.background_bright
-	}
-	if (olddata.background_type !== undefined) {
-		data.backgrounds.type = olddata.background_type === 'unsplash' ? 'images' : 'files'
-	}
-	if (olddata.unsplash?.collection) {
-		data.backgrounds.images = 'unsplash-images-collections'
-		data.backgrounds.queries = { 'unsplash-images-collections': olddata.unsplash.collection }
+	if (data.backgrounds) {
+		data.backgrounds.frequency = olddata.unsplash?.every ?? 'hour'
+
+		if (olddata.background_blur !== undefined) {
+			data.backgrounds.blur = olddata.background_blur
+		}
+		if (olddata.background_bright !== undefined) {
+			data.backgrounds.bright = olddata.background_bright
+		}
+		if (olddata.background_type !== undefined) {
+			data.backgrounds.type = olddata.background_type === 'unsplash' ? 'images' : 'files'
+		}
+		if (olddata.unsplash?.collection) {
+			data.backgrounds.images = 'unsplash-images-collections'
+			data.backgrounds.queries = { 'unsplash-images-collections': olddata.unsplash.collection }
+		}
 	}
 
 	return data
 }
 
-function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Data {
+function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 	if (data.clock?.style) {
 		data.analogstyle = {
 			background: '#fff2',
@@ -389,9 +396,9 @@ function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Dat
 	return data
 }
 
-// function removeLinkDuplicates(curr: Sync.Storage, imported: Import): Sync.Storage {
+// function removeLinkDuplicates(curr: Sync, imported: Import): Sync {
 // 	const currentLinks = bundleLinks(curr)
-// 	const importedLink = bundleLinks(imported as Sync.Storage)
+// 	const importedLink = bundleLinks(imported as Sync)
 // 	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))
 
 // 	for (let ii = 0; ii < currentLinks.length; ii++) {
@@ -405,7 +412,7 @@ function analogClockOptions<Data extends Sync.Storage | Import>(data: Data): Dat
 // 	return curr
 // }
 
-function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storage {
+function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 	// When import doesn't have move, other widgets can still be different
 	// This updates current grid with the widgets states from import
 
@@ -481,7 +488,7 @@ function toggleMoveWidgets(current: Sync.Storage, imported: Import): Sync.Storag
 	return current
 }
 
-function convertOldCssSelectors<Data extends Sync.Storage | Import>(data: Data): Data {
+function convertOldCssSelectors<Data extends Sync | Import>(data: Data): Data {
 	if (data?.css) {
 		data.css = data.css
 			.replaceAll('.block', '.link')

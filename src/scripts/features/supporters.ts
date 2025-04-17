@@ -3,6 +3,8 @@ import { onSettingsLoad } from '../utils/onsettingsload'
 import { debounce } from '../utils/debounce'
 import { storage } from '../storage'
 
+import type { Supporters, Sync } from '../../types/sync'
+
 interface SupportersApi {
 	date: string
 	name: string
@@ -20,8 +22,8 @@ interface SupportersUpdate {
 }
 
 interface SupportersInit {
-	supporters: Sync.Storage['supporters']
-	review: Sync.Storage['review']
+	supporters: Supporters
+	review: Sync['review']
 }
 
 const monthBackgrounds = [

@@ -1,6 +1,9 @@
 import { backgroundUpdate } from '.'
-import storage from '../../storage'
 import { tradThis } from '../../utils/translations'
+import { storage } from '../../storage'
+
+import type { Backgrounds } from '../../../types/sync'
+import type { Background } from '../../../types/shared'
 
 export function initCreditEvents() {
 	document.getElementById('b_interface-background-pause')?.onclickdown(() => {
@@ -18,7 +21,7 @@ export function initCreditEvents() {
 	})
 }
 
-export function toggleCredits(backgrounds: Sync.Backgrounds) {
+export function toggleCredits(backgrounds: Backgrounds) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 	const domsave = document.getElementById('a_interface-background-download')
@@ -46,7 +49,7 @@ export function toggleCredits(backgrounds: Sync.Backgrounds) {
 	}
 }
 
-export function updateCredits(image?: Backgrounds.Item) {
+export function updateCredits(image?: Background) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 	const domsave = document.getElementById('download-background')

@@ -7,9 +7,11 @@ import { transitioner } from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
 import { storage } from '../../storage'
 
+import type { LinkGroups, Sync } from '../../../types/sync'
+
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
-export function initGroups(data: Sync.Storage, init?: true) {
+export function initGroups(data: Sync, init?: true) {
 	if (!init) {
 		for (const node of document.querySelectorAll('#link-mini button') ?? []) {
 			node.remove()
@@ -19,7 +21,7 @@ export function initGroups(data: Sync.Storage, init?: true) {
 	createGroups(data.linkgroups)
 }
 
-function createGroups(linkgroups: Sync.LinkGroups) {
+function createGroups(linkgroups: LinkGroups) {
 	const { groups, pinned, synced, selected } = linkgroups
 
 	for (const group of [...groups, '+']) {
@@ -100,13 +102,13 @@ function changeGroup(event: Event) {
 
 // Updates
 
-export function toggleGroups(on: boolean, data: Sync.Storage): Sync.Storage {
+export function toggleGroups(on: boolean, data: Sync): Sync {
 	domlinkblocks?.classList.toggle('with-groups', on)
 	data.linkgroups.on = on
 	return data
 }
 
-export function changeGroupTitle(title: { old: string; new: string }, data: Sync.Storage): Sync.Storage {
+export function changeGroupTitle(title: { old: string; new: string }, data: Sync): Sync {
 	const index = data.linkgroups.groups.indexOf(title.old)
 
 	for (const link of getLinksInGroup(data, title.old)) {
@@ -122,7 +124,7 @@ export function changeGroupTitle(title: { old: string; new: string }, data: Sync
 	return data
 }
 
-export function addGroup(groups: { title: string; sync?: boolean }[], data: Sync.Storage): Sync.Storage {
+export function addGroup(groups: { title: string; sync?: boolean }[], data: Sync): Sync {
 	for (const { title, sync } of groups) {
 		const isReserved = title === 'default' || title === '+'
 		const isAlreadyUsed = data.linkgroups.groups.includes(title)
@@ -151,7 +153,7 @@ export function addGroup(groups: { title: string; sync?: boolean }[], data: Sync
 	return data
 }
 
-export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
+export function deleteGroup(group: string, data: Sync): Sync {
 	const { groups, pinned, synced, selected } = data.linkgroups
 
 	const isBroken = groups.indexOf(group) === -1
@@ -180,7 +182,7 @@ export function deleteGroup(group: string, data: Sync.Storage): Sync.Storage {
 	return data
 }
 
-export function moveGroups(mini: string[], data: Sync.Storage) {
+export function moveGroups(mini: string[], data: Sync) {
 	const userMini = mini.filter(name => name !== '+')
 
 	data.linkgroups.groups = data.linkgroups.pinned.concat(userMini)

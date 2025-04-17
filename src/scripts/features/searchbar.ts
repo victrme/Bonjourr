@@ -7,6 +7,9 @@ import { apiWebSocket } from '../shared/api'
 import { storage } from '../storage'
 import { parse } from '../utils/parse'
 
+import type { SearchEngines } from '../../types/shared'
+import type { Searchbar } from '../../types/sync'
+
 type SearchbarUpdate = {
 	engine?: string
 	newtab?: boolean
@@ -49,7 +52,7 @@ const setBackground = (value = '#fff2') => {
 		?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
-export function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
+export function searchbar(init?: Searchbar, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
 		return

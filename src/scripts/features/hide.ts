@@ -1,6 +1,8 @@
 import { storage } from '../storage'
 
-export async function hideElements(hide: Sync.Hide = {}, options?: { isEvent: true }) {
+import type { Hide } from '../../types/sync'
+
+export async function hideElements(hide: Hide = {}, options?: { isEvent: true }) {
 	//
 	if (options?.isEvent) {
 		const sync = await storage.sync.get('hide')

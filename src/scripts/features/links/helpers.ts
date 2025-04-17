@@ -2,6 +2,9 @@ import { stringMaxSize } from '../../shared/generic'
 import { API_DOMAIN } from '../../defaults'
 import { tradThis } from '../../utils/translations'
 
+import type { Link, LinkElem } from '../../../types/shared'
+import type { Sync } from '../../../types/sync'
+
 export function getDefaultIcon(url: string, refresh?: number) {
 	if (refresh) {
 		return `${API_DOMAIN}/favicon/blob/${url}?r=${refresh}`
@@ -33,7 +36,7 @@ export function getTitleFromEvent(event: Event): HTMLElement | undefined {
 	}
 }
 
-export function createTitle(link: Links.Link): string {
+export function createTitle(link: Link): string {
 	const isInline = document.getElementById('linkblocks')?.className.includes('inline')
 	const isText = document.getElementById('linkblocks')?.className.includes('text')
 
@@ -56,7 +59,7 @@ export function createTitle(link: Links.Link): string {
 
 // Get Links
 
-export function getLink(data: Sync.Storage, id: string): Links.Link | undefined {
+export function getLink(data: Sync, id: string): Link | undefined {
 	const val = data[id]
 
 	if (isLink(val)) {
@@ -64,9 +67,9 @@ export function getLink(data: Sync.Storage, id: string): Links.Link | undefined 
 	}
 }
 
-export function getLinksInGroup(data: Sync.Storage, group?: string): Links.Link[] {
+export function getLinksInGroup(data: Sync, group?: string): Link[] {
 	const groupName = group ?? data.linkgroups.selected
-	const links: Links.Link[] = []
+	const links: Link[] = []
 
 	for (const value of Object.values(data)) {
 		if (isLink(value) && (value?.parent ?? 0) === groupName) {
@@ -79,8 +82,8 @@ export function getLinksInGroup(data: Sync.Storage, group?: string): Links.Link[
 	return links
 }
 
-export function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
-	const links: Links.Elem[] = []
+export function getLinksInFolder(data: Sync, id: string): LinkElem[] {
+	const links: LinkElem[] = []
 
 	for (const value of Object.values(data)) {
 		if (isElem(value) && value?.parent === id) {
@@ -95,10 +98,10 @@ export function getLinksInFolder(data: Sync.Storage, id: string): Links.Elem[] {
 
 // Links typing validation
 
-export function isLink(link: unknown): link is Links.Link {
-	return ((link as Links.Link)?._id ?? '').startsWith('links')
+export function isLink(link: unknown): link is Link {
+	return ((link as Link)?._id ?? '').startsWith('links')
 }
 
-export function isElem(link: unknown): link is Links.Elem {
-	return (link as Links.Link)?.folder !== true
+export function isElem(link: unknown): link is LinkElem {
+	return (link as Link)?.folder !== true
 }

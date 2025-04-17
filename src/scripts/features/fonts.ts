@@ -9,7 +9,7 @@ import { subsets } from '../langs'
 import { storage } from '../storage'
 import { clock } from './clock'
 
-type Font = Sync.Font
+import type { Font, Sync } from '../../types/sync'
 
 interface Fontsource {
 	family: string
@@ -111,7 +111,7 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
 	eventDebounce({ font: data.font })
 }
 
-async function updateFontFamily(data: Sync.Storage, family: string): Promise<Font> {
+async function updateFontFamily(data: Sync, family: string): Promise<Font> {
 	const iWeight = document.getElementById('i_weight') as HTMLInputElement
 	const familyType = family.length === 0 ? 'none' : systemFontChecker(family) ? 'system' : 'fontsource'
 

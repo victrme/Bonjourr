@@ -1,10 +1,14 @@
-import { type Weather, type LastWeather, type Coords, getSunsetHour } from './index'
 import { handleForecastDisplay, displayWeather } from './display'
-
 import { tradThis, getLang } from '../../utils/translations'
 import { handleGeolOption } from './settings'
+import { getSunsetHour } from './index'
 import { suntime } from '../../shared/time'
 import { storage } from '../../storage'
+
+import type { SimpleWeather } from '../../../types/shared'
+import type { LastWeather } from '../../../types/local'
+import type { Weather } from '../../../types/sync'
+import type { Coords } from './index'
 
 export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	handleForecastDisplay(data.forecast)
@@ -61,7 +65,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 		throw new Error('Cannot get weather')
 	}
 
-	const json: Weather.SimpleWeather = await response?.json()
+	const json: SimpleWeather = await response?.json()
 
 	let [sunset, sunrise] = [0, 0]
 	const { temp, feels } = json.now

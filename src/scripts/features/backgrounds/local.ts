@@ -6,6 +6,9 @@ import { hashcode } from '../../utils/hash'
 import { storage } from '../../storage'
 import * as idb from 'idb-keyval'
 
+import type { BackgroundFile, Local } from '../../../types/local'
+import type { BackgroundImage } from '../../../types/shared'
+
 type LocalFileData = {
 	raw: File
 	full: Blob
@@ -18,7 +21,7 @@ let thumbnailSelectionObserver: MutationObserver
 
 // Update
 
-export async function addLocalBackgrounds(filelist: FileList | File[], local: Local.Storage) {
+export async function addLocalBackgrounds(filelist: FileList | File[], local: Local) {
 	const dateString = userDate().toString()
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 	const filesData: Record<string, LocalFileData> = {}
@@ -161,7 +164,7 @@ async function updateBackgroundPosition(type: 'size' | 'vertical' | 'horizontal'
 
 //	Settings options
 
-export function initFilesSettingsOptions(local: Local.Storage) {
+export function initFilesSettingsOptions(local: Local) {
 	thumbnailSelectionObserver = new MutationObserver(toggleLocalFileButtons)
 	thumbnailVisibilityObserver = new IntersectionObserver(intersectionEvent)
 
@@ -180,7 +183,7 @@ export function initFilesSettingsOptions(local: Local.Storage) {
 	document.getElementById('i_background-horizontal')?.addEventListener('input', handleFilePosition)
 }
 
-function handleFilesSettingsOptions(local: Local.Storage) {
+function handleFilesSettingsOptions(local: Local) {
 	const backgroundFiles = local.backgroundFiles
 
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
@@ -200,7 +203,7 @@ function handleFilesSettingsOptions(local: Local.Storage) {
 	}
 }
 
-function handleFilesMoveOptions(file: Local.BackgroundFile) {
+function handleFilesMoveOptions(file: BackgroundFile) {
 	const backgroundSize = document.querySelector<HTMLInputElement>('#i_background-size')
 	const backgroundVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
 	const backgroundHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
@@ -348,7 +351,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 
 // Storage
 
-export async function getFilesAsCollection(local: Local.Storage): Promise<[string[], Backgrounds.Image[]]> {
+export async function getFilesAsCollection(local: Local): Promise<[string[], BackgroundImage[]]> {
 	const idbKeys = (await idb.keys()) as string[]
 	const files = validateBackgroundFiles(local, idbKeys)
 	const filesData = await getAllFiles(Object.keys(files))
@@ -358,7 +361,7 @@ export async function getFilesAsCollection(local: Local.Storage): Promise<[strin
 		return new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime()
 	})
 
-	const images: Backgrounds.Image[] = []
+	const images: BackgroundImage[] = []
 	const keys = sorted.map(entry => entry[0])
 
 	for (const [key, file] of sorted) {
@@ -371,7 +374,7 @@ export async function getFilesAsCollection(local: Local.Storage): Promise<[strin
 	return [keys, images]
 }
 
-function imageObjectFromStorage(file: Local.BackgroundFile, data: LocalFileData, raw?: boolean): Backgrounds.Image {
+function imageObjectFromStorage(file: BackgroundFile, data: LocalFileData, raw?: boolean): BackgroundImage {
 	return {
 		format: 'image',
 		size: file.position.size,
@@ -385,8 +388,8 @@ function imageObjectFromStorage(file: Local.BackgroundFile, data: LocalFileData,
 	}
 }
 
-function validateBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local.Storage['backgroundFiles'] {
-	const backgroundFiles: Record<string, Local.BackgroundFile> = {}
+function validateBackgroundFiles(local: Local, idbKeys: string[]): Local['backgroundFiles'] {
+	const backgroundFiles: Record<string, BackgroundFile> = {}
 	const date = userDate().toString()
 	let change = false
 
@@ -411,7 +414,7 @@ function validateBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local
 /**
  * Local file storage changes in Bonjourr 21, with automatic compression
  */
-export async function migrateToNewIdbFormat(local: Local.Storage) {
+export async function migrateToNewIdbFormat(local: Local) {
 	type LocalImages = { ids: string[]; selected: string }
 	type LocalImagesItem = { background: File; thumbnail: Blob }
 

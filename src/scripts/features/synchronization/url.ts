@@ -1,6 +1,7 @@
 import { tradThis } from '../../utils/translations'
+import type { Sync } from '../../../types/sync'
 
-export async function receiveFromURL(url = ''): Promise<Sync.Storage> {
+export async function receiveFromURL(url = ''): Promise<Sync> {
 	let resp: Response
 
 	try {

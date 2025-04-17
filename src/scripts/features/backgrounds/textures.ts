@@ -1,9 +1,11 @@
+import type { Backgrounds } from '../../../types/sync'
+
 interface TextureRanges {
 	opacity: TextureRangeInput
 	size: TextureRangeInput
 }
 
-export const TEXTURE_RANGES: Record<Sync.TextureType, TextureRanges> = {
+export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRanges> = {
 	grain: {
 		opacity: {
 			min: '0.02',

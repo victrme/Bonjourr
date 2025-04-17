@@ -10,6 +10,9 @@ import { randomString } from '../../shared/generic'
 import { bundleLinks } from '../../utils/bundlelinks'
 import { storage } from '../../storage'
 
+import type { Link, LinkElem } from '../../../types/shared'
+import type { Sync } from '../../../types/sync'
+
 type Treenode = chrome.bookmarks.BookmarkTreeNode
 
 type BookmarksFolder = {
@@ -39,7 +42,7 @@ export async function linksImport() {
 	createBookmarksDialog()
 }
 
-export async function initBookmarkSync(data: Sync.Storage) {
+export async function initBookmarkSync(data: Sync) {
 	let treenode = await getBookmarkTree()
 	let permission = !!treenode
 
@@ -62,9 +65,9 @@ export async function initBookmarkSync(data: Sync.Storage) {
 	}
 }
 
-export function syncBookmarks(group: string): Links.Link[] {
+export function syncBookmarks(group: string): Link[] {
 	const folder = browserBookmarkFolders.find(folder => folder.title === group)
-	const syncedLinks: Links.Link[] = []
+	const syncedLinks: Link[] = []
 
 	if (folder) {
 		for (const bookmark of folder.bookmarks) {
@@ -322,7 +325,7 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 	return treenode
 }
 
-function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): BookmarksFolder[] {
+function bookmarkTreeToFolderList(treenode: Treenode, data: Sync): BookmarksFolder[] {
 	function createMapFromTree(treenode: Treenode) {
 		if (!treenode.children) {
 			return
@@ -362,7 +365,7 @@ function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): Bookm
 		}
 	}
 
-	const linksUrLs = bundleLinks(data).map(link => isLink(link) && (link as Links.Elem).url)
+	const linksUrLs = bundleLinks(data).map(link => isLink(link) && (link as LinkElem).url)
 	const folders: Record<string, BookmarksFolder> = {}
 
 	createMapFromTree(treenode)

@@ -1,13 +1,15 @@
 import { weatherCacheControl, requestNewWeather, getGeolocation } from './request'
-import type { Weather, WeatherUpdate, MeteoGeo, LastWeather } from './index'
-import { displayWeather } from './display'
-
 import { onSettingsLoad } from '../../utils/onsettingsload'
+import { displayWeather } from './display'
 import { stringMaxSize } from '../../shared/generic'
 import { networkForm } from '../../shared/form'
 import { debounce } from '../../utils/debounce'
 import { tradThis } from '../../utils/translations'
 import { storage } from '../../storage'
+
+import type { WeatherUpdate } from './index'
+import type { LastWeather } from '../../../types/local'
+import type { Weather } from '../../../types/sync'
 
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')
@@ -97,7 +99,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	locationForm.load()
 
 	const currentWeather = { ...weather, city }
-	let newWeather: Weather.Local | undefined
+	let newWeather: LastWeather | undefined
 
 	try {
 		newWeather = await requestNewWeather(currentWeather, lastWeather)
@@ -224,27 +226,27 @@ async function fillLocationSuggestions() {
 
 // Type check
 
-function isUnits(str = ''): str is Weather.Unit {
-	const units: Weather.Unit[] = ['metric', 'imperial']
-	return units.includes(str as Weather.Unit)
+function isUnits(str = ''): str is Weather['unit'] {
+	const units: Weather['unit'][] = ['metric', 'imperial']
+	return units.includes(str as Weather['unit'])
 }
 
-function isForecast(str = ''): str is Weather.Forecast {
-	const forecasts: Weather.Forecast[] = ['auto', 'always', 'never']
-	return forecasts.includes(str as Weather.Forecast)
+function isForecast(str = ''): str is Weather['forecast'] {
+	const forecasts: Weather['forecast'][] = ['auto', 'always', 'never']
+	return forecasts.includes(str as Weather['forecast'])
 }
 
-function isMoreinfo(str = ''): str is Weather.MoreInfo {
-	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'accu', 'custom']
-	return moreinfos.includes(str as Weather.MoreInfo)
+function isMoreinfo(str = ''): str is Weather['moreinfo'] {
+	const moreinfos: Weather['moreinfo'][] = ['none', 'msnw', 'yhw', 'windy', 'accu', 'custom']
+	return moreinfos.includes(str as Weather['moreinfo'])
 }
 
-function isTemperature(str = ''): str is Weather.Temperature {
-	const temps: Weather.Temperature[] = ['actual', 'feelslike', 'both']
-	return temps.includes(str as Weather.Temperature)
+function isTemperature(str = ''): str is Weather['temperature'] {
+	const temps: Weather['temperature'][] = ['actual', 'feelslike', 'both']
+	return temps.includes(str as Weather['temperature'])
 }
 
-function isGeolocation(str = ''): str is Weather.Geolocation {
-	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
-	return geol.includes(str as Weather.Geolocation)
+function isGeolocation(str = ''): str is Weather['geolocation'] {
+	const geol: Weather['geolocation'][] = ['precise', 'approximate', 'off']
+	return geol.includes(str as Weather['geolocation'])
 }

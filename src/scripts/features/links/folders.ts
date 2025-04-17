@@ -5,6 +5,9 @@ import { transitioner } from '../../utils/transitioner'
 import { tradThis } from '../../utils/translations'
 import { storage } from '../../storage'
 
+import type { LinkFolder } from '../../../types/shared'
+import type { Sync } from '../../../types/sync'
+
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 
 queueMicrotask(() => {
@@ -34,14 +37,14 @@ export async function folderClick(event: MouseEvent) {
 	}
 }
 
-function openFolder(data: Sync.Storage, li: HTMLLIElement): void {
+function openFolder(data: Sync, li: HTMLLIElement): void {
 	if (!li.parentNode) {
 		return
 	}
 
 	const linkgroup = li.parentNode.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
-	const folder = data[li.id] as Links.Folder
+	const folder = data[li.id] as LinkFolder
 
 	const transition = transitioner()
 	transition.first(hide)
@@ -104,7 +107,7 @@ async function closeFolder() {
 	}
 }
 
-function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
+function openAllLinks(data: Sync, li: HTMLLIElement) {
 	const linksInFolder = getLinksInFolder(data, li.id)
 
 	for (const link of linksInFolder) {
