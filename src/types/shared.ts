@@ -1,6 +1,6 @@
-import type { langList } from '../scripts/langs'
-import type { Local } from './local'
-import type { Sync } from './sync'
+import type { langList } from '../scripts/langs.ts'
+import type { Local } from './local.ts'
+import type { Sync } from './sync.ts'
 
 export type Langs = keyof typeof langList
 export type Link = LinkFolder | LinkElem

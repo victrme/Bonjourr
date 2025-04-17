@@ -1,7 +1,7 @@
-import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom'
-import { transitioner } from '../../utils/transitioner'
-import { storage } from '../../storage'
-import { weather } from '../weather'
+import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom.ts'
+import { transitioner } from '../../utils/transitioner.ts'
+import { storage } from '../../storage.ts'
+import { weather } from '../weather/index.ts'
 import {
 	isEditing,
 	addGridWidget,
@@ -10,10 +10,10 @@ import {
 	gridStringify,
 	gridParse,
 	getLayout,
-} from './helpers'
+} from './helpers.ts'
 
-import type { Widgets } from '../../../types/shared'
-import type { Sync } from '../../../types/sync'
+import type { Widgets } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
 	if (!widget) {

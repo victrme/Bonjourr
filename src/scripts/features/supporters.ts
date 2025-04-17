@@ -1,9 +1,9 @@
-import { getLang, tradThis } from '../utils/translations'
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { debounce } from '../utils/debounce'
-import { storage } from '../storage'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { debounce } from '../utils/debounce.ts'
+import { storage } from '../storage.ts'
 
-import type { Supporters, Sync } from '../../types/sync'
+import type { Supporters, Sync } from '../../types/sync.ts'
 
 interface SupportersApi {
 	date: string
@@ -375,7 +375,7 @@ function initGlitter() {
 
 	const snowfallDebounce = debounce(snowfall.setup, 200)
 
-	window.addEventListener('resize', snowfallDebounce)
+	globalThis.addEventListener('resize', snowfallDebounce)
 
 	// Animation loop function
 	snowfall.animate = () => {

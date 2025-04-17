@@ -1,5 +1,5 @@
-import { storage } from '../storage'
-import type { Local, Translations } from '../../types/local'
+import { storage } from '../storage.ts'
+import type { Local, Translations } from '../../types/local.ts'
 
 let trns: Translations | undefined
 let currentTrnsLang = 'en'

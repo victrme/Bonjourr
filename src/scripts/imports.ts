@@ -1,13 +1,13 @@
-import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from './features/move/helpers'
-import { countryCodeToLanguageCode } from './utils/translations'
-import { API_DOMAIN, SYNC_DEFAULT } from './defaults'
-import { oldJSONToCSV } from './features/quotes'
-import { randomString } from './shared/generic'
+import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from './features/move/helpers.ts'
+import { countryCodeToLanguageCode } from './utils/translations.ts'
+import { API_DOMAIN, SYNC_DEFAULT } from './defaults.ts'
+import { oldJSONToCSV } from './features/quotes.ts'
+import { randomString } from './shared/generic.ts'
 import { deepmergeAll } from '@victr/deepmerge'
-import { bundleLinks } from './utils/bundlelinks'
+import { bundleLinks } from './utils/bundlelinks.ts'
 
-import type { Sync } from '../types/sync'
-import type { LinkElem, OldSync, Widgets } from '../types/shared'
+import type { Sync } from '../types/sync.ts'
+import type { LinkElem, OldSync, Widgets } from '../types/shared.ts'
 
 type Import = Partial<Sync>
 

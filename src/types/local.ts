@@ -1,5 +1,5 @@
-import type { SimpleWeather, Background, Quote } from './shared'
-import type { Sync } from './sync'
+import type { SimpleWeather, Background, Quote } from './shared.ts'
+import type { Sync } from './sync.ts'
 
 export type BackgroundUrlState = 'NONE' | 'LOADING' | 'OK' | 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE'
 export type SyncType = 'browser' | 'gist' | 'url' | 'off'

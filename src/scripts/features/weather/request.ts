@@ -1,14 +1,14 @@
-import { handleForecastDisplay, displayWeather } from './display'
-import { tradThis, getLang } from '../../utils/translations'
-import { handleGeolOption } from './settings'
-import { getSunsetHour } from './index'
-import { suntime } from '../../shared/time'
-import { storage } from '../../storage'
+import { handleForecastDisplay, displayWeather } from './display.ts'
+import { tradThis, getLang } from '../../utils/translations.ts'
+import { handleGeolOption } from './settings.ts'
+import { getSunsetHour } from './index.ts'
+import { suntime } from '../../shared/time.ts'
+import { storage } from '../../storage.ts'
 
-import type { SimpleWeather } from '../../../types/shared'
-import type { LastWeather } from '../../../types/local'
-import type { Weather } from '../../../types/sync'
-import type { Coords } from './index'
+import type { SimpleWeather } from '../../../types/shared.ts'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Weather } from '../../../types/sync.ts'
+import type { Coords } from './index.ts'
 
 export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	handleForecastDisplay(data.forecast)

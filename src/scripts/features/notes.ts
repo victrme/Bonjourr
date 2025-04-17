@@ -1,13 +1,13 @@
-import { hexColorFromSplitRange } from '../shared/dom'
-import { getLang, tradThis } from '../utils/translations'
-import { opacityFromHex } from '../shared/generic'
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { eventDebounce } from '../utils/debounce'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { opacityFromHex } from '../shared/generic.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
 import PocketEditor from 'pocket-editor'
-import { langList } from '../langs'
-import { storage } from '../storage'
+import { langList } from '../langs.ts'
+import { storage } from '../storage.ts'
 
-import type { Notes } from '../../types/sync'
+import type { Notes } from '../../types/sync.ts'
 
 type NotesEvent = {
 	text?: string

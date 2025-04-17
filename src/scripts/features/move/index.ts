@@ -1,5 +1,5 @@
-import { setAlign, addOverlay, removeOverlay, setGridAreas, setAllAligns, removeSelection, interfaceFade } from './dom'
-import { toggleWidget, toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets'
+import { setAlign, addOverlay, removeOverlay, setGridAreas, setAllAligns, removeSelection, interfaceFade } from './dom.ts'
+import { toggleWidget, toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets.ts'
 import {
 	toolboxEvents,
 	alignButtons,
@@ -8,13 +8,13 @@ import {
 	resetButton,
 	spanButtons,
 	showSpanButtons,
-} from './toolbox'
+} from './toolbox.ts'
 
-import { onSettingsLoad } from '../../utils/onsettingsload'
-import { transitioner } from '../../utils/transitioner'
-import { SYNC_DEFAULT } from '../../defaults'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { transitioner } from '../../utils/transitioner.ts'
+import { SYNC_DEFAULT } from '../../defaults.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
 import {
 	isEditing,
@@ -28,10 +28,10 @@ import {
 	getGridWidgets,
 	getWidgetsStorage,
 	getLayout,
-} from './helpers'
+} from './helpers.ts'
 
-import type { Move, Sync } from '../../../types/sync'
-import type { Widgets } from '../../../types/shared'
+import type { Move, Sync } from '../../../types/sync.ts'
+import type { Widgets } from '../../../types/shared.ts'
 
 type UpdateMove = {
 	widget?: [Widgets, boolean]

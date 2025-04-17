@@ -1,12 +1,12 @@
-import { getLiFromEvent, getLinksInFolder } from './helpers'
-import { initblocks } from './index'
+import { getLiFromEvent, getLinksInFolder } from './helpers.ts'
+import { initblocks } from './index.ts'
 
-import { transitioner } from '../../utils/transitioner'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { transitioner } from '../../utils/transitioner.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
-import type { LinkFolder } from '../../../types/shared'
-import type { Sync } from '../../../types/sync'
+import type { LinkFolder } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 
@@ -111,9 +111,9 @@ function openAllLinks(data: Sync, li: HTMLLIElement) {
 	const linksInFolder = getLinksInFolder(data, li.id)
 
 	for (const link of linksInFolder) {
-		window.open(link.url, '_blank')?.focus()
+		globalThis.open(link.url, '_blank')?.focus()
 	}
 
-	window.open(window.location.href, '_blank')?.focus()
-	window.close()
+	globalThis.open(globalThis.location.href, '_blank')?.focus()
+	globalThis.close()
 }

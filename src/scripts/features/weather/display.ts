@@ -1,9 +1,9 @@
-import { userDate, minutator, suntime } from '../../shared/time'
-import { getLang, tradThis } from '../../utils/translations'
-import { getSunsetHour } from './index'
+import { userDate, minutator, suntime } from '../../shared/time.ts'
+import { getLang, tradThis } from '../../utils/translations.ts'
+import { getSunsetHour } from './index.ts'
 
-import type { LastWeather } from '../../../types/local'
-import type { Weather } from '../../../types/sync'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Weather } from '../../../types/sync.ts'
 
 let weatherFirstStart = true
 

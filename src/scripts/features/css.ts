@@ -1,7 +1,7 @@
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { stringMaxSize } from '../shared/generic'
-import { eventDebounce } from '../utils/debounce'
-import { tradThis } from '../utils/translations'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { stringMaxSize } from '../shared/generic.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { tradThis } from '../utils/translations.ts'
 
 export function customCss(init?: string, event?: { styling: string }) {
 	const stylelink = document.getElementById('styles') as HTMLStyleElement
@@ -21,7 +21,7 @@ export function customCss(init?: string, event?: { styling: string }) {
 	}
 
 	onSettingsLoad(async () => {
-		const { createCssEditor } = await import('./csseditor')
+		const { createCssEditor } = await import('./csseditor.ts')
 
 		const options = {
 			language: 'css',

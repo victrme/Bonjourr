@@ -1,17 +1,17 @@
-import { quickLinks, validateLink } from './index'
-import { isLink } from './helpers'
+import { quickLinks, validateLink } from './index.ts'
+import { isLink } from './helpers.ts'
 
-import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults'
-import { getHTMLTemplate, toggleDisabled } from '../../shared/dom'
-import { getLang, tradThis, traduction } from '../../utils/translations'
-import { settingsNotifications } from '../../utils/notifications'
-import { getPermissions } from '../../utils/permissions'
-import { randomString } from '../../shared/generic'
-import { bundleLinks } from '../../utils/bundlelinks'
-import { storage } from '../../storage'
+import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults.ts'
+import { getHTMLTemplate, toggleDisabled } from '../../shared/dom.ts'
+import { getLang, tradThis, traduction } from '../../utils/translations.ts'
+import { settingsNotifications } from '../../utils/notifications.ts'
+import { getPermissions } from '../../utils/permissions.ts'
+import { randomString } from '../../shared/generic.ts'
+import { bundleLinks } from '../../utils/bundlelinks.ts'
+import { storage } from '../../storage.ts'
 
-import type { Link, LinkElem } from '../../../types/shared'
-import type { Sync } from '../../../types/sync'
+import type { Link, LinkElem } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 type Treenode = chrome.bookmarks.BookmarkTreeNode
 
@@ -286,8 +286,8 @@ function toggleFolderSync(folder: HTMLElement) {
 // webext stuff
 
 async function getBookmarkTree(): Promise<Treenode[] | undefined> {
-	const treenode = window.startupBookmarks ?? (await EXTENSION?.bookmarks?.getTree())
-	const topsites = window.startupTopsites ?? (await EXTENSION?.topSites?.get())
+	const treenode = globalThis.startupBookmarks ?? (await EXTENSION?.bookmarks?.getTree())
+	const topsites = globalThis.startupTopsites ?? (await EXTENSION?.topSites?.get())
 
 	if (!(treenode && topsites)) {
 		return

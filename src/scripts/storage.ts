@@ -1,10 +1,10 @@
-import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
-import { deepEqual } from './dependencies/deepequal'
-import { parse } from './utils/parse'
+import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults.ts'
+import { deepEqual } from './dependencies/deepequal.ts'
+import { parse } from './utils/parse.ts'
 import * as idb from 'idb-keyval'
 
-import type { Local } from '../types/local'
-import type { Sync } from '../types/sync'
+import type { Local } from '../types/local.ts'
+import type { Sync } from '../types/sync.ts'
 
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
 
@@ -144,7 +144,7 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 			}
 
 			localStorage.bonjourr = JSON.stringify(data ?? {})
-			window.dispatchEvent(new Event('storage'))
+			globalThis.dispatchEvent(new Event('storage'))
 			return
 		}
 

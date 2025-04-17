@@ -1,9 +1,9 @@
 import { backgroundUpdate } from '.'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
-import type { Backgrounds } from '../../../types/sync'
-import type { Background } from '../../../types/shared'
+import type { Backgrounds } from '../../../types/sync.ts'
+import type { Background } from '../../../types/shared.ts'
 
 export function initCreditEvents() {
 	document.getElementById('b_interface-background-pause')?.onclickdown(() => {

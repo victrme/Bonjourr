@@ -5,7 +5,7 @@ interface CompressOptions {
 }
 
 export async function compressMedia(blob: Blob, options: CompressOptions) {
-	const blobUrl = window.URL.createObjectURL(blob)
+	const blobUrl = globalThis.URL.createObjectURL(blob)
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
 	const img = new Image()

@@ -1,15 +1,15 @@
-import { hexColorFromSplitRange } from '../shared/dom'
-import { getLang, tradThis } from '../utils/translations'
-import { displayInterface } from '../index'
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { eventDebounce } from '../utils/debounce'
-import { stringMaxSize } from '../shared/generic'
-import { getVnCalendar } from '../dependencies/vietnamese-calendar'
-import { SYNC_DEFAULT } from '../defaults'
-import { userDate } from '../shared/time'
-import { storage } from '../storage'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { displayInterface } from '../index.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { stringMaxSize } from '../shared/generic.ts'
+import { getVnCalendar } from '../dependencies/vietnamese-calendar.ts'
+import { SYNC_DEFAULT } from '../defaults.ts'
+import { userDate } from '../shared/time.ts'
+import { storage } from '../storage.ts'
 
-import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync'
+import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
 
 type DateFormat = Sync['dateformat']
 

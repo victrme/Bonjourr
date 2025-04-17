@@ -1,4 +1,4 @@
-import { storage } from '../storage'
+import { storage } from '../storage.ts'
 
 // Typing from
 // https://gist.github.com/ca0v/73a31f57b397606c9813472f7493a940?permalink_comment_id=4276799#gistcomment-4276799

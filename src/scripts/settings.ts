@@ -1,37 +1,37 @@
-import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others'
-import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts'
-import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds'
-import { changeGroupTitle, initGroups } from './features/links/groups'
-import { supportersNotifications } from './features/supporters'
-import { synchronization } from './features/synchronization'
-import { interfacePopup } from './features/popup'
-import { moveElements } from './features/move'
-import { hideElements } from './features/hide'
-import { linksImport } from './features/links/bookmarks'
-import { quickLinks } from './features/links'
-import { searchbar } from './features/searchbar'
-import { weather } from './features/weather/index'
-import { quotes } from './features/quotes'
-import { notes } from './features/notes'
-import { clock } from './features/clock'
+import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others.ts'
+import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
+import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
+import { changeGroupTitle, initGroups } from './features/links/groups.ts'
+import { supportersNotifications } from './features/supporters.ts'
+import { synchronization } from './features/synchronization/index.ts'
+import { interfacePopup } from './features/popup.ts'
+import { moveElements } from './features/move/index.ts'
+import { hideElements } from './features/hide.ts'
+import { linksImport } from './features/links/bookmarks.ts'
+import { quickLinks } from './features/links/index.ts'
+import { searchbar } from './features/searchbar.ts'
+import { weather } from './features/weather/index.ts'
+import { quotes } from './features/quotes.ts'
+import { notes } from './features/notes.ts'
+import { clock } from './features/clock.ts'
 
-import { inputThrottle, turnRefreshButton, fadeOut } from './shared/dom'
-import { traduction, tradThis, toggleTraduction } from './utils/translations'
-import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults'
-import { settingsNotifications } from './utils/notifications'
-import { getPermissions } from './utils/permissions'
-import { opacityFromHex } from './shared/generic'
-import { loadCallbacks } from './utils/onsettingsload'
-import { filterImports } from './imports'
-import { stringify } from './utils/stringify'
-import { debounce } from './utils/debounce'
-import { langList } from './langs'
-import { storage } from './storage'
-import { parse } from './utils/parse'
+import { inputThrottle, turnRefreshButton, fadeOut } from './shared/dom.ts'
+import { traduction, tradThis, toggleTraduction } from './utils/translations.ts'
+import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
+import { settingsNotifications } from './utils/notifications.ts'
+import { getPermissions } from './utils/permissions.ts'
+import { opacityFromHex } from './shared/generic.ts'
+import { loadCallbacks } from './utils/onsettingsload.ts'
+import { filterImports } from './imports.ts'
+import { stringify } from './utils/stringify.ts'
+import { debounce } from './utils/debounce.ts'
+import { langList } from './langs.ts'
+import { storage } from './storage.ts'
+import { parse } from './utils/parse.ts'
 
-import type { Langs } from '../types/shared'
-import type { Sync } from '../types/sync'
-import type { Local } from '../types/local'
+import type { Langs } from '../types/shared.ts'
+import type { Sync } from '../types/sync.ts'
+import type { Local } from '../types/local.ts'
 
 // Initialization
 
@@ -1043,7 +1043,7 @@ function settingsDrawerBar() {
 		drawerDragEvents()
 	}, 600)
 
-	window.addEventListener('resize', () => {
+	globalThis.addEventListener('resize', () => {
 		drawerDragDebounce()
 
 		// removes transition to prevent weird movement when changing to mobile styling
@@ -1092,8 +1092,8 @@ function drawerDragEvents() {
 		}
 
 		// Add mouse / touch moves events
-		window.addEventListener('touchmove', dragMove)
-		window.addEventListener('pointermove', dragMove)
+		globalThis.addEventListener('touchmove', dragMove)
+		globalThis.addEventListener('pointermove', dragMove)
 		document.body.addEventListener('touchend', dragEnd)
 		document.body.addEventListener('pointerup', dragEnd)
 
@@ -1114,7 +1114,7 @@ function drawerDragEvents() {
 		// element is below max height: move
 		if (clientY > 60) {
 			const touchPosition = clientY - 25
-			const inverseHeight = 100 - (touchPosition / window.innerHeight) * 100
+			const inverseHeight = 100 - (touchPosition / globalThis.innerHeight) * 100
 
 			settingsVh = +inverseHeight.toFixed(2)
 			settingsDom.style.transform = `translateY(-${settingsVh}dvh)`
@@ -1133,8 +1133,8 @@ function drawerDragEvents() {
 			clientY = (e as TouchEvent).changedTouches[0].clientY
 		}
 
-		window.removeEventListener('touchmove', dragMove)
-		window.removeEventListener('pointermove', dragMove)
+		globalThis.removeEventListener('touchmove', dragMove)
+		globalThis.removeEventListener('pointermove', dragMove)
 		document.body.removeEventListener('touchend', dragEnd)
 		document.body.removeEventListener('pointerup', dragEnd)
 
@@ -1149,7 +1149,7 @@ function drawerDragEvents() {
 		settingsDom.classList.remove('dragging')
 
 		// small enough ? close settings
-		if (clientY > window.innerHeight - 100) {
+		if (clientY > globalThis.innerHeight - 100) {
 			settingsToggle()
 		}
 	}
@@ -1301,10 +1301,10 @@ function updateSettingsEvent() {
 	const removeListener = () => chrome.storage.onChanged.removeListener(storageUpdate)
 
 	if (PLATFORM === 'online') {
-		window.addEventListener('storage', storageUpdate)
+		globalThis.addEventListener('storage', storageUpdate)
 	} else {
 		chrome.storage.onChanged.addListener(storageUpdate)
-		window.addEventListener('beforeunload', removeListener, { once: true })
+		globalThis.addEventListener('beforeunload', removeListener, { once: true })
 	}
 }
 

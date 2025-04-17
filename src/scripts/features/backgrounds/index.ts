@@ -1,20 +1,20 @@
-import { getFilesAsCollection, initFilesSettingsOptions, addLocalBackgrounds } from './local'
-import { initCreditEvents, updateCredits, toggleCredits } from './credits'
-import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
-import { TEXTURE_RANGES } from './textures'
-import { PROVIDERS } from './providers'
+import { getFilesAsCollection, initFilesSettingsOptions, addLocalBackgrounds } from './local.ts'
+import { initCreditEvents, updateCredits, toggleCredits } from './credits.ts'
+import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
+import { TEXTURE_RANGES } from './textures.ts'
+import { PROVIDERS } from './providers.ts'
 
-import { userDate, daylightPeriod, needsChange } from '../../shared/time'
-import { turnRefreshButton } from '../../shared/dom'
-import { onSettingsLoad } from '../../utils/onsettingsload'
-import { rgbToHex } from '../../shared/generic'
-import { debounce } from '../../utils/debounce'
-import { BROWSER } from '../../defaults'
-import { storage } from '../../storage'
+import { userDate, daylightPeriod, needsChange } from '../../shared/time.ts'
+import { turnRefreshButton } from '../../shared/dom.ts'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { rgbToHex } from '../../shared/generic.ts'
+import { debounce } from '../../utils/debounce.ts'
+import { BROWSER } from '../../defaults.ts'
+import { storage } from '../../storage.ts'
 
-import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '../../../types/shared'
-import type { Backgrounds, Sync } from '../../../types/sync'
-import type { Local } from '../../../types/local'
+import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '../../../types/shared.ts'
+import type { Backgrounds, Sync } from '../../../types/sync.ts'
+import type { Local } from '../../../types/local.ts'
 
 interface BackgroundUpdate {
 	freq?: string
@@ -409,10 +409,10 @@ async function fetchNewBackgrounds(backgrounds: Backgrounds): Promise<Record<str
 	const base = 'https://services.bonjourr.fr/backgrounds'
 	const path = `/${provider}/${type}/${category}`
 
-	const density = Math.max(2, window.devicePixelRatio)
-	const ratio = window.screen.width / window.screen.height
-	let height = window.screen.height * density
-	let width = window.screen.width * density
+	const density = Math.max(2, globalThis.devicePixelRatio)
+	const ratio = globalThis.screen.width / globalThis.screen.height
+	let height = globalThis.screen.height * density
+	let width = globalThis.screen.width * density
 
 	if (ratio >= 2) {
 		width = height * 2

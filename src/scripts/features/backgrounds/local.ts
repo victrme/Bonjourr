@@ -1,13 +1,13 @@
-import { applyBackground, removeBackgrounds } from './index'
-import { compressMedia } from '../../shared/compress'
-import { IS_MOBILE } from '../../defaults'
-import { userDate } from '../../shared/time'
-import { hashcode } from '../../utils/hash'
-import { storage } from '../../storage'
+import { applyBackground, removeBackgrounds } from './index.ts'
+import { compressMedia } from '../../shared/compress.ts'
+import { IS_MOBILE } from '../../defaults.ts'
+import { userDate } from '../../shared/time.ts'
+import { hashcode } from '../../utils/hash.ts'
+import { storage } from '../../storage.ts'
 import * as idb from 'idb-keyval'
 
-import type { BackgroundFile, Local } from '../../../types/local'
-import type { BackgroundImage } from '../../../types/shared'
+import type { BackgroundFile, Local } from '../../../types/local.ts'
+import type { BackgroundImage } from '../../../types/shared.ts'
 
 type LocalFileData = {
 	raw: File
@@ -61,10 +61,10 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		// 2a. This finds a reasonable resolution for compression
 
-		const isLandscape = window.screen.orientation.type === 'landscape-primary'
-		const long = isLandscape ? window.screen.width : window.screen.height
-		const short = isLandscape ? window.screen.height : window.screen.width
-		const density = Math.min(2, window.devicePixelRatio)
+		const isLandscape = globalThis.screen.orientation.type === 'landscape-primary'
+		const long = isLandscape ? globalThis.screen.width : globalThis.screen.height
+		const short = isLandscape ? globalThis.screen.height : globalThis.screen.width
+		const density = Math.min(2, globalThis.devicePixelRatio)
 		const ratio = Math.min(1.8, long / short)
 		const averagePixelHeight = short * ratio * density
 
@@ -225,7 +225,7 @@ function handleGridView() {
 	const container = document.getElementById('thumbnails-container')
 
 	if (container) {
-		const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
+		const currentZoom = globalThis.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
 		const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
 		container.style.setProperty('--thumbnails-columns', newZoom.toString())
 	}

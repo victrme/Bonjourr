@@ -1,14 +1,14 @@
-import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
-import { opacityFromHex, stringMaxSize } from '../shared/generic'
-import { hexColorFromSplitRange } from '../shared/dom'
-import { getLang, tradThis } from '../utils/translations'
-import { eventDebounce } from '../utils/debounce'
-import { apiWebSocket } from '../shared/api'
-import { storage } from '../storage'
-import { parse } from '../utils/parse'
+import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults.ts'
+import { opacityFromHex, stringMaxSize } from '../shared/generic.ts'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { apiWebSocket } from '../shared/api.ts'
+import { storage } from '../storage.ts'
+import { parse } from '../utils/parse.ts'
 
-import type { SearchEngines } from '../../types/shared'
-import type { Searchbar } from '../../types/sync'
+import type { SearchEngines } from '../../types/shared.ts'
+import type { Searchbar } from '../../types/sync.ts'
 
 type SearchbarUpdate = {
 	engine?: string
@@ -209,7 +209,7 @@ function submitSearch(e: Event) {
 	const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
 	const target = newtab ? '_blank' : '_self'
 
-	window.open(url, target)
+	globalThis.open(url, target)
 	return
 }
 

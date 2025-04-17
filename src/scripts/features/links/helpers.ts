@@ -1,9 +1,9 @@
-import { stringMaxSize } from '../../shared/generic'
-import { API_DOMAIN } from '../../defaults'
-import { tradThis } from '../../utils/translations'
+import { stringMaxSize } from '../../shared/generic.ts'
+import { API_DOMAIN } from '../../defaults.ts'
+import { tradThis } from '../../utils/translations.ts'
 
-import type { Link, LinkElem } from '../../../types/shared'
-import type { Sync } from '../../../types/sync'
+import type { Link, LinkElem } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 export function getDefaultIcon(url: string, refresh?: number) {
 	if (refresh) {

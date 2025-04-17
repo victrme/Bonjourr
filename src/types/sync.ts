@@ -1,4 +1,4 @@
-import type { Frequency, Widgets, BackgroundImage, BackgroundVideo, Link } from './shared'
+import type { Frequency, Widgets, BackgroundImage, BackgroundVideo, Link } from './shared.ts'
 
 export interface Sync {
 	showall: boolean

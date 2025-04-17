@@ -1,8 +1,8 @@
-import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle, moveGroups } from './groups'
-import { initBookmarkSync, syncBookmarks } from './bookmarks'
-import { openEditDialog } from './edit'
-import { folderClick } from './folders'
-import { startDrag } from './drag'
+import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle, moveGroups } from './groups.ts'
+import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
+import { openEditDialog } from './edit.ts'
+import { folderClick } from './folders.ts'
+import { startDrag } from './drag.ts'
 import {
 	isElem,
 	getLiFromEvent,
@@ -11,17 +11,17 @@ import {
 	isLink,
 	getLinksInGroup,
 	getLinksInFolder,
-} from './helpers'
+} from './helpers.ts'
 
-import { randomString, stringMaxSize } from '../../shared/generic'
-import { displayInterface } from '../../index'
-import { getHTMLTemplate } from '../../shared/dom'
-import { eventDebounce } from '../../utils/debounce'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { randomString, stringMaxSize } from '../../shared/generic.ts'
+import { displayInterface } from '../../index.ts'
+import { getHTMLTemplate } from '../../shared/dom.ts'
+import { eventDebounce } from '../../utils/debounce.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
-import type { Link, LinkElem, LinkFolder } from '../../../types/shared'
-import type { Sync } from '../../../types/sync'
+import type { Link, LinkElem, LinkFolder } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
 	title: string

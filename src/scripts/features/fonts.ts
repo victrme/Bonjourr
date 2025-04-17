@@ -1,15 +1,15 @@
-import { getLang, tradThis } from '../utils/translations'
-import { displayInterface } from '../index'
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { eventDebounce } from '../utils/debounce'
-import { networkForm } from '../shared/form'
-import { SYSTEM_OS } from '../defaults'
-import { apiFetch } from '../shared/api'
-import { subsets } from '../langs'
-import { storage } from '../storage'
-import { clock } from './clock'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { displayInterface } from '../index.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { networkForm } from '../shared/form.ts'
+import { SYSTEM_OS } from '../defaults.ts'
+import { apiFetch } from '../shared/api.ts'
+import { subsets } from '../langs.ts'
+import { storage } from '../storage.ts'
+import { clock } from './clock.ts'
 
-import type { Font, Sync } from '../../types/sync'
+import type { Font, Sync } from '../../types/sync.ts'
 
 interface Fontsource {
 	family: string

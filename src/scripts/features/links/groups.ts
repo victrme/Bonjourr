@@ -1,13 +1,13 @@
-import { getLinksInGroup } from './helpers'
-import { openEditDialog } from './edit'
-import { initblocks } from './index'
-import { startDrag } from './drag'
+import { getLinksInGroup } from './helpers.ts'
+import { openEditDialog } from './edit.ts'
+import { initblocks } from './index.ts'
+import { startDrag } from './drag.ts'
 
-import { transitioner } from '../../utils/transitioner'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { transitioner } from '../../utils/transitioner.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
-import type { LinkGroups, Sync } from '../../../types/sync'
+import type { LinkGroups, Sync } from '../../../types/sync.ts'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 

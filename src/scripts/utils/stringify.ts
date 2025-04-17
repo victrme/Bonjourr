@@ -1,7 +1,7 @@
-import { SYNC_DEFAULT } from '../defaults'
-import { bundleLinks } from './bundlelinks'
+import { SYNC_DEFAULT } from '../defaults.ts'
+import { bundleLinks } from './bundlelinks.ts'
 
-import type { Sync } from '../../types/sync'
+import type { Sync } from '../../types/sync.ts'
 
 export function stringify(data: Sync) {
 	const defaultSyncData = structuredClone(SYNC_DEFAULT)

@@ -1,5 +1,5 @@
-import { tradThis } from '../../utils/translations'
-import type { Sync } from '../../../types/sync'
+import { tradThis } from '../../utils/translations.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 export async function receiveFromURL(url = ''): Promise<Sync> {
 	let resp: Response

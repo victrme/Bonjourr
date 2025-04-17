@@ -1,4 +1,4 @@
-import { EXTENSION } from '../defaults'
+import { EXTENSION } from '../defaults.ts'
 
 export async function getPermissions(...args: string[]): Promise<boolean> {
 	if (!EXTENSION) {

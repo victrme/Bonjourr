@@ -1,5 +1,5 @@
-import type { Link } from '../../types/shared'
-import type { Sync } from '../../types/sync'
+import type { Link } from '../../types/shared.ts'
+import type { Sync } from '../../types/sync.ts'
 
 export function bundleLinks(data: Sync): Link[] {
 	// 1.13.0: Returns an array of found links in storage

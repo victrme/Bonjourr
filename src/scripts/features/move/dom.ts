@@ -1,8 +1,8 @@
-import { elements, gridStringify } from './helpers'
-import { moveElements } from './index'
+import { elements, gridStringify } from './helpers.ts'
+import { moveElements } from './index.ts'
 
-import type { MoveAlign, MoveLayout } from '../../../types/sync'
-import type { Widgets } from '../../../types/shared'
+import type { MoveAlign, MoveLayout } from '../../../types/sync.ts'
+import type { Widgets } from '../../../types/shared.ts'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 

@@ -1,6 +1,6 @@
-import { storage } from '../storage'
+import { storage } from '../storage.ts'
 
-import type { Hide } from '../../types/sync'
+import type { Hide } from '../../types/sync.ts'
 
 export async function hideElements(hide: Hide = {}, options?: { isEvent: true }) {
 	//

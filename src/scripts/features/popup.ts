@@ -1,8 +1,8 @@
-import { getLang, tradThis } from '../utils/translations'
-import { BROWSER } from '../defaults'
-import { storage } from '../storage'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { BROWSER } from '../defaults.ts'
+import { storage } from '../storage.ts'
 
-import type { Sync } from '../../types/sync'
+import type { Sync } from '../../types/sync.ts'
 
 type PopupInit = {
 	old?: string

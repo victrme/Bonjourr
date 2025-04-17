@@ -1,11 +1,11 @@
-import { retrieveGist, sendGist, findGistId, isGistTokenValid, setGistStatus } from './gist'
-import { isDistantUrlValid, receiveFromURL } from './url'
-import { onSettingsLoad } from '../../utils/onsettingsload'
-import { networkForm } from '../../shared/form'
-import { fadeOut } from '../../shared/dom'
-import { storage } from '../../storage'
+import { retrieveGist, sendGist, findGistId, isGistTokenValid, setGistStatus } from './gist.ts'
+import { isDistantUrlValid, receiveFromURL } from './url.ts'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { networkForm } from '../../shared/form.ts'
+import { fadeOut } from '../../shared/dom.ts'
+import { storage } from '../../storage.ts'
 
-import type { Local, SyncType } from '../../../types/local'
+import type { Local, SyncType } from '../../../types/local.ts'
 
 interface SyncUpdate {
 	type?: string

@@ -1,7 +1,7 @@
-import { langList } from './langs'
+import { langList } from './langs.ts'
 
-import type { Local } from '../types/local'
-import type { Sync } from '../types/sync'
+import type { Local } from '../types/local.ts'
+import type { Sync } from '../types/sync.ts'
 
 export const CURRENT_VERSION = '21.0.0'
 
@@ -14,32 +14,32 @@ export const SYSTEM_OS =
 	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
 	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
 		? 'ios'
-		: window.navigator.appVersion.includes('Macintosh')
+		: globalThis.navigator.appVersion.includes('Macintosh')
 			? 'mac'
-			: window.navigator.appVersion.includes('Windows')
+			: globalThis.navigator.appVersion.includes('Windows')
 				? 'windows'
-				: window.navigator.userAgent.toLowerCase().includes('Android')
+				: globalThis.navigator.userAgent.toLowerCase().includes('Android')
 					? 'android'
 					: 'unknown'
 
 export const PLATFORM =
-	window.location.protocol === 'moz-extension:'
+	globalThis.location.protocol === 'moz-extension:'
 		? 'firefox'
-		: window.location.protocol === 'chrome-extension:'
+		: globalThis.location.protocol === 'chrome-extension:'
 			? 'chrome'
-			: window.location.protocol === 'safari-web-extension:'
+			: globalThis.location.protocol === 'safari-web-extension:'
 				? 'safari'
 				: 'online'
 
-export const BROWSER = window.navigator?.userAgentData?.brands.some(b => b.brand === 'Microsoft Edge')
+export const BROWSER = globalThis.navigator?.userAgentData?.brands.some(b => b.brand === 'Microsoft Edge')
 	? 'edge'
-	: window.navigator?.userAgentData?.brands.some(b => b.brand === 'Opera')
+	: globalThis.navigator?.userAgentData?.brands.some(b => b.brand === 'Opera')
 		? 'opera'
-		: window.navigator?.userAgentData?.brands.some(b => b.brand === 'Chromium')
+		: globalThis.navigator?.userAgentData?.brands.some(b => b.brand === 'Chromium')
 			? 'chrome'
-			: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
+			: globalThis.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
 				? 'firefox'
-				: window.navigator.userAgent.toLowerCase().indexOf('safari') > -1
+				: globalThis.navigator.userAgent.toLowerCase().indexOf('safari') > -1
 					? 'safari'
 					: 'other'
 

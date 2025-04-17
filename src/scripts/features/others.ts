@@ -1,9 +1,9 @@
-import { BROWSER, SYNC_DEFAULT } from '../defaults'
-import { suntime, minutator } from '../shared/time'
-import { eventDebounce } from '../utils/debounce'
-import { stringMaxSize } from '../shared/generic'
-import { tradThis } from '../utils/translations'
-import { storage } from '../storage'
+import { BROWSER, SYNC_DEFAULT } from '../defaults.ts'
+import { suntime, minutator } from '../shared/time.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { stringMaxSize } from '../shared/generic.ts'
+import { tradThis } from '../utils/translations.ts'
+import { storage } from '../storage.ts'
 
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
@@ -69,7 +69,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 			break
 
 		case 'system':
-			theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+			theme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 			break
 
 		default: {
@@ -90,7 +90,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 		return
 	}
 
-	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+	globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
 		document.documentElement.dataset.theme = event.matches ? 'dark' : 'light'
 	})
 }

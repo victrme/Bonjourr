@@ -1,15 +1,15 @@
-import { weatherCacheControl, requestNewWeather, getGeolocation } from './request'
-import { onSettingsLoad } from '../../utils/onsettingsload'
-import { displayWeather } from './display'
-import { stringMaxSize } from '../../shared/generic'
-import { networkForm } from '../../shared/form'
-import { debounce } from '../../utils/debounce'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { weatherCacheControl, requestNewWeather, getGeolocation } from './request.ts'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { displayWeather } from './display.ts'
+import { stringMaxSize } from '../../shared/generic.ts'
+import { networkForm } from '../../shared/form.ts'
+import { debounce } from '../../utils/debounce.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
-import type { WeatherUpdate } from './index'
-import type { LastWeather } from '../../../types/local'
-import type { Weather } from '../../../types/sync'
+import type { WeatherUpdate } from './index.ts'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Weather } from '../../../types/sync.ts'
 
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')

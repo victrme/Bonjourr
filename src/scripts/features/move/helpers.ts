@@ -1,5 +1,5 @@
-import type { Sync, Move, MoveLayout } from '../../../types/sync'
-import type { Widgets } from '../../../types/shared'
+import type { Sync, Move, MoveLayout } from '../../../types/sync.ts'
+import type { Widgets } from '../../../types/shared.ts'
 
 type Grid = string[][]
 

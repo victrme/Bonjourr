@@ -1,7 +1,7 @@
-import { getLang, tradThis } from '../../utils/translations'
-import { isStorageDefault } from '../../storage'
+import { getLang, tradThis } from '../../utils/translations.ts'
+import { isStorageDefault } from '../../storage.ts'
 
-import type { Sync } from '../../../types/sync'
+import type { Sync } from '../../../types/sync.ts'
 
 interface GistItem {
 	url: string

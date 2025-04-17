@@ -1,10 +1,10 @@
-import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers'
-import { updateMoveElement } from './index'
-import { toggleDisabled } from '../../shared/dom'
-import { tradThis } from '../../utils/translations'
+import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers.ts'
+import { updateMoveElement } from './index.ts'
+import { toggleDisabled } from '../../shared/dom.ts'
+import { tradThis } from '../../utils/translations.ts'
 
-import type { Move, MoveAlign } from '../../../types/sync'
-import type { Widgets } from '../../../types/shared'
+import type { Move, MoveAlign } from '../../../types/sync.ts'
+import type { Widgets } from '../../../types/shared.ts'
 
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
 let resetTimeout: number

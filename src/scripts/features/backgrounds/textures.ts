@@ -1,4 +1,4 @@
-import type { Backgrounds } from '../../../types/sync'
+import type { Backgrounds } from '../../../types/sync.ts'
 
 interface TextureRanges {
 	opacity: TextureRangeInput

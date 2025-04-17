@@ -1,13 +1,13 @@
-import { getSelectedIds, getLink } from './helpers'
-import { togglePinGroup } from './groups'
-import { quickLinks } from './index'
+import { getSelectedIds, getLink } from './helpers.ts'
+import { togglePinGroup } from './groups.ts'
+import { quickLinks } from './index.ts'
 
-import { IS_MOBILE, SYSTEM_OS } from '../../defaults'
-import { getComposedPath } from '../../shared/dom'
-import { transitioner } from '../../utils/transitioner'
-import { tradThis } from '../../utils/translations'
-import { debounce } from '../../utils/debounce'
-import { storage } from '../../storage'
+import { IS_MOBILE, SYSTEM_OS } from '../../defaults.ts'
+import { getComposedPath } from '../../shared/dom.ts'
+import { transitioner } from '../../utils/transitioner.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { debounce } from '../../utils/debounce.ts'
+import { storage } from '../../storage.ts'
 
 interface EditStates {
 	group: string
@@ -310,7 +310,7 @@ queueMicrotask(() => {
 			handleLongPress.cancel()
 		})
 
-		window.addEventListener('resize', closeEditDialog)
+		globalThis.addEventListener('resize', closeEditDialog)
 	}
 })
 

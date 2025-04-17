@@ -1,5 +1,5 @@
-import { getLiFromEvent, getTitleFromEvent } from './helpers'
-import { linksUpdate } from './index'
+import { getLiFromEvent, getTitleFromEvent } from './helpers.ts'
+import { linksUpdate } from './index.ts'
 
 type Coords = {
 	x: number
@@ -164,7 +164,7 @@ export function startDrag(event: PointerEvent) {
 	}
 
 	document.dispatchEvent(new Event('remove-select-all'))
-	dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
+	dragAnimationFrame = globalThis.requestAnimationFrame(deplaceDraggedElem)
 
 	if (event.pointerType === 'touch') {
 		document.documentElement.addEventListener('touchmove', moveDrag, { passive: false })
@@ -370,7 +370,7 @@ function endDrag(event: Event) {
 	const toFolder = isDroppable && targetIdIsLink
 	const toTab = isDroppable && !targetIdIsLink
 
-	window.cancelAnimationFrame(dragAnimationFrame)
+	globalThis.cancelAnimationFrame(dragAnimationFrame)
 	blocks.get(draggedId)?.classList.remove('on')
 
 	for (const container of dragContainers) {
@@ -452,7 +452,7 @@ function deplaceDraggedElem() {
 
 	if (block) {
 		block.style.transform = `translate(${dx}px, ${dy}px)`
-		dragAnimationFrame = window.requestAnimationFrame(deplaceDraggedElem)
+		dragAnimationFrame = globalThis.requestAnimationFrame(deplaceDraggedElem)
 	}
 }
 

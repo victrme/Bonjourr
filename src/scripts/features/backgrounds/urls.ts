@@ -1,10 +1,10 @@
-import { stringMaxSize } from '../../shared/generic'
-import { userDate } from '../../shared/time'
-import { storage } from '../../storage'
+import { stringMaxSize } from '../../shared/generic.ts'
+import { userDate } from '../../shared/time.ts'
+import { storage } from '../../storage.ts'
 
-import type { BackgroundUrlState, Local } from '../../../types/local'
-import type { BackgroundImage } from '../../../types/shared'
-import type { Backgrounds } from '../../../types/sync'
+import type { BackgroundUrlState, Local } from '../../../types/local.ts'
+import type { BackgroundImage } from '../../../types/shared.ts'
+import type { Backgrounds } from '../../../types/sync.ts'
 
 import type { EditorOptions, PrismEditor } from 'prism-code-editor'
 
@@ -37,7 +37,7 @@ export function getUrlsAsCollection(local: Local): [string[], BackgroundImage[]]
 export async function initUrlsEditor(backgrounds: Backgrounds, local: Local) {
 	globalUrlValue = backgrounds.urls
 
-	const { createBackgroundUrlsEditor } = await import('../csseditor')
+	const { createBackgroundUrlsEditor } = await import('../csseditor.ts')
 
 	const options: EditorOptions = {
 		language: 'uri',

@@ -1,16 +1,16 @@
-import { equalsCaseInsensitive } from '../shared/generic'
-import { needsChange, userDate } from '../shared/time'
-import { displayInterface } from '../index'
-import { networkForm } from '../shared/form'
-import { tradThis } from '../utils/translations'
-import { apiFetch } from '../shared/api'
-import { isEvery } from '../shared/assert'
-import { storage } from '../storage'
-import { parse } from '../utils/parse'
+import { equalsCaseInsensitive } from '../shared/generic.ts'
+import { needsChange, userDate } from '../shared/time.ts'
+import { displayInterface } from '../index.ts'
+import { networkForm } from '../shared/form.ts'
+import { tradThis } from '../utils/translations.ts'
+import { apiFetch } from '../shared/api.ts'
+import { isEvery } from '../shared/assert.ts'
+import { storage } from '../storage.ts'
+import { parse } from '../utils/parse.ts'
 
-import type { Quote, QuoteUserInput } from '../../types/shared'
-import type { Sync, Quotes } from '../../types/sync'
-import type { Local } from '../../types/local'
+import type { Quote, QuoteUserInput } from '../../types/shared.ts'
+import type { Sync, Quotes } from '../../types/sync.ts'
+import type { Local } from '../../types/local.ts'
 
 type QuotesInit = {
 	sync: Sync

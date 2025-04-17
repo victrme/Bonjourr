@@ -1,32 +1,32 @@
-import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
-import { supportersNotifications } from './features/supporters'
-import { migrateToNewIdbFormat } from './features/backgrounds/local'
-import { synchronization } from './features/synchronization'
-import { backgroundsInit } from './features/backgrounds/index'
-import { interfacePopup } from './features/popup'
-import { moveElements } from './features/move'
-import { hideElements } from './features/hide'
-import { customFont } from './features/fonts'
-import { quickLinks } from './features/links'
-import { searchbar } from './features/searchbar'
-import { customCss } from './features/css'
-import { weather } from './features/weather'
-import { quotes } from './features/quotes'
-import { notes } from './features/notes'
-import { clock } from './features/clock'
+import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others.ts'
+import { supportersNotifications } from './features/supporters.ts'
+import { migrateToNewIdbFormat } from './features/backgrounds/local.ts'
+import { synchronization } from './features/synchronization/index.ts'
+import { backgroundsInit } from './features/backgrounds/index.ts'
+import { interfacePopup } from './features/popup.ts'
+import { moveElements } from './features/move/index.ts'
+import { hideElements } from './features/hide.ts'
+import { customFont } from './features/fonts.ts'
+import { quickLinks } from './features/links/index.ts'
+import { searchbar } from './features/searchbar.ts'
+import { customCss } from './features/css.ts'
+import { weather } from './features/weather/index.ts'
+import { quotes } from './features/quotes.ts'
+import { notes } from './features/notes.ts'
+import { clock } from './features/clock.ts'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { traduction, setTranslationCache } from './utils/translations'
-import { needsChange, userDate, suntime } from './shared/time'
-import { onSettingsLoad } from './utils/onsettingsload'
-import { filterImports } from './imports'
-import { settingsInit } from './settings'
-import { userActions } from './events'
-import { storage } from './storage'
+import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults.ts'
+import { traduction, setTranslationCache } from './utils/translations.ts'
+import { needsChange, userDate, suntime } from './shared/time.ts'
+import { onSettingsLoad } from './utils/onsettingsload.ts'
+import { filterImports } from './imports.ts'
+import { settingsInit } from './settings.ts'
+import { userActions } from './events.ts'
+import { storage } from './storage.ts'
 import 'clickdown'
 
-import type { Local } from '../types/local'
-import type { Sync } from '../types/sync'
+import type { Local } from '../types/local.ts'
+import type { Sync } from '../types/sync.ts'
 
 type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
 
@@ -199,7 +199,7 @@ function onlineAndMobile() {
 
 		// Fix for opening tabs Firefox iOS
 		if (SYSTEM_OS === 'ios') {
-			window.requestAnimationFrame(triggerAnimationFrame)
+			globalThis.requestAnimationFrame(triggerAnimationFrame)
 			setTimeout(() => cancelAnimationFrame(firefoxRafTimeout), 500)
 		}
 	}
@@ -249,7 +249,7 @@ function onlineAndMobile() {
 	}
 
 	function updateAppHeight() {
-		document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		document.documentElement.style.setProperty('--app-height', `${globalThis.innerHeight}px`)
 	}
 
 	function disableTouchAction() {
@@ -278,7 +278,7 @@ function serviceWorker() {
 
 	let promptEvent: Event // PWA install trigger (30s interaction default)
 
-	window.addEventListener('beforeinstallprompt', e => {
+	globalThis.addEventListener('beforeinstallprompt', e => {
 		promptEvent = e
 		return promptEvent
 	})
