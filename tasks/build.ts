@@ -2,124 +2,85 @@ import { ensureDirSync, existsSync } from 'https://deno.land/std@0.224.0/fs/mod.
 import { extname } from 'https://deno.land/std@0.224.0/path/mod.ts'
 import * as esbuild from 'esbuild'
 
+type Platform = 'chrome' | 'firefox' | 'safari' | 'edge' | 'online'
+type Env = 'dev' | 'prod' | 'test'
+
+const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
+const ENVS = ['dev', 'prod', 'test']
+
 const args = Deno.args
 const platform = args[0]
-const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
-const PLATFORM_ONLINE = platform === 'online'
-const PLATFORM_EDGE = platform === 'edge'
-const PLATFORM_EXT = !PLATFORM_ONLINE
 const env = args[1] ?? 'prod'
-const ENV_DEV = env === 'dev'
-const ENV_PROD = env === 'prod'
-const ENV_TEST = env === 'test'
 
-const paths = {
-	shared: {
-		scripts: ['src/scripts/index.ts', `release/${platform}/src/scripts/main.js`],
-		styles: ['src/styles/style.css', `release/${platform}/src/styles/style.css`],
-		locales: ['_locales/', `release/${platform}/_locales/`],
-		htmls: {
-			index: ['src/index.html', `release/${platform}/index.html`],
-			settings: ['src/settings.html', `release/${platform}/settings.html`],
-		},
-		assets: {
-			interface: ['src/assets/interface', `release/${platform}/src/assets/interface`],
-			weather: ['src/assets/weather', `release/${platform}/src/assets/weather`],
-			labels: ['src/assets/labels', `release/${platform}/src/assets/labels`],
-			favicons: {
-				ico: ['src/assets/favicon.ico', `release/${platform}/src/assets/favicon.ico`],
-				128: ['src/assets/favicon-128x128.png', `release/${platform}/src/assets/favicon-128x128.png`],
-				512: ['src/assets/favicon-512x512.png', `release/${platform}/src/assets/favicon-512x512.png`],
-			},
-		},
-	},
-	extension: {
-		manifest: [`src/manifests/${platform}.json`, `release/${platform}/manifest.json`],
-		scripts: {
-			serviceworker: [
-				'src/scripts/services/service-worker.js',
-				`release/${platform}/src/scripts/service-worker.js`,
-			],
-			storage: ['src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`],
-		},
-	},
-	online: {
-		icon: ['src/assets/apple-touch-icon.png', 'release/online/src/assets/apple-touch-icon.png'],
-		manifest: ['src/manifests/manifest.webmanifest', 'release/online/manifest.webmanifest'],
-		screenshots: ['src/assets/screenshots', 'release/online/src/assets/screenshots'],
-		serviceworker: ['src/scripts/services/service-worker.js', 'release/online/service-worker.js'],
-	},
-	edge: {
-		favicon: ['src/assets/monochrome.png', 'release/edge/src/assets/monochrome.png'],
-	},
-}
+const isPlatform = (s: string): s is Platform => PLATFORMS.includes(s)
+const _isEnv = (s: string): s is Env => ENVS.includes(s)
 
 // Main
 
 console.clear()
 
-if ((ENV_DEV || ENV_TEST) && PLATFORM_ONLINE) {
+if ((env === 'dev') && platform === 'online') {
 	liveServer()
 }
 
-if (ENV_DEV && PLATFORMS.includes(platform)) {
-	builder()
-	watcher()
+if (env === 'dev' && isPlatform(platform)) {
+	builder(platform, env)
+	watcher(platform)
 }
 
-if (ENV_PROD && PLATFORMS.includes(platform)) {
-	builder()
+if (env === 'prod' && isPlatform(platform)) {
+	builder(platform, env)
 }
 
-if (ENV_PROD && platform === undefined) {
+if (env === 'prod' && platform === undefined) {
 	if (existsSync('./release')) {
 		Deno.removeSync('./release/', { recursive: true })
 	}
 
-	for (const platform of PLATFORMS) {
-		// run things
+	for (const platform of PLATFORMS as Platform[]) {
+		builder(platform, env)
 	}
 }
 
 // Build or Watch
 
-function builder() {
+function builder(platform: Platform, env: Env) {
 	console.time('Built in')
-	addDirectories()
-	html()
-	styles()
-	assets()
-	scripts()
-	locales()
-	manifests()
+	addDirectories(platform)
+	html(platform)
+	assets(platform)
+	locales(platform)
+	manifests(platform)
+	styles(platform, env)
+	scripts(platform, env)
 	console.timeEnd('Built in')
 }
 
-async function watcher() {
+async function watcher(platform: Platform) {
 	watchTasks('_locales', (_filename) => {
-		locales()
+		locales(platform)
 	})
 
 	watchTasks('src', (filename) => {
 		if (filename.includes('.html')) {
-			html()
-		}
-		if (filename.includes('styles/')) {
-			styles()
+			html(platform)
 		}
 		if (filename.includes('assets/')) {
-			assets()
-		}
-		if (filename.includes('scripts/')) {
-			scripts()
+			assets(platform)
 		}
 		if (filename.includes('manifests/')) {
-			manifests()
+			manifests(platform)
+		}
+		if (filename.includes('styles/')) {
+			styles(platform, 'dev')
+		}
+		if (filename.includes('scripts/')) {
+			scripts(platform, 'dev')
 		}
 	})
 }
 
-function addDirectories() {
+function addDirectories(platform: Platform) {
 	try {
 		if (existsSync(`release/${platform}`)) {
 			return
@@ -135,48 +96,48 @@ function addDirectories() {
 
 // Tasks
 
-function html() {
-	let data = Deno.readTextFileSync(paths.shared.htmls.index[0])
-	const settings = Deno.readTextFileSync(paths.shared.htmls.settings[0])
+function html(platform: Platform) {
+	const indexdata = Deno.readTextFileSync('src/index.html')
+	const settingsdata = Deno.readTextFileSync('src/settings.html')
 
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
 	const storage = '<script src="src/scripts/webext-storage.js"></script>'
 
-	if (PLATFORM_ONLINE) {
-		data = data.replace('<!-- icon -->', icon)
+	let html = indexdata
+
+	if (platform === 'online') {
+		html = html.replace('<!-- icon -->', icon)
 	}
-	if (PLATFORM_ONLINE) {
-		data = data.replace('<!-- manifest -->', manifest)
+	if (platform === 'online') {
+		html = html.replace('<!-- manifest -->', manifest)
 	}
-	if (PLATFORM_EXT) {
-		data = data.replace('<!-- webext-storage -->', storage)
+	if (platform !== 'online') {
+		html = html.replace('<!-- webext-storage -->', storage)
 	}
-	if (PLATFORM_EDGE) {
-		data = data.replace('favicon.ico', 'monochrome.png')
+	if (platform === 'edge') {
+		html = html.replace('favicon.ico', 'monochrome.png')
 	}
 
-	data = data.replace('<!-- settings -->', settings)
+	html = html.replace('<!-- settings -->', settingsdata)
 
-	Deno.writeTextFileSync(paths.shared.htmls.index[1], data)
+	Deno.writeTextFileSync(`release/${platform}/index.html`, html)
 }
 
-function styles() {
-	const [input, output] = paths.shared.styles
-
+function styles(platform: Platform, env: Env) {
 	try {
 		esbuild.buildSync({
-			entryPoints: [input],
-			outfile: output,
+			entryPoints: ['src/styles/style.css'],
+			outfile: `release/${platform}/src/styles/style.css`,
 			bundle: true,
-			minify: ENV_PROD,
+			minify: env === 'prod',
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
 			},
 		})
 	} catch (_) {
-		if (ENV_PROD) {
+		if (env === 'prod') {
 			throw new Error('?')
 		}
 
@@ -184,85 +145,128 @@ function styles() {
 	}
 }
 
-function scripts() {
-	const [input, output] = paths.shared.scripts
-
+function scripts(platform: Platform, env: Env) {
 	try {
 		esbuild.buildSync({
-			entryPoints: [input],
-			outfile: output,
+			entryPoints: ['src/scripts/index.ts'],
+			outfile: `release/${platform}/src/scripts/main.js`,
 			format: 'iife',
 			bundle: true,
-			sourcemap: ENV_DEV,
-			minifySyntax: ENV_PROD,
-			minifyWhitespace: ENV_PROD,
+			sourcemap: env === 'dev',
+			minifySyntax: env === 'prod',
+			minifyWhitespace: env === 'prod',
 			define: {
 				ENV: `"${env.toUpperCase()}"`,
 			},
 		})
 	} catch (_) {
-		if (ENV_PROD) {
+		if (env === 'prod') {
 			throw new Error('?')
 		}
 
 		return
 	}
 
-	if (PLATFORM_ONLINE) {
-		Deno.copyFileSync(...paths.online.serviceworker)
-	}
-	if (PLATFORM_EXT) {
-		Deno.copyFileSync(...paths.extension.scripts.serviceworker)
-	}
-	if (PLATFORM_EXT) {
-		Deno.copyFileSync(...paths.extension.scripts.storage)
-	}
-}
-
-function assets() {
-	copyDir(...paths.shared.assets.interface)
-	copyDir(...paths.shared.assets.weather)
-	copyDir(...paths.shared.assets.labels)
-	Deno.copyFileSync(...paths.shared.assets.favicons.ico)
-	Deno.copyFileSync(...paths.shared.assets.favicons[128])
-	Deno.copyFileSync(...paths.shared.assets.favicons[512])
-
-	if (PLATFORM_ONLINE) {
-		copyDir(...paths.online.screenshots)
-	}
-	if (PLATFORM_ONLINE) {
-		Deno.copyFileSync(...paths.online.icon)
-	}
-	if (PLATFORM_EDGE) {
-		Deno.copyFileSync(...paths.edge.favicon)
-	}
-	if (!PLATFORM_EDGE) {
-		Deno.copyFileSync(...paths.shared.assets.favicons.ico)
+	if (platform === 'online') {
+		Deno.copyFileSync(
+			'src/scripts/services/service-worker.js',
+			`release/${platform}/src/scripts/service-worker.js`,
+		)
+	} else {
+		Deno.copyFileSync(
+			'src/scripts/services/service-worker.js',
+			`release/${platform}/src/scripts/service-worker.js`,
+		)
+		Deno.copyFileSync(
+			'src/scripts/services/webext-storage.js',
+			`release/${platform}/src/scripts/webext-storage.js`,
+		)
 	}
 }
 
-function manifests() {
-	if (PLATFORM_ONLINE) {
-		Deno.copyFileSync(...paths.online.manifest)
-	}
-	if (PLATFORM_EXT) {
-		Deno.copyFileSync(...paths.extension.manifest)
+function assets(platform: Platform) {
+	// TODO CEST MOCHE
+
+	copyDir(
+		'src/assets/interface',
+		`release/${platform}/src/assets/interface`,
+	)
+	copyDir(
+		'src/assets/weather',
+		`release/${platform}/src/assets/weather`,
+	)
+	copyDir(
+		'src/assets/labels',
+		`release/${platform}/src/assets/labels`,
+	)
+	Deno.copyFileSync(
+		'src/assets/favicon.ico',
+		`release/${platform}/src/assets/favicon.ico`,
+	)
+	Deno.copyFileSync(
+		'src/assets/favicon-128x128.png',
+		`release/${platform}/src/assets/favicon-128x128.png`,
+	)
+	Deno.copyFileSync(
+		'src/assets/favicon-512x512.png',
+		`release/${platform}/src/assets/favicon-512x512.png`,
+	)
+
+	if (platform === 'online') {
+		copyDir(
+			'src/assets/screenshots',
+			'release/online/src/assets/screenshots',
+		)
+		Deno.copyFileSync(
+			'src/assets/apple-touch-icon.png',
+			'release/online/src/assets/apple-touch-icon.png',
+		)
+	} else {
+		Deno.copyFileSync(
+			'src/assets/monochrome.png',
+			`release/${platform}/src/assets/monochrome.png`,
+		)
+		Deno.copyFileSync(
+			'src/assets/favicon.ico',
+			`release/${platform}/src/assets/favicon.ico`,
+		)
 	}
 }
 
-function locales() {
+function manifests(platform: Platform) {
+	if (platform === 'online') {
+		Deno.copyFileSync(
+			'src/manifests/manifest.webmanifest',
+			'release/online/manifest.webmanifest',
+		)
+	} else {
+		Deno.copyFileSync(
+			`src/manifests/${platform}.json`,
+			`release/${platform}/manifest.json`,
+		)
+	}
+}
+
+function locales(platform: Platform) {
 	const langs = Array.from(Deno.readDirSync('_locales'))
 		.filter((entry) => entry.isDirectory && entry.name !== '.DS_Store')
 		.map((entry) => entry.name)
 
-	const [input, output] = paths.shared.locales
-
 	for (const lang of langs) {
-		ensureDirSync(output + lang)
-		Deno.copyFileSync(`${input}${lang}/translations.json`, `${output}${lang}/translations.json`)
+		const output = `release/${platform}/_locales/${lang}`
 
-		if (PLATFORM_EXT) {
-			Deno.copyFileSync(`${input}${lang}/messages.json`, `${output}${lang}/messages.json`)
+		ensureDirSync(output)
+
+		Deno.copyFileSync(
+			`_locales/${lang}/translations.json`,
+			`${output}/translations.json`,
+		)
+
+		if (platform !== 'online') {
+			Deno.copyFileSync(
+				`_locales/${lang}/messages.json`,
+				`${output}/messages.json`,
+			)
 		}
 	}
 }
@@ -298,8 +302,6 @@ function liveServer() {
 		'.svg': 'image/svg+xml',
 		'.png': 'image/png',
 	}
-
-	console.info(`Live server: http://127.0.0.1:8000`)
 
 	Deno.serve(async (req) => {
 		const url = new URL(req.url)
