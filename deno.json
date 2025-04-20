@@ -12,15 +12,15 @@
 		"translate": "deno run --allow-all ./tasks/translate.js"
 	},
 	"imports": {
-		"@b-fuze/deno-dom": "jsr:@b-fuze/deno-dom@^0.1.49",
+		"@happy-dom/global-registrator": "npm:@happy-dom/global-registrator@^17.4.4",
 		"@types/firefox-webext-browser": "npm:@types/firefox-webext-browser@^120.0.4",
 		"@types/chrome": "npm:@types/chrome@^0.0.315",
 		"@victr/deepmerge": "npm:@victr/deepmerge@^1.3.2",
 		"@victr/pocket-editor": "jsr:@victr/pocket-editor@^2.4.2",
 		"clickdown": "npm:clickdown@^1.2.2",
 		"esbuild": "npm:esbuild@^0.25.2",
-		"happy-dom": "npm:happy-dom@^17.4.4",
 		"idb-keyval": "npm:idb-keyval@^6.2.1",
+		"fake-indexeddb": "npm:fake-indexeddb@^6.0.0",
 		"prism-code-editor": "npm:prism-code-editor@^3.4.0"
 	},
 	"lint": {

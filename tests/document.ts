@@ -1,7 +1,8 @@
-import { GlobalWindow } from 'happy-dom'
+import { GlobalRegistrator } from '@happy-dom/global-registrator'
+import 'fake-indexeddb/auto'
 
-const html = Deno.readTextFileSync('./release/chrome/index.html')
-// const doc = new DOMParser().parseFromString(html, 'text/html')
-
-globalThis.window = new GlobalWindow()
-globalThis.document = window.document
+GlobalRegistrator.register({
+	url: 'http://localhost:3000',
+	width: 600,
+	height: 400,
+})
