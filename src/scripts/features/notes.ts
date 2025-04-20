@@ -3,7 +3,7 @@ import { getLang, tradThis } from '../utils/translations.ts'
 import { opacityFromHex } from '../shared/generic.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { eventDebounce } from '../utils/debounce.ts'
-import PocketEditor from 'pocket-editor'
+import { PocketEditor } from '@victr/pocket-editor'
 import { langList } from '../langs.ts'
 import { storage } from '../storage.ts'
 
@@ -72,7 +72,7 @@ function initNotes(init: Notes) {
 
 	init.text = init.text ?? translateNotesText()
 
-	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput(content => {
+	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput((content) => {
 		updateNotes({ text: content })
 	})
 }

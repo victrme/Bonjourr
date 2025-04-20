@@ -1,4 +1,4 @@
-import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from './features/move/helpers.ts'
+// import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from './features/move/helpers.ts'
 import { countryCodeToLanguageCode } from './utils/translations.ts'
 import { API_DOMAIN, SYNC_DEFAULT } from './defaults.ts'
 import { oldJSONToCSV } from './features/quotes.ts'
@@ -42,7 +42,7 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newcurrent = validateLinkGroups(newcurrent) // 20.1
 
 	// newcurrent = removeLinkDuplicates(newcurrent, newtarget) // all
-	newcurrent = toggleMoveWidgets(newcurrent, newtarget) // all
+	// newcurrent = toggleMoveWidgets(newcurrent, newtarget) // all
 
 	newcurrent.settingssync = undefined
 	newcurrent.custom_every = undefined
@@ -135,7 +135,7 @@ function linkListToFlatObjects(data: Import): Import {
 			}
 		})
 
-		const aliasKeyList = Object.keys(data).filter(key => key.match('alias:'))
+		const aliasKeyList = Object.keys(data).filter((key) => key.match('alias:'))
 
 		for (const key of aliasKeyList) {
 			data[key] = undefined
@@ -228,10 +228,10 @@ function manualTimezonesToIntl(data: Import): Import {
 function validateLinkGroups(current: Sync): Sync {
 	// (1)
 	let links = bundleLinks(current)
-	let parents = [...new Set(links.map(link => link.parent))]
-	let parentGroups = parents.filter(p => !p?.toString().startsWith('links'))
+	let parents = [...new Set(links.map((link) => link.parent))]
+	let parentGroups = parents.filter((p) => !p?.toString().startsWith('links'))
 
-	const oldNumberParents = parents.filter(parent => typeof parent === 'number')
+	const oldNumberParents = parents.filter((parent) => typeof parent === 'number')
 	const oldlinktabs = current.linktabs as OldSync['linktabs']
 
 	if (oldlinktabs && oldNumberParents.length > 0) {
@@ -256,9 +256,9 @@ function validateLinkGroups(current: Sync): Sync {
 
 	// Transform default from old "" or undefined to new "default"
 	current.linkgroups.selected = selected ? selected : 'default'
-	current.linkgroups.groups = groups.map(val => (val ? val : 'default'))
-	current.linkgroups.pinned = pinned.map(val => (val ? val : 'default'))
-	current.linkgroups.synced = synced.map(val => (val ? val : 'default'))
+	current.linkgroups.groups = groups.map((val) => (val ? val : 'default'))
+	current.linkgroups.pinned = pinned.map((val) => (val ? val : 'default'))
+	current.linkgroups.synced = synced.map((val) => (val ? val : 'default'))
 
 	for (const link of links) {
 		if (!link?.parent) {
@@ -269,8 +269,8 @@ function validateLinkGroups(current: Sync): Sync {
 
 	// (2)
 	links = bundleLinks(current)
-	parents = [...new Set(links.map(link => link.parent))]
-	parentGroups = parents.filter(p => !p?.toString().startsWith('links'))
+	parents = [...new Set(links.map((link) => link.parent))]
+	parentGroups = parents.filter((p) => !p?.toString().startsWith('links'))
 
 	// Add all groups found in links
 	for (const group of parentGroups) {
@@ -290,7 +290,7 @@ function validateLinkGroups(current: Sync): Sync {
 	}
 
 	// Unselect "default" if empty & groups/links exists
-	const parentNoDefault = current.linkgroups.groups.filter(group => group !== 'default')
+	const parentNoDefault = current.linkgroups.groups.filter((group) => group !== 'default')
 	const defaultExists = current.linkgroups.groups.includes('default')
 	const defaultIsEmpty = parentGroups.includes('default') === false
 	const hasUserGroups = parentNoDefault.length > 0
@@ -412,81 +412,81 @@ function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 // 	return curr
 // }
 
-function toggleMoveWidgets(current: Sync, imported: Import): Sync {
-	// When import doesn't have move, other widgets can still be different
-	// This updates current grid with the widgets states from import
+// function toggleMoveWidgets(current: Sync, imported: Import): Sync {
+// 	// When import doesn't have move, other widgets can still be different
+// 	// This updates current grid with the widgets states from import
 
-	if (imported.move) {
-		current.move = imported.move
+// 	if (imported.move) {
+// 		current.move = imported.move
 
-		const layout = current.move.layouts[current.move.selection]
-		const grid = layout?.grid ?? defaultLayouts[current.move.selection].grid
-		const area = grid.flat().join(' ')
+// 		const layout = current.move.layouts[current.move.selection]
+// 		const grid = layout?.grid ?? defaultLayouts[current.move.selection].grid
+// 		const area = grid.flat().join(' ')
 
-		current.time = area.includes('time')
-		current.main = area.includes('main')
-		current.quicklinks = area.includes('quicklinks')
+// 		current.time = area.includes('time')
+// 		current.main = area.includes('main')
+// 		current.quicklinks = area.includes('quicklinks')
 
-		if (current.notes) {
-			current.notes.on = area.includes('notes')
-		}
-		if (current.quotes) {
-			current.quotes.on = area.includes('quotes')
-		}
-		if (current.searchbar) {
-			current.searchbar.on = area.includes('searchbar')
-		}
+// 		if (current.notes) {
+// 			current.notes.on = area.includes('notes')
+// 		}
+// 		if (current.quotes) {
+// 			current.quotes.on = area.includes('quotes')
+// 		}
+// 		if (current.searchbar) {
+// 			current.searchbar.on = area.includes('searchbar')
+// 		}
 
-		return current
-	}
+// 		return current
+// 	}
 
-	if (!imported.move) {
-		const importStates = {
-			time: imported.time ?? current.time,
-			main: imported.main ?? current.main,
-			notes: imported.notes?.on ?? current.notes?.on,
-			quotes: imported.quotes?.on ?? current.quotes?.on,
-			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
-			quicklinks: imported.quicklinks ?? current.quicklinks,
-		}
+// 	if (!imported.move) {
+// 		const importStates = {
+// 			time: imported.time ?? current.time,
+// 			main: imported.main ?? current.main,
+// 			notes: imported.notes?.on ?? current.notes?.on,
+// 			quotes: imported.quotes?.on ?? current.quotes?.on,
+// 			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
+// 			quicklinks: imported.quicklinks ?? current.quicklinks,
+// 		}
 
-		const diffWidgets = {
-			time: current.time !== importStates.time,
-			main: current.main !== importStates.main,
-			notes: current.notes?.on !== importStates.notes,
-			quotes: current.quotes?.on !== importStates.quotes,
-			searchbar: current.searchbar?.on !== importStates.searchbar,
-			quicklinks: current.quicklinks !== importStates.quicklinks,
-		}
+// 		const diffWidgets = {
+// 			time: current.time !== importStates.time,
+// 			main: current.main !== importStates.main,
+// 			notes: current.notes?.on !== importStates.notes,
+// 			quotes: current.quotes?.on !== importStates.quotes,
+// 			searchbar: current.searchbar?.on !== importStates.searchbar,
+// 			quicklinks: current.quicklinks !== importStates.quicklinks,
+// 		}
 
-		// Force single layout with old imports
-		// Partial imports, for example links list only, will not force single
-		if (Object.keys(imported).some(key => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
-			current.move.selection = 'single'
-		}
+// 		// Force single layout with old imports
+// 		// Partial imports, for example links list only, will not force single
+// 		if (Object.keys(imported).some(key => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
+// 			current.move.selection = 'single'
+// 		}
 
-		const selection = current.move.selection
-		const layout = structuredClone(current.move.layouts[selection])
-		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
+// 		const selection = current.move.selection
+// 		const layout = structuredClone(current.move.layouts[selection])
+// 		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
 
-		if (!layout) {
-			return current
-		}
+// 		if (!layout) {
+// 			return current
+// 		}
 
-		// mutate grid: add or remove widgets that are different from current data
-		for (const [key] of diffEntries) {
-			const id = key as Widgets
-			const state = importStates[id]
-			const gridToggle = state ? addGridWidget : removeGridWidget
+// 		// mutate grid: add or remove widgets that are different from current data
+// 		for (const [key] of diffEntries) {
+// 			const id = key as Widgets
+// 			const state = importStates[id]
+// 			const gridToggle = state ? addGridWidget : removeGridWidget
 
-			layout.grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
-		}
+// 			layout.grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
+// 		}
 
-		current.move.layouts[selection] = layout
-	}
+// 		current.move.layouts[selection] = layout
+// 	}
 
-	return current
-}
+// 	return current
+// }
 
 function convertOldCssSelectors<Data extends Sync | Import>(data: Data): Data {
 	if (data?.css) {

@@ -17,8 +17,6 @@ const _isEnv = (s: string): s is Env => ENVS.includes(s)
 
 // Main
 
-console.clear()
-
 if ((env === 'dev') && platform === 'online') {
 	liveServer()
 }
@@ -185,52 +183,10 @@ function scripts(platform: Platform, env: Env) {
 }
 
 function assets(platform: Platform) {
-	// TODO CEST MOCHE
-
 	copyDir(
-		'src/assets/interface',
-		`release/${platform}/src/assets/interface`,
+		'src/assets',
+		`release/${platform}/src/assets`,
 	)
-	copyDir(
-		'src/assets/weather',
-		`release/${platform}/src/assets/weather`,
-	)
-	copyDir(
-		'src/assets/labels',
-		`release/${platform}/src/assets/labels`,
-	)
-	Deno.copyFileSync(
-		'src/assets/favicon.ico',
-		`release/${platform}/src/assets/favicon.ico`,
-	)
-	Deno.copyFileSync(
-		'src/assets/favicon-128x128.png',
-		`release/${platform}/src/assets/favicon-128x128.png`,
-	)
-	Deno.copyFileSync(
-		'src/assets/favicon-512x512.png',
-		`release/${platform}/src/assets/favicon-512x512.png`,
-	)
-
-	if (platform === 'online') {
-		copyDir(
-			'src/assets/screenshots',
-			'release/online/src/assets/screenshots',
-		)
-		Deno.copyFileSync(
-			'src/assets/apple-touch-icon.png',
-			'release/online/src/assets/apple-touch-icon.png',
-		)
-	} else {
-		Deno.copyFileSync(
-			'src/assets/monochrome.png',
-			`release/${platform}/src/assets/monochrome.png`,
-		)
-		Deno.copyFileSync(
-			'src/assets/favicon.ico',
-			`release/${platform}/src/assets/favicon.ico`,
-		)
-	}
 }
 
 function manifests(platform: Platform) {
@@ -274,12 +230,13 @@ function locales(platform: Platform) {
 // Deno stuff
 
 async function watchTasks(path: string, callback: (filename: string) => void) {
-	// debounce because IDEs do multiple fast saves which triggers watcher
 	const watcher = Deno.watchFs(path)
-	let debounce: number | null = null
+	let debounce = 0
 
 	for await (const event of watcher) {
-		if (event.paths.length === 0) continue
+		if (event.paths.length === 0) {
+			continue
+		}
 
 		if (debounce) {
 			clearTimeout(debounce)
@@ -289,7 +246,7 @@ async function watchTasks(path: string, callback: (filename: string) => void) {
 			console.time('Built in')
 			callback(event.paths[0].replaceAll('\\', '/')) // windows back slashes :(
 			console.timeEnd('Built in')
-		}, 30)
+		}, 20)
 	}
 }
 

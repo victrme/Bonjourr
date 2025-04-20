@@ -50,11 +50,10 @@ export async function toggleTraduction(lang: string) {
 	const tags = document.querySelectorAll('.trn')
 	const toggleDict: { [key: string]: string } = {}
 	const currentDict = { ...trns }
-	let newDict: Translations | undefined
 	let text: string
 
 	await setTranslationCache(lang)
-	newDict = (await storage.local.get('translations')).translations
+	const newDict: Translations | undefined = (await storage.local.get('translations')).translations
 
 	// old lang is 'en'
 	if (newDict && currentDict?.lang === undefined) {

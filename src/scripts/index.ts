@@ -1,4 +1,4 @@
-import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others.ts'
+import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
 import { supportersNotifications } from './features/supporters.ts'
 import { migrateToNewIdbFormat } from './features/backgrounds/local.ts'
 import { synchronization } from './features/synchronization/index.ts'
@@ -15,9 +15,9 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults.ts'
-import { traduction, setTranslationCache } from './utils/translations.ts'
-import { needsChange, userDate, suntime } from './shared/time.ts'
+import { BROWSER, CURRENT_VERSION, ENVIRONNEMENT, IS_MOBILE, PLATFORM, SYSTEM_OS } from './defaults.ts'
+import { setTranslationCache, traduction } from './utils/translations.ts'
+import { needsChange, suntime, userDate } from './shared/time.ts'
 import { onSettingsLoad } from './utils/onsettingsload.ts'
 import { filterImports } from './imports.ts'
 import { settingsInit } from './settings.ts'
@@ -278,7 +278,7 @@ function serviceWorker() {
 
 	let promptEvent: Event // PWA install trigger (30s interaction default)
 
-	globalThis.addEventListener('beforeinstallprompt', e => {
+	globalThis.addEventListener('beforeinstallprompt', (e) => {
 		promptEvent = e
 		return promptEvent
 	})

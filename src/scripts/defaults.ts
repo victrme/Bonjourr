@@ -8,43 +8,45 @@ export const CURRENT_VERSION = '21.0.0'
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
 //@ts-expect-error: "ENV" is defined by esbuild during build step
-export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV
+export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
 export const SYSTEM_OS =
 	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
-	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+		(navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
 		? 'ios'
-		: globalThis.navigator.appVersion.includes('Macintosh')
-			? 'mac'
-			: globalThis.navigator.appVersion.includes('Windows')
-				? 'windows'
-				: globalThis.navigator.userAgent.toLowerCase().includes('Android')
-					? 'android'
-					: 'unknown'
+		: globalThis.navigator.appVersion?.includes('Macintosh')
+		? 'mac'
+		: globalThis.navigator.appVersion?.includes('Windows')
+		? 'windows'
+		: globalThis.navigator.userAgent?.toLowerCase()?.includes('Android')
+		? 'android'
+		: 'unknown'
 
-export const PLATFORM =
-	globalThis.location.protocol === 'moz-extension:'
-		? 'firefox'
-		: globalThis.location.protocol === 'chrome-extension:'
-			? 'chrome'
-			: globalThis.location.protocol === 'safari-web-extension:'
-				? 'safari'
-				: 'online'
+export const PLATFORM = globalThis.location?.protocol === 'moz-extension:'
+	? 'firefox'
+	: globalThis.location?.protocol === 'chrome-extension:'
+	? 'chrome'
+	: globalThis.location?.protocol === 'safari-web-extension:'
+	? 'safari'
+	: 'online'
 
-export const BROWSER = globalThis.navigator?.userAgentData?.brands.some(b => b.brand === 'Microsoft Edge')
+export const BROWSER = globalThis.navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
 	? 'edge'
-	: globalThis.navigator?.userAgentData?.brands.some(b => b.brand === 'Opera')
-		? 'opera'
-		: globalThis.navigator?.userAgentData?.brands.some(b => b.brand === 'Chromium')
-			? 'chrome'
-			: globalThis.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
-				? 'firefox'
-				: globalThis.navigator.userAgent.toLowerCase().indexOf('safari') > -1
-					? 'safari'
-					: 'other'
+	: globalThis.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+	? 'opera'
+	: globalThis.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
+	? 'chrome'
+	: globalThis.navigator.userAgent?.toLowerCase()?.indexOf('firefox') > -1
+	? 'firefox'
+	: globalThis.navigator.userAgent?.toLowerCase()?.indexOf('safari') > -1
+	? 'safari'
+	: 'other'
 
-export const EXTENSION: typeof chrome | typeof browser | undefined =
-	PLATFORM === 'online' ? undefined : PLATFORM === 'firefox' ? browser : chrome
+export const EXTENSION: typeof chrome | typeof browser | undefined = PLATFORM === 'online'
+	? undefined
+	: PLATFORM === 'firefox'
+	? browser
+	: chrome
 
 export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
@@ -59,7 +61,7 @@ const DEFAULT_LANG = (() => {
 	return 'en'
 })()
 
-export const SEARCHBAR_ENGINES = <const>[
+export const SEARCHBAR_ENGINES = [
 	'default',
 	'google',
 	'ddg',
@@ -72,7 +74,7 @@ export const SEARCHBAR_ENGINES = <const>[
 	'lilo',
 	'baidu',
 	'custom',
-]
+] as const
 
 export const SYNC_DEFAULT: Sync = {
 	about: {

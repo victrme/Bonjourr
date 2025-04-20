@@ -1,4 +1,4 @@
-import { backgroundUpdate } from '.'
+import { backgroundUpdate } from './index.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
