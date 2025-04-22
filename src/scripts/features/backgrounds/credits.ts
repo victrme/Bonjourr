@@ -1,4 +1,5 @@
 import { backgroundUpdate } from './index.ts'
+import { onclickdown } from '@victr/clickdown'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
@@ -6,17 +7,17 @@ import type { Backgrounds } from '../../../types/sync.ts'
 import type { Background } from '../../../types/shared.ts'
 
 export function initCreditEvents() {
-	document.getElementById('b_interface-background-pause')?.onclickdown(() => {
+	onclickdown(document.getElementById('b_interface-background-pause'), () => {
 		toggleBackgroundPause()
 	})
 
-	document.getElementById('b_interface-background-refresh')?.onclickdown((_, target) => {
+	onclickdown(document.getElementById('b_interface-background-refresh'), (_, target) => {
 		backgroundUpdate({
 			refresh: target.querySelector('svg') as Element,
 		})
 	})
 
-	document.getElementById('b_interface-background-download')?.onclickdown(() => {
+	onclickdown(document.getElementById('b_interface-background-download'), () => {
 		downloadImage()
 	})
 }

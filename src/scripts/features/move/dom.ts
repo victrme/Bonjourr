@@ -1,5 +1,6 @@
 import { elements, gridStringify } from './helpers.ts'
 import { moveElements } from './index.ts'
+import { onclickdown } from '@victr/clickdown'
 
 import type { MoveAlign, MoveLayout } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'
@@ -45,7 +46,7 @@ export function addOverlay(id: Widgets) {
 	button.className = 'move-overlay'
 	dominterface?.appendChild(button)
 
-	button.onclickdown(() => {
+	onclickdown(button, () => {
 		moveElements(undefined, { select: id })
 	})
 }

@@ -3,7 +3,7 @@ import { bundleLinks } from './bundlelinks.ts'
 
 import type { Sync } from '../../types/sync.ts'
 
-export function stringify(data: Sync) {
+export function stringify(data: Partial<Sync>) {
 	const defaultSyncData = structuredClone(SYNC_DEFAULT)
 
 	// 1a. Add links to defaults

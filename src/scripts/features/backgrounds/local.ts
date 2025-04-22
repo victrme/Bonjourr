@@ -1,5 +1,6 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
 import { compressMedia } from '../../shared/compress.ts'
+import { onclickdown } from '@victr/clickdown'
 import { IS_MOBILE } from '../../defaults.ts'
 import { userDate } from '../../shared/time.ts'
 import { hashcode } from '../../utils/hash.ts'
@@ -175,9 +176,9 @@ export function initFilesSettingsOptions(local: Local) {
 
 	handleFilesSettingsOptions(local)
 
-	document.getElementById('b_thumbnail-remove')?.onclickdown(removeLocalBackgrounds)
-	document.getElementById('b_thumbnail-zoom')?.onclickdown(handleGridView)
-	document.getElementById('b_thumbnail-position')?.onclickdown(handlePositionOption)
+	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
+	onclickdown(document.getElementById('b_thumbnail-zoom'), handleGridView)
+	onclickdown(document.getElementById('b_thumbnail-position'), handlePositionOption)
 	document.getElementById('i_background-size')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-vertical')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-horizontal')?.addEventListener('input', handleFilePosition)
@@ -189,9 +190,9 @@ function handleFilesSettingsOptions(local: Local) {
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
-	const thumbIds = Object.values(thumbs).map(el => el.id)
+	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
-	const missingThumbnails = fileIds.filter(id => !thumbIds.includes(id))
+	const missingThumbnails = fileIds.filter((id) => !thumbIds.includes(id))
 
 	if (missingThumbnails.length > 0) {
 		for (const id of missingThumbnails) {
@@ -250,7 +251,7 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 		const id = target.id ?? ''
 
 		if (isIntersecting && target.classList.contains('loading')) {
-			getFile(id).then(data => {
+			getFile(id).then((data) => {
 				if (data) {
 					addThumbnailImage(id, data)
 					thumbnailVisibilityObserver.unobserve(target)
@@ -362,7 +363,7 @@ export async function getFilesAsCollection(local: Local): Promise<[string[], Bac
 	})
 
 	const images: BackgroundImage[] = []
-	const keys = sorted.map(entry => entry[0])
+	const keys = sorted.map((entry) => entry[0])
 
 	for (const [key, file] of sorted) {
 		const data = filesData[key]
@@ -456,7 +457,7 @@ function unselectAll() {
 
 function getSelection(): string[] {
 	const thmbs = document.querySelectorAll<HTMLElement>('.thumbnail.selected')
-	const ids = Object.values(thmbs).map(thmb => thmb?.id ?? '')
+	const ids = Object.values(thmbs).map((thmb) => thmb?.id ?? '')
 	return ids
 }
 

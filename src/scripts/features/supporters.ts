@@ -1,5 +1,6 @@
 import { getLang, tradThis } from '../utils/translations.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { onclickdown } from '@victr/clickdown'
 import { debounce } from '../utils/debounce.ts'
 import { storage } from '../storage.ts'
 
@@ -99,14 +100,14 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		initSupportersModal()
 		translateNotif()
 
-		supportersNotif?.onclickdown(e => {
+		onclickdown(supportersNotif, (e) => {
 			if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
 				toggleSupportersModal(true)
 				loadModalData()
 			}
 		})
 
-		notifClose?.onclickdown(() => {
+		onclickdown(notifClose, () => {
 			delete document.documentElement.dataset.supporters
 			supportersNotif.classList.remove('shown')
 			updateSupportersOption({ closed: true })
@@ -175,14 +176,14 @@ function initSupportersModal() {
 		})
 
 		// close when click on background
-		supportersModal.addEventListener('click', event => {
+		supportersModal.addEventListener('click', (event) => {
 			if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
 				toggleSupportersModal(false)
 			}
 		})
 
 		// close when esc key
-		document.addEventListener('keyup', event => {
+		document.addEventListener('keyup', (event) => {
 			if (event.key === 'Escape' && document.documentElement.dataset.supportersModal !== undefined) {
 				toggleSupportersModal(false)
 			}

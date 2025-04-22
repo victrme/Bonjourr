@@ -1,4 +1,4 @@
-import { darkmode, favicon, tabTitle, textShadow, pageControl } from './features/others.ts'
+import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
@@ -15,14 +15,15 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
-import { inputThrottle, turnRefreshButton, fadeOut } from './shared/dom.ts'
-import { traduction, tradThis, toggleTraduction } from './utils/translations.ts'
+import { fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
+import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { settingsNotifications } from './utils/notifications.ts'
 import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
 import { loadCallbacks } from './utils/onsettingsload.ts'
 import { filterImports } from './imports.ts'
+import { onclickdown } from '@victr/clickdown'
 import { stringify } from './utils/stringify.ts'
 import { debounce } from './utils/debounce.ts'
 import { langList } from './langs.ts'
@@ -300,7 +301,7 @@ function initOptionsValues(data: Sync, local: Local) {
 }
 
 function initOptionsEvents() {
-	paramId('b_accept-permissions').onclickdown(async () => {
+	onclickdown(paramId('b_accept-permissions'), async () => {
 		await getPermissions('topSites', 'bookmarks')
 
 		const data = await storage.sync.get()
@@ -312,7 +313,7 @@ function initOptionsEvents() {
 
 	// General
 
-	paramId('i_showall').onclickdown((_, target) => {
+	onclickdown(paramId('i_showall'), (_, target) => {
 		showall(target.checked, true)
 	})
 
@@ -340,13 +341,13 @@ function initOptionsEvents() {
 		darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
 	})
 
-	paramId('i_settingshide').onclickdown((_, target) => {
+	onclickdown(paramId('i_settingshide'), (_, target) => {
 		hideElements({ settingsicon: target.checked }, { isEvent: true })
 	})
 
 	// Quick links
 
-	paramId('i_quicklinks').onclickdown((_, target) => {
+	onclickdown(paramId('i_quicklinks'), (_, target) => {
 		moveElements(undefined, { widget: ['quicklinks', target.checked] })
 	})
 
@@ -367,11 +368,11 @@ function initOptionsEvents() {
 		this.classList.remove('valid')
 	})
 
-	paramId('i_linkgroups').onclickdown((_, target) => {
+	onclickdown(paramId('i_linkgroups'), (_, target) => {
 		quickLinks(undefined, { groups: target.checked })
 	})
 
-	paramId('i_linknewtab').onclickdown((_, target) => {
+	onclickdown(paramId('i_linknewtab'), (_, target) => {
 		quickLinks(undefined, { newtab: target.checked })
 	})
 
@@ -379,13 +380,13 @@ function initOptionsEvents() {
 		quickLinks(undefined, { styles: { style: this.value } })
 	})
 
-	paramId('b_showtitles').onclickdown((_, target) => {
+	onclickdown(paramId('b_showtitles'), (_, target) => {
 		quickLinks(undefined, {
 			styles: { titles: !target.classList.contains('on') },
 		})
 	})
 
-	paramId('b_showbackgrounds').onclickdown((_, target) => {
+	onclickdown(paramId('b_showbackgrounds'), (_, target) => {
 		quickLinks(undefined, {
 			styles: { backgrounds: !target.classList.contains('on') },
 		})
@@ -395,7 +396,7 @@ function initOptionsEvents() {
 		quickLinks(undefined, { row: this.value })
 	})
 
-	paramId('b_importbookmarks').onclickdown(async () => {
+	onclickdown(paramId('b_importbookmarks'), async () => {
 		await getPermissions('topSites', 'bookmarks')
 		linksImport()
 	})
@@ -426,7 +427,7 @@ function initOptionsEvents() {
 		backgroundUpdate({ freq: this.value })
 	})
 
-	paramId('i_refresh').onclickdown((_, target) => {
+	onclickdown(paramId('i_refresh'), (_, target) => {
 		backgroundUpdate({ refresh: target.children[0] as HTMLSpanElement })
 	})
 
@@ -434,11 +435,11 @@ function initOptionsEvents() {
 		backgroundUpdate({ files: this.files })
 	})
 
-	paramId('b_background-urls').onclickdown(() => {
+	onclickdown(paramId('b_background-urls'), () => {
 		backgroundUpdate({ urlsapply: true })
 	})
 
-	paramId('i_background-local-compress').onclickdown((_event, target) => {
+	onclickdown(paramId('i_background-local-compress'), (_event, target) => {
 		backgroundUpdate({ compress: target.checked })
 	})
 
@@ -470,19 +471,19 @@ function initOptionsEvents() {
 
 	// Time and date
 
-	paramId('i_time').onclickdown((_, target) => {
+	onclickdown(paramId('i_time'), (_, target) => {
 		moveElements(undefined, { widget: ['time', target.checked] })
 	})
 
-	paramId('i_analog').onclickdown((_, target) => {
+	onclickdown(paramId('i_analog'), (_, target) => {
 		clock(undefined, { analog: target.checked })
 	})
 
-	paramId('i_seconds').onclickdown((_, target) => {
+	onclickdown(paramId('i_seconds'), (_, target) => {
 		clock(undefined, { seconds: target.checked })
 	})
 
-	paramId('i_worldclocks').onclickdown((_, target) => {
+	onclickdown(paramId('i_worldclocks'), (_, target) => {
 		paramId('worldclocks_options')?.classList.toggle('shown', target.checked)
 		clock(undefined, { worldclocks: target.checked })
 	})
@@ -519,14 +520,14 @@ function initOptionsEvents() {
 		clock(undefined, { size: Number.parseFloat(this.value) })
 	})
 
-	paramId('i_ampm').onclickdown((_, target) => {
+	onclickdown(paramId('i_ampm'), (_, target) => {
 		clock(undefined, { ampm: target.checked })
 
 		// shows/hides ampm_label option
 		paramId('ampm_label')?.classList.toggle('shown', target.checked)
 	})
 
-	paramId('i_ampm-label').onclickdown((_, target) => {
+	onclickdown(paramId('i_ampm-label'), (_, target) => {
 		clock(undefined, { ampmlabel: target.checked })
 	})
 
@@ -544,7 +545,7 @@ function initOptionsEvents() {
 
 	// Weather
 
-	paramId('i_main').onclickdown((_, target) => {
+	onclickdown(paramId('i_main'), (_, target) => {
 		moveElements(undefined, { widget: ['main', target.checked] })
 	})
 
@@ -589,7 +590,7 @@ function initOptionsEvents() {
 		weather(undefined, { unhide: true })
 	})
 
-	paramId('i_greethide').onclickdown((_, target) => {
+	onclickdown(paramId('i_greethide'), (_, target) => {
 		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 
@@ -607,7 +608,7 @@ function initOptionsEvents() {
 
 	// Notes
 
-	paramId('i_notes').onclickdown((_, target) => {
+	onclickdown(paramId('i_notes'), (_, target) => {
 		moveElements(undefined, { widget: ['notes', target.checked] })
 	})
 
@@ -623,13 +624,13 @@ function initOptionsEvents() {
 		notes(undefined, { background: true })
 	})
 
-	paramId('i_notes-shade').onclickdown(() => {
+	onclickdown(paramId('i_notes-shade'), () => {
 		notes(undefined, { background: true })
 	})
 
 	// Searchbar
 
-	paramId('i_sb').onclickdown((_, target) => {
+	onclickdown(paramId('i_sb'), (_, target) => {
 		moveElements(undefined, { widget: ['searchbar', target.checked] })
 		getPermissions('search')
 	})
@@ -654,11 +655,11 @@ function initOptionsEvents() {
 		searchbar(undefined, { request: this })
 	})
 
-	paramId('i_sbnewtab').onclickdown((_, target) => {
+	onclickdown(paramId('i_sbnewtab'), (_, target) => {
 		searchbar(undefined, { newtab: target.checked })
 	})
 
-	paramId('i_sbsuggestions').onclickdown((_, target) => {
+	onclickdown(paramId('i_sbsuggestions'), (_, target) => {
 		searchbar(undefined, { suggestions: target.checked })
 	})
 
@@ -672,7 +673,7 @@ function initOptionsEvents() {
 
 	// Quotes
 
-	paramId('i_quotes').onclickdown((_, target) => {
+	onclickdown(paramId('i_quotes'), (_, target) => {
 		moveElements(undefined, { widget: ['quotes', target.checked] })
 	})
 
@@ -684,13 +685,13 @@ function initOptionsEvents() {
 		quotes(undefined, { type: this.value })
 	})
 
-	paramId('i_qtrefresh').onclickdown((_, target) => {
+	onclickdown(paramId('i_qtrefresh'), (_, target) => {
 		inputThrottle(target)
 		turnRefreshButton(target.children[0] as HTMLSpanElement, true)
 		quotes(undefined, { refresh: true })
 	})
 
-	paramId('i_qtauthor').onclickdown((_, target) => {
+	onclickdown(paramId('i_qtauthor'), (_, target) => {
 		quotes(undefined, { author: target.checked })
 	})
 
@@ -710,7 +711,7 @@ function initOptionsEvents() {
 		customFont(undefined, { autocomplete: true })
 	})
 
-	paramId('f_customfont').addEventListener('submit', event => {
+	paramId('f_customfont').addEventListener('submit', (event) => {
 		customFont(undefined, { family: paramId('i_customfont').value })
 		event.preventDefault()
 	})
@@ -729,7 +730,7 @@ function initOptionsEvents() {
 
 	// Page layout
 
-	paramId('b_editmove').onclickdown(() => {
+	onclickdown(paramId('b_editmove'), () => {
 		moveElements(undefined, {
 			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
 		})
@@ -760,7 +761,7 @@ function initOptionsEvents() {
 		interfacePopup(undefined, { announcements: this.value })
 	})
 
-	paramId('i_supporters_notif').onclickdown((_, target) => {
+	onclickdown(paramId('i_supporters_notif'), (_, target) => {
 		supportersNotifications(undefined, { enabled: target.checked })
 	})
 
@@ -780,20 +781,20 @@ function initOptionsEvents() {
 		synchronization(undefined, { url: paramId('i_urlsync').value })
 	})
 
-	paramId('b_storage-persist').onclickdown(async () => {
+	onclickdown(paramId('b_storage-persist'), async () => {
 		const persists = await navigator.storage.persist()
 		synchronization(undefined, { firefoxPersist: persists })
 	})
 
-	paramId('b_gistup').onclickdown(() => {
+	onclickdown(paramId('b_gistup'), () => {
 		synchronization(undefined, { up: true })
 	})
 
-	paramId('b_gistdown').onclickdown(() => {
+	onclickdown(paramId('b_gistdown'), () => {
 		synchronization(undefined, { down: true })
 	})
 
-	paramId('b_urldown').onclickdown(() => {
+	onclickdown(paramId('b_urldown'), () => {
 		synchronization(undefined, { down: true })
 	})
 
@@ -823,36 +824,36 @@ function initOptionsEvents() {
 		copySettings()
 	})
 
-	paramId('settings-data').addEventListener('input', event => {
+	paramId('settings-data').addEventListener('input', (event) => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('settings-data').addEventListener('focus', event => {
+	paramId('settings-data').addEventListener('focus', (event) => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('settings-data').addEventListener('blur', event => {
+	paramId('settings-data').addEventListener('blur', (event) => {
 		toggleSettingsChangesButtons(event.type)
 	})
 
-	paramId('b_settings-cancel').onclickdown(() => {
+	onclickdown(paramId('b_settings-cancel'), () => {
 		toggleSettingsChangesButtons('cancel')
 	})
 
-	paramId('b_settings-apply').onclickdown(() => {
+	onclickdown(paramId('b_settings-apply'), () => {
 		const val = paramId('settings-data').value
 		importSettings(parse<Partial<Sync>>(val) ?? {})
 	})
 
-	paramId('b_reset-first').onclickdown(() => {
+	onclickdown(paramId('b_reset-first'), () => {
 		resetSettings('first')
 	})
 
-	paramId('b_reset-apply').onclickdown(() => {
+	onclickdown(paramId('b_reset-apply'), () => {
 		resetSettings('yes')
 	})
 
-	paramId('b_reset-cancel').onclickdown(() => {
+	onclickdown(paramId('b_reset-cancel'), () => {
 		resetSettings('no')
 	})
 
@@ -887,9 +888,9 @@ function initOptionsEvents() {
 	const tooltips = document.querySelectorAll<HTMLElement>('.tooltip')
 
 	for (const tooltip of tooltips) {
-		tooltip.onclickdown(() => {
+		onclickdown(tooltip, () => {
 			const classes = [...tooltip.classList]
-			const ttclass = classes.filter(cl => cl.startsWith('tt'))[0]
+			const ttclass = classes.filter((cl) => cl.startsWith('tt'))[0]
 			const tttext = document.querySelector(`.tooltiptext.${ttclass}`)
 
 			tttext?.classList.toggle('shown')
@@ -899,7 +900,7 @@ function initOptionsEvents() {
 	const splitRangeButtons = document.querySelectorAll<HTMLButtonElement>('.split-range button')
 
 	for (const button of splitRangeButtons) {
-		button.onclickdown(() => {
+		onclickdown(button, () => {
 			button.classList.toggle('on')
 		})
 	}
@@ -1233,7 +1234,7 @@ function loadImportFile(target: HTMLInputElement) {
 		const importData = decodeExportFile(reader.result)
 
 		// data has at least one valid key from default sync storage => import
-		if (Object.keys(SYNC_DEFAULT).filter(key => key in importData).length > 0) {
+		if (Object.keys(SYNC_DEFAULT).filter((key) => key in importData).length > 0) {
 			importSettings(importData as Sync)
 		}
 	}
