@@ -252,9 +252,8 @@ export async function loadModalData() {
 	}
 
 	try {
-		let response: Response | undefined
 		let supporters: SupportersApi[] = []
-		response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
+		const response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
 
 		if (response.ok) {
 			supporters = await response.json()

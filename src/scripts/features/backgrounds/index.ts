@@ -1,10 +1,10 @@
-import { getFilesAsCollection, initFilesSettingsOptions, addLocalBackgrounds } from './local.ts'
-import { initCreditEvents, updateCredits, toggleCredits } from './credits.ts'
+import { addLocalBackgrounds, getFilesAsCollection, initFilesSettingsOptions } from './local.ts'
+import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 
-import { userDate, daylightPeriod, needsChange } from '../../shared/time.ts'
+import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
 import { turnRefreshButton } from '../../shared/dom.ts'
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
 import { rgbToHex } from '../../shared/generic.ts'
@@ -63,7 +63,7 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 
 		onSettingsLoad(() => {
 			if (type === 'images' || type === 'videos') {
-				getCurrentBackground().then(media => {
+				getCurrentBackground().then((media) => {
 					preloadBackground(media)
 				})
 			}
@@ -429,8 +429,8 @@ async function fetchNewBackgrounds(backgrounds: Backgrounds): Promise<Record<str
 	const resp = await fetch(url)
 	const json = await resp.json()
 
-	const areImages = type === 'images' && Object.keys(json)?.every(key => key.includes('images'))
-	const areVideos = type === 'videos' && Object.keys(json)?.every(key => key.includes('videos'))
+	const areImages = type === 'images' && Object.keys(json)?.every((key) => key.includes('images'))
+	const areVideos = type === 'videos' && Object.keys(json)?.every((key) => key.includes('videos'))
 
 	if (areImages || areVideos) {
 		return json
@@ -578,7 +578,7 @@ export function applyBackground(media: string | Background, options?: ApplyOptio
 
 	if (mediaWrapper?.childElementCount > 1) {
 		const children = Object.values(mediaWrapper?.children)
-		const notHiding = children.filter(child => !child.className.includes('hiding'))
+		const notHiding = children.filter((child) => !child.className.includes('hiding'))
 		const lastVisible = notHiding.at(-1)
 
 		lastVisible?.classList.add('hiding')
@@ -621,7 +621,7 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 	let videoInterval = 0
 
 	const prependVideo = () => {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			const vid = document.createElement('video')
 
 			vid.addEventListener('progress', () => {
@@ -658,14 +658,14 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 	return div
 }
 
-async function preloadBackground(media: Background, options?: ApplyOptions): Promise<true> {
+function preloadBackground(media: Background, options?: ApplyOptions): Promise<true> {
 	const reduceRes = canReduceResolution(options?.full)
 
 	if (media.format === 'image') {
 		const img = document.createElement('img')
 		const src = reduceRes ? media.urls.small : media.urls.full
 
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			img.addEventListener('load', () => {
 				storage.local.remove('backgroundPreloading')
 				img.remove()
@@ -682,8 +682,8 @@ async function preloadBackground(media: Background, options?: ApplyOptions): Pro
 	const vid = document.createElement('video')
 	const src = reduceRes ? media.urls.small : media.urls.full
 
-	return new Promise(resolve => {
-		vid.addEventListener('progress', _ => {
+	return new Promise((resolve) => {
+		vid.addEventListener('progress', (_) => {
 			setTimeout(() => {
 				storage.local.remove('backgroundPreloading')
 				vid.remove()
@@ -998,8 +998,8 @@ function _isImage(item: BackgroundVideo | BackgroundImage): item is BackgroundIm
 	return item.format === 'image'
 }
 function areOnlyImages(list: Background[]): list is BackgroundImage[] {
-	return list?.every(item => item.format === 'image')
+	return list?.every((item) => item.format === 'image')
 }
 function areOnlyVideos(list: Background[]): list is BackgroundVideo[] {
-	return list?.every(item => item.format === 'video')
+	return list?.every((item) => item.format === 'video')
 }

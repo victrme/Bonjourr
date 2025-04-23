@@ -1,4 +1,4 @@
-import { assert } from 'jsr:@std/assert'
+import { assert } from '@std/assert'
 import './init.test.ts'
 
 // Import script after test init, document needs to be loaded first

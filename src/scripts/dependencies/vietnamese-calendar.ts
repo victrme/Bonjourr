@@ -54,7 +54,7 @@ function jdToDate(jd: number) {
 	const month = m + 3 - 12 * INT(m / 10)
 	const year = b * 100 + d - 4800 + INT(m / 10)
 
-	return new Array(day, month, year)
+	return [day, month, year]
 }
 
 /* Compute the time of the k-th new moon after the new moon of 1/1/1900 13:52 UCT
@@ -209,7 +209,7 @@ function convertSolar2Lunar(dd: number, mm: number, yy: number, timeZone: number
 		lunarYear -= 1
 	}
 
-	return new Array(lunarDay, lunarMonth, lunarYear, lunarLeap)
+	return [lunarDay, lunarMonth, lunarYear, lunarLeap]
 }
 
 /* Convert a lunar date to the corresponding solar date */
@@ -247,7 +247,7 @@ function _convertLunar2Solar(
 		}
 
 		if (lunarLeap !== 0 && lunarMonth !== leapMonth) {
-			return new Array(0, 0, 0)
+			return [0, 0, 0]
 		}
 
 		if (lunarLeap !== 0 || off >= leapOff) {

@@ -1,5 +1,5 @@
 import { BROWSER, SYNC_DEFAULT } from '../defaults.ts'
-import { suntime, minutator } from '../shared/time.ts'
+import { minutator, suntime } from '../shared/time.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { stringMaxSize } from '../shared/generic.ts'
 import { tradThis } from '../utils/translations.ts'
@@ -7,7 +7,8 @@ import { storage } from '../storage.ts'
 
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
-		const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
+		const svg =
+			`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
 		const defaulticon = `/src/assets/${BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico'}`
 		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
 
@@ -27,7 +28,9 @@ export function favicon(val?: string, isEvent?: true) {
 	}
 }
 
-export function tabTitle(val = '', isEvent?: true) {
+export function tabTitle(val?: string, isEvent?: true) {
+	val ??= ''
+
 	document.title = stringMaxSize(val, 80) || tradThis('New tab')
 
 	if (isEvent) {
@@ -90,7 +93,7 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 		return
 	}
 
-	globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+	globalThis.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
 		document.documentElement.dataset.theme = event.matches ? 'dark' : 'light'
 	})
 }

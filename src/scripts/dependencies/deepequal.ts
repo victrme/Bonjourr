@@ -1,7 +1,7 @@
 // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
 export function deepEqual(object1: Record<string, unknown>, object2: Record<string, unknown>) {
 	function isObject(object: unknown) {
-		return object != null && typeof object === 'object'
+		return object !== null && typeof object === 'object'
 	}
 
 	const keys1 = Object.keys(object1)

@@ -1,4 +1,4 @@
-import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults.ts'
+import { LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { deepEqual } from './dependencies/deepequal.ts'
 import { parse } from './utils/parse.ts'
 import * as idb from 'idb-keyval'
@@ -233,7 +233,7 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 			let filteredKeys: string[] = []
 
 			if (keys === undefined) {
-				filteredKeys = [...Object.keys(localStorage).filter(k => k !== 'bonjourr')]
+				filteredKeys = [...Object.keys(localStorage).filter((k) => k !== 'bonjourr')]
 			} //
 			else if (typeof keys === 'string') {
 				filteredKeys = [keys]
@@ -305,7 +305,7 @@ async function init(): Promise<AllStorage> {
 	if (PLATFORM !== 'online' && !webextStoreReady()) {
 		globalThis.pageReady = true
 
-		await new Promise(resolve => {
+		await new Promise((resolve) => {
 			document.addEventListener('webextstorage', (event: CustomEventInit) => {
 				if (event.detail === 'sync') {
 					store.sync = globalThis.startupStorage.sync
@@ -406,7 +406,9 @@ export async function getSyncDefaults(): Promise<Sync> {
 	try {
 		const json = await (await fetch('config.json')).json()
 		return verifyDataAsSync(json)
-	} catch (_) {}
+	} catch (_) {
+		// ...
+	}
 
 	return SYNC_DEFAULT
 }

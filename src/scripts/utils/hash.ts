@@ -4,8 +4,10 @@ export function hashcode(str: string) {
 
 	let h1 = 0xdeadbeef
 	let h2 = 0x41c6ce57
+	let i
+	let ch
 
-	for (let i = 0, ch = 0; i < str.length; i++) {
+	for (i = 0, ch = 0; i < str.length; i++) {
 		ch = str.charCodeAt(i)
 		h1 = Math.imul(h1 ^ ch, 2654435761)
 		h2 = Math.imul(h2 ^ ch, 1597334677)
@@ -21,7 +23,7 @@ export function hashcode(str: string) {
 	// To string hash
 	const array = number.toString().split('')
 	const charlist = 'arosmwxcvn'.split('')
-	const string = array.map(num => charlist[Number.parseInt(num)]).join('')
+	const string = array.map((num) => charlist[Number.parseInt(num)]).join('')
 
 	return string
 }

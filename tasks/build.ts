@@ -1,6 +1,6 @@
-import { ensureDirSync, existsSync } from 'https://deno.land/std@0.224.0/fs/mod.ts'
-import { extname } from 'https://deno.land/std@0.224.0/path/mod.ts'
-import * as esbuild from 'esbuild'
+import { ensureDirSync, existsSync } from '@std/fs'
+import { buildSync } from 'esbuild'
+import { extname } from '@std/path'
 
 type Platform = 'chrome' | 'firefox' | 'safari' | 'edge' | 'online'
 type Env = 'dev' | 'prod' | 'test'
@@ -54,7 +54,7 @@ function builder(platform: Platform, env: Env) {
 	console.timeEnd('Built in')
 }
 
-async function watcher(platform: Platform) {
+function watcher(platform: Platform) {
 	watchTasks('_locales', (_filename) => {
 		locales(platform)
 	})
@@ -124,7 +124,7 @@ function html(platform: Platform) {
 
 function styles(platform: Platform, env: Env) {
 	try {
-		esbuild.buildSync({
+		buildSync({
 			entryPoints: ['src/styles/style.css'],
 			outfile: `release/${platform}/src/styles/style.css`,
 			bundle: true,
@@ -145,7 +145,7 @@ function styles(platform: Platform, env: Env) {
 
 function scripts(platform: Platform, env: Env) {
 	try {
-		esbuild.buildSync({
+		buildSync({
 			entryPoints: ['src/scripts/index.ts'],
 			outfile: `release/${platform}/src/scripts/main.js`,
 			format: 'iife',
