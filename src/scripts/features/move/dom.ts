@@ -1,6 +1,6 @@
 import { elements, gridStringify } from './helpers.ts'
 import { moveElements } from './index.ts'
-import { onclickdown } from '@victr/clickdown'
+import { onclickdown } from 'clickdown/mod'
 
 import type { MoveAlign, MoveLayout } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'

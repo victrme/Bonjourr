@@ -8,7 +8,7 @@ import { settingsNotifications } from '../../utils/notifications.ts'
 import { getPermissions } from '../../utils/permissions.ts'
 import { randomString } from '../../shared/generic.ts'
 import { bundleLinks } from '../../utils/bundlelinks.ts'
-import { onclickdown } from '@victr/clickdown'
+import { onclickdown } from 'clickdown/mod'
 import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem } from '../../../types/shared.ts'

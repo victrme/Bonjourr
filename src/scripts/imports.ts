@@ -1,4 +1,4 @@
-// import { addGridWidget, gridParse, gridStringify, removeGridWidget, defaultLayouts } from './features/move/helpers.ts'
+import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from './features/move/helpers.ts'
 import { countryCodeToLanguageCode } from './utils/translations.ts'
 import { API_DOMAIN, SYNC_DEFAULT } from './defaults.ts'
 import { oldJSONToCSV } from './features/quotes.ts'
@@ -25,7 +25,11 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newtarget = newReviewData(newtarget) // ..
 	newtarget = quotesJsonToCsv(newtarget) // ..
 	newtarget = linksDataMigration(newtarget) // 19.2
+	newtarget = analogClockOptions(newtarget) // 20.0
+	newtarget = validateLinkGroups(newtarget) // 20.1
 	newtarget = addSupporters(newtarget) // 20.4
+	newtarget = toIsoLanguageCode(newtarget) // ..
+	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget) // ..
 	newtarget = newBackgroundsField(newtarget) // 21.0
 	newtarget = manualTimezonesToIntl(newtarget) // 21.0
 
@@ -33,16 +37,12 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 
 	newcurrent = deepmergeAll(newcurrent, newtarget, { about: structuredClone(SYNC_DEFAULT.about) }) as Sync
 
-	// Lastest version transform
+	// All versions
 
-	newcurrent = analogClockOptions(newcurrent) // 20.0
-	newcurrent = convertOldCssSelectors(newcurrent) // ..
-	newcurrent = toIsoLanguageCode(newcurrent) // ..
-	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget) // ..
-	newcurrent = validateLinkGroups(newcurrent) // 20.1
+	newcurrent = convertOldCssSelectors(newcurrent)
+	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
 
-	// newcurrent = removeLinkDuplicates(newcurrent, newtarget) // all
-	// newcurrent = toggleMoveWidgets(newcurrent, newtarget) // all
+	// Remove old fields
 
 	newcurrent.settingssync = undefined
 	newcurrent.custom_every = undefined
@@ -75,26 +75,29 @@ function addSupporters(data: Import): Import {
 }
 
 function hideArrayToObject(data: Import): Import {
+	const newhide: Sync['hide'] = {}
+
 	if (Array.isArray(data.hide)) {
-		if (data.hide[0][0]) {
-			data.hide.clock = true
+		if (data.hide[0]?.[0]) {
+			newhide.clock = true
 		}
-		if (data.hide[0][1]) {
-			data.hide.date = true
+		if (data.hide[0]?.[1]) {
+			newhide.date = true
 		}
-		if (data.hide[1][0]) {
-			data.hide.greetings = true
+		if (data.hide[1]?.[0]) {
+			newhide.greetings = true
 		}
-		if (data.hide[1][1]) {
-			data.hide.weatherdesc = true
+		if (data.hide[1]?.[1]) {
+			newhide.weatherdesc = true
 		}
-		if (data.hide[1][2]) {
-			data.hide.weathericon = true
+		if (data.hide[1]?.[2]) {
+			newhide.weathericon = true
 		}
-		if (data.hide[3][0]) {
-			data.hide.settingsicon = true
+		if (data.hide[3]?.[0]) {
+			newhide.settingsicon = true
 		}
 
+		data.hide = newhide
 		data.time = !(data.hide.clock && data.hide.date)
 		data.main = !(data.hide.weatherdesc && data.hide.weathericon && data.hide.weathericon)
 	}
@@ -174,7 +177,7 @@ function quotesJsonToCsv(data: Import): Import {
 	return data
 }
 
-function toIsoLanguageCode(data: Sync): Sync {
+function toIsoLanguageCode(data: Import): Import {
 	data.lang = countryCodeToLanguageCode(data.lang ?? 'en')
 	return data
 }
@@ -225,7 +228,7 @@ function manualTimezonesToIntl(data: Import): Import {
 	return data
 }
 
-function validateLinkGroups(current: Sync): Sync {
+function validateLinkGroups(current: Import): Import {
 	// (1)
 	let links = bundleLinks(current)
 	let parents = [...new Set(links.map((link) => link.parent))]
@@ -250,6 +253,10 @@ function validateLinkGroups(current: Sync): Sync {
 
 			current[link._id] = link
 		}
+	}
+
+	if (!current.linkgroups) {
+		current.linkgroups = SYNC_DEFAULT.linkgroups
 	}
 
 	const { groups, pinned, synced, selected } = current.linkgroups
@@ -396,97 +403,81 @@ function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 	return data
 }
 
-// function removeLinkDuplicates(curr: Sync, imported: Import): Sync {
-// 	const currentLinks = bundleLinks(curr)
-// 	const importedLink = bundleLinks(imported as Sync)
-// 	const importedURLs = importedLink.map((link) => (link.folder ? '' : link.url))
+function toggleMoveWidgets(current: Sync, imported: Import): Sync {
+	// When import doesn't have move, other widgets can still be different
+	// This updates current grid with the widgets states from import
 
-// 	for (let ii = 0; ii < currentLinks.length; ii++) {
-// 		const link = currentLinks[ii]
+	if (imported.move) {
+		current.move = imported.move
 
-// 		if (!link.folder && link.url === importedURLs[ii]) {
-// 			delete curr[link._id]
-// 		}
-// 	}
+		const layout = current.move.layouts[current.move.selection]
+		const grid = layout?.grid ?? defaultLayouts[current.move.selection].grid
+		const area = grid.flat().join(' ')
 
-// 	return curr
-// }
+		current.time = area.includes('time')
+		current.main = area.includes('main')
+		current.quicklinks = area.includes('quicklinks')
 
-// function toggleMoveWidgets(current: Sync, imported: Import): Sync {
-// 	// When import doesn't have move, other widgets can still be different
-// 	// This updates current grid with the widgets states from import
+		if (current.notes) {
+			current.notes.on = area.includes('notes')
+		}
+		if (current.quotes) {
+			current.quotes.on = area.includes('quotes')
+		}
+		if (current.searchbar) {
+			current.searchbar.on = area.includes('searchbar')
+		}
 
-// 	if (imported.move) {
-// 		current.move = imported.move
+		return current
+	}
 
-// 		const layout = current.move.layouts[current.move.selection]
-// 		const grid = layout?.grid ?? defaultLayouts[current.move.selection].grid
-// 		const area = grid.flat().join(' ')
+	if (!imported.move) {
+		const importStates = {
+			time: imported.time ?? current.time,
+			main: imported.main ?? current.main,
+			notes: imported.notes?.on ?? current.notes?.on,
+			quotes: imported.quotes?.on ?? current.quotes?.on,
+			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
+			quicklinks: imported.quicklinks ?? current.quicklinks,
+		}
 
-// 		current.time = area.includes('time')
-// 		current.main = area.includes('main')
-// 		current.quicklinks = area.includes('quicklinks')
+		const diffWidgets = {
+			time: current.time !== importStates.time,
+			main: current.main !== importStates.main,
+			notes: current.notes?.on !== importStates.notes,
+			quotes: current.quotes?.on !== importStates.quotes,
+			searchbar: current.searchbar?.on !== importStates.searchbar,
+			quicklinks: current.quicklinks !== importStates.quicklinks,
+		}
 
-// 		if (current.notes) {
-// 			current.notes.on = area.includes('notes')
-// 		}
-// 		if (current.quotes) {
-// 			current.quotes.on = area.includes('quotes')
-// 		}
-// 		if (current.searchbar) {
-// 			current.searchbar.on = area.includes('searchbar')
-// 		}
+		// Force single layout with old imports
+		// Partial imports, for example links list only, will not force single
+		if (Object.keys(imported).some((key) => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
+			current.move.selection = 'single'
+		}
 
-// 		return current
-// 	}
+		const selection = current.move.selection
+		const layout = structuredClone(current.move.layouts[selection])
+		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
 
-// 	if (!imported.move) {
-// 		const importStates = {
-// 			time: imported.time ?? current.time,
-// 			main: imported.main ?? current.main,
-// 			notes: imported.notes?.on ?? current.notes?.on,
-// 			quotes: imported.quotes?.on ?? current.quotes?.on,
-// 			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
-// 			quicklinks: imported.quicklinks ?? current.quicklinks,
-// 		}
+		if (!layout) {
+			return current
+		}
 
-// 		const diffWidgets = {
-// 			time: current.time !== importStates.time,
-// 			main: current.main !== importStates.main,
-// 			notes: current.notes?.on !== importStates.notes,
-// 			quotes: current.quotes?.on !== importStates.quotes,
-// 			searchbar: current.searchbar?.on !== importStates.searchbar,
-// 			quicklinks: current.quicklinks !== importStates.quicklinks,
-// 		}
+		// mutate grid: add or remove widgets that are different from current data
+		for (const [key] of diffEntries) {
+			const id = key as Widgets
+			const state = importStates[id]
+			const gridToggle = state ? addGridWidget : removeGridWidget
 
-// 		// Force single layout with old imports
-// 		// Partial imports, for example links list only, will not force single
-// 		if (Object.keys(imported).some(key => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
-// 			current.move.selection = 'single'
-// 		}
+			layout.grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
+		}
 
-// 		const selection = current.move.selection
-// 		const layout = structuredClone(current.move.layouts[selection])
-// 		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
+		current.move.layouts[selection] = layout
+	}
 
-// 		if (!layout) {
-// 			return current
-// 		}
-
-// 		// mutate grid: add or remove widgets that are different from current data
-// 		for (const [key] of diffEntries) {
-// 			const id = key as Widgets
-// 			const state = importStates[id]
-// 			const gridToggle = state ? addGridWidget : removeGridWidget
-
-// 			layout.grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
-// 		}
-
-// 		current.move.layouts[selection] = layout
-// 	}
-
-// 	return current
-// }
+	return current
+}
 
 function convertOldCssSelectors<Data extends Sync | Import>(data: Data): Data {
 	if (data?.css) {

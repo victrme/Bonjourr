@@ -16,6 +16,7 @@ import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
 import { BROWSER, CURRENT_VERSION, ENVIRONNEMENT, IS_MOBILE, PLATFORM, SYSTEM_OS } from './defaults.ts'
+import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { needsChange, suntime, userDate } from './shared/time.ts'
 import { onSettingsLoad } from './utils/onsettingsload.ts'
@@ -23,19 +24,11 @@ import { filterImports } from './imports.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
 import { storage } from './storage.ts'
-import 'clickdown'
 
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
 
-type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
-
 const dominterface = document.getElementById('interface') as HTMLDivElement
-const features: FeaturesToWait[] = ['clock', 'links']
-let interfaceDisplayCallback = () => undefined
-let loadtime = performance.now()
-
-//	Startup
 
 try {
 	startup()
@@ -129,55 +122,6 @@ function upgradeLocalStorage(data: Local): Local {
 	// storage.local.remove('lastWeather')
 
 	return data
-}
-
-export function displayInterface(ready?: FeaturesToWait, data?: Sync) {
-	if (data) {
-		if (data?.font?.family) {
-			features.push('fonts')
-		}
-		if (data?.quotes?.on) {
-			features.push('quotes')
-		}
-
-		return
-	}
-
-	if (!ready) {
-		return
-	}
-
-	const index = features.indexOf(ready)
-
-	if (index !== -1) {
-		features.splice(index, 1)
-	} else {
-		return
-	}
-
-	if (features.length > 0) {
-		return
-	}
-
-	loadtime = Math.min(performance.now() - loadtime, 333)
-	loadtime = loadtime > 33 ? loadtime : 0
-	document.documentElement.style.setProperty('--load-time-transition', `${loadtime}ms`)
-	document.body.classList.remove('loading')
-
-	setTimeout(
-		() => {
-			onInterfaceDisplay()
-		},
-		Math.max(333, loadtime),
-	)
-}
-
-function onInterfaceDisplay(callback?: () => undefined): void {
-	if (callback) {
-		interfaceDisplayCallback = callback
-	} else {
-		interfaceDisplayCallback()
-	}
 }
 
 function onlineAndMobile() {

@@ -1,6 +1,6 @@
 import { hexColorFromSplitRange } from '../shared/dom.ts'
 import { getLang, tradThis } from '../utils/translations.ts'
-import { displayInterface } from '../index.ts'
+import { displayInterface } from '../shared/display.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { stringMaxSize } from '../shared/generic.ts'

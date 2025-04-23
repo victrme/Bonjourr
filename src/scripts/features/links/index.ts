@@ -1,20 +1,20 @@
-import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle, moveGroups } from './groups.ts'
+import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openEditDialog } from './edit.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
-	isElem,
-	getLiFromEvent,
-	getDefaultIcon,
 	createTitle,
-	isLink,
-	getLinksInGroup,
+	getDefaultIcon,
+	getLiFromEvent,
 	getLinksInFolder,
+	getLinksInGroup,
+	isElem,
+	isLink,
 } from './helpers.ts'
 
 import { randomString, stringMaxSize } from '../../shared/generic.ts'
-import { displayInterface } from '../../index.ts'
+import { displayInterface } from '../../shared/display.ts'
 import { getHTMLTemplate } from '../../shared/dom.ts'
 import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
@@ -126,7 +126,7 @@ export async function quickLinks(init?: Sync, event?: LinksUpdate) {
 // Initialisation
 
 export function initblocks(data: Sync, isInit?: true): true {
-	const allLinks = Object.values(data).filter(val => isLink(val)) as Link[]
+	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
 
@@ -149,8 +149,8 @@ export function initblocks(data: Sync, isInit?: true): true {
 	activeGroups.reverse()
 
 	// Remove links that didn't make the cut
-	const divs = activeGroups.map(g => g.div)
-	const usedLis = activeGroups.flatMap(group => group.lis)
+	const divs = activeGroups.map((g) => g.div)
+	const usedLis = activeGroups.flatMap((group) => group.lis)
 
 	for (const div of document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group')) {
 		for (const li of div.querySelectorAll<HTMLLIElement>('li')) {
@@ -166,7 +166,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 
 	for (const group of activeGroups) {
 		const linkgroup = group.div ?? getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
-		const linksInFolders = allLinks.filter(link => !link.folder && typeof link.parent === 'string')
+		const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
 		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')
 		const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')
 		const fragment = document.createDocumentFragment()
@@ -181,7 +181,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 		}
 
 		for (const link of group.links) {
-			let li = group.lis.find(li => li.id === link._id)
+			let li = group.lis.find((li) => li.id === link._id)
 
 			if (li) {
 				li.removeAttribute('style')
@@ -242,7 +242,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 	}
 
 	const linksInThisFolder = folderChildren
-		.filter(l => !l.folder && l.parent === link._id)
+		.filter((l) => !l.folder && l.parent === link._id)
 		.toSorted((a, b) => a.order - b.order)
 
 	li.id = link._id
@@ -477,14 +477,12 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 
 		if (addsFromFolder) {
 			link.parent = folderid
-		}
-		//
+		} //
 		else if (noParents && synced.includes(selected)) {
 			link.parent = ''
 			data.linkgroups.selected = ''
 			initGroups(data)
-		}
-		//
+		} //
 		else if (noParents) {
 			link.parent = selected
 		}
@@ -506,7 +504,7 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
 	titledom.value = ''
 
 	const blocks = [...document.querySelectorAll<HTMLElement>('.link')]
-	const idsOnInterface = blocks.map(block => block.id)
+	const idsOnInterface = blocks.map((block) => block.id)
 	const order = idsOnInterface.indexOf(ids[0])
 
 	for (let i = 0; i < ids.length; i++) {
@@ -616,7 +614,7 @@ function moveToFolder({ target, source }: MoveToFolder, data: Sync): Sync {
 function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: Sync): Sync {
 	// Get the current links in the target group to determine the next order
 	const linksInGroup = getLinksInGroup(data, group)
-	const maxOrder = linksInGroup.length > 0 ? Math.max(...linksInGroup.map(link => link.order)) : -1
+	const maxOrder = linksInGroup.length > 0 ? Math.max(...linksInGroup.map((link) => link.order)) : -1
 
 	// Update each link's parent and order
 	ids.forEach((id, index) => {
@@ -752,7 +750,7 @@ function setRows(row: string) {
 // Helpers
 
 export function validateLink(title: string, url: string, parent?: string): LinkElem {
-	const startsWithEither = (strs: string[]) => strs.some(str => url.startsWith(str))
+	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 	const sanitizedUrl = stringMaxSize(url, 512)
 
 	const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
@@ -777,8 +775,8 @@ function animateLinksRemove(ids: string[]) {
 }
 
 function correctLinksOrder(data: Sync): Sync {
-	const allLinks = Object.values(data).filter(val => isLink(val)) as Link[]
-	const folderIds = allLinks.filter(link => link.folder).map(({ _id }) => _id)
+	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
+	const folderIds = allLinks.filter((link) => link.folder).map(({ _id }) => _id)
 
 	for (const folderId of folderIds) {
 		const linksInFolder = getLinksInFolder(data, folderId)

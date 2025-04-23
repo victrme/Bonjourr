@@ -23,7 +23,7 @@ import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
 import { loadCallbacks } from './utils/onsettingsload.ts'
 import { filterImports } from './imports.ts'
-import { onclickdown } from '@victr/clickdown'
+import { onclickdown } from 'clickdown/mod'
 import { stringify } from './utils/stringify.ts'
 import { debounce } from './utils/debounce.ts'
 import { langList } from './langs.ts'
@@ -1158,7 +1158,7 @@ function drawerDragEvents() {
 
 //	Settings management
 
-async function copySettings() {
+function copySettings() {
 	const copybtn = document.querySelector('#b_settings-copy span')
 	const pre = document.getElementById('settings-data')
 

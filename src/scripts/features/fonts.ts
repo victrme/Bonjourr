@@ -1,5 +1,5 @@
 import { getLang, tradThis } from '../utils/translations.ts'
-import { displayInterface } from '../index.ts'
+import { displayInterface } from '../shared/display.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { networkForm } from '../shared/form.ts'
@@ -204,7 +204,7 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 		font.weight = '400'
 		font.system = false
 		font.family = newfamily
-		font.weightlist = newfont.weights.map(w => w.toString())
+		font.weightlist = newfont.weights.map((w) => w.toString())
 		return font
 	}
 
@@ -215,8 +215,9 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 
 function displayFont({ family, size, weight, system }: Font) {
 	// Weight: default bonjourr lowers font weight on clock (because we like it)
-	const clockWeight =
-		Number.parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
+	const clockWeight = Number.parseInt(weight) > 100
+		? systemfont.weights[systemfont.weights.indexOf(weight) - 1]
+		: weight
 	const subset = getRequiredSubset()
 	const id = family.toLocaleLowerCase().replaceAll(' ', '-')
 	const fontfacedom = document.getElementById('fontface')
@@ -298,7 +299,7 @@ function setWeightSettings(weights: string[]) {
 
 export async function fontIsAvailableInSubset(lang?: string, family?: string) {
 	const fontlist = (await (await apiFetch('/fonts'))?.json()) as Fontsource[]
-	const font = fontlist?.find(item => item.family === family)
+	const font = fontlist?.find((item) => item.family === family)
 	const subset = getRequiredSubset(lang)
 
 	return font?.subsets.includes(subset)
@@ -326,7 +327,7 @@ function systemFontChecker(family: string): boolean {
 }
 
 function waitForFontLoad(family: string): Promise<boolean> {
-	return new Promise(resolve => {
+	return new Promise((resolve) => {
 		let limitcounter = 0
 		let hasLoadedFont = systemFontChecker(family)
 

@@ -1,6 +1,6 @@
 import { getLang, tradThis } from '../utils/translations.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
-import { onclickdown } from '@victr/clickdown'
+import { onclickdown } from 'clickdown/mod'
 import { debounce } from '../utils/debounce.ts'
 import { storage } from '../storage.ts'
 

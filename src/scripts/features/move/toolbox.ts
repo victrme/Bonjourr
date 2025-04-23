@@ -5,7 +5,7 @@ import { tradThis } from '../../utils/translations.ts'
 
 import type { Move, MoveAlign } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'
-import { onclickdown } from '@victr/clickdown'
+import { onclickdown } from 'clickdown/mod'
 
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
 let resetTimeout: number

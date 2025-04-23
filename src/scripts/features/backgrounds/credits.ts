@@ -1,5 +1,5 @@
 import { backgroundUpdate } from './index.ts'
-import { onclickdown } from '@victr/clickdown'
+import { onclickdown } from 'clickdown/mod'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 

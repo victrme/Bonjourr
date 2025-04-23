@@ -1,6 +1,6 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
 import { compressMedia } from '../../shared/compress.ts'
-import { onclickdown } from '@victr/clickdown'
+import { onclickdown } from 'clickdown/mod'
 import { IS_MOBILE } from '../../defaults.ts'
 import { userDate } from '../../shared/time.ts'
 import { hashcode } from '../../utils/hash.ts'

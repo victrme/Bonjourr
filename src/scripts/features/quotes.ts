@@ -1,6 +1,6 @@
 import { equalsCaseInsensitive } from '../shared/generic.ts'
 import { needsChange, userDate } from '../shared/time.ts'
-import { displayInterface } from '../index.ts'
+import { displayInterface } from '../shared/display.ts'
 import { networkForm } from '../shared/form.ts'
 import { tradThis } from '../utils/translations.ts'
 import { apiFetch } from '../shared/api.ts'
@@ -9,7 +9,7 @@ import { storage } from '../storage.ts'
 import { parse } from '../utils/parse.ts'
 
 import type { Quote, QuoteUserInput } from '../../types/shared.ts'
-import type { Sync, Quotes } from '../../types/sync.ts'
+import type { Quotes, Sync } from '../../types/sync.ts'
 import type { Local } from '../../types/local.ts'
 
 type QuotesInit = {
@@ -260,7 +260,7 @@ function controlCacheList(list: Quote[], lang: string, type: Quotes['type'], url
 	}
 
 	if (list.length < 2) {
-		tryFetchQuotes(lang, type, url).then(list => {
+		tryFetchQuotes(lang, type, url).then((list) => {
 			storage.local.set({ quotesCache: list })
 		})
 	}
@@ -302,7 +302,7 @@ function csvUserInputToQuotes(csv?: string | QuoteUserInput): Quote[] {
 }
 
 export function oldJSONToCSV(input: QuoteUserInput): string {
-	return input.map(val => val.join(',')).join('\n')
+	return input.map((val) => val.join(',')).join('\n')
 }
 
 function csvToQuotes(csv: string): Quote[] {
