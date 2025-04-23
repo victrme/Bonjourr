@@ -1,0 +1,126 @@
+{
+	"background_blur": 0,
+	"clock": {
+		"ampm": false,
+		"analog": true,
+		"seconds": true,
+		"timezone": "auto"
+	},
+	"dark": "system",
+	"dynamic": {
+		"current": {
+			"city": "Kinbidhoo",
+			"country": "Maldives",
+			"link": "https://unsplash.com/photos/nXhT7-3it0Y",
+			"name": "Saud Edum",
+			"url": "https://images.unsplash.com/photo-1619873068038-b25550eeff69?ixid=Mnw4ODczOHwwfDF8cmFuZG9tfHx8fHx8fHx8MTYyMzQyMTg3Ng&ixlib=rb-1.2.1&w=2560&fm=jpg&q=70",
+			"username": "saudedum"
+		},
+		"every": "hour",
+		"next": {
+			"city": null,
+			"country": "México",
+			"link": "https://unsplash.com/photos/jOV7yVid2wM",
+			"name": "Eduardo Cano Photo Co.",
+			"url": "https://images.unsplash.com/photo-1579230757892-bfb5af370290?ixid=Mnw4ODczOHwwfDF8cmFuZG9tfHx8fHx8fHx8MTYyMzQyMTg4Nw&ixlib=rb-1.2.1&w=2560&fm=jpg&q=70",
+			"username": "eduardocanophotoco"
+		},
+		"time": 0
+	},
+	"font": {
+		"family": "Roboto",
+		"size": "15",
+		"supportedWeights": [
+			"100",
+			"300",
+			"regular",
+			"500",
+			"700",
+			"900"
+		],
+		"weight": "200"
+	},
+	"greeting": "Victor",
+	"hide": [],
+	"lang": "fr",
+	"linknewtab": false,
+	"links": [
+		{
+			"icon": "https://api.faviconkit.com/www.youtube.com/144",
+			"title": "Youtube",
+			"url": "https://www.youtube.com/"
+		},
+		{
+			"icon": "https://api.faviconkit.com/vault.bitwarden.com/144",
+			"title": "Bitwarden",
+			"url": "https://vault.bitwarden.com/#/vault"
+		},
+		{
+			"icon": "https://api.faviconkit.com/github.com/144",
+			"title": "Github",
+			"url": "https://github.com/victrme/"
+		}
+	],
+	"linksrow": 5,
+	"reviewPopup": "removed",
+	"searchbar": false,
+	"searchbar_engine": "ddg",
+	"searchbar_newtab": false,
+	"showall": true,
+	"usdate": true,
+	"weather": {
+		"ccode": "FR",
+		"city": "Paris",
+		"fcDay": 2,
+		"fcHigh": 21,
+		"lastCall": 1623767816,
+		"lastState": {
+			"base": "stations",
+			"clouds": {
+				"all": 0
+			},
+			"cod": 200,
+			"coord": {
+				"lat": 47.8625,
+				"lon": -4.2382
+			},
+			"dt": 1623767817,
+			"id": 2986712,
+			"main": {
+				"feels_like": 26.22,
+				"humidity": 57,
+				"pressure": 1019,
+				"temp": 26.22,
+				"temp_max": 26.45,
+				"temp_min": 22.5
+			},
+			"name": "Plomeur",
+			"sys": {
+				"country": "FR",
+				"id": 6568,
+				"sunrise": 1623730652,
+				"sunset": 1623788250,
+				"type": 1
+			},
+			"timezone": 7200,
+			"visibility": 10000,
+			"weather": [
+				{
+					"description": "ciel dégagé",
+					"icon": "01d",
+					"id": 800,
+					"main": "Clear"
+				}
+			],
+			"wind": {
+				"deg": 230,
+				"speed": 3.09
+			}
+		},
+		"location": [
+			47.8625183,
+			-4.2382070999999994
+		],
+		"unit": "metric"
+	}
+}
