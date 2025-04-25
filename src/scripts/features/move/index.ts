@@ -1,13 +1,21 @@
-import { setAlign, addOverlay, removeOverlay, setGridAreas, setAllAligns, removeSelection, interfaceFade } from './dom.ts'
+import {
+	addOverlay,
+	interfaceFade,
+	removeOverlay,
+	removeSelection,
+	setAlign,
+	setAllAligns,
+	setGridAreas,
+} from './dom.ts'
 import { toggleWidget, toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets.ts'
 import {
-	toolboxEvents,
 	alignButtons,
 	gridButtons,
 	layoutButtons,
 	resetButton,
-	spanButtons,
 	showSpanButtons,
+	spanButtons,
+	toolboxEvents,
 } from './toolbox.ts'
 
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
@@ -17,20 +25,20 @@ import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
 import {
-	isEditing,
-	isRowEmpty,
+	addGridWidget,
+	getGridWidgets,
+	getLayout,
+	getWidgetsStorage,
 	gridFind,
 	gridParse,
 	gridStringify,
+	isEditing,
+	isRowEmpty,
 	spansInGridArea,
-	addGridWidget,
 	updateWidgetsStorage,
-	getGridWidgets,
-	getWidgetsStorage,
-	getLayout,
 } from './helpers.ts'
 
-import type { Move, Sync } from '../../../types/sync.ts'
+import type { Move, MoveLayout, Sync } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'
 
 type UpdateMove = {
@@ -277,7 +285,7 @@ function layoutReset(data: Sync) {
 
 	data.move.layouts[data.move.selection] = {
 		grid: gridParse(grid),
-		items: {},
+		items: {} as MoveLayout['items'],
 	}
 
 	storage.sync.set(data)
@@ -325,8 +333,7 @@ function toggleMoveStatus(data: Sync, force?: boolean) {
 		dominterface?.classList.remove('move-edit')
 		mover.classList.add('hidden')
 		removeOverlay()
-	}
-	//
+	} //
 	else if (hasOverlay) {
 		bEditmove.textContent = tradThis('Close')
 		dominterface?.classList.add('move-edit')

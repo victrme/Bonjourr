@@ -1,4 +1,4 @@
-import type { Frequency, Widgets, BackgroundImage, BackgroundVideo, Link } from './shared.ts'
+import type { BackgroundImage, BackgroundVideo, Frequency, Link, Widgets } from './shared.ts'
 
 export interface Sync {
 	showall: boolean
@@ -160,7 +160,7 @@ export interface Move {
 
 export interface MoveLayout {
 	grid: string[][]
-	items: Record<Widgets, MoveAlign>
+	items: Record<Widgets, MoveAlign | undefined>
 }
 
 export interface MoveAlign {

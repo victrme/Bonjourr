@@ -229,27 +229,29 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 		}
 
 		default: {
-			const res: Record<string, unknown> = {}
-			let filteredKeys: string[] = []
+			const result: Record<string, unknown> = {}
+			let keylist: string[] = []
 
 			if (keys === undefined) {
-				filteredKeys = [...Object.keys(localStorage).filter((k) => k !== 'bonjourr')]
-			} //
-			else if (typeof keys === 'string') {
-				filteredKeys = [keys]
+				keylist = Object.keys(localStorage).filter((key) => key !== 'bonjourr')
+			} else if (typeof keys === 'string') {
+				keylist = [keys]
 			}
 
-			for (const key of filteredKeys) {
+			for (const key of keylist) {
 				const item = localStorage.getItem(key) ?? ''
-				const isJson = item.startsWith('{') || item.startsWith('[')
-				const val = isJson ? parse<Partial<Local>>(item) : item
 
-				if (val) {
-					res[key] = val
+				if (item && key in LOCAL_DEFAULT) {
+					const isJson = item.startsWith('{') || item.startsWith('[')
+					const val = isJson ? parse(item) : item
+
+					if (val) {
+						result[key] = val
+					}
 				}
 			}
 
-			return res as Local
+			return result as unknown as Local
 		}
 	}
 }
@@ -417,33 +419,22 @@ export function isStorageDefault(data: Sync): boolean {
 	const current = structuredClone(data)
 	current.review = SYNC_DEFAULT.review
 	current.showall = SYNC_DEFAULT.showall
-	current.unsplash.time = SYNC_DEFAULT.unsplash.time
-	current.unsplash.pausedImage = SYNC_DEFAULT.unsplash.pausedImage
 	current.weather.city = SYNC_DEFAULT.weather.city
 	current.quotes.last = SYNC_DEFAULT.quotes.last
 
 	return deepEqual(current, SYNC_DEFAULT)
 }
 
-function verifyDataAsSync(data: Record<string, unknown> = {}): Sync {
-	for (const key in SYNC_DEFAULT) {
-		const notAbout = key !== 'about'
-		const missingKey = !(key in data)
+function verifyDataAsSync(data: Partial<Sync> = {}): Sync {
+	let sync = { ...SYNC_DEFAULT }
 
-		if (notAbout && missingKey) {
-			data[key] = SYNC_DEFAULT[key]
-		}
-	}
+	sync.about.version = '0.0.0'
+	sync = { ...sync, ...data }
 
-	return data
+	return sync
 }
 
-function verifyDataAsLocal(data: Record<string, unknown> = {}): Local {
-	for (const key in LOCAL_DEFAULT) {
-		if (!(key in data)) {
-			data[key] = LOCAL_DEFAULT[key as keyof typeof LOCAL_DEFAULT]
-		}
-	}
-
-	return data
+function verifyDataAsLocal(data: Partial<Local> = {}): Local {
+	const local = { ...LOCAL_DEFAULT, ...data }
+	return local
 }

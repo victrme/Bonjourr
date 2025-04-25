@@ -23,7 +23,7 @@ export const elements = {
 export const defaultLayouts: Defaults = {
 	single: {
 		grid: [['time'], ['main'], ['quicklinks']],
-		items: {},
+		items: {} as MoveLayout['items'],
 	},
 	double: {
 		grid: [
@@ -31,7 +31,7 @@ export const defaultLayouts: Defaults = {
 			['main', '.'],
 			['quicklinks', '.'],
 		],
-		items: {},
+		items: {} as MoveLayout['items'],
 	},
 	triple: {
 		grid: [
@@ -39,7 +39,7 @@ export const defaultLayouts: Defaults = {
 			['main', '.', '.'],
 			['quicklinks', '.', '.'],
 		],
-		items: {},
+		items: {} as MoveLayout['items'],
 	},
 }
 

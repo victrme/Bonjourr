@@ -2,7 +2,7 @@
 	"$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
 	"version": "20.4.2",
 	"tasks": {
-		"test": "deno test --no-check --allow-read",
+		"test": "deno test --allow-read",
 		"build": "deno run --allow-all ./tasks/build.ts",
 		"edge": "deno run --allow-all ./tasks/build.ts edge dev",
 		"chrome": "deno run --allow-all ./tasks/build.ts chrome dev",
@@ -27,6 +27,7 @@
 		"pocket-editor": "npm:pocket-editor@^2.5.0",
 		"prism-code-editor": "npm:prism-code-editor@^3.4.0"
 	},
+	"nodeModulesDir": "auto",
 	"lint": {
 		"include": [
 			"src",

@@ -1,4 +1,4 @@
-import { weatherCacheControl, requestNewWeather, getGeolocation } from './request.ts'
+import { getGeolocation, requestNewWeather, weatherCacheControl } from './request.ts'
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
 import { displayWeather } from './display.ts'
 import { stringMaxSize } from '../../shared/generic.ts'
@@ -7,7 +7,7 @@ import { debounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { WeatherUpdate } from './index.ts'
+import type { MeteoGeo, WeatherUpdate } from './index.ts'
 import type { LastWeather } from '../../../types/local.ts'
 import type { Weather } from '../../../types/sync.ts'
 

@@ -1,26 +1,29 @@
 import { langList } from './langs.ts'
 
+import type { Navigator } from '../types/shared.ts'
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
+
+const navigator = globalThis.navigator as Navigator
+const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
+const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
 export const CURRENT_VERSION = '21.0.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
-//@ts-expect-error: "ENV" is defined by esbuild during build step
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
-export const SYSTEM_OS =
-	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
+export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
 		(navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
-		? 'ios'
-		: globalThis.navigator.appVersion?.includes('Macintosh')
-		? 'mac'
-		: globalThis.navigator.appVersion?.includes('Windows')
-		? 'windows'
-		: globalThis.navigator.userAgent?.toLowerCase()?.includes('Android')
-		? 'android'
-		: 'unknown'
+	? 'ios'
+	: navigator.appVersion?.includes('Macintosh')
+	? 'mac'
+	: navigator.appVersion?.includes('Windows')
+	? 'windows'
+	: navigator.userAgent?.toLowerCase()?.includes('android')
+	? 'android'
+	: 'unknown'
 
 export const PLATFORM = globalThis.location?.protocol === 'moz-extension:'
 	? 'firefox'
@@ -30,15 +33,15 @@ export const PLATFORM = globalThis.location?.protocol === 'moz-extension:'
 	? 'safari'
 	: 'online'
 
-export const BROWSER = globalThis.navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
+export const BROWSER = navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
 	? 'edge'
-	: globalThis.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
 	? 'opera'
-	: globalThis.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
+	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
 	? 'chrome'
-	: globalThis.navigator.userAgent?.toLowerCase()?.indexOf('firefox') > -1
+	: navigator.userAgent?.toLowerCase()?.indexOf('firefox') > -1
 	? 'firefox'
-	: globalThis.navigator.userAgent?.toLowerCase()?.indexOf('safari') > -1
+	: navigator.userAgent?.toLowerCase()?.indexOf('safari') > -1
 	? 'safari'
 	: 'other'
 
@@ -50,7 +53,7 @@ export const EXTENSION: typeof chrome | typeof browser | undefined = PLATFORM ==
 
 export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
-	: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+	: mobileUA.some((ua) => navigator.userAgent.includes(ua))
 
 const DEFAULT_LANG = (() => {
 	for (const code of Object.keys(langList)) {

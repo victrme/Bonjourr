@@ -14,7 +14,7 @@ import { storage } from '../../storage.ts'
 import type { Link, LinkElem } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-type Treenode = chrome.bookmarks.BookmarkTreeNode
+type Treenode = browser.bookmarks.BookmarkTreeNode
 
 type BookmarksFolder = {
 	title: string
@@ -289,8 +289,15 @@ function toggleFolderSync(folder: HTMLElement) {
 // webext stuff
 
 async function getBookmarkTree(): Promise<Treenode[] | undefined> {
-	const treenode = globalThis.startupBookmarks ?? (await EXTENSION?.bookmarks?.getTree())
-	const topsites = globalThis.startupTopsites ?? (await EXTENSION?.topSites?.get())
+	let treenode = globalThis.startupBookmarks
+	let topsites = globalThis.startupTopsites
+
+	if (!treenode) {
+		treenode = await EXTENSION?.bookmarks?.getTree() as browser.bookmarks.BookmarkTreeNode[]
+	}
+	if (!topsites) {
+		topsites = await EXTENSION?.topSites?.get()
+	}
 
 	if (!(treenode && topsites)) {
 		return
@@ -320,8 +327,9 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 		title: 'topsites',
 		children: topsites.map((site) => ({
 			id: '',
-			title: site.title,
+			title: site.title ?? '',
 			url: site.url,
+			syncing: false,
 		})),
 	})
 

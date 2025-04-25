@@ -181,22 +181,19 @@ export interface UnsplashImage {
 
 declare global {
 	var pageReady: boolean
-	var startupBookmarks: undefined
-	var startupTopsites: undefined
+	var startupBookmarks: browser.bookmarks.BookmarkTreeNode[] | undefined
+	var startupTopsites: browser.topSites.MostVisitedURL[] | undefined
 	var startupStorage: {
 		sync?: Sync
 		local?: Local
 	}
+	var ENV: 'PROD' | 'DEV' | 'TEST'
 }
 
 // https://github.com/lukewarlow/user-agent-data-types
 // WICG Spec: https://wicg.github.io/ua-client-hints
 
-export declare interface Navigator extends NavigatorUA {}
-export declare interface WorkerNavigator extends NavigatorUA {}
-
-// https://wicg.github.io/ua-client-hints/#navigatorua
-declare interface NavigatorUA {
+export interface Navigator extends globalThis.Navigator {
 	readonly userAgentData?: NavigatorUAData
 }
 
