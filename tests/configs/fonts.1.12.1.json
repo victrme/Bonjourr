@@ -1,0 +1,46 @@
+{
+	"usdate": false,
+	"showall": true,
+	"dynamic": { "collection": "", "every": "day", "lastCollec": "day", "time": 1647587966842 },
+	"background_blur": 15,
+	"css": "",
+	"weather": {
+		"ccode": "FR",
+		"city": "Mozac",
+		"fcHigh": 9,
+		"lastState": {
+			"temp": 5.66,
+			"feels_like": 2.6,
+			"temp_max": 5.66,
+			"sunrise": 1647582902,
+			"sunset": 1647626193,
+			"description": "couvert",
+			"icon_id": 804
+		},
+		"location": [45.7801728, 3.0769152],
+		"unit": "metric",
+		"forecast": "auto",
+		"temperature": "feelslike"
+	},
+	"favicon": "",
+	"greeting": "",
+	"custom_every": "pause",
+	"background_type": "dynamic",
+	"about": { "browser": "firefox", "version": "1.12.1" },
+	"clock": { "ampm": false, "analog": false, "face": "none", "seconds": false, "timezone": "auto" },
+	"font": {
+		"availWeights": ["400", "500", "600", "700", "800", "900"],
+		"family": "Playfair Display",
+		"size": "14",
+		"url": "https://fonts.googleapis.com/css?family=Playfair Display:800",
+		"weight": "800"
+	},
+	"searchbar": { "on": false, "opacity": 0.1, "newtab": false, "engine": "google", "request": "" },
+	"links": [],
+	"hide": [[0, 0], [0, 0, 0], [0], [0]],
+	"lang": "fr",
+	"linksrow": 4,
+	"reviewPopup": "removed",
+	"background_bright": 0.63,
+	"cssHeight": 100
+}
