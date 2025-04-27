@@ -130,6 +130,8 @@ export interface SimpleWeather {
 export type UnsplashCollections = 'night' | 'noon' | 'day' | 'evening' | 'user'
 
 export interface OldSync {
+	usdate: boolean
+	searchbar: boolean
 	background_blur: number
 	background_bright: number
 	background_type: string

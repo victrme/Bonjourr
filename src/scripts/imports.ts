@@ -21,15 +21,15 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newtarget = linkListToFlatObjects(newtarget) // 13.0
 	newtarget = hideArrayToObject(newtarget) // 16.0
 	newtarget = improvedWeather(newtarget) // 18.1
+	newtarget = clockDateFormat(newtarget)
 	newtarget = newFontSystem(newtarget) // 19.0
-	newtarget = newReviewData(newtarget) // ..
-	newtarget = quotesJsonToCsv(newtarget) // ..
+	newtarget = newReviewData(newtarget)
+	newtarget = quotesJsonToCsv(newtarget)
 	newtarget = linksDataMigration(newtarget) // 19.2
 	newtarget = analogClockOptions(newtarget) // 20.0
 	newtarget = validateLinkGroups(newtarget) // 20.1
 	newtarget = addSupporters(newtarget) // 20.4
-	newtarget = toIsoLanguageCode(newtarget) // ..
-	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget) // ..
+	newtarget = toIsoLanguageCode(newtarget)
 	newtarget = newBackgroundsField(newtarget) // 21.0
 	newtarget = manualTimezonesToIntl(newtarget) // 21.0
 
@@ -39,6 +39,7 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 
 	// All versions
 
+	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget) // ..
 	newcurrent = convertOldCssSelectors(newcurrent)
 	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
 
@@ -58,6 +59,7 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newcurrent.background_blur = undefined
 	newcurrent.background_bright = undefined
 	newcurrent.background_type = undefined
+	newcurrent.usdate = undefined
 
 	return newcurrent
 }
@@ -167,6 +169,7 @@ function newReviewData(data: Import): Import {
 	if (data.reviewPopup) {
 		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
 	}
+
 	return data
 }
 
@@ -179,6 +182,18 @@ function quotesJsonToCsv(data: Import): Import {
 
 function toIsoLanguageCode(data: Import): Import {
 	data.lang = countryCodeToLanguageCode(data.lang ?? 'en')
+	return data
+}
+
+function clockDateFormat(data: Import): Import {
+	const old = data as Partial<OldSync>
+
+	if (old.usdate) {
+		data.dateformat = 'us'
+	} else {
+		data.dateformat = 'auto'
+	}
+
 	return data
 }
 
@@ -316,7 +331,7 @@ function linksDataMigration(data: Import): Import {
 		return data
 	}
 
-	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC' // ...
+	const notfoundicon = 'data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjI2MiIgdmlld0JveD0iMC'
 	const list = (bundleLinks(data as Sync) as LinkElem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
 	for (const link of list) {

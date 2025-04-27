@@ -1,11 +1,11 @@
-import { assert } from '@std/assert'
 import './init.test.ts'
-
-import type { Link } from '../src/types/shared.ts'
 
 // Import script after test init, document needs to be loaded first
 import { SYNC_DEFAULT } from '../src/scripts/defaults.ts'
 import { filterImports } from '../src/scripts/imports.ts'
+import { assert } from '@std/assert'
+
+import type { Link } from '../src/types/shared.ts'
 
 const defaults = structuredClone(SYNC_DEFAULT)
 
@@ -30,10 +30,6 @@ Deno.test('1.10', async (t) => {
 	const old = JSON.parse(text)
 	const res = filterImports(defaults, old)
 
-	await t.step('Hide', () => {
-		assert(Array.isArray(res.hide) === false)
-	})
-
 	await t.step('Links', () => {
 		const allkeys = Object.keys(res)
 		const linkkeys = allkeys.filter((key) => key.length === 11 && key.includes('links'))
@@ -55,6 +51,10 @@ Deno.test('1.10', async (t) => {
 		assert(link.parent === 'default')
 	})
 
+	await t.step('Clock', () => {
+		assert(res.dateformat === 'us')
+	})
+
 	await t.step('Backgrounds', () => {
 		assert(old.background_blur === res.backgrounds.blur)
 	})
@@ -62,5 +62,13 @@ Deno.test('1.10', async (t) => {
 	await t.step('Searchbar', () => {
 		assert(old.searchbar_engine === res.searchbar.engine)
 		assert(old.searchbar_newtab === res.searchbar.newtab)
+	})
+
+	await t.step('Hide', () => {
+		assert(Array.isArray(res.hide) === false)
+	})
+
+	await t.step('Review', () => {
+		assert(res.review === -1)
 	})
 })
