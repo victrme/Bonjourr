@@ -229,25 +229,32 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 		}
 
 		default: {
-			const result: Record<string, unknown> = {}
-			let keylist: string[] = []
+			const defaults = structuredClone(LOCAL_DEFAULT) as unknown
+			const result: Record<string, unknown> = defaults as Record<string, unknown>
 
-			if (keys === undefined) {
-				keylist = Object.keys(localStorage).filter((key) => key !== 'bonjourr')
-			} else if (typeof keys === 'string') {
-				keylist = [keys]
+			keys ??= Object.keys(LOCAL_DEFAULT)
+
+			if (typeof keys === 'string') {
+				keys = [keys]
 			}
 
-			for (const key of keylist) {
-				const item = localStorage.getItem(key) ?? ''
+			const localKeys = Object.keys(globalThis.localStorage)
+			const neededKeys = keys.filter((k) => localKeys.includes(k))
 
-				if (item && key in LOCAL_DEFAULT) {
-					const isJson = item.startsWith('{') || item.startsWith('[')
-					const val = isJson ? parse(item) : item
+			for (const key of neededKeys) {
+				const item = globalThis.localStorage.getItem(key)
+				const isJson = item && (item.startsWith('{') || item.startsWith('['))
+				const isBool = item && (item === 'true' || item === 'false')
+				const isNoom = item && Number.isNaN(Number.parseInt(item)) === false
 
-					if (val) {
-						result[key] = val
-					}
+				if (isJson) {
+					result[key] = parse(item)
+				} else if (isBool) {
+					result[key] = item === 'true'
+				} else if (isNoom) {
+					result[key] = Number.parseFloat(item)
+				} else {
+					result[key] = item
 				}
 			}
 
