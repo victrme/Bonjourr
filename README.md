@@ -139,26 +139,31 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 
 ### Run locally
 
-Prerequisites:
+Bonjourr uses [Deno](https://docs.deno.com/runtime/). It is essentially an improved nodejs.
 
--   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
--   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
+To get Deno:
+```bash
+# Windows
+irm https://deno.land/install.ps1 | iex
 
-You can replace `pnpm` by `npm run`
+# Linux / MacOS
+curl -fsSL https://deno.land/install.sh | sh
+```
 
+Then install dependencies and build Bonjourr:
 ```bash
 # In root directory
-pnpm install
+deno install
 
 # Production build for all platforms in /release/
-pnpm build
+deno run build
 
 # These commands watch changes for each platforms
-pnpm chrome
-pnpm edge
-pnpm firefox
-pnpm safari
-pnpm online
+deno run chrome
+deno run edge
+deno run firefox
+deno run safari
+deno run online
 ```
 
 #### Chrome
@@ -187,8 +192,8 @@ pnpm online
 
 #### Online (web version)
 
--   A live server opens with `pnpm online`
--   Go to http://127.0.0.1:8080/
+-   A live server opens with `deno run online`
+-   Go to http://0.0.0.0:8000/
 
 ### Using Docker
 
@@ -202,15 +207,15 @@ Prerequisites:
 # Build the container image
 docker build -t bonjourr/bonjourr .
 
-# Run the container on local port 8080
+# Run the container on local port 8000
 docker run --rm -p "8080:80/tcp" -it bonjourr/bonjourr
 
-# Go to http://127.0.0.1:8080/
+# Go to http://0.0.0.0:8000/
 ```
 
 #### Docker Desktop
 
 -   Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 -   Search for `bonjourr/bonjourr` Hub image
--   Run a new container with `8080` as host port
--   Go to http://127.0.0.1:8080/
+-   Run a new container with `8000` as host port
+-   Go to http://0.0.0.0:8000/
