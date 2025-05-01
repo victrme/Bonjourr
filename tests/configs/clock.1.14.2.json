@@ -1,6 +1,11 @@
 {
 	"usdate": true,
-	"dynamic": { "collection": "", "every": "hour", "lastCollec": "day", "time": 1662800669419 },
+	"dynamic": {
+		"collection": "",
+		"every": "hour",
+		"lastCollec": "day",
+		"time": 1662800669419
+	},
 	"linksrow": 7,
 	"linkstyle": "large",
 	"cssHeight": 211,
@@ -15,12 +20,40 @@
 	"dark": "disable",
 	"custom_every": "pause",
 	"background_type": "custom",
-	"clock": { "ampm": true, "analog": false, "face": "none", "seconds": false, "timezone": "auto" },
+	"clock": {
+		"ampm": true,
+		"analog": false,
+		"face": "none",
+		"seconds": false,
+		"timezone": "auto"
+	},
 	"reviewPopup": "removed",
-	"searchbar": { "on": false, "opacity": 0, "newtab": true, "engine": "brave", "request": "" },
-	"quotes": { "author": true, "frequency": "tabs", "last": 1662800806621, "on": false, "type": "classic" },
+	"searchbar": {
+		"on": false,
+		"opacity": 0,
+		"newtab": true,
+		"engine": "brave",
+		"request": ""
+	},
+	"quotes": {
+		"author": true,
+		"frequency": "tabs",
+		"last": 1662800806621,
+		"on": false,
+		"type": "classic"
+	},
 	"font": {
-		"availWeights": ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+		"availWeights": [
+			"100",
+			"200",
+			"300",
+			"400",
+			"500",
+			"600",
+			"700",
+			"800",
+			"900"
+		],
 		"family": "Fira Sans",
 		"size": "13.15",
 		"url": "https://fonts.googleapis.com/css?family=Fira%20Sans:400",
@@ -83,7 +116,7 @@
 	"custom_time": 1652777554053,
 	"weather": {
 		"ccode": "FR",
-		"city": "Clermont-Ferrand",
+		"city": "Lyon",
 		"fcHigh": 21,
 		"forecast": "auto",
 		"lastState": {

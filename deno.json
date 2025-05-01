@@ -10,7 +10,7 @@
 		"safari": "deno run --allow-all ./tasks/build.ts safari dev",
 		"online": "deno run --allow-all ./tasks/build.ts online dev",
 		"docker": "deno run --allow-all ./tasks/build.ts online prod",
-		"translate": "deno run --allow-all ./tasks/translate.js"
+		"translate": "deno run --allow-all ./tasks/translate.ts"
 	},
 	"imports": {
 		"@happy-dom/global-registrator": "npm:@happy-dom/global-registrator@^17.4.4",
@@ -29,16 +29,9 @@
 	},
 	"nodeModulesDir": "auto",
 	"lint": {
-		"include": [
-			"src",
-			"tasks",
-			"tests",
-			"_locales"
-		],
+		"include": ["src", "tasks", "tests", "_locales"],
 		"rules": {
-			"tags": [
-				"recommended"
-			],
+			"tags": ["recommended"],
 			"include": [
 				"eqeqeq",
 				"verbatim-module-syntax",
@@ -60,15 +53,7 @@
 	},
 	"compilerOptions": {
 		"strict": true,
-		"lib": [
-			"dom",
-			"dom.iterable",
-			"dom.asynciterable",
-			"deno.ns"
-		],
-		"types": [
-			"@types/firefox-webext-browser",
-			"@types/chrome"
-		]
+		"lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
+		"types": ["@types/firefox-webext-browser", "@types/chrome"]
 	}
 }
