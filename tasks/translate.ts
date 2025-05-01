@@ -50,19 +50,21 @@ async function translateFile(lang: string): Promise<void> {
 		const translations = await claudeTranslation(message)
 
 		for (const key of missingKeys) {
-			newDict[key] = translations.get(key)
-			added++
+			if (key in newDict) {
+				newDict[key] = translations.get(key)
+				added++
+			}
 		}
 	}
 
 	// Order translations
-	const keylist = new Set()
+	const keylist = new Set<string>()
 	const enKeys = [...Object.keys(englishDict)]
 	const sortOrder = (a: string, b: string) => enKeys.indexOf(a) - enKeys.indexOf(b)
 
-	JSON.stringify(newDict, (key) => {
-		return keylist.add(key)
-	})
+	for (const key of enKeys) {
+		keylist.add(key)
+	}
 
 	const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
 
