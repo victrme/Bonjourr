@@ -2,33 +2,34 @@ name: CI
 on: push
 
 jobs:
-    builds:
+    ci:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
-            - uses: ./.github/actions/deno
-            - run: deno run build
+            - name: Checkout code
+              uses: actions/checkout@v3
 
-    tests:
-        needs: builds
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: ./.github/actions/deno
-            - run: deno run test
+            - name: Setup deno
+              uses: denoland/setup-deno@v2
 
-    types:
-        needs: tests
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: ./.github/actions/deno
-            - run: deno check
+            - name: Cache dependencies
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.deno
+                      ~/.cache/deno
+                  key: ${{ runner.os }}-deno-${{ hashFiles('**/deps.ts') }}
 
-    formatting:
-        needs: types
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v3
-            - uses: ./.github/actions/deno
-            - run: deno fmt --check
+            - name: Install dependencies
+              run: deno install
+
+            - name: Build
+              run: deno run build
+
+            - name: Test imports
+              run: deno run test
+
+            - name: Check types
+              run: deno check
+
+            - name: Check formatting
+              run: deno fmt --check
