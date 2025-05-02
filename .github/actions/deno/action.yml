@@ -1,4 +1,5 @@
 name: "Setup deno"
+description: "Setup Deno and cache dependencies"
 
 runs:
     using: "composite"
