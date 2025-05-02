@@ -50,8 +50,11 @@ async function translateFile(lang: string): Promise<void> {
 		const translations = await claudeTranslation(message)
 
 		for (const key of missingKeys) {
-			if (key in newDict) {
-				newDict[key] = translations.get(key)
+			const keyExists = key in newDict
+			const trn = translations.get(key)
+
+			if (keyExists && trn) {
+				newDict[key] = trn
 				added++
 			}
 		}
