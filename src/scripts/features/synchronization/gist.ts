@@ -172,7 +172,7 @@ export async function findGistId(token?: string): Promise<string | undefined> {
 	}
 
 	const list = (await resp.json()) as GistItem[]
-	const file = list.filter(gist => !gist.public && gist.files['bonjourr-export.json']?.size > 0)[0]
+	const file = list.filter((gist) => !gist.public && gist.files['bonjourr-export.json']?.size > 0)[0]
 
 	return file?.id
 }

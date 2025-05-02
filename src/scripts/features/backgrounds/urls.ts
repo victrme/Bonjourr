@@ -13,13 +13,13 @@ let backgroundUrlsEditor: PrismEditor
 
 export function getUrlsAsCollection(local: Local): [string[], BackgroundImage[]] {
 	const entries = Object.entries(local.backgroundUrls)
-	const working = entries.filter(entry => entry[1].state === 'OK')
+	const working = entries.filter((entry) => entry[1].state === 'OK')
 	const sorted = working.toSorted((a, b) => new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime())
 	const urls = sorted.map(([key]) => key)
 
 	return [
 		urls,
-		urls.map(url => ({
+		urls.map((url) => ({
 			format: 'image',
 			page: '',
 			username: '',
@@ -52,7 +52,7 @@ export async function initUrlsEditor(backgrounds: Backgrounds, local: Local) {
 	backgroundUrlsEditor.textarea.maxLength = 8080
 	backgroundUrlsEditor.textarea.placeholder = 'https://picsum.photos/200\n'
 
-	backgroundUrlsEditor.addListener('update', value => {
+	backgroundUrlsEditor.addListener('update', (value) => {
 		toggleUrlsButton(globalUrlValue, stringMaxSize(value, 8080))
 	})
 
@@ -71,7 +71,7 @@ export async function initUrlsEditor(backgrounds: Backgrounds, local: Local) {
 
 function highlightUrlsEditorLine(url: string, state: BackgroundUrlState) {
 	const lines = backgroundUrlsEditor.wrapper.querySelectorAll('.pce-line')
-	const line = lines.values().find(l => l.textContent === `${url}\n`)
+	const line = lines.values().find((l) => l.textContent === `${url}\n`)
 	const noContent = !line?.textContent?.replace('\n', '')
 	const lineState = noContent ? 'NONE' : state
 

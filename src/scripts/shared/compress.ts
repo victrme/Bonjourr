@@ -15,7 +15,7 @@ export async function compressMedia(blob: Blob, options: CompressOptions) {
 	const size = options.size ?? 300
 	const q = options.q ?? 0.9
 
-	await new Promise(resolve => {
+	await new Promise((resolve) => {
 		img.onload = () => {
 			const orientation = img.height > img.width ? 'portrait' : 'landscape'
 			let ratio = 0
@@ -39,7 +39,7 @@ export async function compressMedia(blob: Blob, options: CompressOptions) {
 		}
 	})
 
-	const newBlob = await new Promise(resolve => {
+	const newBlob = await new Promise((resolve) => {
 		ctx?.canvas.toBlob(resolve, `image/${type}`, q)
 	})
 

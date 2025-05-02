@@ -51,7 +51,7 @@ export const subsets = {
 	ru: 'cyrillic',
 	uk: 'cyrillic',
 	sr: 'cyrillic',
-	be: 'cyrillic',  
+	be: 'cyrillic',
 	sk: 'latin-ext',
 	hr: 'latin-ext',
 	cs: 'latin-ext',

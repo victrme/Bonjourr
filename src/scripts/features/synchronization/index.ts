@@ -1,4 +1,4 @@
-import { retrieveGist, sendGist, findGistId, isGistTokenValid, setGistStatus } from './gist.ts'
+import { findGistId, isGistTokenValid, retrieveGist, sendGist, setGistStatus } from './gist.ts'
 import { isDistantUrlValid, receiveFromURL } from './url.ts'
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
 import { networkForm } from '../../shared/form.ts'

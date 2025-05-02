@@ -10,12 +10,14 @@
 	background-color: rgb(var(--color-param));
 	color: var(--color-text);
 	border: 1px solid #e3e3e3;
-	background-image: linear-gradient(
+	background-image:
+		linear-gradient(
 			to left,
 			rgba(var(--color-param), 0) 0%,
 			rgba(var(--color-param), 0.9) 55%,
 			rgb(var(--color-param)) 100%
-		), var(--background);
+		),
+		var(--background);
 	background-size: 74%;
 	background-repeat: no-repeat;
 	background-position: right center;
@@ -334,8 +336,9 @@ html[data-supporters] #show-settings.shown:after {
 	justify-content: center;
 	flex-shrink: 0;
 	box-shadow: rgba(100, 100, 111, 0) 0px 0px 0px 0px;
-	transition: box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s, border cubic-bezier(0.175, 0.885, 0.32, 1.275)
-		0.3s;
+	transition:
+		box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s,
+		border cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s;
 }
 
 #supporters-modal #bottom-section #donate-button:hover {

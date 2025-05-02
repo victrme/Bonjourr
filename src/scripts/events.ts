@@ -25,20 +25,16 @@ function keyboardUserActions(event: KeyboardEvent) {
 
 		if (open.contextmenu) {
 			document.dispatchEvent(new Event('close-edit'))
-		}
-		//
+		} //
 		else if (open.settings && keyup) {
 			document.dispatchEvent(new Event('toggle-settings'))
-		}
-		//
+		} //
 		else if (open.selectall) {
 			document.dispatchEvent(new Event('remove-select-all'))
-		}
-		//
+		} //
 		else if (open.folder) {
 			document.dispatchEvent(new Event('close-folder'))
-		}
-		//
+		} //
 		else if (keyup) {
 			// condition to avoid conflicts with esc key on supporters modal
 			// likely to be improved
@@ -63,20 +59,20 @@ function clickUserActions(event: MouseEvent) {
 
 	const open = isOpen()
 	const composedPath = (event.composedPath() as Element[]) ?? [document.body]
-	const path = composedPath.filter(node => node?.className?.includes)
-	const pathIds = path.map(el => (el as HTMLElement).id)
+	const path = composedPath.filter((node) => node?.className?.includes)
+	const pathIds = path.map((el) => (el as HTMLElement).id)
 
 	const on = {
 		body: (path[0] as HTMLElement).tagName === 'BODY',
-		link: path.some(el => el.classList.contains('link')),
-		linkfolder: path.some(el => el.className.includes('folder')),
-		addgroup: path.some(el => el.className.includes('add-group')),
-		folder: path.some(el => el.className.includes('in-folder')),
-		localfiles: path.some(el => el.id === 'local_options'),
+		link: path.some((el) => el.classList.contains('link')),
+		linkfolder: path.some((el) => el.className.includes('folder')),
+		addgroup: path.some((el) => el.className.includes('add-group')),
+		folder: path.some((el) => el.className.includes('in-folder')),
+		localfiles: path.some((el) => el.id === 'local_options'),
 		interface: pathIds.includes('interface'),
 		editlink: pathIds.includes('editlink'),
-		settings: path.some(el => el.id === 'settings'),
-		showsettings: path.some(el => el.id === 'show-settings'),
+		settings: path.some((el) => el.id === 'settings'),
+		showsettings: path.some((el) => el.id === 'show-settings'),
 	}
 
 	if (document.body.classList.contains('tabbing')) {
@@ -108,12 +104,10 @@ function clickUserActions(event: MouseEvent) {
 
 	if (open.settings) {
 		document.dispatchEvent(new Event('toggle-settings'))
-	}
-	//
+	} //
 	else if (open.selectall && !on.link) {
 		document.dispatchEvent(new Event('remove-select-all'))
-	}
-	//
+	} //
 	else if (open.folder && !on.folder && !on.linkfolder) {
 		document.dispatchEvent(new Event('close-folder'))
 	}

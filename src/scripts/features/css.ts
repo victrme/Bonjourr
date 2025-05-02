@@ -39,7 +39,7 @@ export function customCss(init?: string, event?: { styling: string }) {
 		editor.textarea.setAttribute('aria-labelledby', 'lbl-css')
 		editor.textarea.placeholder = tradThis('Type in your custom CSS')
 
-		editor.addListener('update', value => {
+		editor.addListener('update', (value) => {
 			eventDebounce({ css: stringMaxSize(value, 8080) })
 			stylelink.textContent = stringMaxSize(value, 8080)
 		})

@@ -168,9 +168,9 @@ export function deleteGroup(group: string, data: Sync): Sync {
 	}
 
 	data.linkgroups.selected = group === selected || pinned.includes(group) ? groups[0] : selected
-	data.linkgroups.pinned = pinned.filter(p => p !== group)
-	data.linkgroups.synced = synced.filter(g => g !== group)
-	data.linkgroups.groups = groups.filter(g => g !== group)
+	data.linkgroups.pinned = pinned.filter((p) => p !== group)
+	data.linkgroups.synced = synced.filter((g) => g !== group)
+	data.linkgroups.groups = groups.filter((g) => g !== group)
 
 	if (groups.length === 2) {
 		data.linkgroups.pinned = []
@@ -183,7 +183,7 @@ export function deleteGroup(group: string, data: Sync): Sync {
 }
 
 export function moveGroups(mini: string[], data: Sync) {
-	const userMini = mini.filter(name => name !== '+')
+	const userMini = mini.filter((name) => name !== '+')
 
 	data.linkgroups.groups = data.linkgroups.pinned.concat(userMini)
 	initGroups(data)
@@ -199,11 +199,11 @@ export async function togglePinGroup(group: string, action: 'pin' | 'unpin') {
 		data.linkgroups.pinned.push(group)
 	}
 	if (action === 'unpin') {
-		data.linkgroups.pinned = pinned.filter(pinned => pinned !== group)
+		data.linkgroups.pinned = pinned.filter((pinned) => pinned !== group)
 	}
 
 	if (group === data.linkgroups.selected) {
-		const unpinned = groups.filter(id => pinned.includes(id) === false)
+		const unpinned = groups.filter((id) => pinned.includes(id) === false)
 		data.linkgroups.selected = unpinned[0]
 	}
 

@@ -1,5 +1,5 @@
-import { handleForecastDisplay, displayWeather } from './display.ts'
-import { tradThis, getLang } from '../../utils/translations.ts'
+import { displayWeather, handleForecastDisplay } from './display.ts'
+import { getLang, tradThis } from '../../utils/translations.ts'
 import { handleGeolOption } from './settings.ts'
 import { getSunsetHour } from './index.ts'
 import { suntime } from '../../shared/time.ts'
@@ -140,9 +140,9 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 	const location = { lat: 0, lon: 0 }
 
 	if (type === 'precise') {
-		await new Promise(resolve =>
+		await new Promise((resolve) =>
 			navigator.geolocation.getCurrentPosition(
-				geo => {
+				(geo) => {
 					location.lat = geo.coords.latitude
 					location.lon = geo.coords.longitude
 					resolve(true)
@@ -150,7 +150,7 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 				() => {
 					resolve(false)
 				},
-			),
+			)
 		)
 	}
 

@@ -259,7 +259,7 @@ function initSuggestions() {
 			li?.removeAttribute('aria-selected')
 		})
 
-		li.addEventListener('click', e => {
+		li.addEventListener('click', (e) => {
 			applyResultContentToInput(li)
 			submitSearch(e)
 		})
@@ -292,8 +292,8 @@ function initSuggestions() {
 		}
 
 		if (isArrowDown) {
-			lastSelected =
-				selectShownResult(lastSelected?.nextElementSibling) ?? domsuggestions?.querySelector('li.shown')
+			lastSelected = selectShownResult(lastSelected?.nextElementSibling) ??
+				domsuggestions?.querySelector('li.shown')
 			applyResultContentToInput(lastSelected)
 		}
 

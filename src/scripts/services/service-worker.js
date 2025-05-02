@@ -39,7 +39,7 @@ async function updateCache() {
 
 function retrieveCache(event) {
 	const url = event.request.url
-	const isApi = API_URLS.some(api => url.includes(api))
+	const isApi = API_URLS.some((api) => url.includes(api))
 
 	event.respondWith(
 		(async () => {

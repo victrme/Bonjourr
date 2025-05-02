@@ -43,7 +43,7 @@ let domlinkgroup: HTMLDivElement
 
 export function startDrag(event: PointerEvent) {
 	const path = event.composedPath() as HTMLElement[]
-	const type = path.some(element => element?.className?.includes('link-title')) ? 'mini' : 'link'
+	const type = path.some((element) => element?.className?.includes('link-title')) ? 'mini' : 'link'
 	const isMini = type === 'mini'
 
 	if (event.button > 0) {
@@ -66,14 +66,14 @@ export function startDrag(event: PointerEvent) {
 
 	//
 
-	domlinkgroup = path.find(node => node?.classList?.contains('link-group')) as HTMLDivElement
+	domlinkgroup = path.find((node) => node?.classList?.contains('link-group')) as HTMLDivElement
 	domlinkgroups = document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group')
 	domlinklinks = document.querySelectorAll<HTMLLIElement>('#linkblocks li')
 	domlinktitles = document.querySelectorAll<HTMLButtonElement>('#link-mini button')
 	dragContainers = document.querySelectorAll<HTMLElement>(isMini ? '#link-mini' : '.link-group')
 
 	const tagName = isMini ? 'BUTTON' : 'LI'
-	const target = path.find(node => node.tagName === tagName)
+	const target = path.find((node) => node.tagName === tagName)
 	const pos = getPosFromEvent(event)
 
 	draggedId = findIdFromElement(target)
@@ -396,28 +396,22 @@ function endDrag(event: Event) {
 
 		if (type === 'mini') {
 			linksUpdate({ moveGroups: ids })
-		}
-		//
+		} //
 		else if (createFolder) {
 			linksUpdate({ addFolder: { ids: [targetId, draggedId], group } })
-		}
-		//
+		} //
 		else if (moveToFolder) {
 			linksUpdate({ moveToFolder: { source: draggedId, target: targetId } })
-		}
-		//
+		} //
 		else if (concatFolders) {
 			linksUpdate({ concatFolders: { source: draggedId, target: targetId } })
-		}
-		//
+		} //
 		else if (toTab) {
 			linksUpdate({ moveToGroup: { ids: [draggedId], target: targetId } })
-		}
-		//
+		} //
 		else if (outOfFolder) {
 			linksUpdate({ moveOutFolder: { ids: [draggedId], group } })
-		}
-		//
+		} //
 		else {
 			linksUpdate({ moveLinks: ids })
 		}

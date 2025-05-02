@@ -1,4 +1,4 @@
-import { userDate, minutator, suntime } from '../../shared/time.ts'
+import { minutator, suntime, userDate } from '../../shared/time.ts'
 import { getLang, tradThis } from '../../utils/translations.ts'
 import { getSunsetHour } from './index.ts'
 

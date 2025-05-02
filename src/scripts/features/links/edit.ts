@@ -1,4 +1,4 @@
-import { getSelectedIds, getLink } from './helpers.ts'
+import { getLink, getSelectedIds } from './helpers.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
 
@@ -42,10 +42,10 @@ let editStates: EditStates
 
 export async function openEditDialog(event: Event) {
 	const path = getComposedPath(event.target)
-	const classNames = path.map(element => element.className ?? '')
-	const linkelem = path.find(el => el?.className?.includes('link') && el?.tagName === 'LI')
-	const linkgroup = path.find(el => el?.className?.includes('link-group'))
-	const linktitle = path.find(el => el?.className?.includes('link-title'))
+	const classNames = path.map((element) => element.className ?? '')
+	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
+	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
+	const linktitle = path.find((el) => el?.className?.includes('link-title'))
 
 	const pointer = event as PointerEvent
 	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
@@ -56,21 +56,21 @@ export async function openEditDialog(event: Event) {
 	}
 
 	const container: EditStates['container'] = {
-		mini: path.some(element => element?.id?.includes('link-mini')),
-		group: classNames.some(cl => cl.includes('link-group') && !cl.includes('in-folder')),
-		folder: classNames.some(cl => cl.includes('link-group') && cl.includes('in-folder')),
+		mini: path.some((element) => element?.id?.includes('link-mini')),
+		group: classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
+		folder: classNames.some((cl) => cl.includes('link-group') && cl.includes('in-folder')),
 	}
 
 	const target: EditStates['target'] = {
-		link: classNames.some(cl => cl.includes('link-elem')),
-		folder: classNames.some(cl => cl.includes('link-folder')),
-		title: classNames.some(cl => cl.includes('link-title')),
-		synced: classNames.some(cl => cl.includes('synced')),
-		addgroup: classNames.some(cl => cl.includes('add-group')),
+		link: classNames.some((cl) => cl.includes('link-elem')),
+		folder: classNames.some((cl) => cl.includes('link-folder')),
+		title: classNames.some((cl) => cl.includes('link-title')),
+		synced: classNames.some((cl) => cl.includes('synced')),
+		addgroup: classNames.some((cl) => cl.includes('add-group')),
 	}
 
-	const selectall = classNames.some(cl => cl.includes('select-all'))
-	const dragging = classNames.some(cl => cl.includes('dragging') || cl.includes('dropping'))
+	const selectall = classNames.some((cl) => cl.includes('select-all'))
+	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
 	editStates = {
@@ -116,7 +116,7 @@ export async function openEditDialog(event: Event) {
 	}
 
 	if (target.folder || target.link) {
-		const pathLis = path.filter(el => el.tagName === 'LI')
+		const pathLis = path.filter((el) => el.tagName === 'LI')
 		const li = pathLis[0]
 		const id = li?.id
 		const link = getLink(data, id)
@@ -253,18 +253,15 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 
 	if (withPointer && isMobileSized) {
 		x = (innerWidth - editRects.width) / 2
-		y =
-			(event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) -
+		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) -
 			60 -
 			editRects.height
-	}
-	//
+	} //
 	else if (withPointer) {
 		// gets coordinates differently from touchstart or contextmenu
 		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 20
 		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 20
-	}
-	//
+	} //
 	else if (withKeyboard) {
 		x = (event.target as HTMLElement).offsetLeft
 		y = (event.target as HTMLElement).offsetTop
@@ -302,7 +299,7 @@ queueMicrotask(() => {
 			openEditDialog(event)
 		}, 500)
 
-		domlinkblocks?.addEventListener('touchstart', event => {
+		domlinkblocks?.addEventListener('touchstart', (event) => {
 			handleLongPress(event)
 		})
 
@@ -345,15 +342,13 @@ function submitChanges(event: SubmitEvent) {
 			quickLinks(undefined, {
 				addGroups: [{ title: domtitle.value }],
 			})
-		}
-		//
+		} //
 		else if (selectall) {
 			quickLinks(undefined, {
 				addFolder: { ids: selected, group: group },
 			})
 			document.dispatchEvent(new Event('remove-select-all'))
-		}
-		//
+		} //
 		else if (container.group) {
 			quickLinks(undefined, {
 				addLinks: [{ group, title: domtitle.value, url: domurl.value }],
