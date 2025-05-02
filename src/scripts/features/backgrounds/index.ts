@@ -1,16 +1,20 @@
-import { getFilesAsCollection, initFilesSettingsOptions, addLocalBackgrounds } from './local'
-import { initCreditEvents, updateCredits, toggleCredits } from './credits'
-import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls'
-import { TEXTURE_RANGES } from './textures'
-import { PROVIDERS } from './providers'
+import { addLocalBackgrounds, getFilesAsCollection, initFilesSettingsOptions } from './local.ts'
+import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
+import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
+import { TEXTURE_RANGES } from './textures.ts'
+import { PROVIDERS } from './providers.ts'
 
-import { userDate, daylightPeriod, needsChange } from '../../shared/time'
-import { turnRefreshButton } from '../../shared/dom'
-import { onSettingsLoad } from '../../utils/onsettingsload'
-import { rgbToHex } from '../../shared/generic'
-import { debounce } from '../../utils/debounce'
-import { BROWSER } from '../../defaults'
-import { storage } from '../../storage'
+import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
+import { turnRefreshButton } from '../../shared/dom.ts'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { rgbToHex } from '../../shared/generic.ts'
+import { debounce } from '../../utils/debounce.ts'
+import { BROWSER } from '../../defaults.ts'
+import { storage } from '../../storage.ts'
+
+import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '../../../types/shared.ts'
+import type { Backgrounds, Sync } from '../../../types/sync.ts'
+import type { Local } from '../../../types/local.ts'
 
 interface BackgroundUpdate {
 	freq?: string
@@ -38,7 +42,7 @@ interface ApplyOptions {
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
 
-export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?: true): void {
+export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 	if (init) {
 		// Rush background opacity to reduce black frames
 		const type = sync.backgrounds.type
@@ -59,7 +63,7 @@ export function backgroundsInit(sync: Sync.Storage, local: Local.Storage, init?:
 
 		onSettingsLoad(() => {
 			if (type === 'images' || type === 'videos') {
-				getCurrentBackground().then(media => {
+				getCurrentBackground().then((media) => {
 					preloadBackground(media)
 				})
 			}
@@ -215,7 +219,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 }
 
-export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<Sync.Backgrounds>) {
+export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<Backgrounds>) {
 	const data = await storage.sync.get('backgrounds')
 
 	if (blur !== undefined) {
@@ -242,7 +246,7 @@ async function solidUpdate(value: string) {
 
 //	Cache & network
 
-async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Local.Storage): Promise<void> {
+async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): Promise<void> {
 	if (backgrounds.type === 'color') {
 		return
 	}
@@ -252,7 +256,7 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 
 	// 1. Find correct list to use
 
-	let list: Backgrounds.Video[] | Backgrounds.Image[] = []
+	let list: BackgroundVideo[] | BackgroundImage[] = []
 	let keys: string[] = []
 
 	switch (backgrounds.type) {
@@ -341,10 +345,10 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 
 	if (isImagesOrVideos && backgrounds.frequency === 'pause') {
 		if (backgrounds.type === 'images') {
-			backgrounds.pausedImage = list[0] as Backgrounds.Image
+			backgrounds.pausedImage = list[0] as BackgroundImage
 		}
 		if (backgrounds.type === 'videos') {
-			backgrounds.pausedVideo = list[0] as Backgrounds.Video
+			backgrounds.pausedVideo = list[0] as BackgroundVideo
 		}
 		if (backgrounds.type === 'videos') {
 			backgrounds.pausedUrl = list[0].urls.full
@@ -388,7 +392,7 @@ async function backgroundCacheControl(backgrounds: Sync.Backgrounds, local: Loca
 	}
 }
 
-async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backgrounds.Api> {
+async function fetchNewBackgrounds(backgrounds: Backgrounds): Promise<Record<string, Background[]>> {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -405,10 +409,10 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 	const base = 'https://services.bonjourr.fr/backgrounds'
 	const path = `/${provider}/${type}/${category}`
 
-	const density = Math.max(2, window.devicePixelRatio)
-	const ratio = window.screen.width / window.screen.height
-	let height = window.screen.height * density
-	let width = window.screen.width * density
+	const density = Math.max(2, globalThis.devicePixelRatio)
+	const ratio = globalThis.screen.width / globalThis.screen.height
+	let height = globalThis.screen.height * density
+	let width = globalThis.screen.width * density
 
 	if (ratio >= 2) {
 		width = height * 2
@@ -423,10 +427,10 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 
 	const url = base + path + screen + search
 	const resp = await fetch(url)
-	const json = (await resp.json()) as Backgrounds.Api
+	const json = await resp.json()
 
-	const areImages = type === 'images' && Object.keys(json)?.every(key => key.includes('images'))
-	const areVideos = type === 'videos' && Object.keys(json)?.every(key => key.includes('videos'))
+	const areImages = type === 'images' && Object.keys(json)?.every((key) => key.includes('images'))
+	const areVideos = type === 'videos' && Object.keys(json)?.every((key) => key.includes('videos'))
 
 	if (areImages || areVideos) {
 		return json
@@ -435,7 +439,7 @@ async function fetchNewBackgrounds(backgrounds: Sync.Backgrounds): Promise<Backg
 	throw new Error('Received JSON is bad')
 }
 
-function findCollectionName(backgrounds: Sync.Backgrounds): string {
+function findCollectionName(backgrounds: Backgrounds): string {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -457,7 +461,7 @@ function findCollectionName(backgrounds: Sync.Backgrounds): string {
 	return collectionName
 }
 
-function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
+function getCollection(backgrounds: Backgrounds, local: Local) {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -496,7 +500,7 @@ function getCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	return { images, videos }
 }
 
-function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
+function setCollection(backgrounds: Backgrounds, local: Local) {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -507,7 +511,7 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 		default:
 	}
 
-	function fromApi(json: Backgrounds.Api): Local.Storage {
+	function fromApi(json: Record<string, Background[]>): Local {
 		for (const [key, list] of Object.entries(json)) {
 			local.backgroundCollections[key] = list
 		}
@@ -515,7 +519,7 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 		return local
 	}
 
-	function fromList(list: Backgrounds.Item[]): Local.Storage {
+	function fromList(list: Background[]): Local {
 		const collectionName = findCollectionName(backgrounds)
 		local.backgroundCollections[collectionName] = list
 
@@ -525,7 +529,7 @@ function setCollection(backgrounds: Sync.Backgrounds, local: Local.Storage) {
 	return { fromList, fromApi }
 }
 
-function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: string[]): Local.Storage {
+function setLastUsed(backgrounds: Backgrounds, local: Local, keys: string[]): Local {
 	switch (backgrounds.type) {
 		case 'images':
 		case 'videos':
@@ -548,7 +552,7 @@ function setLastUsed(backgrounds: Sync.Backgrounds, local: Local.Storage, keys: 
 
 // 	Apply to DOM
 
-export function applyBackground(media: string | Backgrounds.Item, options?: ApplyOptions): void {
+export function applyBackground(media: string | Background, options?: ApplyOptions): void {
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
 	const reduceRes = canReduceResolution(options?.full)
 
@@ -574,7 +578,7 @@ export function applyBackground(media: string | Backgrounds.Item, options?: Appl
 
 	if (mediaWrapper?.childElementCount > 1) {
 		const children = Object.values(mediaWrapper?.children)
-		const notHiding = children.filter(child => !child.className.includes('hiding'))
+		const notHiding = children.filter((child) => !child.className.includes('hiding'))
 		const lastVisible = notHiding.at(-1)
 
 		lastVisible?.classList.add('hiding')
@@ -582,7 +586,7 @@ export function applyBackground(media: string | Backgrounds.Item, options?: Appl
 	}
 }
 
-function createImageItem(src: string, media: Backgrounds.Image): HTMLDivElement {
+function createImageItem(src: string, media: BackgroundImage): HTMLDivElement {
 	const backgroundsWrapper = document.getElementById('background-wrapper')
 	const div = document.createElement('div')
 	const img = new Image()
@@ -617,7 +621,7 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 	let videoInterval = 0
 
 	const prependVideo = () => {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			const vid = document.createElement('video')
 
 			vid.addEventListener('progress', () => {
@@ -654,14 +658,14 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 	return div
 }
 
-async function preloadBackground(media: Backgrounds.Item, options?: ApplyOptions): Promise<true> {
+function preloadBackground(media: Background, options?: ApplyOptions): Promise<true> {
 	const reduceRes = canReduceResolution(options?.full)
 
 	if (media.format === 'image') {
 		const img = document.createElement('img')
 		const src = reduceRes ? media.urls.small : media.urls.full
 
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			img.addEventListener('load', () => {
 				storage.local.remove('backgroundPreloading')
 				img.remove()
@@ -678,8 +682,8 @@ async function preloadBackground(media: Backgrounds.Item, options?: ApplyOptions
 	const vid = document.createElement('video')
 	const src = reduceRes ? media.urls.small : media.urls.full
 
-	return new Promise(resolve => {
-		vid.addEventListener('progress', _ => {
+	return new Promise((resolve) => {
+		vid.addEventListener('progress', (_) => {
 			setTimeout(() => {
 				storage.local.remove('backgroundPreloading')
 				vid.remove()
@@ -698,7 +702,7 @@ export function removeBackgrounds(): void {
 	setTimeout(() => mediaWrapper.firstChild?.remove(), 2000)
 }
 
-function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
+function applyFilters({ blur, bright, fadein }: Partial<Backgrounds>) {
 	if (blur !== undefined) {
 		document.documentElement.style.setProperty('--blur', `${blur}px`)
 		document.body.classList.toggle('blurred', blur >= 15)
@@ -713,7 +717,7 @@ function applyFilters({ blur, bright, fadein }: Partial<Sync.Backgrounds>) {
 	}
 }
 
-function applyTexture(texture: Sync.Backgrounds['texture']): void {
+function applyTexture(texture: Backgrounds['texture']): void {
 	const wrapper = document.getElementById('background-wrapper')
 	const domtexture = document.getElementById('background-texture')
 
@@ -732,7 +736,7 @@ function applyTexture(texture: Sync.Backgrounds['texture']): void {
 
 // 	Settings options
 
-export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) {
+export function initBackgroundOptions(sync: Sync, local: Local) {
 	applyFullResBackground(sync, local)
 	initFilesSettingsOptions(local)
 	initUrlsEditor(sync.backgrounds, local)
@@ -740,7 +744,7 @@ export function initBackgroundOptions(sync: Sync.Storage, local: Local.Storage) 
 	handleBackgroundOptions(sync.backgrounds)
 }
 
-function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
+function handleBackgroundOptions(backgrounds: Backgrounds) {
 	const type = backgrounds.type
 
 	document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
@@ -755,7 +759,7 @@ function handleBackgroundOptions(backgrounds: Sync.Backgrounds) {
 	handleBackgroundActions(backgrounds)
 }
 
-function handleTextureOptions(backgrounds: Sync.Backgrounds) {
+function handleTextureOptions(backgrounds: Backgrounds) {
 	const hasTexture = backgrounds.texture.type !== 'none'
 
 	document.getElementById('background-texture-options')?.classList.toggle('shown', hasTexture)
@@ -782,7 +786,7 @@ function handleTextureOptions(backgrounds: Sync.Backgrounds) {
 	}
 }
 
-function handleProviderOptions(backgrounds: Sync.Backgrounds) {
+function handleProviderOptions(backgrounds: Backgrounds) {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -814,7 +818,7 @@ function handleProviderOptions(backgrounds: Sync.Backgrounds) {
 	}
 }
 
-function createProviderSelect(backgrounds: Sync.Backgrounds) {
+function createProviderSelect(backgrounds: Backgrounds) {
 	const backgroundProvider = document.querySelector<HTMLSelectElement>('#i_background-provider')
 	const providersType = backgrounds.type === 'images' ? 'IMAGES' : 'VIDEOS'
 	const providersList = PROVIDERS[providersType]
@@ -852,7 +856,7 @@ function createProviderSelect(backgrounds: Sync.Backgrounds) {
 	}
 }
 
-async function applyFullResBackground(sync: Sync.Storage, local: Local.Storage) {
+async function applyFullResBackground(sync: Sync, local: Local) {
 	const currentBackground = document.querySelector<HTMLElement>('#background-media div')
 	const currentIsSmall = currentBackground?.dataset.res === 'small'
 
@@ -885,7 +889,7 @@ async function applyFullResBackground(sync: Sync.Storage, local: Local.Storage) 
 	}
 }
 
-function handleBackgroundActions(backgrounds: Sync.Backgrounds) {
+function handleBackgroundActions(backgrounds: Backgrounds) {
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
 	document.getElementById('background-actions')?.classList.toggle('shown', type !== 'color')
@@ -895,7 +899,7 @@ function handleBackgroundActions(backgrounds: Sync.Backgrounds) {
 
 //  Helpers
 
-async function getCurrentBackground(): Promise<Backgrounds.Item> {
+async function getCurrentBackground(): Promise<Background> {
 	const sync = await storage.sync.get('backgrounds')
 	const local = await storage.local.get()
 	const isImage = sync.backgrounds.type === 'images'
@@ -911,7 +915,7 @@ function canReduceResolution(full = false) {
 	return blurred && !full && !settingsOpened
 }
 
-function applySafariThemeColor(image: Backgrounds.Image, img: HTMLImageElement) {
+function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement) {
 	let color = image.color
 
 	if (BROWSER === 'safari' && !color) {
@@ -977,25 +981,25 @@ function getAverageColor(img: HTMLImageElement) {
 	}
 }
 
-function isBackgroundType(str = ''): str is Sync.Storage['backgrounds']['type'] {
+function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
 }
-function isBackgroundTexture(str = ''): str is Sync.Storage['backgrounds']['texture']['type'] {
+function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['type'] {
 	return ['none', 'grain', 'dots', 'topographic'].includes(str)
 }
 function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)
 }
 
-function _isVideo(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Video {
+function _isVideo(item: BackgroundVideo | BackgroundImage): item is BackgroundVideo {
 	return item.format === 'video'
 }
-function _isImage(item: Backgrounds.Video | Backgrounds.Image): item is Backgrounds.Image {
+function _isImage(item: BackgroundVideo | BackgroundImage): item is BackgroundImage {
 	return item.format === 'image'
 }
-function areOnlyImages(list: Backgrounds.Item[]): list is Backgrounds.Image[] {
-	return list?.every(item => item.format === 'image')
+function areOnlyImages(list: Background[]): list is BackgroundImage[] {
+	return list?.every((item) => item.format === 'image')
 }
-function areOnlyVideos(list: Backgrounds.Item[]): list is Backgrounds.Video[] {
-	return list?.every(item => item.format === 'video')
+function areOnlyVideos(list: Background[]): list is BackgroundVideo[] {
+	return list?.every((item) => item.format === 'video')
 }

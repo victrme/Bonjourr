@@ -1,10 +1,14 @@
-import { type Weather, type LastWeather, type Coords, getSunsetHour } from './index'
-import { handleForecastDisplay, displayWeather } from './display'
+import { displayWeather, handleForecastDisplay } from './display.ts'
+import { getLang, tradThis } from '../../utils/translations.ts'
+import { handleGeolOption } from './settings.ts'
+import { getSunsetHour } from './index.ts'
+import { suntime } from '../../shared/time.ts'
+import { storage } from '../../storage.ts'
 
-import { tradThis, getLang } from '../../utils/translations'
-import { handleGeolOption } from './settings'
-import { suntime } from '../../shared/time'
-import { storage } from '../../storage'
+import type { SimpleWeather } from '../../../types/shared.ts'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Weather } from '../../../types/sync.ts'
+import type { Coords } from './index.ts'
 
 export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	handleForecastDisplay(data.forecast)
@@ -61,7 +65,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 		throw new Error('Cannot get weather')
 	}
 
-	const json: Weather.SimpleWeather = await response?.json()
+	const json: SimpleWeather = await response?.json()
 
 	let [sunset, sunrise] = [0, 0]
 	const { temp, feels } = json.now
@@ -136,9 +140,9 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 	const location = { lat: 0, lon: 0 }
 
 	if (type === 'precise') {
-		await new Promise(resolve =>
+		await new Promise((resolve) =>
 			navigator.geolocation.getCurrentPosition(
-				geo => {
+				(geo) => {
 					location.lat = geo.coords.latitude
 					location.lon = geo.coords.longitude
 					resolve(true)
@@ -146,7 +150,7 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 				() => {
 					resolve(false)
 				},
-			),
+			)
 		)
 	}
 

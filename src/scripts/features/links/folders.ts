@@ -1,9 +1,12 @@
-import { getLiFromEvent, getLinksInFolder } from './helpers'
-import { initblocks } from './index'
+import { getLiFromEvent, getLinksInFolder } from './helpers.ts'
+import { initblocks } from './index.ts'
 
-import { transitioner } from '../../utils/transitioner'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { transitioner } from '../../utils/transitioner.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
+
+import type { LinkFolder } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 
@@ -34,14 +37,14 @@ export async function folderClick(event: MouseEvent) {
 	}
 }
 
-function openFolder(data: Sync.Storage, li: HTMLLIElement): void {
+function openFolder(data: Sync, li: HTMLLIElement): void {
 	if (!li.parentNode) {
 		return
 	}
 
 	const linkgroup = li.parentNode.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
-	const folder = data[li.id] as Links.Folder
+	const folder = data[li.id] as LinkFolder
 
 	const transition = transitioner()
 	transition.first(hide)
@@ -104,13 +107,13 @@ async function closeFolder() {
 	}
 }
 
-function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
+function openAllLinks(data: Sync, li: HTMLLIElement) {
 	const linksInFolder = getLinksInFolder(data, li.id)
 
 	for (const link of linksInFolder) {
-		window.open(link.url, '_blank')?.focus()
+		globalThis.open(link.url, '_blank')?.focus()
 	}
 
-	window.open(window.location.href, '_blank')?.focus()
-	window.close()
+	globalThis.open(globalThis.location.href, '_blank')?.focus()
+	globalThis.close()
 }

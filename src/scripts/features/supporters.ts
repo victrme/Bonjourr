@@ -1,7 +1,10 @@
-import { getLang, tradThis } from '../utils/translations'
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { debounce } from '../utils/debounce'
-import { storage } from '../storage'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { onclickdown } from 'clickdown/mod'
+import { debounce } from '../utils/debounce.ts'
+import { storage } from '../storage.ts'
+
+import type { Supporters, Sync } from '../../types/sync.ts'
 
 interface SupportersApi {
 	date: string
@@ -20,8 +23,8 @@ interface SupportersUpdate {
 }
 
 interface SupportersInit {
-	supporters: Sync.Storage['supporters']
-	review: Sync.Storage['review']
+	supporters: Supporters
+	review: Sync['review']
 }
 
 const monthBackgrounds = [
@@ -97,14 +100,14 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		initSupportersModal()
 		translateNotif()
 
-		supportersNotif?.onclickdown(e => {
+		onclickdown(supportersNotif, (e) => {
 			if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
 				toggleSupportersModal(true)
 				loadModalData()
 			}
 		})
 
-		notifClose?.onclickdown(() => {
+		onclickdown(notifClose, () => {
 			delete document.documentElement.dataset.supporters
 			supportersNotif.classList.remove('shown')
 			updateSupportersOption({ closed: true })
@@ -173,14 +176,14 @@ function initSupportersModal() {
 		})
 
 		// close when click on background
-		supportersModal.addEventListener('click', event => {
+		supportersModal.addEventListener('click', (event) => {
 			if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
 				toggleSupportersModal(false)
 			}
 		})
 
 		// close when esc key
-		document.addEventListener('keyup', event => {
+		document.addEventListener('keyup', (event) => {
 			if (event.key === 'Escape' && document.documentElement.dataset.supportersModal !== undefined) {
 				toggleSupportersModal(false)
 			}
@@ -249,9 +252,8 @@ export async function loadModalData() {
 	}
 
 	try {
-		let response: Response | undefined
 		let supporters: SupportersApi[] = []
-		response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
+		const response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
 
 		if (response.ok) {
 			supporters = await response.json()
@@ -373,7 +375,7 @@ function initGlitter() {
 
 	const snowfallDebounce = debounce(snowfall.setup, 200)
 
-	window.addEventListener('resize', snowfallDebounce)
+	globalThis.addEventListener('resize', snowfallDebounce)
 
 	// Animation loop function
 	snowfall.animate = () => {

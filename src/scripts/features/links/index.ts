@@ -1,29 +1,27 @@
-import { initGroups, addGroup, deleteGroup, toggleGroups, changeGroupTitle, moveGroups } from './groups'
-import { initBookmarkSync, syncBookmarks } from './bookmarks'
-import { openEditDialog } from './edit'
-import { folderClick } from './folders'
-import { startDrag } from './drag'
+import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
+import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
+import { openEditDialog } from './edit.ts'
+import { folderClick } from './folders.ts'
+import { startDrag } from './drag.ts'
 import {
-	isElem,
-	getLiFromEvent,
-	getDefaultIcon,
 	createTitle,
-	isLink,
-	getLinksInGroup,
+	getDefaultIcon,
+	getLiFromEvent,
 	getLinksInFolder,
-} from './helpers'
+	getLinksInGroup,
+	isElem,
+	isLink,
+} from './helpers.ts'
 
-import { randomString, stringMaxSize } from '../../shared/generic'
-import { displayInterface } from '../../index'
-import { getHTMLTemplate } from '../../shared/dom'
-import { eventDebounce } from '../../utils/debounce'
-import { tradThis } from '../../utils/translations'
-import { storage } from '../../storage'
+import { randomString, stringMaxSize } from '../../shared/generic.ts'
+import { displayInterface } from '../../shared/display.ts'
+import { getHTMLTemplate } from '../../shared/dom.ts'
+import { eventDebounce } from '../../utils/debounce.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
-type Link = Links.Link
-type Elem = Links.Elem
-type Style = Sync['linkstyle']
-type Sync = Sync.Storage
+import type { Link, LinkElem, LinkFolder } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
 	title: string
@@ -88,7 +86,7 @@ type LinksUpdate = {
 }
 
 type LinkGroups = {
-	links: Links.Link[]
+	links: Link[]
 	title: string
 	pinned: boolean
 	synced: boolean
@@ -128,7 +126,7 @@ export async function quickLinks(init?: Sync, event?: LinksUpdate) {
 // Initialisation
 
 export function initblocks(data: Sync, isInit?: true): true {
-	const allLinks = Object.values(data).filter(val => isLink(val)) as Link[]
+	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
 	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
 
@@ -151,8 +149,8 @@ export function initblocks(data: Sync, isInit?: true): true {
 	activeGroups.reverse()
 
 	// Remove links that didn't make the cut
-	const divs = activeGroups.map(g => g.div)
-	const usedLis = activeGroups.flatMap(group => group.lis)
+	const divs = activeGroups.map((g) => g.div)
+	const usedLis = activeGroups.flatMap((group) => group.lis)
 
 	for (const div of document.querySelectorAll<HTMLDivElement>('#linkblocks .link-group')) {
 		for (const li of div.querySelectorAll<HTMLLIElement>('li')) {
@@ -168,7 +166,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 
 	for (const group of activeGroups) {
 		const linkgroup = group.div ?? getHTMLTemplate<HTMLDivElement>('link-group-template', '.link-group')
-		const linksInFolders = allLinks.filter(link => !link.folder && typeof link.parent === 'string')
+		const linksInFolders = allLinks.filter((link) => !link.folder && typeof link.parent === 'string')
 		const linklist = linkgroup.querySelector<HTMLUListElement>('ul')
 		const linktitle = linkgroup.querySelector<HTMLButtonElement>('button')
 		const fragment = document.createDocumentFragment()
@@ -183,7 +181,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 		}
 
 		for (const link of group.links) {
-			let li = group.lis.find(li => li.id === link._id)
+			let li = group.lis.find((li) => li.id === link._id)
 
 			if (li) {
 				li.removeAttribute('style')
@@ -206,7 +204,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 		}
 
 		if (folderid) {
-			linktitle.textContent = (data[folderid] as Links.Folder).title
+			linktitle.textContent = (data[folderid] as LinkFolder).title
 		} else {
 			linktitle.textContent = group.title
 		}
@@ -234,7 +232,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 	return true
 }
 
-function createFolder(link: Links.Folder, folderChildren: Link[], style: Style): HTMLLIElement {
+function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['linkstyle']): HTMLLIElement {
 	const li = getHTMLTemplate<HTMLLIElement>('link-folder-template', 'li')
 	const imgs = li.querySelectorAll('img')
 	const span = li.querySelector('span')
@@ -244,7 +242,7 @@ function createFolder(link: Links.Folder, folderChildren: Link[], style: Style):
 	}
 
 	const linksInThisFolder = folderChildren
-		.filter(l => !l.folder && l.parent === link._id)
+		.filter((l) => !l.folder && l.parent === link._id)
 		.toSorted((a, b) => a.order - b.order)
 
 	li.id = link._id
@@ -264,7 +262,7 @@ function createFolder(link: Links.Folder, folderChildren: Link[], style: Style):
 	return li
 }
 
-function createElem(link: Links.Elem, openInNewtab: boolean, style: Style) {
+function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyle']) {
 	const li = getHTMLTemplate<HTMLLIElement>('link-elem-template', 'li')
 	const span = li.querySelector('span')
 	const anchor = li.querySelector('a')
@@ -479,14 +477,12 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 
 		if (addsFromFolder) {
 			link.parent = folderid
-		}
-		//
+		} //
 		else if (noParents && synced.includes(selected)) {
 			link.parent = ''
 			data.linkgroups.selected = ''
 			initGroups(data)
-		}
-		//
+		} //
 		else if (noParents) {
 			link.parent = selected
 		}
@@ -501,14 +497,14 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 	return correctdata
 }
 
-function addLinkFolder(ids: string[], title?: string, group?: string): Links.Folder[] {
+function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolder[] {
 	const titledom = document.getElementById('e-title') as HTMLInputElement
 	const linktitle = title ?? titledom.value
 
 	titledom.value = ''
 
 	const blocks = [...document.querySelectorAll<HTMLElement>('.link')]
-	const idsOnInterface = blocks.map(block => block.id)
+	const idsOnInterface = blocks.map((block) => block.id)
 	const order = idsOnInterface.indexOf(ids[0])
 
 	for (let i = 0; i < ids.length; i++) {
@@ -535,7 +531,7 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
 	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
 	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
-	const link = data[id] as Links.Link
+	const link = data[id] as Link
 
 	if (titledom && title !== undefined) {
 		link.title = stringMaxSize(title, 64)
@@ -572,8 +568,8 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 }
 
 function concatFolders({ target, source }: MoveToFolder, data: Sync): Sync {
-	const linktarget = data[target] as Links.Link
-	const linksource = data[source] as Links.Link
+	const linktarget = data[target] as Link
+	const linksource = data[source] as Link
 
 	if (!(linktarget.folder && linksource.folder)) {
 		return data
@@ -589,8 +585,8 @@ function concatFolders({ target, source }: MoveToFolder, data: Sync): Sync {
 		}
 
 		if (ids.includes(val._id) && !val.folder) {
-			;(data[key] as Elem).parent = target
-			;(data[key] as Elem).order = Date.now()
+			;(data[key] as LinkElem).parent = target
+			;(data[key] as LinkElem).order = Date.now()
 		}
 	}
 
@@ -603,12 +599,12 @@ function concatFolders({ target, source }: MoveToFolder, data: Sync): Sync {
 }
 
 function moveToFolder({ target, source }: MoveToFolder, data: Sync): Sync {
-	const isSourceElem = typeof (data[source] as Links.Elem)?.url === 'string'
-	const isTargetFolder = (data[target] as Links.Folder)?.folder === true
+	const isSourceElem = typeof (data[source] as LinkElem)?.url === 'string'
+	const isTargetFolder = (data[target] as LinkFolder)?.folder === true
 
 	if (isSourceElem && isTargetFolder) {
-		;(data[source] as Elem).parent = target
-		;(data[source] as Elem).order = Date.now()
+		;(data[source] as LinkElem).parent = target
+		;(data[source] as LinkElem).order = Date.now()
 		initblocks(data)
 	}
 
@@ -618,7 +614,7 @@ function moveToFolder({ target, source }: MoveToFolder, data: Sync): Sync {
 function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: Sync): Sync {
 	// Get the current links in the target group to determine the next order
 	const linksInGroup = getLinksInGroup(data, group)
-	const maxOrder = linksInGroup.length > 0 ? Math.max(...linksInGroup.map(link => link.order)) : -1
+	const maxOrder = linksInGroup.length > 0 ? Math.max(...linksInGroup.map((link) => link.order)) : -1
 
 	// Update each link's parent and order
 	ids.forEach((id, index) => {
@@ -672,7 +668,7 @@ function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 
 function refreshIcons(ids: string[], data: Sync): Sync {
 	for (const id of ids) {
-		const link = data[id] as Links.Elem
+		const link = data[id] as LinkElem
 
 		if (link._id) {
 			link.icon = Date.now().toString()
@@ -685,7 +681,7 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 	return data
 }
 
-function setOpenInNewTab(newtab: boolean, data: Sync.Storage): Sync.Storage {
+function setOpenInNewTab(newtab: boolean, data: Sync): Sync {
 	const anchors = document.querySelectorAll<HTMLAnchorElement>('.link a')
 
 	for (const anchor of anchors) {
@@ -753,8 +749,8 @@ function setRows(row: string) {
 
 // Helpers
 
-export function validateLink(title: string, url: string, parent?: string): Links.Elem {
-	const startsWithEither = (strs: string[]) => strs.some(str => url.startsWith(str))
+export function validateLink(title: string, url: string, parent?: string): LinkElem {
+	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 	const sanitizedUrl = stringMaxSize(url, 512)
 
 	const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
@@ -779,8 +775,8 @@ function animateLinksRemove(ids: string[]) {
 }
 
 function correctLinksOrder(data: Sync): Sync {
-	const allLinks = Object.values(data).filter(val => isLink(val)) as Link[]
-	const folderIds = allLinks.filter(link => link.folder).map(({ _id }) => _id)
+	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
+	const folderIds = allLinks.filter((link) => link.folder).map(({ _id }) => _id)
 
 	for (const folderId of folderIds) {
 		const linksInFolder = getLinksInFolder(data, folderId)

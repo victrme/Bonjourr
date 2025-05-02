@@ -1,12 +1,14 @@
-import { getLang, tradThis } from '../utils/translations'
-import { BROWSER } from '../defaults'
-import { storage } from '../storage'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { BROWSER } from '../defaults.ts'
+import { storage } from '../storage.ts'
+
+import type { Sync } from '../../types/sync.ts'
 
 type PopupInit = {
 	old?: string
 	new: string
 	review: number
-	announce: Sync.Storage['announcements']
+	announce: Sync['announcements']
 }
 
 type PopupUpdate = {
@@ -58,8 +60,10 @@ const ANNOUNCEMENT_TRNS = {
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 const REVIEW_URLS = {
-	chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
-	opera: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+	chrome:
+		'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+	opera:
+		'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
 	firefox: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/',
 	safari: 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236',
 	edge: 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid',
@@ -169,6 +173,6 @@ function closePopup() {
 	removePopupTrigger()
 }
 
-function isAnnouncement(str = ''): str is Sync.Storage['announcements'] {
+function isAnnouncement(str = ''): str is Sync['announcements'] {
 	return ['all', 'major', 'off'].includes(str)
 }

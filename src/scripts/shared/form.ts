@@ -1,4 +1,4 @@
-import { onSettingsLoad } from '../utils/onsettingsload'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
 
 export function networkForm(targetId: string) {
 	let form: HTMLFormElement

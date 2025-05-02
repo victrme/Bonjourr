@@ -1,16 +1,20 @@
-import { quickLinks, validateLink } from './index'
-import { isLink } from './helpers'
+import { quickLinks, validateLink } from './index.ts'
+import { isLink } from './helpers.ts'
 
-import { EXTENSION, API_DOMAIN, PLATFORM } from '../../defaults'
-import { getHTMLTemplate, toggleDisabled } from '../../shared/dom'
-import { getLang, tradThis, traduction } from '../../utils/translations'
-import { settingsNotifications } from '../../utils/notifications'
-import { getPermissions } from '../../utils/permissions'
-import { randomString } from '../../shared/generic'
-import { bundleLinks } from '../../utils/bundlelinks'
-import { storage } from '../../storage'
+import { API_DOMAIN, EXTENSION, PLATFORM } from '../../defaults.ts'
+import { getHTMLTemplate, toggleDisabled } from '../../shared/dom.ts'
+import { getLang, tradThis, traduction } from '../../utils/translations.ts'
+import { settingsNotifications } from '../../utils/notifications.ts'
+import { getPermissions } from '../../utils/permissions.ts'
+import { randomString } from '../../shared/generic.ts'
+import { bundleLinks } from '../../utils/bundlelinks.ts'
+import { onclickdown } from 'clickdown/mod'
+import { storage } from '../../storage.ts'
 
-type Treenode = chrome.bookmarks.BookmarkTreeNode
+import type { Link, LinkElem } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
+
+type Treenode = browser.bookmarks.BookmarkTreeNode
 
 type BookmarksFolder = {
 	title: string
@@ -39,7 +43,7 @@ export async function linksImport() {
 	createBookmarksDialog()
 }
 
-export async function initBookmarkSync(data: Sync.Storage) {
+export async function initBookmarkSync(data: Sync) {
 	let treenode = await getBookmarkTree()
 	let permission = !!treenode
 
@@ -62,9 +66,9 @@ export async function initBookmarkSync(data: Sync.Storage) {
 	}
 }
 
-export function syncBookmarks(group: string): Links.Link[] {
-	const folder = browserBookmarkFolders.find(folder => folder.title === group)
-	const syncedLinks: Links.Link[] = []
+export function syncBookmarks(group: string): Link[] {
+	const folder = browserBookmarkFolders.find((folder) => folder.title === group)
+	const syncedLinks: Link[] = []
 
 	if (folder) {
 		for (const bookmark of folder.bookmarks) {
@@ -91,8 +95,8 @@ function createBookmarksDialog() {
 		const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
 		bookmarksdom?.addEventListener('click', closeDialog)
-		applybutton?.onclickdown(importSelectedBookmarks)
-		closebutton?.onclickdown(closeDialog)
+		onclickdown(applybutton, importSelectedBookmarks)
+		onclickdown(closebutton, closeDialog)
 
 		document.body.appendChild(bookmarksdom)
 	}
@@ -109,8 +113,10 @@ function createBookmarksDialog() {
 		}
 
 		h2.textContent = list.title
-		selectButton?.onclickdown(() => toggleFolderSelect(folder))
-		syncButton?.onclickdown(() => toggleFolderSync(folder))
+
+		onclickdown(selectButton, () => toggleFolderSelect(folder))
+		onclickdown(syncButton, () => toggleFolderSync(folder))
+
 		folder.classList.toggle('used', list.used)
 		folder.dataset.title = list.title
 		container?.appendChild(folder)
@@ -144,8 +150,8 @@ function createBookmarksDialog() {
 				.slice(0, -1)
 				.replace('/', '')
 
-			liButton?.onclickdown(() => li.classList.toggle('selected'))
-			liButton?.onclickdown(handleApplyButtonText)
+			onclickdown(liButton, () => li.classList.toggle('selected'))
+			onclickdown(liButton, handleApplyButtonText)
 
 			if (bookmark.used) {
 				liButton.setAttribute('disabled', '')
@@ -170,9 +176,9 @@ function importSelectedBookmarks() {
 	const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder li.selected')
 	const selectedFolders = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.selected')
 	const syncedFolders = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder.synced')
-	const linksIds = Object.values(selectedLinks).map(element => element.id)
-	const folderIds = Object.values(selectedFolders).map(element => element.dataset.title)
-	const syncedIds = Object.values(syncedFolders).map(element => element.dataset.title)
+	const linksIds = Object.values(selectedLinks).map((element) => element.id)
+	const folderIds = Object.values(selectedFolders).map((element) => element.dataset.title)
+	const syncedIds = Object.values(syncedFolders).map((element) => element.dataset.title)
 
 	const links: { title: string; url: string; group?: string }[] = []
 	const groups: { title: string; sync: boolean }[] = []
@@ -283,8 +289,15 @@ function toggleFolderSync(folder: HTMLElement) {
 // webext stuff
 
 async function getBookmarkTree(): Promise<Treenode[] | undefined> {
-	const treenode = window.startupBookmarks ?? (await EXTENSION?.bookmarks?.getTree())
-	const topsites = window.startupTopsites ?? (await EXTENSION?.topSites?.get())
+	let treenode = globalThis.startupBookmarks
+	let topsites = globalThis.startupTopsites
+
+	if (!treenode) {
+		treenode = await EXTENSION?.bookmarks?.getTree() as browser.bookmarks.BookmarkTreeNode[]
+	}
+	if (!topsites) {
+		topsites = await EXTENSION?.topSites?.get()
+	}
 
 	if (!(treenode && topsites)) {
 		return
@@ -312,17 +325,18 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 	treenode[0].children?.unshift({
 		id: '',
 		title: 'topsites',
-		children: topsites.map(site => ({
+		children: topsites.map((site) => ({
 			id: '',
-			title: site.title,
+			title: site.title ?? '',
 			url: site.url,
+			syncing: false,
 		})),
 	})
 
 	return treenode
 }
 
-function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): BookmarksFolder[] {
+function bookmarkTreeToFolderList(treenode: Treenode, data: Sync): BookmarksFolder[] {
 	function createMapFromTree(treenode: Treenode) {
 		if (!treenode.children) {
 			return
@@ -346,7 +360,7 @@ function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): Bookm
 			}
 
 			const current = folders[treenode.title].bookmarks
-			const urls = current.map(b => b.url)
+			const urls = current.map((b) => b.url)
 
 			if (urls.includes(child.url)) {
 				continue
@@ -362,13 +376,13 @@ function bookmarkTreeToFolderList(treenode: Treenode, data: Sync.Storage): Bookm
 		}
 	}
 
-	const linksUrLs = bundleLinks(data).map(link => isLink(link) && (link as Links.Elem).url)
+	const linksUrLs = bundleLinks(data).map((link) => isLink(link) && (link as LinkElem).url)
 	const folders: Record<string, BookmarksFolder> = {}
 
 	createMapFromTree(treenode)
 
 	for (const [folder, { bookmarks }] of Object.entries(folders)) {
-		const allUsed = bookmarks.every(b => b.used)
+		const allUsed = bookmarks.every((b) => b.used)
 		const isGroup = data.linkgroups.groups.includes(folder)
 		const isSynced = data.linkgroups.synced.includes(folder)
 

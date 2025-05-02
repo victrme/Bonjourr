@@ -1,11 +1,21 @@
-import { EXTENSION } from '../defaults'
+import { PLATFORM } from '../defaults.ts'
 
 export async function getPermissions(...args: string[]): Promise<boolean> {
-	if (!EXTENSION) {
-		return true
-	}
+	switch (PLATFORM) {
+		case 'online': {
+			return true
+		}
 
-	return await EXTENSION?.permissions.request({
-		permissions: [...args] as browser.permissions.Permission[],
-	})
+		case 'firefox': {
+			return await browser.permissions.request({
+				permissions: [...args as browser._manifest.OptionalPermission[]],
+			})
+		}
+
+		default: {
+			return chrome.permissions.request({
+				permissions: [...args as chrome.runtime.ManifestPermissions[]],
+			}) ?? false
+		}
+	}
 }

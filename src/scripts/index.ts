@@ -1,45 +1,39 @@
-import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
-import { supportersNotifications } from './features/supporters'
-import { synchronization } from './features/synchronization'
-import { backgroundsInit } from './features/backgrounds/index'
-import { interfacePopup } from './features/popup'
-import { moveElements } from './features/move'
-import { hideElements } from './features/hide'
-import { customFont } from './features/fonts'
-import { quickLinks } from './features/links'
-import { searchbar } from './features/searchbar'
-import { customCss } from './features/css'
-import { weather } from './features/weather'
-import { quotes } from './features/quotes'
-import { notes } from './features/notes'
-import { clock } from './features/clock'
+import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
+import { supportersNotifications } from './features/supporters.ts'
+import { migrateToNewIdbFormat } from './features/backgrounds/local.ts'
+import { synchronization } from './features/synchronization/index.ts'
+import { backgroundsInit } from './features/backgrounds/index.ts'
+import { interfacePopup } from './features/popup.ts'
+import { moveElements } from './features/move/index.ts'
+import { hideElements } from './features/hide.ts'
+import { customFont } from './features/fonts.ts'
+import { quickLinks } from './features/links/index.ts'
+import { searchbar } from './features/searchbar.ts'
+import { customCss } from './features/css.ts'
+import { weather } from './features/weather/index.ts'
+import { quotes } from './features/quotes.ts'
+import { notes } from './features/notes.ts'
+import { clock } from './features/clock.ts'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { traduction, setTranslationCache } from './utils/translations'
-import { needsChange, userDate, suntime } from './shared/time'
-import { onSettingsLoad } from './utils/onsettingsload'
-import { filterImports } from './imports'
-import { settingsInit } from './settings'
-import { userActions } from './events'
-import { storage } from './storage'
-import 'clickdown'
-import { migrateToNewIdbFormat } from './features/backgrounds/local'
+import { BROWSER, CURRENT_VERSION, ENVIRONNEMENT, IS_MOBILE, PLATFORM, SYSTEM_OS } from './defaults.ts'
+import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
+import { setTranslationCache, traduction } from './utils/translations.ts'
+import { needsChange, suntime, userDate } from './shared/time.ts'
+import { onSettingsLoad } from './utils/onsettingsload.ts'
+import { filterImports } from './imports.ts'
+import { settingsInit } from './settings.ts'
+import { userActions } from './events.ts'
+import { storage } from './storage.ts'
 
-type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
-
-const dominterface = document.getElementById('interface') as HTMLDivElement
-const features: FeaturesToWait[] = ['clock', 'links']
-let interfaceDisplayCallback = () => undefined
-let loadtime = performance.now()
-
-//	Startup
+import type { Local } from '../types/local.ts'
+import type { Sync } from '../types/sync.ts'
 
 try {
 	startup()
 	serviceWorker()
 	onlineAndMobile()
 } catch (_) {
-	// ...
+	console.warn('Startup failed')
 }
 
 async function startup() {
@@ -114,11 +108,11 @@ async function startup() {
 	})
 }
 
-function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
+function upgradeSyncStorage(data: Sync): Sync {
 	return filterImports(data, data)
 }
 
-function upgradeLocalStorage(data: Local.Storage): Local.Storage {
+function upgradeLocalStorage(data: Local): Local {
 	data.translations = undefined
 	storage.local.remove('translations')
 
@@ -128,56 +122,8 @@ function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 	return data
 }
 
-export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
-	if (data) {
-		if (data?.font?.family) {
-			features.push('fonts')
-		}
-		if (data?.quotes?.on) {
-			features.push('quotes')
-		}
-
-		return
-	}
-
-	if (!ready) {
-		return
-	}
-
-	const index = features.indexOf(ready)
-
-	if (index !== -1) {
-		features.splice(index, 1)
-	} else {
-		return
-	}
-
-	if (features.length > 0) {
-		return
-	}
-
-	loadtime = Math.min(performance.now() - loadtime, 333)
-	loadtime = loadtime > 33 ? loadtime : 0
-	document.documentElement.style.setProperty('--load-time-transition', `${loadtime}ms`)
-	document.body.classList.remove('loading')
-
-	setTimeout(
-		() => {
-			onInterfaceDisplay()
-		},
-		Math.max(333, loadtime),
-	)
-}
-
-function onInterfaceDisplay(callback?: () => undefined): void {
-	if (callback) {
-		interfaceDisplayCallback = callback
-	} else {
-		interfaceDisplayCallback()
-	}
-}
-
 function onlineAndMobile() {
+	const dominterface = document.getElementById('interface') as HTMLDivElement
 	const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
 	const onlineSafariIos = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
 	let visibilityHasChanged = false
@@ -196,7 +142,7 @@ function onlineAndMobile() {
 
 		// Fix for opening tabs Firefox iOS
 		if (SYSTEM_OS === 'ios') {
-			window.requestAnimationFrame(triggerAnimationFrame)
+			globalThis.requestAnimationFrame(triggerAnimationFrame)
 			setTimeout(() => cancelAnimationFrame(firefoxRafTimeout), 500)
 		}
 	}
@@ -246,7 +192,7 @@ function onlineAndMobile() {
 	}
 
 	function updateAppHeight() {
-		document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		document.documentElement.style.setProperty('--app-height', `${globalThis.innerHeight}px`)
 	}
 
 	function disableTouchAction() {
@@ -275,7 +221,7 @@ function serviceWorker() {
 
 	let promptEvent: Event // PWA install trigger (30s interaction default)
 
-	window.addEventListener('beforeinstallprompt', e => {
+	globalThis.addEventListener('beforeinstallprompt', (e) => {
 		promptEvent = e
 		return promptEvent
 	})

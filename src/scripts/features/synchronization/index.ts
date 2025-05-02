@@ -1,9 +1,11 @@
-import { retrieveGist, sendGist, findGistId, isGistTokenValid, setGistStatus } from './gist'
-import { isDistantUrlValid, receiveFromURL } from './url'
-import { onSettingsLoad } from '../../utils/onsettingsload'
-import { networkForm } from '../../shared/form'
-import { fadeOut } from '../../shared/dom'
-import { storage } from '../../storage'
+import { findGistId, isGistTokenValid, retrieveGist, sendGist, setGistStatus } from './gist.ts'
+import { isDistantUrlValid, receiveFromURL } from './url.ts'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { networkForm } from '../../shared/form.ts'
+import { fadeOut } from '../../shared/dom.ts'
+import { storage } from '../../storage.ts'
+
+import type { Local, SyncType } from '../../../types/local.ts'
 
 interface SyncUpdate {
 	type?: string
@@ -19,7 +21,7 @@ interface SyncUpdate {
 const gistsyncform = networkForm('f_gistsync')
 const urlsyncform = networkForm('f_urlsync')
 
-export function synchronization(init?: Local.Storage, update?: SyncUpdate) {
+export function synchronization(init?: Local, update?: SyncUpdate) {
 	if (init) {
 		onSettingsLoad(() => {
 			toggleSyncSettingsOption(init)
@@ -147,7 +149,7 @@ async function updateSyncOption(update: SyncUpdate) {
 	}
 }
 
-async function handleStoragePersistence(type?: Local.SyncType): Promise<boolean | undefined> {
+async function handleStoragePersistence(type?: SyncType): Promise<boolean | undefined> {
 	if (!navigator?.storage?.persisted) {
 		return
 	}
@@ -163,7 +165,7 @@ async function handleStoragePersistence(type?: Local.SyncType): Promise<boolean 
 	}
 }
 
-async function toggleSyncSettingsOption(local?: Local.Storage) {
+async function toggleSyncSettingsOption(local?: Local) {
 	const gistId = local?.gistId
 	const gistToken = local?.gistToken
 	const distantUrl = local?.distantUrl
@@ -233,7 +235,7 @@ async function toggleSyncSettingsOption(local?: Local.Storage) {
 
 // Type check
 
-function isSyncType(val = ''): val is Local.SyncType {
+function isSyncType(val = ''): val is SyncType {
 	return ['browser', 'gist', 'url', 'off'].includes(val)
 }
 

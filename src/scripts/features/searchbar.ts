@@ -1,11 +1,14 @@
-import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
-import { opacityFromHex, stringMaxSize } from '../shared/generic'
-import { hexColorFromSplitRange } from '../shared/dom'
-import { getLang, tradThis } from '../utils/translations'
-import { eventDebounce } from '../utils/debounce'
-import { apiWebSocket } from '../shared/api'
-import { storage } from '../storage'
-import { parse } from '../utils/parse'
+import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults.ts'
+import { opacityFromHex, stringMaxSize } from '../shared/generic.ts'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { apiWebSocket } from '../shared/api.ts'
+import { storage } from '../storage.ts'
+import { parse } from '../utils/parse.ts'
+
+import type { SearchEngines } from '../../types/shared.ts'
+import type { Searchbar } from '../../types/sync.ts'
 
 type SearchbarUpdate = {
 	engine?: string
@@ -49,7 +52,7 @@ const setBackground = (value = '#fff2') => {
 		?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
-export function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
+export function searchbar(init?: Searchbar, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
 		return
@@ -206,7 +209,7 @@ function submitSearch(e: Event) {
 	const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
 	const target = newtab ? '_blank' : '_self'
 
-	window.open(url, target)
+	globalThis.open(url, target)
 	return
 }
 
@@ -256,7 +259,7 @@ function initSuggestions() {
 			li?.removeAttribute('aria-selected')
 		})
 
-		li.addEventListener('click', e => {
+		li.addEventListener('click', (e) => {
 			applyResultContentToInput(li)
 			submitSearch(e)
 		})
@@ -289,8 +292,8 @@ function initSuggestions() {
 		}
 
 		if (isArrowDown) {
-			lastSelected =
-				selectShownResult(lastSelected?.nextElementSibling) ?? domsuggestions?.querySelector('li.shown')
+			lastSelected = selectShownResult(lastSelected?.nextElementSibling) ??
+				domsuggestions?.querySelector('li.shown')
 			applyResultContentToInput(lastSelected)
 		}
 

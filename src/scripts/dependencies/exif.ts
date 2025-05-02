@@ -3,7 +3,6 @@ export async function getExif(img: Blob): Promise<Record<string, unknown>> {
 	const buffer = await img.arrayBuffer()
 	const exif = findEXIFinJPEG(buffer)
 
-
 	return exif
 }
 
@@ -249,8 +248,7 @@ function readEXIFData(dataview: DataView, start: number): Record<string, unknown
 					break
 
 				case 'ComponentsConfiguration':
-					exifData[tag] =
-						StringValues.Components[exifData[tag][0]] +
+					exifData[tag] = StringValues.Components[exifData[tag][0]] +
 						StringValues.Components[exifData[tag][1]] +
 						StringValues.Components[exifData[tag][2]] +
 						StringValues.Components[exifData[tag][3]]
@@ -360,7 +358,7 @@ const TiffTags: Record<string, string> = {
 	33432: 'Copyright',
 }
 
-const GPSTags: Record<string, string> = {
+const _GPSTags: Record<string, string> = {
 	0: 'GPSVersionID',
 	1: 'GPSLatitudeRef',
 	2: 'GPSLatitude',

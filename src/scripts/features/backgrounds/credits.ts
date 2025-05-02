@@ -1,24 +1,28 @@
-import { backgroundUpdate } from '.'
-import storage from '../../storage'
-import { tradThis } from '../../utils/translations'
+import { backgroundUpdate } from './index.ts'
+import { onclickdown } from 'clickdown/mod'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
+
+import type { Backgrounds } from '../../../types/sync.ts'
+import type { Background } from '../../../types/shared.ts'
 
 export function initCreditEvents() {
-	document.getElementById('b_interface-background-pause')?.onclickdown(() => {
+	onclickdown(document.getElementById('b_interface-background-pause'), () => {
 		toggleBackgroundPause()
 	})
 
-	document.getElementById('b_interface-background-refresh')?.onclickdown((_, target) => {
+	onclickdown(document.getElementById('b_interface-background-refresh'), (_, target) => {
 		backgroundUpdate({
 			refresh: target.querySelector('svg') as Element,
 		})
 	})
 
-	document.getElementById('b_interface-background-download')?.onclickdown(() => {
+	onclickdown(document.getElementById('b_interface-background-download'), () => {
 		downloadImage()
 	})
 }
 
-export function toggleCredits(backgrounds: Sync.Backgrounds) {
+export function toggleCredits(backgrounds: Backgrounds) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 	const domsave = document.getElementById('a_interface-background-download')
@@ -46,7 +50,7 @@ export function toggleCredits(backgrounds: Sync.Backgrounds) {
 	}
 }
 
-export function updateCredits(image?: Backgrounds.Item) {
+export function updateCredits(image?: Background) {
 	const domcontainer = document.getElementById('credit-container')
 	const domcredit = document.getElementById('credit')
 	const domsave = document.getElementById('download-background')

@@ -1,13 +1,17 @@
-import { hexColorFromSplitRange } from '../shared/dom'
-import { getLang, tradThis } from '../utils/translations'
-import { displayInterface } from '../index'
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { eventDebounce } from '../utils/debounce'
-import { stringMaxSize } from '../shared/generic'
-import { getVnCalendar } from '../dependencies/vietnamese-calendar'
-import { SYNC_DEFAULT } from '../defaults'
-import { userDate } from '../shared/time'
-import { storage } from '../storage'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { displayInterface } from '../shared/display.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { stringMaxSize } from '../shared/generic.ts'
+import { getVnCalendar } from '../dependencies/vietnamese-calendar.ts'
+import { SYNC_DEFAULT } from '../defaults.ts'
+import { userDate } from '../shared/time.ts'
+import { storage } from '../storage.ts'
+
+import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
+
+type DateFormat = Sync['dateformat']
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -28,9 +32,7 @@ type ClockUpdate = {
 	world?: { index: number; region?: string; timezone?: string }
 }
 
-type DateFormat = Sync.Storage['dateformat']
-
-const defaultAnalogStyle: Sync.AnalogStyle = {
+const defaultAnalogStyle: AnalogStyle = {
 	face: 'none',
 	hands: 'modern',
 	shape: 'round',
@@ -45,7 +47,7 @@ const oneInFive = Math.random() > 0.8 ? 1 : 0
 let numberWidths = [1]
 let clockInterval: number
 
-export function clock(init?: Sync.Storage, event?: ClockUpdate) {
+export function clock(init?: Sync, event?: ClockUpdate) {
 	if (event) {
 		clockUpdate(event)
 		return
@@ -163,7 +165,7 @@ async function clockUpdate(update: ClockUpdate) {
 	clockSize(data.clock.size)
 }
 
-function analogStyle(style: Sync.AnalogStyle = structuredClone(defaultAnalogStyle)) {
+function analogStyle(style: AnalogStyle = structuredClone(defaultAnalogStyle)) {
 	const { face, shape, hands } = style
 
 	const time = document.getElementById('time') as HTMLElement
@@ -219,7 +221,7 @@ function greetingSize(size = '3') {
 
 //	Clock
 
-function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string, dateformat: DateFormat) {
+function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat) {
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
@@ -229,7 +231,7 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 		}
 	})
 
-	const clocks: Sync.WorldClocks = []
+	const clocks: WorldClock[] = []
 
 	if (clock.seconds && !clock.analog) {
 		setSecondsWidthInCh()
@@ -294,7 +296,7 @@ function getClock(index: number): HTMLDivElement {
 	return clone
 }
 
-function digital(wrapper: HTMLElement, clock: Sync.Clock, timezone: string) {
+function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 	const date = userDate(timezone)
 	const domclock = wrapper.querySelector<HTMLElement>('.digital')
 	const hh = wrapper.querySelector('.digital-hh') as HTMLElement
@@ -339,7 +341,7 @@ function digital(wrapper: HTMLElement, clock: Sync.Clock, timezone: string) {
 	ss.textContent = s.toString()
 }
 
-function analog(wrapper: HTMLElement, clock: Sync.Clock, timezone: string) {
+function analog(wrapper: HTMLElement, clock: Clock, timezone: string) {
 	const date = userDate(timezone)
 	const m = ((date.getMinutes() + date.getSeconds() / 60) * 6).toFixed(1)
 	const h = (((date.getHours() % 12) + date.getMinutes() / 60) * 30).toFixed(1)
@@ -482,15 +484,15 @@ function fixunits(val: number) {
 	return (val < 10 ? '0' : '') + val.toString()
 }
 
-function isFace(str?: string): str is Sync.AnalogStyle['face'] {
+function isFace(str?: string): str is AnalogStyle['face'] {
 	return ['none', 'number', 'roman', 'marks', 'swiss', 'braun'].includes(str ?? '')
 }
 
-function isHands(str?: string): str is Sync.AnalogStyle['hands'] {
+function isHands(str?: string): str is AnalogStyle['hands'] {
 	return ['modern', 'swiss', 'classic', 'braun', 'apple'].includes(str ?? '')
 }
 
-function isShape(str?: string): str is Sync.AnalogStyle['shape'] {
+function isShape(str?: string): str is AnalogStyle['shape'] {
 	return ['round', 'square', 'rectangle'].includes(str ?? '')
 }
 

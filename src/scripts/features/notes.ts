@@ -1,11 +1,13 @@
-import { hexColorFromSplitRange } from '../shared/dom'
-import { getLang, tradThis } from '../utils/translations'
-import { opacityFromHex } from '../shared/generic'
-import { onSettingsLoad } from '../utils/onsettingsload'
-import { eventDebounce } from '../utils/debounce'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { opacityFromHex } from '../shared/generic.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
 import PocketEditor from 'pocket-editor'
-import { langList } from '../langs'
-import { storage } from '../storage'
+import { langList } from '../langs.ts'
+import { storage } from '../storage.ts'
+
+import type { Notes } from '../../types/sync.ts'
 
 type NotesEvent = {
 	text?: string
@@ -16,7 +18,7 @@ type NotesEvent = {
 
 const container = document.getElementById('notes_container')
 
-export function notes(init?: Sync.Notes, event?: NotesEvent) {
+export function notes(init?: Notes, event?: NotesEvent) {
 	if (event) {
 		updateNotes(event)
 		return
@@ -60,7 +62,7 @@ async function updateNotes(event: NotesEvent) {
 //	Funcs
 //
 
-function initNotes(init: Sync.Notes) {
+function initNotes(init: Notes) {
 	document.getElementById('pocket-editor')?.remove()
 
 	handleAlign(init.align)
@@ -70,7 +72,7 @@ function initNotes(init: Sync.Notes) {
 
 	init.text = init.text ?? translateNotesText()
 
-	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput(content => {
+	new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput((content) => {
 		updateNotes({ text: content })
 	})
 }

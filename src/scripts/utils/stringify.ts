@@ -1,7 +1,9 @@
-import { SYNC_DEFAULT } from '../defaults'
-import { bundleLinks } from './bundlelinks'
+import { SYNC_DEFAULT } from '../defaults.ts'
+import { bundleLinks } from './bundlelinks.ts'
 
-export function stringify(data: Sync.Storage) {
+import type { Sync } from '../../types/sync.ts'
+
+export function stringify(data: Partial<Sync>) {
 	const defaultSyncData = structuredClone(SYNC_DEFAULT)
 
 	// 1a. Add links to defaults

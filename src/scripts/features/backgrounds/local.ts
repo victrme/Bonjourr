@@ -1,10 +1,14 @@
-import { applyBackground, removeBackgrounds } from './index'
-import { compressMedia } from '../../shared/compress'
-import { IS_MOBILE } from '../../defaults'
-import { userDate } from '../../shared/time'
-import { hashcode } from '../../utils/hash'
-import { storage } from '../../storage'
+import { applyBackground, removeBackgrounds } from './index.ts'
+import { compressMedia } from '../../shared/compress.ts'
+import { onclickdown } from 'clickdown/mod'
+import { IS_MOBILE } from '../../defaults.ts'
+import { userDate } from '../../shared/time.ts'
+import { hashcode } from '../../utils/hash.ts'
+import { storage } from '../../storage.ts'
 import * as idb from 'idb-keyval'
+
+import type { BackgroundFile, Local } from '../../../types/local.ts'
+import type { BackgroundImage } from '../../../types/shared.ts'
 
 type LocalFileData = {
 	raw: File
@@ -18,7 +22,7 @@ let thumbnailSelectionObserver: MutationObserver
 
 // Update
 
-export async function addLocalBackgrounds(filelist: FileList | File[], local: Local.Storage) {
+export async function addLocalBackgrounds(filelist: FileList | File[], local: Local) {
 	const dateString = userDate().toString()
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 	const filesData: Record<string, LocalFileData> = {}
@@ -58,10 +62,10 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		// 2a. This finds a reasonable resolution for compression
 
-		const isLandscape = window.screen.orientation.type === 'landscape-primary'
-		const long = isLandscape ? window.screen.width : window.screen.height
-		const short = isLandscape ? window.screen.height : window.screen.width
-		const density = Math.min(2, window.devicePixelRatio)
+		const isLandscape = globalThis.screen.orientation.type === 'landscape-primary'
+		const long = isLandscape ? globalThis.screen.width : globalThis.screen.height
+		const short = isLandscape ? globalThis.screen.height : globalThis.screen.width
+		const density = Math.min(2, globalThis.devicePixelRatio)
 		const ratio = Math.min(1.8, long / short)
 		const averagePixelHeight = short * ratio * density
 
@@ -161,7 +165,7 @@ async function updateBackgroundPosition(type: 'size' | 'vertical' | 'horizontal'
 
 //	Settings options
 
-export function initFilesSettingsOptions(local: Local.Storage) {
+export function initFilesSettingsOptions(local: Local) {
 	thumbnailSelectionObserver = new MutationObserver(toggleLocalFileButtons)
 	thumbnailVisibilityObserver = new IntersectionObserver(intersectionEvent)
 
@@ -172,23 +176,23 @@ export function initFilesSettingsOptions(local: Local.Storage) {
 
 	handleFilesSettingsOptions(local)
 
-	document.getElementById('b_thumbnail-remove')?.onclickdown(removeLocalBackgrounds)
-	document.getElementById('b_thumbnail-zoom')?.onclickdown(handleGridView)
-	document.getElementById('b_thumbnail-position')?.onclickdown(handlePositionOption)
+	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
+	onclickdown(document.getElementById('b_thumbnail-zoom'), handleGridView)
+	onclickdown(document.getElementById('b_thumbnail-position'), handlePositionOption)
 	document.getElementById('i_background-size')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-vertical')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-horizontal')?.addEventListener('input', handleFilePosition)
 }
 
-function handleFilesSettingsOptions(local: Local.Storage) {
+function handleFilesSettingsOptions(local: Local) {
 	const backgroundFiles = local.backgroundFiles
 
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
 
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
-	const thumbIds = Object.values(thumbs).map(el => el.id)
+	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
-	const missingThumbnails = fileIds.filter(id => !thumbIds.includes(id))
+	const missingThumbnails = fileIds.filter((id) => !thumbIds.includes(id))
 
 	if (missingThumbnails.length > 0) {
 		for (const id of missingThumbnails) {
@@ -200,7 +204,7 @@ function handleFilesSettingsOptions(local: Local.Storage) {
 	}
 }
 
-function handleFilesMoveOptions(file: Local.BackgroundFile) {
+function handleFilesMoveOptions(file: BackgroundFile) {
 	const backgroundSize = document.querySelector<HTMLInputElement>('#i_background-size')
 	const backgroundVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
 	const backgroundHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
@@ -222,7 +226,7 @@ function handleGridView() {
 	const container = document.getElementById('thumbnails-container')
 
 	if (container) {
-		const currentZoom = window.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
+		const currentZoom = globalThis.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
 		const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
 		container.style.setProperty('--thumbnails-columns', newZoom.toString())
 	}
@@ -247,7 +251,7 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 		const id = target.id ?? ''
 
 		if (isIntersecting && target.classList.contains('loading')) {
-			getFile(id).then(data => {
+			getFile(id).then((data) => {
 				if (data) {
 					addThumbnailImage(id, data)
 					thumbnailVisibilityObserver.unobserve(target)
@@ -348,7 +352,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 
 // Storage
 
-export async function getFilesAsCollection(local: Local.Storage): Promise<[string[], Backgrounds.Image[]]> {
+export async function getFilesAsCollection(local: Local): Promise<[string[], BackgroundImage[]]> {
 	const idbKeys = (await idb.keys()) as string[]
 	const files = validateBackgroundFiles(local, idbKeys)
 	const filesData = await getAllFiles(Object.keys(files))
@@ -358,8 +362,8 @@ export async function getFilesAsCollection(local: Local.Storage): Promise<[strin
 		return new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime()
 	})
 
-	const images: Backgrounds.Image[] = []
-	const keys = sorted.map(entry => entry[0])
+	const images: BackgroundImage[] = []
+	const keys = sorted.map((entry) => entry[0])
 
 	for (const [key, file] of sorted) {
 		const data = filesData[key]
@@ -371,7 +375,7 @@ export async function getFilesAsCollection(local: Local.Storage): Promise<[strin
 	return [keys, images]
 }
 
-function imageObjectFromStorage(file: Local.BackgroundFile, data: LocalFileData, raw?: boolean): Backgrounds.Image {
+function imageObjectFromStorage(file: BackgroundFile, data: LocalFileData, raw?: boolean): BackgroundImage {
 	return {
 		format: 'image',
 		size: file.position.size,
@@ -385,8 +389,8 @@ function imageObjectFromStorage(file: Local.BackgroundFile, data: LocalFileData,
 	}
 }
 
-function validateBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local.Storage['backgroundFiles'] {
-	const backgroundFiles: Record<string, Local.BackgroundFile> = {}
+function validateBackgroundFiles(local: Local, idbKeys: string[]): Local['backgroundFiles'] {
+	const backgroundFiles: Record<string, BackgroundFile> = {}
 	const date = userDate().toString()
 	let change = false
 
@@ -411,7 +415,7 @@ function validateBackgroundFiles(local: Local.Storage, idbKeys: string[]): Local
 /**
  * Local file storage changes in Bonjourr 21, with automatic compression
  */
-export async function migrateToNewIdbFormat(local: Local.Storage) {
+export async function migrateToNewIdbFormat(local: Local) {
 	type LocalImages = { ids: string[]; selected: string }
 	type LocalImagesItem = { background: File; thumbnail: Blob }
 
@@ -453,7 +457,7 @@ function unselectAll() {
 
 function getSelection(): string[] {
 	const thmbs = document.querySelectorAll<HTMLElement>('.thumbnail.selected')
-	const ids = Object.values(thmbs).map(thmb => thmb?.id ?? '')
+	const ids = Object.values(thmbs).map((thmb) => thmb?.id ?? '')
 	return ids
 }
 

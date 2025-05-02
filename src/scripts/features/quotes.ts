@@ -1,18 +1,20 @@
-import { equalsCaseInsensitive } from '../shared/generic'
-import { needsChange, userDate } from '../shared/time'
-import { displayInterface } from '../index'
-import { networkForm } from '../shared/form'
-import { tradThis } from '../utils/translations'
-import { apiFetch } from '../shared/api'
-import { isEvery } from '../shared/assert'
-import { storage } from '../storage'
-import { parse } from '../utils/parse'
+import { equalsCaseInsensitive } from '../shared/generic.ts'
+import { needsChange, userDate } from '../shared/time.ts'
+import { displayInterface } from '../shared/display.ts'
+import { networkForm } from '../shared/form.ts'
+import { tradThis } from '../utils/translations.ts'
+import { apiFetch } from '../shared/api.ts'
+import { isEvery } from '../shared/assert.ts'
+import { storage } from '../storage.ts'
+import { parse } from '../utils/parse.ts'
 
-type Quote = Quotes.Item
+import type { Quote, QuoteUserInput } from '../../types/shared.ts'
+import type { Quotes, Sync } from '../../types/sync.ts'
+import type { Local } from '../../types/local.ts'
 
 type QuotesInit = {
-	sync: Sync.Storage
-	local: Local.Storage
+	sync: Sync
+	local: Local
 }
 
 type QuotesUpdate = {
@@ -115,7 +117,7 @@ async function updateQuotes({ author, frequency, type, userlist, url, refresh }:
 	storage.sync.set({ quotes: data.quotes })
 }
 
-async function updateQuotesData(data: Sync.Storage) {
+async function updateQuotesData(data: Sync) {
 	const isUser = data.quotes.type === 'user'
 	let list: Quote[] = []
 	let selection = 0
@@ -157,7 +159,7 @@ function handleUserListChange(input: string): string | undefined {
 
 	// old json format
 	if (input.startsWith('[[')) {
-		array = csvUserInputToQuotes(oldJSONToCSV(parse<Quotes.UserInput>(input) ?? []))
+		array = csvUserInputToQuotes(oldJSONToCSV(parse<QuoteUserInput>(input) ?? []))
 	} else {
 		array = csvUserInputToQuotes(input)
 	}
@@ -175,7 +177,7 @@ function handleUserListChange(input: string): string | undefined {
 	return input
 }
 
-function refreshQuotes(sync: Sync.Storage, quoteslist: Local.Storage['quotesCache'] = []) {
+function refreshQuotes(sync: Sync, quoteslist: Local['quotesCache'] = []) {
 	const { lang, quotes } = sync
 	const { type, url, userlist } = quotes
 
@@ -187,7 +189,7 @@ function refreshQuotes(sync: Sync.Storage, quoteslist: Local.Storage['quotesCach
 
 // ─── API & STORAGE
 
-async function fetchQuotes(lang: string, type: Quotes.Sync['type'], url: string | undefined): Promise<Quote[]> {
+async function fetchQuotes(lang: string, type: Quotes['type'], url: string | undefined): Promise<Quote[]> {
 	if (!navigator.onLine || type === 'user') {
 		return []
 	}
@@ -234,7 +236,7 @@ function validateResponse(response: Response | undefined): asserts response is R
 	}
 }
 
-async function tryFetchQuotes(lang: string, type: Quotes.Sync['type'], url: string | undefined): Promise<Quote[]> {
+async function tryFetchQuotes(lang: string, type: Quotes['type'], url: string | undefined): Promise<Quote[]> {
 	try {
 		return await fetchQuotes(lang, type, url)
 	} catch (_error) {
@@ -244,7 +246,7 @@ async function tryFetchQuotes(lang: string, type: Quotes.Sync['type'], url: stri
 	return []
 }
 
-function controlCacheList(list: Quote[], lang: string, type: Quotes.Sync['type'], url: Quotes.Sync['url']): Quote {
+function controlCacheList(list: Quote[], lang: string, type: Quotes['type'], url: Quotes['url']): Quote {
 	//
 	if (type === 'user') {
 		const randIndex = Math.round(Math.random() * (list.length - 1))
@@ -258,7 +260,7 @@ function controlCacheList(list: Quote[], lang: string, type: Quotes.Sync['type']
 	}
 
 	if (list.length < 2) {
-		tryFetchQuotes(lang, type, url).then(list => {
+		tryFetchQuotes(lang, type, url).then((list) => {
 			storage.local.set({ quotesCache: list })
 		})
 	}
@@ -286,7 +288,7 @@ function insertToDom(quote?: Quote) {
 
 // ─── HELPERS
 
-function csvUserInputToQuotes(csv?: string | Quotes.UserInput): Quote[] {
+function csvUserInputToQuotes(csv?: string | QuoteUserInput): Quote[] {
 	if (!csv) {
 		return []
 	}
@@ -299,8 +301,8 @@ function csvUserInputToQuotes(csv?: string | Quotes.UserInput): Quote[] {
 	return csvToQuotes(csv)
 }
 
-export function oldJSONToCSV(input: Quotes.UserInput): string {
-	return input.map(val => val.join(',')).join('\n')
+export function oldJSONToCSV(input: QuoteUserInput): string {
+	return input.map((val) => val.join(',')).join('\n')
 }
 
 function csvToQuotes(csv: string): Quote[] {
@@ -316,9 +318,9 @@ function csvToQuotes(csv: string): Quote[] {
 	return quotes
 }
 
-function isQuotesType(type = ''): type is Quotes.Types {
-	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'office', 'user', 'url']
-	return types.includes(type as Quotes.Types)
+function isQuotesType(type = ''): type is Quotes['type'] {
+	const types: Quotes['type'][] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'office', 'user', 'url']
+	return types.includes(type as Quotes['type'])
 }
 
 const urlRegEx = /^https?:\/\//i

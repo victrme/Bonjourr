@@ -1,18 +1,21 @@
-import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom'
-import { transitioner } from '../../utils/transitioner'
-import { storage } from '../../storage'
-import { weather } from '../weather'
+import { addOverlay, interfaceFade, removeOverlay, removeSelection, setAllAligns, setGridAreas } from './dom.ts'
+import { transitioner } from '../../utils/transitioner.ts'
+import { storage } from '../../storage.ts'
+import { weather } from '../weather/index.ts'
 import {
-	isEditing,
 	addGridWidget,
+	getLayout,
+	gridParse,
+	gridStringify,
+	isEditing,
 	removeGridWidget,
 	updateWidgetsStorage,
-	gridStringify,
-	gridParse,
-	getLayout,
-} from './helpers'
+} from './helpers.ts'
 
-export function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
+import type { Widgets } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
+
+export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
 	if (!widget) {
 		return
 	}
@@ -47,7 +50,7 @@ export function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
 
 		// Apply weather if re-enabled
 		if (id === 'main' && on === true) {
-			storage.local.get('lastWeather').then(local => {
+			storage.local.get('lastWeather').then((local) => {
 				weather({ sync: newdata, lastWeather: local.lastWeather })
 			})
 		}

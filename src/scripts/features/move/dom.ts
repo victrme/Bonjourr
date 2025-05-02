@@ -1,14 +1,18 @@
-import { elements, gridStringify } from './helpers'
-import { moveElements } from './index'
+import { elements, gridStringify } from './helpers.ts'
+import { moveElements } from './index.ts'
+import { onclickdown } from 'clickdown/mod'
+
+import type { MoveAlign, MoveLayout } from '../../../types/sync.ts'
+import type { Widgets } from '../../../types/shared.ts'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
-export function setGridAreas(grid: Sync.MoveLayout['grid'] | string) {
+export function setGridAreas(grid: MoveLayout['grid'] | string) {
 	const property = typeof grid === 'string' ? grid : gridStringify(grid)
 	document.documentElement.style.setProperty('--grid', property)
 }
 
-export function setAlign(id: Widgets, align?: Sync.MoveAlign) {
+export function setAlign(id: Widgets, align?: MoveAlign) {
 	const { box, text } = align ?? { box: '', text: '' }
 	const elem = elements[id]
 
@@ -30,7 +34,7 @@ export function setAlign(id: Widgets, align?: Sync.MoveAlign) {
 	}
 }
 
-export function setAllAligns(items: Sync.MoveLayout['items']) {
+export function setAllAligns(items: MoveLayout['items']) {
 	for (const [widget, align] of Object.entries(items)) {
 		setAlign(widget as Widgets, align)
 	}
@@ -42,7 +46,7 @@ export function addOverlay(id: Widgets) {
 	button.className = 'move-overlay'
 	dominterface?.appendChild(button)
 
-	button.onclickdown(() => {
+	onclickdown(button, () => {
 		moveElements(undefined, { select: id })
 	})
 }

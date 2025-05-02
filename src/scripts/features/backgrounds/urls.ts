@@ -1,21 +1,25 @@
-import { stringMaxSize } from '../../shared/generic'
-import { userDate } from '../../shared/time'
-import { storage } from '../../storage'
+import { stringMaxSize } from '../../shared/generic.ts'
+import { userDate } from '../../shared/time.ts'
+import { storage } from '../../storage.ts'
+
+import type { BackgroundUrlState, Local } from '../../../types/local.ts'
+import type { BackgroundImage } from '../../../types/shared.ts'
+import type { Backgrounds } from '../../../types/sync.ts'
 
 import type { EditorOptions, PrismEditor } from 'prism-code-editor'
 
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
 
-export function getUrlsAsCollection(local: Local.Storage): [string[], Backgrounds.Image[]] {
+export function getUrlsAsCollection(local: Local): [string[], BackgroundImage[]] {
 	const entries = Object.entries(local.backgroundUrls)
-	const working = entries.filter(entry => entry[1].state === 'OK')
+	const working = entries.filter((entry) => entry[1].state === 'OK')
 	const sorted = working.toSorted((a, b) => new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime())
 	const urls = sorted.map(([key]) => key)
 
 	return [
 		urls,
-		urls.map(url => ({
+		urls.map((url) => ({
 			format: 'image',
 			page: '',
 			username: '',
@@ -30,10 +34,10 @@ export function getUrlsAsCollection(local: Local.Storage): [string[], Background
 
 // Editor
 
-export async function initUrlsEditor(backgrounds: Sync.Backgrounds, local: Local.Storage) {
+export async function initUrlsEditor(backgrounds: Backgrounds, local: Local) {
 	globalUrlValue = backgrounds.urls
 
-	const { createBackgroundUrlsEditor } = await import('../csseditor')
+	const { createBackgroundUrlsEditor } = await import('../csseditor.ts')
 
 	const options: EditorOptions = {
 		language: 'uri',
@@ -48,7 +52,7 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds, local: Local
 	backgroundUrlsEditor.textarea.maxLength = 8080
 	backgroundUrlsEditor.textarea.placeholder = 'https://picsum.photos/200\n'
 
-	backgroundUrlsEditor.addListener('update', value => {
+	backgroundUrlsEditor.addListener('update', (value) => {
 		toggleUrlsButton(globalUrlValue, stringMaxSize(value, 8080))
 	})
 
@@ -65,9 +69,9 @@ export async function initUrlsEditor(backgrounds: Sync.Backgrounds, local: Local
 	}
 }
 
-function highlightUrlsEditorLine(url: string, state: Local.BackgroundUrlState) {
+function highlightUrlsEditorLine(url: string, state: BackgroundUrlState) {
 	const lines = backgroundUrlsEditor.wrapper.querySelectorAll('.pce-line')
-	const line = lines.values().find(l => l.textContent === `${url}\n`)
+	const line = lines.values().find((l) => l.textContent === `${url}\n`)
 	const noContent = !line?.textContent?.replace('\n', '')
 	const lineState = noContent ? 'NONE' : state
 
@@ -87,9 +91,9 @@ export function toggleUrlsButton(storage: string, value: string) {
 	}
 }
 
-export function applyUrls(backgrounds: Sync.Backgrounds) {
+export function applyUrls(backgrounds: Backgrounds) {
 	const editorValue = backgroundUrlsEditor.value
-	const backgroundUrls: Local.Storage['backgroundUrls'] = {}
+	const backgroundUrls: Local['backgroundUrls'] = {}
 
 	for (const url of editorValue.split('\n')) {
 		backgroundUrls[url] = { lastUsed: userDate().toString(), state: 'NONE' }
@@ -103,7 +107,7 @@ export function applyUrls(backgrounds: Sync.Backgrounds) {
 	checkUrlStates(backgroundUrls)
 }
 
-async function checkUrlStates(backgroundUrls: Local.Storage['backgroundUrls']) {
+async function checkUrlStates(backgroundUrls: Local['backgroundUrls']) {
 	const entries = Object.entries(backgroundUrls)
 
 	for (const [url] of entries) {
@@ -118,7 +122,7 @@ async function checkUrlStates(backgroundUrls: Local.Storage['backgroundUrls']) {
 	}
 }
 
-async function getState(item: string): Promise<Local.BackgroundUrlState> {
+async function getState(item: string): Promise<BackgroundUrlState> {
 	const isImage = (resp: Response) => resp.headers.get('content-type')?.includes('image/')
 	const proxy = 'https://services.bonjourr.fr/backgrounds/proxy/'
 	let resp: Response

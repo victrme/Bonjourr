@@ -1,31 +1,34 @@
-import { PLATFORM, LOCAL_DEFAULT, SYNC_DEFAULT } from './defaults'
-import { deepEqual } from './dependencies/deepequal'
-import { parse } from './utils/parse'
+import { LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
+import { deepEqual } from './dependencies/deepequal.ts'
+import { parse } from './utils/parse.ts'
 import * as idb from 'idb-keyval'
+
+import type { Local } from '../types/local.ts'
+import type { Sync } from '../types/sync.ts'
 
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
 
 interface AllStorage {
-	sync?: Sync.Storage
-	local?: Local.Storage
+	sync?: Sync
+	local?: Local
 }
 
 interface Storage {
 	sync: {
-		get: (key?: string | string[]) => Promise<Sync.Storage>
-		set: (val: Partial<Sync.Storage>) => Promise<void>
+		get: (key?: string | string[]) => Promise<Sync>
+		set: (val: Partial<Sync>) => Promise<void>
 		remove: (key: string) => void
 		clear: () => Promise<void>
 	}
 	local: {
-		get: (key?: keyof Local.Storage | (keyof Local.Storage)[]) => Promise<Local.Storage>
-		set: (val: Partial<Local.Storage>) => void
-		remove: (key: keyof Local.Storage) => void
+		get: (key?: keyof Local | (keyof Local)[]) => Promise<Local>
+		set: (val: Partial<Local>) => void
+		remove: (key: keyof Local) => void
 		clear: () => void
 	}
 	type: {
 		get: () => StorageType
-		change: (type: 'sync' | 'local', data: Sync.Storage) => void
+		change: (type: 'sync' | 'local', data: Sync) => void
 		init: () => StorageType
 	}
 	init: () => Promise<AllStorage>
@@ -50,8 +53,6 @@ export const storage: Storage = {
 	type: storageTypeFn(),
 }
 
-export default storage
-
 //	Storage type
 
 function storageTypeFn() {
@@ -75,7 +76,7 @@ function storageTypeFn() {
 		return type
 	}
 
-	function change(type: 'sync' | 'local', data: Sync.Storage) {
+	function change(type: 'sync' | 'local', data: Sync) {
 		if (globalThis.chrome?.storage === undefined) {
 			return
 		}
@@ -96,7 +97,7 @@ function storageTypeFn() {
 
 //	Synced data
 
-async function syncGet(key?: string | string[]): Promise<Sync.Storage> {
+async function syncGet(key?: string | string[]): Promise<Sync> {
 	switch (storage.type.get()) {
 		case 'webext-sync': {
 			const data = await chrome.storage.sync.get(key ?? null)
@@ -109,7 +110,7 @@ async function syncGet(key?: string | string[]): Promise<Sync.Storage> {
 		}
 
 		default: {
-			return verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
+			return verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
 		}
 	}
 }
@@ -136,14 +137,14 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 				return
 			}
 
-			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
+			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
 
 			for (const [k, v] of Object.entries(keyval)) {
 				data[k] = v
 			}
 
 			localStorage.bonjourr = JSON.stringify(data ?? {})
-			window.dispatchEvent(new Event('storage'))
+			globalThis.dispatchEvent(new Event('storage'))
 			return
 		}
 
@@ -219,36 +220,45 @@ function localSet(value: Record<string, unknown>) {
 	}
 }
 
-async function localGet(keys?: string | string[]): Promise<Local.Storage> {
+async function localGet(keys?: string | string[]): Promise<Local> {
 	switch (storage.type.get()) {
 		case 'webext-sync':
 		case 'webext-local': {
 			const data = await chrome.storage.local.get(keys)
-			return data as Local.Storage
+			return data as Local
 		}
 
 		default: {
-			const res: Record<string, unknown> = {}
-			let filteredKeys: string[] = []
+			const defaults = structuredClone(LOCAL_DEFAULT) as unknown
+			const result: Record<string, unknown> = defaults as Record<string, unknown>
 
-			if (keys === undefined) {
-				filteredKeys = [...Object.keys(localStorage).filter(k => k !== 'bonjourr')]
-			} //
-			else if (typeof keys === 'string') {
-				filteredKeys = [keys]
+			keys ??= Object.keys(LOCAL_DEFAULT)
+
+			if (typeof keys === 'string') {
+				keys = [keys]
 			}
 
-			for (const key of filteredKeys) {
-				const item = localStorage.getItem(key) ?? ''
-				const isJson = item.startsWith('{') || item.startsWith('[')
-				const val = isJson ? parse<Partial<Local.Storage>>(item) : item
+			const localKeys = Object.keys(globalThis.localStorage)
+			const neededKeys = keys.filter((k) => localKeys.includes(k))
 
-				if (val) {
-					res[key] = val
+			for (const key of neededKeys) {
+				const item = globalThis.localStorage.getItem(key)
+				const isJson = item && (item.startsWith('{') || item.startsWith('['))
+				const isBool = item && (item === 'true' || item === 'false')
+				const isNoom = item && Number.isNaN(Number.parseInt(item)) === false
+
+				if (isJson) {
+					result[key] = parse(item)
+				} else if (isBool) {
+					result[key] = item === 'true'
+				} else if (isNoom) {
+					result[key] = Number.parseFloat(item)
+				} else {
+					result[key] = item
 				}
 			}
 
-			return res as Local.Storage
+			return result as unknown as Local
 		}
 	}
 }
@@ -261,7 +271,7 @@ function localRemove(key: string) {
 		}
 
 		case 'localstorage': {
-			const data = verifyDataAsSync(parse<Sync.Storage>(localStorage.bonjourr) ?? {})
+			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
 			delete data[key]
 			localStorage.bonjourr = JSON.stringify(data ?? {})
 			return
@@ -304,7 +314,7 @@ async function init(): Promise<AllStorage> {
 	if (PLATFORM !== 'online' && !webextStoreReady()) {
 		globalThis.pageReady = true
 
-		await new Promise(resolve => {
+		await new Promise((resolve) => {
 			document.addEventListener('webextstorage', (event: CustomEventInit) => {
 				if (event.detail === 'sync') {
 					store.sync = globalThis.startupStorage.sync
@@ -347,8 +357,8 @@ async function init(): Promise<AllStorage> {
 		store.sync = await getSyncDefaults()
 	}
 
-	const sync = verifyDataAsSync(store.sync ?? {})
-	const local = verifyDataAsLocal(store.local ?? {})
+	const sync = verifyDataAsSync(store.sync)
+	const local = verifyDataAsLocal(store.local)
 
 	return {
 		sync,
@@ -401,46 +411,37 @@ async function clearall() {
 
 //	Helpers
 
-export async function getSyncDefaults(): Promise<Sync.Storage> {
+export async function getSyncDefaults(): Promise<Sync> {
 	try {
 		const json = await (await fetch('config.json')).json()
 		return verifyDataAsSync(json)
-	} catch (_) {}
+	} catch (_) {
+		// ...
+	}
 
 	return SYNC_DEFAULT
 }
 
-export function isStorageDefault(data: Sync.Storage): boolean {
+export function isStorageDefault(data: Sync): boolean {
 	const current = structuredClone(data)
 	current.review = SYNC_DEFAULT.review
 	current.showall = SYNC_DEFAULT.showall
-	current.unsplash.time = SYNC_DEFAULT.unsplash.time
-	current.unsplash.pausedImage = SYNC_DEFAULT.unsplash.pausedImage
 	current.weather.city = SYNC_DEFAULT.weather.city
 	current.quotes.last = SYNC_DEFAULT.quotes.last
 
 	return deepEqual(current, SYNC_DEFAULT)
 }
 
-function verifyDataAsSync(data: Record<string, unknown> = {}) {
-	for (const key in SYNC_DEFAULT) {
-		const notAbout = key !== 'about'
-		const missingKey = !(key in data)
+function verifyDataAsSync(data: Partial<Sync> = {}): Sync {
+	let sync = { ...SYNC_DEFAULT }
 
-		if (notAbout && missingKey) {
-			data[key] = SYNC_DEFAULT[key]
-		}
-	}
+	sync.about.version = '0.0.0'
+	sync = { ...sync, ...data }
 
-	return data as Sync.Storage
+	return sync
 }
 
-function verifyDataAsLocal(data: Record<string, unknown> = {}) {
-	for (const key in LOCAL_DEFAULT) {
-		if (!(key in data)) {
-			data[key] = LOCAL_DEFAULT[key as keyof typeof LOCAL_DEFAULT]
-		}
-	}
-
-	return data as Local.Storage
+function verifyDataAsLocal(data: Partial<Local> = {}): Local {
+	const local = { ...LOCAL_DEFAULT, ...data }
+	return local
 }

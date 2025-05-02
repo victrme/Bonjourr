@@ -1,4 +1,4 @@
-import { onSettingsLoad } from './onsettingsload'
+import { onSettingsLoad } from './onsettingsload.ts'
 
 export function settingsNotifications(notifs: Record<string, boolean>): void {
 	//

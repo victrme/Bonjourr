@@ -1,171 +1,186 @@
-declare namespace Sync {
-	interface Storage {
-		showall: boolean
-		quicklinks: boolean
-		syncbookmarks?: number
-		time: boolean
-		main: boolean
-		pagegap: number
-		pagewidth: number
-		linksrow: number
-		linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
-		linknewtab: boolean
-		linktitles: boolean
-		linkbackgrounds: boolean
-		linkgroups: LinkGroups
-		textShadow: number
-		cssHeight?: number
-		review: number
-		announcements: 'all' | 'major' | 'off'
-		supporters: Supporters
-		reviewPopup?: number | string
-		css: string
-		lang: string
-		favicon: string
-		tabtitle: string
-		greeting: string
-		notes?: Notes
-		hide?: Hide
-		dark: 'auto' | 'system' | 'enable' | 'disable'
-		dateformat: 'auto' | 'eu' | 'us' | 'cn'
-		backgrounds: Backgrounds
-		clock: Clock
-		analogstyle?: AnalogStyle
-		worldclocks: WorldClocks
-		weather: Weather.Sync
-		searchbar: Searchbar
-		quotes: Quotes.Sync
-		font: Font
-		move: Move
-		about: {
-			browser: string
-			version: string
-		}
-		[key: string]: Links.Link | unknown
+import type { BackgroundImage, BackgroundVideo, Frequency, Link, Widgets } from './shared.ts'
+
+export interface Sync {
+	showall: boolean
+	quicklinks: boolean
+	syncbookmarks?: number
+	time: boolean
+	main: boolean
+	pagegap: number
+	pagewidth: number
+	linksrow: number
+	linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
+	linknewtab: boolean
+	linktitles: boolean
+	linkbackgrounds: boolean
+	linkgroups: LinkGroups
+	textShadow: number
+	cssHeight?: number
+	review: number
+	announcements: 'all' | 'major' | 'off'
+	supporters: Supporters
+	reviewPopup?: number | string
+	css: string
+	lang: string
+	favicon: string
+	tabtitle: string
+	greeting: string
+	notes?: Notes
+	hide?: Hide
+	dark: 'auto' | 'system' | 'enable' | 'disable'
+	dateformat: 'auto' | 'eu' | 'us' | 'cn'
+	backgrounds: Backgrounds
+	clock: Clock
+	analogstyle?: AnalogStyle
+	worldclocks: WorldClock[]
+	weather: Weather
+	searchbar: Searchbar
+	quotes: Quotes
+	font: Font
+	move: Move
+	about: {
+		browser: string
+		version: string
 	}
+	[key: string]: Link | unknown
+}
 
-	type LinkGroups = {
-		on: boolean
-		selected: string
-		groups: string[]
-		pinned: string[]
-		synced: string[]
-	}
+export interface LinkGroups {
+	on: boolean
+	selected: string
+	groups: string[]
+	pinned: string[]
+	synced: string[]
+}
 
-	type Hide = {
-		clock?: boolean
-		date?: boolean
-		greetings?: boolean
-		weatherdesc?: boolean
-		weathericon?: boolean
-		settingsicon?: boolean
-	}
+export interface Hide {
+	clock?: boolean
+	date?: boolean
+	greetings?: boolean
+	weatherdesc?: boolean
+	weathericon?: boolean
+	settingsicon?: boolean
+}
 
-	type Backgrounds = {
-		type: 'files' | 'urls' | 'images' | 'videos' | 'color'
-		frequency: Frequency
-		fadein: number
-		bright: number
-		blur: number
-		color: string
-		urls: string
-		images: string
-		videos: string
-		pausedUrl?: string
-		pausedImage?: Backgrounds.Image
-		pausedVideo?: Backgrounds.Video
-		queries: Record<string, string>
-		texture: {
-			type: TextureType
-			size?: number
-			opacity?: number
-		}
-	}
-
-	type TextureType = 'none' | 'grain' | 'dots' | 'topographic'
-
-	type Clock = {
-		ampm: boolean
-		analog: boolean
-		seconds: boolean
-		timezone: string
-		size: number
-		ampmlabel: boolean
-		worldclocks: boolean
-		face?: 'none' | 'number' | 'roman' | 'marks'
-		style?: 'round' | 'square' | 'transparent'
-	}
-
-	type AnalogStyle = {
-		border: string
-		background: string
-		shape: 'round' | 'square' | 'rectangle'
-		face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
-		hands: 'modern' | 'swiss' | 'classic' | 'braun' | 'apple'
-	}
-
-	type WorldClocks = {
-		region: string
-		timezone: string
-	}[]
-
-	type Searchbar = {
-		on: boolean
-		width?: number
-		newtab: boolean
-		engine: string
-		request: string
-		opacity?: number
-		suggestions: boolean
-		placeholder: string
-		background?: string
-	}
-
-	type Font = {
-		family: string
-		size: string
-		weight: string
-		weightlist: string[]
-		system?: boolean
-		url?: string
-		availWeights?: string[]
-	}
-
-	type Notes = {
-		on: boolean
-		align: string
-		text?: string
-		width?: number
-		background?: string
+export interface Backgrounds {
+	type: 'files' | 'urls' | 'images' | 'videos' | 'color'
+	frequency: Frequency
+	fadein: number
+	bright: number
+	blur: number
+	color: string
+	urls: string
+	images: string
+	videos: string
+	pausedUrl?: string
+	pausedImage?: BackgroundImage
+	pausedVideo?: BackgroundVideo
+	queries: Record<string, string>
+	texture: {
+		type: 'none' | 'grain' | 'dots' | 'topographic'
+		size?: number
 		opacity?: number
 	}
+}
 
-	type Move = {
-		selection: MoveSelection
-		layouts: {
-			single?: MoveLayout
-			double?: MoveLayout
-			triple?: MoveLayout
-		}
+export interface Clock {
+	ampm: boolean
+	analog: boolean
+	seconds: boolean
+	timezone: string
+	size: number
+	ampmlabel: boolean
+	worldclocks: boolean
+	face?: 'none' | 'number' | 'roman' | 'marks'
+	style?: 'round' | 'square' | 'transparent'
+}
+
+export interface AnalogStyle {
+	border: string
+	background: string
+	shape: 'round' | 'square' | 'rectangle'
+	face: 'none' | 'number' | 'roman' | 'marks' | 'swiss' | 'braun'
+	hands: 'modern' | 'swiss' | 'classic' | 'braun' | 'apple'
+}
+
+export interface WorldClock {
+	region: string
+	timezone: string
+}
+
+export interface Searchbar {
+	on: boolean
+	width?: number
+	newtab: boolean
+	engine: string
+	request: string
+	opacity?: number
+	suggestions: boolean
+	placeholder: string
+	background?: string
+}
+
+export interface Font {
+	family: string
+	size: string
+	weight: string
+	weightlist: string[]
+	system?: boolean
+	url?: string
+	availWeights?: string[]
+}
+
+export interface Notes {
+	on: boolean
+	align: string
+	text?: string
+	width?: number
+	background?: string
+	opacity?: number
+}
+
+export interface Quotes {
+	on: boolean
+	author: boolean
+	last?: number
+	type: 'classic' | 'kaamelott' | 'inspirobot' | 'stoic' | 'hitokoto' | 'office' | 'user' | 'url'
+	frequency: Frequency
+	userlist?: string
+	url?: string
+}
+
+export interface Move {
+	selection: 'single' | 'double' | 'triple'
+	layouts: {
+		single?: MoveLayout
+		double?: MoveLayout
+		triple?: MoveLayout
 	}
+}
 
-	type MoveSelection = 'single' | 'double' | 'triple'
+export interface MoveLayout {
+	grid: string[][]
+	items: Record<Widgets, MoveAlign | undefined>
+}
 
-	interface MoveLayout {
-		grid: string[][]
-		items: {
-			[key in Widgets]?: MoveAlign
-		}
-	}
+export interface MoveAlign {
+	box: string
+	text: string
+}
 
-	interface MoveAlign {
-		box: string
-		text: string
-	}
+export interface Supporters {
+	enabled: boolean
+	closed: boolean
+	month: number
+}
 
-	type Supporters = {
-		enabled: boolean
-		closed: boolean
-		month: number
-	}
+export interface Weather {
+	ccode?: string
+	city?: string
+	unit: 'metric' | 'imperial'
+	geolocation: 'precise' | 'approximate' | 'off'
+	forecast: 'auto' | 'always' | 'never'
+	temperature: 'actual' | 'feelslike' | 'both'
+	moreinfo: 'none' | 'msnw' | 'yhw' | 'windy' | 'accu' | 'custom'
+	provider?: string
 }

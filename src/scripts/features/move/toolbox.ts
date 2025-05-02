@@ -1,7 +1,11 @@
-import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers'
-import { updateMoveElement } from './index'
-import { toggleDisabled } from '../../shared/dom'
-import { tradThis } from '../../utils/translations'
+import { elements, getGridWidgets, gridFind, gridParse, gridStringify, hasDuplicateInArray } from './helpers.ts'
+import { updateMoveElement } from './index.ts'
+import { toggleDisabled } from '../../shared/dom.ts'
+import { tradThis } from '../../utils/translations.ts'
+
+import type { Move, MoveAlign } from '../../../types/sync.ts'
+import type { Widgets } from '../../../types/shared.ts'
+import { onclickdown } from 'clickdown/mod'
 
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
 let resetTimeout: number
@@ -19,29 +23,29 @@ export function toolboxEvents() {
 	const closeBtn = document.querySelector<HTMLElement>('#close-mover')
 
 	for (const [key, element] of elementEntries) {
-		element?.onclickdown(() => updateMoveElement({ select: key }), { propagate: false })
+		onclickdown(element, () => updateMoveElement({ select: key }), { propagate: false })
 	}
 
 	for (const button of moverBtns) {
-		button.onclickdown(() => {
+		onclickdown(button, () => {
 			updateMoveElement({ grid: { x: button.dataset.col, y: button.dataset.row } })
 		})
 	}
 
 	for (const button of boxAlignBtns) {
-		button.onclickdown(() => {
+		onclickdown(button, () => {
 			updateMoveElement({ box: button.dataset.align })
 		})
 	}
 
 	for (const button of textAlignBtns) {
-		button.onclickdown(() => {
+		onclickdown(button, () => {
 			updateMoveElement({ text: button.dataset.align })
 		})
 	}
 
-	spanColsBtn?.onclickdown(() => updateMoveElement({ span: 'col' }))
-	spanRowsBtn?.onclickdown(() => updateMoveElement({ span: 'row' }))
+	onclickdown(spanColsBtn, () => updateMoveElement({ span: 'col' }))
+	onclickdown(spanRowsBtn, () => updateMoveElement({ span: 'row' }))
 	closeBtn?.addEventListener('click', () => updateMoveElement({ toggle: false }))
 	resetBtn?.addEventListener('click', () => updateMoveElement({ reset: true }))
 
@@ -94,7 +98,7 @@ export function toolboxEvents() {
 	}
 }
 
-export function layoutButtons(selection: Sync.MoveSelection) {
+export function layoutButtons(selection: Move['selection']) {
 	for (const button of document.querySelectorAll<HTMLButtonElement>('#grid-layout button')) {
 		button.classList.toggle('selected', button.dataset.layout === selection)
 	}
@@ -134,7 +138,7 @@ export function gridButtons(id: Widgets) {
 
 		// Bottom limit when last elem on last line
 		if (row === grid.length - 1) {
-			const idOnlyRow = grid.at(row)?.filter(id => id !== '.')
+			const idOnlyRow = grid.at(row)?.filter((id) => id !== '.')
 			if (new Set(idOnlyRow).size === 1) {
 				bottom = true
 			}
@@ -182,7 +186,7 @@ export function spanButtons(id: Widgets) {
 	}
 
 	const [posCol, posRow] = gridFind(grid, id)[0]
-	const col = grid.map(g => g[posCol])
+	const col = grid.map((g) => g[posCol])
 	const row = [...grid[posRow]]
 
 	const hasColumnDuplicates = hasDuplicateInArray(col, id)
@@ -192,7 +196,7 @@ export function spanButtons(id: Widgets) {
 	applyStates('row', hasRowDuplicates)
 }
 
-export function alignButtons(align?: Sync.MoveAlign) {
+export function alignButtons(align?: MoveAlign) {
 	const { box, text } = align ?? { box: '', text: '' }
 	const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
 	const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')

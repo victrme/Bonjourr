@@ -38,7 +38,7 @@ export function transitioner(): Transitioner {
 				steps.first(rest)
 			}
 
-			await new Promise(r => {
+			await new Promise((r) => {
 				waitTimeout = setTimeout(() => r(true), Math.min(timeout, 2000))
 			})
 

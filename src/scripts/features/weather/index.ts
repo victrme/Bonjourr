@@ -1,19 +1,19 @@
-import { weatherCacheControl } from './request'
-import { handleGeolOption } from './settings'
-import { weatherUpdate } from './settings'
+import { weatherCacheControl } from './request.ts'
+import { handleGeolOption } from './settings.ts'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { weatherUpdate } from './settings.ts'
+import { suntime } from '../../shared/time.ts'
+import { storage } from '../../storage.ts'
 
-import { onSettingsLoad } from '../../utils/onsettingsload'
-import { suntime } from '../../shared/time'
-import { storage } from '../../storage'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Sync } from '../../../types/sync.ts'
 
-export type Weather = Weather.Sync
-export type LastWeather = Weather.Local
 export type Coords = { lat: number; lon: number }
 export type MeteoGeo = { name: string; detail: string }[]
 
 export type WeatherInit = {
-	sync: Sync.Storage
-	lastWeather?: Weather.Local
+	sync: Sync
+	lastWeather?: LastWeather
 }
 
 export type WeatherUpdate = {
