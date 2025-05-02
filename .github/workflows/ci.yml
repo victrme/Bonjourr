@@ -6,7 +6,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: denoland/setup-deno@v2
+            - uses: ./.github/actions/deno
             - run: deno run build
 
     tests:
@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: denoland/setup-deno@v2
+            - uses: ./.github/actions/deno
             - run: deno run test
 
     types:
@@ -22,7 +22,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: denoland/setup-deno@v2
+            - uses: ./.github/actions/deno
             - run: deno check
 
     formatting:
@@ -30,5 +30,5 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
-            - uses: denoland/setup-deno@v2
+            - uses: ./.github/actions/deno
             - run: deno fmt --check
