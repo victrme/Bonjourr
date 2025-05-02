@@ -134,12 +134,12 @@ function styles(platform: Platform, env: Env) {
 				'.png': 'file',
 			},
 		})
-	} catch (_) {
+	} catch (err) {
 		if (env === 'prod') {
-			throw new Error('?')
+			throw (err as Error).message
+		} else {
+			console.warn((err as Error).message)
 		}
-
-		return
 	}
 }
 
@@ -157,12 +157,12 @@ function scripts(platform: Platform, env: Env) {
 				ENV: `"${env.toUpperCase()}"`,
 			},
 		})
-	} catch (_) {
+	} catch (err) {
 		if (env === 'prod') {
-			throw new Error('?')
+			throw (err as Error).message
+		} else {
+			console.warn((err as Error).message)
 		}
-
-		return
 	}
 
 	if (platform === 'online') {

@@ -28,14 +28,12 @@ import { storage } from './storage.ts'
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
 
-const dominterface = document.getElementById('interface') as HTMLDivElement
-
 try {
 	startup()
 	serviceWorker()
 	onlineAndMobile()
 } catch (_) {
-	// ...
+	console.warn('Startup failed')
 }
 
 async function startup() {
@@ -125,6 +123,7 @@ function upgradeLocalStorage(data: Local): Local {
 }
 
 function onlineAndMobile() {
+	const dominterface = document.getElementById('interface') as HTMLDivElement
 	const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
 	const onlineSafariIos = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
 	let visibilityHasChanged = false
