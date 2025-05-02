@@ -1,0 +1,34 @@
+name: CI
+on: push
+
+jobs:
+    ci:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: denoland/setup-deno@v2
+            - run: deno run build
+
+    tests:
+        needs: builds
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: denoland/setup-deno@v2
+            - run: deno run test
+
+    types:
+        needs: tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: denoland/setup-deno@v2
+            - run: deno check
+
+    formatting:
+        needs: types
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: denoland/setup-deno@v2
+            - run: deno fmt --check
