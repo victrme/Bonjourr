@@ -21,24 +21,24 @@ const IMAGES: Provider[] = [
 			},
 		],
 	},
-	{
-		optgroup: 'Pixabay',
-		options: [
-			{
-				name: 'Pixabay Search',
-				value: 'pixabay-images-search',
-			},
-		],
-	},
-	{
-		optgroup: 'MET Museum',
-		options: [
-			{
-				name: 'MET Museum paintings',
-				value: 'metmuseum-images-paintings',
-			},
-		],
-	},
+	// {
+	// 	optgroup: 'Pixabay',
+	// 	options: [
+	// 		{
+	// 			name: 'Pixabay Search',
+	// 			value: 'pixabay-images-search',
+	// 		},
+	// 	],
+	// },
+	// {
+	// 	optgroup: 'MET Museum',
+	// 	options: [
+	// 		{
+	// 			name: 'MET Museum paintings',
+	// 			value: 'metmuseum-images-paintings',
+	// 		},
+	// 	],
+	// },
 ]
 
 const VIDEOS: Provider[] = [
