@@ -69,7 +69,7 @@ If you just want to say thank you and support our work, here's some ideas:
 
 If you feel like we've earned it and you want to support independant open source developpers, we'll gladly accept your donations! It motivates us to keep improving Bonjourr and makes it feel more real :)
 
-__As a token of our appreciation, donating will also get your name [featured in Bonjourr](https://bonjourr.fr/docs/overview/#supporters-notification) for the entire month after you donate!__
+**As a token of our appreciation, donating will also get your name [featured in Bonjourr](https://bonjourr.fr/docs/overview/#supporters-notification) for the entire month after you donate!**
 
 <div>
 
@@ -122,16 +122,9 @@ __As a token of our appreciation, donating will also get your name [featured in 
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
 -   **🇭🇷 Croatian translation** · Ghost
--   **🇦🇿  Azerbaijani translation** · Hacıağa Sadıxov · [GitHub](https://github.com/Hajiagha-Sadikhov)
+-   **🇦🇿 Azerbaijani translation** · Hacıağa Sadıxov · [GitHub](https://github.com/Hajiagha-Sadikhov)
 
 ## 👨‍💻 Running Bonjourr
-
-Clone this repository
-
-```bash
-git clone https://github.com/victrme/Bonjourr
-cd Bonjourr
-```
 
 ### Self-host APIs
 
@@ -139,18 +132,13 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 
 ### Run locally
 
-Bonjourr uses [Deno](https://docs.deno.com/runtime/). It is essentially an improved nodejs.
+-   Install Deno runtime: https://docs.deno.com/runtime/
+-   Optionally add Deno extension for [VSCode](https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno) or [Zed](https://zed.dev/docs/languages/deno)
+-   Or a Prettier extension for [VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+-   Clone this repository
+-   Install dependencies
+-   Build Bonjourr
 
-To get Deno:
-```bash
-# Windows
-irm https://deno.land/install.ps1 | iex
-
-# Linux / MacOS
-curl -fsSL https://deno.land/install.sh | sh
-```
-
-Then install dependencies and build Bonjourr:
 ```bash
 # In root directory
 deno install
@@ -208,7 +196,7 @@ Prerequisites:
 docker build -t bonjourr/bonjourr .
 
 # Run the container on local port 8000
-docker run --rm -p "8080:80/tcp" -it bonjourr/bonjourr
+docker run --rm -p "8000:80/tcp" -it bonjourr/bonjourr
 
 # Go to http://0.0.0.0:8000/
 ```
