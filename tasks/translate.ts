@@ -32,7 +32,8 @@ async function translateFile(lang: string): Promise<void> {
 		return
 	}
 
-	// Remove keys not found in "english" translation file
+	// 1. Remove keys not found in "english" translation file
+
 	for (const key of Object.keys(langDict)) {
 		if (englishDict[key]) {
 			newDict[key] = langDict[key]
@@ -42,25 +43,27 @@ async function translateFile(lang: string): Promise<void> {
 		removed++
 	}
 
-	// Add keys & translate new stuff
-	const missingKeys = Object.keys(englishDict).filter((key) => newDict[key] === undefined)
+	// 2. Add keys & translate new stuff
+
+	const englishKeys = Object.keys(englishDict)
+	const missingKeys = englishKeys.filter((k) => newDict[k] === undefined)
 
 	if (missingKeys.length > 0) {
 		const message = `${lang}\n${missingKeys.join('\n')}`
 		const translations = await claudeTranslation(message)
 
 		for (const key of missingKeys) {
-			const keyExists = key in newDict
 			const trn = translations.get(key)
 
-			if (keyExists && trn) {
+			if (trn) {
 				newDict[key] = trn
 				added++
 			}
 		}
 	}
 
-	// Order translations
+	// 3. Order translations
+
 	const keylist = new Set<string>()
 	const enKeys = [...Object.keys(englishDict)]
 	const sortOrder = (a: string, b: string) => enKeys.indexOf(a) - enKeys.indexOf(b)
@@ -71,24 +74,29 @@ async function translateFile(lang: string): Promise<void> {
 
 	const stringified = JSON.stringify(newDict, Array.from(keylist).sort(sortOrder), 2)
 
-	// Write to file
+	// 4. Write to file
 	Deno.writeTextFileSync(`./_locales/${lang}/translations.json`, stringified)
 
-	// Info
+	// 5. Info
 	console.info(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
 }
 
 async function claudeTranslation(message: string): Promise<Map<string, string>> {
-	const init = { body: message, method: 'POST' }
-	const path = 'https://claude-translator.victr.workers.dev/'
-	const response = await fetch(path, init)
-	const json = await response.json()
-	const trns = JSON.parse(json.content[0].text)
-	const map = new Map<string, string>()
+	try {
+		const init = { body: message, method: 'POST' }
+		const path = 'https://claude-translator.victr.workers.dev/'
+		const response = await fetch(path, init)
+		const json = await response.json()
+		const trns = JSON.parse(json.content[0].text)
+		const map = new Map<string, string>()
 
-	for (const [en, trn] of trns) {
-		map.set(en, trn)
+		for (const [en, trn] of trns) {
+			map.set(en, trn)
+		}
+
+		return map
+	} catch (err) {
+		console.warn(err)
+		return new Map()
 	}
-
-	return map
 }

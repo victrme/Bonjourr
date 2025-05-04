@@ -7,8 +7,8 @@
 
 	<div class="param" id="accept-permissions">
 		<div class="wrapper">
-			<label for="b_accept-permissions" class="trn">Synchronized links require the user to accept
-				permissions</label>
+			<label for="b_accept-permissions" class="trn"
+			>Synchronized links require the user to accept permissions</label>
 			<button id="b_accept-permissions" class="param-btn trn">Ask permission</button>
 		</div>
 	</div>
@@ -55,17 +55,39 @@
 			</span>
 
 			<div class="split-inputs">
-				<input type="text" name="favicon" id="i_favicon" maxlength="2" placeholder="🌤" aria-label="Tab favicon"
-					class="not-safari" autocomplete="off" autocorrect="off" spellcheck="false" />
-				<input type="text" name="tabtitle" id="i_tabtitle" maxlength="80" placeholder="New tab"
-					aria-label="Tab title" autocomplete="off" spellcheck="false" />
+				<input
+					type="text"
+					name="favicon"
+					id="i_favicon"
+					maxlength="2"
+					placeholder="🌤"
+					aria-label="Tab favicon"
+					class="not-safari"
+					autocomplete="off"
+					autocorrect="off"
+					spellcheck="false"
+				/>
+				<input
+					type="text"
+					name="tabtitle"
+					id="i_tabtitle"
+					maxlength="80"
+					placeholder="New tab"
+					aria-label="Tab title"
+					autocomplete="off"
+					spellcheck="false"
+				/>
 			</div>
 		</div>
 
 		<div class="tooltiptext dropdown tttab">
 			<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview/#newtab-title" rel="noreferrer noopener"
-				target="_blank">Learn more</a>
+			<a
+				class="trn"
+				href="https://bonjourr.fr/docs/overview/#newtab-title"
+				rel="noreferrer noopener"
+				target="_blank"
+			>Learn more</a>
 		</div>
 
 		<hr />
@@ -83,8 +105,12 @@
 		<p class="tooltiptext dropdown tthidesettingsicon">
 			<!-- prettier-ignore -->
 			<span class="trn">When this is enabled, clicking the bottom right corner will still open settings.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview/#hide-settings" rel="noreferrer noopener"
-				target="_blank">Learn more</a>
+			<a
+				class="trn"
+				href="https://bonjourr.fr/docs/overview/#hide-settings"
+				rel="noreferrer noopener"
+				target="_blank"
+			>Learn more</a>
 		</p>
 	</div>
 </div>
@@ -129,8 +155,14 @@
 
 				<form id="f_background-user-coll" class="network-input">
 					<div>
-						<input type="text" name="background-user-coll" id="i_background-user-coll" placeholder="XSCVKUH"
-							aria-label="Background collections" maxlength="256" />
+						<input
+							type="text"
+							name="background-user-coll"
+							id="i_background-user-coll"
+							placeholder="XSCVKUH"
+							aria-label="Background collections"
+							maxlength="256"
+						/>
 						<button type="submit">
 							<span></span>
 						</button>
@@ -148,8 +180,14 @@
 
 				<form id="f_background-user-search" class="network-input">
 					<div>
-						<input type="text" name="background-user-search" id="i_background-user-search"
-							placeholder="nature, winter" aria-label="Background search" maxlength="256" />
+						<input
+							type="text"
+							name="background-user-search"
+							id="i_background-user-search"
+							placeholder="nature, winter"
+							aria-label="Background search"
+							maxlength="256"
+						/>
 						<button type="submit">
 							<span></span>
 						</button>
@@ -196,20 +234,44 @@
 		<div id="background-position-options" class="dropdown">
 			<div class="wrapper">
 				<label for="i_background-vertical" class="trn">Vertical</label>
-				<input id="i_background-vertical" name="background-vertical" type="range" class="range" min="0"
-					max="100" step="10" value="50" />
+				<input
+					id="i_background-vertical"
+					name="background-vertical"
+					type="range"
+					class="range"
+					min="0"
+					max="100"
+					step="10"
+					value="50"
+				/>
 			</div>
 
 			<div class="wrapper">
 				<label for="i_background-horizontal" class="trn">Horizontal</label>
-				<input id="i_background-horizontal" name="background-horizontal" type="range" class="range" min="0"
-					max="100" step="10" value="50" />
+				<input
+					id="i_background-horizontal"
+					name="background-horizontal"
+					type="range"
+					class="range"
+					min="0"
+					max="100"
+					step="10"
+					value="50"
+				/>
 			</div>
 
 			<div class="wrapper">
 				<label for="i_background-size" class="trn">Size</label>
-				<input id="i_background-size" name="background-size" type="range" min="100" max="200" value="100"
-					step="10" class="range" />
+				<input
+					id="i_background-size"
+					name="background-size"
+					type="range"
+					min="100"
+					max="200"
+					value="100"
+					step="10"
+					class="range"
+				/>
 			</div>
 		</div>
 
@@ -237,12 +299,24 @@
 					<option value="day" class="trn">Every day</option>
 					<option value="pause" class="trn">Pause</option>
 				</select>
-				<button id="i_refresh" class="input-btn refresh-btn" title="Next background"
-					aria-label="Next background">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-						stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round"
-							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+				<button
+					id="i_refresh"
+					class="input-btn refresh-btn"
+					title="Next background"
+					aria-label="Next background"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+						/>
 					</svg>
 				</button>
 			</div>
@@ -312,8 +386,16 @@
 
 		<div class="wrapper">
 			<label for="i_bright" class="trn">Brightness</label>
-			<input id="i_bright" type="range" class="range" name="background_bright" min=".2" max="1" value=".80"
-				step=".01" />
+			<input
+				id="i_bright"
+				type="range"
+				class="range"
+				name="background_bright"
+				min=".2"
+				max="1"
+				value=".80"
+				step=".01"
+			/>
 		</div>
 
 		<div class="as as_fadein dropdown">
@@ -321,8 +403,16 @@
 
 			<div class="wrapper">
 				<label for="i_fadein" class="trn">Fade in</label>
-				<input id="i_fadein" type="range" class="range" name="background_fadein" min="0" max="1200" value="400"
-					step="100" />
+				<input
+					id="i_fadein"
+					type="range"
+					class="range"
+					name="background_fadein"
+					min="0"
+					max="1200"
+					value="400"
+					step="100"
+				/>
 			</div>
 		</div>
 	</div>
@@ -335,8 +425,8 @@
 
 	<p class="tooltiptext dropdown ttlinks">
 		<span class="trn">These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.</span>
-		<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener"
-			target="_blank">Learn more</a>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#quick-links" rel="noreferrer noopener" target="_blank"
+		>Learn more</a>
 	</p>
 </div>
 
@@ -354,11 +444,29 @@
 			<form id="f_addlink">
 				<div>
 					<div>
-						<input type="text" name="addlink-title" id="i_addlink-title" maxlength="64" placeholder="Title"
-							aria-label="Add title to new link" autocomplete="off" />
-						<input type="text" name="addlink-url" id="i_addlink-url" minlength="3" maxlength="512"
-							placeholder="example.com" aria-label="Add URL to new link" autocomplete="off"
-							autocorrect="off" autocapitalize="off" spellcheck="false" required="true" />
+						<input
+							type="text"
+							name="addlink-title"
+							id="i_addlink-title"
+							maxlength="64"
+							placeholder="Title"
+							aria-label="Add title to new link"
+							autocomplete="off"
+						/>
+						<input
+							type="text"
+							name="addlink-url"
+							id="i_addlink-url"
+							minlength="3"
+							maxlength="512"
+							placeholder="example.com"
+							aria-label="Add URL to new link"
+							autocomplete="off"
+							autocorrect="off"
+							autocapitalize="off"
+							spellcheck="false"
+							required="true"
+						/>
 					</div>
 
 					<button type="submit" id="i_addlink">
@@ -388,10 +496,10 @@
 
 		<div class="as as_link dropdown">
 			<p class="tooltiptext dropdown">
-				<span class="trn">Organize your links even more with pages. Right click next to a page to add
-					another.</span>
-				<a class="trn" href="https://bonjourr.fr/docs/overview#links" rel="noreferrer noopener"
-					target="_blank">Learn more</a>
+				<span class="trn"
+				>Organize your links even more with pages. Right click next to a page to add another.</span>
+				<a class="trn" href="https://bonjourr.fr/docs/overview#links" rel="noreferrer noopener" target="_blank"
+				>Learn more</a>
 			</p>
 
 			<div class="not-safari">
@@ -416,13 +524,21 @@
 				<label for="i_linkstyle" class="trn">Style</label>
 
 				<div class="split-inputs">
-					<button id="b_showtitles" class="input-btn on" aria-label="Toggle link titles"
-						title="Toggle link titles">
+					<button
+						id="b_showtitles"
+						class="input-btn on"
+						aria-label="Toggle link titles"
+						title="Toggle link titles"
+					>
 						<span>T</span>
 					</button>
 
-					<button id="b_showbackgrounds" class="input-btn on" aria-label="Toggle link backgrounds"
-						title="Toggle link backgrounds">
+					<button
+						id="b_showbackgrounds"
+						class="input-btn on"
+						aria-label="Toggle link backgrounds"
+						title="Toggle link backgrounds"
+					>
 						<span></span>
 					</button>
 
@@ -510,23 +626,34 @@
 					<label for="i_analog-background-opacity" class="trn">Clock background</label>
 
 					<div id="analog-background-range" class="split-inputs split-range">
-						<input id="i_analog-background-opacity" name="i_analog-background-opacity" class="range"
-							type="range" min="0" max="15" step="1" />
+						<input
+							id="i_analog-background-opacity"
+							name="i_analog-background-opacity"
+							class="range"
+							type="range"
+							min="0"
+							max="15"
+							step="1"
+						/>
 
-						<button id="i_analog-background-shade" title="Clock background shade"
-							class="input-btn icon-only">
+						<button
+							id="i_analog-background-shade"
+							title="Clock background shade"
+							class="input-btn icon-only"
+						>
 							<span data-value="light">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-									<path
-										d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
+									<path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
 								</svg>
 							</span>
 
 							<span data-value="dark">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-									<path fill-rule="evenodd"
+									<path
+										fill-rule="evenodd"
 										d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z"
-										clip-rule="evenodd" />
+										clip-rule="evenodd"
+									/>
 								</svg>
 							</span>
 						</button>
@@ -539,22 +666,30 @@
 					<label for="i_analog-border-opacity" class="trn">Clock border</label>
 
 					<div id="analog-border-range" class="split-inputs split-range">
-						<input id="i_analog-border-opacity" name="i_analog-border-opacity" class="range" type="range"
-							min="0" max="15" step="1" />
+						<input
+							id="i_analog-border-opacity"
+							name="i_analog-border-opacity"
+							class="range"
+							type="range"
+							min="0"
+							max="15"
+							step="1"
+						/>
 
 						<button id="i_analog-border-shade" title="Clock border shade" class="input-btn icon-only">
 							<span data-value="light">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-									<path
-										d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
+									<path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
 								</svg>
 							</span>
 
 							<span data-value="dark">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-									<path fill-rule="evenodd"
+									<path
+										fill-rule="evenodd"
 										d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z"
-										clip-rule="evenodd" />
+										clip-rule="evenodd"
+									/>
 								</svg>
 							</span>
 						</button>
@@ -596,8 +731,16 @@
 
 			<div class="wrapper">
 				<label for="i_clocksize" class="trn">Clock size</label>
-				<input id="i_clocksize" name="i_clocksize" type="range" min="0.25" max="2.25" step=".125" value="1"
-					class="range" />
+				<input
+					id="i_clocksize"
+					name="i_clocksize"
+					type="range"
+					min="0.25"
+					max="2.25"
+					step=".125"
+					value="1"
+					class="range"
+				/>
 			</div>
 
 			<hr />
@@ -615,32 +758,57 @@
 
 					<div id="worldclocks-list">
 						<div class="worldclocks-item split-inputs dropdown shown">
-							<input type="text" name="worldclock-city" maxlength="24" placeholder="Paris"
-								aria-label="Add city" />
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Paris"
+								aria-label="Add city"
+							/>
 							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
-							<input type="text" name="worldclock-city" maxlength="24" placeholder="São Paulo"
-								aria-label="Add city" />
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="São Paulo"
+								aria-label="Add city"
+							/>
 							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
-							<input type="text" name="worldclock-city" maxlength="24" placeholder="Los Angeles"
-								aria-label="Add city" />
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Los Angeles"
+								aria-label="Add city"
+							/>
 							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
-							<input type="text" name="worldclock-city" maxlength="24" placeholder="Tokyo"
-								aria-label="Add city" />
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Tokyo"
+								aria-label="Add city"
+							/>
 							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
-							<input type="text" name="worldclock-city" maxlength="24" placeholder="Kolkata"
-								aria-label="Add city" />
+							<input
+								type="text"
+								name="worldclock-city"
+								maxlength="24"
+								placeholder="Kolkata"
+								aria-label="Add city"
+							/>
 							<select name="worldclock-timezone"></select>
 						</div>
 					</div>
@@ -712,8 +880,18 @@
 
 				<form id="f_location" class="network-form">
 					<div>
-						<input id="i_city" type="text" name="city" list="dl_cityfound" autocomplete="off" minlength="2"
-							maxlength="64" spellcheck="false" aria-label="Location" required />
+						<input
+							id="i_city"
+							type="text"
+							name="city"
+							list="dl_cityfound"
+							autocomplete="off"
+							minlength="2"
+							maxlength="64"
+							spellcheck="false"
+							aria-label="Location"
+							required
+						/>
 
 						<datalist id="dl_cityfound"></datalist>
 
@@ -773,8 +951,11 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_moreinfo" class="trn">Detailed weather</label>
-					<button class="tooltip ttdetailledweather" title="What is detailed weather?"
-						aria-label="What is detailed weather?">
+					<button
+						class="tooltip ttdetailledweather"
+						title="What is detailed weather?"
+						aria-label="What is detailed weather?"
+					>
 						?
 					</button>
 				</span>
@@ -791,16 +972,25 @@
 
 			<p class="tooltiptext dropdown ttdetailledweather">
 				<span class="trn">Click on the weather widget to get detailed weather reports.</span>
-				<a class="trn" href="https://bonjourr.fr/docs/overview/#detailed-weather" rel="noreferrer noopener"
-					target="_blank">Learn more</a>
+				<a
+					class="trn"
+					href="https://bonjourr.fr/docs/overview/#detailed-weather"
+					rel="noreferrer noopener"
+					target="_blank"
+				>Learn more</a>
 			</p>
 
 			<div id="weather_provider" class="dropdown">
 				<hr />
 				<div class="wrapper">
 					<label for="i_provider" class="trn">Provider URL</label>
-					<input id="i_provider" name="provider" type="text" placeholder="https://weatherbug.com/"
-						maxlength="512" />
+					<input
+						id="i_provider"
+						name="provider"
+						type="text"
+						placeholder="https://weatherbug.com/"
+						maxlength="512"
+					/>
 				</div>
 			</div>
 
@@ -854,8 +1044,8 @@
 
 	<p class="tooltiptext dropdown ttnotes">
 		<span class="trn">You can use Markdown and keyboard shortcuts in notes.</span>
-		<a class="trn" href="https://bonjourr.fr/docs/overview/#notes" rel="noreferrer noopener" target="_blank">Learn
-			more</a>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#notes" rel="noreferrer noopener" target="_blank"
+		>Learn more</a>
 	</p>
 </div>
 
@@ -882,8 +1072,16 @@
 
 			<div class="wrapper">
 				<label for="i_noteswidth" class="trn">Width</label>
-				<input id="i_noteswidth" type="range" name="i_noteswidth" min="20" max="70" step="1" value="50"
-					class="range" />
+				<input
+					id="i_noteswidth"
+					type="range"
+					name="i_noteswidth"
+					min="20"
+					max="70"
+					step="1"
+					value="50"
+					class="range"
+				/>
 			</div>
 
 			<hr />
@@ -892,22 +1090,30 @@
 				<label for="i_notes-opacity" class="trn">Background</label>
 
 				<div id="notes-background-range" class="split-inputs split-range">
-					<input id="i_notes-opacity" name="i_notes-opacity" class="range" type="range" min="0" max="15"
-						step="1" />
+					<input
+						id="i_notes-opacity"
+						name="i_notes-opacity"
+						class="range"
+						type="range"
+						min="0"
+						max="15"
+						step="1"
+					/>
 
 					<button id="i_notes-shade" title="Notes shade" class="input-btn icon-only">
 						<span data-value="light">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-								<path
-									d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
+								<path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
 							</svg>
 						</span>
 
 						<span data-value="dark">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-								<path fill-rule="evenodd"
+								<path
+									fill-rule="evenodd"
 									d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z"
-									clip-rule="evenodd" />
+									clip-rule="evenodd"
+								/>
 							</svg>
 						</span>
 					</button>
@@ -948,8 +1154,11 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_sbengine" class="trn">Search engine</label>
-					<button class="tooltip ttsearchengine" title="I want more info on search engines"
-						aria-label="I want more info on search engines">
+					<button
+						class="tooltip ttsearchengine"
+						title="I want more info on search engines"
+						aria-label="I want more info on search engines"
+					>
 						?
 					</button>
 				</span>
@@ -972,16 +1181,25 @@
 			<p class="tooltiptext dropdown ttsearchengine">
 				<!-- prettier-ignore -->
 				<span class="trn">Change the endpoint of the search bar.</span>
-				<a class="trn" href="https://bonjourr.fr/docs/overview/#searchbar" rel="noreferrer noopener"
-					target="_blank">Learn more</a>
+				<a
+					class="trn"
+					href="https://bonjourr.fr/docs/overview/#searchbar"
+					rel="noreferrer noopener"
+					target="_blank"
+				>Learn more</a>
 			</p>
 
 			<div id="searchbar_request" class="dropdown">
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
-					<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s"
-						maxlength="512" />
+					<input
+						id="i_sbrequest"
+						name="sbrequest"
+						type="text"
+						placeholder="Search query: %s"
+						maxlength="512"
+					/>
 				</div>
 			</div>
 
@@ -989,16 +1207,30 @@
 
 			<div class="wrapper">
 				<label for="i_sbplaceholder" class="trn">Placeholder text</label>
-				<input type="text" name="sbplaceholder" id="i_sbplaceholder" autocomplete="off" maxlength="48"
-					placeholder="Search" />
+				<input
+					type="text"
+					name="sbplaceholder"
+					id="i_sbplaceholder"
+					autocomplete="off"
+					maxlength="48"
+					placeholder="Search"
+				/>
 			</div>
 
 			<hr />
 
 			<div class="wrapper">
 				<label for="i_sbwidth" class="trn">Width</label>
-				<input id="i_sbwidth" type="range" name="i_sbwidth" min="10" max="60" step="2" value="30"
-					class="range" />
+				<input
+					id="i_sbwidth"
+					type="range"
+					name="i_sbwidth"
+					min="10"
+					max="60"
+					step="2"
+					value="30"
+					class="range"
+				/>
 			</div>
 
 			<hr />
@@ -1012,16 +1244,17 @@
 					<button id="i_sb-shade" title="Search bar shade" class="input-btn icon-only">
 						<span data-value="light">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-								<path
-									d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
+								<path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z" />
 							</svg>
 						</span>
 
 						<span data-value="dark">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-								<path fill-rule="evenodd"
+								<path
+									fill-rule="evenodd"
 									d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z"
-									clip-rule="evenodd" />
+									clip-rule="evenodd"
+								/>
 							</svg>
 						</span>
 					</button>
@@ -1038,8 +1271,8 @@
 
 	<p class="tooltiptext dropdown ttquotes">
 		<span class="trn">Use the default quote collections or import your own.</span>
-		<a class="trn" href="https://bonjourr.fr/docs/overview/#quotes" rel="noreferrer noopener" target="_blank">Learn
-			more</a>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#quotes" rel="noreferrer noopener" target="_blank"
+		>Learn more</a>
 	</p>
 </div>
 
@@ -1088,8 +1321,14 @@
 
 				<div class="wrapper">
 					<label for="i_qtlist" class="trn">Custom quotes</label>
-					<textarea id="i_qtlist" name="qtlist" type="text" class="param-textarea"
-						placeholder="Author, Your quote.&#10;Author, Your second quote." maxlength="8000"></textarea>
+					<textarea
+						id="i_qtlist"
+						name="qtlist"
+						type="text"
+						class="param-textarea"
+						placeholder="Author, Your quote.&#10;Author, Your second quote."
+						maxlength="8000"
+					></textarea>
 				</div>
 			</div>
 
@@ -1101,9 +1340,18 @@
 
 					<form id="f_qturl" class="network-form">
 						<div>
-							<input id="i_qturl" type="url" name="qturl" minlength="3" maxlength="512"
-								placeholder="https://example.com/quotes.csv" autocomplete="off" autocorrect="off"
-								autocapitalize="off" spellcheck="false" />
+							<input
+								id="i_qturl"
+								type="url"
+								name="qturl"
+								minlength="3"
+								maxlength="512"
+								placeholder="https://example.com/quotes.csv"
+								autocomplete="off"
+								autocorrect="off"
+								autocapitalize="off"
+								spellcheck="false"
+							/>
 							<button type="submit">
 								<span></span>
 							</button>
@@ -1126,10 +1374,18 @@
 					<option value="pause" class="trn">Pause</option>
 				</select>
 				<button id="i_qtrefresh" class="input-btn refresh-btn" aria-label="Next quote" title="Next quote">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-						stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round"
-							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+						/>
 					</svg>
 				</button>
 			</div>
@@ -1146,8 +1402,11 @@
 		<div class="wrapper">
 			<span>
 				<label for="i_customfont" class="trn">Font family</label>
-				<button class="tooltip ttfontfamily" title="When can I preview these fonts?"
-					aria-label="When can I preview these fonts?">
+				<button
+					class="tooltip ttfontfamily"
+					title="When can I preview these fonts?"
+					aria-label="When can I preview these fonts?"
+				>
 					?
 				</button>
 			</span>
@@ -1213,8 +1472,8 @@
 		<p class="tooltiptext dropdown ttgrid">
 			<span class="trn">Customise how and where widgets appear.</span>
 			<span class="trn instructions">Open the toolbox and select a widget to modify on the page.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener">Learn
-				more</a>
+			<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener"
+			>Learn more</a>
 		</p>
 	</div>
 
@@ -1240,8 +1499,16 @@
 
 			<div class="wrapper">
 				<label for="i_pagewidth" class="trn">Page width</label>
-				<input id="i_pagewidth" type="range" name="page_width" min="600" max="2200" value="1600" step="100"
-					class="range" />
+				<input
+					id="i_pagewidth"
+					type="range"
+					name="page_width"
+					min="600"
+					max="2200"
+					value="1600"
+					step="100"
+					class="range"
+				/>
 			</div>
 		</div>
 
@@ -1263,8 +1530,8 @@
 		<p class="tooltiptext dropdown ttcss">
 			<span class="trn">Make cool things happen with CSS.</span>
 			<span class="trn instructions">Check out our </span>
-			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank">CSS
-				snippets.</a>
+			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank"
+			>CSS snippets.</a>
 		</p>
 	</div>
 
@@ -1292,8 +1559,11 @@
 		<div class="supporters-notif wrapper">
 			<span>
 				<label for="i_supporters_notif" class="trn">Supporters</label>
-				<button class="tooltip ttsupporters" title="What are supporters notifications?"
-					aria-label="What are supporters notifications?">
+				<button
+					class="tooltip ttsupporters"
+					title="What are supporters notifications?"
+					aria-label="What are supporters notifications?"
+				>
 					?
 				</button>
 			</span>
@@ -1303,11 +1573,15 @@
 
 		<p class="tooltiptext dropdown ttsupporters">
 			<!-- prettier-ignore -->
-			<span class="trn">The supporters notification appears at the top of your settings to thank those who donate
-				and support our
+			<span class="trn"
+			>The supporters notification appears at the top of your settings to thank those who donate and support our
 				work.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview/#supporters-notification" rel="noreferrer noopener"
-				target="_blank">Learn more</a>
+			<a
+				class="trn"
+				href="https://bonjourr.fr/docs/overview/#supporters-notification"
+				rel="noreferrer noopener"
+				target="_blank"
+			>Learn more</a>
 		</p>
 	</div>
 </div>
@@ -1319,8 +1593,12 @@
 
 	<p class="tooltiptext dropdown ttexport">
 		<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
-		<a class="trn" href="https://bonjourr.fr/docs/overview/#settings-management" rel="noreferrer noopener"
-			target="_blank">Learn more</a>
+		<a
+			class="trn"
+			href="https://bonjourr.fr/docs/overview/#settings-management"
+			rel="noreferrer noopener"
+			target="_blank"
+		>Learn more</a>
 	</p>
 </div>
 
@@ -1354,8 +1632,14 @@
 
 				<form id="f_gistsync" class="network-form">
 					<div>
-						<input type="text" name="gistsync" id="i_gistsync" maxlength="93"
-							aria-label="Synchronization using Github Gist" autocomplete="github-token" />
+						<input
+							type="text"
+							name="gistsync"
+							id="i_gistsync"
+							maxlength="93"
+							aria-label="Synchronization using Github Gist"
+							autocomplete="github-token"
+						/>
 						<button type="submit" id="b_gistsync">
 							<span></span>
 						</button>
@@ -1399,8 +1683,14 @@
 
 				<form id="f_urlsync" class="network-form">
 					<div>
-						<input type="text" name="i_urlsync" id="i_urlsync" maxlength="256"
-							aria-label="Synchronization using a distant URL" autocomplete="urlsync" />
+						<input
+							type="text"
+							name="i_urlsync"
+							id="i_urlsync"
+							maxlength="256"
+							aria-label="Synchronization using a distant URL"
+							autocomplete="urlsync"
+						/>
 						<button type="submit" id="b_urlsync">
 							<span></span>
 						</button>
@@ -1435,27 +1725,44 @@
 		<button id="b_settings-cancel" class="param-btn btn-red" title="Cancel changes" aria-label="Cancel changes">
 			<span class="trn">Cancel</span>
 		</button>
-		<button id="b_settings-apply" class="param-btn" title="Load Bonjourr with these settings"
-			aria-label="Load Bonjourr with these settings" disabled>
+		<button
+			id="b_settings-apply"
+			class="param-btn"
+			title="Load Bonjourr with these settings"
+			aria-label="Load Bonjourr with these settings"
+			disabled
+		>
 			<span class="trn">Apply changes</span>
 		</button>
 	</div>
 
 	<div id="settings-files-options" class="wrapper">
-		<button id="b_settings-copy" class="param-btn" title="Copy settings data to clipboard"
-			aria-label="Copy settings data to clipboard">
+		<button
+			id="b_settings-copy"
+			class="param-btn"
+			title="Copy settings data to clipboard"
+			aria-label="Copy settings data to clipboard"
+		>
 			<img src="src/assets/labels/copy.svg" height="14" alt="" />
 			<span class="trn">Copy</span>
 		</button>
 
 		<div>
-			<button id="b_file-load" class="param-btn" title="Import an existing settings file"
-				aria-label="Import an existing settings file">
+			<button
+				id="b_file-load"
+				class="param-btn"
+				title="Import an existing settings file"
+				aria-label="Import an existing settings file"
+			>
 				<img src="src/assets/labels/download.svg" height="16" alt="" />
 				<span class="trn">Import</span>
 			</button>
-			<button id="b_file-save" class="param-btn not-safari" title="Export a new settings file"
-				aria-label="Export a new settings file">
+			<button
+				id="b_file-save"
+				class="param-btn not-safari"
+				title="Export a new settings file"
+				aria-label="Export a new settings file"
+			>
 				<img src="src/assets/labels/upload.svg" height="16" alt="" />
 				<span class="trn">Export</span>
 			</button>
@@ -1493,32 +1800,48 @@
 
 		<div id="settings-footer-links">
 			<a href="https://bonjourr.fr" title="Bonjourr's website" rel="noreferrer noopener">
-				<svg version="1.1" viewBox="0 0 16 16" xml:space="preserve" xmlns="http://www.w3.org/2000/svg"
-					xmlns:xlink="http://www.w3.org/1999/xlink">
-					<path
-						d="M15.4 7 14 5.6V2c0-.6-.5-1-1-1h-1a1 1 0 0 0-1 1v.6l-2-2C8.7.3 8.5 0 8 0s-.7.3-1 .6L.5 7c-.3.3-.5.6-.5 1 0 .6.4 1 1 1h1v6c0 .6.5 1 1 1h3v-5c0-.6.5-1 1-1h2c.6 0 1 .5 1 1v5h3c.6 0 1-.5 1-1V9h1c.6 0 1-.4 1-1 0-.4-.2-.7-.6-1z" />
+				<svg
+					version="1.1"
+					viewBox="0 0 16 16"
+					xml:space="preserve"
+					xmlns="http://www.w3.org/2000/svg"
+					xmlns:xlink="http://www.w3.org/1999/xlink"
+				>
+					<path d="M15.4 7 14 5.6V2c0-.6-.5-1-1-1h-1a1 1 0 0 0-1 1v.6l-2-2C8.7.3 8.5 0 8 0s-.7.3-1 .6L.5 7c-.3.3-.5.6-.5 1 0 .6.4 1 1 1h1v6c0 .6.5 1 1 1h3v-5c0-.6.5-1 1-1h2c.6 0 1 .5 1 1v5h3c.6 0 1-.5 1-1V9h1c.6 0 1-.4 1-1 0-.4-.2-.7-.6-1z" />
 				</svg>
 			</a>
 			<a href="https://bsky.app/profile/bonjourr.fr" title="Join us on Bluesky" rel="noreferrer noopener">
-				<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"
-					viewBox="0 0 581 511" xmlns="http://www.w3.org/2000/svg">
+				<svg
+					clip-rule="evenodd"
+					fill-rule="evenodd"
+					stroke-linejoin="round"
+					stroke-miterlimit="2"
+					viewBox="0 0 581 511"
+					xmlns="http://www.w3.org/2000/svg"
+				>
 					<path
 						d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.38-3.69-10.832-3.708-7.896-.017-2.936-1.193.516-3.707 7.896-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.449-163.25-81.433-5.957-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z"
-						fill-rule="nonzero">
+						fill-rule="nonzero"
+					>
 					</path>
 				</svg>
 			</a>
-			<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository"
-				rel="noreferrer noopener">
+			<a
+				href="https://github.com/victrme/Bonjourr"
+				title="Bonjourr's GitHub repository"
+				rel="noreferrer noopener"
+			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 96">
-					<path fill-rule="evenodd" clip-rule="evenodd"
-						d="M48.9 0a49.2 49.2 0 0 0-15.4 96c2.3.4 3.2-1.2 3.2-2.5v-9c-13.6 2.9-16.5-6-16.5-6-2.2-5.7-5.4-7.1-5.4-7.1-4.4-3 .3-3 .3-3 5 .3 7.5 5 7.5 5 4.4 7.5 11.5 5.4 14.3 4 .4-3 1.7-5.3 3-6.5-10.8-1.1-22.2-5.4-22.2-24.3 0-5.4 2-9.8 5-13.2-.5-1.2-2.2-6.3.5-13 0 0 4.1-1.3 13.4 5A47 47 0 0 1 49 23.8c4 0 8.3.6 12.2 1.6 9.3-6.3 13.4-5 13.4-5 2.7 6.7 1 11.8.5 13 3.1 3.4 5 7.8 5 13.2 0 19-11.4 23-22.3 24.3 1.7 1.5 3.3 4.5 3.3 9.1v13.5c0 1.3.8 2.9 3.2 2.4a49.2 49.2 0 0 0 33.4-46.7A49 49 0 0 0 49 0z" />
+					<path
+						fill-rule="evenodd"
+						clip-rule="evenodd"
+						d="M48.9 0a49.2 49.2 0 0 0-15.4 96c2.3.4 3.2-1.2 3.2-2.5v-9c-13.6 2.9-16.5-6-16.5-6-2.2-5.7-5.4-7.1-5.4-7.1-4.4-3 .3-3 .3-3 5 .3 7.5 5 7.5 5 4.4 7.5 11.5 5.4 14.3 4 .4-3 1.7-5.3 3-6.5-10.8-1.1-22.2-5.4-22.2-24.3 0-5.4 2-9.8 5-13.2-.5-1.2-2.2-6.3.5-13 0 0 4.1-1.3 13.4 5A47 47 0 0 1 49 23.8c4 0 8.3.6 12.2 1.6 9.3-6.3 13.4-5 13.4-5 2.7 6.7 1 11.8.5 13 3.1 3.4 5 7.8 5 13.2 0 19-11.4 23-22.3 24.3 1.7 1.5 3.3 4.5 3.3 9.1v13.5c0 1.3.8 2.9 3.2 2.4a49.2 49.2 0 0 0 33.4-46.7A49 49 0 0 0 49 0z"
+					/>
 				</svg>
 			</a>
 			<a href="https://bonjourr.fr/docs/" title="Bonjourr's documentation" rel="noreferrer noopener">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-					<path
-						d="M448 360V24c0-13-11-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13 0 24-11 24-24v-16c0-7-3-14-9-19-4-15-4-59 0-74 6-5 9-11 9-19zM128 134c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm0 64c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm253 250H96a32 32 0 1 1 0-64h285c-2 17-2 47 0 64z" />
+					<path d="M448 360V24c0-13-11-24-24-24H96C43 0 0 43 0 96v320c0 53 43 96 96 96h328c13 0 24-11 24-24v-16c0-7-3-14-9-19-4-15-4-59 0-74 6-5 9-11 9-19zM128 134c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm0 64c0-3 3-6 6-6h212c3 0 6 3 6 6v20c0 3-3 6-6 6H134c-3 0-6-3-6-6v-20zm253 250H96a32 32 0 1 1 0-64h285c-2 17-2 47 0 64z" />
 				</svg>
 			</a>
 		</div>
