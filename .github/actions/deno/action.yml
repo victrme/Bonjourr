@@ -1,8 +1,8 @@
-name: "Setup deno"
-description: "Setup Deno and cache dependencies"
+name: 'Setup deno'
+description: 'Setup Deno and cache dependencies'
 
 runs:
-    using: "composite"
+    using: 'composite'
     steps:
         - uses: denoland/setup-deno@v2
         - uses: actions/cache@v4

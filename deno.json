@@ -52,7 +52,7 @@
 		"useTabs": true,
 		"semiColons": false,
 		"singleQuote": true,
-		"include": ["src", "tasks", "tests", "_locales/**/*.json"]
+		"include": ["**/*.ts", "**/*.js"]
 	},
 	"compilerOptions": {
 		"strict": true,
