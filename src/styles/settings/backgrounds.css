@@ -50,7 +50,9 @@
 	padding: 0;
 	overflow: hidden;
 	background-color: var(--color-input);
-	transition: transform 0.1s, opacity 0.1s;
+	transition:
+		transform 0.1s,
+		opacity 0.1s;
 }
 
 .thumbnail.hiding {
@@ -116,6 +118,10 @@
 }
 
 /* Background URLs */
+
+#background-urls-option {
+	display: none;
+}
 
 #background-urls-editor > div {
 	background-color: var(--color-input);
