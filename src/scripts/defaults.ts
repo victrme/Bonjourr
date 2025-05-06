@@ -119,7 +119,7 @@ export const SYNC_DEFAULT: Sync = {
 		synced: [],
 	},
 	backgrounds: {
-		type: 'color',
+		type: 'images',
 		fadein: 600,
 		blur: 15,
 		bright: 0.8,

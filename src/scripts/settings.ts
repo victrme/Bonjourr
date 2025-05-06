@@ -415,12 +415,14 @@ function initOptionsEvents() {
 		backgroundUpdate({ provider: this.value })
 	})
 
-	paramId('i_background-user-coll').addEventListener('change', function () {
-		backgroundUpdate({ query: this.value })
+	paramId('f_background-user-coll').addEventListener('submit', function (this, event: SubmitEvent) {
+		backgroundUpdate({ query: event })
+		event.preventDefault()
 	})
 
-	paramId('i_background-user-search').addEventListener('change', function () {
-		backgroundUpdate({ query: this.value })
+	paramId('f_background-user-search').addEventListener('submit', function (this, event: SubmitEvent) {
+		backgroundUpdate({ query: event })
+		event.preventDefault()
 	})
 
 	paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {

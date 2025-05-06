@@ -15,13 +15,14 @@ import { storage } from '../../storage.ts'
 import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '../../../types/shared.ts'
 import type { Backgrounds, Sync } from '../../../types/sync.ts'
 import type { Local } from '../../../types/local.ts'
+import { networkForm } from '../../shared/form.ts'
 
 interface BackgroundUpdate {
 	freq?: string
 	type?: string
 	blur?: string
 	color?: string
-	query?: string
+	query?: SubmitEvent
 	files?: FileList | null
 	compress?: boolean
 	bright?: string
@@ -41,6 +42,9 @@ interface ApplyOptions {
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
+
+const formBackgroundUserColl = networkForm('f_background-user-coll')
+const formBackgroundUserSearch = networkForm('f_background-user-search')
 
 export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 	if (init) {
@@ -204,18 +208,43 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		data.backgrounds[data.backgrounds.type] = update.provider
 		storage.sync.set({ backgrounds: data.backgrounds })
 		handleBackgroundOptions(data.backgrounds)
-		backgroundCacheControl(data.backgrounds, local)
+
+		const isNotEmpty = local.backgroundCollections[update.provider]?.length > 0
+		const isDefault = update.provider.includes('bonjourr')
+
+		if (isNotEmpty || isDefault) {
+			backgroundCacheControl(data.backgrounds, local)
+		}
 	}
 
 	if (update.query !== undefined) {
 		const collectionName = data.backgrounds[data.backgrounds.type]
+		const target = update.query.target as HTMLElement
+		const input = target.querySelector<HTMLInputElement>('input')
+		const query = input?.value ?? ''
 
 		local.backgroundCollections[collectionName] = []
-		data.backgrounds.queries[collectionName] = update.query
+		data.backgrounds.queries[collectionName] = query
 		storage.sync.set({ backgrounds: data.backgrounds })
 
+		if (query === '') {
+			storage.local.set({ backgroundCollections: local.backgroundCollections })
+
+			formBackgroundUserColl.accept('')
+			formBackgroundUserSearch.accept('')
+			removeBackgrounds()
+
+			return
+		}
+
+		formBackgroundUserColl.load()
+		formBackgroundUserSearch.load()
+
 		handleBackgroundOptions(data.backgrounds)
-		backgroundCacheControl(data.backgrounds, local)
+		await backgroundCacheControl(data.backgrounds, local)
+
+		formBackgroundUserColl.accept(collectionName)
+		formBackgroundUserSearch.accept(collectionName)
 	}
 }
 
@@ -476,10 +505,6 @@ function getCollection(backgrounds: Backgrounds, local: Local) {
 
 	const collectionName = findCollectionName(backgrounds)
 	const collection = local.backgroundCollections[collectionName] ?? []
-
-	if (collection.length === 0) {
-		console.warn(new Error('?'))
-	}
 
 	// Check collection format
 
