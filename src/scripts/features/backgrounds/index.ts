@@ -224,11 +224,23 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		const collectionName = data.backgrounds[data.backgrounds.type]
 		const target = update.query.target as HTMLElement
 		const input = target.querySelector<HTMLInputElement>('input')
-		const query = input?.value ?? ''
+		let query = input?.value ?? ''
+
+		// 0. extract unsplash collection from URL
+
+		const isCorrectCollection = collectionName === 'unsplash-images-collections'
+		const startsWithUrl = query.startsWith('https://unsplash.com/collections/')
+		if (isCorrectCollection && startsWithUrl) {
+			query = query.replace('https://unsplash.com/collections/', '').slice(0, query.indexOf('/'))
+		}
+
+		// 1. Save query
 
 		local.backgroundCollections[collectionName] = []
 		data.backgrounds.queries[collectionName] = query
 		storage.sync.set({ backgrounds: data.backgrounds })
+
+		// 2. Handle empty query
 
 		if (query === '') {
 			storage.local.set({ backgroundCollections: local.backgroundCollections })
