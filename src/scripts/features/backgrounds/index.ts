@@ -42,6 +42,8 @@ interface ApplyOptions {
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
+const fadeinPreviewDebounce = debounce(previewFadein, 200)
+let fadeinTimeout = 0
 
 const formBackgroundUserColl = networkForm('f_background-user-coll')
 const formBackgroundUserSearch = networkForm('f_background-user-search')
@@ -105,6 +107,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (update.fadein !== undefined) {
 		applyFilters({ fadein: Number.parseInt(update.fadein) })
 		propertiesUpdateDebounce({ fadein: Number.parseFloat(update.fadein) })
+		fadeinPreviewDebounce(Number.parseFloat(update.fadein))
 		return
 	}
 
@@ -271,6 +274,15 @@ async function solidUpdate(value: string) {
 	const data = await storage.sync.get('backgrounds')
 	data.backgrounds.color = value
 	storage.sync.set({ backgrounds: data.backgrounds })
+}
+
+function previewFadein(ms: number) {
+	const wrapper = document.getElementById('background-wrapper')
+	const setOpacity = (val: number) => wrapper?.setAttribute('style', `opacity: ${val}`)
+
+	clearTimeout(fadeinTimeout)
+	fadeinTimeout = setTimeout(() => setOpacity(1), ms)
+	setOpacity(0)
 }
 
 //	Cache & network
