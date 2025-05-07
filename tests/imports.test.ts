@@ -3,7 +3,7 @@ import './init.test.ts'
 // Import script after test init, document needs to be loaded first
 import { SYNC_DEFAULT } from '../src/scripts/defaults.ts'
 import { filterImports } from '../src/scripts/imports.ts'
-import type { Link } from '../src/types/shared.ts'
+import type { Link, OldSync } from '../src/types/shared.ts'
 import { assert } from '@std/assert'
 
 const defaults = structuredClone(SYNC_DEFAULT)
@@ -28,7 +28,7 @@ Deno.test('Current version small import', () => {
 	assert(defaults.lang === config.lang)
 })
 
-Deno.test('1.10', async (t) => {
+Deno.test('1.10.0', async (t) => {
 	const text = Deno.readTextFileSync('./tests/configs/old.1.10.0.json')
 	const old = JSON.parse(text)
 	const res = filterImports(defaults, old)
@@ -79,5 +79,18 @@ Deno.test('1.10', async (t) => {
 
 	await t.step('Review', () => {
 		assert(res.review === -1)
+	})
+})
+
+Deno.test('20.4.2', async (t) => {
+	const text = Deno.readTextFileSync('./tests/configs/unsplash.20.4.2.json')
+	const old = JSON.parse(text)
+	const res = filterImports(defaults, old)
+
+	await t.step('Backgrounds', () => {
+		assert(old.unsplash.every === res.backgrounds.frequency)
+		assert(old.background_blur === res.backgrounds.blur)
+		assert(old.background_bright === res.backgrounds.bright)
+		assert(old.unsplash.collection === res.backgrounds.queries['unsplash-images-collections'])
 	})
 })
