@@ -1,7 +1,7 @@
 // Uses ISO 639
 // https://wikipedia.org/wiki/List_of_ISO_639_language_codes
 
-export default {
+export const langList = {
 	en: 'English',
 	fr: 'Français',
 	de: 'Deutsch',
@@ -51,7 +51,7 @@ export const subsets = {
 	ru: 'cyrillic',
 	uk: 'cyrillic',
 	sr: 'cyrillic',
-	be: 'cyrillic',  
+	be: 'cyrillic',
 	sk: 'latin-ext',
 	hr: 'latin-ext',
 	cs: 'latin-ext',
@@ -60,7 +60,7 @@ export const subsets = {
 	tr: 'latin-ext',
 	hu: 'latin-ext',
 	vi: 'latin-ext',
-  az: 'latin-ext', 
+	az: 'latin-ext',
 	ja: 'japanese',
 	hy: 'armenian',
 	te: 'telugu',

@@ -1,8 +1,12 @@
-import { getLiFromEvent, getLinksInFolder } from './helpers'
-import { initblocks } from '.'
-import transitioner from '../../utils/transitioner'
-import { tradThis } from '../../utils/translations'
-import storage from '../../storage'
+import { getLiFromEvent, getLinksInFolder } from './helpers.ts'
+import { initblocks } from './index.ts'
+
+import { transitioner } from '../../utils/transitioner.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
+
+import type { LinkFolder } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLUListElement
 
@@ -16,7 +20,7 @@ export async function folderClick(event: MouseEvent) {
 	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
-	if (!li || !inFolder || rightClick || isSelectAll) {
+	if (!(li && inFolder) || rightClick || isSelectAll) {
 		return
 	}
 
@@ -33,14 +37,18 @@ export async function folderClick(event: MouseEvent) {
 	}
 }
 
-function openFolder(data: Sync.Storage, li: HTMLLIElement) {
-	const linkgroup = li.parentNode!.parentNode as HTMLElement
+function openFolder(data: Sync, li: HTMLLIElement): void {
+	if (!li.parentNode) {
+		return
+	}
+
+	const linkgroup = li.parentNode.parentNode as HTMLElement
 	const linktitle = linkgroup.querySelector<HTMLButtonElement>('.link-title')
-	const folder = data[li.id] as Links.Folder
+	const folder = data[li.id] as LinkFolder
 
 	const transition = transitioner()
 	transition.first(hide)
-	transition.then(changeToFolder)
+	transition.after(changeToFolder)
 	transition.finally(show)
 	transition.transition(40)
 
@@ -50,8 +58,8 @@ function openFolder(data: Sync.Storage, li: HTMLLIElement) {
 		linkgroup.classList.remove('in-folder')
 	}
 
-	async function changeToFolder() {
-		await initblocks(data)
+	function changeToFolder() {
+		initblocks(data)
 
 		if (linktitle) {
 			linktitle.textContent = folder?.title || tradThis('Folder')
@@ -71,15 +79,17 @@ async function closeFolder() {
 	const data = await storage.sync.get()
 	const transition = transitioner()
 	transition.first(hide)
-	transition.then(changeToTab)
+	transition.after(changeToTab)
 	transition.finally(show)
 	transition.transition(40)
 
 	function hide() {
-		document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')?.forEach((group) => {
+		const folders = document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')
+
+		for (const group of folders) {
 			group.classList.add('hiding')
 			group.dataset.folder = ''
-		})
+		}
 	}
 
 	async function changeToTab() {
@@ -88,17 +98,22 @@ async function closeFolder() {
 	}
 
 	function show() {
-		document.querySelectorAll<HTMLDivElement>('.link-group')?.forEach((group) => {
+		const groups = document.querySelectorAll<HTMLDivElement>('.link-group')
+
+		for (const group of groups) {
 			group.classList.remove('in-folder')
 			group.classList.remove('hiding')
-		})
+		}
 	}
 }
 
-function openAllLinks(data: Sync.Storage, li: HTMLLIElement) {
-	const links = getLinksInFolder(data, li.id)
+function openAllLinks(data: Sync, li: HTMLLIElement) {
+	const linksInFolder = getLinksInFolder(data, li.id)
 
-	links.forEach((link) => window.open(link.url, '_blank')?.focus())
-	window.open(window.location.href, '_blank')?.focus()
-	window.close()
+	for (const link of linksInFolder) {
+		globalThis.open(link.url, '_blank')?.focus()
+	}
+
+	globalThis.open(globalThis.location.href, '_blank')?.focus()
+	globalThis.close()
 }

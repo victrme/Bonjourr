@@ -1,60 +1,53 @@
-import notes from './features/notes'
-import clock from './features/clock'
-import quotes from './features/quotes'
-import weather from './features/weather/index'
-import customCss from './features/css'
-import searchbar from './features/searchbar'
-import customFont from './features/fonts'
-import quickLinks from './features/links'
-import moveElements from './features/move'
-import hideElements from './features/hide'
-import interfacePopup from './features/popup'
-import initBackground from './features/backgrounds'
-import synchronization from './features/synchronization'
-import { settingsPreload } from './settings'
-import { supportersNotifications } from './features/supporters'
-import { textShadow, favicon, tabTitle, darkmode, pageControl } from './features/others'
+import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
+import { supportersNotifications } from './features/supporters.ts'
+import { migrateToNewIdbFormat } from './features/backgrounds/local.ts'
+import { synchronization } from './features/synchronization/index.ts'
+import { backgroundsInit } from './features/backgrounds/index.ts'
+import { interfacePopup } from './features/popup.ts'
+import { moveElements } from './features/move/index.ts'
+import { hideElements } from './features/hide.ts'
+import { customFont } from './features/fonts.ts'
+import { quickLinks } from './features/links/index.ts'
+import { searchbar } from './features/searchbar.ts'
+import { customCss } from './features/css.ts'
+import { weather } from './features/weather/index.ts'
+import { quotes } from './features/quotes.ts'
+import { notes } from './features/notes.ts'
+import { clock } from './features/clock.ts'
 
-import { SYSTEM_OS, BROWSER, PLATFORM, IS_MOBILE, CURRENT_VERSION, ENVIRONNEMENT } from './defaults'
-import { traduction, setTranslationCache } from './utils/translations'
-import { freqControl } from './utils'
-import onSettingsLoad from './utils/onsettingsload'
-import filterImports from './utils/filterimports'
-import errorMessage from './utils/errormessage'
-import suntime from './utils/suntime'
-import storage from './storage'
-import 'clickdown'
+import { BROWSER, CURRENT_VERSION, ENVIRONNEMENT, IS_MOBILE, PLATFORM, SYSTEM_OS } from './defaults.ts'
+import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
+import { setTranslationCache, traduction } from './utils/translations.ts'
+import { needsChange, suntime, userDate } from './shared/time.ts'
+import { onSettingsLoad } from './utils/onsettingsload.ts'
+import { filterImports } from './imports.ts'
+import { settingsInit } from './settings.ts'
+import { userActions } from './events.ts'
+import { storage } from './storage.ts'
 
-type FeaturesToWait = 'clock' | 'links' | 'fonts' | 'quotes'
-
-const dominterface = document.getElementById('interface') as HTMLDivElement
-const features: FeaturesToWait[] = ['clock', 'links']
-let interfaceDisplayCallback = () => undefined
-let loadtime = performance.now()
-
-//	Startup
+import type { Local } from '../types/local.ts'
+import type { Sync } from '../types/sync.ts'
 
 try {
 	startup()
 	serviceWorker()
 	onlineAndMobile()
-} catch (error) {
-	errorMessage(error)
+} catch (_) {
+	console.warn('Startup failed')
 }
 
 async function startup() {
 	let { sync, local } = await storage.init()
-	const OLD_VERSION = sync?.about?.version
+	const oldVersion = sync?.about?.version
 
-	if (!sync || !local) {
-		errorMessage('Storage failed 😥')
+	if (!(sync && local)) {
 		return
 	}
 
-	if (OLD_VERSION !== CURRENT_VERSION) {
-		console.log(`Version change: ${OLD_VERSION} => ${CURRENT_VERSION}`)
+	if (oldVersion !== CURRENT_VERSION) {
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
+		await migrateToNewIdbFormat(local)
 
 		// <!> do not move
 		// <!> must delete old keys before upgrading storage
@@ -65,7 +58,9 @@ async function startup() {
 	await setTranslationCache(sync.lang, local)
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
+	userDate(sync.clock.timezone)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
+
 	weather({ sync: sync, lastWeather: local.lastWeather })
 	customFont(sync.font)
 	textShadow(sync.textShadow)
@@ -74,14 +69,15 @@ async function startup() {
 	clock(sync)
 	darkmode(sync.dark)
 	searchbar(sync.searchbar)
-	quotes({ sync: sync, local })
+	quotes({ sync, local })
 	notes(sync.notes)
 	moveElements(sync.move)
 	customCss(sync.css)
 	hideElements(sync.hide)
-	initBackground(sync, local)
+	backgroundsInit(sync, local, true)
 	quickLinks(sync)
 	synchronization(local)
+	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
 
@@ -95,9 +91,8 @@ async function startup() {
 	onInterfaceDisplay(() => {
 		document.body.classList.remove('init')
 
-		settingsPreload()
-		userActionsEvents()
 		setPotatoComputerMode()
+		userActions()
 
 		supportersNotifications({
 			supporters: sync.supporters,
@@ -105,19 +100,19 @@ async function startup() {
 		})
 
 		interfacePopup({
-			old: OLD_VERSION,
-			new: CURRENT_VERSION,
-			review: sync.review ?? 0,
 			announce: sync.announcements,
+			review: sync.review ?? 0,
+			new: CURRENT_VERSION,
+			old: oldVersion,
 		})
 	})
 }
 
-function upgradeSyncStorage(data: Sync.Storage): Sync.Storage {
+function upgradeSyncStorage(data: Sync): Sync {
 	return filterImports(data, data)
 }
 
-function upgradeLocalStorage(data: Local.Storage): Local.Storage {
+function upgradeLocalStorage(data: Local): Local {
 	data.translations = undefined
 	storage.local.remove('translations')
 
@@ -127,187 +122,12 @@ function upgradeLocalStorage(data: Local.Storage): Local.Storage {
 	return data
 }
 
-export function displayInterface(ready?: FeaturesToWait, data?: Sync.Storage) {
-	if (data) {
-		if (data?.font?.family) features.push('fonts')
-		if (data?.quotes?.on) features.push('quotes')
-		return
-	} else if (!ready) {
-		return
-	}
-
-	const index = features.indexOf(ready)
-
-	if (index !== -1) {
-		features.splice(index, 1)
-	} else {
-		return
-	}
-
-	if (features.length > 0) {
-		return
-	}
-
-	loadtime = Math.min(performance.now() - loadtime, 400)
-	loadtime = loadtime > 33 ? loadtime : 0
-	document.documentElement.style.setProperty('--load-time-transition', loadtime + 'ms')
-	document.body.classList.remove('loading')
-
-	setTimeout(() => {
-		onInterfaceDisplay()
-	}, Math.max(333, loadtime))
-}
-
-function onInterfaceDisplay(callback?: () => undefined): void {
-	if (callback) {
-		interfaceDisplayCallback = callback
-	} else {
-		interfaceDisplayCallback()
-	}
-}
-
-function userActionsEvents() {
-	const domsuggestions = document.getElementById('sb-suggestions')
-	let isMousingDownOnInput = false
-
-	document.body.addEventListener('mousedown', detectTargetAsInputs)
-	document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
-
-	document.addEventListener('click', clickUserActions)
-	document.addEventListener('keydown', keydownUserActions)
-	document.addEventListener('keyup', keydownUserActions)
-
-	function keydownUserActions(event: KeyboardEvent) {
-		if (event.code === 'Escape') {
-			if (domsuggestions?.classList.contains('shown')) {
-				domsuggestions?.classList.remove('shown')
-				return
-			}
-
-			const open = isOpen()
-			const keyup = event.type === 'keyup'
-
-			if (open.contextmenu) {
-				document.dispatchEvent(new Event('close-edit'))
-			}
-			//
-			else if (open.settings && keyup) {
-				document.dispatchEvent(new Event('toggle-settings'))
-			}
-			//
-			else if (open.selectall) {
-				document.dispatchEvent(new Event('remove-select-all'))
-			}
-			//
-			else if (open.folder) {
-				document.dispatchEvent(new Event('close-folder'))
-			}
-			//
-			else if (keyup) {
-				// condition to avoid conflicts with esc key on supporters modal
-				// likely to be improved
-				if (document.documentElement.dataset.supportersModal === undefined) {
-					document.dispatchEvent(new Event('toggle-settings'))
-				}
-			}
-
-			return
-		}
-
-		if (event.code === 'Tab') {
-			document.body.classList.toggle('tabbing', true)
-			return
-		}
-	}
-
-	function clickUserActions(event: MouseEvent) {
-		if (isMousingDownOnInput) {
-			return
-		}
-
-		const open = isOpen()
-		const composedPath = (event.composedPath() as Element[]) ?? [document.body]
-		const path = composedPath.filter((node) => node?.className?.includes)
-		const pathIds = path.map((el) => (el as HTMLElement).id)
-
-		const on = {
-			body: (path[0] as HTMLElement).tagName === 'BODY',
-			link: path.some((el) => el.classList.contains('link')),
-			linkfolder: path.some((el) => el.className.includes('folder')),
-			addgroup: path.some((el) => el.className.includes('add-group')),
-			folder: path.some((el) => el.className.includes('in-folder')),
-			interface: pathIds.includes('interface'),
-			editlink: pathIds.includes('editlink'),
-			settings: path.some((el) => el.id === 'settings'),
-			showsettings: path.some((el) => el.id === 'show-settings'),
-		}
-
-		if (document.body.classList.contains('tabbing')) {
-			document.body?.classList.toggle('tabbing', false)
-		}
-
-		if (on.showsettings) {
-			document.dispatchEvent(new Event('toggle-settings'))
-		}
-
-		if (open.contextmenu && !on.editlink) {
-			if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
-				return
-			}
-
-			document.dispatchEvent(new Event('close-edit'))
-			return
-		}
-
-		if ((on.body || on.interface) === false) {
-			return
-		}
-
-		if (open.settings) {
-			document.dispatchEvent(new Event('toggle-settings'))
-		}
-		//
-		else if (open.selectall && !on.link) {
-			document.dispatchEvent(new Event('remove-select-all'))
-		}
-		//
-		else if (open.folder && !on.folder && !on.linkfolder) {
-			document.dispatchEvent(new Event('close-folder'))
-		}
-	}
-
-	function isOpen() {
-		return {
-			settings: !!document.getElementById('settings')?.classList.contains('shown'),
-			folder: !!document.querySelector('.in-folder'),
-			selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
-			contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
-		}
-	}
-
-	function detectTargetAsInputs(event: Event) {
-		const path = event.composedPath() as Element[]
-		const tagName = path[0]?.tagName ?? ''
-		isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
-	}
-
-	function closeSettingsOnMoveOpen() {
-		setTimeout(() => {
-			const elementmover = document.getElementById('element-mover')
-			const moverHasOpened = elementmover?.classList.contains('hidden') === false
-
-			if (moverHasOpened) {
-				document.dispatchEvent(new Event('toggle-settings'))
-			}
-		}, 20)
-	}
-}
-
 function onlineAndMobile() {
+	const dominterface = document.getElementById('interface') as HTMLDivElement
 	const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
-	const onlineSafariIOS = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
+	const onlineSafariIos = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
 	let visibilityHasChanged = false
-	let firefoxRAFTimeout: number
+	let firefoxRafTimeout: number
 
 	if (IS_MOBILE) {
 		document.addEventListener('visibilitychange', updateOnVisibilityChange)
@@ -322,12 +142,12 @@ function onlineAndMobile() {
 
 		// Fix for opening tabs Firefox iOS
 		if (SYSTEM_OS === 'ios') {
-			window.requestAnimationFrame(triggerAnimationFrame)
-			setTimeout(() => cancelAnimationFrame(firefoxRAFTimeout), 500)
+			globalThis.requestAnimationFrame(triggerAnimationFrame)
+			setTimeout(() => cancelAnimationFrame(firefoxRafTimeout), 500)
 		}
 	}
 
-	if (onlineSafariIOS) {
+	if (onlineSafariIos) {
 		onSettingsLoad(() => {
 			const inputs = document.querySelectorAll('input[type="text"], input[type="url"], textarea')
 
@@ -347,17 +167,19 @@ function onlineAndMobile() {
 		visibilityHasChanged = false
 
 		const data = await storage.sync.get()
-		const local = await storage.local.get(['unsplashCache', 'lastWeather'])
+		const local = await storage.local.get()
 
-		if (!data?.clock || !data?.weather) {
+		if (!(data?.clock && data?.weather)) {
 			return
 		}
 
-		const frequency = freqControl.get(data.unsplash.every, data.unsplash.time ?? Date.now())
+		const last = local.backgroundLastChange
+		const time = (last ? new Date(last) : new Date()).getTime()
+		const frequency = needsChange(data.backgrounds.frequency, time)
 		const needNewImage = data.background_type === 'unsplash' && frequency
 
 		if (needNewImage && data.unsplash) {
-			initBackground(data, local)
+			backgroundsInit(data, local)
 		}
 
 		clock(data)
@@ -366,11 +188,11 @@ function onlineAndMobile() {
 
 	function triggerAnimationFrame() {
 		updateAppHeight()
-		firefoxRAFTimeout = requestAnimationFrame(triggerAnimationFrame)
+		firefoxRafTimeout = requestAnimationFrame(triggerAnimationFrame)
 	}
 
 	function updateAppHeight() {
-		document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`)
+		document.documentElement.style.setProperty('--app-height', `${globalThis.innerHeight}px`)
 	}
 
 	function disableTouchAction() {
@@ -397,8 +219,9 @@ function serviceWorker() {
 
 	navigator.serviceWorker.register('service-worker.js')
 
-	let promptEvent // PWA install trigger (30s interaction default)
-	window.addEventListener('beforeinstallprompt', function (e) {
+	let promptEvent: Event // PWA install trigger (30s interaction default)
+
+	globalThis.addEventListener('beforeinstallprompt', (e) => {
 		promptEvent = e
 		return promptEvent
 	})
@@ -413,7 +236,7 @@ function setPotatoComputerMode() {
 
 	const fourHours = 1000 * 60 * 60 * 4
 	const isPotato = localStorage.potato === 'yes'
-	const expirationTime = Date.now() - parseInt(localStorage.lastPotatoCheck ?? '0')
+	const expirationTime = Date.now() - Number.parseInt(localStorage.lastPotatoCheck ?? '0')
 
 	if (expirationTime < fourHours) {
 		document.body.classList.toggle('potato', isPotato)
@@ -429,8 +252,8 @@ function setPotatoComputerMode() {
 		return
 	}
 
-	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0) + ''
-	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0) + ''
+	const vendor = gl?.getParameter(debugInfo?.UNMASKED_VENDOR_WEBGL ?? 0).toString()
+	const renderer = gl?.getParameter(debugInfo?.UNMASKED_RENDERER_WEBGL ?? 0).toString()
 	const detectedPotato = vendor.includes('Google') && renderer.includes('SwiftShader')
 
 	localStorage.potato = detectedPotato ? 'yes' : 'no'

@@ -1,15 +1,20 @@
-import { apiFetch, equalsCaseInsensitive, freqControl, isEvery } from '../utils'
-import { displayInterface } from '../index'
-import networkForm from '../utils/networkform'
-import storage from '../storage'
-import parse from '../utils/parse'
-import { tradThis } from '../utils/translations'
+import { equalsCaseInsensitive } from '../shared/generic.ts'
+import { needsChange, userDate } from '../shared/time.ts'
+import { displayInterface } from '../shared/display.ts'
+import { networkForm } from '../shared/form.ts'
+import { tradThis } from '../utils/translations.ts'
+import { apiFetch } from '../shared/api.ts'
+import { isEvery } from '../shared/assert.ts'
+import { storage } from '../storage.ts'
+import { parse } from '../utils/parse.ts'
 
-type Quote = Quotes.Item
+import type { Quote, QuoteUserInput } from '../../types/shared.ts'
+import type { Quotes, Sync } from '../../types/sync.ts'
+import type { Local } from '../../types/local.ts'
 
 type QuotesInit = {
-	sync: Sync.Storage
-	local: Local.Storage
+	sync: Sync
+	local: Local
 }
 
 type QuotesUpdate = {
@@ -25,7 +30,7 @@ type QuotesUpdate = {
 const quotesTypeForm = networkForm('f_qttype')
 const quotesUrlForm = networkForm('f_qturl')
 
-export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
+export async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	if (update) {
 		updateQuotes(update)
 		return
@@ -36,7 +41,7 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	}
 
 	const { lang, quotes } = init.sync
-	const needsNewQuote = freqControl.get(quotes.frequency, quotes.last ?? 0)
+	const needsNewQuote = needsChange(quotes.frequency, quotes.last ?? 0)
 
 	const selection = init.local?.userQuoteSelection ?? 0
 	let list = init.local?.quotesCache ?? []
@@ -56,7 +61,7 @@ export default async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 	}
 
 	if (needsNewQuote) {
-		quotes.last = freqControl.set()
+		quotes.last = userDate().getTime()
 		quote = controlCacheList(list, lang, quotes.type, quotes.url)
 		storage.sync.set({ quotes })
 	}
@@ -92,7 +97,7 @@ async function updateQuotes({ author, frequency, type, userlist, url, refresh }:
 	}
 
 	if (refresh) {
-		data.quotes.last = freqControl.set()
+		data.quotes.last = userDate().getTime()
 		refreshQuotes(data, local?.quotesCache)
 	}
 
@@ -112,7 +117,7 @@ async function updateQuotes({ author, frequency, type, userlist, url, refresh }:
 	storage.sync.set({ quotes: data.quotes })
 }
 
-async function updateQuotesData(data: Sync.Storage) {
+async function updateQuotesData(data: Sync) {
 	const isUser = data.quotes.type === 'user'
 	let list: Quote[] = []
 	let selection = 0
@@ -130,9 +135,8 @@ async function updateQuotesData(data: Sync.Storage) {
 			form.load()
 			list = await fetchQuotes(data.lang, data.quotes.type, data.quotes.url)
 			form.accept()
-		} catch (error) {
+		} catch (_error) {
 			form.warn(tradThis('Fetch failed, please check console for more information'))
-			console.warn(error)
 		}
 
 		storage.local.set({ quotesCache: list })
@@ -155,10 +159,10 @@ function handleUserListChange(input: string): string | undefined {
 
 	// old json format
 	if (input.startsWith('[[')) {
-		input = oldJSONToCSV(parse<Quotes.UserInput>(input) ?? [])
+		array = csvUserInputToQuotes(oldJSONToCSV(parse<QuoteUserInput>(input) ?? []))
+	} else {
+		array = csvUserInputToQuotes(input)
 	}
-
-	array = csvUserInputToQuotes(input)
 
 	if (array.length > 0) {
 		insertToDom({
@@ -173,17 +177,19 @@ function handleUserListChange(input: string): string | undefined {
 	return input
 }
 
-function refreshQuotes(data: Sync.Storage, list: Local.Storage['quotesCache'] = []) {
-	if (data.quotes.type === 'user' && data.quotes.userlist) {
-		list = csvUserInputToQuotes(data.quotes.userlist)
-	}
+function refreshQuotes(sync: Sync, quoteslist: Local['quotesCache'] = []) {
+	const { lang, quotes } = sync
+	const { type, url, userlist } = quotes
 
-	insertToDom(controlCacheList(list, data.lang, data.quotes.type, data.quotes.url))
+	const hasUserQuotes = type === 'user' && userlist
+	const list = hasUserQuotes ? csvUserInputToQuotes(userlist) : quoteslist
+
+	insertToDom(controlCacheList(list, lang, type, url))
 }
 
 // ─── API & STORAGE
 
-async function fetchQuotes(lang: string, type: Quotes.Sync['type'], url: string | undefined): Promise<Quote[]> {
+async function fetchQuotes(lang: string, type: Quotes['type'], url: string | undefined): Promise<Quote[]> {
 	if (!navigator.onLine || type === 'user') {
 		return []
 	}
@@ -211,7 +217,8 @@ async function fetchQuotes(lang: string, type: Quotes.Sync['type'], url: string 
 		return []
 	}
 
-	const query = `/quotes/${type}` + (type === 'classic' ? `/${lang}` : '')
+	const endpoint = type === 'classic' ? `${lang}` : ''
+	const query = `/quotes/${type}/${endpoint}`
 
 	response = await apiFetch(query)
 	validateResponse(response)
@@ -229,17 +236,17 @@ function validateResponse(response: Response | undefined): asserts response is R
 	}
 }
 
-async function tryFetchQuotes(lang: string, type: Quotes.Sync['type'], url: string | undefined): Promise<Quote[]> {
+async function tryFetchQuotes(lang: string, type: Quotes['type'], url: string | undefined): Promise<Quote[]> {
 	try {
 		return await fetchQuotes(lang, type, url)
-	} catch (error) {
-		console.warn(error)
+	} catch (_error) {
+		console.info(_error)
 	}
 
 	return []
 }
 
-function controlCacheList(list: Quote[], lang: string, type: Quotes.Sync['type'], url: Quotes.Sync['url']): Quote {
+function controlCacheList(list: Quote[], lang: string, type: Quotes['type'], url: Quotes['url']): Quote {
 	//
 	if (type === 'user') {
 		const randIndex = Math.round(Math.random() * (list.length - 1))
@@ -268,33 +275,33 @@ function toggleAuthorAlwaysOn(state: boolean) {
 }
 
 function insertToDom(quote?: Quote) {
-	const quoteDOM = document.getElementById('quote')
-	const authorDOM = document.getElementById('author')
+	const quoteDom = document.getElementById('quote')
+	const authorDom = document.getElementById('author')
 
-	if (!quote || !quoteDOM || !authorDOM) {
+	if (!(quote && quoteDom && authorDom)) {
 		return
 	}
 
-	quoteDOM.textContent = quote.content
-	authorDOM.textContent = quote.author
+	quoteDom.textContent = quote.content
+	authorDom.textContent = quote.author
 }
 
 // ─── HELPERS
 
-function csvUserInputToQuotes(csv?: string | Quotes.UserInput): Quote[] {
+function csvUserInputToQuotes(csv?: string | QuoteUserInput): Quote[] {
 	if (!csv) {
 		return []
 	}
 
 	// convert <1.19.0 json format to csv
 	if (Array.isArray(csv)) {
-		csv = oldJSONToCSV(csv)
+		return csvToQuotes(oldJSONToCSV(csv))
 	}
 
 	return csvToQuotes(csv)
 }
 
-export function oldJSONToCSV(input: Quotes.UserInput): string {
+export function oldJSONToCSV(input: QuoteUserInput): string {
 	return input.map((val) => val.join(',')).join('\n')
 }
 
@@ -311,15 +318,17 @@ function csvToQuotes(csv: string): Quote[] {
 	return quotes
 }
 
-function isQuotesType(type = ''): type is Quotes.Types {
-	const types: Quotes.Types[] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'office', 'user', 'url']
-	return types.includes(type as Quotes.Types)
+function isQuotesType(type = ''): type is Quotes['type'] {
+	const types: Quotes['type'][] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'office', 'user', 'url']
+	return types.includes(type as Quotes['type'])
 }
 
 const urlRegEx = /^https?:\/\//i
 
 function canStoreUrl(url: string | undefined) {
-	if (url === undefined) return false
+	if (url === undefined) {
+		return false
+	}
 
 	return url === '' || urlRegEx.test(url)
 }
@@ -327,8 +336,12 @@ function canStoreUrl(url: string | undefined) {
 function determineUrlApiResponseType(response: Response): 'json' | 'csv' {
 	const contentType = response.headers.get('content-type')?.split(';', 2)[0]
 
-	if (contentType === 'application/json') return 'json'
-	if (contentType === 'text/csv') return 'csv'
+	if (contentType === 'application/json') {
+		return 'json'
+	}
+	if (contentType === 'text/csv') {
+		return 'csv'
+	}
 
 	const url = new URL(response.url)
 	const parts = url.pathname.split('.')

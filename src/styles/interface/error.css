@@ -1,0 +1,75 @@
+#error {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	user-select: auto;
+	pointer-events: all;
+	top: 5%;
+	left: 5%;
+	width: calc(90% - 100px);
+	max-width: 500px;
+	padding: 50px;
+	opacity: 0;
+	color: #fff;
+	border-radius: 20px;
+	background-color: rgba(0, 0, 0, 0.1333333333);
+	backdrop-filter: blur(2em);
+	-webkit-backdrop-filter: blur(2em);
+	transition: opacity 0.4s;
+	z-index: 1;
+}
+
+#error pre {
+	width: calc(100% - 32px);
+	overflow: hidden;
+	user-select: all;
+	pointer-events: all;
+	padding: 8px 16px;
+	text-align: left;
+	background-color: rgba(17, 17, 17, 0.2666666667);
+	margin-top: 3em;
+}
+
+#error textarea {
+	width: calc(100% - 32px);
+	height: 100px;
+	padding: 8px 16px;
+	color: #fff;
+	font-size: 13px;
+	white-space: pre;
+	resize: vertical;
+	overflow-x: hidden;
+	border: none;
+	font-family: monospace;
+	background-color: rgba(17, 17, 17, 0.2666666667);
+}
+
+#error a {
+	color: #fff;
+}
+
+#error button {
+	cursor: pointer;
+	padding: 5px 10px;
+	border-radius: 5px;
+	border: none;
+	background-color: var(--color-red);
+	color: #fff;
+}
+
+#error .error-explain {
+	margin-top: 2em;
+	margin-bottom: 3em;
+}
+
+#error .error-buttons {
+	display: flex;
+	justify-content: space-around;
+	width: 300px;
+}
+
+#error .error-buttons-close {
+	background-color: var(--color-blue);
+}

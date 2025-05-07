@@ -1,0 +1,87 @@
+#settings-managment {
+	position: relative;
+}
+
+#settings-managment.dragging-file {
+	opacity: 0.5;
+}
+#settings-managment.dragging-file #file-import {
+	position: absolute;
+	display: initial;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	background-color: transparent;
+}
+
+#settings-data {
+	opacity: 0.8;
+	font-size: 13px;
+	width: 100%;
+	height: 110px;
+	min-height: 110px;
+	max-height: 3000px;
+	margin: 6px 0;
+	padding: 10px 16px;
+	tab-size: 1.5em;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	resize: vertical;
+	cursor: pointer;
+	box-sizing: border-box;
+	border-radius: 10px;
+	color: var(--color-text);
+	background-color: var(--color-areas);
+}
+
+[data-system='mac'] #settings-data {
+	font-size: 12px;
+}
+
+#settings-data:focus-within {
+	overflow-y: auto;
+	opacity: unset;
+	cursor: inherit;
+	min-height: 300px;
+}
+
+#file-import,
+#file-download,
+#settings-files-options.hidden,
+#settings-changes-options.hidden {
+	display: none;
+}
+
+/*  Synchronization  */
+
+#gist-sync-status-wrapper {
+	display: flex;
+	flex-direction: column;
+	text-align: right;
+	font-size: 13px;
+	padding-inline-end: 1em;
+	color: var(--color-light-text);
+}
+
+#gist-sync-status-wrapper,
+#gist-sync-status-wrapper a {
+	font-size: 13px;
+}
+
+/*  Reset  */
+
+#reset-settings {
+	margin-top: 1em;
+}
+
+#reset-conf,
+#reset-first {
+	display: none;
+}
+
+#reset-conf.shown,
+#reset-first.shown {
+	display: flex;
+}

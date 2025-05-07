@@ -1,10 +1,13 @@
-import { hexColorFromSplitRange, opacityFromHex } from '../utils'
-import { getLang, tradThis } from '../utils/translations'
-import { eventDebounce } from '../utils/debounce'
-import onSettingsLoad from '../utils/onsettingsload'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { opacityFromHex } from '../shared/generic.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
 import PocketEditor from 'pocket-editor'
-import langList from '../langs'
-import storage from '../storage'
+import { langList } from '../langs.ts'
+import { storage } from '../storage.ts'
+
+import type { Notes } from '../../types/sync.ts'
 
 type NotesEvent = {
 	text?: string
@@ -15,7 +18,7 @@ type NotesEvent = {
 
 const container = document.getElementById('notes_container')
 
-export default function notes(init?: Sync.Notes, event?: NotesEvent) {
+export function notes(init?: Notes, event?: NotesEvent) {
 	if (event) {
 		updateNotes(event)
 		return
@@ -43,7 +46,7 @@ async function updateNotes(event: NotesEvent) {
 	}
 
 	if (event?.width !== undefined) {
-		notes.width = parseInt(event.width)
+		notes.width = Number.parseInt(event.width)
 		handleWidth(notes.width)
 	}
 
@@ -59,7 +62,7 @@ async function updateNotes(event: NotesEvent) {
 //	Funcs
 //
 
-function initNotes(init: Sync.Notes) {
+function initNotes(init: Notes) {
 	document.getElementById('pocket-editor')?.remove()
 
 	handleAlign(init.align)
@@ -85,7 +88,7 @@ function handleAlign(value: string) {
 
 function handleWidth(value?: number) {
 	if (value) {
-		document.documentElement.style.setProperty('--notes-width', value.toString() + 'em')
+		document.documentElement.style.setProperty('--notes-width', `${value.toString()}em`)
 	}
 }
 

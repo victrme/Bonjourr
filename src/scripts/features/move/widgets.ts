@@ -1,18 +1,24 @@
-import { interfaceFade, setAllAligns, setGridAreas, removeSelection, addOverlay, removeOverlay } from './dom'
-import transitioner from '../../utils/transitioner'
-import storage from '../../storage'
+import { addOverlay, interfaceFade, removeOverlay, removeSelection, setAllAligns, setGridAreas } from './dom.ts'
+import { transitioner } from '../../utils/transitioner.ts'
+import { storage } from '../../storage.ts'
+import { weather } from '../weather/index.ts'
 import {
-	isEditing,
 	addGridWidget,
+	getLayout,
+	gridParse,
+	gridStringify,
+	isEditing,
 	removeGridWidget,
 	updateWidgetsStorage,
-	gridStringify,
-	gridParse,
-	getLayout,
-} from './helpers'
+} from './helpers.ts'
 
-export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boolean]) {
-	if (!widget) return
+import type { Widgets } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
+
+export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
+	if (!widget) {
+		return
+	}
 
 	const [id, on] = widget
 	const gridToggle = on ? addGridWidget : removeGridWidget
@@ -22,16 +28,16 @@ export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boole
 	const grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
 
 	data.move.layouts[selection] = { items: layout.items, grid: grid }
-	data = updateWidgetsStorage([widget], data)
-	storage.sync.set(data)
+	const newdata = updateWidgetsStorage([widget], data)
+	storage.sync.set(newdata)
 
 	interfaceTransition.first(() => {
 		toggleWidgetInSettings([[id, on]])
 		interfaceFade('out')
 	})
 
-	interfaceTransition.then(async () => {
-		const layout = getLayout(data)
+	interfaceTransition.after(() => {
+		const layout = getLayout(newdata)
 		setGridAreas(layout.grid)
 		setAllAligns(layout.items)
 		toggleWidgetOnInterface([[id, on]])
@@ -40,6 +46,13 @@ export default function toggleWidget(data: Sync.Storage, widget: [Widgets, boole
 		// add/remove widget overlay only when editing move
 		if (isEditing()) {
 			on ? addOverlay(id) : removeOverlay(id)
+		}
+
+		// Apply weather if re-enabled
+		if (id === 'main' && on === true) {
+			storage.local.get('lastWeather').then((local) => {
+				weather({ sync: newdata, lastWeather: local.lastWeather })
+			})
 		}
 	})
 
@@ -62,7 +75,7 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 
 	for (const [widget, on] of states) {
 		const input = document.getElementById(inputids[widget]) as HTMLInputElement
-		const option = document.getElementById(widget + '_options')
+		const option = document.getElementById(`${widget}_options`)
 
 		option?.classList.toggle('shown', on)
 		input.checked = on

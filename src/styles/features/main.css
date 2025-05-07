@@ -7,7 +7,7 @@
 }
 
 #greetings {
-	font-size: 3em;
+	font-size: var(--greeting-size);
 	font-weight: inherit;
 	margin: 0;
 	width: 100%;

@@ -1,12 +1,17 @@
-import { hexColorFromSplitRange, stringMaxSize } from '../utils'
-import { getLang, tradThis } from '../utils/translations'
-import { displayInterface } from '../index'
-import { eventDebounce } from '../utils/debounce'
-import { SYNC_DEFAULT } from '../defaults'
-import onSettingsLoad from '../utils/onsettingsload'
-import getVnCalendar from '../dependencies/vietnamese-calendar'
-import errorMessage from '../utils/errormessage'
-import storage from '../storage'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { displayInterface } from '../shared/display.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { stringMaxSize } from '../shared/generic.ts'
+import { getVnCalendar } from '../dependencies/vietnamese-calendar.ts'
+import { SYNC_DEFAULT } from '../defaults.ts'
+import { userDate } from '../shared/time.ts'
+import { storage } from '../storage.ts'
+
+import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
+
+type DateFormat = Sync['dateformat']
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -15,6 +20,7 @@ type ClockUpdate = {
 	seconds?: boolean
 	dateformat?: string
 	greeting?: string
+	greetingsize?: string
 	timezone?: string
 	shape?: string
 	face?: string
@@ -26,9 +32,7 @@ type ClockUpdate = {
 	world?: { index: number; region?: string; timezone?: string }
 }
 
-type DateFormat = Sync.Storage['dateformat']
-
-const defaultAnalogStyle: Sync.AnalogStyle = {
+const defaultAnalogStyle: AnalogStyle = {
 	face: 'none',
 	hands: 'modern',
 	shape: 'round',
@@ -36,13 +40,14 @@ const defaultAnalogStyle: Sync.AnalogStyle = {
 	background: '#fff2',
 }
 
+const sinogramRegex = /zh-CN|zh-HK|ja/
 const defaultTimezones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
 const defaultRegions = ['Paris', 'New York', 'Tokyo', 'Lisbon', 'Los Angeles']
 const oneInFive = Math.random() > 0.8 ? 1 : 0
 let numberWidths = [1]
 let clockInterval: number
 
-export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
+export function clock(init?: Sync, event?: ClockUpdate) {
 	if (event) {
 		clockUpdate(event)
 		return
@@ -57,8 +62,8 @@ export default function clock(init?: Sync.Storage, event?: ClockUpdate) {
 		clockSize(clock.size)
 		displayInterface('clock')
 		onSettingsLoad(toggleWorldClocksOptions)
-	} catch (e) {
-		errorMessage(e)
+	} catch (err) {
+		console.info(err)
 	}
 }
 
@@ -80,12 +85,17 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.greeting !== undefined) {
 		data.greeting = stringMaxSize(update.greeting, 64)
-		greetings(zonedDate(data.clock.timezone), data.greeting)
+		greetings(data.greeting)
 		storage.sync.set({ greeting: data.greeting })
 	}
 
+	if (update.greetingsize !== undefined) {
+		greetingSize(update.greetingsize)
+	}
+
 	if (update.timezone !== undefined) {
-		greetings(zonedDate(update.timezone), data.greeting)
+		userDate(update.timezone)
+		greetings(data.greeting)
 	}
 
 	if (isHands(update.hands)) {
@@ -106,8 +116,12 @@ async function clockUpdate(update: ClockUpdate) {
 		analogstyle[option] = hexColorFromSplitRange(`#analog-${option}-range`)
 		analogStyle(analogstyle)
 
-		if (update?.[option] === 'opacity') eventDebounce({ analogstyle })
-		if (update?.[option] === 'shade') storage.sync.set({ analogstyle })
+		if (update?.[option] === 'opacity') {
+			eventDebounce({ analogstyle })
+		}
+		if (update?.[option] === 'shade') {
+			storage.sync.set({ analogstyle })
+		}
 
 		return
 	}
@@ -118,8 +132,12 @@ async function clockUpdate(update: ClockUpdate) {
 		const worldclock = data.worldclocks?.[index] ?? baseclock
 		const { region, timezone } = update.world
 
-		if (region !== undefined) worldclock.region = region
-		if (timezone !== undefined) worldclock.timezone = timezone
+		if (region !== undefined) {
+			worldclock.region = region
+		}
+		if (timezone !== undefined) {
+			worldclock.timezone = timezone
+		}
 
 		data.worldclocks[index] = worldclock
 		toggleWorldClocksOptions()
@@ -147,30 +165,39 @@ async function clockUpdate(update: ClockUpdate) {
 	clockSize(data.clock.size)
 }
 
-function analogStyle(style?: Sync.AnalogStyle) {
-	style = style ?? structuredClone(defaultAnalogStyle)
+function analogStyle(style: AnalogStyle = structuredClone(defaultAnalogStyle)) {
 	const { face, shape, hands } = style
 
 	const time = document.getElementById('time') as HTMLElement
 	const spans = document.querySelectorAll<HTMLSpanElement>('.analog .analog-face span')
 
-	const backgroundAlpha = parseInt(style.background.slice(4), 16)
+	const backgroundAlpha = Number.parseInt(style.background.slice(4), 16)
 	const isWhiteOpaque = style.background?.includes('fff') && backgroundAlpha > 7
 	const isTransparent = backgroundAlpha === 0
 
 	let faceNumbers = ['12', '3', '6', '9']
 	const lang = getLang()
 
-	if (lang === 'am') faceNumbers = ['Գ', 'Զ', 'Թ', 'ԺԲ']
-	else if (lang === 'ar') faceNumbers = ['٣', '٦', '٩', '١٢']
-	else if (lang === 'fa') faceNumbers = ['۳', '۶', '۹', '۱۲']
-	else if (lang.match(/zh-CN|zh-HK|ja/)) faceNumbers = ['三', '六', '九', '十二']
+	if (lang === 'am') {
+		faceNumbers = ['Գ', 'Զ', 'Թ', 'ԺԲ']
+	} else if (lang === 'ar') {
+		faceNumbers = ['٣', '٦', '٩', '١٢']
+	} else if (lang === 'fa') {
+		faceNumbers = ['۳', '۶', '۹', '۱۲']
+	} else if (lang.match(sinogramRegex)) {
+		faceNumbers = ['三', '六', '九', '十二']
+	}
 
 	spans.forEach((span, i) => {
-		if (face === 'roman') span.textContent = ['XII', 'III', 'VI', 'IX'][i % 4]
-		else if (face === 'marks') span.textContent = ['│', '―', '│', '―'][i % 4]
-		else if (face === 'number') span.textContent = faceNumbers[i % 4]
-		else span.textContent = ''
+		if (face === 'roman') {
+			span.textContent = ['XII', 'III', 'VI', 'IX'][i % 4]
+		} else if (face === 'marks') {
+			span.textContent = ['│', '―', '│', '―'][i % 4]
+		} else if (face === 'number') {
+			span.textContent = faceNumbers[i % 4]
+		} else {
+			span.textContent = ''
+		}
 	})
 
 	time.dataset.face = face === 'swiss' || face === 'braun' ? face : ''
@@ -184,13 +211,17 @@ function analogStyle(style?: Sync.AnalogStyle) {
 	time.style.setProperty('--analog-background', style.background)
 }
 
-function clockSize(size = 1) {
-	document.documentElement.style.setProperty('--clock-size', size.toString() + 'em')
+function clockSize(size = 5) {
+	document.documentElement.style.setProperty('--clock-size', `${size.toString()}em`)
+}
+
+function greetingSize(size = '3') {
+	document.documentElement.style.setProperty('--greeting-size', `${size}em`)
 }
 
 //	Clock
 
-function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string, dateformat: DateFormat) {
+function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat) {
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
@@ -200,7 +231,7 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 		}
 	})
 
-	const clocks: Sync.WorldClocks = []
+	const clocks: WorldClock[] = []
 
 	if (clock.seconds && !clock.analog) {
 		setSecondsWidthInCh()
@@ -225,13 +256,13 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 			const { region, timezone } = clocks[index]
 			const domclock = getClock(index)
 			const domregion = domclock.querySelector<HTMLElement>('.clock-region')
-			const date = zonedDate(timezone)
+			const date = userDate(timezone)
 			const isNextHour = date.getMinutes() === 0
 
 			if (clock.analog) {
-				analog(domclock, date, clock)
+				analog(domclock, clock, timezone)
 			} else {
-				digital(domclock, date, clock)
+				digital(domclock, clock, timezone)
 			}
 
 			if (isNextHour || firstStart) {
@@ -243,7 +274,7 @@ function startClock(clock: Sync.Clock, world: Sync.WorldClocks, greeting: string
 			}
 		}
 
-		greetings(zonedDate(clock.timezone), greeting)
+		greetings(greeting)
 	}
 }
 
@@ -265,7 +296,8 @@ function getClock(index: number): HTMLDivElement {
 	return clone
 }
 
-function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
+function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
+	const date = userDate(timezone)
 	const domclock = wrapper.querySelector<HTMLElement>('.digital')
 	const hh = wrapper.querySelector('.digital-hh') as HTMLElement
 	const mm = wrapper.querySelector('.digital-mm') as HTMLElement
@@ -279,11 +311,17 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 		return
 	}
 
-	if (clock.ampmlabel) domclock.dataset.ampmLabel = ''
-	else delete domclock.dataset.ampmLabel
+	if (clock.ampmlabel) {
+		domclock.dataset.ampmLabel = ''
+	} else {
+		delete domclock.dataset.ampmLabel
+	}
 
-	if (clock.ampm) domclock.dataset.ampm = date.getHours() < 12 ? 'am' : 'pm'
-	else delete domclock.dataset.ampm
+	if (clock.ampm) {
+		domclock.dataset.ampm = date.getHours() < 12 ? 'am' : 'pm'
+	} else {
+		delete domclock.dataset.ampm
+	}
 
 	if (clock.ampm && h === 0) {
 		h = 12
@@ -303,7 +341,8 @@ function digital(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
 	ss.textContent = s.toString()
 }
 
-function analog(wrapper: HTMLElement, date: Date, clock: Sync.Clock) {
+function analog(wrapper: HTMLElement, clock: Clock, timezone: string) {
+	const date = userDate(timezone)
 	const m = ((date.getMinutes() + date.getSeconds() / 60) * 6).toFixed(1)
 	const h = (((date.getHours() % 12) + date.getMinutes() / 60) * 30).toFixed(1)
 	const s = (date.getSeconds() * 6).toFixed(1)
@@ -370,7 +409,8 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, tim
 
 //	Greetings
 
-function greetings(date: Date, name?: string) {
+function greetings(name?: string) {
+	const date = userDate()
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
@@ -379,11 +419,17 @@ function greetings(date: Date, name?: string) {
 	const hour = date.getHours()
 	let period: 'night' | 'morning' | 'afternoon' | 'evening'
 
-	if (hour < 3) period = 'evening'
-	else if (hour < 5) period = 'night'
-	else if (hour < 12) period = 'morning'
-	else if (hour < 18) period = 'afternoon'
-	else period = 'evening'
+	if (hour < 3) {
+		period = 'evening'
+	} else if (hour < 5) {
+		period = 'night'
+	} else if (hour < 12) {
+		period = 'morning'
+	} else if (hour < 18) {
+		period = 'afternoon'
+	} else {
+		period = 'evening'
+	}
 
 	const greetings = {
 		morning: 'Good morning',
@@ -402,8 +448,8 @@ function greetings(date: Date, name?: string) {
 // World clocks
 
 function toggleWorldClocksOptions() {
-	const parents = document.querySelectorAll<HTMLElement>(`.worldclocks-item`)
-	const inputs = document.querySelectorAll<HTMLInputElement>(`.worldclocks-item [name="worldclock-city"]`)
+	const parents = document.querySelectorAll<HTMLElement>('.worldclocks-item')
+	const inputs = document.querySelectorAll<HTMLInputElement>('.worldclocks-item input')
 
 	parents.forEach((parent, i) => {
 		const currHasText = !!inputs[i]?.value
@@ -434,54 +480,19 @@ function getSecondsWidthInCh(second: number): number {
 	return Math.min(...numberWidths) + numberWidths[second]
 }
 
-function zonedDate(timezone: string = 'auto'): Date {
-	const isUTC = (timezone.includes('+') || timezone.includes('-')) && timezone.length < 6
-	const date = new Date()
-
-	if (timezone === 'auto') {
-		return date
-	}
-
-	if (isUTC) {
-		const offset = date.getTimezoneOffset() / 60 // hour
-		let utcHour = date.getHours() + offset
-		const utcMinutes = date.getMinutes() + date.getTimezoneOffset()
-		let minutes
-
-		if (timezone.split('.')[1]) {
-			minutes = utcMinutes + parseInt(timezone.split('.')[1])
-
-			if (minutes > -30) {
-				utcHour++
-			}
-		} else {
-			minutes = date.getMinutes()
-		}
-
-		date.setHours(utcHour + parseInt(timezone), minutes)
-
-		return date
-	}
-
-	const intl = new Intl.DateTimeFormat('en', { timeZone: timezone, dateStyle: 'medium', timeStyle: 'medium' })
-	const zonedDate = new Date(intl.format(date))
-
-	return zonedDate
-}
-
 function fixunits(val: number) {
 	return (val < 10 ? '0' : '') + val.toString()
 }
 
-function isFace(str?: string): str is Sync.AnalogStyle['face'] {
+function isFace(str?: string): str is AnalogStyle['face'] {
 	return ['none', 'number', 'roman', 'marks', 'swiss', 'braun'].includes(str ?? '')
 }
 
-function isHands(str?: string): str is Sync.AnalogStyle['hands'] {
+function isHands(str?: string): str is AnalogStyle['hands'] {
 	return ['modern', 'swiss', 'classic', 'braun', 'apple'].includes(str ?? '')
 }
 
-function isShape(str?: string): str is Sync.AnalogStyle['shape'] {
+function isShape(str?: string): str is AnalogStyle['shape'] {
 	return ['round', 'square', 'rectangle'].includes(str ?? '')
 }
 

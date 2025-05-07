@@ -69,7 +69,7 @@ If you just want to say thank you and support our work, here's some ideas:
 
 If you feel like we've earned it and you want to support independant open source developpers, we'll gladly accept your donations! It motivates us to keep improving Bonjourr and makes it feel more real :)
 
-__As a token of our appreciation, donating will also get your name [featured in Bonjourr](https://bonjourr.fr/docs/overview/#supporters-notification) for the entire month after you donate!__
+**As a token of our appreciation, donating will also get your name [featured in Bonjourr](https://bonjourr.fr/docs/overview/#supporters-notification) for the entire month after you donate!**
 
 <div>
 
@@ -122,16 +122,9 @@ __As a token of our appreciation, donating will also get your name [featured in 
 -   **🇵🇹 European Portuguese translation** · [harkadya](https://harkadya.com) & [BlackSpirits](https://github.com/Blackspirits)
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
 -   **🇭🇷 Croatian translation** · Ghost
--   **🇦🇿  Azerbaijani translation** · Hacıağa Sadıxov · [GitHub](https://github.com/Hajiagha-Sadikhov)
+-   **🇦🇿 Azerbaijani translation** · Hacıağa Sadıxov · [GitHub](https://github.com/Hajiagha-Sadikhov)
 
 ## 👨‍💻 Running Bonjourr
-
-Clone this repository
-
-```bash
-git clone https://github.com/victrme/Bonjourr
-cd Bonjourr
-```
 
 ### Self-host APIs
 
@@ -139,26 +132,26 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 
 ### Run locally
 
-Prerequisites:
-
--   [Node 18.17.20 or later](https://nodejs.org/en/download) is needed on your system to run the build script
--   We recommend using [pnpm](https://pnpm.io/installation) for your convenience
-
-You can replace `pnpm` by `npm run`
+-   Install Deno runtime: https://docs.deno.com/runtime/
+-   Optionally add Deno extension for [VSCode](https://marketplace.visualstudio.com/items?itemName=denoland.vscode-deno) or [Zed](https://zed.dev/docs/languages/deno)
+-   Or a Prettier extension for [VSCode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+-   Clone this repository
+-   Install dependencies
+-   Build Bonjourr
 
 ```bash
 # In root directory
-pnpm install
+deno install
 
 # Production build for all platforms in /release/
-pnpm build
+deno run build
 
 # These commands watch changes for each platforms
-pnpm chrome
-pnpm edge
-pnpm firefox
-pnpm safari
-pnpm online
+deno run chrome
+deno run edge
+deno run firefox
+deno run safari
+deno run online
 ```
 
 #### Chrome
@@ -187,8 +180,8 @@ pnpm online
 
 #### Online (web version)
 
--   A live server opens with `pnpm online`
--   Go to http://127.0.0.1:8080/
+-   A live server opens with `deno run online`
+-   Go to http://0.0.0.0:8000/
 
 ### Using Docker
 
@@ -202,15 +195,15 @@ Prerequisites:
 # Build the container image
 docker build -t bonjourr/bonjourr .
 
-# Run the container on local port 8080
-docker run --rm -p "8080:80/tcp" -it bonjourr/bonjourr
+# Run the container on local port 8000
+docker run --rm -p "8000:80/tcp" -it bonjourr/bonjourr
 
-# Go to http://127.0.0.1:8080/
+# Go to http://0.0.0.0:8000/
 ```
 
 #### Docker Desktop
 
 -   Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 -   Search for `bonjourr/bonjourr` Hub image
--   Run a new container with `8080` as host port
--   Go to http://127.0.0.1:8080/
+-   Run a new container with `8000` as host port
+-   Go to http://0.0.0.0:8000/
