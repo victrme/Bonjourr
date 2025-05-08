@@ -89,7 +89,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		addThumbnailImage(id, filesData[id])
 		await idb.set(id, filesData[id])
-		storage.local.set(local)
+		storage.local.set({ backgroundFiles: local.backgroundFiles })
 	}
 
 	// 3. Apply background
@@ -412,38 +412,48 @@ function validateBackgroundFiles(local: Local, idbKeys: string[]): Local['backgr
 	return backgroundFiles
 }
 
-/**
- * Local file storage changes in Bonjourr 21, with automatic compression
- */
-export async function migrateToNewIdbFormat(local: Local) {
-	type LocalImages = { ids: string[]; selected: string }
-	type LocalImagesItem = { background: File; thumbnail: Blob }
+type LocalImages = {
+	ids: string[]
+	selected: string
+}
+type LocalImagesItem = {
+	background: File
+	thumbnail: Blob
+}
 
-	const localImages = (await idb.get('localImages')) as LocalImages
-	const selectedImage = (await idb.get(localImages?.selected ?? '')) as LocalImagesItem
+export async function prepareIdbFormatMigration(local: Local) {
+	const localImages = await idb.get('localImages')
 
-	if (!(localImages && selectedImage)) {
+	if (!localImages) {
 		return
 	}
 
-	// 1. Quickly compress and show selected background
+	const keys = (await idb.keys() as string[]).filter((k) => k !== 'localImages')
+	const selected = localImages.selected ?? ''
+	const selectedImage = await idb.get(selected)
 
 	await addLocalBackgrounds([selectedImage.background], local)
 
-	// 2. Defer compression of other images
+	for (const key of keys) {
+		const file = await idb.get(key) as LocalImagesItem
 
-	const files: File[] = []
-
-	for (const id of localImages.ids) {
-		const file = await idb.get(id)
-
-		if (file) {
-			files.push(file)
+		const backgroundFile: BackgroundFile = {
+			lastUsed: userDate().toString(),
+			selected: key === selected,
+			position: { size: 'cover', x: '50%', y: '50%' },
 		}
+
+		const localFileData: LocalFileData = {
+			raw: file.background,
+			full: file.background,
+			medium: file.thumbnail,
+			small: file.thumbnail,
+		}
+
+		idb.set(key, localFileData)
+		local.backgroundFiles[key] = backgroundFile
 	}
 
-	await addLocalBackgrounds(files, local)
-	idb.delMany(localImages.ids)
 	idb.del('localImages')
 }
 
