@@ -1,6 +1,6 @@
 import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from './features/move/helpers.ts'
 import { countryCodeToLanguageCode } from './utils/translations.ts'
-import { API_DOMAIN, SYNC_DEFAULT } from './defaults.ts'
+import { API_DOMAIN, CURRENT_VERSION, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { oldJSONToCSV } from './features/quotes.ts'
 import { randomString } from './shared/generic.ts'
 import { deepmergeAll } from '@victr/deepmerge'
@@ -35,11 +35,12 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 
 	// Merge both settings
 
-	newcurrent = deepmergeAll(newcurrent, newtarget, { about: structuredClone(SYNC_DEFAULT.about) }) as Sync
+	const defaultAbout = { about: { browser: PLATFORM, version: CURRENT_VERSION } }
+	newcurrent = deepmergeAll(newcurrent, newtarget, defaultAbout) as Sync
 
 	// All versions
 
-	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget) // ..
+	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
 	newcurrent = convertOldCssSelectors(newcurrent)
 	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
 

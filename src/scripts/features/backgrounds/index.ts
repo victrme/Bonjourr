@@ -6,7 +6,6 @@ import { PROVIDERS } from './providers.ts'
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
 import { turnRefreshButton } from '../../shared/dom.ts'
-import { onSettingsLoad } from '../../utils/onsettingsload.ts'
 import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
 import { BROWSER } from '../../defaults.ts'
@@ -21,6 +20,7 @@ interface BackgroundUpdate {
 	freq?: string
 	type?: string
 	blur?: string
+	blurfocus?: true
 	color?: string
 	query?: SubmitEvent
 	files?: FileList | null
@@ -36,8 +36,7 @@ interface BackgroundUpdate {
 }
 
 interface ApplyOptions {
-	full?: true
-	fast?: true
+	action?: 'startup' | 'settings-open' | 'remove-blur'
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
@@ -66,14 +65,6 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 		pauseButton?.classList.toggle('paused', isPaused)
 
 		initCreditEvents()
-
-		onSettingsLoad(() => {
-			if (type === 'images' || type === 'videos') {
-				getCurrentBackground().then((media) => {
-					preloadBackground(media)
-				})
-			}
-		})
 	}
 
 	toggleCredits(sync.backgrounds)
@@ -92,6 +83,14 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 // 	Storage update
 
 export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> {
+	const data = await storage.sync.get('backgrounds')
+	const local = await storage.local.get()
+
+	if (update.blurfocus) {
+		fullResolutionOnBlurFocus()
+		return
+	}
+
 	if (update.blur !== undefined) {
 		applyFilters({ blur: Number.parseFloat(update.blur) })
 		propertiesUpdateDebounce({ blur: Number.parseFloat(update.blur) })
@@ -110,9 +109,6 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		fadeinPreviewDebounce(Number.parseFloat(update.fadein))
 		return
 	}
-
-	const data = await storage.sync.get('backgrounds')
-	const local = await storage.local.get()
 
 	if (isBackgroundType(update.type)) {
 		data.backgrounds.type = update.type
@@ -295,6 +291,15 @@ function previewFadein(ms: number) {
 	clearTimeout(fadeinTimeout)
 	fadeinTimeout = setTimeout(() => setOpacity(1), ms)
 	setOpacity(0)
+}
+
+async function fullResolutionOnBlurFocus() {
+	const [current, next] = await getCurrentBackgrounds()
+
+	preloadBackground(current, { action: 'remove-blur' }).then(() => {
+		applyBackground(current, { action: 'remove-blur' })
+		preloadBackground(next, { action: 'remove-blur' })
+	})
 }
 
 //	Cache & network
@@ -602,27 +607,26 @@ function setLastUsed(backgrounds: Backgrounds, local: Local, keys: string[]): Lo
 // 	Apply to DOM
 
 export function applyBackground(media: string | Background, options?: ApplyOptions): void {
-	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-	const reduceRes = canReduceResolution(options?.full)
-
 	if (typeof media === 'string') {
 		document.documentElement.style.setProperty('--solid-background', media)
 		return
 	}
 
+	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
+	const size = detectBackgroundSize(options?.action)
 	let item: HTMLDivElement
 
 	if (media.format === 'image') {
-		const src = reduceRes ? media.urls.small : media.urls.full
+		const src = media.urls[size]
 		item = createImageItem(src, media)
 	} else {
 		const opacity = 4 //s
 		const duration = 1000 * (media.duration - opacity)
-		const src = reduceRes ? media.urls.small : media.urls.full
+		const src = media.urls[size]
 		item = createVideoItem(src, duration)
 	}
 
-	item.dataset.res = reduceRes ? 'small' : 'full'
+	item.dataset.res = size
 	mediaWrapper.prepend(item)
 
 	if (mediaWrapper?.childElementCount > 1) {
@@ -708,11 +712,11 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 }
 
 function preloadBackground(media: Background, options?: ApplyOptions): Promise<true> {
-	const reduceRes = canReduceResolution(options?.full)
+	const size = detectBackgroundSize(options?.action)
 
 	if (media.format === 'image') {
 		const img = document.createElement('img')
-		const src = reduceRes ? media.urls.small : media.urls.full
+		const src = media.urls[size]
 
 		return new Promise((resolve) => {
 			img.addEventListener('load', () => {
@@ -726,10 +730,8 @@ function preloadBackground(media: Background, options?: ApplyOptions): Promise<t
 		})
 	}
 
-	// (media.format === 'video')
-
 	const vid = document.createElement('video')
-	const src = reduceRes ? media.urls.small : media.urls.full
+	const src = media.urls[size]
 
 	return new Promise((resolve) => {
 		vid.addEventListener('progress', (_) => {
@@ -786,7 +788,7 @@ function applyTexture(texture: Backgrounds['texture']): void {
 // 	Settings options
 
 export function initBackgroundOptions(sync: Sync, local: Local) {
-	applyFullResBackground(sync, local)
+	changeBackgroundResolution(sync, local)
 	initFilesSettingsOptions(local)
 	initUrlsEditor(sync.backgrounds, local)
 	createProviderSelect(sync.backgrounds)
@@ -905,35 +907,33 @@ function createProviderSelect(backgrounds: Backgrounds) {
 	}
 }
 
-async function applyFullResBackground(sync: Sync, local: Local) {
+async function changeBackgroundResolution(sync: Sync, local: Local) {
 	const currentBackground = document.querySelector<HTMLElement>('#background-media div')
-	const currentIsSmall = currentBackground?.dataset.res === 'small'
+	const currentNotFull = currentBackground?.dataset.res !== 'full'
 
-	if (currentIsSmall) {
+	if (currentNotFull) {
 		if (sync.backgrounds.type === 'images') {
 			const collection = getCollection(sync.backgrounds, local)
-			const [current, next] = collection.images()
+			const [current] = collection.images()
 
-			preloadBackground(current, { full: true }).then(() => {
-				preloadBackground(next, { full: true })
-				applyBackground(current, { full: true })
+			preloadBackground(current, { action: 'settings-open' }).then(() => {
+				applyBackground(current, { action: 'settings-open' })
 			})
 		}
 
 		if (sync.backgrounds.type === 'videos') {
 			const collection = getCollection(sync.backgrounds, local)
-			const [current, next] = collection.videos()
+			const [current] = collection.videos()
 
-			preloadBackground(current, { full: true }).then(() => {
-				preloadBackground(next, { full: true })
-				applyBackground(current, { full: true })
+			preloadBackground(current, { action: 'settings-open' }).then(() => {
+				applyBackground(current, { action: 'settings-open' })
 			})
 		}
 
 		if (sync.backgrounds.type === 'files') {
 			const collection = await getFilesAsCollection(local)
 			const image = collection[1][0]
-			applyBackground(image, { full: true })
+			applyBackground(image, { action: 'settings-open' })
 		}
 	}
 }
@@ -948,20 +948,33 @@ function handleBackgroundActions(backgrounds: Backgrounds) {
 
 //  Helpers
 
-async function getCurrentBackground(): Promise<Background> {
-	const sync = await storage.sync.get('backgrounds')
-	const local = await storage.local.get()
+async function getCurrentBackgrounds(sync?: Sync, local?: Local): Promise<[Background, Background]> {
+	sync ??= await storage.sync.get('backgrounds')
+	local ??= await storage.local.get()
+
 	const isImage = sync.backgrounds.type === 'images'
 	const lists = getCollection(sync.backgrounds, local)
 	const list = isImage ? lists.images() : lists.videos()
 
-	return list[0]
+	return [list[0], list[1]]
 }
 
-function canReduceResolution(full = false) {
-	const settingsOpened = document.getElementById('settings')?.classList.contains('shown')
+function detectBackgroundSize(action: ApplyOptions['action']): 'full' | 'medium' | 'small' {
+	action ??= 'startup'
+
 	const blurred = document.body.className.includes('blurred')
-	return blurred && !full && !settingsOpened
+	const blurredStartup = blurred && action === 'startup'
+	const crispStartup = !blurred && action === 'startup'
+	const settingsOpen = action === 'settings-open'
+	const removeBlur = action === 'remove-blur'
+
+	let size: 'small' | 'medium' | 'full' = 'small'
+	if (blurredStartup) size = 'small'
+	if (crispStartup) size = 'full'
+	if (settingsOpen) size = 'medium'
+	if (removeBlur) size = 'full'
+
+	return size
 }
 
 function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement) {

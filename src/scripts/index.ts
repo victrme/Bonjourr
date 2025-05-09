@@ -15,7 +15,6 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
-import { BROWSER, CURRENT_VERSION, ENVIRONNEMENT, IS_MOBILE, PLATFORM, SYSTEM_OS } from './defaults.ts'
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { needsChange, suntime, userDate } from './shared/time.ts'
@@ -24,6 +23,17 @@ import { filterImports } from './imports.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
 import { storage } from './storage.ts'
+
+import {
+	BROWSER,
+	CURRENT_VERSION,
+	ENVIRONNEMENT,
+	IS_MOBILE,
+	LOCAL_DEFAULT,
+	PLATFORM,
+	SYNC_DEFAULT,
+	SYSTEM_OS,
+} from './defaults.ts'
 
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
@@ -40,18 +50,20 @@ async function startup() {
 	let { sync, local } = await storage.init()
 	const oldVersion = sync?.about?.version
 
-	if (!(sync && local)) {
-		return
+	if (!sync || !local) {
+		console.warn('Storage failed, loading Bonjourr with default settings')
+		sync = structuredClone(SYNC_DEFAULT)
+		local = structuredClone(LOCAL_DEFAULT)
 	}
 
 	if (oldVersion !== CURRENT_VERSION) {
+		console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
+
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
-
 		await prepareIdbFormatMigration(local)
 
-		// <!> do not move
-		// <!> must delete old keys before upgrading storage
+		// <!> do not move, must delete old keys before upgrading storage
 		await storage.sync.clear()
 		await storage.sync.set(sync)
 	}
@@ -61,7 +73,6 @@ async function startup() {
 	traduction(null, sync.lang)
 	userDate(sync.clock.timezone)
 	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
-
 	weather({ sync: sync, lastWeather: local.lastWeather })
 	customFont(sync.font)
 	textShadow(sync.textShadow)
@@ -116,9 +127,6 @@ function upgradeSyncStorage(data: Sync): Sync {
 function upgradeLocalStorage(data: Local): Local {
 	data.translations = undefined
 	storage.local.remove('translations')
-
-	// data.lastWeather = undefined
-	// storage.local.remove('lastWeather')
 
 	return data
 }

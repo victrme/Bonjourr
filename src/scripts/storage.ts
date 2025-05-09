@@ -433,15 +433,15 @@ export function isStorageDefault(data: Sync): boolean {
 }
 
 function verifyDataAsSync(data: Partial<Sync> = {}): Sync {
-	let sync = { ...SYNC_DEFAULT }
-
-	sync.about.version = '0.0.0'
-	sync = { ...sync, ...data }
-
-	return sync
+	return {
+		...SYNC_DEFAULT,
+		...data,
+	}
 }
 
 function verifyDataAsLocal(data: Partial<Local> = {}): Local {
-	const local = { ...LOCAL_DEFAULT, ...data }
-	return local
+	return {
+		...LOCAL_DEFAULT,
+		...data,
+	}
 }
