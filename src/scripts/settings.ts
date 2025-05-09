@@ -460,7 +460,11 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_blur').addEventListener('focusin', function (this: HTMLInputElement) {
-		backgroundUpdate({ blur: this.value, blurfocus: true })
+		backgroundUpdate({ blurenter: true })
+	})
+
+	paramId('i_blur').addEventListener('pointerleave', function (this: HTMLInputElement) {
+		backgroundUpdate({ blurleave: true, blur: this.value })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {

@@ -16,11 +16,14 @@ import type { Backgrounds, Sync } from '../../../types/sync.ts'
 import type { Local } from '../../../types/local.ts'
 import { networkForm } from '../../shared/form.ts'
 
+type BackgroundSize = 'full' | 'medium' | 'small'
+
 interface BackgroundUpdate {
 	freq?: string
 	type?: string
 	blur?: string
-	blurfocus?: true
+	blurenter?: true
+	blurleave?: true
 	color?: string
 	query?: SubmitEvent
 	files?: FileList | null
@@ -33,10 +36,6 @@ interface BackgroundUpdate {
 	provider?: string
 	texturesize?: string
 	textureopacity?: string
-}
-
-interface ApplyOptions {
-	action?: 'startup' | 'settings-open' | 'remove-blur'
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
@@ -86,14 +85,22 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	const data = await storage.sync.get('backgrounds')
 	const local = await storage.local.get()
 
-	if (update.blurfocus) {
-		fullResolutionOnBlurFocus()
+	if (update.blurenter) {
+		const [current] = await getCurrentBackgrounds()
+		preloadBackground(current, 'full')
+		applyBackground(current, 'medium', 'fast')
 		return
 	}
 
-	if (update.blur !== undefined) {
-		applyFilters({ blur: Number.parseFloat(update.blur) })
-		propertiesUpdateDebounce({ blur: Number.parseFloat(update.blur) })
+	if (update.blurleave) {
+		const [current, next] = await getCurrentBackgrounds()
+		const blur = Number.parseFloat(update.blur ?? '15px')
+
+		if (blur === 0) {
+			applyBackground(current, 'full', 'fast')
+			preloadBackground(next, 'full')
+		}
+
 		return
 	}
 
@@ -107,6 +114,12 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		applyFilters({ fadein: Number.parseInt(update.fadein) })
 		propertiesUpdateDebounce({ fadein: Number.parseFloat(update.fadein) })
 		fadeinPreviewDebounce(Number.parseFloat(update.fadein))
+		return
+	}
+
+	if (update.blur !== undefined) {
+		applyFilters({ blur: Number.parseFloat(update.blur) })
+		propertiesUpdateDebounce({ blur: Number.parseFloat(update.blur) })
 		return
 	}
 
@@ -291,15 +304,6 @@ function previewFadein(ms: number) {
 	clearTimeout(fadeinTimeout)
 	fadeinTimeout = setTimeout(() => setOpacity(1), ms)
 	setOpacity(0)
-}
-
-async function fullResolutionOnBlurFocus() {
-	const [current, next] = await getCurrentBackgrounds()
-
-	preloadBackground(current, { action: 'remove-blur' }).then(() => {
-		applyBackground(current, { action: 'remove-blur' })
-		preloadBackground(next, { action: 'remove-blur' })
-	})
 }
 
 //	Cache & network
@@ -606,14 +610,18 @@ function setLastUsed(backgrounds: Backgrounds, local: Local, keys: string[]): Lo
 
 // 	Apply to DOM
 
-export function applyBackground(media: string | Background, options?: ApplyOptions): void {
+export function applyBackground(media: string | Background, force?: BackgroundSize, fast?: 'fast'): void {
 	if (typeof media === 'string') {
 		document.documentElement.style.setProperty('--solid-background', media)
 		return
 	}
 
+	if (fast) {
+		document.body.classList.add('init')
+	}
+
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-	const size = detectBackgroundSize(options?.action)
+	const size = detectBackgroundSize(force)
 	let item: HTMLDivElement
 
 	if (media.format === 'image') {
@@ -634,12 +642,17 @@ export function applyBackground(media: string | Background, options?: ApplyOptio
 		const notHiding = children.filter((child) => !child.className.includes('hiding'))
 		const lastVisible = notHiding.at(-1)
 
-		lastVisible?.classList.add('hiding')
-		setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
+		if (fast) {
+			document.body.classList.remove('init')
+			setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 200)
+		} else {
+			lastVisible?.classList.add('hiding')
+			setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
+		}
 	}
 }
 
-function createImageItem(src: string, media: BackgroundImage): HTMLDivElement {
+function createImageItem(src: string, media: BackgroundImage, callback?: () => void): HTMLDivElement {
 	const backgroundsWrapper = document.getElementById('background-wrapper')
 	const div = document.createElement('div')
 	const img = new Image()
@@ -648,6 +661,10 @@ function createImageItem(src: string, media: BackgroundImage): HTMLDivElement {
 		backgroundsWrapper?.classList.remove('hidden')
 		applySafariThemeColor(media, img)
 		updateCredits(media)
+
+		if (callback) {
+			callback()
+		}
 	})
 
 	img.src = src
@@ -668,7 +685,7 @@ function createImageItem(src: string, media: BackgroundImage): HTMLDivElement {
 	return div
 }
 
-function createVideoItem(src: string, duration: number): HTMLDivElement {
+function createVideoItem(src: string, duration: number, callback?: () => void): HTMLDivElement {
 	const backgroundsWrapper = document.getElementById('background-wrapper')
 	const div = document.createElement('div')
 	let videoInterval = 0
@@ -680,6 +697,10 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 			vid.addEventListener('progress', () => {
 				backgroundsWrapper?.classList.remove('hidden')
 				resolve(true)
+
+				if (callback) {
+					callback()
+				}
 			})
 
 			vid.src = src
@@ -711,8 +732,8 @@ function createVideoItem(src: string, duration: number): HTMLDivElement {
 	return div
 }
 
-function preloadBackground(media: Background, options?: ApplyOptions): Promise<true> {
-	const size = detectBackgroundSize(options?.action)
+function preloadBackground(media: Background, force?: BackgroundSize): Promise<true> {
+	const size = detectBackgroundSize(force)
 
 	if (media.format === 'image') {
 		const img = document.createElement('img')
@@ -787,12 +808,18 @@ function applyTexture(texture: Backgrounds['texture']): void {
 
 // 	Settings options
 
-export function initBackgroundOptions(sync: Sync, local: Local) {
-	changeBackgroundResolution(sync, local)
+export async function initBackgroundOptions(sync: Sync, local: Local) {
 	initFilesSettingsOptions(local)
 	initUrlsEditor(sync.backgrounds, local)
 	createProviderSelect(sync.backgrounds)
 	handleBackgroundOptions(sync.backgrounds)
+
+	const currentBackground = document.querySelector<HTMLElement>('#background-media div')
+
+	if (currentBackground?.dataset.res !== 'full') {
+		const [current] = await getCurrentBackgrounds(sync, local)
+		preloadBackground(current, 'medium')
+	}
 }
 
 function handleBackgroundOptions(backgrounds: Backgrounds) {
@@ -907,37 +934,6 @@ function createProviderSelect(backgrounds: Backgrounds) {
 	}
 }
 
-async function changeBackgroundResolution(sync: Sync, local: Local) {
-	const currentBackground = document.querySelector<HTMLElement>('#background-media div')
-	const currentNotFull = currentBackground?.dataset.res !== 'full'
-
-	if (currentNotFull) {
-		if (sync.backgrounds.type === 'images') {
-			const collection = getCollection(sync.backgrounds, local)
-			const [current] = collection.images()
-
-			preloadBackground(current, { action: 'settings-open' }).then(() => {
-				applyBackground(current, { action: 'settings-open' })
-			})
-		}
-
-		if (sync.backgrounds.type === 'videos') {
-			const collection = getCollection(sync.backgrounds, local)
-			const [current] = collection.videos()
-
-			preloadBackground(current, { action: 'settings-open' }).then(() => {
-				applyBackground(current, { action: 'settings-open' })
-			})
-		}
-
-		if (sync.backgrounds.type === 'files') {
-			const collection = await getFilesAsCollection(local)
-			const image = collection[1][0]
-			applyBackground(image, { action: 'settings-open' })
-		}
-	}
-}
-
 function handleBackgroundActions(backgrounds: Backgrounds) {
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
@@ -952,29 +948,30 @@ async function getCurrentBackgrounds(sync?: Sync, local?: Local): Promise<[Backg
 	sync ??= await storage.sync.get('backgrounds')
 	local ??= await storage.local.get()
 
-	const isImage = sync.backgrounds.type === 'images'
-	const lists = getCollection(sync.backgrounds, local)
-	const list = isImage ? lists.images() : lists.videos()
+	if (sync.backgrounds.type === 'files') {
+		const [_keys, images] = await getFilesAsCollection(local)
+		return [images[0], images[1]]
+	}
+	if (sync.backgrounds.type === 'images') {
+		const lists = getCollection(sync.backgrounds, local)
+		const images = lists.images()
+		return [images[0], images[1]]
+	}
+	if (sync.backgrounds.type === 'videos') {
+		const lists = getCollection(sync.backgrounds, local)
+		const videos = lists.videos()
+		return [videos[0], videos[1]]
+	}
 
-	return [list[0], list[1]]
+	throw new Error('Backgrounds are not files, images, or videos')
 }
 
-function detectBackgroundSize(action: ApplyOptions['action']): 'full' | 'medium' | 'small' {
-	action ??= 'startup'
-
-	const blurred = document.body.className.includes('blurred')
-	const blurredStartup = blurred && action === 'startup'
-	const crispStartup = !blurred && action === 'startup'
-	const settingsOpen = action === 'settings-open'
-	const removeBlur = action === 'remove-blur'
-
-	let size: 'small' | 'medium' | 'full' = 'small'
-	if (blurredStartup) size = 'small'
-	if (crispStartup) size = 'full'
-	if (settingsOpen) size = 'medium'
-	if (removeBlur) size = 'full'
-
-	return size
+function detectBackgroundSize(force?: BackgroundSize): 'full' | 'medium' | 'small' {
+	if (force) {
+		return force
+	} else {
+		return document.body.className.includes('blurred') ? 'small' : 'full'
+	}
 }
 
 function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement) {
