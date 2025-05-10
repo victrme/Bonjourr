@@ -17,6 +17,15 @@ type LocalFileData = {
 	small: Blob
 }
 
+type OldLocalImages = {
+	ids: string[]
+	selected: string
+}
+type OldLocalImagesItem = {
+	background: File
+	thumbnail: Blob
+}
+
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
@@ -127,9 +136,14 @@ async function removeLocalBackgrounds() {
 	const [_, collection] = await getFilesAsCollection(local)
 	const image = collection[0]
 
-	image ? applyBackground(image) : removeBackgrounds()
-	handleFilesSettingsOptions(local)
+	if (image) {
+		applyBackground(image)
+	} else {
+		removeBackgrounds()
+		toggleLocalFileButtons()
+	}
 
+	handleFilesSettingsOptions(local)
 	storage.local.remove('backgroundFiles')
 	storage.local.set({ backgroundFiles: local.backgroundFiles })
 }
@@ -261,7 +275,7 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 	}
 }
 
-function toggleLocalFileButtons(_: MutationRecord[]) {
+function toggleLocalFileButtons(_?: MutationRecord[]) {
 	const thmbRemove = document.getElementById('b_thumbnail-remove')
 	const thmbMove = document.getElementById('b_thumbnail-position')
 	const thmbZoom = document.getElementById('b_thumbnail-zoom')
@@ -271,7 +285,7 @@ function toggleLocalFileButtons(_: MutationRecord[]) {
 
 	thumbnails === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
 	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
-	selected === 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
+	selected !== 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
 	if (selected === 1 && domoptions?.classList.contains('shown')) {
 		domoptions?.classList.remove('shown')
@@ -359,7 +373,7 @@ export async function getFilesAsCollection(local: Local): Promise<[string[], Bac
 	const entries = Object.entries(files)
 
 	const sorted = entries.toSorted((a, b) => {
-		return new Date(a[1].lastUsed).getTime() - new Date(b[1].lastUsed).getTime()
+		return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
 	})
 
 	const images: BackgroundImage[] = []
@@ -412,17 +426,8 @@ function validateBackgroundFiles(local: Local, idbKeys: string[]): Local['backgr
 	return backgroundFiles
 }
 
-type LocalImages = {
-	ids: string[]
-	selected: string
-}
-type LocalImagesItem = {
-	background: File
-	thumbnail: Blob
-}
-
 export async function prepareIdbFormatMigration(local: Local) {
-	const localImages = await idb.get('localImages')
+	const localImages = await idb.get('localImages') as OldLocalImages
 
 	if (!localImages) {
 		return
@@ -435,7 +440,7 @@ export async function prepareIdbFormatMigration(local: Local) {
 	await addLocalBackgrounds([selectedImage.background], local)
 
 	for (const key of keys) {
-		const file = await idb.get(key) as LocalImagesItem
+		const file = await idb.get(key) as OldLocalImagesItem
 
 		const backgroundFile: BackgroundFile = {
 			lastUsed: userDate().toString(),

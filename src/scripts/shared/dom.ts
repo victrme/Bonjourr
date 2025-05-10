@@ -48,8 +48,14 @@ export function getComposedPath(target: EventTarget | null): HTMLElement[] {
 	return path
 }
 
-export function turnRefreshButton(elem: Element, canTurn: boolean) {
-	elem.animate(
+export function turnRefreshButton(event: Event, canTurn: boolean) {
+	let target = event.target as Element
+
+	if (target.tagName === 'path' && target.parentElement) target = target.parentElement
+	if (target.tagName !== 'svg' && target.firstElementChild) target = target.firstElementChild
+	if (target.tagName !== 'svg' && target.firstElementChild) target = target.firstElementChild
+
+	target?.animate(
 		canTurn
 			? [{ transform: 'rotate(360deg)' }]
 			: [{ transform: 'rotate(0deg)' }, { transform: 'rotate(90deg)' }, { transform: 'rotate(0deg)' }],

@@ -30,7 +30,7 @@ interface BackgroundUpdate {
 	compress?: boolean
 	bright?: string
 	fadein?: string
-	refresh?: Element
+	refresh?: Event
 	urlsapply?: true
 	texture?: string
 	provider?: string
@@ -610,7 +610,7 @@ function setLastUsed(backgrounds: Backgrounds, local: Local, keys: string[]): Lo
 
 // 	Apply to DOM
 
-export function applyBackground(media: string | Background, force?: BackgroundSize, fast?: 'fast'): void {
+export function applyBackground(media?: string | Background, force?: BackgroundSize, fast?: 'fast'): void {
 	if (typeof media === 'string') {
 		document.documentElement.style.setProperty('--solid-background', media)
 		return
@@ -618,6 +618,10 @@ export function applyBackground(media: string | Background, force?: BackgroundSi
 
 	if (fast) {
 		document.body.classList.add('init')
+	}
+
+	if (!media) {
+		return
 	}
 
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
@@ -732,8 +736,12 @@ function createVideoItem(src: string, duration: number, callback?: () => void): 
 	return div
 }
 
-function preloadBackground(media: Background, force?: BackgroundSize): Promise<true> {
+function preloadBackground(media?: Background, force?: BackgroundSize) {
 	const size = detectBackgroundSize(force)
+
+	if (!media) {
+		return
+	}
 
 	if (media.format === 'image') {
 		const img = document.createElement('img')
@@ -944,7 +952,7 @@ function handleBackgroundActions(backgrounds: Backgrounds) {
 
 //  Helpers
 
-async function getCurrentBackgrounds(sync?: Sync, local?: Local): Promise<[Background, Background]> {
+async function getCurrentBackgrounds(sync?: Sync, local?: Local) {
 	sync ??= await storage.sync.get('backgrounds')
 	local ??= await storage.local.get()
 
@@ -963,7 +971,7 @@ async function getCurrentBackgrounds(sync?: Sync, local?: Local): Promise<[Backg
 		return [videos[0], videos[1]]
 	}
 
-	throw new Error('Backgrounds are not files, images, or videos')
+	return []
 }
 
 function detectBackgroundSize(force?: BackgroundSize): 'full' | 'medium' | 'small' {

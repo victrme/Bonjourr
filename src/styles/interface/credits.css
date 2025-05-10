@@ -60,6 +60,9 @@
 #background-actions {
 	position: fixed;
 	display: none;
+	align-items: center;
+	justify-content: center;
+	column-gap: 4px;
 	opacity: 0;
 	bottom: 0;
 	left: calc(50% - 60px - 20px);
@@ -69,7 +72,7 @@
 }
 
 #background-actions.shown {
-	display: unset;
+	display: flex;
 }
 
 #background-actions:hover {

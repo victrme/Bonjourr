@@ -429,8 +429,8 @@ function initOptionsEvents() {
 		backgroundUpdate({ freq: this.value })
 	})
 
-	onclickdown(paramId('i_refresh'), (_, target) => {
-		backgroundUpdate({ refresh: target.children[0] as HTMLSpanElement })
+	onclickdown(paramId('i_refresh'), (event) => {
+		backgroundUpdate({ refresh: event })
 	})
 
 	paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
@@ -695,9 +695,9 @@ function initOptionsEvents() {
 		quotes(undefined, { type: this.value })
 	})
 
-	onclickdown(paramId('i_qtrefresh'), (_, target) => {
+	onclickdown(paramId('i_qtrefresh'), (event, target) => {
 		inputThrottle(target)
-		turnRefreshButton(target.children[0] as HTMLSpanElement, true)
+		turnRefreshButton(event, true)
 		quotes(undefined, { refresh: true })
 	})
 

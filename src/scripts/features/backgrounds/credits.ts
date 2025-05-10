@@ -11,10 +11,8 @@ export function initCreditEvents() {
 		toggleBackgroundPause()
 	})
 
-	onclickdown(document.getElementById('b_interface-background-refresh'), (_, target) => {
-		backgroundUpdate({
-			refresh: target.querySelector('svg') as Element,
-		})
+	onclickdown(document.getElementById('b_interface-background-refresh'), (event) => {
+		backgroundUpdate({ refresh: event })
 	})
 
 	onclickdown(document.getElementById('b_interface-background-download'), () => {
@@ -128,12 +126,17 @@ export function updateCredits(image?: Background) {
 }
 
 async function toggleBackgroundPause() {
+	const freqInput = document.querySelector<HTMLSelectElement>('#i_freq')
 	const button = document.getElementById('b_interface-background-pause')
 	const paused = button?.classList.contains('paused')
 	const sync = await storage.sync.get('backgrounds')
+	const last = localStorage.lastBackgroundFreq || 'hour'
+
+	if (freqInput) {
+		freqInput.value = paused ? last : 'pause'
+	}
 
 	if (paused) {
-		const last = localStorage.lastBackgroundFreq || 'hour'
 		backgroundUpdate({ freq: last })
 	} else {
 		localStorage.lastBackgroundFreq = sync.backgrounds.frequency
