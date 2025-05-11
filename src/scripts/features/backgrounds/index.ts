@@ -86,21 +86,19 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	const local = await storage.local.get()
 
 	if (update.blurenter) {
-		const [current] = await getCurrentBackgrounds()
-		preloadBackground(current, 'full')
-		applyBackground(current, 'medium', 'fast')
+		changeBackgroundResolution(data.backgrounds.blur, 'blur-enter')
 		return
 	}
 
-	if (update.blurleave) {
-		const [current, next] = await getCurrentBackgrounds()
-		const blur = Number.parseFloat(update.blur ?? '15px')
+	if (update.blurleave && update.blur !== undefined) {
+		const blur = Number.parseInt(update.blur ?? '15px')
+		changeBackgroundResolution(blur, 'blur-leave')
+		return
+	}
 
-		if (blur === 0) {
-			applyBackground(current, 'full', 'fast')
-			preloadBackground(next, 'full')
-		}
-
+	if (update.blur !== undefined) {
+		applyFilters({ blur: Number.parseFloat(update.blur) })
+		propertiesUpdateDebounce({ blur: Number.parseFloat(update.blur) })
 		return
 	}
 
@@ -114,12 +112,6 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		applyFilters({ fadein: Number.parseInt(update.fadein) })
 		propertiesUpdateDebounce({ fadein: Number.parseFloat(update.fadein) })
 		fadeinPreviewDebounce(Number.parseFloat(update.fadein))
-		return
-	}
-
-	if (update.blur !== undefined) {
-		applyFilters({ blur: Number.parseFloat(update.blur) })
-		propertiesUpdateDebounce({ blur: Number.parseFloat(update.blur) })
 		return
 	}
 
@@ -816,17 +808,16 @@ function applyTexture(texture: Backgrounds['texture']): void {
 
 // 	Settings options
 
-export async function initBackgroundOptions(sync: Sync, local: Local) {
+export function initBackgroundOptions(sync: Sync, local: Local) {
 	initFilesSettingsOptions(local)
 	initUrlsEditor(sync.backgrounds, local)
 	createProviderSelect(sync.backgrounds)
 	handleBackgroundOptions(sync.backgrounds)
 
-	const currentBackground = document.querySelector<HTMLElement>('#background-media div')
-
-	if (currentBackground?.dataset.res !== 'full') {
-		const [current] = await getCurrentBackgrounds(sync, local)
-		preloadBackground(current, 'medium')
+	if (detectBackgroundSize() !== 'full') {
+		getCurrentBackgrounds(sync, local).then(([current]) => {
+			preloadBackground(current, 'medium')
+		})
 	}
 }
 
@@ -948,6 +939,33 @@ function handleBackgroundActions(backgrounds: Backgrounds) {
 	document.getElementById('background-actions')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
 	document.getElementById('b_interface-background-download')?.classList.toggle('shown', type === 'images')
+}
+
+async function changeBackgroundResolution(blur: number, action: 'blur-enter' | 'blur-leave') {
+	const [current, next] = await getCurrentBackgrounds()
+
+	if (action === 'blur-enter') {
+		preloadBackground(current, 'medium')
+		preloadBackground(current, 'small')
+
+		if (blur !== 0) {
+			preloadBackground(current, 'full')
+			applyBackground(current, 'medium', 'fast')
+		}
+	}
+
+	if (action === 'blur-leave') {
+		if (blur === 0) {
+			applyBackground(current, 'full', 'fast')
+			preloadBackground(next, 'full')
+		} else if (blur <= 15) {
+			applyBackground(current, 'medium', 'fast')
+			preloadBackground(next, 'medium')
+		} else {
+			applyBackground(current, 'small', 'fast')
+			preloadBackground(next, 'small')
+		}
+	}
 }
 
 //  Helpers
