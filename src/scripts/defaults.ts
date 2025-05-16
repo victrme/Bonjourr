@@ -1,51 +1,59 @@
-import langList from './langs'
+import { langList } from './langs.ts'
 
-export const CURRENT_VERSION = '20.4.2'
+import type { Navigator } from '../types/shared.ts'
+import type { Local } from '../types/local.ts'
+import type { Sync } from '../types/sync.ts'
+
+const navigator = globalThis.navigator as Navigator
+const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
+const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
+
+export const CURRENT_VERSION = '21.0.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
-//@ts-expect-error: "ENV" is defined by esbuild during build step
-export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = ENV
+export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
-export const SYSTEM_OS =
-	['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(navigator.platform) ||
-	(navigator.userAgent.includes('Mac') && 'ontouchend' in document)
-		? 'ios'
-		: window.navigator.appVersion.includes('Macintosh')
-		? 'mac'
-		: window.navigator.appVersion.includes('Windows')
-		? 'windows'
-		: window.navigator.userAgent.toLowerCase().includes('Android')
-		? 'android'
-		: 'unknown'
+export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
+		(navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
+	? 'ios'
+	: navigator.appVersion?.includes('Macintosh')
+	? 'mac'
+	: navigator.appVersion?.includes('Windows')
+	? 'windows'
+	: navigator.userAgent?.toLowerCase()?.includes('android')
+	? 'android'
+	: 'unknown'
 
-export const PLATFORM =
-	window.location.protocol === 'moz-extension:'
-		? 'firefox'
-		: window.location.protocol === 'chrome-extension:'
-		? 'chrome'
-		: window.location.protocol === 'safari-web-extension:'
-		? 'safari'
-		: 'online'
-
-export const BROWSER = window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
-	? 'edge'
-	: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
-	? 'opera'
-	: window.navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
-	? 'chrome'
-	: window.navigator.userAgent.toLowerCase().indexOf('firefox') > -1
+export const PLATFORM = globalThis.location?.protocol === 'moz-extension:'
 	? 'firefox'
-	: window.navigator.userAgent.toLowerCase().indexOf('safari') > -1
+	: globalThis.location?.protocol === 'chrome-extension:'
+	? 'chrome'
+	: globalThis.location?.protocol === 'safari-web-extension:'
+	? 'safari'
+	: 'online'
+
+export const BROWSER = navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
+	? 'edge'
+	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+	? 'opera'
+	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
+	? 'chrome'
+	: navigator.userAgent?.toLowerCase()?.indexOf('firefox') > -1
+	? 'firefox'
+	: navigator.userAgent?.toLowerCase()?.indexOf('safari') > -1
 	? 'safari'
 	: 'other'
 
-export const EXTENSION: typeof chrome | typeof browser | undefined =
-	PLATFORM === 'online' ? undefined : PLATFORM === 'firefox' ? browser : chrome
+export const EXTENSION: typeof chrome | typeof browser | undefined = PLATFORM === 'online'
+	? undefined
+	: PLATFORM === 'firefox'
+	? browser
+	: chrome
 
 export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
-	: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+	: mobileUA.some((ua) => navigator.userAgent.includes(ua))
 
 const DEFAULT_LANG = (() => {
 	for (const code of Object.keys(langList)) {
@@ -56,7 +64,7 @@ const DEFAULT_LANG = (() => {
 	return 'en'
 })()
 
-export const SEARCHBAR_ENGINES = <const>[
+export const SEARCHBAR_ENGINES = [
 	'default',
 	'google',
 	'ddg',
@@ -69,9 +77,9 @@ export const SEARCHBAR_ENGINES = <const>[
 	'lilo',
 	'baidu',
 	'custom',
-]
+] as const
 
-export const SYNC_DEFAULT: Sync.Storage = {
+export const SYNC_DEFAULT: Sync = {
 	about: {
 		browser: PLATFORM,
 		version: CURRENT_VERSION,
@@ -111,16 +119,19 @@ export const SYNC_DEFAULT: Sync.Storage = {
 		synced: [],
 	},
 	backgrounds: {
-		type: 'color',
+		type: 'images',
 		fadein: 600,
 		blur: 15,
 		bright: 0.8,
 		frequency: 'hour',
-		color: '#654',
-		urls: [],
-		images: { provider: 'unsplash', collection: 'daylight' },
-		videos: { provider: 'pixabay', collection: 'daylight' },
-		texture: { type: 'none' },
+		color: '#185A63',
+		urls: '',
+		images: 'bonjourr-images-daylight',
+		videos: 'bonjourr-videos-daylight',
+		queries: {},
+		texture: {
+			type: 'none',
+		},
 	},
 	clock: {
 		size: 1,
@@ -195,31 +206,13 @@ export const SYNC_DEFAULT: Sync.Storage = {
 	},
 }
 
-export const LOCAL_DEFAULT: Local.Storage = {
+export const LOCAL_DEFAULT: Local = {
 	syncType: PLATFORM === 'online' ? 'off' : 'browser',
 	userQuoteSelection: 0,
 	translations: undefined,
-	selectedId: '',
-	idsList: [],
 	quotesCache: [],
-	unsplashCache: {
-		noon: [],
-		day: [],
-		evening: [],
-		night: [],
-		user: [],
-	},
-	daylightCollection: {
-		images: {
-			unsplash: { noon: [], day: [], evening: [], night: [] },
-			pixabay: { noon: [], day: [], evening: [], night: [] },
-		},
-		videos: {
-			pixabay: { noon: [], day: [], evening: [], night: [] },
-		},
-	},
-	localFiles: {
-		selected: '',
-		ids: [],
-	},
+	backgroundUrls: {},
+	backgroundFiles: {},
+	backgroundCollections: {},
+	backgroundCompressFiles: true,
 }

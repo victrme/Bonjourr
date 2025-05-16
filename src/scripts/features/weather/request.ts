@@ -1,13 +1,14 @@
-import storage from '../../storage'
-import suntime from '../../utils/suntime'
-import { weatherFetch } from '../../utils'
-import { tradThis, getLang } from '../../utils/translations'
+import { displayWeather, handleForecastDisplay } from './display.ts'
+import { getLang, tradThis } from '../../utils/translations.ts'
+import { handleGeolOption } from './settings.ts'
+import { getSunsetHour } from './index.ts'
+import { suntime } from '../../shared/time.ts'
+import { storage } from '../../storage.ts'
 
-import { getSunsetHour } from './index'
-import { handleGeolOption } from './settings'
-import { handleForecastDisplay, displayWeather } from './display'
-
-import type { Weather, LastWeather, Coords } from './index'
+import type { SimpleWeather } from '../../../types/shared.ts'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Weather } from '../../../types/sync.ts'
+import type { Coords } from './index.ts'
 
 export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
 	handleForecastDisplay(data.forecast)
@@ -17,7 +18,7 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
 		return
 	}
 
-	const now = new Date().getTime()
+	const now = Date.now()
 	const last = lastWeather?.timestamp ?? 0
 	const isAnHourLater = now > last + 3600000
 
@@ -25,8 +26,9 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
 		const newWeather = await requestNewWeather(data, lastWeather)
 
 		if (newWeather) {
-			lastWeather = newWeather
-			storage.local.set({ lastWeather })
+			storage.local.set({ lastWeather: newWeather })
+			displayWeather(data, newWeather)
+			return
 		}
 	}
 
@@ -46,7 +48,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	url.searchParams.set('lang', getLang())
 	url.searchParams.set('unit', data.unit === 'metric' ? 'C' : 'F')
 
-	if (coords && coords.lat && coords.lon) {
+	if (coords?.lat && coords?.lon) {
 		url.searchParams.set('lat', coords.lat.toString())
 		url.searchParams.set('lon', coords.lon.toString())
 	}
@@ -63,25 +65,25 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 		throw new Error('Cannot get weather')
 	}
 
-	const json: Weather.SimpleWeather = await response?.json()
+	const json: SimpleWeather = await response?.json()
 
 	let [sunset, sunrise] = [0, 0]
 	const { temp, feels } = json.now
 	const { description, icon } = json.now
 
-	let forecasted_high = lastWeather?.forecasted_high ?? -273.15
-	let forecasted_timestamp = lastWeather?.forecasted_timestamp ?? 0
+	let forecastedHigh = lastWeather?.forecasted_high ?? -273.15
+	let forecastedTimestamp = lastWeather?.forecasted_timestamp ?? 0
 
 	if (json.daily) {
 		const [today, tomorrow] = json.daily
 		const date = new Date()
 
 		if (date.getHours() > getSunsetHour()) {
-			forecasted_high = tomorrow.high
-			forecasted_timestamp = new Date(tomorrow.time).getTime()
+			forecastedHigh = tomorrow.high
+			forecastedTimestamp = new Date(tomorrow.time).getTime()
 		} else {
-			forecasted_high = today.high
-			forecasted_timestamp = new Date(today.time).getTime()
+			forecastedHigh = today.high
+			forecastedTimestamp = new Date(today.time).getTime()
 		}
 	}
 
@@ -100,9 +102,9 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 	}
 
 	return {
-		timestamp: new Date().getTime(),
-		forecasted_timestamp,
-		forecasted_high,
+		timestamp: Date.now(),
+		forecasted_timestamp: forecastedTimestamp,
+		forecasted_high: forecastedHigh,
 		description,
 		feels_like: feels,
 		icon_id: icon,
@@ -148,7 +150,7 @@ export async function getGeolocation(type: Weather['geolocation']): Promise<Coor
 				() => {
 					resolve(false)
 				},
-			),
+			)
 		)
 	}
 

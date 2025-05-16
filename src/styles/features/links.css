@@ -152,7 +152,7 @@
  * Annoying class naming overlap between edits and link groups "selected"
  * Edit: selected
  * Group: selected-group
-*/
+ */
 
 .link-title.selected,
 .link-title.selected.selected-group {
@@ -249,7 +249,7 @@
 }
 
 .link.removed {
-	margin: 0 calc((var(--column-gap) / 2) * -1); /* minus half of gap */
+	margin: 0 calc(var(--column-gap) / 2 * -1); /* minus half of gap */
 	width: 0 !important;
 	opacity: 0;
 	overflow: hidden;

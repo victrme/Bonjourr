@@ -1,9 +1,9 @@
-import { stringMaxSize } from '../utils'
-import { eventDebounce } from '../utils/debounce'
-import onSettingsLoad from '../utils/onsettingsload'
-import { tradThis } from '../utils/translations'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { stringMaxSize } from '../shared/generic.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { tradThis } from '../utils/translations.ts'
 
-export default function customCss(init?: string, event?: { styling: string }) {
+export function customCss(init?: string, event?: { styling: string }) {
 	const stylelink = document.getElementById('styles') as HTMLStyleElement
 
 	if (event) {
@@ -21,7 +21,7 @@ export default function customCss(init?: string, event?: { styling: string }) {
 	}
 
 	onSettingsLoad(async () => {
-		const { create } = await import('./csseditor')
+		const { createCssEditor } = await import('./csseditor.ts')
 
 		const options = {
 			language: 'css',
@@ -31,7 +31,7 @@ export default function customCss(init?: string, event?: { styling: string }) {
 			value: init || '',
 		}
 
-		const editor = create(options)
+		const editor = createCssEditor(options)
 		const tabCommand = editor.keyCommandMap.Tab
 
 		editor.textarea.id = 'css-editor-textarea'
@@ -40,13 +40,15 @@ export default function customCss(init?: string, event?: { styling: string }) {
 		editor.textarea.placeholder = tradThis('Type in your custom CSS')
 
 		editor.addListener('update', (value) => {
-			value = stringMaxSize(value, 8080)
-			eventDebounce({ css: value })
-			stylelink.textContent = value
+			eventDebounce({ css: stringMaxSize(value, 8080) })
+			stylelink.textContent = stringMaxSize(value, 8080)
 		})
 
 		editor.keyCommandMap.Tab = (e, selection, value) => {
-			if (document.body.matches('.tabbing')) return false
+			if (document.body.matches('.tabbing')) {
+				return false
+			}
+
 			return tabCommand?.(e, selection, value)
 		}
 	})

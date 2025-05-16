@@ -1,16 +1,15 @@
-import { getLang, tradThis } from '../utils/translations'
-import { displayInterface } from '../index'
-import { eventDebounce } from '../utils/debounce'
-import onSettingsLoad from '../utils/onsettingsload'
-import { SYSTEM_OS } from '../defaults'
-import errorMessage from '../utils/errormessage'
-import { apiFetch } from '../utils'
-import { subsets } from '../langs'
-import networkForm from '../utils/networkform'
-import storage from '../storage'
-import clock from './clock'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { displayInterface } from '../shared/display.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { networkForm } from '../shared/form.ts'
+import { SYSTEM_OS } from '../defaults.ts'
+import { apiFetch } from '../shared/api.ts'
+import { subsets } from '../langs.ts'
+import { storage } from '../storage.ts'
+import { clock } from './clock.ts'
 
-type Font = Sync.Font
+import type { Font, Sync } from '../../types/sync.ts'
 
 interface Fontsource {
 	family: string
@@ -29,23 +28,35 @@ type CustomFontUpdate = {
 
 const familyForm = networkForm('f_customfont')
 
-export const systemfont = (function () {
+export const systemfont = (() => {
 	const fonts = {
 		fallback: { placeholder: 'Arial', weights: ['500', '600', '800'] },
 		windows: { placeholder: 'Segoe UI', weights: ['300', '400', '600', '700', '800'] },
 		android: { placeholder: 'Roboto', weights: ['100', '300', '400', '500', '700', '900'] },
 		linux: { placeholder: 'Fira Sans', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
-		apple: { placeholder: 'SF Pro Display', weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'] },
+		apple: {
+			placeholder: 'SF Pro Display',
+			weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+		},
 	}
 
-	if (SYSTEM_OS === 'windows') return fonts.windows
-	else if (SYSTEM_OS === 'android') return fonts.android
-	else if (SYSTEM_OS === 'mac') return fonts.apple
-	else if (SYSTEM_OS === 'ios') return fonts.apple
-	else return fonts.linux
+	if (SYSTEM_OS === 'windows') {
+		return fonts.windows
+	}
+	if (SYSTEM_OS === 'android') {
+		return fonts.android
+	}
+	if (SYSTEM_OS === 'mac') {
+		return fonts.apple
+	}
+	if (SYSTEM_OS === 'ios') {
+		return fonts.apple
+	}
+
+	return fonts.linux
 })()
 
-export default function customFont(init?: Font, event?: CustomFontUpdate) {
+export function customFont(init?: Font, event?: CustomFontUpdate) {
 	if (event) {
 		updateCustomFont(event)
 		return
@@ -53,15 +64,15 @@ export default function customFont(init?: Font, event?: CustomFontUpdate) {
 
 	if (init) {
 		try {
-			init = migrateToNewFormat(init)
-			displayFont(init)
+			const font = migrateToNewFormat(init)
+			displayFont(font)
 			displayInterface('fonts')
 
 			onSettingsLoad(() => {
-				initFontSettings(init)
+				initFontSettings(font)
 			})
-		} catch (e) {
-			errorMessage(e)
+		} catch (_) {
+			// ...
 		}
 	}
 }
@@ -100,9 +111,9 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
 	eventDebounce({ font: data.font })
 }
 
-async function updateFontFamily(data: Sync.Storage, family: string): Promise<Font> {
-	const i_weight = document.getElementById('i_weight') as HTMLInputElement
-	const familyType = family.length == 0 ? 'none' : systemFontChecker(family) ? 'system' : 'fontsource'
+async function updateFontFamily(data: Sync, family: string): Promise<Font> {
+	const iWeight = document.getElementById('i_weight') as HTMLInputElement
+	const familyType = family.length === 0 ? 'none' : systemFontChecker(family) ? 'system' : 'fontsource'
 
 	let font: Font = {
 		family: '',
@@ -113,19 +124,6 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 	}
 
 	switch (familyType) {
-		case 'none': {
-			displayFont(font)
-			familyForm.accept('i_customfont', systemfont.placeholder)
-			break
-		}
-
-		case 'system': {
-			font.family = family
-			displayFont(font)
-			familyForm.accept('i_customfont', family)
-			break
-		}
-
 		case 'fontsource': {
 			familyForm.load()
 
@@ -145,11 +143,23 @@ async function updateFontFamily(data: Sync.Storage, family: string): Promise<Fon
 			}
 			break
 		}
+
+		case 'system': {
+			font.family = family
+			displayFont(font)
+			familyForm.accept('i_customfont', family)
+			break
+		}
+
+		default: {
+			displayFont(font)
+			familyForm.accept('i_customfont', systemfont.placeholder)
+		}
 	}
 
 	clock(undefined, {})
 	setWeightSettings(font.weightlist)
-	i_weight.value = font.weight
+	iWeight.value = font.weight
 
 	return font
 }
@@ -205,9 +215,12 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
 
 function displayFont({ family, size, weight, system }: Font) {
 	// Weight: default bonjourr lowers font weight on clock (because we like it)
-	const clockWeight = parseInt(weight) > 100 ? systemfont.weights[systemfont.weights.indexOf(weight) - 1] : weight
+	const clockWeight = Number.parseInt(weight) > 100
+		? systemfont.weights[systemfont.weights.indexOf(weight) - 1]
+		: weight
 	const subset = getRequiredSubset()
 	const id = family.toLocaleLowerCase().replaceAll(' ', '-')
+	const fontfacedom = document.getElementById('fontface')
 
 	if (!system) {
 		let fontface = `
@@ -220,7 +233,9 @@ function displayFont({ family, size, weight, system }: Font) {
 			fontface += fontface.replace('latin', subset)
 		}
 
-		document.getElementById('fontface')!.textContent += fontface
+		if (fontfacedom) {
+			fontfacedom.textContent += fontface
+		}
 	}
 
 	document.documentElement.style.setProperty('--font-family', family ? `"${family}"` : null)
@@ -230,7 +245,7 @@ function displayFont({ family, size, weight, system }: Font) {
 }
 
 function setFontSize(size: string) {
-	document.documentElement.style.setProperty('--font-size', parseInt(size) / 16 + 'em')
+	document.documentElement.style.setProperty('--font-size', `${Number.parseInt(size) / 16}em`)
 }
 
 //
@@ -238,22 +253,21 @@ function setFontSize(size: string) {
 //
 
 function initFontSettings(font?: Font) {
-	const settings = document.getElementById('settings') as HTMLElement
 	const hasCustomWeights = font && font.weightlist.length > 0
 	const weights = hasCustomWeights ? font.weightlist : systemfont.weights
-	const family = font?.family || systemfont.placeholder
-
 	setWeightSettings(weights)
 }
 
 async function setAutocompleteSettings(isLangSwitch?: boolean) {
-	const dl_fontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
+	const dlFontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
 
-	if (isLangSwitch) {
-		dl_fontfamily?.childNodes.forEach((node) => node.remove())
+	if (isLangSwitch && dlFontfamily?.childNodes) {
+		for (const node of dlFontfamily.childNodes) {
+			node.remove()
+		}
 	}
 
-	if (dl_fontfamily?.childElementCount === 0) {
+	if (dlFontfamily?.childElementCount === 0) {
 		const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
 		const fragment = new DocumentFragment()
 		const requiredSubset = getRequiredSubset()
@@ -267,7 +281,7 @@ async function setAutocompleteSettings(isLangSwitch?: boolean) {
 			}
 		}
 
-		dl_fontfamily?.appendChild(fragment)
+		dlFontfamily?.appendChild(fragment)
 	}
 }
 
@@ -288,7 +302,7 @@ export async function fontIsAvailableInSubset(lang?: string, family?: string) {
 	const font = fontlist?.find((item) => item.family === family)
 	const subset = getRequiredSubset(lang)
 
-	return font && font.subsets.includes(subset)
+	return font?.subsets.includes(subset)
 }
 
 function systemFontChecker(family: string): boolean {
@@ -298,14 +312,14 @@ function systemFontChecker(family: string): boolean {
 
 	const p = document.createElement('p')
 	p.setAttribute('style', 'position: absolute; opacity: 0; font-family: invalid font;')
-	p.textContent = 'mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890' + tradThis('New tab')
+	p.textContent = `mqlskdjfhgpaozieurytwnxbcv?./,;:1234567890${tradThis('New tab')}`
 	document.getElementById('interface')?.prepend(p)
 
-	const first_w = p.getBoundingClientRect().width
+	const firstW = p.getBoundingClientRect().width
 	p.style.fontFamily = `'${family}'`
 
-	const second_w = p.getBoundingClientRect().width
-	const hasLoadedFont = first_w !== second_w
+	const secondW = p.getBoundingClientRect().width
+	const hasLoadedFont = firstW !== secondW
 
 	p.remove()
 
@@ -316,21 +330,21 @@ function waitForFontLoad(family: string): Promise<boolean> {
 	return new Promise((resolve) => {
 		let limitcounter = 0
 		let hasLoadedFont = systemFontChecker(family)
+
 		const interval = setInterval(() => {
 			if (hasLoadedFont || limitcounter === 100) {
 				clearInterval(interval)
 				return resolve(true)
-			} else {
-				hasLoadedFont = systemFontChecker(family)
-				limitcounter++
 			}
+
+			hasLoadedFont = systemFontChecker(family)
+			limitcounter++
 		}, 100)
 	})
 }
 
-function getRequiredSubset(lang?: string): string {
+function getRequiredSubset(lang: string = getLang()): string {
 	let subset = 'latin'
-	lang = lang ?? getLang()
 
 	if (lang in subsets) {
 		subset = subsets[lang as keyof typeof subsets]
@@ -351,8 +365,8 @@ function migrateToNewFormat(font: Font): Font {
 
 	font.system = systemFontChecker(font.family)
 
-	delete font.availWeights
-	delete font.url
+	font.availWeights = undefined
+	font.url = undefined
 
 	storage.local.remove('fontface')
 	storage.local.remove('fonts')
