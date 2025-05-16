@@ -357,6 +357,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 			const newlocal = setCollection(backgrounds, local).fromApi(json)
 			const newcoll = getCollection(backgrounds, newlocal)
 			const isImage = backgrounds.type === 'images'
+
 			newlocal.backgroundLastChange = userDate().toString()
 			storage.local.set(newlocal)
 
@@ -441,7 +442,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 			preloadBackground(newlist[0])
 			preloadBackground(newlist[1])
 
-			storage.local.set(newlocal)
+			storage.local.set({ backgroundCollections: newlocal.backgroundCollections })
 		}
 	}
 }
@@ -741,13 +742,13 @@ function preloadBackground(media?: Background, force?: BackgroundSize) {
 
 		return new Promise((resolve) => {
 			img.addEventListener('load', () => {
-				storage.local.remove('backgroundPreloading')
 				img.remove()
 				resolve(true)
+				storage.local.remove('backgroundPreloading')
 			})
 
-			img.src = src
 			storage.local.set({ backgroundPreloading: true })
+			img.src = src
 		})
 	}
 
@@ -763,8 +764,8 @@ function preloadBackground(media?: Background, force?: BackgroundSize) {
 			}, 200)
 		})
 
-		vid.src = src
 		storage.local.set({ backgroundPreloading: true })
+		vid.src = src
 	})
 }
 

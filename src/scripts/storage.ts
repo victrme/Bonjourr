@@ -210,10 +210,10 @@ function localSet(value: Record<string, unknown>) {
 		default: {
 			for (const [key, val] of Object.entries(value)) {
 				if (typeof val === 'string') {
-					return localStorage.setItem(key, val)
+					localStorage.setItem(key, val)
+				} else {
+					localStorage.setItem(key, JSON.stringify(val))
 				}
-
-				return localStorage.setItem(key, JSON.stringify(val))
 			}
 			return
 		}
@@ -232,8 +232,9 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 			const defaults = structuredClone(LOCAL_DEFAULT) as unknown
 			const result: Record<string, unknown> = defaults as Record<string, unknown>
 
-			keys ??= Object.keys(LOCAL_DEFAULT)
-
+			if (keys === undefined) {
+				keys = Object.keys(LOCAL_DEFAULT)
+			}
 			if (typeof keys === 'string') {
 				keys = [keys]
 			}
@@ -258,6 +259,8 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 				}
 			}
 
+			console.log(result)
+
 			return result as unknown as Local
 		}
 	}
@@ -271,9 +274,7 @@ function localRemove(key: string) {
 		}
 
 		case 'localstorage': {
-			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
-			delete data[key]
-			localStorage.bonjourr = JSON.stringify(data ?? {})
+			localStorage.removeItem(key)
 			return
 		}
 

@@ -215,4 +215,7 @@ export const LOCAL_DEFAULT: Local = {
 	backgroundFiles: {},
 	backgroundCollections: {},
 	backgroundCompressFiles: true,
+	backgroundPreloading: undefined,
+	backgroundLastChange: '',
+	lastWeather: undefined,
 }
