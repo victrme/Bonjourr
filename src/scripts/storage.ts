@@ -259,8 +259,6 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 				}
 			}
 
-			console.log(result)
-
 			return result as unknown as Local
 		}
 	}

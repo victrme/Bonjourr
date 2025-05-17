@@ -92,9 +92,9 @@ async function closeFolder() {
 		}
 	}
 
-	async function changeToTab() {
+	function changeToTab() {
 		domlinkblocks.classList.toggle('with-groups', data.linkgroups.on)
-		await initblocks(data)
+		initblocks(data)
 	}
 
 	function show() {

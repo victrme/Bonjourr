@@ -11,6 +11,7 @@ import { storage } from '../../storage.ts'
 
 interface EditStates {
 	group: string
+	folder: string
 	selected: string[]
 	selectall: boolean
 	dragging: boolean
@@ -73,8 +74,12 @@ export async function openEditDialog(event: Event) {
 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
 
+	const domfolder = document.querySelector<HTMLElement>('.link-group.in-folder')
+	const folder = domfolder?.dataset?.folder ?? ''
+
 	editStates = {
 		group,
+		folder,
 		selectall,
 		container,
 		dragging,
@@ -313,7 +318,7 @@ queueMicrotask(() => {
 
 function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
-	const { container, target, group, selected, selectall } = editStates
+	const { container, target, group, folder, selected, selectall } = editStates
 
 	if (change === 'edit-apply') {
 		applyLinkChanges('button')
@@ -338,32 +343,47 @@ function submitChanges(event: SubmitEvent) {
 	}
 
 	if (change === 'edit-add') {
-		if (target.title) {
+		if (container.folder) {
 			quickLinks(undefined, {
-				addGroups: [{ title: domtitle.value }],
+				addLinks: [{
+					group: folder,
+					title: domtitle.value,
+					url: domurl.value,
+				}],
 			})
-		} //
-		else if (selectall) {
+		} else if (target.title) {
 			quickLinks(undefined, {
-				addFolder: { ids: selected, group: group },
+				addGroups: [{
+					title: domtitle.value,
+				}],
 			})
+		} else if (selectall) {
 			document.dispatchEvent(new Event('remove-select-all'))
-		} //
-		else if (container.group) {
 			quickLinks(undefined, {
-				addLinks: [{ group, title: domtitle.value, url: domurl.value }],
+				addFolder: {
+					ids: selected,
+					group: group,
+				},
+			})
+		} else if (container.group) {
+			quickLinks(undefined, {
+				addLinks: [{
+					group,
+					title: domtitle.value,
+					url: domurl.value,
+				}],
 			})
 		}
 	}
 
 	if (change === 'edit-unfolder') {
+		document.dispatchEvent(new Event('remove-select-all'))
 		quickLinks(undefined, {
 			moveOutFolder: {
 				ids: editStates.selected,
 				group: editStates.group,
 			},
 		})
-		document.dispatchEvent(new Event('remove-select-all'))
 	}
 
 	if (change === 'edit-pin') {
@@ -390,13 +410,36 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 	}
 
 	if (editStates.target.title) {
-		quickLinks(undefined, { groupTitle: { old: domeditlink.dataset.group ?? '', new: domtitle.value } })
+		quickLinks(undefined, {
+			groupTitle: {
+				old: domeditlink.dataset.group ?? '',
+				new: domtitle.value,
+			},
+		})
+		closeEditDialog()
+		return
+	}
+
+	if (editStates.container.folder && domurl.value) {
+		quickLinks(undefined, {
+			addLinks: [{
+				group: editStates.folder,
+				title: domtitle.value,
+				url: domurl.value,
+			}],
+		})
 		closeEditDialog()
 		return
 	}
 
 	if (editStates.container.group && !editStates.target.link && !editStates.target.folder) {
-		quickLinks(undefined, { addLinks: [{ group: editStates.group, title: domtitle.value, url: domurl.value }] })
+		quickLinks(undefined, {
+			addLinks: [{
+				group: editStates.group,
+				title: domtitle.value,
+				url: domurl.value,
+			}],
+		})
 		closeEditDialog()
 		return
 	}

@@ -446,7 +446,6 @@ export async function linksUpdate(update: LinksUpdate) {
 }
 
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
-	const folderid = domlinkblocks.dataset.folderid
 	const type = args.type
 	let newlinks: Link[] = []
 
@@ -471,19 +470,14 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 
 	// Adds parent if missing from link validation
 	for (const link of newlinks) {
-		const addsFromFolder = folderid && !link.folder
 		const noParents = link.parent === undefined
 		const { selected, synced } = data.linkgroups
 
-		if (addsFromFolder) {
-			link.parent = folderid
-		} //
-		else if (noParents && synced.includes(selected)) {
+		if (noParents && synced.includes(selected)) {
 			link.parent = ''
 			data.linkgroups.selected = ''
 			initGroups(data)
-		} //
-		else if (noParents) {
+		} else if (noParents) {
 			link.parent = selected
 		}
 
