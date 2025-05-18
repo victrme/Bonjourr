@@ -93,7 +93,7 @@ aside .input-btn.icon-only:active {
 
 aside textarea,
 aside .prism-code-editor {
-	font-family: Consolas, Monaco, Ubuntu Mono, monospace;
+	font-family: var(--monospace-font-family);
 }
 
 aside select,
@@ -270,8 +270,25 @@ aside input[type='range']::-ms-tooltip {
 }
 
 aside input[type='color'] {
+	width: 0;
+	height: 0;
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+	right: 0;
 	padding: 0;
 	background-color: transparent;
+}
+
+aside #customColorButton {
+	font-family: var(--monospace-font-family);
+	border: 1px solid black;
+	height: 31px;
+	width: 155px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	outline-offset: 2px;
 }
 
 label.input-file {
@@ -382,6 +399,7 @@ aside form.valid.remove span::after {
 }
 
 .wrapper {
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;

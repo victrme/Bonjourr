@@ -200,7 +200,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
 		'on',
-		(data.analogstyle?.background ?? '#fff').includes('#000'),
+		(data.analogstyle?.background ?? '#fff').includes('#000')
 	)
 	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
 	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
@@ -407,7 +407,69 @@ function initOptionsEvents() {
 		backgroundUpdate({ type: this.value })
 	})
 
-	paramId('i_solid-background').addEventListener('input', function () {
+	function getReadableTextColor(backgroundColor: string): string {
+		// Remove "#" if present
+		const hex = backgroundColor.replace('#', '')
+
+		// Parse r, g, b values
+		const r = parseInt(hex.substring(0, 2), 16)
+		const g = parseInt(hex.substring(2, 4), 16)
+		const b = parseInt(hex.substring(4, 6), 16)
+
+		// Calculate relative luminance (https://www.w3.org/TR/WCAG20/#relativeluminancedef)
+		const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+
+		// Return black for bright backgrounds, white for dark backgrounds
+		return luminance > 0.5 ? '#000000' : '#FFFFFF'
+	}
+
+	function adjustColorBrightness(hex: string, amount: number): string {
+		const cleanHex = hex.replace('#', '')
+		const num = parseInt(cleanHex, 16)
+
+		let r = (num >> 16) + amount
+		let g = ((num >> 8) & 0x00ff) + amount
+		let b = (num & 0x0000ff) + amount
+
+		r = Math.max(Math.min(255, r), 0)
+		g = Math.max(Math.min(255, g), 0)
+		b = Math.max(Math.min(255, b), 0)
+
+		return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
+	}
+
+	function colorButtonStyling(btn: HTMLElement, color: string) {
+		if (btn) {
+			btn.style.backgroundColor = colorPicker.value
+			btn.style.color = getReadableTextColor(colorPicker.value)
+			btn.style.borderColor = adjustColorBrightness(colorPicker.value, -50)
+			btn.textContent = colorPicker.value
+		}
+	}
+
+	const colorPicker = paramId('i_solid-background')
+	const customButton = document.getElementById('customColorButton')
+
+	if (customButton !== null) {
+		colorButtonStyling(customButton, colorPicker.value)
+	}
+
+	customButton?.addEventListener('click', function () {
+		console.log('e')
+		colorPicker?.click()
+	})
+
+	// colorPicker?.addEventListener('input', function (event) {
+	// 	customButton?.style.backgroundColor = event.target.value
+	// 	// Change button background to selected color
+	// })
+
+	// when native color input value changes
+	colorPicker.addEventListener('input', function () {
+		if (customButton !== null) {
+			colorButtonStyling(customButton, this.value)
+		}
+
 		backgroundUpdate({ color: this.value })
 	})
 
