@@ -280,7 +280,7 @@ aside input[type='color'] {
 	background-color: transparent;
 }
 
-aside #customColorButton {
+aside #b_solid-background {
 	font-family: var(--monospace-font-family);
 	border: 1px solid black;
 	height: 31px;
@@ -289,6 +289,12 @@ aside #customColorButton {
 	justify-content: center;
 	align-items: center;
 	outline-offset: 2px;
+	filter: brightness(1);
+	transition: filter 0.15s;
+}
+
+aside #b_solid-background:hover {
+	filter: brightness(1.15);
 }
 
 label.input-file {

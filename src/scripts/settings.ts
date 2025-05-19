@@ -1,4 +1,4 @@
-import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
+import { darkmode, favicon, pageControl, tabTitle, textShadow, colorButtonStyling } from './features/others.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
@@ -196,6 +196,8 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
 	setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
+
+	colorButtonStyling(paramId('b_solid-background'), paramId('i_solid-background').value)
 
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
@@ -407,69 +409,13 @@ function initOptionsEvents() {
 		backgroundUpdate({ type: this.value })
 	})
 
-	function getReadableTextColor(backgroundColor: string): string {
-		// Remove "#" if present
-		const hex = backgroundColor.replace('#', '')
-
-		// Parse r, g, b values
-		const r = parseInt(hex.substring(0, 2), 16)
-		const g = parseInt(hex.substring(2, 4), 16)
-		const b = parseInt(hex.substring(4, 6), 16)
-
-		// Calculate relative luminance (https://www.w3.org/TR/WCAG20/#relativeluminancedef)
-		const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-
-		// Return black for bright backgrounds, white for dark backgrounds
-		return luminance > 0.5 ? '#000000' : '#FFFFFF'
-	}
-
-	function adjustColorBrightness(hex: string, amount: number): string {
-		const cleanHex = hex.replace('#', '')
-		const num = parseInt(cleanHex, 16)
-
-		let r = (num >> 16) + amount
-		let g = ((num >> 8) & 0x00ff) + amount
-		let b = (num & 0x0000ff) + amount
-
-		r = Math.max(Math.min(255, r), 0)
-		g = Math.max(Math.min(255, g), 0)
-		b = Math.max(Math.min(255, b), 0)
-
-		return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`
-	}
-
-	function colorButtonStyling(btn: HTMLElement, color: string) {
-		if (btn) {
-			btn.style.backgroundColor = colorPicker.value
-			btn.style.color = getReadableTextColor(colorPicker.value)
-			btn.style.borderColor = adjustColorBrightness(colorPicker.value, -50)
-			btn.textContent = colorPicker.value
-		}
-	}
-
-	const colorPicker = paramId('i_solid-background')
-	const customButton = document.getElementById('customColorButton')
-
-	if (customButton !== null) {
-		colorButtonStyling(customButton, colorPicker.value)
-	}
-
-	customButton?.addEventListener('click', function () {
-		console.log('e')
-		colorPicker?.click()
+	paramId('b_solid-background').addEventListener('click', function () {
+		paramId('i_solid-background').click()
 	})
 
-	// colorPicker?.addEventListener('input', function (event) {
-	// 	customButton?.style.backgroundColor = event.target.value
-	// 	// Change button background to selected color
-	// })
-
 	// when native color input value changes
-	colorPicker.addEventListener('input', function () {
-		if (customButton !== null) {
-			colorButtonStyling(customButton, this.value)
-		}
-
+	paramId('i_solid-background').addEventListener('input', function () {
+		colorButtonStyling(paramId('b_solid-background'), this.value)
 		backgroundUpdate({ color: this.value })
 	})
 
