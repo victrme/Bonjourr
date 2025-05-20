@@ -3,7 +3,7 @@
     "browser": "firefox",
     "version": "20.4.2"
   },
-  "showall": true,
+  "showall": false,
   "lang": "en",
   "dark": "system",
   "favicon": "",
@@ -14,14 +14,14 @@
   "time": true,
   "main": true,
   "dateformat": "auto",
-  "background_blur": 0,
-  "background_bright": 0.35,
-  "background_type": "local",
+  "background_blur": 15,
+  "background_bright": 0.8,
+  "background_type": "unsplash",
   "quicklinks": true,
   "syncbookmarks": null,
   "textShadow": 0.2,
   "announcements": "major",
-  "review": -1,
+  "review": 31,
   "css": "",
   "hide": {},
   "linkstyle": "medium",
@@ -43,9 +43,9 @@
     "ampm": false,
     "analog": false,
     "seconds": false,
-    "timezone": "Asia/Irkutsk",
     "ampmlabel": false,
-    "worldclocks": true
+    "timezone": "auto",
+    "worldclocks": false
   },
   "analogstyle": {
     "face": "none",
@@ -54,21 +54,12 @@
     "border": "#ffff",
     "background": "#fff2"
   },
-  "worldclocks": [
-    {
-      "timezone": "Europe/Paris",
-      "region": "Clermont-Ferrand"
-    },
-    {
-      "timezone": "America/Sao_Paulo",
-      "region": "Sao Paulo"
-    }
-  ],
+  "worldclocks": [],
   "unsplash": {
-    "every": "tabs",
-    "collection": "KWcmZT9FkSo",
-    "lastCollec": "user",
-    "time": 1746606433306
+    "every": "hour",
+    "collection": "",
+    "lastCollec": "day",
+    "time": 1747677308677
   },
   "weather": {
     "unit": "metric",
@@ -81,14 +72,14 @@
   },
   "notes": {
     "on": false,
-    "opacity": 0.1,
     "width": 40,
+    "opacity": 0.1,
     "align": "left"
   },
   "searchbar": {
     "on": false,
     "opacity": 0.1,
-    "newtab": true,
+    "newtab": false,
     "suggestions": true,
     "engine": "default",
     "request": "",
@@ -99,7 +90,7 @@
     "author": false,
     "type": "classic",
     "frequency": "day",
-    "last": 1746589872934
+    "last": 1747726990397
   },
   "font": {
     "size": "14",
@@ -115,21 +106,6 @@
   },
   "move": {
     "selection": "single",
-    "layouts": {
-      "single": {
-        "items": {},
-        "grid": [
-          [
-            "time"
-          ],
-          [
-            "main"
-          ],
-          [
-            "quicklinks"
-          ]
-        ]
-      }
-    }
+    "layouts": {}
   }
 }
