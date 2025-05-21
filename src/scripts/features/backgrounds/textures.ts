@@ -84,10 +84,10 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 	},
 	topographic: {
 		opacity: {
-			min: '0.3',
+			min: '0.1',
 			max: '1.0',
 			step: '0.05',
-			value: '0.6',
+			value: '0.4',
 		},
 		size: {
 			min: '400',

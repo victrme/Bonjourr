@@ -175,12 +175,12 @@ body.init #background-media > div video {
 #background-wrapper[data-texture='topographic'] #background-texture {
 	background-color: var(--texture-color);
 	opacity: var(--texture-opacity);
-	mask-image: url('../../assets/interface/topography.svg');
+	mask-image: url('../../assets/interface/topographic.svg');
 	mask-repeat: repeat;
 	mask-size: var(--texture-size);
 	mask-position: center;
 
-	-webkit-mask-image: url('../../assets/interface/topography.svg');
+	-webkit-mask-image: url('../../assets/interface/topographic.svg');
 	-webkit-mask-repeat: repeat;
 	-webkit-mask-size: var(--texture-size);
 }

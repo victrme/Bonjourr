@@ -855,13 +855,20 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 	if (hasTexture) {
 		const iOpacity = document.querySelector<HTMLInputElement>('#i_texture-opacity')
 		const iSize = document.querySelector<HTMLInputElement>('#i_texture-size')
+		const iColor = document.querySelector<HTMLInputElement>('#i_texture-color')
 		const ranges = TEXTURE_RANGES[backgrounds.texture.type]
-		const { opacity, size } = backgrounds.texture
+		const { opacity, size, color } = backgrounds.texture
 
 		// shows and hides texture color option
 		document
 			.querySelector<HTMLElement>('#background-texture-color-option')
 			?.classList.toggle('shown', ranges.color !== undefined)
+
+		if (iColor && ranges.color !== undefined) {
+			iColor.value = color === undefined ? ranges.color : color
+			// to make the non native color button aware of the change
+			document.getElementById('i_texture-color')?.dispatchEvent(new Event('input', { bubbles: true }))
+		}
 
 		if (iOpacity) {
 			iOpacity.min = ranges.opacity.min
