@@ -82,11 +82,18 @@ body.init #background-media > div video {
 	background-repeat: repeat;
 }
 
-#background-wrapper[data-texture='dots'] #background-texture {
+#background-wrapper[data-texture='verticalDots'] #background-texture {
 	opacity: var(--texture-opacity);
 	background-size: var(--texture-size) var(--texture-size);
-	background-image: radial-gradient(var(--texture-color) 1px, transparent 0);
-	/* mix-blend-mode: multiply; */
+	background-image: radial-gradient(var(--texture-color) 1.25px, transparent 0);
+}
+
+#background-wrapper[data-texture='diagonalDots'] #background-texture {
+	opacity: var(--texture-opacity);
+	background-image: radial-gradient(var(--texture-color) 1.25px, transparent 1.25px),
+		radial-gradient(var(--texture-color) 1.25px, transparent 1.25px);
+	background-size: var(--texture-size) var(--texture-size);
+	background-position: 0 0, calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
 }
 
 #background-wrapper[data-texture='topographic'] #background-texture {

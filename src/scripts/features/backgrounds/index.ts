@@ -1085,7 +1085,7 @@ function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
 }
 function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['type'] {
-	return ['none', 'grain', 'dots', 'topographic'].includes(str)
+	return ['none', 'grain', 'verticalDots', 'diagonalDots', 'topographic'].includes(str)
 }
 function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)

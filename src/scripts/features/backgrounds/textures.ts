@@ -22,7 +22,22 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 		},
 		color: undefined,
 	},
-	dots: {
+	verticalDots: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.1',
+			value: '0.3',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+	diagonalDots: {
 		opacity: {
 			min: '0.1',
 			max: '1.0',
