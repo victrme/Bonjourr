@@ -3,6 +3,7 @@ import type { Backgrounds } from '../../../types/sync.ts'
 interface TextureRanges {
 	opacity: TextureRangeInput
 	size: TextureRangeInput
+	color: string | false
 }
 
 export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRanges> = {
@@ -19,6 +20,7 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 			step: '5',
 			value: '220',
 		},
+		color: false,
 	},
 	dots: {
 		opacity: {
@@ -33,6 +35,7 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 			step: '1',
 			value: '30',
 		},
+		color: '#ffffff',
 	},
 	topographic: {
 		opacity: {
@@ -47,6 +50,7 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 			step: '10',
 			value: '500',
 		},
+		color: '#ffffff',
 	},
 
 	none: {
@@ -62,6 +66,7 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 			value: '',
 			step: '',
 		},
+		color: false,
 	},
 }
 

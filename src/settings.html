@@ -338,37 +338,6 @@
 		</div>
 	</div>
 
-	<div class="as as_texture dropdown">
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_texture" class="trn">Texture</label>
-
-			<select id="i_texture">
-				<option value="none" class="trn">None</option>
-				<option value="grain" class="trn">Grain</option>
-				<option value="dots" class="trn">Dots</option>
-				<option value="topographic" class="trn">Topographic</option>
-			</select>
-		</div>
-
-		<div id="background-texture-options" class="dropdown shown">
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_texture-opacity" class="trn">Texture opacity</label>
-				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_texture-size" class="trn">Texture size</label>
-				<input id="i_texture-size" name="texture-size" class="range" type="range" />
-			</div>
-		</div>
-	</div>
-
 	<div id="background-filters-options" class="dropdown">
 		<hr />
 
@@ -408,6 +377,49 @@
 					value="400"
 					step="100"
 				/>
+			</div>
+		</div>
+	</div>
+
+	<div class="as as_texture dropdown">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_texture" class="trn">Texture</label>
+
+			<select id="i_texture">
+				<option value="none" class="trn">None</option>
+				<option value="grain" class="trn">Grain</option>
+				<option value="dots" class="trn">Dots</option>
+				<option value="topographic" class="trn">Topographic</option>
+			</select>
+		</div>
+
+		<div id="background-texture-options" class="dropdown shown">
+			<div id="background-texture-color-option" class="dropdown">
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_texture-color" class="trn">Texture color</label>
+					<input type="color" id="i_texture-color" name="texture-color" tabindex="-1" />
+					<button id="i_texture-color" style="padding: 10px; background-color: #f1f1f1; border-radius: 5px">
+						Pick a Color
+					</button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-opacity" class="trn">Texture opacity</label>
+				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-size" class="trn">Texture size</label>
+				<input id="i_texture-size" name="texture-size" class="range" type="range" />
 			</div>
 		</div>
 	</div>

@@ -47,7 +47,11 @@
 }
 
 #background-texture-options.shown {
-	max-height: 180px;
+	max-height: 185px;
+}
+
+#background-texture-color-option.shown {
+	max-height: 60px;
 }
 
 /* Dropdowns: Time & Date Options */
@@ -145,7 +149,7 @@
 }
 
 .all .as_texture {
-	max-height: 180px;
+	max-height: 245px;
 }
 
 .all .as_fadein {

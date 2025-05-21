@@ -848,6 +848,15 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 		const ranges = TEXTURE_RANGES[backgrounds.texture.type]
 		const { opacity, size } = backgrounds.texture
 
+		// shows and hides texture color option
+		document
+			.querySelector<HTMLElement>('#background-texture-color-option')
+			?.classList.toggle('shown', ranges.color !== false)
+
+		// document
+		// 	.querySelector<HTMLElement>('#background-texture-color-option')
+		// 	?.classList.toggle('shown', backgrounds.texture.type === 'dots')
+
 		if (iOpacity) {
 			iOpacity.min = ranges.opacity.min
 			iOpacity.max = ranges.opacity.max
