@@ -85,13 +85,12 @@ body.init #background-media > div video {
 #background-wrapper[data-texture='dots'] #background-texture {
 	opacity: var(--texture-opacity);
 	background-size: var(--texture-size) var(--texture-size);
-	background-image: radial-gradient(white 1px, transparent 0);
+	background-image: radial-gradient(var(--texture-color) 1px, transparent 0);
+	/* mix-blend-mode: multiply; */
 }
 
 #background-wrapper[data-texture='topographic'] #background-texture {
 	opacity: var(--texture-opacity);
 	background-size: var(--texture-size);
 	background-image: url('../../assets/interface/topographic.png');
-	background-repeat: repeat;
-	filter: invert(1);
 }
