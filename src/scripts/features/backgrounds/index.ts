@@ -812,6 +812,7 @@ function applyTexture(texture: Backgrounds['texture']): void {
 
 	wrapper.dataset.texture = texture.type
 	document.documentElement.style.setProperty('--texture-color', `${color}`)
+	document.documentElement.style.setProperty('--texture-color-transparent', `${color}77`)
 	document.documentElement.style.setProperty('--texture-opacity', `${opacity}`)
 	document.documentElement.style.setProperty('--texture-size', `${size}px`)
 }
@@ -1085,7 +1086,7 @@ function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
 }
 function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['type'] {
-	return ['none', 'grain', 'verticalDots', 'diagonalDots', 'topographic'].includes(str)
+	return ['none', 'grain', 'verticalDots', 'diagonalDots', 'topographic', 'checkerboard', 'isometric'].includes(str)
 }
 function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)

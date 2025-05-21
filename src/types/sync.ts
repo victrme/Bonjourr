@@ -77,7 +77,7 @@ export interface Backgrounds {
 	pausedVideo?: BackgroundVideo
 	queries: Record<string, string>
 	texture: {
-		type: 'none' | 'grain' | 'verticalDots' | 'diagonalDots' | 'topographic'
+		type: 'none' | 'grain' | 'verticalDots' | 'diagonalDots' | 'topographic' | 'checkerboard' | 'isometric'
 		size?: number
 		opacity?: number
 		color?: string | undefined
