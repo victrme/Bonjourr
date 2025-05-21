@@ -5,6 +5,12 @@ globalThis.startupStorage = {
 	local: undefined,
 }
 
+if (localStorage.focusOnPage === 'true') {
+	if (globalThis.location.search.includes('??') === false) {
+		globalThis.location.href = globalThis.location.href + '??'
+	}
+}
+
 chrome.storage.sync.get().then((data) => {
 	globalThis.startupStorage.sync = data
 
