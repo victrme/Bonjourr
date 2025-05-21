@@ -293,10 +293,6 @@ aside .color-button {
 	transition: filter 0.15s;
 }
 
-aside .color-button:hover {
-	filter: brightness(1.15);
-}
-
 label.input-file {
 	position: relative;
 	display: block;

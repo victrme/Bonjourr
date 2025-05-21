@@ -80,7 +80,7 @@ export interface Backgrounds {
 		type: 'none' | 'grain' | 'dots' | 'topographic'
 		size?: number
 		opacity?: number
-		color?: string | false
+		color?: string | undefined
 	}
 }
 

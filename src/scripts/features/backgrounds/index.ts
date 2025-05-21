@@ -860,7 +860,7 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 		// shows and hides texture color option
 		document
 			.querySelector<HTMLElement>('#background-texture-color-option')
-			?.classList.toggle('shown', ranges.color !== false)
+			?.classList.toggle('shown', ranges.color !== undefined)
 
 		if (iOpacity) {
 			iOpacity.min = ranges.opacity.min

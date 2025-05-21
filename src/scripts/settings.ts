@@ -135,7 +135,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
 	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
 	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
-	setInput('i_texture-color', data.backgrounds.texture.color ? data.backgrounds.texture.color : '#ffffff')
+	setInput('i_texture-color', data.backgrounds.texture.color ?? '#ffffff')
 	setInput('i_pagewidth', data.pagewidth || 1600)
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
