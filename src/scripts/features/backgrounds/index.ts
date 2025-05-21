@@ -34,6 +34,7 @@ interface BackgroundUpdate {
 	urlsapply?: true
 	texture?: string
 	provider?: string
+	texturecolor?: string
 	texturesize?: string
 	textureopacity?: string
 }
@@ -176,6 +177,12 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	// Textures
+
+	if (update.texturecolor !== undefined) {
+		data.backgrounds.texture.color = update.texturecolor
+		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
+		applyTexture(data.backgrounds.texture)
+	}
 
 	if (update.textureopacity !== undefined) {
 		data.backgrounds.texture.opacity = Number.parseFloat(update.textureopacity)
@@ -799,10 +806,12 @@ function applyTexture(texture: Backgrounds['texture']): void {
 	}
 
 	const ranges = TEXTURE_RANGES[texture.type]
+	const color = texture.color ?? ranges.color
 	const size = texture.size ?? ranges.size.value
 	const opacity = texture.opacity ?? ranges.opacity.value
 
 	wrapper.dataset.texture = texture.type
+	document.documentElement.style.setProperty('--texture-color', `${color}`)
 	document.documentElement.style.setProperty('--texture-opacity', `${opacity}`)
 	document.documentElement.style.setProperty('--texture-size', `${size}px`)
 }
@@ -852,10 +861,6 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 		document
 			.querySelector<HTMLElement>('#background-texture-color-option')
 			?.classList.toggle('shown', ranges.color !== false)
-
-		// document
-		// 	.querySelector<HTMLElement>('#background-texture-color-option')
-		// 	?.classList.toggle('shown', backgrounds.texture.type === 'dots')
 
 		if (iOpacity) {
 			iOpacity.min = ranges.opacity.min

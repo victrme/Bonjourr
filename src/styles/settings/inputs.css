@@ -280,7 +280,7 @@ aside input[type='color'] {
 	background-color: transparent;
 }
 
-aside #b_solid-background {
+aside .color-button {
 	font-family: var(--monospace-font-family);
 	border: 1px solid black;
 	height: 31px;
@@ -293,7 +293,7 @@ aside #b_solid-background {
 	transition: filter 0.15s;
 }
 
-aside #b_solid-background:hover {
+aside .color-button:hover {
 	filter: brightness(1.15);
 }
 

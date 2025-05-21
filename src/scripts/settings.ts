@@ -135,6 +135,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
 	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
 	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
+	setInput('i_texture-color', data.backgrounds.texture.color ? data.backgrounds.texture.color : '#ffffff')
 	setInput('i_pagewidth', data.pagewidth || 1600)
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
@@ -457,6 +458,18 @@ function initOptionsEvents() {
 
 	paramId('i_texture').addEventListener('change', function (this: HTMLInputElement) {
 		backgroundUpdate({ texture: this.value })
+	})
+
+	colorButtonStyling(paramId('b_texture-color'), paramId('i_texture-color').value)
+
+	paramId('b_texture-color').addEventListener('click', function () {
+		paramId('i_texture-color').click()
+	})
+
+	// when native color input value changes
+	paramId('i_texture-color').addEventListener('input', function () {
+		colorButtonStyling(paramId('b_texture-color'), this.value)
+		backgroundUpdate({ texturecolor: this.value })
 	})
 
 	paramId('i_texture-size').addEventListener('input', function (this: HTMLInputElement) {
