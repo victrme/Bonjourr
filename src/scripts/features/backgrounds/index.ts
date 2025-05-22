@@ -1110,6 +1110,11 @@ function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['t
 		'horizontalStripes',
 		'diagonalLines',
 		'aztec',
+		'circuitBoard',
+		'endlessClouds',
+		'vectorGrain',
+		'waves',
+		'honeycomb',
 	].includes(str)
 }
 function isFrequency(str = ''): str is Frequency {

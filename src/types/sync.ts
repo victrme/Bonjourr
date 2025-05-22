@@ -93,6 +93,11 @@ export interface Backgrounds {
 			| 'horizontalStripes'
 			| 'diagonalLines'
 			| 'aztec'
+			| 'circuitBoard'
+			| 'endlessClouds'
+			| 'vectorGrain'
+			| 'waves'
+			| 'honeycomb'
 		size?: number
 		opacity?: number
 		color?: string | undefined

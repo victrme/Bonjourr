@@ -226,6 +226,86 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 		color: '#ffffff',
 	},
 
+	circuitBoard: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.2',
+		},
+		size: {
+			min: '150',
+			max: '500',
+			step: '1',
+			value: '250',
+		},
+		color: '#ffffff',
+	},
+
+	endlessClouds: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.2',
+		},
+		size: {
+			min: '80',
+			max: '400',
+			step: '1',
+			value: '150',
+		},
+		color: '#ffffff',
+	},
+
+	waves: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.2',
+		},
+		size: {
+			min: '80',
+			max: '400',
+			step: '1',
+			value: '150',
+		},
+		color: '#ffffff',
+	},
+
+	honeycomb: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.2',
+		},
+		size: {
+			min: '25',
+			max: '300',
+			step: '5',
+			value: '75',
+		},
+		color: '#ffffff',
+	},
+
+	vectorGrain: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.5',
+		},
+		size: {
+			min: '250',
+			max: '1000',
+			step: '10',
+			value: '350',
+		},
+		color: '#ffffff',
+	},
+
 	none: {
 		opacity: {
 			min: '',

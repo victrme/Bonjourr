@@ -78,7 +78,7 @@ body.init #background-media > div video {
 #background-wrapper[data-texture='grain'] #background-texture {
 	opacity: var(--texture-opacity);
 	background-size: var(--texture-size);
-	background-image: url('../../assets/interface/grain.png');
+	background-image: url('../../assets/interface/patterns/grain.png');
 	background-repeat: repeat;
 }
 
@@ -175,12 +175,12 @@ body.init #background-media > div video {
 #background-wrapper[data-texture='topographic'] #background-texture {
 	background-color: var(--texture-color);
 	opacity: var(--texture-opacity);
-	mask-image: url('../../assets/interface/topographic.svg');
+	mask-image: url('../../assets/interface/patterns/topographic.svg');
 	mask-repeat: repeat;
 	mask-size: var(--texture-size);
 	mask-position: center;
 
-	-webkit-mask-image: url('../../assets/interface/topographic.svg');
+	-webkit-mask-image: url('../../assets/interface/patterns/topographic.svg');
 	-webkit-mask-repeat: repeat;
 	-webkit-mask-size: var(--texture-size);
 }
@@ -254,12 +254,79 @@ body.init #background-media > div video {
 #background-wrapper[data-texture='aztec'] #background-texture {
 	background-color: var(--texture-color);
 	opacity: var(--texture-opacity);
-	mask-image: url('../../assets/interface/aztec.svg');
+	mask-image: url('../../assets/interface/patterns/aztec.svg');
 	mask-repeat: repeat;
 	mask-size: var(--texture-size);
 	mask-position: center;
 
-	-webkit-mask-image: url('../../assets/interface/aztec.svg');
+	-webkit-mask-image: url('../../assets/interface/patterns/aztec.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='circuitBoard'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/circuitBoard.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/circuitBoard.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='endlessClouds'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/endlessClouds.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/endlessClouds.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='vectorGrain'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-mode: luminance; /* some SVGs need this */
+	mask-image: url('../../assets/interface/patterns/vectorGrain.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/vectorGrain.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='waves'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/waves.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/waves.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='honeycomb'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-mode: luminance; /* some SVGs need this */
+	mask-image: url('../../assets/interface/patterns/honeycomb.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/honeycomb.svg');
 	-webkit-mask-repeat: repeat;
 	-webkit-mask-size: var(--texture-size);
 }
