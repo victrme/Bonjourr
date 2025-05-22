@@ -1,323 +1,344 @@
 {
-	"lang": "fa",
-	"New tab": "صفحه‌ی جدید",
-	"Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "از بُنژور لذت می‌برید؟ می‌توانید به ما نظر بدهید و یا کمک مالی کنید, این به ما کمک بزرگی می‌کند! 😇",
-	"Read the release notes": "یادداشت های انتشار را بخوانید",
-	"Review": "نظر دادن",
-	"Donate": "کمک مالی",
-	"Good morning": "صبح بخیر",
-	"Good afternoon": "بعد از ظهر بخیر",
-	"Good evening": "عصر بخیر",
-	"Good night": "شب بخیر",
-	"Sweet dreams": "خوب بخوابی",
-	"It is currently <temp1>°": "در حال حاضر <temp1>° است",
-	"It is currently <temp1>° and feels like <temp2>°": "در حال حاضر <temp1>° است و مانند <temp2>° است",
-	"It currently feels like <temp2>°": "در حال حاضر مانند <temp2>° است",
-	"with a high of <temp1>° today": "با حداکثر دمای <temp1>° امروز",
-	"with a high of <temp1>° tomorrow": "با حداکثر <temp1>° فردا",
-	"Default group": "Default group",
-	"Folder": "پوشه",
-	"Photo by <name>": "عکس از <name>",
-	"Editing": "ویرایش",
-	"No selection": "انتخاب نشده",
-	"Grid position": "موقعیت در شبکه",
-	"Fill row": "پر کردن ردیف",
-	"Fill column": "پر کردن ستون",
-	"Box alignment": "تراز جعبه",
-	"Tab appearance": "ظاهر صفحه",
-	"Text alignment": "تراز متن",
-	"Reset layout": "تنظیم مجدد",
-	"Done": "اتمام",
-	"Title": "عنوان",
-	"Link": "پیوند",
-	"Icon": "آیکون",
-	"Add new link": "لینک جدید اضافه کنید",
-	"Add new group": "Add new group",
-	"Create new folder": "پوشه جدید ایجاد کنید",
-	"Delete link": "لینک را حذف کنید",
-	"Delete group": "Delete group",
-	"Delete folder": "پوشه را حذف کنید",
-	"Delete selected": "Delete selected",
-	"Remove from folder": "حذف از پوشه",
-	"Refresh icon": "Refresh icon",
-	"Pin group": "این گروه را پین کنید",
-	"Unpin group": "پین گروه را بردارید",
-	"Apply changes": "اعمال تغییرات",
-	"Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "گروه های همگام شده به طور خودکار به روز می شوند تا با نشانک های مرورگر شما مطابقت داشته باشند. بیشتر بدانید",
-	"our documentation": "مستندات ما",
-	"Select group": "Select group",
-	"Sync with browser": "همگام سازی با مرورگر",
-	"Most visited": "Most visited",
-	"Import selection": "Import selection",
-	"(synced)": "(همگام‌سازی شده)",
-	"This <currentMonth>, Bonjourr is brought to you by our lovely supporters.": "این <currentMonth>، بونژور توسط حامیان دوست‌داشتنی ما ارائه می‌شود.",
-	"Find out who they are": "بفهمید آنها چه کسانی هستند",
-	"Supporters like you make Bonjourr possible": "حامیان مانند شما باعث امکان پذیر شدن بونژور می‌شوند",
-	"Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.": "در اینجا افراد شگفت‌انگیزی هستند که ماه گذشته از ما حمایت کردند. با تشکر از آنها، می‌توانیم بونژور را رایگان، متن‌باز و در حال پیشرفت مداوم نگه داریم.",
-	"Our monthly supporters": "حامیان ماهانه ما",
-	"Our one-time supporters": "حامیان تک‌مرحله‌ای ما",
-	"Join the community and get your name in Bonjourr.": "به جامعه بپیوندید و نام خود را در بونژور ثبت کنید.",
-	"The supporters notification appears at the top of your settings to thank those who donate and support our work.": "اعلان حامیان در بالای تنظیمات شما ظاهر می‌شود تا از کسانی که اهدا می‌کنند و از کار ما حمایت می‌کنند تشکر کند.",
-	"Synchronized links require the user to accept permissions": "پیوندهای همگام سازی شده نیاز به پذیرش مجوز از کاربر دارند",
-	"Ask permission": "اجازه بخواهید",
-	"General": "عمومی",
-	"Show all settings": "نمایش همه‌ی تنظیمات",
-	"Enabled": "Enabled",
-	"Disabled": "غیرفعال",
-	"Language": "زبان",
-	"Dark mode": "حالت تاریک",
-	"At night": "شب",
-	"System": "سیستم",
-	"New tab icon": "آیکون صفحه‌ی جدید",
-	"New tab title": "عنوان صفحه‌ی جدید",
-	"Tips on tab appearance": "نکاتی در مورد ظاهر برگه",
-	"The icon and title that appear on your tab. You can put any emoji.": "آیکون و عنوانی که در صفحه‌ی جدید ظاهر می‌شود. می‌توانید هر ایموجی که می‌خواهید قرار دهید.",
-	"Hide settings icon": "پنهان کردن آیکون تنظیمات",
-	"When this is enabled, clicking the bottom right corner will still open settings.": "هنگامی که این فعال شود، کلیک در گوشه سمت راست پایین همچنان تنظیمات را باز می‌کند.",
-	"Background": "پس‌زمینه",
-	"Background type": "نوع پس‌زمینه",
-	"Default": "پیش‌فرض",
-	"Color": "رنگ",
-	"Provider": "ارائه‌دهنده",
-	"Custom collection": "مجموعه سفارشی",
-	"Custom search": "جستجوی سفارشی",
-	"nature, winter": "طبیعت، زمستان",
-	"Bonjourr Daylight": "روشنایی بونژور",
-	"Pixabay Search": "جستجوی پیکسابای",
-	"Unsplash Collections": "مجموعه‌های آنسپلش",
-	"Unsplash Search": "جستجوی آنسپلش",
-	"Local files": "فایل‌های محلی",
-	"Remove": "حذف",
-	"Vertical": "عمودی",
-	"Horizontal": "افقی",
-	"Move": "جابجایی",
-	"Zoom": "بزرگنمایی",
-	"Add": "افزودن",
-	"Frequency": "زمان‌بندی",
-	"Daylight": "روز روشن",
-	"Every tab": "هر صفحه",
-	"Every hour": "هر ساعت",
-	"Every day": "هر روز",
-	"Pause": "توقف",
-	"Texture": "بافت",
-	"Grain": "دانه",
-	"Dots": "نقاط",
-	"Topographic": "توپوگرافی",
-	"Next background": "پس زمینه بعدی",
-	"Show all": "نمایش همه",
-	"Unsplash collection": "مجموعه‌ی Unsplash",
-	"Tips on Unsplash collections": "نکاتی در مورد مجموعه های Unsplash",
-	"Type the collection ID from its URL, add more by separating them with a comma.": "collection ID را از آدرس اینترنتی بگیرید، با اضافه کردن کاما (ویرگول) چند مجموعه اضافه کنید.",
-	"Blur intensity": "میزان مات بودن",
-	"Brightness": "روشنایی",
-	"Fade in": "محو شدن",
-	"Quick Links": "پیوندهای سریع",
-	"Tips on Quick Links": "نکاتی در مورد پیوندهای سریع",
-	"These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.": "این‌ها نشانک‌های بونژور هستند. با کلیک راست روی آیکون، Quick Links خود را ویرایش کنید.",
-	"Learn more": "اطلاعات بیشتر",
-	"Enable": "فعال",
-	"Add link": "لینک اضافه کنید",
-	"Import bookmarks": "وارد کردن نشانک ها",
-	"Show groups": "Show groups",
-	"Organize your links even more with pages. Right click next to a page to add another.": "پیوندهای خود را حتی بیشتر با صفحات سازماندهی کنید. در کنار یک صفحه کلیک راست کنید تا صفحه دیگری اضافه شود.",
-	"Open in new tab": "باز کردن در صفحه‌ جدید",
-	"Links per row": "پیوندها در هر ردیف",
-	"Style": "ظاهر",
-	"Large": "بزرگ",
-	"Medium": "متوسط",
-	"Small": "کوچک",
-	"Inline": "داخلی",
-	"Text": "متن",
-	"Toggle link titles": "تغییر عنوان پیوندها",
-	"Toggle link backgrounds": "تغییر پس زمینه پیوند",
-	"Time & Date": "روز و ساعت",
-	"Analog clock": "ساعت عقربه‌ای",
-	"Clock face": "صفحه‌ی ساعت",
-	"None": "هیچ‌کدام",
-	"Numbers": "اعداد",
-	"Romans": "رومی",
-	"Swiss railway": "Swiss railway",
-	"Marks": "علامت",
-	"Clock shape": "Clock shape",
-	"Round": "گرد",
-	"Square": "مربع",
-	"Rectangle": "Rectangle",
-	"Transparent": "شفاف",
-	"Clock hands": "Clock hands",
-	"Modern": "Modern",
-	"Clock background": "Clock background",
-	"Clock background shade": "سایه پس زمینه ساعت",
-	"Clock border": "Clock border",
-	"Clock border shade": "سایه حاشیه ساعت",
-	"12-Hour Time": "زمان ۱۲ ساعتی",
-	"Show am/pm": "نمایش صبح/ظهر",
-	"Show seconds": "نمایش ثانیه‌شمار",
-	"Date format": "فرمت تاریخ",
-	"Day date month": "روز تاریخ ماه",
-	"Day, month date": "روز، ماه تاریخ",
-	"Month date day": "ماه تاریخ روز",
-	"World clocks": "World clocks",
-	"Regions": "Regions",
-	"Time zone": "منطقه زمانی",
-	"Show": "نمایش",
-	"Clock and date": "ساعت و تاریخ",
-	"Clock only": "فقط ساعت",
-	"Date only": "فقط تاریخ",
-	"Weather & Greetings": "آب و هوا و خوش‌آمدگویی",
-	"Greeting": "خوش‌آمد",
-	"Clock size": "اندازه‌ی ساعت",
-	"Date": "روز",
-	"Greetings": "خوش‌آمدگویی",
-	"Greeting name": "نام خوش‌آمد",
-	"Greeting size": "اندازه سلام",
-	"Name": "نام",
-	"Weather": "آب و هوا",
-	"Geolocation": "موقعیت مکانی",
-	"Manual": "دستی",
-	"Approximate": "تقریبی",
-	"Precise": "دقیق",
-	"Location": "موقعیت شهر",
-	"Manual location": "مکان دستی",
-	"Cannot find correct city": "شهر صحیح پیدا نمی شود",
-	"No internet connection": "بدون اتصال به اینترنت",
-	"Cannot reach weather service": "دسترسی به خدمات هواشناسی امکان پذیر نیست",
-	"Unit": "واحد",
-	"Celsius": "سانتی‌گراد",
-	"Fahrenheit": "فرانهایت",
-	"Forecast": "پیش‌بینی",
-	"Automatic": "خودکار",
-	"Always show": "نمایش دائم",
-	"Never show": "هرگز نشان نده",
-	"Temperature": "دما",
-	"Actual": "واقعی",
-	"Feels like": "احساس می‌شود",
-	"Both": "هر دو",
-	"Detailed weather": "آب و هوا با جزئیات",
-	"What is detailed weather?": "آب و هوای دقیق چیست؟",
-	"https://www.msn.com/en-xl/weather/forecast/": "https://www.msn.com/en-xl/weather/forecast/",
-	"Click on the weather widget to get detailed weather reports.": "برای دریافت گزارش دقیق آب و هوا روی ویجت آب و هوا کلیک کنید.",
-	"Custom provider": "ارائه دهنده‌ دلخواه",
-	"Provider URL": "آدرس اینترنتی ارائه دهنده",
-	"Description and icon": "شرح و آیکون",
-	"Description only": "فقط شرح",
-	"Icon only": "فقط آیکون",
-	"Notes": "یادداشت",
-	"You can use Markdown and keyboard shortcuts in notes.": "می‌توانید از Markdown و میانبرهای صفحه‌کلید در یادداشت‌ها استفاده کنید.",
-	"Edit this note": "ویرایش این یادداشت",
-	"With markdown titles, lists, and checkboxes": "با عناوین، فهرست‌ها و چک باکس‌های علامت‌گذاری شده",
-	"Learn more on <url>": "در <url> بیشتر بیاموزید",
-	"Left": "چپ",
-	"Center": "وسط",
-	"Right": "راست",
-	"Width": "عرض",
-	"Notes shade": "سایه یادداشت ها",
-	"Search bar": "نوار جستجو",
-	"Suggestions": "پیشنهادات",
-	"Search engine": "موتور جستجو",
-	"Change the endpoint of the search bar.": "نقطه پایانی نوار جستجو را تغییر دهید.",
-	"google": "google",
-	"duckduckgo": "duckduckgo",
-	"startpage": "startpage",
-	"qwant": "qwant",
-	"yahoo": "yahoo",
-	"bing": "bing",
-	"URL request": "آدرس جستجو",
-	"%s Not found": "%s پیدا نشد",
-	"Search query: %s": "متن جستجو: %s",
-	"Placeholder text": "متن جایگزین",
-	"Search": "جستجو",
-	"Opacity": "شفافیت",
-	"Search bar shade": "سایه نوار جستجو",
-	"Quotes": "نقل قول",
-	"Use the default quote collections or import your own.": "از مجموعه نقل‌قول‌های پیش‌فرض استفاده کنید یا نقل‌قول‌های خود را وارد کنید.",
-	"Always show author": "همیشه نویسنده را نمایش بده",
-	"Quote type": "نوع نقل قول",
-	"Classic": "کلاسیک",
-	"Custom": "دلخواه",
-	"Custom quotes": "نقل‌قول دلخواه",
-	"Fetch failed, please check console for more information": "واکشی انجام نشد، لطفاً برای اطلاعات بیشتر کنسول را بررسی کنید",
-	"Author, Your quote.\nAuthor, Your second quote.": "نویسنده، نقل قول شما\nنویسنده، نقل قول دوم شما",
-	"Next quote": "نقل قول بعدی",
-	"Fonts": "فونت‌ها",
-	"Font family": "خانواده فونت",
-	"Cannot load this font": "این فونت بارگیری نمی شود",
-	"Weight": "وزن",
-	"Size": "اندازه",
-	"Shadow": "سایه",
-	"These fonts come from Fontsource.": "این فونت‌ها از Fontsource می‌آیند.",
-	"Preview fonts": "پیش‌نمایش فونت‌ها",
-	"Page layout": "چیدمان صفحه",
-	"Tips on page grid layout": "نکاتی در مورد طرح بندی شبکه ای صفحه",
-	"Customise how and where widgets appear.": "شخصی‌سازی مکان و نوع نمایش ابزارک‌ها (ویجت‌ها).",
-	"Open the toolbox and select a widget to modify on the page.": "جعبه ابزار را باز کنید و ویجتی را برای تغییر در صفحه انتخاب کنید.",
-	"Open layout toolbox": "جعبه ابزار طرح بندی را باز کنید",
-	"Open": "باز کن",
-	"Close": "بستن",
-	"Page columns": "ستون های صفحه",
-	"Page width": "عرض صفحه",
-	"Page gap": "فاصله‌ی صفحه",
-	"Simple": "ساده",
-	"Double": "دوبل",
-	"Triple": "سه گانه",
-	"Custom Style": "ظاهر دلخواه",
-	"Tips on Custom styles": "نکاتی در مورد سبک های سفارشی",
-	"Make cool things happen with CSS.": "با CSS کارهای جذاب انجام دهید.",
-	"Check out our ": "ما را ببینید ",
-	"CSS snippets.": "قطعات CSS.",
-	"Type in your custom CSS": "CSS دلخواه‍ خودتان را تایپ کنید",
-	"Notifications": "اعلانات",
-	"Updates": "به روز رسانی ها",
-	"Major": "اصلی",
-	"All": "همه",
-	"Supporters": "حامیان",
-	"What are supporters notifications?": "حامیان اعلانات چیست؟",
-	"Supporters notifications appear monthly at the top of your settings as a thank you to people who donate and support our work.": "اعلانات حامیان ماهانه در بالای تنظیمات شما به عنوان تشکر از افرادی که به کار ما کمک مالی می‌کنند و از آن پشتیبانی می‌نمایند، ظاهر می‌شوند.",
-	"Settings management": "مدیریت تنظیمات",
-	"Tips on imports & exports": "نکاتی در مورد واردات و صادرات",
-	"Transfer your settings between multiple instances of Bonjourr.": "تنظیمات خود را بین چندین نسخه‌ی مختلف بُنژور انتقال دهید.",
-	"Synchronization type": "نوع همگام سازی",
-	"Authentification token": "نشانه احراز هویت",
-	"Browser": "مرورگر",
-	"Get": "دریافت کنید",
-	"Send": "ارسال کنید",
-	"Distant URL": "URL دور",
-	"Not a valid URL": "URL معتبر نیست",
-	"Cannot access resource right now": "در حال حاضر نمی‌توان به منبع دسترسی پیدا کرد",
-	"Cannot access resource, even with proxy": "دسترسی به منبع حتی با پروکسی امکان‌پذیر نیست",
-	"Synchronize": "همگام‌سازی",
-	"Server status": "وضعیت سرور",
-	"Waiting for authentification": "در انتظار احراز هویت",
-	"No saved data yet": "هنوز داده‌ای ذخیره نشده است",
-	"Last update": "آخرین بروزرسانی",
-	"Invalid token": "توکن نامعتبر",
-	"Gist id in settings is invalid": "شناسه Gist در تنظیمات نامعتبر است",
-	"Cannot find bonjourr file in gists": "فایل bonjourr در gists یافت نشد",
-	"Cannot access Github servers right now": "در حال حاضر نمی‌توان به سرورهای Github دسترسی داشت",
-	"Response is not valid JSON": "پاسخ JSON معتبر نیست",
-	"Some Github Gist error happend": "خطایی در Github Gist رخ داده است",
-	"Tried to send default config": "تلاش برای ارسال پیکربندی پیش‌فرض",
-	"Settings file": "Settings file",
-	"Import an existing settings file": "فایل تنظیمات موجود را وارد کنید",
-	"Import": "وارد کردن",
-	"Export a new settings file": "یک فایل تنظیمات جدید صادر کنید",
-	"Export": "خارج کردن",
-	"Copy settings data to clipboard": "داده های تنظیمات را در کلیپ بورد کپی کنید",
-	"Copy": "Copy",
-	"Copied!": "کپی شد!",
-	"Cancel changes": "لغو تغییرات",
-	"Load Bonjourr with these settings": "Bonjourr را با این تنظیمات بارگیری کنید",
-	"Reset all settings": "Reset all settings",
-	"Reset": "بازنشانی کنید",
-	"Are you sure?": "آیا مطمئن هستید؟",
-	"I am sure": "مطمئن‌ام",
-	"No, go back": "نه، برگرد عقب",
-	"Bonjourr's website": "وب سایت Bonjourr",
-	"Check out our Twitter": "توییتر ما را بررسی کنید",
-	"Bonjourr's GitHub repository": "مخزن Bonjourr's GitHub",
-	"Bonjourr's documentation": "مستندات Bonjourr",
-	"Made in France with ❤️": "ساخته شده در فرانسه با ❤️",
-	"by": "توسط",
-	"Consider": "اگر از بُنژور لذت می‌برید، در نظر بگیرید که",
-	"donating": "کمک مالی",
-	"if you love Bonjourr": "کنید."
+  "lang": "fa",
+  "New tab": "صفحه‌ی جدید",
+  "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "از بُنژور لذت می‌برید؟ می‌توانید به ما نظر بدهید و یا کمک مالی کنید, این به ما کمک بزرگی می‌کند! 😇",
+  "Read the release notes": "یادداشت های انتشار را بخوانید",
+  "Review": "نظر دادن",
+  "Donate": "کمک مالی",
+  "Good morning": "صبح بخیر",
+  "Good afternoon": "بعد از ظهر بخیر",
+  "Good evening": "عصر بخیر",
+  "Good night": "شب بخیر",
+  "Sweet dreams": "خوب بخوابی",
+  "It is currently <temp1>°": "در حال حاضر <temp1>° است",
+  "It is currently <temp1>° and feels like <temp2>°": "در حال حاضر <temp1>° است و مانند <temp2>° است",
+  "It currently feels like <temp2>°": "در حال حاضر مانند <temp2>° است",
+  "with a high of <temp1>° today": "با حداکثر دمای <temp1>° امروز",
+  "with a high of <temp1>° tomorrow": "با حداکثر <temp1>° فردا",
+  "Default group": "Default group",
+  "Folder": "پوشه",
+  "Photo by <name>": "عکس از <name>",
+  "Editing": "ویرایش",
+  "No selection": "انتخاب نشده",
+  "Grid position": "موقعیت در شبکه",
+  "Fill row": "پر کردن ردیف",
+  "Fill column": "پر کردن ستون",
+  "Box alignment": "تراز جعبه",
+  "Tab appearance": "ظاهر صفحه",
+  "Text alignment": "تراز متن",
+  "Reset layout": "تنظیم مجدد",
+  "Done": "اتمام",
+  "Title": "عنوان",
+  "Link": "پیوند",
+  "Icon": "آیکون",
+  "Add new link": "لینک جدید اضافه کنید",
+  "Add new group": "Add new group",
+  "Create new folder": "پوشه جدید ایجاد کنید",
+  "Delete link": "لینک را حذف کنید",
+  "Delete group": "Delete group",
+  "Delete folder": "پوشه را حذف کنید",
+  "Delete selected": "Delete selected",
+  "Remove from folder": "حذف از پوشه",
+  "Refresh icon": "Refresh icon",
+  "Pin group": "این گروه را پین کنید",
+  "Unpin group": "پین گروه را بردارید",
+  "Apply changes": "اعمال تغییرات",
+  "Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "گروه های همگام شده به طور خودکار به روز می شوند تا با نشانک های مرورگر شما مطابقت داشته باشند. بیشتر بدانید",
+  "our documentation": "مستندات ما",
+  "Select group": "Select group",
+  "Sync with browser": "همگام سازی با مرورگر",
+  "Most visited": "Most visited",
+  "Import selection": "Import selection",
+  "(synced)": "(همگام‌سازی شده)",
+  "This <currentMonth>, Bonjourr is brought to you by our lovely supporters.": "این <currentMonth>، بونژور توسط حامیان دوست‌داشتنی ما ارائه می‌شود.",
+  "Find out who they are": "بفهمید آنها چه کسانی هستند",
+  "Supporters like you make Bonjourr possible": "حامیان مانند شما باعث امکان پذیر شدن بونژور می‌شوند",
+  "Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.": "در اینجا افراد شگفت‌انگیزی هستند که ماه گذشته از ما حمایت کردند. با تشکر از آنها، می‌توانیم بونژور را رایگان، متن‌باز و در حال پیشرفت مداوم نگه داریم.",
+  "Our monthly supporters": "حامیان ماهانه ما",
+  "Our one-time supporters": "حامیان تک‌مرحله‌ای ما",
+  "Join the community and get your name in Bonjourr.": "به جامعه بپیوندید و نام خود را در بونژور ثبت کنید.",
+  "The supporters notification appears at the top of your settings to thank those who donate and support our work.": "اعلان حامیان در بالای تنظیمات شما ظاهر می‌شود تا از کسانی که اهدا می‌کنند و از کار ما حمایت می‌کنند تشکر کند.",
+  "Synchronized links require the user to accept permissions": "پیوندهای همگام سازی شده نیاز به پذیرش مجوز از کاربر دارند",
+  "Ask permission": "اجازه بخواهید",
+  "General": "عمومی",
+  "Show all settings": "نمایش همه‌ی تنظیمات",
+  "Enabled": "Enabled",
+  "Disabled": "غیرفعال",
+  "Language": "زبان",
+  "Dark mode": "حالت تاریک",
+  "At night": "شب",
+  "System": "سیستم",
+  "New tab icon": "آیکون صفحه‌ی جدید",
+  "New tab title": "عنوان صفحه‌ی جدید",
+  "Tips on tab appearance": "نکاتی در مورد ظاهر برگه",
+  "The icon and title that appear on your tab. You can put any emoji.": "آیکون و عنوانی که در صفحه‌ی جدید ظاهر می‌شود. می‌توانید هر ایموجی که می‌خواهید قرار دهید.",
+  "Hide settings icon": "پنهان کردن آیکون تنظیمات",
+  "When this is enabled, clicking the bottom right corner will still open settings.": "هنگامی که این فعال شود، کلیک در گوشه سمت راست پایین همچنان تنظیمات را باز می‌کند.",
+  "Background": "پس‌زمینه",
+  "Background type": "نوع پس‌زمینه",
+  "Default": "پیش‌فرض",
+  "Color": "رنگ",
+  "Provider": "ارائه‌دهنده",
+  "Custom collection": "مجموعه سفارشی",
+  "Custom search": "جستجوی سفارشی",
+  "nature, winter": "طبیعت، زمستان",
+  "Bonjourr Daylight": "روشنایی بونژور",
+  "Pixabay Search": "جستجوی پیکسابای",
+  "Unsplash Collections": "مجموعه‌های آنسپلش",
+  "Unsplash Search": "جستجوی آنسپلش",
+  "Local files": "فایل‌های محلی",
+  "Remove": "حذف",
+  "Vertical": "عمودی",
+  "Horizontal": "افقی",
+  "Move": "جابجایی",
+  "Zoom": "بزرگنمایی",
+  "Add": "افزودن",
+  "Frequency": "زمان‌بندی",
+  "Daylight": "روز روشن",
+  "Every tab": "هر صفحه",
+  "Every hour": "هر ساعت",
+  "Every day": "هر روز",
+  "Pause": "توقف",
+  "Texture": "بافت",
+  "Texture density": "چگالی بافت",
+  "Texture color": "رنگ بافت",
+  "Texture opacity": "شفافیت بافت",
+  "Background color": "رنگ پس‌زمینه",
+  "Fade in time": "زمان محو شدن",
+  "Grain": "دانه",
+  "Vector grain": "دانه برداری",
+  "Diagonal dots": "نقاط قطری",
+  "Vertical dots": "نقاط عمودی",
+  "Topographic": "توپوگرافی",
+  "Aztec": "آزتک",
+  "Checkerboard": "صفحه شطرنجی",
+  "Isometric": "ایزومتریک",
+  "Circuit board": "برد مدار",
+  "Endless clouds": "ابرهای بی‌پایان",
+  "Waves": "امواج",
+  "Honeycomb": "کندوی عسل",
+  "Grid": "شبکه",
+  "Vertical lines": "خطوط عمودی",
+  "Horizontal lines": "خطوط افقی",
+  "Diagonal lines": "خطوط قطری",
+  "Vertical stripes": "راه‌راه عمودی",
+  "Horizontal stripes": "راه‌راه افقی",
+  "Diagonal stripes": "راه‌راه قطری",
+  "Next background": "پس زمینه بعدی",
+  "Show all": "نمایش همه",
+  "Unsplash collection": "مجموعه‌ی Unsplash",
+  "Tips on Unsplash collections": "نکاتی در مورد مجموعه های Unsplash",
+  "Type the collection ID from its URL, add more by separating them with a comma.": "collection ID را از آدرس اینترنتی بگیرید، با اضافه کردن کاما (ویرگول) چند مجموعه اضافه کنید.",
+  "Blur intensity": "میزان مات بودن",
+  "Brightness": "روشنایی",
+  "Fade in": "محو شدن",
+  "Quick Links": "پیوندهای سریع",
+  "Tips on Quick Links": "نکاتی در مورد پیوندهای سریع",
+  "These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.": "این‌ها نشانک‌های بونژور هستند. با کلیک راست روی آیکون، Quick Links خود را ویرایش کنید.",
+  "Learn more": "اطلاعات بیشتر",
+  "Enable": "فعال",
+  "Add link": "لینک اضافه کنید",
+  "Import bookmarks": "وارد کردن نشانک ها",
+  "Show groups": "Show groups",
+  "Organize your links even more with pages. Right click next to a page to add another.": "پیوندهای خود را حتی بیشتر با صفحات سازماندهی کنید. در کنار یک صفحه کلیک راست کنید تا صفحه دیگری اضافه شود.",
+  "Open in new tab": "باز کردن در صفحه‌ جدید",
+  "Links per row": "پیوندها در هر ردیف",
+  "Style": "ظاهر",
+  "Large": "بزرگ",
+  "Medium": "متوسط",
+  "Small": "کوچک",
+  "Inline": "داخلی",
+  "Text": "متن",
+  "Toggle link titles": "تغییر عنوان پیوندها",
+  "Toggle link backgrounds": "تغییر پس زمینه پیوند",
+  "Time & Date": "روز و ساعت",
+  "Analog clock": "ساعت عقربه‌ای",
+  "Clock face": "صفحه‌ی ساعت",
+  "None": "هیچ‌کدام",
+  "Numbers": "اعداد",
+  "Romans": "رومی",
+  "Swiss railway": "Swiss railway",
+  "Marks": "علامت",
+  "Clock shape": "Clock shape",
+  "Round": "گرد",
+  "Square": "مربع",
+  "Rectangle": "Rectangle",
+  "Transparent": "شفاف",
+  "Clock hands": "Clock hands",
+  "Modern": "Modern",
+  "Clock background": "Clock background",
+  "Clock background shade": "سایه پس زمینه ساعت",
+  "Clock border": "Clock border",
+  "Clock border shade": "سایه حاشیه ساعت",
+  "12-Hour Time": "زمان ۱۲ ساعتی",
+  "Show am/pm": "نمایش صبح/ظهر",
+  "Show seconds": "نمایش ثانیه‌شمار",
+  "Date format": "فرمت تاریخ",
+  "Day date month": "روز تاریخ ماه",
+  "Day, month date": "روز، ماه تاریخ",
+  "Month date day": "ماه تاریخ روز",
+  "World clocks": "World clocks",
+  "Regions": "Regions",
+  "Time zone": "منطقه زمانی",
+  "Show": "نمایش",
+  "Clock and date": "ساعت و تاریخ",
+  "Clock only": "فقط ساعت",
+  "Date only": "فقط تاریخ",
+  "Weather & Greetings": "آب و هوا و خوش‌آمدگویی",
+  "Greeting": "خوش‌آمد",
+  "Clock size": "اندازه‌ی ساعت",
+  "Date": "روز",
+  "Greetings": "خوش‌آمدگویی",
+  "Greeting name": "نام خوش‌آمد",
+  "Greeting size": "اندازه سلام",
+  "Name": "نام",
+  "Weather": "آب و هوا",
+  "Geolocation": "موقعیت مکانی",
+  "Manual": "دستی",
+  "Approximate": "تقریبی",
+  "Precise": "دقیق",
+  "Location": "موقعیت شهر",
+  "Manual location": "مکان دستی",
+  "Cannot find correct city": "شهر صحیح پیدا نمی شود",
+  "No internet connection": "بدون اتصال به اینترنت",
+  "Cannot reach weather service": "دسترسی به خدمات هواشناسی امکان پذیر نیست",
+  "Unit": "واحد",
+  "Celsius": "سانتی‌گراد",
+  "Fahrenheit": "فرانهایت",
+  "Forecast": "پیش‌بینی",
+  "Automatic": "خودکار",
+  "Always show": "نمایش دائم",
+  "Never show": "هرگز نشان نده",
+  "Temperature": "دما",
+  "Actual": "واقعی",
+  "Feels like": "احساس می‌شود",
+  "Both": "هر دو",
+  "Detailed weather": "آب و هوا با جزئیات",
+  "What is detailed weather?": "آب و هوای دقیق چیست؟",
+  "https://www.msn.com/en-xl/weather/forecast/": "https://www.msn.com/en-xl/weather/forecast/",
+  "Click on the weather widget to get detailed weather reports.": "برای دریافت گزارش دقیق آب و هوا روی ویجت آب و هوا کلیک کنید.",
+  "Custom provider": "ارائه دهنده‌ دلخواه",
+  "Provider URL": "آدرس اینترنتی ارائه دهنده",
+  "Description and icon": "شرح و آیکون",
+  "Description only": "فقط شرح",
+  "Icon only": "فقط آیکون",
+  "Notes": "یادداشت",
+  "You can use Markdown and keyboard shortcuts in notes.": "می‌توانید از Markdown و میانبرهای صفحه‌کلید در یادداشت‌ها استفاده کنید.",
+  "Edit this note": "ویرایش این یادداشت",
+  "With markdown titles, lists, and checkboxes": "با عناوین، فهرست‌ها و چک باکس‌های علامت‌گذاری شده",
+  "Learn more on <url>": "در <url> بیشتر بیاموزید",
+  "Left": "چپ",
+  "Center": "وسط",
+  "Right": "راست",
+  "Width": "عرض",
+  "Notes shade": "سایه یادداشت ها",
+  "Search bar": "نوار جستجو",
+  "Suggestions": "پیشنهادات",
+  "Search engine": "موتور جستجو",
+  "Change the endpoint of the search bar.": "نقطه پایانی نوار جستجو را تغییر دهید.",
+  "google": "google",
+  "duckduckgo": "duckduckgo",
+  "startpage": "startpage",
+  "qwant": "qwant",
+  "yahoo": "yahoo",
+  "bing": "bing",
+  "URL request": "آدرس جستجو",
+  "%s Not found": "%s پیدا نشد",
+  "Search query: %s": "متن جستجو: %s",
+  "Placeholder text": "متن جایگزین",
+  "Search": "جستجو",
+  "Opacity": "شفافیت",
+  "Search bar shade": "سایه نوار جستجو",
+  "Quotes": "نقل قول",
+  "Use the default quote collections or import your own.": "از مجموعه نقل‌قول‌های پیش‌فرض استفاده کنید یا نقل‌قول‌های خود را وارد کنید.",
+  "Always show author": "همیشه نویسنده را نمایش بده",
+  "Quote type": "نوع نقل قول",
+  "Classic": "کلاسیک",
+  "Custom": "دلخواه",
+  "Custom quotes": "نقل‌قول دلخواه",
+  "Fetch failed, please check console for more information": "واکشی انجام نشد، لطفاً برای اطلاعات بیشتر کنسول را بررسی کنید",
+  "Author, Your quote.\nAuthor, Your second quote.": "نویسنده، نقل قول شما\nنویسنده، نقل قول دوم شما",
+  "Next quote": "نقل قول بعدی",
+  "Fonts": "فونت‌ها",
+  "Font family": "خانواده فونت",
+  "Cannot load this font": "این فونت بارگیری نمی شود",
+  "Weight": "وزن",
+  "Size": "اندازه",
+  "Shadow": "سایه",
+  "These fonts come from Fontsource.": "این فونت‌ها از Fontsource می‌آیند.",
+  "Preview fonts": "پیش‌نمایش فونت‌ها",
+  "Page layout": "چیدمان صفحه",
+  "Tips on page grid layout": "نکاتی در مورد طرح بندی شبکه ای صفحه",
+  "Customise how and where widgets appear.": "شخصی‌سازی مکان و نوع نمایش ابزارک‌ها (ویجت‌ها).",
+  "Open the toolbox and select a widget to modify on the page.": "جعبه ابزار را باز کنید و ویجتی را برای تغییر در صفحه انتخاب کنید.",
+  "Open layout toolbox": "جعبه ابزار طرح بندی را باز کنید",
+  "Open": "باز کن",
+  "Close": "بستن",
+  "Page columns": "ستون های صفحه",
+  "Page width": "عرض صفحه",
+  "Page gap": "فاصله‌ی صفحه",
+  "Simple": "ساده",
+  "Double": "دوبل",
+  "Triple": "سه گانه",
+  "Custom Style": "ظاهر دلخواه",
+  "Tips on Custom styles": "نکاتی در مورد سبک های سفارشی",
+  "Make cool things happen with CSS.": "با CSS کارهای جذاب انجام دهید.",
+  "Check out our ": "ما را ببینید ",
+  "CSS snippets.": "قطعات CSS.",
+  "Type in your custom CSS": "CSS دلخواه‍ خودتان را تایپ کنید",
+  "Notifications": "اعلانات",
+  "Updates": "به روز رسانی ها",
+  "Major": "اصلی",
+  "All": "همه",
+  "Supporters": "حامیان",
+  "What are supporters notifications?": "حامیان اعلانات چیست؟",
+  "Supporters notifications appear monthly at the top of your settings as a thank you to people who donate and support our work.": "اعلانات حامیان ماهانه در بالای تنظیمات شما به عنوان تشکر از افرادی که به کار ما کمک مالی می‌کنند و از آن پشتیبانی می‌نمایند، ظاهر می‌شوند.",
+  "Settings management": "مدیریت تنظیمات",
+  "Tips on imports & exports": "نکاتی در مورد واردات و صادرات",
+  "Transfer your settings between multiple instances of Bonjourr.": "تنظیمات خود را بین چندین نسخه‌ی مختلف بُنژور انتقال دهید.",
+  "Synchronization type": "نوع همگام سازی",
+  "Authentification token": "نشانه احراز هویت",
+  "Browser": "مرورگر",
+  "Get": "دریافت کنید",
+  "Send": "ارسال کنید",
+  "Distant URL": "URL دور",
+  "Not a valid URL": "URL معتبر نیست",
+  "Cannot access resource right now": "در حال حاضر نمی‌توان به منبع دسترسی پیدا کرد",
+  "Cannot access resource, even with proxy": "دسترسی به منبع حتی با پروکسی امکان‌پذیر نیست",
+  "Synchronize": "همگام‌سازی",
+  "Server status": "وضعیت سرور",
+  "Waiting for authentification": "در انتظار احراز هویت",
+  "No saved data yet": "هنوز داده‌ای ذخیره نشده است",
+  "Last update": "آخرین بروزرسانی",
+  "Invalid token": "توکن نامعتبر",
+  "Gist id in settings is invalid": "شناسه Gist در تنظیمات نامعتبر است",
+  "Cannot find bonjourr file in gists": "فایل bonjourr در gists یافت نشد",
+  "Cannot access Github servers right now": "در حال حاضر نمی‌توان به سرورهای Github دسترسی داشت",
+  "Response is not valid JSON": "پاسخ JSON معتبر نیست",
+  "Some Github Gist error happend": "خطایی در Github Gist رخ داده است",
+  "Tried to send default config": "تلاش برای ارسال پیکربندی پیش‌فرض",
+  "Settings file": "Settings file",
+  "Import an existing settings file": "فایل تنظیمات موجود را وارد کنید",
+  "Import": "وارد کردن",
+  "Export a new settings file": "یک فایل تنظیمات جدید صادر کنید",
+  "Export": "خارج کردن",
+  "Copy settings data to clipboard": "داده های تنظیمات را در کلیپ بورد کپی کنید",
+  "Copy": "Copy",
+  "Copied!": "کپی شد!",
+  "Cancel changes": "لغو تغییرات",
+  "Load Bonjourr with these settings": "Bonjourr را با این تنظیمات بارگیری کنید",
+  "Reset all settings": "Reset all settings",
+  "Reset": "بازنشانی کنید",
+  "Are you sure?": "آیا مطمئن هستید؟",
+  "I am sure": "مطمئن‌ام",
+  "No, go back": "نه، برگرد عقب",
+  "Bonjourr's website": "وب سایت Bonjourr",
+  "Check out our Twitter": "توییتر ما را بررسی کنید",
+  "Bonjourr's GitHub repository": "مخزن Bonjourr's GitHub",
+  "Bonjourr's documentation": "مستندات Bonjourr",
+  "Made in France with ❤️": "ساخته شده در فرانسه با ❤️",
+  "by": "توسط",
+  "Consider": "اگر از بُنژور لذت می‌برید، در نظر بگیرید که",
+  "donating": "کمک مالی",
+  "if you love Bonjourr": "کنید."
 }

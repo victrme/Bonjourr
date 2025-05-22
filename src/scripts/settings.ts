@@ -1,4 +1,4 @@
-import { darkmode, favicon, pageControl, tabTitle, textShadow, colorButtonStyling } from './features/others.ts'
+import { colorButtonStyling, darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
@@ -203,7 +203,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
 		'on',
-		(data.analogstyle?.background ?? '#fff').includes('#000')
+		(data.analogstyle?.background ?? '#fff').includes('#000'),
 	)
 	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
 	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
