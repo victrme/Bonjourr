@@ -184,3 +184,82 @@ body.init #background-media > div video {
 	-webkit-mask-repeat: repeat;
 	-webkit-mask-size: var(--texture-size);
 }
+
+#background-wrapper[data-texture='grid'] #background-texture {
+	background-image: linear-gradient(var(--texture-color) 2px, transparent 2px),
+		linear-gradient(to right, var(--texture-color) 2px, transparent 2px);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='verticalLines'] #background-texture {
+	background-image: repeating-linear-gradient(
+		to right,
+		var(--texture-color),
+		var(--texture-color) 2px,
+		transparent 2px,
+		transparent
+	);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='horizontalLines'] #background-texture {
+	background-image: repeating-linear-gradient(
+		0deg,
+		var(--texture-color),
+		var(--texture-color) 2px,
+		transparent 2px,
+		transparent
+	);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='diagonalStripes'] #background-texture {
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent var(--texture-size),
+		var(--texture-color) var(--texture-size),
+		var(--texture-color) calc(var(--texture-size) * 2)
+	);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='verticalStripes'] #background-texture {
+	background-image: linear-gradient(90deg, transparent 50%, var(--texture-color) 50%);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='horizontalStripes'] #background-texture {
+	background-image: linear-gradient(0deg, transparent 50%, var(--texture-color) 50%);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='diagonalLines'] #background-texture {
+	background-image: repeating-linear-gradient(
+		45deg,
+		var(--texture-color) 0,
+		var(--texture-color) 2px,
+		transparent 0,
+		transparent 50%
+	);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='aztec'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/aztec.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/aztec.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}

@@ -98,6 +98,134 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 		color: '#ffffff',
 	},
 
+	grid: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.4',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
+	verticalLines: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.4',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
+	horizontalLines: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.4',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
+	diagonalStripes: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.4',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
+	verticalStripes: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.4',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
+	horizontalStripes: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.4',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
+	diagonalLines: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.4',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
+	aztec: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.2',
+		},
+		size: {
+			min: '10',
+			max: '100',
+			step: '1',
+			value: '30',
+		},
+		color: '#ffffff',
+	},
+
 	none: {
 		opacity: {
 			min: '',

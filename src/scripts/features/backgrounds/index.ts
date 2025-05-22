@@ -866,6 +866,7 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 
 		if (iColor && ranges.color !== undefined) {
 			iColor.value = color === undefined ? ranges.color : color
+
 			// to make the non native color button aware of the change
 			document.getElementById('i_texture-color')?.dispatchEvent(new Event('input', { bubbles: true }))
 		}
@@ -1093,7 +1094,23 @@ function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
 }
 function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['type'] {
-	return ['none', 'grain', 'verticalDots', 'diagonalDots', 'topographic', 'checkerboard', 'isometric'].includes(str)
+	return [
+		'none',
+		'grain',
+		'verticalDots',
+		'diagonalDots',
+		'topographic',
+		'checkerboard',
+		'isometric',
+		'grid',
+		'verticalLines',
+		'horizontalLines',
+		'diagonalStripes',
+		'verticalStripes',
+		'horizontalStripes',
+		'diagonalLines',
+		'aztec',
+	].includes(str)
 }
 function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)
