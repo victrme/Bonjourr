@@ -75,6 +75,7 @@
 	display: flex;
 }
 
+#background-actions:focus-within,
 #background-actions:hover {
 	opacity: 1;
 }

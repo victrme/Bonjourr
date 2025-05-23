@@ -46,6 +46,7 @@ export function settingsInit(sync: Sync, local: Local) {
 	settingsInitLocal = local
 
 	document.body?.addEventListener('keydown', settingsInitEvent)
+	showsettings?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
 }
 
@@ -55,10 +56,12 @@ function settingsInitEvent(event: Event) {
 
 	// 1. When to load settings
 
+	const target = event.target as Element
 	const settingsAreHidden = settings?.classList.contains('hidden')
+	const isKeyboardButton = event.type === 'keydown' && target?.parentElement?.id === 'show-settings'
 	const isLeftClick = (event as PointerEvent)?.button === 0
 	const isEscape = (event as KeyboardEvent)?.code === 'Escape'
-	const canOpenSettings = settingsAreHidden && (isEscape || isLeftClick)
+	const canOpenSettings = settingsAreHidden && (isEscape || isLeftClick || isKeyboardButton)
 
 	if (!canOpenSettings) {
 		return
