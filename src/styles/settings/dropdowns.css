@@ -68,6 +68,10 @@
 	max-height: 280px;
 }
 
+#greetings_options.shown {
+	max-height: 120px;
+}
+
 #ampm_label.shown {
 	max-height: 60px;
 }

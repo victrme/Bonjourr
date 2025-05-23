@@ -203,7 +203,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
 		'on',
-		(data.analogstyle?.background ?? '#fff').includes('#000'),
+		(data.analogstyle?.background ?? '#fff').includes('#000')
 	)
 	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
 	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
@@ -234,6 +234,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	// Activate feature options
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
+	paramId('greetings_options')?.classList.toggle('shown', !data.hide.greetings)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
 	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
@@ -622,6 +623,7 @@ function initOptionsEvents() {
 	})
 
 	onclickdown(paramId('i_greethide'), (_, target) => {
+		document.getElementById('greetings_options')?.classList.toggle('shown', target.checked)
 		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 
