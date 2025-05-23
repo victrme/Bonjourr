@@ -19,11 +19,11 @@
 }
 
 .all #background-provider-option.shown {
-	max-height: 120px;
+	max-height: 170px;
 }
 
 #background-user-coll-option.shown {
-	max-height: 60px;
+	max-height: 105px;
 }
 
 #background-user-search-option.shown {

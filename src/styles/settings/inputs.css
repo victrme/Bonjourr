@@ -36,6 +36,10 @@ aside .param-btn {
 	border-radius: 1em;
 	white-space: nowrap;
 	background-color: rgba(var(--blue), 0.15);
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
 }
 
 aside .param-btn img,
@@ -363,8 +367,9 @@ aside form button:disabled {
 }
 
 aside form button span {
-	display: block;
+	display: flex;
 	width: 31px;
+	justify-content: center;
 }
 
 aside form.valid button {
@@ -378,7 +383,8 @@ aside form.valid span::after {
 }
 
 aside form.valid.remove span::after {
-	content: '×';
+	content: url('../../assets/interface/close.svg');
+	width: 11px;
 }
 
 @media (hover: hover) {
