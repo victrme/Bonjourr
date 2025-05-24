@@ -7,7 +7,9 @@
 
 	<div class="param" id="accept-permissions">
 		<div class="wrapper">
-			<label for="b_accept-permissions" class="trn">Synchronized links require the user to accept permissions</label>
+			<label for="b_accept-permissions" class="trn"
+				>Synchronized links require the user to accept permissions</label
+			>
 			<button id="b_accept-permissions" class="param-btn trn">Ask permission</button>
 		</div>
 	</div>
@@ -48,7 +50,9 @@
 		<div class="wrapper" id="tabtitle">
 			<span>
 				<span class="trn">Tab appearance</span>
-				<button class="tooltip tttab" title="Tips on tab appearance" aria-label="Tips on tab appearance">?</button>
+				<button class="tooltip tttab" title="Tips on tab appearance" aria-label="Tips on tab appearance">
+					?
+				</button>
 			</span>
 
 			<div class="split-inputs">
@@ -79,7 +83,11 @@
 
 		<div class="tooltiptext dropdown tttab">
 			<span class="trn">The icon and title that appear on your tab. You can put any emoji.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview/#newtab-title" rel="noreferrer noopener" target="_blank"
+			<a
+				class="trn"
+				href="https://bonjourr.fr/docs/overview/#newtab-title"
+				rel="noreferrer noopener"
+				target="_blank"
 				>Learn more</a
 			>
 		</div>
@@ -89,7 +97,9 @@
 		<div class="settingshide wrapper">
 			<span>
 				<label for="i_settingshide" class="trn">Hide settings icon</label>
-				<button class="tooltip tthidesettingsicon" title="What does this do?" aria-label="What does this do?">?</button>
+				<button class="tooltip tthidesettingsicon" title="What does this do?" aria-label="What does this do?">
+					?
+				</button>
 			</span>
 			<input id="i_settingshide" class="switch" type="checkbox" />
 		</div>
@@ -99,7 +109,11 @@
 			<span class="trn"
 			>When this is enabled, clicking the bottom right corner will still
 				open settings.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview/#hide-settings" rel="noreferrer noopener" target="_blank"
+			<a
+				class="trn"
+				href="https://bonjourr.fr/docs/overview/#hide-settings"
+				rel="noreferrer noopener"
+				target="_blank"
 				>Learn more</a
 			>
 		</p>
@@ -113,68 +127,74 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_type" class="trn">Background type</label>
-		<select id="i_type">
-			<option value="images" class="trn">Images</option>
-			<option value="videos" class="trn">Videos</option>
-			<option value="files" class="trn">Local files</option>
-			<option value="color" class="trn">Color</option>
-			<option value="urls" class="trn">URLs</option>
-		</select>
+
+		<form id="f_background-provider" class="network-form">
+			<select id="i_type">
+				<option value="images" class="trn">Images</option>
+				<option value="videos" class="trn">Videos</option>
+				<option value="files" class="trn">Local files</option>
+				<!-- <option value="urls" class="trn">URLs</option> -->
+				<option value="color" class="trn">Color</option>
+			</select>
+			<small class="network-form-warning"></small>
+		</form>
 	</div>
 
-	<div id="background-provider-option" class="dropdown">
+	<div id="background-provider-option" class="as as_provider dropdown">
 		<hr />
 
 		<div class="wrapper">
 			<label for="i_background-provider" class="trn">Provider</label>
-			<select id="i_background-provider" disabled>
-				<option value="unsplash">Unsplash</option>
-				<option value="pixabay">Pixabay</option>
-			</select>
-		</div>
-	</div>
-
-	<div id="background-collection-option" class="dropdown shown">
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_background-collection" class="trn">Collection</label>
-			<select id="i_background-collection">
-				<option value="daylight">Bonjourr daylight</option>
-				<option value="usercoll">Custom collection</option>
-				<option value="usertags">Custom tags</option>
-			</select>
+			<select id="i_background-provider"></select>
 		</div>
 
-		<div id="background-user-coll-option" class="dropdown shown">
+		<div id="background-user-coll-option" class="dropdown">
 			<hr />
 
 			<div class="wrapper">
 				<label for="i_background-user-coll" class="trn">Custom collection</label>
-				<input
-					type="text"
-					name="background-user-coll"
-					id="i_background-user-coll"
-					placeholder="XSCVKUH"
-					aria-label="Background collections"
-					maxlength="256"
-				/>
+
+				<form id="f_background-user-coll" class="network-form">
+					<div>
+						<input
+							type="text"
+							name="background-user-coll"
+							id="i_background-user-coll"
+							placeholder="XSCVKUH"
+							aria-label="Background collections"
+							maxlength="256"
+						/>
+						<button type="submit">
+							<span></span>
+						</button>
+					</div>
+					<small class="network-form-warning"></small>
+				</form>
 			</div>
 		</div>
 
-		<div id="background-user-tags-option" class="dropdown">
+		<div id="background-user-search-option" class="dropdown">
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_background-user-tags" class="trn">Custom tags</label>
-				<input
-					type="text"
-					name="background-user-tags"
-					id="i_background-user-tags"
-					placeholder="nature, winter"
-					aria-label="Background tags"
-					maxlength="256"
-				/>
+				<label for="i_background-user-search" class="trn">Custom search</label>
+
+				<form id="f_background-user-search" class="network-form">
+					<div>
+						<input
+							type="text"
+							name="background-user-search"
+							id="i_background-user-search"
+							placeholder="nature, winter"
+							aria-label="Background search"
+							maxlength="256"
+						/>
+						<button type="submit">
+							<span></span>
+						</button>
+					</div>
+					<small class="network-form-warning"></small>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -182,21 +202,34 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<div id="thumbnails-container"></div>
-
-		<div id="thumbnail-show-buttons">
-			<button class="param-btn trn" id="b_thumbnail-all" aria-label="Show all backgrounds">Show all</button>
-		</div>
-
-		<div id="thumbnail-action-buttons" class="wrapper">
+		<div id="background-local-actions" class="wrapper">
 			<div>
-				<button id="thumbnail-position" class="trn param-btn">Change position</button>
-				<button id="thumbnail-remove" class="trn param-btn btn-red">Remove</button>
+				<button id="b_thumbnail-remove" class="param-btn btn-red">
+					<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
+					<!-- <span>&times;</span> -->
+					<span class="trn">Remove</span>
+				</button>
+
+				<button id="b_thumbnail-position" class="trn param-btn">
+					<img src="src/assets/labels/move.svg" height="15" alt="" />
+					<span class="trn">Move</span>
+				</button>
 			</div>
 
-			<button id="thumbnail-zoom" class="trn param-btn">
-				<img src="src/assets/labels/zoom-out.svg" height="16" alt="" />
-			</button>
+			<div>
+				<button id="b_thumbnail-zoom" class="trn param-btn">
+					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
+					<span>Zoom</span>
+				</button>
+
+				<label id="lbl_background-upload">
+					<span class="param-btn">
+						<img src="src/assets/labels/add.svg" height="13" alt="" />
+						Add
+					</span>
+					<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+				</label>
+			</div>
 		</div>
 
 		<div id="background-position-options" class="dropdown">
@@ -229,10 +262,10 @@
 			</div>
 
 			<div class="wrapper">
-				<label for="i_background-zoom" class="trn">Zoom</label>
+				<label for="i_background-size" class="trn">Size</label>
 				<input
-					id="i_background-zoom"
-					name="background-zoom"
+					id="i_background-size"
+					name="background-size"
 					type="range"
 					min="100"
 					max="200"
@@ -243,15 +276,13 @@
 			</div>
 		</div>
 
+		<div id="thumbnails-container"></div>
+
 		<hr />
 
 		<div class="wrapper">
-			<span class="trn">Add backgrounds</span>
-
-			<label id="lbl_background-upload">
-				<span class="param-btn trn">Select files</span>
-				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
-			</label>
+			<label for="i_background-local-compress" class="trn">Compress files</label>
+			<input id="i_background-local-compress" class="switch" type="checkbox" />
 		</div>
 	</div>
 
@@ -269,18 +300,16 @@
 					<option value="day" class="trn">Every day</option>
 					<option value="pause" class="trn">Pause</option>
 				</select>
-				<button id="i_refresh" class="input-btn refresh-btn" title="Next background" aria-label="Next background">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="1.5"
-						stroke="currentColor"
-					>
+				<button
+					id="i_refresh"
+					class="input-btn refresh-btn"
+					title="Next background"
+					aria-label="Next background"
+				>
+					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+							d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
+							fill="currentColor"
 						/>
 					</svg>
 				</button>
@@ -291,15 +320,12 @@
 	<div id="background-urls-option" class="dropdown">
 		<hr />
 
-		<label for="i_background-urls" class="trn">Background URLs</label>
-		<textarea
-			id="i_background-urls"
-			name="background-urls"
-			type="text"
-			class="param-textarea"
-			placeholder="https://picsum.photos/200&#10;https://picsum.photos/600/400"
-			maxlength="8000"
-		></textarea>
+		<div class="wrapper">
+			<label for="b_background-urls" class="trn">Background URLs</label>
+			<button id="b_background-urls" class="param-btn" disabled>Apply changes</button>
+		</div>
+
+		<div id="background-urls-editor"></div>
 	</div>
 
 	<div id="solid_options" class="dropdown">
@@ -311,32 +337,34 @@
 		</div>
 	</div>
 
-	<hr />
-
-	<div class="wrapper">
-		<label for="i_texture" class="trn">Texture</label>
-
-		<select id="i_texture">
-			<option value="none" class="trn">None</option>
-			<option value="grain" class="trn">Grain</option>
-			<option value="dots" class="trn">Dots</option>
-			<option value="topographic" class="trn">Topographic</option>
-		</select>
-	</div>
-
-	<div id="background-texture-options" class="dropdown shown">
+	<div class="as as_texture dropdown">
 		<hr />
 
 		<div class="wrapper">
-			<label for="i_texture-opacity" class="trn">Texture opacity</label>
-			<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
+			<label for="i_texture" class="trn">Texture</label>
+
+			<select id="i_texture">
+				<option value="none" class="trn">None</option>
+				<option value="grain" class="trn">Grain</option>
+				<option value="dots" class="trn">Dots</option>
+				<option value="topographic" class="trn">Topographic</option>
+			</select>
 		</div>
 
-		<hr />
+		<div id="background-texture-options" class="dropdown shown">
+			<hr />
 
-		<div class="wrapper">
-			<label for="i_texture-size" class="trn">Texture size</label>
-			<input id="i_texture-size" name="texture-size" class="range" type="range" />
+			<div class="wrapper">
+				<label for="i_texture-opacity" class="trn">Texture opacity</label>
+				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-size" class="trn">Texture size</label>
+				<input id="i_texture-size" name="texture-size" class="range" type="range" />
+			</div>
 		</div>
 	</div>
 
@@ -352,23 +380,34 @@
 
 		<div class="wrapper">
 			<label for="i_bright" class="trn">Brightness</label>
-			<input id="i_bright" type="range" class="range" name="background_bright" min=".2" max="1" value=".80" step=".01" />
-		</div>
-
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_fadein" class="trn">Fade in</label>
 			<input
-				id="i_fadein"
+				id="i_bright"
 				type="range"
 				class="range"
-				name="background_fadein"
-				min="0"
-				max="1200"
-				value="400"
-				step="100"
+				name="background_bright"
+				min=".2"
+				max="1"
+				value=".80"
+				step=".01"
 			/>
+		</div>
+
+		<div class="as as_fadein dropdown">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_fadein" class="trn">Fade in</label>
+				<input
+					id="i_fadein"
+					type="range"
+					class="range"
+					name="background_fadein"
+					min="0"
+					max="1200"
+					value="400"
+					step="100"
+				/>
+			</div>
 		</div>
 	</div>
 </div>
@@ -451,7 +490,9 @@
 
 		<div class="as as_link dropdown">
 			<p class="tooltiptext dropdown">
-				<span class="trn">Organize your links even more with pages. Right click next to a page to add another.</span>
+				<span class="trn"
+					>Organize your links even more with pages. Right click next to a page to add another.</span
+				>
 				<a class="trn" href="https://bonjourr.fr/docs/overview#links" rel="noreferrer noopener" target="_blank"
 					>Learn more</a
 				>
@@ -479,7 +520,12 @@
 				<label for="i_linkstyle" class="trn">Style</label>
 
 				<div class="split-inputs">
-					<button id="b_showtitles" class="input-btn on" aria-label="Toggle link titles" title="Toggle link titles">
+					<button
+						id="b_showtitles"
+						class="input-btn on"
+						aria-label="Toggle link titles"
+						title="Toggle link titles"
+					>
 						<span>T</span>
 					</button>
 
@@ -586,7 +632,11 @@
 							step="1"
 						/>
 
-						<button id="i_analog-background-shade" title="Clock background shade" class="input-btn icon-only">
+						<button
+							id="i_analog-background-shade"
+							title="Clock background shade"
+							class="input-btn icon-only"
+						>
 							<span data-value="light">
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
 									<path
@@ -715,9 +765,7 @@
 								placeholder="Paris"
 								aria-label="Add city"
 							/>
-							<select name="worldclock-timezone">
-								<!-- timezone template -->
-							</select>
+							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
@@ -728,9 +776,7 @@
 								placeholder="São Paulo"
 								aria-label="Add city"
 							/>
-							<select name="worldclock-timezone">
-								<!-- timezone template -->
-							</select>
+							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
@@ -741,9 +787,7 @@
 								placeholder="Los Angeles"
 								aria-label="Add city"
 							/>
-							<select name="worldclock-timezone">
-								<!-- timezone template -->
-							</select>
+							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
@@ -754,9 +798,7 @@
 								placeholder="Tokyo"
 								aria-label="Add city"
 							/>
-							<select name="worldclock-timezone">
-								<!-- timezone template -->
-							</select>
+							<select name="worldclock-timezone"></select>
 						</div>
 
 						<div class="worldclocks-item split-inputs dropdown">
@@ -767,9 +809,7 @@
 								placeholder="Kolkata"
 								aria-label="Add city"
 							/>
-							<select name="worldclock-timezone">
-								<!-- timezone template -->
-							</select>
+							<select name="worldclock-timezone"></select>
 						</div>
 					</div>
 				</div>
@@ -784,7 +824,6 @@
 						<option value="auto" class="trn">Automatic</option>
 					</optgroup>
 					<optgroup></optgroup>
-					<!-- timezone template -->
 				</select>
 			</div>
 
@@ -946,7 +985,13 @@
 				<hr />
 				<div class="wrapper">
 					<label for="i_provider" class="trn">Provider URL</label>
-					<input id="i_provider" name="provider" type="text" placeholder="https://weatherbug.com/" maxlength="512" />
+					<input
+						id="i_provider"
+						name="provider"
+						type="text"
+						placeholder="https://weatherbug.com/"
+						maxlength="512"
+					/>
 				</div>
 			</div>
 
@@ -1000,7 +1045,9 @@
 
 	<p class="tooltiptext dropdown ttnotes">
 		<span class="trn">You can use Markdown and keyboard shortcuts in notes.</span>
-		<a class="trn" href="https://bonjourr.fr/docs/overview/#notes" rel="noreferrer noopener" target="_blank">Learn more</a>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#notes" rel="noreferrer noopener" target="_blank"
+			>Learn more</a
+		>
 	</p>
 </div>
 
@@ -1027,7 +1074,16 @@
 
 			<div class="wrapper">
 				<label for="i_noteswidth" class="trn">Width</label>
-				<input id="i_noteswidth" type="range" name="i_noteswidth" min="20" max="70" step="1" value="50" class="range" />
+				<input
+					id="i_noteswidth"
+					type="range"
+					name="i_noteswidth"
+					min="20"
+					max="70"
+					step="1"
+					value="50"
+					class="range"
+				/>
 			</div>
 
 			<hr />
@@ -1036,7 +1092,15 @@
 				<label for="i_notes-opacity" class="trn">Background</label>
 
 				<div id="notes-background-range" class="split-inputs split-range">
-					<input id="i_notes-opacity" name="i_notes-opacity" class="range" type="range" min="0" max="15" step="1" />
+					<input
+						id="i_notes-opacity"
+						name="i_notes-opacity"
+						class="range"
+						type="range"
+						min="0"
+						max="15"
+						step="1"
+					/>
 
 					<button id="i_notes-shade" title="Notes shade" class="input-btn icon-only">
 						<span data-value="light">
@@ -1093,7 +1157,7 @@
 
 			<div class="wrapper">
 				<span>
-					<label for="i_searchengine" class="trn">Search engine</label>
+					<label for="i_sbengine" class="trn">Search engine</label>
 					<button
 						class="tooltip ttsearchengine"
 						title="I want more info on search engines"
@@ -1121,7 +1185,11 @@
 			<p class="tooltiptext dropdown ttsearchengine">
 				<!-- prettier-ignore -->
 				<span class="trn">Change the endpoint of the search bar.</span>
-				<a class="trn" href="https://bonjourr.fr/docs/overview/#searchbar" rel="noreferrer noopener" target="_blank"
+				<a
+					class="trn"
+					href="https://bonjourr.fr/docs/overview/#searchbar"
+					rel="noreferrer noopener"
+					target="_blank"
 					>Learn more</a
 				>
 			</p>
@@ -1130,7 +1198,13 @@
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
-					<input id="i_sbrequest" name="sbrequest" type="text" placeholder="Search query: %s" maxlength="512" />
+					<input
+						id="i_sbrequest"
+						name="sbrequest"
+						type="text"
+						placeholder="Search query: %s"
+						maxlength="512"
+					/>
 				</div>
 			</div>
 
@@ -1152,7 +1226,16 @@
 
 			<div class="wrapper">
 				<label for="i_sbwidth" class="trn">Width</label>
-				<input id="i_sbwidth" type="range" name="i_sbwidth" min="10" max="60" step="2" value="30" class="range" />
+				<input
+					id="i_sbwidth"
+					type="range"
+					name="i_sbwidth"
+					min="10"
+					max="60"
+					step="2"
+					value="30"
+					class="range"
+				/>
 			</div>
 
 			<hr />
@@ -1195,7 +1278,9 @@
 
 	<p class="tooltiptext dropdown ttquotes">
 		<span class="trn">Use the default quote collections or import your own.</span>
-		<a class="trn" href="https://bonjourr.fr/docs/overview/#quotes" rel="noreferrer noopener" target="_blank">Learn more</a>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#quotes" rel="noreferrer noopener" target="_blank"
+			>Learn more</a
+		>
 	</p>
 </div>
 
@@ -1297,17 +1382,10 @@
 					<option value="pause" class="trn">Pause</option>
 				</select>
 				<button id="i_qtrefresh" class="input-btn refresh-btn" aria-label="Next quote" title="Next quote">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke-width="1.5"
-						stroke="currentColor"
-					>
+					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+							d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
+							fill="currentColor"
 						/>
 					</svg>
 				</button>
@@ -1393,7 +1471,9 @@
 
 	<div class="param">
 		<div class="wrapper">
-			<span style="padding: 8px 4px">Click "Edit" to allow widgets to move, then select a widget on the page.</span>
+			<span style="padding: 8px 4px"
+				>Click "Edit" to allow widgets to move, then select a widget on the page.</span
+			>
 
 			<button id="b_movetips" class="input-btn">&times;</button>
 		</div>
@@ -1423,7 +1503,9 @@
 		<p class="tooltiptext dropdown ttcss">
 			<span class="trn">Make cool things happen with CSS. </span>
 			<span class="trn instructions">Check out our </span>
-			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank">CSS snippets.</a>
+			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank"
+				>CSS snippets.</a
+			>
 		</p>
 	</div>
 
@@ -1466,8 +1548,8 @@
 		<p class="tooltiptext dropdown ttsupporters">
 			<!-- prettier-ignore -->
 			<span class="trn"
-			>The supporters notification appears at the top of your settings to
-				thank those who donate and support our work.</span>
+			>The supporters notification appears at the top of your settings to thank those who donate and support our
+				work.</span>
 			<a
 				class="trn"
 				href="https://bonjourr.fr/docs/overview/#supporters-notification"
@@ -1486,7 +1568,11 @@
 
 	<p class="tooltiptext dropdown ttexport">
 		<span class="trn">Transfer your settings between multiple instances of Bonjourr.</span>
-		<a class="trn" href="https://bonjourr.fr/docs/overview/#settings-management" rel="noreferrer noopener" target="_blank"
+		<a
+			class="trn"
+			href="https://bonjourr.fr/docs/overview/#settings-management"
+			rel="noreferrer noopener"
+			target="_blank"
 			>Learn more</a
 		>
 	</p>
@@ -1717,7 +1803,11 @@
 					></path>
 				</svg>
 			</a>
-			<a href="https://github.com/victrme/Bonjourr" title="Bonjourr's GitHub repository" rel="noreferrer noopener">
+			<a
+				href="https://github.com/victrme/Bonjourr"
+				title="Bonjourr's GitHub repository"
+				rel="noreferrer noopener"
+			>
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98 96">
 					<path
 						fill-rule="evenodd"
@@ -1756,312 +1846,344 @@
 </div>
 
 <template id="timezones-select-template">
-	<select>
-		<optgroup label="Coordinated Universal Time">
-			<option value="-10">HST -10</option>
-			<option value="-9">AKST -9</option>
-			<option value="-8">PST -8</option>
-			<option value="-7">MST -7</option>
-			<option value="-6">CST -6</option>
-			<option value="-5">EST -5</option>
-			<option value="-4">AST -4</option>
-			<option value="-3">CLST -3</option>
-			<option value="+0">GMT</option>
-			<option value="+1">CET +1</option>
-			<option value="+2">EET +2</option>
-			<option value="+3">MSK +3</option>
-			<option value="+3.30">GMT +3:30</option>
-			<option value="+4">AST +4</option>
-			<option value="+4.30">GMT</option>
-			<option value="+5">PKT +5</option>
-			<option value="+5.30">GMT +5:30</option>
-			<option value="+5.45">GMT +5:45</option>
-			<option value="+6">IST +6</option>
-			<option value="+6.30">GMT +6:30</option>
-			<option value="+7">ICT +7</option>
-			<option value="+8">CST +8</option>
-			<option value="+8.30">GMT +8:30</option>
-			<option value="+9">KST +9</option>
-			<option value="+10">AEST +10</option>
-			<option value="+11">AEDT +11</option>
-			<option value="+12">NZDT +12</option>
-		</optgroup>
-		<optgroup label="Europe">
-			<option value="Europe/Andorra">Europe/Andorra</option>
-			<option value="Europe/Athens">Europe/Athens</option>
-			<option value="Europe/Belgrade">Europe/Belgrade</option>
-			<option value="Europe/Berlin">Europe/Berlin</option>
-			<option value="Europe/Brussels">Europe/Brussels</option>
-			<option value="Europe/Bucharest">Europe/Bucharest</option>
-			<option value="Europe/Budapest">Europe/Budapest</option>
-			<option value="Europe/Chisinau">Europe/Chisinau</option>
-			<option value="Europe/Dublin">Europe/Dublin</option>
-			<option value="Europe/Gibraltar">Europe/Gibraltar</option>
-			<option value="Europe/Helsinki">Europe/Helsinki</option>
-			<option value="Europe/Istanbul">Europe/Istanbul</option>
-			<option value="Europe/Kyiv">Europe/Kyiv</option>
-			<option value="Europe/Lisbon">Europe/Lisbon</option>
-			<option value="Europe/London">Europe/London</option>
-			<option value="Europe/Madrid">Europe/Madrid</option>
-			<option value="Europe/Malta">Europe/Malta</option>
-			<option value="Europe/Minsk">Europe/Minsk</option>
-			<option value="Europe/Paris">Europe/Paris</option>
-			<option value="Europe/Prague">Europe/Prague</option>
-			<option value="Europe/Riga">Europe/Riga</option>
-			<option value="Europe/Rome">Europe/Rome</option>
-			<option value="Europe/Samara">Europe/Samara</option>
-			<option value="Europe/Saratov">Europe/Saratov</option>
-			<option value="Europe/Sofia">Europe/Sofia</option>
-			<option value="Europe/Tallinn">Europe/Tallinn</option>
-			<option value="Europe/Tirane">Europe/Tirane</option>
-			<option value="Europe/Vienna">Europe/Vienna</option>
-			<option value="Europe/Vilnius">Europe/Vilnius</option>
-			<option value="Europe/Warsaw">Europe/Warsaw</option>
-			<option value="Europe/Zurich">Europe/Zurich</option>
-		</optgroup>
-		<optgroup label="West Asia">
-			<option value="Asia/Almaty">Asia/Almaty</option>
-			<option value="Asia/Ashgabat">Asia/Ashgabat</option>
-			<option value="Asia/Baku">Asia/Baku</option>
-			<option value="Asia/Baghdad">Asia/Baghdad</option>
-			<option value="Asia/Beirut">Asia/Beirut</option>
-			<option value="Asia/Damascus">Asia/Damascus</option>
-			<option value="Asia/Dushanbe">Asia/Dushanbe</option>
-			<option value="Asia/Gaza">Asia/Gaza</option>
-			<option value="Asia/Hebron">Asia/Hebron</option>
-			<option value="Asia/Jerusalem">Asia/Jerusalem</option>
-			<option value="Asia/Kabul">Asia/Kabul</option>
-			<option value="Asia/Karachi">Asia/Karachi</option>
-			<option value="Asia/Qatar">Asia/Qatar</option>
-			<option value="Asia/Riyadh">Asia/Riyadh</option>
-			<option value="Asia/Samarkand">Asia/Samarkand</option>
-			<option value="Asia/Tbilisi">Asia/Tbilisi</option>
-			<option value="Asia/Tehran">Asia/Tehran</option>
-			<option value="Asia/Yerevan">Asia/Yerevan</option>
-		</optgroup>
-		<optgroup label="Central and east Asia">
-			<option value="Asia/Bangkok">Asia/Bangkok</option>
-			<option value="Asia/Bishkek">Asia/Bishkek</option>
-			<option value="Asia/Choibalsan">Asia/Choibalsan</option>
-			<option value="Asia/Colombo">Asia/Colombo</option>
-			<option value="Asia/Dhaka">Asia/Dhaka</option>
-			<option value="Asia/Dili">Asia/Dili</option>
-			<option value="Asia/Dubai">Asia/Dubai</option>
-			<option value="Asia/Famagusta">Asia/Famagusta</option>
-			<option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</option>
-			<option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
-			<option value="Asia/Hovd">Asia/Hovd</option>
-			<option value="Asia/Jakarta">Asia/Jakarta</option>
-			<option value="Asia/Jayapura">Asia/Jayapura</option>
-			<option value="Asia/Kathmandu">Asia/Kathmandu</option>
-			<option value="Asia/Kolkata">Asia/Kolkata</option>
-			<option value="Asia/Kuching">Asia/Kuching</option>
-			<option value="Asia/Macau">Asia/Macau</option>
-			<option value="Asia/Makassar">Asia/Makassar</option>
-			<option value="Asia/Manila">Asia/Manila</option>
-			<option value="Asia/Nicosia">Asia/Nicosia</option>
-			<option value="Asia/Pontianak">Asia/Pontianak</option>
-			<option value="Asia/Pyongyang">Asia/Pyongyang</option>
-			<option value="Asia/Seoul">Asia/Seoul</option>
-			<option value="Asia/Shanghai">Asia/Shanghai</option>
-			<option value="Asia/Singapore">Asia/Singapore</option>
-			<option value="Asia/Taipei">Asia/Taipei</option>
-			<option value="Asia/Tashkent">Asia/Tashkent</option>
-			<option value="Asia/Thimphu">Asia/Thimphu</option>
-			<option value="Asia/Tokyo">Asia/Tokyo</option>
-			<option value="Asia/Ulaanbaatar">Asia/Ulaanbaatar</option>
-			<option value="Asia/Urumqi">Asia/Urumqi</option>
-			<option value="Asia/Yangon">Asia/Yangon</option>
-		</optgroup>
-		<optgroup label="America">
-			<option value="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires</option>
-			<option value="America/Argentina/Cordoba">America/Argentina/Cordoba</option>
-			<option value="America/Asuncion">America/Asuncion</option>
-			<option value="America/Belize">America/Belize</option>
-			<option value="America/Bogota">America/Bogota</option>
-			<option value="America/Caracas">America/Caracas</option>
-			<option value="America/Cayenne">America/Cayenne</option>
-			<option value="America/Costa_Rica">America/Costa_Rica</option>
-			<option value="America/Cuiaba">America/Cuiaba</option>
-			<option value="America/El_Salvador">America/El_Salvador</option>
-			<option value="America/Grand_Turk">America/Grand_Turk</option>
-			<option value="America/Guatemala">America/Guatemala</option>
-			<option value="America/Guayaquil">America/Guayaquil</option>
-			<option value="America/Guyana">America/Guyana</option>
-			<option value="America/Havana">America/Havana</option>
-			<option value="America/Jamaica">America/Jamaica</option>
-			<option value="America/La_Paz">America/La_Paz</option>
-			<option value="America/Lima">America/Lima</option>
-			<option value="America/Managua">America/Managua</option>
-			<option value="America/Martinique">America/Martinique</option>
-			<option value="America/Miquelon">America/Miquelon</option>
-			<option value="America/Montevideo">America/Montevideo</option>
-			<option value="America/Noronha">America/Noronha</option>
-			<option value="America/Nuuk">America/Nuuk</option>
-			<option value="America/Panama">America/Panama</option>
-			<option value="America/Paramaribo">America/Paramaribo</option>
-			<option value="America/Port-au-Prince">America/Port-au-Prince</option>
-			<option value="America/Punta_Arenas">America/Punta_Arenas</option>
-			<option value="America/Santiago">America/Santiago</option>
-			<option value="America/Santo_Domingo">America/Santo_Domingo</option>
-			<option value="America/Scoresbysund">America/Scoresbysund</option>
-			<option value="America/Tegucigalpa">America/Tegucigalpa</option>
-			<option value="America/Thule">America/Thule</option>
-		</optgroup>
-		<optgroup label="Africa">
-			<option value="Africa/Abidjan">Africa/Abidjan</option>
-			<option value="Africa/Algiers">Africa/Algiers</option>
-			<option value="Africa/Cairo">Africa/Cairo</option>
-			<option value="Africa/Casablanca">Africa/Casablanca</option>
-			<option value="Africa/El_Aaiun">Africa/El_Aaiun</option>
-			<option value="Africa/Johannesburg">Africa/Johannesburg</option>
-			<option value="Africa/Lagos">Africa/Lagos</option>
-			<option value="Africa/Maputo">Africa/Maputo</option>
-			<option value="Africa/Monrovia">Africa/Monrovia</option>
-			<option value="Africa/Nairobi">Africa/Nairobi</option>
-			<option value="Africa/Ndjamena">Africa/Ndjamena</option>
-			<option value="Africa/Sao_Tome">Africa/Sao_Tome</option>
-			<option value="Africa/Tripoli">Africa/Tripoli</option>
-			<option value="Africa/Tunis">Africa/Tunis</option>
-			<option value="Africa/Windhoek">Africa/Windhoek</option>
-		</optgroup>
-		<optgroup label="Russia">
-			<option value="Europe/Astrakhan">Europe/Astrakhan</option>
-			<option value="Europe/Kaliningrad">Europe/Kaliningrad</option>
-			<option value="Europe/Moscow">Europe/Moscow</option>
-			<option value="Europe/Ulyanovsk">Europe/Ulyanovsk</option>
-			<option value="Asia/Anadyr">Asia/Anadyr</option>
-			<option value="Asia/Barnaul">Asia/Barnaul</option>
-			<option value="Asia/Chita">Asia/Chita</option>
-			<option value="Asia/Irkutsk">Asia/Irkutsk</option>
-			<option value="Asia/Kamchatka">Asia/Kamchatka</option>
-			<option value="Asia/Khandyga">Asia/Khandyga</option>
-			<option value="Asia/Krasnoyarsk">Asia/Krasnoyarsk</option>
-			<option value="Asia/Magadan">Asia/Magadan</option>
-			<option value="Asia/Novosibirsk">Asia/Novosibirsk</option>
-			<option value="Asia/Omsk">Asia/Omsk</option>
-			<option value="Asia/Sakhalin">Asia/Sakhalin</option>
-			<option value="Asia/Tomsk">Asia/Tomsk</option>
-			<option value="Asia/Vladivostok">Asia/Vladivostok</option>
-			<option value="Asia/Yakutsk">Asia/Yakutsk</option>
-			<option value="Asia/Yekaterinburg">Asia/Yekaterinburg</option>
-		</optgroup>
-		<optgroup label="Australia">
-			<option value="Australia/Adelaide">Australia/Adelaide</option>
-			<option value="Australia/Brisbane">Australia/Brisbane</option>
-			<option value="Australia/Broken_Hill">Australia/Broken_Hill</option>
-			<option value="Australia/Darwin">Australia/Darwin</option>
-			<option value="Australia/Eucla">Australia/Eucla</option>
-			<option value="Australia/Hobart">Australia/Hobart</option>
-			<option value="Australia/Lindeman">Australia/Lindeman</option>
-			<option value="Australia/Lord_Howe">Australia/Lord_Howe</option>
-			<option value="Australia/Perth">Australia/Perth</option>
-			<option value="Australia/Sydney">Australia/Sydney</option>
-		</optgroup>
-		<optgroup label="Canada">
-			<option value="America/Dawson">America/Dawson</option>
-			<option value="America/Edmonton">America/Edmonton</option>
-			<option value="America/Fort_Nelson">America/Fort_Nelson</option>
-			<option value="America/Halifax">America/Halifax</option>
-			<option value="America/Inuvik">America/Inuvik</option>
-			<option value="America/Iqaluit">America/Iqaluit</option>
-			<option value="America/Regina">America/Regina</option>
-			<option value="America/St_Johns">America/St_Johns</option>
-			<option value="America/Toronto">America/Toronto</option>
-			<option value="America/Vancouver">America/Vancouver</option>
-			<option value="America/Whitehorse">America/Whitehorse</option>
-			<option value="America/Winnipeg">America/Winnipeg</option>
-		</optgroup>
-		<optgroup label="United States">
-			<option value="America/Adak">America/Adak</option>
-			<option value="America/Anchorage">America/Anchorage</option>
-			<option value="America/Boise">America/Boise</option>
-			<option value="America/Chicago">America/Chicago</option>
-			<option value="America/Denver">America/Denver</option>
-			<option value="America/Detroit">America/Detroit</option>
-			<option value="America/Indiana/Indianapolis">America/Indiana/Indianapolis</option>
-			<option value="America/Kentucky/Louisville">America/Kentucky/Louisville</option>
-			<option value="America/Los_Angeles">America/Los_Angeles</option>
-			<option value="America/Menominee">America/Menominee</option>
-			<option value="America/New_York">America/New_York</option>
-			<option value="America/North_Dakota/Center">America/North_Dakota/Center</option>
-			<option value="America/Phoenix">America/Phoenix</option>
-			<option value="America/Puerto_Rico">America/Puerto_Rico</option>
-			<option value="America/Sitka">America/Sitka</option>
-		</optgroup>
-		<optgroup label="Mexico">
-			<option value="America/Bahia_Banderas">America/Bahia_Banderas</option>
-			<option value="America/Cancun">America/Cancun</option>
-			<option value="America/Chihuahua">America/Chihuahua</option>
-			<option value="America/Ciudad_Juarez">America/Ciudad_Juarez</option>
-			<option value="America/Hermosillo">America/Hermosillo</option>
-			<option value="America/Matamoros">America/Matamoros</option>
-			<option value="America/Mazatlan">America/Mazatlan</option>
-			<option value="America/Mexico_City">America/Mexico_City</option>
-			<option value="America/Ojinaga">America/Ojinaga</option>
-			<option value="America/Tijuana">America/Tijuana</option>
-		</optgroup>
-		<optgroup label="Brazil">
-			<option value="America/Araguaina">America/Araguaina</option>
-			<option value="America/Bahia">America/Bahia</option>
-			<option value="America/Belem">America/Belem</option>
-			<option value="America/Boa_Vista">America/Boa_Vista</option>
-			<option value="America/Campo_Grande">America/Campo_Grande</option>
-			<option value="America/Eirunepe">America/Eirunepe</option>
-			<option value="America/Fortaleza">America/Fortaleza</option>
-			<option value="America/Manaus">America/Manaus</option>
-			<option value="America/Porto_Velho">America/Porto_Velho</option>
-			<option value="America/Recife">America/Recife</option>
-			<option value="America/Rio_Branco">America/Rio_Branco</option>
-			<option value="America/Santarem">America/Santarem</option>
-			<option value="America/Sao_Paulo">America/Sao_Paulo</option>
-		</optgroup>
-		<optgroup label="Atlantic ocean">
-			<option value="Atlantic/Azores">Atlantic/Azores</option>
-			<option value="Atlantic/Bermuda">Atlantic/Bermuda</option>
-			<option value="Atlantic/Canary">Atlantic/Canary</option>
-			<option value="Atlantic/Cape_Verde">Atlantic/Cape_Verde</option>
-			<option value="Atlantic/Faroe">Atlantic/Faroe</option>
-			<option value="Atlantic/Madeira">Atlantic/Madeira</option>
-			<option value="Atlantic/South_Georgia">Atlantic/South_Georgia</option>
-			<option value="Atlantic/Stanley">Atlantic/Stanley</option>
-		</optgroup>
-		<optgroup label="Pacific ocean">
-			<option value="Pacific/Apia">Pacific/Apia</option>
-			<option value="Pacific/Auckland">Pacific/Auckland</option>
-			<option value="Pacific/Bougainville">Pacific/Bougainville</option>
-			<option value="Pacific/Chatham">Pacific/Chatham</option>
-			<option value="Pacific/Easter">Pacific/Easter</option>
-			<option value="Pacific/Efate">Pacific/Efate</option>
-			<option value="Pacific/Fakaofo">Pacific/Fakaofo</option>
-			<option value="Pacific/Fiji">Pacific/Fiji</option>
-			<option value="Pacific/Galapagos">Pacific/Galapagos</option>
-			<option value="Pacific/Gambier">Pacific/Gambier</option>
-			<option value="Pacific/Guadalcanal">Pacific/Guadalcanal</option>
-			<option value="Pacific/Guam">Pacific/Guam</option>
-			<option value="Pacific/Honolulu">Pacific/Honolulu</option>
-			<option value="Pacific/Kanton">Pacific/Kanton</option>
-			<option value="Pacific/Kiritimati">Pacific/Kiritimati</option>
-			<option value="Pacific/Kosrae">Pacific/Kosrae</option>
-			<option value="Pacific/Kwajalein">Pacific/Kwajalein</option>
-			<option value="Pacific/Marquesas">Pacific/Marquesas</option>
-			<option value="Pacific/Nauru">Pacific/Nauru</option>
-			<option value="Pacific/Niue">Pacific/Niue</option>
-			<option value="Pacific/Norfolk">Pacific/Norfolk</option>
-			<option value="Pacific/Noumea">Pacific/Noumea</option>
-			<option value="Pacific/Pago_Pago">Pacific/Pago_Pago</option>
-			<option value="Pacific/Palau">Pacific/Palau</option>
-			<option value="Pacific/Pitcairn">Pacific/Pitcairn</option>
-			<option value="Pacific/Port_Moresby">Pacific/Port_Moresby</option>
-			<option value="Pacific/Rarotonga">Pacific/Rarotonga</option>
-			<option value="Pacific/Tahiti">Pacific/Tahiti</option>
-			<option value="Pacific/Tarawa">Pacific/Tarawa</option>
-			<option value="Pacific/Tongatapu">Pacific/Tongatapu</option>
-		</optgroup>
-		<optgroup label="Indian ocean">
-			<option value="Indian/Chagos">Indian/Chagos</option>
-			<option value="Indian/Maldives">Indian/Maldives</option>
-			<option value="Indian/Mauritius">Indian/Mauritius</option>
-		</optgroup>
-	</select>
+	<optgroup label="Abbreviation Timezones">
+		<option value="HST">HST -10</option>
+		<option value="PST">PST -8</option>
+		<option value="MST">MST -7</option>
+		<option value="CST">CST -6</option>
+		<option value="EST">EST -5</option>
+		<option value="AST">AST -4</option>
+		<option value="UTC">UTC +0</option>
+		<option value="CET">CET +1</option>
+		<option value="EET">EET +2</option>
+		<option value="IST">IST +5:30</option>
+		<option value="BST">BST +6</option>
+		<option value="JST">JST +9</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Universal Time Coordinated">
+		<option value="-10:00">UTC -10</option>
+		<option value="-09:00">UTC -9</option>
+		<option value="-08:00">UTC -8</option>
+		<option value="-07:00">UTC -7</option>
+		<option value="-06:00">UTC -6</option>
+		<option value="-05:00">UTC -5</option>
+		<option value="-04:00">UTC -4</option>
+		<option value="-03:00">UTC -3</option>
+		<option value="+00:00">UTC +0</option>
+		<option value="+01:00">UTC +1</option>
+		<option value="+02:00">UTC +2</option>
+		<option value="+03:00">UTC +3</option>
+		<option value="+05:30">UTC +5:30</option>
+		<option value="+08:00">UTC +8</option>
+		<option value="+09:00">UTC +9</option>
+		<option value="+10:00">UTC +10</option>
+		<option value="+12:00">UTC +12</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Europe">
+		<option value="Europe/Andorra">Europe/Andorra</option>
+		<option value="Europe/Athens">Europe/Athens</option>
+		<option value="Europe/Belgrade">Europe/Belgrade</option>
+		<option value="Europe/Berlin">Europe/Berlin</option>
+		<option value="Europe/Brussels">Europe/Brussels</option>
+		<option value="Europe/Bucharest">Europe/Bucharest</option>
+		<option value="Europe/Budapest">Europe/Budapest</option>
+		<option value="Europe/Chisinau">Europe/Chisinau</option>
+		<option value="Europe/Dublin">Europe/Dublin</option>
+		<option value="Europe/Gibraltar">Europe/Gibraltar</option>
+		<option value="Europe/Helsinki">Europe/Helsinki</option>
+		<option value="Europe/Istanbul">Europe/Istanbul</option>
+		<option value="Europe/Kyiv">Europe/Kyiv</option>
+		<option value="Europe/Lisbon">Europe/Lisbon</option>
+		<option value="Europe/London">Europe/London</option>
+		<option value="Europe/Madrid">Europe/Madrid</option>
+		<option value="Europe/Malta">Europe/Malta</option>
+		<option value="Europe/Minsk">Europe/Minsk</option>
+		<option value="Europe/Paris">Europe/Paris</option>
+		<option value="Europe/Prague">Europe/Prague</option>
+		<option value="Europe/Riga">Europe/Riga</option>
+		<option value="Europe/Rome">Europe/Rome</option>
+		<option value="Europe/Samara">Europe/Samara</option>
+		<option value="Europe/Saratov">Europe/Saratov</option>
+		<option value="Europe/Sofia">Europe/Sofia</option>
+		<option value="Europe/Tallinn">Europe/Tallinn</option>
+		<option value="Europe/Tirane">Europe/Tirane</option>
+		<option value="Europe/Vienna">Europe/Vienna</option>
+		<option value="Europe/Vilnius">Europe/Vilnius</option>
+		<option value="Europe/Warsaw">Europe/Warsaw</option>
+		<option value="Europe/Zurich">Europe/Zurich</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="West Asia">
+		<option value="Asia/Almaty">Asia/Almaty</option>
+		<option value="Asia/Ashgabat">Asia/Ashgabat</option>
+		<option value="Asia/Baku">Asia/Baku</option>
+		<option value="Asia/Baghdad">Asia/Baghdad</option>
+		<option value="Asia/Beirut">Asia/Beirut</option>
+		<option value="Asia/Damascus">Asia/Damascus</option>
+		<option value="Asia/Dushanbe">Asia/Dushanbe</option>
+		<option value="Asia/Gaza">Asia/Gaza</option>
+		<option value="Asia/Hebron">Asia/Hebron</option>
+		<option value="Asia/Jerusalem">Asia/Jerusalem</option>
+		<option value="Asia/Kabul">Asia/Kabul</option>
+		<option value="Asia/Karachi">Asia/Karachi</option>
+		<option value="Asia/Qatar">Asia/Qatar</option>
+		<option value="Asia/Riyadh">Asia/Riyadh</option>
+		<option value="Asia/Samarkand">Asia/Samarkand</option>
+		<option value="Asia/Tbilisi">Asia/Tbilisi</option>
+		<option value="Asia/Tehran">Asia/Tehran</option>
+		<option value="Asia/Yerevan">Asia/Yerevan</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Central and east Asia">
+		<option value="Asia/Bangkok">Asia/Bangkok</option>
+		<option value="Asia/Bishkek">Asia/Bishkek</option>
+		<option value="Asia/Choibalsan">Asia/Choibalsan</option>
+		<option value="Asia/Colombo">Asia/Colombo</option>
+		<option value="Asia/Dhaka">Asia/Dhaka</option>
+		<option value="Asia/Dili">Asia/Dili</option>
+		<option value="Asia/Dubai">Asia/Dubai</option>
+		<option value="Asia/Famagusta">Asia/Famagusta</option>
+		<option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh</option>
+		<option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
+		<option value="Asia/Hovd">Asia/Hovd</option>
+		<option value="Asia/Jakarta">Asia/Jakarta</option>
+		<option value="Asia/Jayapura">Asia/Jayapura</option>
+		<option value="Asia/Kathmandu">Asia/Kathmandu</option>
+		<option value="Asia/Kolkata">Asia/Kolkata</option>
+		<option value="Asia/Kuching">Asia/Kuching</option>
+		<option value="Asia/Macau">Asia/Macau</option>
+		<option value="Asia/Makassar">Asia/Makassar</option>
+		<option value="Asia/Manila">Asia/Manila</option>
+		<option value="Asia/Nicosia">Asia/Nicosia</option>
+		<option value="Asia/Pontianak">Asia/Pontianak</option>
+		<option value="Asia/Pyongyang">Asia/Pyongyang</option>
+		<option value="Asia/Seoul">Asia/Seoul</option>
+		<option value="Asia/Shanghai">Asia/Shanghai</option>
+		<option value="Asia/Singapore">Asia/Singapore</option>
+		<option value="Asia/Taipei">Asia/Taipei</option>
+		<option value="Asia/Tashkent">Asia/Tashkent</option>
+		<option value="Asia/Thimphu">Asia/Thimphu</option>
+		<option value="Asia/Tokyo">Asia/Tokyo</option>
+		<option value="Asia/Ulaanbaatar">Asia/Ulaanbaatar</option>
+		<option value="Asia/Urumqi">Asia/Urumqi</option>
+		<option value="Asia/Yangon">Asia/Yangon</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="America">
+		<option value="America/Argentina/Buenos_Aires">America/Argentina/Buenos_Aires</option>
+		<option value="America/Argentina/Cordoba">America/Argentina/Cordoba</option>
+		<option value="America/Asuncion">America/Asuncion</option>
+		<option value="America/Belize">America/Belize</option>
+		<option value="America/Bogota">America/Bogota</option>
+		<option value="America/Caracas">America/Caracas</option>
+		<option value="America/Cayenne">America/Cayenne</option>
+		<option value="America/Costa_Rica">America/Costa_Rica</option>
+		<option value="America/Cuiaba">America/Cuiaba</option>
+		<option value="America/El_Salvador">America/El_Salvador</option>
+		<option value="America/Grand_Turk">America/Grand_Turk</option>
+		<option value="America/Guatemala">America/Guatemala</option>
+		<option value="America/Guayaquil">America/Guayaquil</option>
+		<option value="America/Guyana">America/Guyana</option>
+		<option value="America/Havana">America/Havana</option>
+		<option value="America/Jamaica">America/Jamaica</option>
+		<option value="America/La_Paz">America/La_Paz</option>
+		<option value="America/Lima">America/Lima</option>
+		<option value="America/Managua">America/Managua</option>
+		<option value="America/Martinique">America/Martinique</option>
+		<option value="America/Miquelon">America/Miquelon</option>
+		<option value="America/Montevideo">America/Montevideo</option>
+		<option value="America/Noronha">America/Noronha</option>
+		<option value="America/Nuuk">America/Nuuk</option>
+		<option value="America/Panama">America/Panama</option>
+		<option value="America/Paramaribo">America/Paramaribo</option>
+		<option value="America/Port-au-Prince">America/Port-au-Prince</option>
+		<option value="America/Punta_Arenas">America/Punta_Arenas</option>
+		<option value="America/Santiago">America/Santiago</option>
+		<option value="America/Santo_Domingo">America/Santo_Domingo</option>
+		<option value="America/Scoresbysund">America/Scoresbysund</option>
+		<option value="America/Tegucigalpa">America/Tegucigalpa</option>
+		<option value="America/Thule">America/Thule</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Africa">
+		<option value="Africa/Abidjan">Africa/Abidjan</option>
+		<option value="Africa/Algiers">Africa/Algiers</option>
+		<option value="Africa/Cairo">Africa/Cairo</option>
+		<option value="Africa/Casablanca">Africa/Casablanca</option>
+		<option value="Africa/El_Aaiun">Africa/El_Aaiun</option>
+		<option value="Africa/Johannesburg">Africa/Johannesburg</option>
+		<option value="Africa/Lagos">Africa/Lagos</option>
+		<option value="Africa/Maputo">Africa/Maputo</option>
+		<option value="Africa/Monrovia">Africa/Monrovia</option>
+		<option value="Africa/Nairobi">Africa/Nairobi</option>
+		<option value="Africa/Ndjamena">Africa/Ndjamena</option>
+		<option value="Africa/Sao_Tome">Africa/Sao_Tome</option>
+		<option value="Africa/Tripoli">Africa/Tripoli</option>
+		<option value="Africa/Tunis">Africa/Tunis</option>
+		<option value="Africa/Windhoek">Africa/Windhoek</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Russia">
+		<option value="Europe/Astrakhan">Europe/Astrakhan</option>
+		<option value="Europe/Kaliningrad">Europe/Kaliningrad</option>
+		<option value="Europe/Moscow">Europe/Moscow</option>
+		<option value="Europe/Ulyanovsk">Europe/Ulyanovsk</option>
+		<option value="Asia/Anadyr">Asia/Anadyr</option>
+		<option value="Asia/Barnaul">Asia/Barnaul</option>
+		<option value="Asia/Chita">Asia/Chita</option>
+		<option value="Asia/Irkutsk">Asia/Irkutsk</option>
+		<option value="Asia/Kamchatka">Asia/Kamchatka</option>
+		<option value="Asia/Khandyga">Asia/Khandyga</option>
+		<option value="Asia/Krasnoyarsk">Asia/Krasnoyarsk</option>
+		<option value="Asia/Magadan">Asia/Magadan</option>
+		<option value="Asia/Novosibirsk">Asia/Novosibirsk</option>
+		<option value="Asia/Omsk">Asia/Omsk</option>
+		<option value="Asia/Sakhalin">Asia/Sakhalin</option>
+		<option value="Asia/Tomsk">Asia/Tomsk</option>
+		<option value="Asia/Vladivostok">Asia/Vladivostok</option>
+		<option value="Asia/Yakutsk">Asia/Yakutsk</option>
+		<option value="Asia/Yekaterinburg">Asia/Yekaterinburg</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Australia">
+		<option value="Australia/Adelaide">Australia/Adelaide</option>
+		<option value="Australia/Brisbane">Australia/Brisbane</option>
+		<option value="Australia/Broken_Hill">Australia/Broken_Hill</option>
+		<option value="Australia/Darwin">Australia/Darwin</option>
+		<option value="Australia/Eucla">Australia/Eucla</option>
+		<option value="Australia/Hobart">Australia/Hobart</option>
+		<option value="Australia/Lindeman">Australia/Lindeman</option>
+		<option value="Australia/Lord_Howe">Australia/Lord_Howe</option>
+		<option value="Australia/Perth">Australia/Perth</option>
+		<option value="Australia/Sydney">Australia/Sydney</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Canada">
+		<option value="America/Dawson">America/Dawson</option>
+		<option value="America/Edmonton">America/Edmonton</option>
+		<option value="America/Fort_Nelson">America/Fort_Nelson</option>
+		<option value="America/Halifax">America/Halifax</option>
+		<option value="America/Inuvik">America/Inuvik</option>
+		<option value="America/Iqaluit">America/Iqaluit</option>
+		<option value="America/Regina">America/Regina</option>
+		<option value="America/St_Johns">America/St_Johns</option>
+		<option value="America/Toronto">America/Toronto</option>
+		<option value="America/Vancouver">America/Vancouver</option>
+		<option value="America/Whitehorse">America/Whitehorse</option>
+		<option value="America/Winnipeg">America/Winnipeg</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="United States">
+		<option value="America/Adak">America/Adak</option>
+		<option value="America/Anchorage">America/Anchorage</option>
+		<option value="America/Boise">America/Boise</option>
+		<option value="America/Chicago">America/Chicago</option>
+		<option value="America/Denver">America/Denver</option>
+		<option value="America/Detroit">America/Detroit</option>
+		<option value="America/Indiana/Indianapolis">America/Indiana/Indianapolis</option>
+		<option value="America/Kentucky/Louisville">America/Kentucky/Louisville</option>
+		<option value="America/Los_Angeles">America/Los_Angeles</option>
+		<option value="America/Menominee">America/Menominee</option>
+		<option value="America/New_York">America/New_York</option>
+		<option value="America/North_Dakota/Center">America/North_Dakota/Center</option>
+		<option value="America/Phoenix">America/Phoenix</option>
+		<option value="America/Puerto_Rico">America/Puerto_Rico</option>
+		<option value="America/Sitka">America/Sitka</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Mexico">
+		<option value="America/Bahia_Banderas">America/Bahia_Banderas</option>
+		<option value="America/Cancun">America/Cancun</option>
+		<option value="America/Chihuahua">America/Chihuahua</option>
+		<option value="America/Ciudad_Juarez">America/Ciudad_Juarez</option>
+		<option value="America/Hermosillo">America/Hermosillo</option>
+		<option value="America/Matamoros">America/Matamoros</option>
+		<option value="America/Mazatlan">America/Mazatlan</option>
+		<option value="America/Mexico_City">America/Mexico_City</option>
+		<option value="America/Ojinaga">America/Ojinaga</option>
+		<option value="America/Tijuana">America/Tijuana</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Brazil">
+		<option value="America/Araguaina">America/Araguaina</option>
+		<option value="America/Bahia">America/Bahia</option>
+		<option value="America/Belem">America/Belem</option>
+		<option value="America/Boa_Vista">America/Boa_Vista</option>
+		<option value="America/Campo_Grande">America/Campo_Grande</option>
+		<option value="America/Eirunepe">America/Eirunepe</option>
+		<option value="America/Fortaleza">America/Fortaleza</option>
+		<option value="America/Manaus">America/Manaus</option>
+		<option value="America/Porto_Velho">America/Porto_Velho</option>
+		<option value="America/Recife">America/Recife</option>
+		<option value="America/Rio_Branco">America/Rio_Branco</option>
+		<option value="America/Santarem">America/Santarem</option>
+		<option value="America/Sao_Paulo">America/Sao_Paulo</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Atlantic ocean">
+		<option value="Atlantic/Azores">Atlantic/Azores</option>
+		<option value="Atlantic/Bermuda">Atlantic/Bermuda</option>
+		<option value="Atlantic/Canary">Atlantic/Canary</option>
+		<option value="Atlantic/Cape_Verde">Atlantic/Cape_Verde</option>
+		<option value="Atlantic/Faroe">Atlantic/Faroe</option>
+		<option value="Atlantic/Madeira">Atlantic/Madeira</option>
+		<option value="Atlantic/South_Georgia">Atlantic/South_Georgia</option>
+		<option value="Atlantic/Stanley">Atlantic/Stanley</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Pacific ocean">
+		<option value="Pacific/Apia">Pacific/Apia</option>
+		<option value="Pacific/Auckland">Pacific/Auckland</option>
+		<option value="Pacific/Bougainville">Pacific/Bougainville</option>
+		<option value="Pacific/Chatham">Pacific/Chatham</option>
+		<option value="Pacific/Easter">Pacific/Easter</option>
+		<option value="Pacific/Efate">Pacific/Efate</option>
+		<option value="Pacific/Fakaofo">Pacific/Fakaofo</option>
+		<option value="Pacific/Fiji">Pacific/Fiji</option>
+		<option value="Pacific/Galapagos">Pacific/Galapagos</option>
+		<option value="Pacific/Gambier">Pacific/Gambier</option>
+		<option value="Pacific/Guadalcanal">Pacific/Guadalcanal</option>
+		<option value="Pacific/Guam">Pacific/Guam</option>
+		<option value="Pacific/Honolulu">Pacific/Honolulu</option>
+		<option value="Pacific/Kanton">Pacific/Kanton</option>
+		<option value="Pacific/Kiritimati">Pacific/Kiritimati</option>
+		<option value="Pacific/Kosrae">Pacific/Kosrae</option>
+		<option value="Pacific/Kwajalein">Pacific/Kwajalein</option>
+		<option value="Pacific/Marquesas">Pacific/Marquesas</option>
+		<option value="Pacific/Nauru">Pacific/Nauru</option>
+		<option value="Pacific/Niue">Pacific/Niue</option>
+		<option value="Pacific/Norfolk">Pacific/Norfolk</option>
+		<option value="Pacific/Noumea">Pacific/Noumea</option>
+		<option value="Pacific/Pago_Pago">Pacific/Pago_Pago</option>
+		<option value="Pacific/Palau">Pacific/Palau</option>
+		<option value="Pacific/Pitcairn">Pacific/Pitcairn</option>
+		<option value="Pacific/Port_Moresby">Pacific/Port_Moresby</option>
+		<option value="Pacific/Rarotonga">Pacific/Rarotonga</option>
+		<option value="Pacific/Tahiti">Pacific/Tahiti</option>
+		<option value="Pacific/Tarawa">Pacific/Tarawa</option>
+		<option value="Pacific/Tongatapu">Pacific/Tongatapu</option>
+	</optgroup>
+	<optgroup></optgroup>
+
+	<optgroup label="Indian ocean">
+		<option value="Indian/Chagos">Indian/Chagos</option>
+		<option value="Indian/Maldives">Indian/Maldives</option>
+		<option value="Indian/Mauritius">Indian/Mauritius</option>
+	</optgroup>
 </template>

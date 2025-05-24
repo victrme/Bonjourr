@@ -158,7 +158,7 @@
 	left: 50%;
 	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 	width: calc(var(--clock-size) * 0.2);
-	margin-left: calc(var(--clock-size) * -0.1);
+	/* margin-left: calc(var(--clock-size) * -0.1); */
 	border-radius: calc(var(--clock-size) * 0.2);
 	transform-origin: bottom center;
 	background-color: white;
@@ -546,9 +546,10 @@
 }
 
 .clock-date-secondary {
-    display: block;
-    font-size: smaller;
+	display: block;
+	font-size: smaller;
 }
+
 .clock-date-secondary::after {
-    content: '\200b';
+	content: '\200b';
 }

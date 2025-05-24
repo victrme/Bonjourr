@@ -1,85 +1,76 @@
-declare namespace Local {
-	type Storage = {
-		fonts?: FontList
-		fontface?: string
-		userQuoteSelection: number
-		quotesCache: Quotes.Item[]
-		translations?: Translations
-		lastWeather?: Weather.Local
-		operaExplained?: true
+import type { Background, Quote, SimpleWeather } from './shared.ts'
+import type { Sync } from './sync.ts'
 
-		// Sync
-		gistId?: string
-		gistToken?: string
-		distantUrl?: string
-		pastebinToken?: string
-		syncStorage?: Sync.Storage
-		syncType?: SyncType
+export type BackgroundUrlState = 'NONE' | 'LOADING' | 'OK' | 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE'
+export type SyncType = 'browser' | 'gist' | 'url' | 'off'
 
-		// Backgrounds
-		customCollection?: CustomCollection
-		daylightCollection?: DaylightCollection
-		backgroundPreloading?: true
-		backgroundLastChange?: string
-		localFiles?: LocalFiles
+export interface Local {
+	fonts?: FontListItem[]
+	fontface?: string
+	userQuoteSelection: number
+	quotesCache: Quote[]
+	translations?: Translations
+	lastWeather?: LastWeather
+	operaExplained?: true
 
-		// Unused - Old
-		unsplashCache: Unsplash.Local
-		selectedId: string
-		idsList: string[]
+	// Sync
+	gistId?: string
+	gistToken?: string
+	distantUrl?: string
+	pastebinToken?: string
+	syncStorage?: Sync
+	syncType?: SyncType
+
+	// Backgrounds
+	backgroundCollections: Record<string, Background[]>
+	backgroundUrls: Record<string, BackgroundUrl>
+	backgroundFiles: Record<string, BackgroundFile>
+	backgroundPreloading?: true
+	backgroundLastChange?: string
+	backgroundCompressFiles?: boolean
+}
+
+export interface LastWeather {
+	temp: number
+	forecasted_timestamp: number
+	forecasted_high: number
+	feels_like: number
+	sunrise: number
+	sunset: number
+	icon_id: string
+	description: string
+	timestamp: number
+	link: string
+	approximation?: {
+		ccode?: SimpleWeather['geo']['country']
+		city?: SimpleWeather['geo']['city']
+		lat: SimpleWeather['geo']['lat']
+		lon: SimpleWeather['geo']['lon']
 	}
+}
 
-	type SyncType = 'browser' | 'gist' | 'url' | 'off'
+export interface BackgroundUrl {
+	lastUsed: string
+	state: BackgroundUrlState
+}
 
-	type Translations = {
-		lang: string
-		[key: string]: string
+export interface BackgroundFile {
+	lastUsed: string
+	selected?: boolean
+	position: {
+		size: string
+		x: string
+		y: string
 	}
+}
 
-	type FontList = {
-		family: string
-		weights: string[]
-		variable: boolean
-	}[]
+export interface FontListItem {
+	family: string
+	weights: string[]
+	variable: boolean
+}
 
-	interface LocalFiles {
-		ids: string[]
-		selected: string
-	}
-
-	//
-
-	interface CustomCollection {
-		images: {
-			unsplash: Backgrounds.Image[]
-			pixabay: Backgrounds.Image[]
-		}
-		videos: {
-			pixabay: Backgrounds.Video[]
-		}
-	}
-
-	interface DaylightCollection {
-		images: {
-			unsplash: DaylightImages
-			pixabay: DaylightImages
-		}
-		videos: {
-			pixabay: DaylightVideos
-		}
-	}
-
-	interface DaylightImages {
-		night: Backgrounds.Image[]
-		noon: Backgrounds.Image[]
-		day: Backgrounds.Image[]
-		evening: Backgrounds.Image[]
-	}
-
-	interface DaylightVideos {
-		night: Backgrounds.Video[]
-		noon: Backgrounds.Video[]
-		day: Backgrounds.Video[]
-		evening: Backgrounds.Video[]
-	}
+export type Translations = {
+	lang: string
+	[key: string]: string
 }

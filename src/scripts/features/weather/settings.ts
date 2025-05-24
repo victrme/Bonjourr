@@ -1,13 +1,15 @@
-import storage from '../../storage'
-import debounce from '../../utils/debounce'
-import networkForm from '../../utils/networkform'
-import { tradThis } from '../../utils/translations'
-import onSettingsLoad from '../../utils/onsettingsload'
-import { stringMaxSize } from '../../utils'
+import { getGeolocation, requestNewWeather, weatherCacheControl } from './request.ts'
+import { onSettingsLoad } from '../../utils/onsettingsload.ts'
+import { displayWeather } from './display.ts'
+import { stringMaxSize } from '../../shared/generic.ts'
+import { networkForm } from '../../shared/form.ts'
+import { debounce } from '../../utils/debounce.ts'
+import { tradThis } from '../../utils/translations.ts'
+import { storage } from '../../storage.ts'
 
-import { weatherCacheControl, requestNewWeather, getGeolocation } from './request'
-import type { Weather, WeatherUpdate, MeteoGeo, LastWeather } from './index'
-import { displayWeather } from './display'
+import type { MeteoGeo, WeatherUpdate } from './index.ts'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Weather } from '../../../types/sync.ts'
 
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')
@@ -18,7 +20,7 @@ export async function weatherUpdate(update: WeatherUpdate) {
 	const { weather, hide } = await storage.sync.get(['weather', 'hide'])
 	let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
-	if (!weather || !hide) {
+	if (!(weather && hide)) {
 		return
 	}
 
@@ -79,8 +81,8 @@ export async function weatherUpdate(update: WeatherUpdate) {
 }
 
 async function updateManualLocation(weather: Weather, lastWeather?: LastWeather) {
-	const i_city = document.getElementById('i_city') as HTMLInputElement
-	let city = i_city.value
+	const iCity = document.getElementById('i_city') as HTMLInputElement
+	let city = iCity.value
 
 	removeLocationSuggestions()
 
@@ -97,7 +99,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	locationForm.load()
 
 	const currentWeather = { ...weather, city }
-	let newWeather: Weather.Local | undefined = undefined
+	let newWeather: LastWeather | undefined
 
 	try {
 		newWeather = await requestNewWeather(currentWeather, lastWeather)
@@ -112,14 +114,13 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 	}
 
 	if (newWeather) {
-		lastWeather = newWeather
 		weather.city = city ?? 'Paris'
 		locationForm.accept('i_city', weather.city)
 
 		storage.sync.set({ weather })
 		storage.local.set({ lastWeather })
 
-		displayWeather(weather, lastWeather)
+		displayWeather(weather, newWeather)
 	}
 }
 
@@ -138,26 +139,26 @@ async function updateGeolocation(geol: string, weather: Weather, lastWeather?: L
 		weather.geolocation = geol
 	}
 
-	lastWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
+	const newWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
 
 	geolForm.accept()
 	handleGeolOption(weather)
 
 	storage.sync.set({ weather })
 
-	if (lastWeather) {
+	if (newWeather) {
 		storage.local.set({ lastWeather })
-		displayWeather(weather, lastWeather)
+		displayWeather(weather, newWeather)
 	}
 }
 
 export function handleGeolOption(data: Weather) {
-	const i_city = document.querySelector<HTMLInputElement>('#i_city')
-	const i_geol = document.querySelector<HTMLInputElement>('#i_geol')
+	const iCity = document.querySelector<HTMLInputElement>('#i_city')
+	const iGeol = document.querySelector<HTMLInputElement>('#i_geol')
 
-	if (i_city && i_geol) {
-		i_geol.value = data?.geolocation ?? false
-		i_city.setAttribute('placeholder', data.city ?? 'Paris')
+	if (iCity && iGeol) {
+		iGeol.value = data?.geolocation ?? false
+		iCity.setAttribute('placeholder', data.city ?? 'Paris')
 		document.getElementById('location_options')?.classList.toggle('shown', data.geolocation === 'off')
 	}
 }
@@ -165,30 +166,33 @@ export function handleGeolOption(data: Weather) {
 // Location suggestions
 
 function updateSuggestions(updateEvent: Event) {
-	const f_location = document.querySelector<HTMLFormElement>('#f_location')
-	const i_city = document.querySelector<HTMLInputElement>('#i_city')
+	const fLocation = document.querySelector<HTMLFormElement>('#f_location')
+	const iCity = document.querySelector<HTMLInputElement>('#i_city')
 	const event = updateEvent as InputEvent
 
-	if (!f_location || !i_city) {
+	if (!(fLocation && iCity)) {
 		return
 	}
 
 	if (event.data !== undefined) {
-		f_location?.classList.toggle('valid', i_city.value.length > 2)
+		fLocation?.classList.toggle('valid', iCity.value.length > 2)
 		removeLocationSuggestions()
 		suggestionsDebounce()
 	}
 }
 
 function removeLocationSuggestions() {
-	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
-	dl_cityfound?.childNodes.forEach((node) => node.remove())
+	const datalist = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+	const nodelist = datalist?.children ?? []
+	for (const node of nodelist) {
+		node.remove()
+	}
 }
 
 async function fillLocationSuggestions() {
-	const dl_cityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
-	const i_city = document.getElementById('i_city') as HTMLInputElement
-	const city = i_city.value
+	const dlCityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
+	const iCity = document.getElementById('i_city') as HTMLInputElement
+	const city = iCity.value
 
 	if (city === '') {
 		removeLocationSuggestions()
@@ -213,7 +217,7 @@ async function fillLocationSuggestions() {
 			const option = document.createElement('option')
 			option.value = detail
 			option.textContent = detail
-			dl_cityfound?.appendChild(option)
+			dlCityfound?.appendChild(option)
 		}
 	} catch (_error) {
 		// ...
@@ -222,27 +226,27 @@ async function fillLocationSuggestions() {
 
 // Type check
 
-function isUnits(str = ''): str is Weather.Unit {
-	const units: Weather.Unit[] = ['metric', 'imperial']
-	return units.includes(str as Weather.Unit)
+function isUnits(str = ''): str is Weather['unit'] {
+	const units: Weather['unit'][] = ['metric', 'imperial']
+	return units.includes(str as Weather['unit'])
 }
 
-function isForecast(str = ''): str is Weather.Forecast {
-	const forecasts: Weather.Forecast[] = ['auto', 'always', 'never']
-	return forecasts.includes(str as Weather.Forecast)
+function isForecast(str = ''): str is Weather['forecast'] {
+	const forecasts: Weather['forecast'][] = ['auto', 'always', 'never']
+	return forecasts.includes(str as Weather['forecast'])
 }
 
-function isMoreinfo(str = ''): str is Weather.MoreInfo {
-	const moreinfos: Weather.MoreInfo[] = ['none', 'msnw', 'yhw', 'windy', 'accu', 'custom']
-	return moreinfos.includes(str as Weather.MoreInfo)
+function isMoreinfo(str = ''): str is Weather['moreinfo'] {
+	const moreinfos: Weather['moreinfo'][] = ['none', 'msnw', 'yhw', 'windy', 'accu', 'custom']
+	return moreinfos.includes(str as Weather['moreinfo'])
 }
 
-function isTemperature(str = ''): str is Weather.Temperature {
-	const temps: Weather.Temperature[] = ['actual', 'feelslike', 'both']
-	return temps.includes(str as Weather.Temperature)
+function isTemperature(str = ''): str is Weather['temperature'] {
+	const temps: Weather['temperature'][] = ['actual', 'feelslike', 'both']
+	return temps.includes(str as Weather['temperature'])
 }
 
-function isGeolocation(str = ''): str is Weather.Geolocation {
-	const geol: Weather.Geolocation[] = ['precise', 'approximate', 'off']
-	return geol.includes(str as Weather.Geolocation)
+function isGeolocation(str = ''): str is Weather['geolocation'] {
+	const geol: Weather['geolocation'][] = ['precise', 'approximate', 'off']
+	return geol.includes(str as Weather['geolocation'])
 }

@@ -1,7 +1,7 @@
 // Uses ISO 639
 // https://wikipedia.org/wiki/List_of_ISO_639_language_codes
 
-export default {
+export const langList = {
 	en: 'English',
 	fr: 'Français',
 	de: 'Deutsch',
@@ -24,6 +24,7 @@ export default {
 	el: 'Ελληνικά',
 	sr: 'Српски (ћирилица)',
 	'sr-YU': 'Srpski (latinica)',
+	be: 'Беларуская',
 	uk: 'Українська',
 	ru: 'Русский',
 	tr: 'Türkçe',
@@ -39,6 +40,7 @@ export default {
 	'nan-Hant-TW': '臺灣台語（漢羅）',
 	ko: '한국어',
 	ja: '日本語',
+	te: 'తెలుగు',
 }
 
 // uses basic latin characters if not included
@@ -49,6 +51,7 @@ export const subsets = {
 	ru: 'cyrillic',
 	uk: 'cyrillic',
 	sr: 'cyrillic',
+	be: 'cyrillic',
 	sk: 'latin-ext',
 	hr: 'latin-ext',
 	cs: 'latin-ext',
@@ -57,9 +60,10 @@ export const subsets = {
 	tr: 'latin-ext',
 	hu: 'latin-ext',
 	vi: 'latin-ext',
-  az: 'latin-ext', 
+	az: 'latin-ext',
 	ja: 'japanese',
 	hy: 'armenian',
+	te: 'telugu',
 	'zh-CN': 'chinese-simplified',
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',

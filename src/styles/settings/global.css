@@ -21,6 +21,10 @@ aside {
 	transition: transform 0.33s, background-color 0.33s;
 }
 
+aside.hidden {
+	display: none;
+}
+
 aside.shown {
 	-webkit-transform: translateX(-100%);
 	transform: translateX(-100%);

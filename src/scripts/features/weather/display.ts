@@ -1,10 +1,9 @@
-import { LastWeather, getSunsetHour } from './index'
-import { getLang, tradThis } from '../../utils/translations'
-import { minutator } from '../../utils'
-import userDate from '../../utils/userdate'
-import suntime from '../../utils/suntime'
+import { minutator, suntime, userDate } from '../../shared/time.ts'
+import { getLang, tradThis } from '../../utils/translations.ts'
+import { getSunsetHour } from './index.ts'
 
-import type { Weather } from '.'
+import type { LastWeather } from '../../../types/local.ts'
+import type { Weather } from '../../../types/sync.ts'
 
 let weatherFirstStart = true
 
@@ -47,7 +46,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 	}
 
 	const handleWidget = () => {
-		let condition = lastWeather.icon_id
+		const condition = lastWeather.icon_id
 
 		if (!tempContainer) {
 			return
@@ -67,13 +66,15 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 		const day = date.getHours() > getSunsetHour() ? 'tomorrow' : 'today'
 		let string = ''
 
-		if (day === 'today') string = tradThis('with a high of <temp1>° today')
+		if (day === 'today') {
+			string = tradThis('with a high of <temp1>° today')
+		}
 		if (day === 'tomorrow') {
 			string = tradThis('with a high of <temp1>° tomorrow')
 		}
 
 		string = string.replace('<temp1>', lastWeather.forecasted_high.toString())
-		string = string + dot
+		string += dot
 
 		if (forecastdom) {
 			forecastdom.textContent = string
@@ -89,7 +90,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 			return
 		}
 
-		const URLs = {
+		const urLs = {
 			accu: lastWeather.link ?? 'https://www.accuweather.com/',
 			msnw: tradThis('https://www.msn.com/en-xl/weather/forecast/'),
 			yhw: 'https://www.yahoo.com/news/weather/',
@@ -97,8 +98,8 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
 			custom: data.provider ?? '',
 		}
 
-		if ((data.moreinfo || '') in URLs) {
-			weatherdom?.setAttribute('href', URLs[data.moreinfo as keyof typeof URLs])
+		if ((data.moreinfo || '') in urLs) {
+			weatherdom?.setAttribute('href', urLs[data.moreinfo as keyof typeof urLs])
 		}
 	}
 

@@ -1,10 +1,14 @@
-import { apiWebSocket, hexColorFromSplitRange, opacityFromHex, stringMaxSize } from '../utils'
-import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults'
-import { getLang, tradThis } from '../utils/translations'
-import { eventDebounce } from '../utils/debounce'
-import errorMessage from '../utils/errormessage'
-import storage from '../storage'
-import parse from '../utils/parse'
+import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults.ts'
+import { opacityFromHex, stringMaxSize } from '../shared/generic.ts'
+import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { eventDebounce } from '../utils/debounce.ts'
+import { apiWebSocket } from '../shared/api.ts'
+import { storage } from '../storage.ts'
+import { parse } from '../utils/parse.ts'
+
+import type { SearchEngines } from '../../types/shared.ts'
+import type { Searchbar } from '../../types/sync.ts'
 
 type SearchbarUpdate = {
 	engine?: string
@@ -25,6 +29,7 @@ type Suggestions = {
 type UndefinedElement = Element | undefined | null
 
 let socket: WebSocket | undefined
+const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -38,13 +43,16 @@ const setRequest = (value = '') => domcontainer?.setAttribute('data-request', st
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
 const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
-const setWidth = (value = 30) => document.documentElement.style.setProperty('--searchbar-width', value.toString() + 'em')
+const setWidth = (value = 30) =>
+	document.documentElement.style.setProperty('--searchbar-width', `${value.toString()}em`)
 const setBackground = (value = '#fff2') => {
 	document.documentElement.style.setProperty('--searchbar-background', value)
-	document.getElementById('sb_container')?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
+	document
+		.getElementById('sb_container')
+		?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
-export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdate) {
+export function searchbar(init?: Searchbar, update?: SearchbarUpdate) {
 	if (update) {
 		updateSearchbar(update)
 		return
@@ -65,12 +73,20 @@ export default function searchbar(init?: Sync.Searchbar, update?: SearchbarUpdat
 		domcontainer?.addEventListener('submit', submitSearch)
 		domsearchbar?.addEventListener('input', handleUserInput)
 		document.addEventListener('keydown', searchbarShortcut)
-	} catch (e) {
-		errorMessage(e)
+	} catch (_) {
+		//...
 	}
 }
 
-async function updateSearchbar({ engine, newtab, background, placeholder, request, suggestions, width }: SearchbarUpdate) {
+async function updateSearchbar({
+	engine,
+	newtab,
+	background,
+	placeholder,
+	request,
+	suggestions,
+	width,
+}: SearchbarUpdate) {
 	const { searchbar } = await storage.sync.get('searchbar')
 
 	if (!searchbar) {
@@ -94,7 +110,7 @@ async function updateSearchbar({ engine, newtab, background, placeholder, reques
 	}
 
 	if (width !== undefined) {
-		searchbar.width = parseInt(width)
+		searchbar.width = Number.parseInt(width)
 		setWidth(searchbar.width)
 	}
 
@@ -125,18 +141,18 @@ async function updateSearchbar({ engine, newtab, background, placeholder, reques
 //	Search Submission
 //
 
-function isValidURL(string: string): boolean {
+function isValidUrl(string: string): boolean {
 	try {
-		const url = new URL(string.startsWith('http') ? string : 'https://' + string)
-		const domainPattern = /^(?:\w(?:[\w-]*\.)+[\w-]+)(?::\d+)?(?:\/[^/?#]+)?\/?$/
-		return domainPattern.test(url.host)
+		const basicURL = !!new URL(string)
+		const regexMatch = domainPattern.test(string)
+		return basicURL && regexMatch
 	} catch (_) {
 		return false
 	}
 }
 
-function createSearchURL(val: string, engine: string): string {
-	const URLs: Record<SearchEngines, string> = {
+function createSearchUrl(val: string, engine: string): string {
+	const urLs: Record<SearchEngines, string> = {
 		default: '',
 		google: 'https://www.google.com/search?udm=14&q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
@@ -151,14 +167,14 @@ function createSearchURL(val: string, engine: string): string {
 		custom: domcontainer?.dataset.request || '',
 	}
 
-	let searchURL = ''
+	let searchUrl = ''
 
 	if (isValidEngine(engine)) {
 		const trad = tradThis(engine)
-		searchURL = trad.includes('%s') ? trad : URLs[engine]
+		searchUrl = trad.includes('%s') ? trad : urLs[engine]
 	}
 
-	return searchURL.replace('%s', encodeURIComponent(val ?? ''))
+	return searchUrl.replace('%s', encodeURIComponent(val ?? ''))
 }
 
 function submitSearch(e: Event) {
@@ -187,12 +203,13 @@ function submitSearch(e: Event) {
 
 	engine = engine.replace('default', 'google')
 
-	const domainURL = val.startsWith('http') ? val : 'https://' + val
-	const searchURL = createSearchURL(val, engine)
-	const url = isValidURL(val) ? domainURL : searchURL
+	const hasProtocol = val.startsWith('http://') || val.startsWith('https://')
+	const domainUrl = hasProtocol ? val : `https://${val}`
+	const searchUrl = createSearchUrl(val, engine)
+	const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
 	const target = newtab ? '_blank' : '_self'
 
-	window.open(url, target)
+	globalThis.open(url, target)
 	return
 }
 
@@ -206,7 +223,10 @@ function initSuggestions() {
 	}
 
 	function applyResultContentToInput(elem: UndefinedElement) {
-		if (!elem || !domsearchbar) return
+		if (!(elem && domsearchbar)) {
+			return
+		}
+
 		domsearchbar.value = elem?.querySelector('.suggest-result')?.textContent ?? ''
 	}
 
@@ -272,7 +292,8 @@ function initSuggestions() {
 		}
 
 		if (isArrowDown) {
-			lastSelected = selectShownResult(lastSelected?.nextElementSibling) ?? domsuggestions?.querySelector('li.shown')
+			lastSelected = selectShownResult(lastSelected?.nextElementSibling) ??
+				domsuggestions?.querySelector('li.shown')
 			applyResultContentToInput(lastSelected)
 		}
 
@@ -292,14 +313,16 @@ function initSuggestions() {
 
 	function hideResultsAndSuggestions() {
 		const children = Object.values(domsuggestions?.children ?? [])
-		children.forEach((child) => child.classList.remove('shown'))
+		for (const child of children) {
+			child.classList.remove('shown')
+		}
 		domsuggestions?.classList.remove('shown')
 	}
 
 	async function createSuggestionSocket() {
 		socket = await apiWebSocket('suggestions')
 
-		socket?.addEventListener('message', function (event: MessageEvent) {
+		socket?.addEventListener('message', (event: MessageEvent) => {
 			const data = parse<Suggestions | { error: string }>(event.data)
 
 			if (Array.isArray(data)) {
@@ -327,14 +350,20 @@ function suggestions(results: Suggestions) {
 
 	liList.forEach((li, i) => {
 		const result = results[i]
-		if (!result) return
+		const resultdom = li.querySelector('.suggest-result')
+		const descdom = li.querySelector('.suggest-desc')
+
+		if (!(result && resultdom && descdom)) {
+			return
+		}
 
 		const searchIcon = 'src/assets/interface/magnifying-glass.svg'
 		const image = result.image ?? searchIcon
 		const desc = result.desc ?? ''
 
-		const resultdom = li.querySelector('.suggest-result')
-		resultdom!.textContent = result.text
+		if (resultdom) {
+			resultdom.textContent = result.text
+		}
 
 		if (result.text.includes(input.value)) {
 			const queryIndex = result.text.indexOf(input.value)
@@ -346,23 +375,23 @@ function suggestions(results: Suggestions) {
 			querydom.textContent = result.text.slice(queryIndex, input.value.length)
 			enddom.textContent = result.text.slice(input.value.length)
 
-			resultdom!.textContent = ''
-			resultdom?.appendChild(startdom)
-			resultdom?.appendChild(querydom)
-			resultdom?.appendChild(enddom)
+			resultdom.textContent = ''
+			resultdom.appendChild(startdom)
+			resultdom.appendChild(querydom)
+			resultdom.appendChild(enddom)
 		}
 
 		const imgdom = li.querySelector('img') as HTMLImageElement
 		imgdom.classList.toggle('default-search-icon', image === searchIcon)
 		imgdom.src = image
 
-		li.querySelector('.suggest-desc')!.textContent = desc
+		descdom.textContent = desc
 		li.classList.toggle('shown', !!result)
 
 		// This cuts results short if it overflows the interface
 		const rect = li.getBoundingClientRect()
-		const y_limit = rect.y + rect.height + 40 // 40 is arbitrary padding in px
-		const isOverflowing = y_limit > document.body.offsetHeight
+		const yLimit = rect.y + rect.height + 40 // 40 is arbitrary padding in px
+		const isOverflowing = yLimit > document.body.offsetHeight
 
 		if (isOverflowing) {
 			li.classList.remove('shown')
@@ -380,7 +409,9 @@ function suggestions(results: Suggestions) {
 
 function handleUserInput(e: Event) {
 	const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
-	const startsTypingProtocol = 'https://'.startsWith(value) || value.match(/https?:\/?\/?/i)
+	const hasProtocol = value.startsWith('http://') || value.startsWith('https://')
+	const withProtocol = hasProtocol ? value : `https://${value}`
+	const startsTypingProtocol = 'https://'.startsWith(value) || 'http://'.startsWith(value)
 
 	// Button display toggle
 	if (domsearchbar) {
@@ -388,12 +419,14 @@ function handleUserInput(e: Event) {
 	}
 
 	if (value === '') {
-		document.querySelectorAll('#sb-suggestions li.shown')?.forEach((li) => li.classList.remove('shown'))
+		for (const li of document.querySelectorAll('#sb-suggestions li.shown') ?? []) {
+			li.classList.remove('shown')
+		}
 		domsuggestions?.classList.remove('shown')
 		return
 	}
 
-	if (startsTypingProtocol || isValidURL(value)) {
+	if (startsTypingProtocol || isValidUrl(withProtocol)) {
 		domsuggestions?.classList.remove('shown')
 		return
 	}

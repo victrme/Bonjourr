@@ -1,12 +1,14 @@
-import { getLang, tradThis } from '../utils/translations'
-import { BROWSER } from '../defaults'
-import storage from '../storage'
+import { getLang, tradThis } from '../utils/translations.ts'
+import { BROWSER } from '../defaults.ts'
+import { storage } from '../storage.ts'
+
+import type { Sync } from '../../types/sync.ts'
 
 type PopupInit = {
 	old?: string
 	new: string
 	review: number
-	announce: Sync.Storage['announcements']
+	announce: Sync['announcements']
 }
 
 type PopupUpdate = {
@@ -58,16 +60,18 @@ const ANNOUNCEMENT_TRNS = {
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 const REVIEW_URLS = {
-	chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
-	opera: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+	chrome:
+		'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+	opera:
+		'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
 	firefox: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/',
 	safari: 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236',
 	edge: 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid',
 	other: 'https://bonjourr.fr/help#%EF%B8%8F-reviews',
 }
 
-export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
-	if (event?.announcements) {
+export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
+	if (isAnnouncement(event?.announcements)) {
 		storage.sync.set({ announcements: event?.announcements })
 		return
 	}
@@ -79,7 +83,7 @@ export default function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 	}
 
 	if (init.old && (init.review === -1 || init.review > 30)) {
-		const major = (s: string) => parseInt(s.split('.')[0])
+		const major = (s: string) => Number.parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
 		const isNewVersion = init.new !== init.old && init.new === ANNOUNCEMENT_VERSION
 
@@ -128,7 +132,7 @@ function displayPopup(type: 'review' | 'announce') {
 	if (type === 'announce') {
 		const lang = getLang() as keyof typeof ANNOUNCEMENT_TRNS
 		const description = ANNOUNCEMENT_TRNS[lang] ?? ANNOUNCEMENT_TRNS.en
-		const buttontext = tradThis('Read the release notes') + ' 📝'
+		const buttontext = `${tradThis('Read the release notes')} 📝`
 		desc.innerHTML = description
 		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, buttontext))
 	}
@@ -167,4 +171,8 @@ function closePopup() {
 	setTimeout(() => document.getElementById('credit-container')?.removeAttribute('style'), 600)
 	document.getElementById('popup')?.classList.remove('shown')
 	removePopupTrigger()
+}
+
+function isAnnouncement(str = ''): str is Sync['announcements'] {
+	return ['all', 'major', 'off'].includes(str)
 }
