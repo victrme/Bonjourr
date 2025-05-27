@@ -1,4 +1,5 @@
 .move-overlay {
+	position: relative;
 	border: none;
 	border-radius: 1em;
 	background-color: #fff2;
@@ -66,6 +67,61 @@
 	box-shadow: 5px 5px 20px #2224;
 	direction: ltr;
 	z-index: 4;
+	display: none;
+}
+
+.move-overlay ul {
+	padding: 0;
+	margin: 0;
+}
+
+.move-overlay-grid {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.move-overlay-grid li {
+	position: absolute;
+}
+
+.move-overlay ul li button {
+	color: white;
+	width: 100%;
+	height: 100%;
+	padding: 1em;
+	margin: 1em;
+	border-radius: 0.5em;
+	background-color: transparent;
+
+	&:hover {
+		background-color: #fff2;
+	}
+}
+
+.move-overlay-grid li:nth-child(1) {
+	left: 0;
+	right: 0;
+	top: -1em;
+}
+.move-overlay-grid li:nth-child(2) {
+	top: 0;
+	bottom: 0;
+	left: -1em;
+}
+.move-overlay-grid li:nth-child(3) {
+	top: 0;
+	bottom: 0;
+	right: -1em;
+}
+.move-overlay-grid li:nth-child(4) {
+	left: 0;
+	right: 0;
+	bottom: -1em;
+}
+
+input[name='move-align-vertical'] {
+	writing-mode: vertical-lr;
 }
 
 #element-mover.hidden {
@@ -113,47 +169,8 @@ button.grid-spanner {
 	background-color: var(--color-dialog-highlight);
 }
 
-button.grid-spanner:hover:not(:disabled) {
-	color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
-}
-
-button.grid-spanner.selected:not(:disabled) {
-	color: var(--color-blue);
-	border-color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.25);
-}
-
 #grid-selection {
 	display: none;
-}
-
-<<<<<<< HEAD
-=======
-#grid-mover {
-	max-width: 85px;
-	margin: auto;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr 1fr 1fr;
-}
-
-#grid-mover button {
-	min-width: 3em;
-	margin: 0;
-	padding: 0;
-}
-#grid-mover button:first-of-type,
-#grid-mover button:last-of-type {
-	grid-column: 1 / 3;
-}
-
->>>>>>> master
-#grid-spanner-container {
-	display: none;
-}
-
-#grid-spanner-container.active {
-	display: block;
 }
 
 #text-alignment-mover {
@@ -187,16 +204,6 @@ button i::after {
 	box-sizing: border-box;
 	position: absolute;
 	display: block;
-}
-
-.rotate-half {
-	transform: rotate(180deg);
-}
-.rotate-quart {
-	transform: rotate(90deg);
-}
-.rotate-quart-r {
-	transform: rotate(-90deg);
 }
 
 i.text-left,

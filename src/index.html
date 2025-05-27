@@ -414,6 +414,25 @@
 		</div>
 
 		<div id="templates">
+			<template id="move-overlay-template">
+				<div class="move-overlay">
+					<ul class="move-overlay-grid" aria-label="Widget grid move options">
+						<li><button id="move-grid-top">↑</button></li>
+						<li><button id="move-grid-left">←</button></li>
+						<li><button id="move-grid-right">→</button></li>
+						<li><button id="move-grid-bottom">↓</button></li>
+					</ul>
+					<ul class="move-overlay-align" aria-label="Widget grid alignment options">
+						<li>
+							<input type="range" name="move-align-vertical" min="0" max="2" step="1" value="1" />
+						</li>
+						<li>
+							<input type="range" name="move-align-horizontal" min="0" max="2" step="1" value="1" />
+						</li>
+					</ul>
+				</div>
+			</template>
+
 			<template id="bookmarks-dialog-template">
 				<dialog id="bookmarks">
 					<div id="bookmarks-header">
