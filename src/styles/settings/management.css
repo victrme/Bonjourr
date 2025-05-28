@@ -34,6 +34,7 @@
 	border-radius: 10px;
 	color: var(--color-text);
 	background-color: var(--color-areas);
+	transition: min-height 0.1s ease;
 }
 
 [data-system='mac'] #settings-data {

@@ -15,11 +15,11 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v20.4.0'
-const ANNOUNCEMENT_VERSION = '20.4.0'
+const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v21.0.0'
+const ANNOUNCEMENT_VERSION = '21.0.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: '<b>Version 20.4 ✨</b> New supporters notification, Gist synchronisation improvements and small interaction fixes!',
+	en: '<b>Bonjourr just got a major update! ✨</b> Learn all about the new features: video backgrounds, texture overlays, background search and more.',
 	fr: "<b>Version 20.4 ✨</b> Nouvelle notification pour les supporters, améliorations de la synchronisation Gist et petites corrections d'interaction !",
 	de: '<b>Version 20.4 ✨</b> Neue Unterstützer-Benachrichtigung, Gist-Synchronisationsverbesserungen und kleine Interaktionskorrekturen!',
 	it: '<b>Versione 20.4 ✨</b> Nuova notifica per i sostenitori, miglioramenti alla sincronizzazione Gist e piccole correzioni di interazione!',
@@ -60,10 +60,8 @@ const ANNOUNCEMENT_TRNS = {
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 const REVIEW_URLS = {
-	chrome:
-		'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
-	opera:
-		'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+	chrome: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
+	opera: 'https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd/reviews',
 	firefox: 'https://addons.mozilla.org/en-US/firefox/addon/bonjourr-startpage/',
 	safari: 'https://apps.apple.com/fr/app/bonjourr-startpage/id1615431236',
 	edge: 'https://microsoftedge.microsoft.com/addons/detail/bonjourr/dehmmlejmefjphdeoagelkpaoolicmid',
@@ -93,7 +91,7 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 
 		if (canAnnounce) {
 			localStorage.hasUpdated = 'true'
-			displayPopup('announce')
+			displayPopup('announce', true)
 			return
 		}
 	}
@@ -111,7 +109,7 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 	}
 }
 
-function displayPopup(type: 'review' | 'announce') {
+function displayPopup(type: 'review' | 'announce', showIcon: boolean = false) {
 	const template = document.getElementById('popup-template') as HTMLTemplateElement
 	const doc = document.importNode(template.content, true)
 	const popup = doc.getElementById('popup')
@@ -132,7 +130,7 @@ function displayPopup(type: 'review' | 'announce') {
 	if (type === 'announce') {
 		const lang = getLang() as keyof typeof ANNOUNCEMENT_TRNS
 		const description = ANNOUNCEMENT_TRNS[lang] ?? ANNOUNCEMENT_TRNS.en
-		const buttontext = `${tradThis('Read the release notes')} 📝`
+		const buttontext = `${tradThis('Read the blog post')} 📝`
 		desc.innerHTML = description
 		buttons.appendChild(createPopupButton(ANNOUNCEMENT_URL, buttontext))
 	}
@@ -140,6 +138,7 @@ function displayPopup(type: 'review' | 'announce') {
 	close?.addEventListener('click', closePopup)
 	document.body.appendChild(popup)
 	popup.classList.add(type)
+	popup.classList.toggle('withIcon', showIcon)
 	openPopup()
 }
 
