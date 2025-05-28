@@ -110,7 +110,7 @@ export function updateCredits(image?: Background) {
 	domspacer.textContent = hasLocation ? ' - ' : ' '
 	domrest.textContent = rest
 
-	domlocation.href = `${image.urls.full}?utm_source=Bonjourr&utm_medium=referral`
+	domlocation.href = `${image.page}?utm_source=Bonjourr&utm_medium=referral`
 	domartist.href = `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`
 
 	domcredit.textContent = ''
