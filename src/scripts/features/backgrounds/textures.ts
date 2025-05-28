@@ -242,6 +242,22 @@ export const TEXTURE_RANGES: Record<Backgrounds['texture']['type'], TextureRange
 		color: '#ffffff',
 	},
 
+	ticTacToe: {
+		opacity: {
+			min: '0.1',
+			max: '1.0',
+			step: '0.05',
+			value: '0.2',
+		},
+		size: {
+			min: '50',
+			max: '400',
+			step: '1',
+			value: '100',
+		},
+		color: '#ffffff',
+	},
+
 	endlessClouds: {
 		opacity: {
 			min: '0.1',

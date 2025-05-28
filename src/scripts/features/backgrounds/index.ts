@@ -1111,6 +1111,7 @@ function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['t
 		'diagonalLines',
 		'aztec',
 		'circuitBoard',
+		'ticTacToe',
 		'endlessClouds',
 		'vectorGrain',
 		'waves',

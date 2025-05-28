@@ -94,6 +94,7 @@ export interface Backgrounds {
 			| 'diagonalLines'
 			| 'aztec'
 			| 'circuitBoard'
+			| 'ticTacToe'
 			| 'endlessClouds'
 			| 'vectorGrain'
 			| 'waves'

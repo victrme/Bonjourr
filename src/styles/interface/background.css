@@ -277,6 +277,19 @@ body.init #background-media > div video {
 	-webkit-mask-size: var(--texture-size);
 }
 
+#background-wrapper[data-texture='ticTacToe'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/tic-tac-toe.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/tic-tac-toe.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
 #background-wrapper[data-texture='endlessClouds'] #background-texture {
 	background-color: var(--texture-color);
 	opacity: var(--texture-opacity);
