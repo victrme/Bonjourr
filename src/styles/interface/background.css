@@ -78,20 +78,255 @@ body.init #background-media > div video {
 #background-wrapper[data-texture='grain'] #background-texture {
 	opacity: var(--texture-opacity);
 	background-size: var(--texture-size);
-	background-image: url('../../assets/interface/grain.png');
+	background-image: url('../../assets/interface/patterns/grain.png');
 	background-repeat: repeat;
 }
 
-#background-wrapper[data-texture='dots'] #background-texture {
+#background-wrapper[data-texture='verticalDots'] #background-texture {
 	opacity: var(--texture-opacity);
 	background-size: var(--texture-size) var(--texture-size);
-	background-image: radial-gradient(white 1px, transparent 0);
+	background-image: radial-gradient(var(--texture-color) 1.25px, transparent 0);
+}
+
+#background-wrapper[data-texture='diagonalDots'] #background-texture {
+	opacity: var(--texture-opacity);
+	background-image: radial-gradient(var(--texture-color) 1.25px, transparent 1.25px),
+		radial-gradient(var(--texture-color) 1.25px, transparent 1.25px);
+	background-size: var(--texture-size) var(--texture-size);
+	background-position: 0 0, calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
+}
+
+#background-wrapper[data-texture='checkerboard'] #background-texture {
+	opacity: var(--texture-opacity);
+	background-image: repeating-linear-gradient(
+			45deg,
+			var(--texture-color) 25%,
+			transparent 25%,
+			transparent 75%,
+			var(--texture-color) 75%,
+			var(--texture-color)
+		),
+		repeating-linear-gradient(
+			45deg,
+			var(--texture-color) 25%,
+			transparent 25%,
+			transparent 75%,
+			var(--texture-color) 75%,
+			var(--texture-color)
+		);
+	background-position: 0 0, calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
+	background-size: var(--texture-size) var(--texture-size);
+}
+
+#background-wrapper[data-texture='isometric'] #background-texture {
+	opacity: var(--texture-opacity);
+	background-image: linear-gradient(
+			30deg,
+			var(--texture-color) 12%,
+			transparent 12.5%,
+			transparent 87%,
+			var(--texture-color) 87.5%,
+			var(--texture-color)
+		),
+		linear-gradient(
+			150deg,
+			var(--texture-color) 12%,
+			transparent 12.5%,
+			transparent 87%,
+			var(--texture-color) 87.5%,
+			var(--texture-color)
+		),
+		linear-gradient(
+			30deg,
+			var(--texture-color) 12%,
+			transparent 12.5%,
+			transparent 87%,
+			var(--texture-color) 87.5%,
+			var(--texture-color)
+		),
+		linear-gradient(
+			150deg,
+			var(--texture-color) 12%,
+			transparent 12.5%,
+			transparent 87%,
+			var(--texture-color) 87.5%,
+			var(--texture-color)
+		),
+		linear-gradient(
+			60deg,
+			var(--texture-color-transparent) 25%,
+			transparent 25.5%,
+			transparent 75%,
+			var(--texture-color-transparent) 75%,
+			var(--texture-color-transparent)
+		),
+		linear-gradient(
+			60deg,
+			var(--texture-color-transparent) 25%,
+			transparent 25.5%,
+			transparent 75%,
+			var(--texture-color-transparent) 75%,
+			var(--texture-color-transparent)
+		);
+	background-size: 44px 77px;
+	background-position: 0 0, 0 0, 22px 39px, 22px 39px, 0 0, 22px 39px;
 }
 
 #background-wrapper[data-texture='topographic'] #background-texture {
+	background-color: var(--texture-color);
 	opacity: var(--texture-opacity);
-	background-size: var(--texture-size);
-	background-image: url('../../assets/interface/topographic.png');
-	background-repeat: repeat;
-	filter: invert(1);
+	mask-image: url('../../assets/interface/patterns/topographic.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/topographic.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='grid'] #background-texture {
+	background-image: linear-gradient(var(--texture-color) 2px, transparent 2px),
+		linear-gradient(to right, var(--texture-color) 2px, transparent 2px);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='verticalLines'] #background-texture {
+	background-image: repeating-linear-gradient(
+		to right,
+		var(--texture-color),
+		var(--texture-color) 2px,
+		transparent 2px,
+		transparent
+	);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='horizontalLines'] #background-texture {
+	background-image: repeating-linear-gradient(
+		0deg,
+		var(--texture-color),
+		var(--texture-color) 2px,
+		transparent 2px,
+		transparent
+	);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='diagonalStripes'] #background-texture {
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent var(--texture-size),
+		var(--texture-color) var(--texture-size),
+		var(--texture-color) calc(var(--texture-size) * 2)
+	);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='verticalStripes'] #background-texture {
+	background-image: linear-gradient(90deg, transparent 50%, var(--texture-color) 50%);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='horizontalStripes'] #background-texture {
+	background-image: linear-gradient(0deg, transparent 50%, var(--texture-color) 50%);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='diagonalLines'] #background-texture {
+	background-image: repeating-linear-gradient(
+		45deg,
+		var(--texture-color) 0,
+		var(--texture-color) 2px,
+		transparent 0,
+		transparent 50%
+	);
+	background-size: var(--texture-size) var(--texture-size);
+	opacity: var(--texture-opacity);
+}
+
+#background-wrapper[data-texture='aztec'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/aztec.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/aztec.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='circuitBoard'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/circuitBoard.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/circuitBoard.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='endlessClouds'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/endlessClouds.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/endlessClouds.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='vectorGrain'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-mode: luminance; /* some SVGs need this */
+	mask-image: url('../../assets/interface/patterns/vectorGrain.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/vectorGrain.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='waves'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-image: url('../../assets/interface/patterns/waves.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/waves.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
+}
+
+#background-wrapper[data-texture='honeycomb'] #background-texture {
+	background-color: var(--texture-color);
+	opacity: var(--texture-opacity);
+	mask-mode: luminance; /* some SVGs need this */
+	mask-image: url('../../assets/interface/patterns/honeycomb.svg');
+	mask-repeat: repeat;
+	mask-size: var(--texture-size);
+	mask-position: center;
+
+	-webkit-mask-image: url('../../assets/interface/patterns/honeycomb.svg');
+	-webkit-mask-repeat: repeat;
+	-webkit-mask-size: var(--texture-size);
 }

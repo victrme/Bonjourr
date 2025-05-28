@@ -42,7 +42,7 @@
 	resize: vertical;
 	overflow-x: hidden;
 	border: none;
-	font-family: monospace;
+	font-family: var(--monospace-font-family);
 	background-color: rgba(17, 17, 17, 0.2666666667);
 }
 

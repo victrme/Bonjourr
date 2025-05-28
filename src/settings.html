@@ -150,7 +150,16 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_background-user-coll" class="trn">Custom collection</label>
+				<span>
+					<label for="i_collection" class="trn">Custom collection</label>
+					<button
+						class="tooltip ttcoll"
+						title="Tips on Unsplash collections"
+						aria-label="Tips on Unsplash collections"
+					>
+						?
+					</button>
+				</span>
 
 				<form id="f_background-user-coll" class="network-form">
 					<div>
@@ -169,6 +178,17 @@
 					<small class="network-form-warning"></small>
 				</form>
 			</div>
+
+			<p class="tooltiptext dropdown ttcoll">
+				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
+				<a
+					class="trn"
+					href="https://bonjourr.fr/docs/overview/#unsplash-collection"
+					rel="noreferrer noopener"
+					target="_blank"
+					>Learn more</a
+				>
+			</p>
 		</div>
 
 		<div id="background-user-search-option" class="dropdown">
@@ -202,28 +222,43 @@
 
 		<div id="background-local-actions" class="wrapper">
 			<div>
-				<button id="b_thumbnail-remove" class="param-btn btn-red">
+				<button
+					id="b_thumbnail-remove"
+					class="param-btn btn-red"
+					title="Delete selected background"
+					aria-label="Delete selected background"
+				>
 					<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
 					<!-- <span>&times;</span> -->
 					<span class="trn">Remove</span>
 				</button>
 
-				<button id="b_thumbnail-position" class="trn param-btn">
+				<button
+					id="b_thumbnail-position"
+					class="trn param-btn"
+					title="Move selected background"
+					aria-label="Move selected background"
+				>
 					<img src="src/assets/labels/move.svg" height="15" alt="" />
 					<span class="trn">Move</span>
 				</button>
 			</div>
 
 			<div>
-				<button id="b_thumbnail-zoom" class="trn param-btn">
+				<button
+					id="b_thumbnail-zoom"
+					class="trn param-btn"
+					title="Increase background size on grid"
+					aria-label="Increase background size on grid"
+				>
 					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
-					<span>Zoom</span>
+					<span class="trn">Zoom</span>
 				</button>
 
-				<label id="lbl_background-upload">
+				<label id="lbl_background-upload" title="Upload new background" aria-label="Upload new background">
 					<span class="param-btn">
 						<img src="src/assets/labels/add.svg" height="13" alt="" />
-						Add
+						<span class="trn">Add</span>
 					</span>
 					<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
 				</label>
@@ -331,38 +366,8 @@
 
 		<div class="wrapper">
 			<label for="i_solid-background" class="trn">Background color</label>
-			<input type="color" id="i_solid-background" name="solid-background" />
-		</div>
-	</div>
-
-	<div class="as as_texture dropdown">
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_texture" class="trn">Texture</label>
-
-			<select id="i_texture">
-				<option value="none" class="trn">None</option>
-				<option value="grain" class="trn">Grain</option>
-				<option value="dots" class="trn">Dots</option>
-				<option value="topographic" class="trn">Topographic</option>
-			</select>
-		</div>
-
-		<div id="background-texture-options" class="dropdown shown">
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_texture-opacity" class="trn">Texture opacity</label>
-				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_texture-size" class="trn">Texture size</label>
-				<input id="i_texture-size" name="texture-size" class="range" type="range" />
-			</div>
+			<input type="color" id="i_solid-background" name="solid-background" tabindex="-1" />
+			<button id="b_solid-background" class="color-button trn"> Pick a Color </button>
 		</div>
 	</div>
 
@@ -394,7 +399,7 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_fadein" class="trn">Fade in</label>
+				<label for="i_fadein" class="trn">Fade in time</label>
 				<input
 					id="i_fadein"
 					type="range"
@@ -405,6 +410,63 @@
 					value="400"
 					step="100"
 				/>
+			</div>
+		</div>
+	</div>
+
+	<div class="as as_texture dropdown">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_texture" class="trn">Texture</label>
+
+			<select id="i_texture">
+				<option value="none" class="trn">None</option>
+				<option value="grain" class="trn">Grain</option>
+				<option value="vectorGrain" class="trn">Vector grain</option>
+				<option value="diagonalDots" class="trn">Diagonal dots</option>
+				<option value="verticalDots" class="trn">Vertical dots</option>
+				<option value="topographic" class="trn">Topographic</option>
+				<option value="aztec" class="trn">Aztec</option>
+				<option value="checkerboard" class="trn">Checkerboard</option>
+				<option value="isometric" class="trn">Isometric</option>
+				<option value="circuitBoard" class="trn">Circuit board</option>
+				<option value="endlessClouds" class="trn">Endless clouds</option>
+				<option value="waves" class="trn">Waves</option>
+				<option value="honeycomb" class="trn">Honeycomb</option>
+				<option value="grid" class="trn">Grid</option>
+				<option value="verticalLines" class="trn">Vertical lines</option>
+				<option value="horizontalLines" class="trn">Horizontal lines</option>
+				<option value="diagonalLines" class="trn">Diagonal lines</option>
+				<option value="verticalStripes" class="trn">Vertical stripes</option>
+				<option value="horizontalStripes" class="trn">Horizontal stripes</option>
+				<option value="diagonalStripes" class="trn">Diagonal stripes</option>
+			</select>
+		</div>
+
+		<div id="background-texture-options" class="dropdown shown">
+			<div id="background-texture-color-option" class="dropdown">
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_texture-color" class="trn">Texture color</label>
+					<input type="color" id="i_texture-color" name="texture-color" tabindex="-1" />
+					<button id="b_texture-color" class="color-button trn"> Pick a Color </button>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-opacity" class="trn">Texture opacity</label>
+				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-size" class="trn">Texture density</label>
+				<input id="i_texture-size" name="texture-size" class="range" type="range" />
 			</div>
 		</div>
 	</div>
@@ -1021,18 +1083,36 @@
 			<input id="i_detach" class="switch" type="checkbox" />
 		</div> -->
 
-		<hr />
+		<div id="greetings_options" class="dropdown">
+			<hr />
 
-		<div class="wrapper">
-			<label for="i_greeting" class="trn">Greeting name</label>
-			<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="64" placeholder="Name" />
-		</div>
+			<div class="wrapper">
+				<label for="i_greeting" class="trn">Greeting name</label>
+				<input
+					type="text"
+					name="greeting"
+					id="i_greeting"
+					autocomplete="off"
+					maxlength="64"
+					placeholder="Name"
+				/>
+			</div>
 
-		<hr />
+			<hr />
 
-		<div class="wrapper">
-			<label for="i_greetsize" class="trn">Greeting size</label>
-			<input id="i_greetsize" type="range" name="greetsize" min="1.5" max="5" value="3" step=".2" class="range" />
+			<div class="wrapper">
+				<label for="i_greetsize" class="trn">Greeting size</label>
+				<input
+					id="i_greetsize"
+					type="range"
+					name="greetsize"
+					min="1.5"
+					max="5"
+					value="3"
+					step=".2"
+					class="range"
+				/>
+			</div>
 		</div>
 	</div>
 </div>
@@ -1157,11 +1237,7 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_sbengine" class="trn">Search engine</label>
-					<button
-						class="tooltip ttsearchengine"
-						title="I want more info on search engines"
-						aria-label="I want more info on search engines"
-					>
+					<button class="tooltip ttsearchengine" title="What does this do?" aria-label="What does this do?">
 						?
 					</button>
 				</span>
@@ -1404,8 +1480,8 @@
 				<label for="i_customfont" class="trn">Font family</label>
 				<button
 					class="tooltip ttfontfamily"
-					title="When can I preview these fonts?"
-					aria-label="When can I preview these fonts?"
+					title="Where can I preview these fonts?"
+					aria-label="Where can I preview these fonts?"
 				>
 					?
 				</button>

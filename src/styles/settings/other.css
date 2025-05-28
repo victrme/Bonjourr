@@ -42,6 +42,11 @@
 	background-color: transparent;
 }
 
+#b_showtitles:hover,
+#b_showbackgrounds:hover {
+	opacity: 1;
+}
+
 #b_showbackgrounds {
 	display: flex;
 	justify-content: center;
@@ -52,6 +57,7 @@
 #b_showbackgrounds span {
 	justify-content: center;
 	align-items: center;
+	pointer-events: none;
 }
 
 #b_showbackgrounds span {

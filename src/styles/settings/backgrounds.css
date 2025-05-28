@@ -21,7 +21,7 @@
 	pointer-events: all;
 }
 
-#lbl_background-upload span {
+#lbl_background-upload > span {
 	display: block;
 	padding: 0 1em;
 	height: 31px;
@@ -39,7 +39,8 @@
 	display: grid;
 	width: 100%;
 	max-height: 300px;
-	gap: 3px;
+	margin-top: 5px;
+	gap: 7px;
 	overflow: auto;
 	grid-template-columns: repeat(var(--thumbnails-columns), 1fr);
 }
@@ -50,9 +51,7 @@
 	padding: 0;
 	overflow: hidden;
 	background-color: var(--color-input);
-	transition:
-		transform 0.1s,
-		opacity 0.1s;
+	transition: transform 0.1s, opacity 0.1s;
 }
 
 .thumbnail.hiding {
