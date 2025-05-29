@@ -23,7 +23,7 @@ const ANNOUNCEMENT_TRNS = {
 	fr: "<b>Version 20.4 ✨</b> Nouvelle notification pour les supporters, améliorations de la synchronisation Gist et petites corrections d'interaction !",
 	de: '<b>Version 20.4 ✨</b> Neue Unterstützer-Benachrichtigung, Gist-Synchronisationsverbesserungen und kleine Interaktionskorrekturen!',
 	it: '<b>Versione 20.4 ✨</b> Nuova notifica per i sostenitori, miglioramenti alla sincronizzazione Gist e piccole correzioni di interazione!',
-	es: '<b>Versión 20.4 ✨</b> Nueva notificación para seguidores, mejoras en la sincronización de Gist y pequeñas correcciones de interacción!',
+	es: '<b>¡Actualización mayor de Bonjourr! ✨</b> Mira todas las nuevas características: videos como fondo, superposición de texturas, búsqueda de fondo y más.',
 	'pt-BR':
 		'<b>Versão 20.4 ✨</b> Nova notificação de apoiadores, melhorias na sincronização do Gist e pequenas correções de interação!',
 	'pt-PT':
