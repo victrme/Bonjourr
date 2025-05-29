@@ -1,7 +1,7 @@
+import { getReadableTextColor, hexToHSL, hexToRGB, stringMaxSize } from '../shared/generic.ts'
 import { BROWSER, SYNC_DEFAULT } from '../defaults.ts'
 import { minutator, suntime } from '../shared/time.ts'
 import { eventDebounce } from '../utils/debounce.ts'
-import { getReadableTextColor, hexToHSL, hexToRGB, stringMaxSize } from '../shared/generic.ts'
 import { tradThis } from '../utils/translations.ts'
 import { storage } from '../storage.ts'
 
@@ -109,7 +109,7 @@ export function textShadow(init?: number, event?: number) {
 
 // solid background button
 export function colorButtonStyling(colorButton: HTMLElement, color: string) {
-	let hsl = hexToHSL(color)
+	const hsl = hexToHSL(color)
 
 	// darker color for border
 	hsl.l = Math.max(0, hsl.l - 10)

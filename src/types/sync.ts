@@ -101,7 +101,7 @@ export interface Backgrounds {
 			| 'honeycomb'
 		size?: number
 		opacity?: number
-		color?: string | undefined
+		color?: string
 	}
 }
 

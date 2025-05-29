@@ -90,7 +90,8 @@ body.init #background-media > div video {
 
 #background-wrapper[data-texture='diagonalDots'] #background-texture {
 	opacity: var(--texture-opacity);
-	background-image: radial-gradient(var(--texture-color) 1.25px, transparent 1.25px),
+	background-image:
+		radial-gradient(var(--texture-color) 1.25px, transparent 1.25px),
 		radial-gradient(var(--texture-color) 1.25px, transparent 1.25px);
 	background-size: var(--texture-size) var(--texture-size);
 	background-position: 0 0, calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
@@ -98,7 +99,8 @@ body.init #background-media > div video {
 
 #background-wrapper[data-texture='checkerboard'] #background-texture {
 	opacity: var(--texture-opacity);
-	background-image: repeating-linear-gradient(
+	background-image:
+		repeating-linear-gradient(
 			45deg,
 			var(--texture-color) 25%,
 			transparent 25%,
@@ -107,35 +109,20 @@ body.init #background-media > div video {
 			var(--texture-color)
 		),
 		repeating-linear-gradient(
-			45deg,
-			var(--texture-color) 25%,
-			transparent 25%,
-			transparent 75%,
-			var(--texture-color) 75%,
-			var(--texture-color)
-		);
+		45deg,
+		var(--texture-color) 25%,
+		transparent 25%,
+		transparent 75%,
+		var(--texture-color) 75%,
+		var(--texture-color)
+	);
 	background-position: 0 0, calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
 	background-size: var(--texture-size) var(--texture-size);
 }
 
 #background-wrapper[data-texture='isometric'] #background-texture {
 	opacity: var(--texture-opacity);
-	background-image: linear-gradient(
-			30deg,
-			var(--texture-color) 12%,
-			transparent 12.5%,
-			transparent 87%,
-			var(--texture-color) 87.5%,
-			var(--texture-color)
-		),
-		linear-gradient(
-			150deg,
-			var(--texture-color) 12%,
-			transparent 12.5%,
-			transparent 87%,
-			var(--texture-color) 87.5%,
-			var(--texture-color)
-		),
+	background-image:
 		linear-gradient(
 			30deg,
 			var(--texture-color) 12%,
@@ -145,29 +132,45 @@ body.init #background-media > div video {
 			var(--texture-color)
 		),
 		linear-gradient(
-			150deg,
-			var(--texture-color) 12%,
-			transparent 12.5%,
-			transparent 87%,
-			var(--texture-color) 87.5%,
-			var(--texture-color)
-		),
+		150deg,
+		var(--texture-color) 12%,
+		transparent 12.5%,
+		transparent 87%,
+		var(--texture-color) 87.5%,
+		var(--texture-color)
+	),
 		linear-gradient(
-			60deg,
-			var(--texture-color-transparent) 25%,
-			transparent 25.5%,
-			transparent 75%,
-			var(--texture-color-transparent) 75%,
-			var(--texture-color-transparent)
-		),
+		30deg,
+		var(--texture-color) 12%,
+		transparent 12.5%,
+		transparent 87%,
+		var(--texture-color) 87.5%,
+		var(--texture-color)
+	),
 		linear-gradient(
-			60deg,
-			var(--texture-color-transparent) 25%,
-			transparent 25.5%,
-			transparent 75%,
-			var(--texture-color-transparent) 75%,
-			var(--texture-color-transparent)
-		);
+		150deg,
+		var(--texture-color) 12%,
+		transparent 12.5%,
+		transparent 87%,
+		var(--texture-color) 87.5%,
+		var(--texture-color)
+	),
+		linear-gradient(
+		60deg,
+		var(--texture-color-transparent) 25%,
+		transparent 25.5%,
+		transparent 75%,
+		var(--texture-color-transparent) 75%,
+		var(--texture-color-transparent)
+	),
+		linear-gradient(
+		60deg,
+		var(--texture-color-transparent) 25%,
+		transparent 25.5%,
+		transparent 75%,
+		var(--texture-color-transparent) 75%,
+		var(--texture-color-transparent)
+	);
 	background-size: 44px 77px;
 	background-position: 0 0, 0 0, 22px 39px, 22px 39px, 0 0, 22px 39px;
 }
@@ -186,7 +189,8 @@ body.init #background-media > div video {
 }
 
 #background-wrapper[data-texture='grid'] #background-texture {
-	background-image: linear-gradient(var(--texture-color) 2px, transparent 2px),
+	background-image:
+		linear-gradient(var(--texture-color) 2px, transparent 2px),
 		linear-gradient(to right, var(--texture-color) 2px, transparent 2px);
 	background-size: var(--texture-size) var(--texture-size);
 	opacity: var(--texture-opacity);
