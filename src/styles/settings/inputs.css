@@ -168,7 +168,9 @@ aside .switch:after {
 	border-radius: 50%;
 	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
 	background-color: white;
-	transition: background-color 0.15s, transform 0.15s;
+	transition:
+		background-color 0.15s,
+		transform 0.15s;
 }
 
 aside .switch:checked {
@@ -273,28 +275,26 @@ aside input[type='range']::-ms-tooltip {
 	display: none;
 }
 
-aside input[type='color'] {
-	width: 0;
-	height: 0;
-	position: absolute;
-	opacity: 0;
-	pointer-events: none;
-	right: 0;
-	padding: 0;
-	background-color: transparent;
+aside .color-button {
+	position: relative;
 }
 
-aside .color-button {
-	font-family: var(--monospace-font-family);
+aside .color-button input {
+	overflow: hidden;
+	position: absolute;
+	width: 0;
+	height: 0;
+	bottom: 0;
+	padding: 0;
+}
+
+aside .color-button button {
 	border: 1px solid black;
 	height: 31px;
 	width: 155px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	text-align: left;
+	padding-inline-start: 1em;
 	outline-offset: 2px;
-	filter: brightness(1);
-	transition: filter 0.15s;
 }
 
 label.input-file {
@@ -358,7 +358,9 @@ aside form button {
 	max-width: 0;
 	visibility: hidden;
 	background-color: var(--color-input);
-	transition: opacity 0.1s, max-width 0.2s;
+	transition:
+		opacity 0.1s,
+		max-width 0.2s;
 }
 
 aside form button:disabled {
@@ -407,7 +409,6 @@ aside form.valid.remove span::after {
 }
 
 .wrapper {
-	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
