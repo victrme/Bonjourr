@@ -175,24 +175,24 @@ function onlineAndMobile() {
 
 		visibilityHasChanged = false
 
-		const data = await storage.sync.get()
+		const sync = await storage.sync.get()
 		const local = await storage.local.get()
+		const { backgroundLastChange, lastWeather } = local
 
-		if (!(data?.clock && data?.weather)) {
+		if (!sync.clock || !sync.weather) {
 			return
 		}
 
-		const last = local.backgroundLastChange
-		const time = (last ? new Date(last) : new Date()).getTime()
-		const frequency = needsChange(data.backgrounds.frequency, time)
-		const needNewImage = data.background_type === 'unsplash' && frequency
+		const time = (backgroundLastChange ? new Date(backgroundLastChange) : new Date()).getTime()
+		const needNew = needsChange(sync.backgrounds.frequency, time)
+		const notColor = sync.backgrounds.type !== 'color'
 
-		if (needNewImage && data.unsplash) {
-			backgroundsInit(data, local)
+		clock(sync)
+		weather({ sync, lastWeather })
+
+		if (notColor && needNew) {
+			backgroundsInit(sync, local)
 		}
-
-		clock(data)
-		weather({ sync: data, lastWeather: local.lastWeather })
 	}
 
 	function triggerAnimationFrame() {
