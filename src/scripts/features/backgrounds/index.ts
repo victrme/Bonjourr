@@ -34,6 +34,7 @@ interface BackgroundUpdate {
 	urlsapply?: true
 	texture?: string
 	provider?: string
+	texturecolor?: string
 	texturesize?: string
 	textureopacity?: string
 }
@@ -176,6 +177,12 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	// Textures
+
+	if (update.texturecolor !== undefined) {
+		data.backgrounds.texture.color = update.texturecolor
+		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
+		applyTexture(data.backgrounds.texture)
+	}
 
 	if (update.textureopacity !== undefined) {
 		data.backgrounds.texture.opacity = Number.parseFloat(update.textureopacity)
@@ -357,6 +364,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 			const newlocal = setCollection(backgrounds, local).fromApi(json)
 			const newcoll = getCollection(backgrounds, newlocal)
 			const isImage = backgrounds.type === 'images'
+
 			newlocal.backgroundLastChange = userDate().toString()
 			storage.local.set(newlocal)
 
@@ -441,7 +449,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 			preloadBackground(newlist[0])
 			preloadBackground(newlist[1])
 
-			storage.local.set(newlocal)
+			storage.local.set({ backgroundCollections: newlocal.backgroundCollections })
 		}
 	}
 }
@@ -741,13 +749,13 @@ function preloadBackground(media?: Background, force?: BackgroundSize) {
 
 		return new Promise((resolve) => {
 			img.addEventListener('load', () => {
-				storage.local.remove('backgroundPreloading')
 				img.remove()
 				resolve(true)
+				storage.local.remove('backgroundPreloading')
 			})
 
-			img.src = src
 			storage.local.set({ backgroundPreloading: true })
+			img.src = src
 		})
 	}
 
@@ -763,8 +771,8 @@ function preloadBackground(media?: Background, force?: BackgroundSize) {
 			}, 200)
 		})
 
-		vid.src = src
 		storage.local.set({ backgroundPreloading: true })
+		vid.src = src
 	})
 }
 
@@ -798,10 +806,13 @@ function applyTexture(texture: Backgrounds['texture']): void {
 	}
 
 	const ranges = TEXTURE_RANGES[texture.type]
+	const color = texture.color ?? ranges.color
 	const size = texture.size ?? ranges.size.value
 	const opacity = texture.opacity ?? ranges.opacity.value
 
 	wrapper.dataset.texture = texture.type
+	document.documentElement.style.setProperty('--texture-color', `${color}`)
+	document.documentElement.style.setProperty('--texture-color-transparent', `${color}77`)
 	document.documentElement.style.setProperty('--texture-opacity', `${opacity}`)
 	document.documentElement.style.setProperty('--texture-size', `${size}px`)
 }
@@ -844,8 +855,21 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 	if (hasTexture) {
 		const iOpacity = document.querySelector<HTMLInputElement>('#i_texture-opacity')
 		const iSize = document.querySelector<HTMLInputElement>('#i_texture-size')
+		const iColor = document.querySelector<HTMLInputElement>('#i_texture-color')
 		const ranges = TEXTURE_RANGES[backgrounds.texture.type]
-		const { opacity, size } = backgrounds.texture
+		const { opacity, size, color } = backgrounds.texture
+
+		// shows and hides texture color option
+		document
+			.querySelector<HTMLElement>('#background-texture-color-option')
+			?.classList.toggle('shown', ranges.color !== undefined)
+
+		if (iColor && ranges.color !== undefined) {
+			iColor.value = color === undefined ? ranges.color : color
+
+			// to make the non native color button aware of the change
+			document.getElementById('i_texture-color')?.dispatchEvent(new Event('input', { bubbles: true }))
+		}
 
 		if (iOpacity) {
 			iOpacity.min = ranges.opacity.min
@@ -1070,7 +1094,29 @@ function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
 }
 function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['type'] {
-	return ['none', 'grain', 'dots', 'topographic'].includes(str)
+	return [
+		'none',
+		'grain',
+		'verticalDots',
+		'diagonalDots',
+		'topographic',
+		'checkerboard',
+		'isometric',
+		'grid',
+		'verticalLines',
+		'horizontalLines',
+		'diagonalStripes',
+		'verticalStripes',
+		'horizontalStripes',
+		'diagonalLines',
+		'aztec',
+		'circuitBoard',
+		'ticTacToe',
+		'endlessClouds',
+		'vectorGrain',
+		'waves',
+		'honeycomb',
+	].includes(str)
 }
 function isFrequency(str = ''): str is Frequency {
 	return ['tabs', 'hour', 'day', 'period', 'pause'].includes(str)

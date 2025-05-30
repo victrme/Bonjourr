@@ -29,7 +29,7 @@ Deno.test('Current version small import', () => {
 })
 
 Deno.test('1.10.0', async (t) => {
-	const text = Deno.readTextFileSync('./tests/configs/old.1.10.0.json')
+	const text = Deno.readTextFileSync('./tests/configs/10.0.0.json')
 	const old = JSON.parse(text)
 	const res = filterImports(defaults, old)
 
@@ -88,7 +88,7 @@ Deno.test('1.10.0', async (t) => {
 })
 
 Deno.test('20.4.2', async (t) => {
-	const text = Deno.readTextFileSync('./tests/configs/unsplash.20.4.2.json')
+	const text = Deno.readTextFileSync('./tests/configs/20.4.2.json')
 	const old = JSON.parse(text)
 	const res = filterImports(defaults, old)
 
@@ -112,5 +112,23 @@ Deno.test('20.4.2', async (t) => {
 		await t.step('Frequency', () => {
 			assert(old.unsplash.every === res.backgrounds.frequency)
 		})
+	})
+
+	await t.step('Links', async (t) => {
+		await t.step('Link groups', () => {
+			for (const group of res.linkgroups.groups) {
+				assert(old.linkgroups.groups.includes(group))
+			}
+		})
+	})
+})
+
+Deno.test('20.4.2-default', async (t) => {
+	const text = Deno.readTextFileSync('./tests/configs/20.4.2-default.json')
+	const old = JSON.parse(text)
+	const res = filterImports(defaults, old)
+
+	await t.step('Keep default link groups', () => {
+		assert(JSON.stringify(res.linkgroups.groups) === `["default"]`)
 	})
 })

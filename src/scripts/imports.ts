@@ -16,6 +16,7 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	let newcurrent = current
 
 	// Prepare imported data compatibility
+	newtarget = convertOldCssSelectors(newtarget) // all
 
 	newtarget = booleanSearchbarToObject(newtarget) // 9.0
 	newtarget = linkListToFlatObjects(newtarget) // 13.0
@@ -34,18 +35,15 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newtarget = manualTimezonesToIntl(newtarget) // 21.0
 
 	// Merge both settings
-
 	const defaultAbout = { about: { browser: PLATFORM, version: CURRENT_VERSION } }
 	newcurrent = deepmergeAll(newcurrent, newtarget, defaultAbout) as Sync
 
-	// All versions
-
+	// After merge only
+	newcurrent = removeLinkgroupDuplicates(newcurrent)
 	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
-	newcurrent = convertOldCssSelectors(newcurrent)
 	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
 
 	// Remove old fields
-
 	newcurrent.settingssync = undefined
 	newcurrent.custom_every = undefined
 	newcurrent.custom_time = undefined
@@ -285,7 +283,7 @@ function validateLinkGroups(current: Import): Import {
 
 	for (const link of links) {
 		if (!link?.parent) {
-			link.parent = 'default'
+			link.parent = current.linkgroups.selected
 			current[link._id] = link
 		}
 	}
@@ -301,11 +299,6 @@ function validateLinkGroups(current: Import): Import {
 			current.linkgroups.groups.push(group.toString())
 		}
 	}
-
-	// Remove duplicate groups
-	current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
-	current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
-	current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
 
 	// Force enable if multiple groups are hidden
 	if (current.linkgroups.groups.length > 1) {
@@ -419,6 +412,28 @@ function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 	return data
 }
 
+function removeLinkgroupDuplicates(current: Sync): Sync {
+	// 1. Remove duplicate
+	current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
+	current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
+	current.linkgroups.synced = [...new Set(current.linkgroups.synced)]
+
+	// 2. Remove default from SYNC_DEFAULT
+
+	const links = bundleLinks(current)
+	const parents = links.map((l) => l.parent)
+	const defaultGroupAsParent = parents.some((parent) => parent === 'default')
+	const multipleGroups = current.linkgroups.groups.length > 1
+
+	if (multipleGroups && !defaultGroupAsParent) {
+		current.linkgroups.groups = current.linkgroups.groups.filter((item) => item !== 'default')
+		current.linkgroups.pinned = current.linkgroups.pinned.filter((item) => item !== 'default')
+		current.linkgroups.synced = current.linkgroups.synced.filter((item) => item !== 'default')
+	}
+
+	return current
+}
+
 function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 	// When import doesn't have move, other widgets can still be different
 	// This updates current grid with the widgets states from import
@@ -495,7 +510,7 @@ function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 	return current
 }
 
-function convertOldCssSelectors<Data extends Sync | Import>(data: Data): Data {
+function convertOldCssSelectors(data: Import): Import {
 	if (data?.css) {
 		data.css = data.css
 			.replaceAll('.block', '.link')
