@@ -485,10 +485,6 @@ function initOptionsEvents() {
 		backgroundUpdate({ blurenter: true })
 	})
 
-	paramId('i_blur').addEventListener('pointerleave', function (this: HTMLInputElement) {
-		backgroundUpdate({ blurleave: true, blur: this.value })
-	})
-
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
 		backgroundUpdate({ blur: this.value })
 	})

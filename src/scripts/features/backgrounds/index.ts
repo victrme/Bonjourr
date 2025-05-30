@@ -23,7 +23,6 @@ interface BackgroundUpdate {
 	type?: string
 	blur?: string
 	blurenter?: true
-	blurleave?: true
 	color?: string
 	query?: SubmitEvent
 	files?: FileList | null
@@ -87,13 +86,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	const local = await storage.local.get()
 
 	if (update.blurenter) {
-		changeBackgroundResolution(data.backgrounds.blur, 'blur-enter')
-		return
-	}
-
-	if (update.blurleave && update.blur !== undefined) {
-		const blur = Number.parseInt(update.blur ?? '15px')
-		changeBackgroundResolution(blur, 'blur-leave')
+		blurResolutionControl()
 		return
 	}
 
@@ -610,7 +603,7 @@ function setLastUsed(backgrounds: Backgrounds, local: Local, keys: string[]): Lo
 
 // 	Apply to DOM
 
-export function applyBackground(media?: string | Background, force?: BackgroundSize, fast?: 'fast'): void {
+export function applyBackground(media?: string | Background, res?: BackgroundSize, fast?: 'fast'): void {
 	if (typeof media === 'string') {
 		document.documentElement.style.setProperty('--solid-background', media)
 		return
@@ -625,20 +618,20 @@ export function applyBackground(media?: string | Background, force?: BackgroundS
 	}
 
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-	const size = detectBackgroundSize(force)
+	const resolution = res ? res : detectBackgroundSize()
 	let item: HTMLDivElement
 
 	if (media.format === 'image') {
-		const src = media.urls[size]
+		const src = media.urls[resolution]
 		item = createImageItem(src, media)
 	} else {
 		const opacity = 4 //s
 		const duration = 1000 * (media.duration - opacity)
-		const src = media.urls[size]
+		const src = media.urls[resolution]
 		item = createVideoItem(src, duration)
 	}
 
-	item.dataset.res = size
+	item.dataset.res = resolution
 	mediaWrapper.prepend(item)
 
 	if (mediaWrapper?.childElementCount > 1) {
@@ -736,8 +729,8 @@ function createVideoItem(src: string, duration: number, callback?: () => void): 
 	return div
 }
 
-function preloadBackground(media?: Background, force?: BackgroundSize) {
-	const size = detectBackgroundSize(force)
+function preloadBackground(media: Background | undefined, res?: BackgroundSize) {
+	const resolution = res ? res : detectBackgroundSize()
 
 	if (!media) {
 		return
@@ -745,7 +738,7 @@ function preloadBackground(media?: Background, force?: BackgroundSize) {
 
 	if (media.format === 'image') {
 		const img = document.createElement('img')
-		const src = media.urls[size]
+		const src = media.urls[resolution]
 
 		return new Promise((resolve) => {
 			img.addEventListener('load', () => {
@@ -760,7 +753,7 @@ function preloadBackground(media?: Background, force?: BackgroundSize) {
 	}
 
 	const vid = document.createElement('video')
-	const src = media.urls[size]
+	const src = media.urls[resolution]
 
 	return new Promise((resolve) => {
 		vid.addEventListener('progress', (_) => {
@@ -824,12 +817,6 @@ export function initBackgroundOptions(sync: Sync, local: Local) {
 	initUrlsEditor(sync.backgrounds, local)
 	createProviderSelect(sync.backgrounds)
 	handleBackgroundOptions(sync.backgrounds)
-
-	if (detectBackgroundSize() !== 'full') {
-		getCurrentBackgrounds(sync, local).then(([current]) => {
-			preloadBackground(current, 'medium')
-		})
-	}
 }
 
 function handleBackgroundOptions(backgrounds: Backgrounds) {
@@ -965,31 +952,19 @@ function handleBackgroundActions(backgrounds: Backgrounds) {
 	document.getElementById('b_interface-background-download')?.classList.toggle('shown', type === 'images')
 }
 
-async function changeBackgroundResolution(blur: number, action: 'blur-enter' | 'blur-leave') {
+async function blurResolutionControl() {
 	const [current, next] = await getCurrentBackgrounds()
 
-	if (action === 'blur-enter') {
-		preloadBackground(current, 'medium')
-		preloadBackground(current, 'small')
+	preloadBackground(current, 'small')
 
-		if (blur !== 0) {
-			preloadBackground(current, 'full')
-			applyBackground(current, 'medium', 'fast')
-		}
-	}
+	preloadBackground(current, 'medium')?.then(() => {
+		applyBackground(current, 'medium', 'fast')
+		preloadBackground(next)
+	})
 
-	if (action === 'blur-leave') {
-		if (blur === 0) {
-			applyBackground(current, 'full', 'fast')
-			preloadBackground(next, 'full')
-		} else if (blur <= 15) {
-			applyBackground(current, 'medium', 'fast')
-			preloadBackground(next, 'medium')
-		} else {
-			applyBackground(current, 'small', 'fast')
-			preloadBackground(next, 'small')
-		}
-	}
+	preloadBackground(current, 'full')?.then(() => {
+		applyBackground(current, 'full', 'fast')
+	})
 }
 
 //  Helpers
@@ -1016,12 +991,8 @@ async function getCurrentBackgrounds(sync?: Sync, local?: Local) {
 	return []
 }
 
-function detectBackgroundSize(force?: BackgroundSize): 'full' | 'medium' | 'small' {
-	if (force) {
-		return force
-	} else {
-		return document.body.className.includes('blurred') ? 'small' : 'full'
-	}
+function detectBackgroundSize(): 'full' | 'small' {
+	return document.body.className.includes('blurred') ? 'small' : 'full'
 }
 
 function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement) {
@@ -1047,7 +1018,8 @@ function getAverageColor(img: HTMLImageElement) {
 		const canvas = document.createElement('canvas')
 		const ctx = canvas.getContext('2d')
 
-		const maxDimension = 100 // resizing the image for better performance
+		// resizing the image for better performance
+		const maxDimension = 100
 
 		// Calculate the scaling factor to maintain aspect ratio
 		const scale = Math.min(maxDimension / img.width, maxDimension / img.height)
