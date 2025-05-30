@@ -1,4 +1,5 @@
 .move-overlay {
+	position: relative;
 	border: none;
 	border-radius: 1em;
 	background-color: #fff2;
@@ -57,25 +58,70 @@
 #element-mover {
 	position: absolute;
 	display: flex;
-	flex-direction: column;
 	left: 2em;
 	top: 2em;
 	gap: 24px;
-	padding: 16px 6px 8px;
-	min-width: 170px;
-	font-size: 14px;
+	padding: 1em;
+	font-size: 13px;
 	border-radius: 1em;
 	box-shadow: 5px 5px 20px #2224;
-	cursor: grab;
 	direction: ltr;
 	z-index: 4;
+	display: none;
 }
 
-#element-mover:not(.active) > div:not(#close-mover-wrapper) {
-	pointer-events: none;
-	filter: grayscale(1);
-	opacity: 0.4;
-	cursor: auto;
+.move-overlay ul {
+	padding: 0;
+	margin: 0;
+}
+
+.move-overlay-grid {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.move-overlay-grid li {
+	position: absolute;
+}
+
+.move-overlay ul li button {
+	color: white;
+	width: 100%;
+	height: 100%;
+	padding: 1em;
+	margin: 1em;
+	border-radius: 0.5em;
+	background-color: transparent;
+
+	&:hover {
+		background-color: #fff2;
+	}
+}
+
+.move-overlay-grid li:nth-child(1) {
+	left: 0;
+	right: 0;
+	top: -1em;
+}
+.move-overlay-grid li:nth-child(2) {
+	top: 0;
+	bottom: 0;
+	left: -1em;
+}
+.move-overlay-grid li:nth-child(3) {
+	top: 0;
+	bottom: 0;
+	right: -1em;
+}
+.move-overlay-grid li:nth-child(4) {
+	left: 0;
+	right: 0;
+	bottom: -1em;
+}
+
+input[name='move-align-vertical'] {
+	writing-mode: vertical-lr;
 }
 
 #element-mover.hidden {
@@ -86,12 +132,6 @@
 	text-align: center;
 }
 
-#element-mover p {
-	margin-bottom: 1em;
-}
-
-#grid-mover button,
-#box-alignment-mover button,
 #text-alignment-mover button {
 	padding: 0;
 }
@@ -107,12 +147,11 @@
 	background-color: transparent;
 }
 
-.mover button:hover:not(:disabled) {
-	background-color: #fff4;
-}
-
-.mover button:active:not(:disabled) {
-	background-color: #fff5;
+#element-mover:not(.active) > div {
+	pointer-events: none;
+	filter: grayscale(1);
+	opacity: 0.4;
+	cursor: auto;
 }
 
 .mover button.selected,
@@ -130,50 +169,8 @@ button.grid-spanner {
 	background-color: var(--color-dialog-highlight);
 }
 
-button.grid-spanner:hover:not(:disabled) {
-	color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
-}
-
-button.grid-spanner.selected:not(:disabled) {
-	color: var(--color-blue);
-	border-color: var(--color-blue);
-	background-color: rgba(var(--blue), 0.25);
-}
-
 #grid-selection {
 	display: none;
-}
-
-#grid-mover {
-	max-width: 85px;
-	margin: auto;
-	grid-template-columns: 1fr 1fr;
-	grid-template-rows: 1fr 1fr 1fr;
-}
-
-#grid-mover button {
-	min-width: 3em;
-	margin: 0;
-	padding: 0;
-}
-#grid-mover button:first-of-type,
-#grid-mover button:last-of-type {
-	grid-column: 1 / 3;
-}
-
-#grid-spanner-container {
-	display: none;
-}
-
-#grid-spanner-container.active {
-	display: block;
-}
-
-#box-alignment-mover {
-	place-content: center;
-	grid-template-columns: repeat(3, 32px);
-	grid-template-rows: repeat(3, 24px);
 }
 
 #text-alignment-mover {
@@ -186,11 +183,6 @@ button.grid-spanner.selected:not(:disabled) {
 	align-items: center;
 	justify-content: center;
 	padding: 0.5em;
-}
-
-#close-mover-wrapper button {
-	display: block;
-	width: 100%;
 }
 
 /*
@@ -214,83 +206,14 @@ button i::after {
 	display: block;
 }
 
-.rotate-half {
-	transform: rotate(180deg);
-}
-.rotate-quart {
-	transform: rotate(90deg);
-}
-.rotate-quart-r {
-	transform: rotate(-90deg);
-}
-
-/* Grid mover icons */
-
-.chevron {
-	display: inline-block;
-	width: 2.4em;
-	height: 2.4em;
-	font-size: 10px;
-}
-
-.chevron::after {
-	border-bottom: 0.2em solid;
-	border-right: 0.2em solid;
-	width: 1em;
-	height: 1em;
-	transform: rotate(45deg) translateX(100%);
-}
-
-/* Box align icons */
-
 i.text-left,
 i.text-center,
-i.text-right,
-i.box-center,
-i.box-corner,
-i.box-side {
+i.text-right {
 	margin: auto;
 	width: 1.4em;
 	height: 1.4em;
 	font-size: 10px;
 }
-
-i.box-center::after {
-	top: 0.2em;
-	left: 0.1em;
-	height: 0.6em;
-	width: 1.2em;
-	border-bottom: 0.2em solid;
-}
-
-i.box-center::before {
-	top: 0.1em;
-	left: 0.6em;
-	height: 1.2em;
-	border-left: 0.2em solid;
-}
-
-i.box-side {
-	border-bottom: 0.2em solid;
-}
-
-i.box-side::before {
-	bottom: 0;
-	left: 0.6em;
-	height: 0.6em;
-	border-left: 0.2em solid;
-}
-
-i.box-corner::before {
-	left: 0;
-	top: 0;
-	height: 1em;
-	width: 1em;
-	border-left: 0.2em solid;
-	border-top: 0.2em solid;
-}
-
-/* Text align icons */
 
 i.text-left::before,
 i.text-center::before,

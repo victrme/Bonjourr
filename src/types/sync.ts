@@ -171,31 +171,6 @@ export interface Quotes {
 	url?: string
 }
 
-export interface Move {
-	selection: 'single' | 'double' | 'triple'
-	layouts: {
-		single?: MoveLayout
-		double?: MoveLayout
-		triple?: MoveLayout
-	}
-}
-
-export interface MoveLayout {
-	grid: string[][]
-	items: Record<Widgets, MoveAlign | undefined>
-}
-
-export interface MoveAlign {
-	box: string
-	text: string
-}
-
-export interface Supporters {
-	enabled: boolean
-	closed: boolean
-	month: number
-}
-
 export interface Weather {
 	ccode?: string
 	city?: string
@@ -205,4 +180,86 @@ export interface Weather {
 	temperature: 'actual' | 'feelslike' | 'both'
 	moreinfo: 'none' | 'msnw' | 'yhw' | 'windy' | 'accu' | 'custom'
 	provider?: string
+}
+
+export interface LinkGroups {
+	on: boolean
+	selected: string
+	groups: string[]
+	pinned: string[]
+	synced: string[]
+}
+
+export interface Hide {
+	clock?: boolean
+	date?: boolean
+	greetings?: boolean
+	weatherdesc?: boolean
+	weathericon?: boolean
+	settingsicon?: boolean
+}
+
+export interface Backgrounds {
+	type: 'files' | 'urls' | 'images' | 'videos' | 'color'
+	frequency: Frequency
+	fadein: number
+	bright: number
+	blur: number
+	color: string
+	urls: string
+	images: string
+	videos: string
+	pausedUrl?: string
+	pausedImage?: BackgroundImage
+	pausedVideo?: BackgroundVideo
+	queries: Record<string, string>
+	texture: {
+		type: 'none' | 'grain' | 'dots' | 'topographic'
+		size?: number
+		opacity?: number
+	}
+}
+
+export type Move = {
+	selection: MoveSelection
+	layouts: {
+		single?: MoveLayout
+		double?: MoveLayout
+		triple?: MoveLayout
+	}
+}
+
+export type MoveSelection = 'single' | 'double' | 'triple'
+
+export interface MoveLayout {
+	grid: string[][]
+	items: {
+		[key in Widgets]?: MoveAlign
+	}
+}
+
+export interface MoveAlign {
+	box: string
+	text: string
+}
+
+// 21
+
+export type SimpleMove = {
+	grid: string[][]
+	items: Record<Widgets, SimpleMoveWidget>
+}
+
+export type SimpleMoveWidget = {
+	box_v?: 'top' | 'middle' | 'bottom'
+	box_h?: 'left' | 'center' | 'right'
+	text?: 'left' | 'center' | 'right'
+	gap?: number
+	minwidth?: 'auto' | number
+}
+
+export type Supporters = {
+	enabled: boolean
+	closed: boolean
+	month: number
 }

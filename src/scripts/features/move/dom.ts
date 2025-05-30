@@ -4,6 +4,7 @@ import { onclickdown } from 'clickdown/mod'
 
 import type { MoveAlign, MoveLayout } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'
+import { getHTMLTemplate } from '../../shared/dom.ts'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
@@ -41,14 +42,10 @@ export function setAllAligns(items: MoveLayout['items']) {
 }
 
 export function addOverlay(id: Widgets) {
-	const button = document.createElement('button')
-	button.id = `move-overlay-${id}`
-	button.className = 'move-overlay'
-	dominterface?.appendChild(button)
-
-	onclickdown(button, () => {
-		moveElements(undefined, { select: id })
-	})
+	const overlay = getHTMLTemplate<HTMLDivElement>('move-overlay-template', '.move-overlay')
+	overlay.id = `move-overlay-${id}`
+	dominterface?.appendChild(overlay)
+	onclickdown(overlay, () => moveElements(undefined, { select: id }))
 }
 
 export function removeOverlay(id?: Widgets) {

@@ -105,7 +105,10 @@
 		</div>
 
 		<p class="tooltiptext dropdown tthidesettingsicon">
-			<span class="trn">When this is enabled, clicking the bottom right corner will still open settings.</span>
+			<!-- prettier-ignore -->
+			<span class="trn"
+			>When this is enabled, clicking the bottom right corner will still
+				open settings.</span>
 			<a
 				class="trn"
 				href="https://bonjourr.fr/docs/overview/#hide-settings"
@@ -504,31 +507,30 @@
 			<label for="i_addlink" class="trn">Add link</label>
 			<form id="f_addlink">
 				<div>
-					<div>
-						<input
-							type="text"
-							name="addlink-title"
-							id="i_addlink-title"
-							maxlength="64"
-							placeholder="Title"
-							aria-label="Add title to new link"
-							autocomplete="off"
-						/>
-						<input
-							type="text"
-							name="addlink-url"
-							id="i_addlink-url"
-							minlength="3"
-							maxlength="512"
-							placeholder="example.com"
-							aria-label="Add URL to new link"
-							autocomplete="off"
-							autocorrect="off"
-							autocapitalize="off"
-							spellcheck="false"
-							required="true"
-						/>
-					</div>
+					<input
+						type="text"
+						name="addlink-title"
+						id="i_addlink-title"
+						maxlength="64"
+						placeholder="Title"
+						aria-label="Add title to new link"
+						autocomplete="off"
+					/>
+
+					<input
+						type="text"
+						name="addlink-url"
+						id="i_addlink-url"
+						minlength="3"
+						maxlength="512"
+						placeholder="example.com"
+						aria-label="Add URL to new link"
+						autocomplete="off"
+						autocorrect="off"
+						autocapitalize="off"
+						spellcheck="false"
+						required="true"
+					/>
 
 					<button type="submit" id="i_addlink">
 						<span></span>
@@ -1545,59 +1547,30 @@
 
 <div class="as as_page dropdown">
 	<div class="settings-title">
-		<h2 class="trn">Page layout</h2>
-
-		<button class="tooltip ttgrid" title="Tips on page grid layout" aria-label="Tips on page grid layout">?</button>
-
-		<p class="tooltiptext dropdown ttgrid">
-			<span class="trn">Customise how and where widgets appear.</span>
-			<span class="trn instructions">Open the toolbox and select a widget to modify on the page.</span>
-			<a class="trn" href="https://bonjourr.fr/docs/overview#page-layouts" rel="noreferrer noopener"
-				>Learn more</a
-			>
-		</p>
+		<h2 class="trn">Move</h2>
 	</div>
 
 	<div class="param">
 		<div class="wrapper">
-			<label for="b_editmove" class="trn">Open layout toolbox</label>
-			<button id="b_editmove" class="param-btn trn">Open</button>
-		</div>
+			<span style="padding: 8px 4px"
+				>Click "Edit" to allow widgets to move, then select a widget on the page.</span
+			>
 
-		<div class="not-mobile">
-			<hr />
-
-			<div class="wrapper">
-				<span class="trn">Page columns</span>
-				<select id="i_pagecolumns">
-					<option class="trn" value="single">Simple</option>
-					<option class="trn" value="double">Double</option>
-					<option class="trn" value="triple">Triple</option>
-				</select>
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_pagewidth" class="trn">Page width</label>
-				<input
-					id="i_pagewidth"
-					type="range"
-					name="page_width"
-					min="600"
-					max="2200"
-					value="1600"
-					step="100"
-					class="range"
-				/>
-			</div>
+			<button id="b_movetips" class="input-btn">&times;</button>
 		</div>
 
 		<hr />
 
 		<div class="wrapper">
-			<label for="i_pagegap" class="trn">Page gap</label>
-			<input id="i_pagegap" type="range" name="page_gap" min="0" max="8" value="1" step=".5" class="range" />
+			<label for="b_editmove" class="trn">Widgets</label>
+			<button id="b_editmove" class="param-btn trn">Edit</button>
+		</div>
+
+		<hr />
+
+		<div class="wrapper">
+			<label for="b_detach-move" class="trn">Reset position</label>
+			<button id="b_detach-move" class="param-btn btn-red trn">Reset</button>
 		</div>
 	</div>
 </div>
@@ -1609,7 +1582,7 @@
 		<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
 
 		<p class="tooltiptext dropdown ttcss">
-			<span class="trn">Make cool things happen with CSS.</span>
+			<span class="trn">Make cool things happen with CSS. </span>
 			<span class="trn instructions">Check out our </span>
 			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank"
 				>CSS snippets.</a
@@ -1944,13 +1917,10 @@
 		</p>
 	</div>
 
-	<div id="donate">
+	<div id="donate" class="not-safari">
 		<p>
 			<span class="trn">Consider</span>
-			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn not-safari">donating</a>
-
-			<span class="trn safari-only">donating</span>
-
+			<a href="https://bonjourr.fr/#donate" rel="noreferrer noopener" class="trn">donating</a>
 			<span class="trn">if you love Bonjourr</span> 😊
 		</p>
 	</div>

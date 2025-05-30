@@ -138,9 +138,6 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
 	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
 	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
-	setInput('i_texture-color', data.backgrounds.texture.color ?? '#ffffff')
-	setInput('i_pagewidth', data.pagewidth || 1600)
-	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
 	setInput('i_greeting', data.greeting ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
@@ -772,24 +769,22 @@ function initOptionsEvents() {
 		})
 	})
 
-	paramId('i_pagecolumns').addEventListener('change', function () {
-		moveElements(undefined, { layout: this.value, toggle: true })
-	})
+	// paramId('i_pagecolumns').addEventListener('change', function () {
+	// 	moveElements(undefined, { layout: this.value, toggle: true })
+	// })
 
-	paramId('i_pagewidth').addEventListener('input', function () {
-		pageControl({ width: Number.parseInt(this.value) }, true)
-	})
+	// paramId('i_pagewidth').addEventListener('input', function () {
+	// 	pageControl({ width: parseInt(this.value) }, true)
+	// })
 
-	paramId('i_pagegap').addEventListener('input', function () {
-		pageControl({ gap: Number.parseFloat(this.value) }, true)
-	})
+	// paramId('i_pagegap').addEventListener('input', function () {
+	// 	pageControl({ gap: parseFloat(this.value) }, true)
+	// })
 
-	paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), {
-		passive: true,
-	})
-	paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
-	paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
-	paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
+	// paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), { passive: true })
+	// paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
+	// paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
+	// paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
 	// Updates
 
