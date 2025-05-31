@@ -1,8 +1,8 @@
-Cada vez que abra una nueva ventana o pestaña, será recibido por esta página de aspecto minimalista que ayudará a su serenidad y productividad. Gracias a sus magníficos fondos de alta calidad que cambian según el estado de ánimo del día, tus nuevas pestañas se sentirán siempre frescas.
+Cada vez que abras una nueva ventana o pestaña, serás recibido por esta página de aspecto minimalista que ayudará a tu serenidad y productividad. Gracias a sus magníficos fondos de alta calidad que cambian según el estado de ánimo del día, tus nuevas pestañas se sentirán siempre frescas.
 
 Bonjourr se creó como una alternativa más moderna a las páginas de inicio como Momentum. Nos hemos inspirado en iOS y en el lenguaje de diseño de Apple para crear esta hermosa página de inicio que te ayudará a centrarte en lo que importa.
 
-Aquí tienes algunas características clave:
+Aquí hay algunas características clave:
 🍏 Lenguaje de diseño de iOS
 🏞 Fondos dinámicos en 4K que cambian según el estado de ánimo del día
 ⚡️ ¡Rápido y ligero!
@@ -15,7 +15,7 @@ Aquí tienes algunas características clave:
 🥖 Emoji como favicon
 🧑💻 Estilo CSS personalizado
 📝 Fuentes personalizadas
-🔒 Privacidad enfocada
+🔒 Enfocada en la privacidad
 🌎 Multilenguaje
 
 Bonjourr pretende tener un aspecto y un tacto mínimos, a la vez que te aporta un montón de opciones para personalizarlo a tu gusto. Establece tus propios fondos (¡o colecciones de Unsplash!), activa el bonito reloj analógico, establece tu propia fuente y enlaces rápidos... Incluso puedes consultar nuestra documentación, donde hemos recopilado algunos fragmentos de estilo para hacer aún más.
@@ -47,14 +47,14 @@ Al igual que en iOS, Bonjourr tiene un bonito modo oscuro automático.
 
 🥖 Emoji como favicon
 
-🔒 Privacidad enfocada
+🔒 Enfocada en la privacidad
 Algunas páginas de inicio como Momentum te animan a crear una cuenta, darles algunos datos personales, usar más permisos y depender de muchos servicios de terceros. Bonjourr no recoge ningún dato, ni siquiera con fines analíticos, utiliza permisos mínimos, depende de menos servicios de terceros y, por supuesto, no tiene ningún sistema de cuentas. Que Bonjourr sea de código abierto también significa que puedes comprobar fácilmente si nuestras afirmaciones son ciertas.
 
 🧑💻 Estilo CSS personalizado
-Tienes una idea específica en mente? Bonjourr te tiene cubierto con la sección de estilos personalizados. Puedes personalizar y hacer cualquier cosa al añadir tu propio CSS.
+¿Tienes una idea específica en mente? Bonjourr te tiene cubierto con la sección de estilos personalizados. Puedes personalizar y hacer cualquier cosa al añadir tu propio CSS.
 
 📝 Fuentes personalizadas
-Quieres una fuente específica en tu página de inicio? Puedes seleccionarla fácilmente gracias a la integración de Bonjourr con Google Fonts.
+¿Quieres una fuente específica en tu página de inicio? Puedes seleccionarla fácilmente gracias a la integración de Bonjourr con Google Fonts.
 
 🌎 Multilenguaje
 Gracias a nuestros increíbles colaboradores, Bonjourr está disponible en 20+ idiomas diferentes.
