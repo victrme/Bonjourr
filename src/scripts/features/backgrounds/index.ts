@@ -64,6 +64,8 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 		pauseButton?.classList.toggle('paused', isPaused)
 
 		initCreditEvents()
+
+		document.addEventListener('visibilitychange', pauseVideoOnVisibilityChange)
 	}
 
 	toggleCredits(sync.backgrounds)
@@ -344,6 +346,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 	const lastTime = new Date(local.backgroundLastChange ?? '01/01/1971').getTime()
 	const needNew = needsChange(backgrounds.frequency, lastTime)
 	const isPaused = backgrounds.frequency === 'pause'
+	const isProloading = localStorage.backgroundPreloading === 'true'
 
 	if (list.length === 0) {
 		if (isFilesOrUrls) {
@@ -367,7 +370,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 		}
 	}
 
-	if (isImagesOrVideos && local.backgroundPreloading) {
+	if (isImagesOrVideos && isProloading) {
 		applyBackground(list[0])
 		preloadBackground(list[1])
 		return
@@ -691,7 +694,7 @@ function createVideoItem(src: string, duration: number, callback?: () => void): 
 		return new Promise((resolve) => {
 			const vid = document.createElement('video')
 
-			vid.addEventListener('progress', () => {
+			vid.addEventListener('canplay', () => {
 				backgroundsWrapper?.classList.remove('hidden')
 				resolve(true)
 
@@ -701,8 +704,10 @@ function createVideoItem(src: string, duration: number, callback?: () => void): 
 			})
 
 			vid.src = src
+			vid.volume = 0
 			vid.muted = true
 			vid.autoplay = true
+			vid.playbackRate = 1
 			div.prepend(vid)
 		})
 	}
@@ -730,43 +735,44 @@ function createVideoItem(src: string, duration: number, callback?: () => void): 
 }
 
 function preloadBackground(media: Background | undefined, res?: BackgroundSize) {
-	const resolution = res ? res : detectBackgroundSize()
-
 	if (!media) {
 		return
 	}
 
+	localStorage.setItem('backgroundPreloading', 'true')
+
+	const resolution = res ? res : detectBackgroundSize()
+	const src = media.urls[resolution]
+
 	if (media.format === 'image') {
 		const img = document.createElement('img')
-		const src = media.urls[resolution]
+		img.fetchPriority = 'low'
 
 		return new Promise((resolve) => {
 			img.addEventListener('load', () => {
+				localStorage.removeItem('backgroundPreloading')
 				img.remove()
 				resolve(true)
-				storage.local.remove('backgroundPreloading')
 			})
 
-			storage.local.set({ backgroundPreloading: true })
 			img.src = src
 		})
 	}
 
-	const vid = document.createElement('video')
-	const src = media.urls[resolution]
+	if (media.format === 'video') {
+		const video = document.createElement('video')
 
-	return new Promise((resolve) => {
-		vid.addEventListener('progress', (_) => {
-			setTimeout(() => {
-				storage.local.remove('backgroundPreloading')
-				vid.remove()
+		return new Promise((resolve) => {
+			video.addEventListener('canplaythrough', () => {
+				localStorage.removeItem('backgroundPreloading')
+				video.remove()
 				resolve(true)
-			}, 200)
-		})
+			})
 
-		storage.local.set({ backgroundPreloading: true })
-		vid.src = src
-	})
+			// Wait the for applied video to continue buffering
+			setTimeout(() => video.src = src, 600)
+		})
+	}
 }
 
 export function removeBackgrounds(): void {
@@ -1010,6 +1016,16 @@ function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement) {
 			document.documentElement.style.setProperty('--average-color', color)
 		}, fadein)
 	}
+}
+
+function pauseVideoOnVisibilityChange() {
+	document.querySelectorAll('video')?.forEach((video) => {
+		if (document.hidden) {
+			video.pause()
+		} else {
+			video.play()
+		}
+	})
 }
 
 function getAverageColor(img: HTMLImageElement) {
