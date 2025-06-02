@@ -128,6 +128,11 @@ function upgradeLocalStorage(data: Local): Local {
 	data.translations = undefined
 	storage.local.remove('translations')
 
+	data = {
+		...LOCAL_DEFAULT,
+		...data,
+	}
+
 	return data
 }
 

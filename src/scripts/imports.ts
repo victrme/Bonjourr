@@ -359,31 +359,28 @@ function improvedWeather(data: Import): Import {
 
 /** Version 21: migrate from generic fields to a single object */
 function newBackgroundsField(data: Import): Import {
-	if (data.backgrounds) {
-		return data
-	}
-
 	const olddata = data as Partial<OldSync>
 	const defaults = structuredClone(SYNC_DEFAULT)
 
-	data.backgrounds = defaults.backgrounds
+	if (!data.backgrounds) {
+		data.backgrounds = defaults.backgrounds
+	}
 
-	if (data.backgrounds) {
+	if (olddata.background_blur !== undefined) {
+		data.backgrounds.blur = olddata.background_blur
+	}
+	if (olddata.background_bright !== undefined) {
+		data.backgrounds.bright = olddata.background_bright
+	}
+	if (olddata.background_type !== undefined) {
+		data.backgrounds.type = olddata.background_type === 'unsplash' ? 'images' : 'files'
+	}
+	if (olddata.unsplash) {
 		data.backgrounds.frequency = olddata.unsplash?.every ?? 'hour'
-
-		if (olddata.background_blur !== undefined) {
-			data.backgrounds.blur = olddata.background_blur
-		}
-		if (olddata.background_bright !== undefined) {
-			data.backgrounds.bright = olddata.background_bright
-		}
-		if (olddata.background_type !== undefined) {
-			data.backgrounds.type = olddata.background_type === 'unsplash' ? 'images' : 'files'
-		}
-		if (olddata.unsplash?.collection) {
-			data.backgrounds.images = 'unsplash-images-collections'
-			data.backgrounds.queries = { 'unsplash-images-collections': olddata.unsplash.collection }
-		}
+	}
+	if (olddata.unsplash?.collection) {
+		data.backgrounds.images = 'unsplash-images-collections'
+		data.backgrounds.queries = { 'unsplash-images-collections': olddata.unsplash.collection }
 	}
 
 	return data
