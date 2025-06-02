@@ -29,7 +29,10 @@
 	cursor: pointer;
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);
-	transition: opacity 2s, background-color 0.1s, color 0.1s;
+	transition:
+		opacity 2s,
+		background-color 0.1s,
+		color 0.1s;
 }
 
 #popup_buttons {
@@ -92,7 +95,9 @@
 	width: 100%;
 	font-size: 1.6em;
 	font-weight: bolder;
-	transition: opacity 0.1s, background-color 0.1s;
+	transition:
+		opacity 0.1s,
+		background-color 0.1s;
 }
 
 #popup_close:hover {
