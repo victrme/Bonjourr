@@ -75,43 +75,45 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		return
 	}
 
-	// extracts notification template from index.html
-	const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
-	const doc = document.importNode(template.content, true)
-	supportersNotif = doc.getElementById('supporters-notif-container') as HTMLElement
-
 	// resets closing and stores new month
 	updateSupportersOption({
 		closed: false,
 		month: currentMonth,
 	})
 
+	const settingsNotifs = document.getElementById('settings-notifications')
+	const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
+	const doc = document.importNode(template.content, true)
+
+	supportersNotif = doc.getElementById('supporters-notif-container') as HTMLElement
+	settingsNotifs?.insertAdjacentElement('beforebegin', supportersNotif)
 	supportersNotif.classList.add('shown')
 	document.documentElement.dataset.supporters = ''
+}
 
-	onSettingsLoad(() => {
-		const notifClose = doc.getElementById('supporters-notif-close')
-		const settingsNotifs = document.getElementById('settings-notifications')
-		const image = monthBackgrounds[currentMonth - 1]
+export function initSupportersSettingsNotif(supporters: Sync['supporters']) {
+	// extracts notification template from index.html
+	const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
+	const doc = document.importNode(template.content, true)
+	const notifClose = doc.getElementById('supporters-notif-close')
+	const image = monthBackgrounds[supporters.month - 1]
 
-		supportersNotif.style.setProperty('--background', `url(${image})`)
-		settingsNotifs?.insertAdjacentElement('beforebegin', supportersNotif)
+	supportersNotif.style.setProperty('--background', `url(${image})`)
 
-		initSupportersModal()
-		translateNotif()
+	initSupportersModal()
+	translateNotif()
 
-		onclickdown(supportersNotif, (e) => {
-			if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
-				toggleSupportersModal(true)
-				loadModalData()
-			}
-		})
+	onclickdown(supportersNotif, (e) => {
+		if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
+			toggleSupportersModal(true)
+			loadModalData()
+		}
+	})
 
-		onclickdown(notifClose, () => {
-			delete document.documentElement.dataset.supporters
-			supportersNotif.classList.remove('shown')
-			updateSupportersOption({ closed: true })
-		})
+	onclickdown(notifClose, () => {
+		delete document.documentElement.dataset.supporters
+		supportersNotif.classList.remove('shown')
+		updateSupportersOption({ closed: true })
 	})
 }
 

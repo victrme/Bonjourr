@@ -1,8 +1,8 @@
 import { colorButtonStyling, darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
+import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
-import { supportersNotifications } from './features/supporters.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
 import { moveElements } from './features/move/index.ts'
@@ -80,6 +80,7 @@ function settingsInitEvent(event: Event) {
 	traduction(settings, sync.lang)
 	translatePlaceholders()
 	initBackgroundOptions(sync, local)
+	initSupportersSettingsNotif(sync.supporters)
 	initOptionsValues(sync, local)
 	initOptionsEvents()
 	settingsFooter()
