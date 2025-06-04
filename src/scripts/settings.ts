@@ -80,7 +80,7 @@ function settingsInitEvent(event: Event) {
 	traduction(settings, sync.lang)
 	translatePlaceholders()
 	initBackgroundOptions(sync, local)
-	initSupportersSettingsNotif(sync.supporters)
+	initSupportersSettingsNotif(sync)
 	initOptionsValues(sync, local)
 	initOptionsEvents()
 	settingsFooter()
