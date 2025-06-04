@@ -106,10 +106,7 @@ async function startup() {
 		setPotatoComputerMode()
 		userActions()
 
-		supportersNotifications({
-			supporters: sync.supporters,
-			review: sync.review,
-		})
+		supportersNotifications(sync)
 
 		interfacePopup({
 			announce: sync.announcements,
