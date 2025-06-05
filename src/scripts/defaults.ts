@@ -139,6 +139,7 @@ export const SYNC_DEFAULT: Sync = {
 		analog: false,
 		seconds: false,
 		ampmlabel: false,
+		ampmposition: 'top-left',
 		worldclocks: false,
 		timezone: 'auto',
 	},
