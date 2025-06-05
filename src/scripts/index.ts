@@ -61,12 +61,7 @@ async function startup() {
 
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
-
-		try {
-			await prepareIdbFormatMigration(local)
-		} catch (e) {
-			console.warn(e)
-		}
+		await prepareIdbFormatMigration(local)
 
 		// <!> do not move, must delete old keys before upgrading storage
 		await storage.sync.clear()

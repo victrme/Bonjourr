@@ -346,7 +346,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 	const lastTime = new Date(local.backgroundLastChange ?? '01/01/1971').getTime()
 	const needNew = needsChange(backgrounds.frequency, lastTime)
 	const isPaused = backgrounds.frequency === 'pause'
-	const isPreloading = localStorage.backgroundPreloading === 'true'
+	const isProloading = localStorage.backgroundPreloading === 'true'
 
 	if (list.length === 0) {
 		if (isFilesOrUrls) {
@@ -370,7 +370,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 		}
 	}
 
-	if (isImagesOrVideos && isPreloading) {
+	if (isImagesOrVideos && isProloading) {
 		applyBackground(list[0])
 		preloadBackground(list[1])
 		return
@@ -399,13 +399,6 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 
 	if (list.length > 1) {
 		list.shift()
-	}
-
-	if (backgrounds.type === 'files') {
-		const rand = Math.floor(Math.random() * list.length)
-		applyBackground(list[rand])
-		local.backgroundFiles[keys[rand]].lastUsed = userDate().toString()
-		return
 	}
 
 	if (isImagesOrVideos && backgrounds.frequency === 'pause') {

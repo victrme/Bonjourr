@@ -1,6 +1,6 @@
 {
 	"$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
-	"version": "21.0.1",
+	"version": "21.0.0",
 	"tasks": {
 		"build": "deno run --allow-all ./tasks/build.ts",
 		"edge": "deno run --allow-all ./tasks/build.ts edge dev",

@@ -21,22 +21,15 @@ export function userDate(timezone = 'auto'): Date {
 		return date
 	}
 
-	try {
-		const intl = new Intl.DateTimeFormat('en', {
-			timeZone: timezone,
-			dateStyle: 'medium',
-			timeStyle: 'medium',
-		})
+	const intl = new Intl.DateTimeFormat('en', {
+		timeZone: timezone,
+		dateStyle: 'medium',
+		timeStyle: 'medium',
+	})
 
-		userSetDate = new Date(intl.format(date))
+	userSetDate = new Date(intl.format(date))
 
-		return userSetDate
-	} catch (e) {
-		console.warn(e)
-		console.info('Your timezone is not valid')
-	}
-
-	return date
+	return userSetDate
 }
 
 export function daylightPeriod(time?: number) {
