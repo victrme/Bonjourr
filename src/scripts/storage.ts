@@ -376,7 +376,13 @@ async function init(): Promise<AllStorage> {
 async function clearall() {
 	sessionStorage.clear()
 	localStorage.clear()
-	idb.clear()
+
+	try {
+		idb.clear()
+	} catch (_) {
+		console.info('You are on Firefox Private Browsing')
+		return
+	}
 
 	//@ts-expect-error: Type 'undefined' is not assignable to type ...
 	globalThis.startupStorage = undefined
