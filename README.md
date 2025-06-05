@@ -123,6 +123,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇯🇵 Japanese translation** · [Kou365](https://github.com/Kou365) & 石原英里華 (IshiharaErika)
 -   **🇭🇷 Croatian translation** · Ghost
 -   **🇦🇿 Azerbaijani translation** · Hacıağa Sadıxov · [GitHub](https://github.com/Hajiagha-Sadikhov)
+-   **🇧🇾 Belarusian translation** · Eduard Račkoŭski · [GitHub](https://github.com/The518thGuy)
 
 ## 👨‍💻 Running Bonjourr
 
