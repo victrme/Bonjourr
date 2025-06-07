@@ -59,6 +59,8 @@ async function startup() {
 	if (oldVersion !== CURRENT_VERSION) {
 		console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
 
+		localStorage.setItem('upgrade-archive', JSON.stringify(sync))
+
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
 
