@@ -31,6 +31,39 @@ let thumbnailSelectionObserver: MutationObserver
 
 // Update
 
+async function saveFileToCache(blob: File | Blob, name: string, size: string) {
+	const start = globalThis.performance.now()
+	const cache = await caches.open('local-files')
+	const request = new Request(`https://mock.bonjourr.fr/${name}/${size}`)
+	const response = new Response(blob, { headers: { 'content-type': blob.type } })
+	await cache.put(request, response)
+
+	const time = globalThis.performance.now() - start
+	console.log('save', name, 'in: ', time, 'ms')
+
+	return true
+}
+
+export async function getFileFromCache(name: string): Promise<LocalFileData> {
+	const start = globalThis.performance.now()
+	const cache = await caches.open('local-files')
+	const fileData: LocalFileData = {}
+
+	for (const size of ['raw', 'full', 'medium', 'small']) {
+		const resp = await cache?.match(`https://mock.bonjourr.fr/${name}/${size}`)
+		const blob = await resp?.blob()
+
+		if (blob) {
+			fileData[size] = blob
+		}
+	}
+
+	const time = globalThis.performance.now() - start
+	console.log('got', name, 'in: ', time, 'ms')
+
+	return fileData
+}
+
 export async function addLocalBackgrounds(filelist: FileList | File[], local: Local) {
 	try {
 		const dateString = userDate().toString()
@@ -97,9 +130,13 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 			filesData[id] = { raw, full, medium, small }
 
-			addThumbnailImage(id, filesData[id])
-			await idb.set(id, filesData[id])
+			saveFileToCache(raw, id, 'raw')
+			saveFileToCache(full, id, 'full')
+			saveFileToCache(medium, id, 'medium')
+			saveFileToCache(small, id, 'small')
 			storage.local.set({ backgroundFiles: local.backgroundFiles })
+
+			addThumbnailImage(id, filesData[id])
 		}
 
 		// 3. Apply background
@@ -113,8 +150,8 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 		unselectAll()
 		applyBackground(image)
 		handleFilesSettingsOptions(local)
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
+	} catch (e) {
+		console.info(e)
 		return
 	}
 }
@@ -378,24 +415,28 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 
 export async function getFilesAsCollection(local: Local): Promise<[string[], BackgroundImage[]]> {
 	try {
-		const idbKeys = (await idb.keys()) as string[]
-		const files = validateBackgroundFiles(local, idbKeys)
-		const filesData = await getAllFiles(Object.keys(files))
+		const files = local.backgroundFiles ?? []
+		const filesData = [await getFileFromCache(Object.keys(files)[0])]
 		const entries = Object.entries(files)
 
-		const sorted = entries.toSorted((a, b) => {
-			return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
-		})
+		// const sorted = entries.toSorted((a, b) => {
+		// 	return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
+		// })
 
-		const images: BackgroundImage[] = []
-		const keys = sorted.map((entry) => entry[0])
+		// const images: BackgroundImage[] = []
+		// const keys = sorted.map((entry) => entry[0])
 
-		for (const [key, file] of sorted) {
-			const data = filesData[key]
-			const isRaw = local.backgroundCompressFiles
-			const image = imageObjectFromStorage(file, data, isRaw)
-			images.push(image)
-		}
+		// for (const [key, file] of sorted) {
+		// 	const data = filesData[key]
+		// 	console.log(data)
+
+		// 	const isRaw = local.backgroundCompressFiles
+		// 	const image = imageObjectFromStorage(file, data, isRaw)
+		// 	images.push(image)
+		// }
+
+		const keys = Object.keys(files)
+		const images: BackgroundImage[] = [imageObjectFromStorage(entries[0][1], filesData[0], false)]
 
 		return [keys, images]
 	} catch (_) {

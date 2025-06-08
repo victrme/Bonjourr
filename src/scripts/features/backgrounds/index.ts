@@ -1,4 +1,4 @@
-import { addLocalBackgrounds, getFilesAsCollection, initFilesSettingsOptions } from './local.ts'
+import { addLocalBackgrounds, getFileFromCache, getFilesAsCollection, initFilesSettingsOptions } from './local.ts'
 import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
