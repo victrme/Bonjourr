@@ -22,44 +22,9 @@
 		<style type="text/css" id="styles"></style>
 		<style type="text/css" id="fontface"></style>
 
+		<script src="src/scripts/help-mode.js" defer></script>
 		<script src="src/scripts/main.js" defer></script>
 	</head>
-
-	<div id="help-mode" style="display: none">
-		<h1>Help Mode</h1>
-		<h2>Status</h2>
-		<p>
-			<span>Website: </span>
-			<span id="website-status">...</span>
-			<span>, weather: </span>
-			<span id="weather-status">...</span>
-			<span>, services: </span>
-			<span id="services-status">...</span>
-		</p>
-
-		<h2>Contact</h2>
-		<ul>
-			<li>Documentation: <a href="https://bonjourr.fr/docs">bonjourr.fr/docs</a></li>
-			<li>On Telegram: <a href="https://t.me/@bonjourrStartpage">@BonjourrStartpage</a></li>
-			<li>Via email: bonjourr.app@protonmail.com</li>
-		</ul>
-
-		<h2>Storage</h2>
-		<h3>LocalStorage</h3>
-		<ul>
-			<li>
-				<p>{key}</p>
-				<p>{val}</p>
-			</li>
-		</ul>
-
-		<h3>Extension Storage</h3>
-		<h4>Sync</h4>
-		<p>{object}</p>
-
-		<h4>Local</h4>
-		<p>{object}</p>
-	</div>
 
 	<body class="init loading">
 		<dialog id="editlink">
@@ -316,7 +281,7 @@
 			</div>
 		</dialog>
 
-		<div id="background-wrapper" class="hidden" data-type="omages" data-texture="none">
+		<div id="background-wrapper" class="hidden" data-type="images" data-texture="none">
 			<div id="background-media"></div>
 			<div id="background-color"></div>
 			<div id="background-texture"></div>
@@ -510,6 +475,10 @@
 			</button>
 		</div>
 
+		<aside id="settings" class="init hidden" style="display: none">
+			<!-- settings -->
+		</aside>
+
 		<div id="templates">
 			<template id="bookmarks-dialog-template">
 				<dialog id="bookmarks">
@@ -689,10 +658,36 @@
 					<button id="b_opera-explained" class="trn">Close and access Bonjourr</button>
 				</dialog>
 			</template>
-		</div>
 
-		<aside id="settings" class="init hidden" style="display: none">
-			<!-- settings -->
-		</aside>
+			<template id="help-mode-template">
+				<div id="help-mode">
+					<h1>Help Mode</h1>
+					<h2>Status</h2>
+					<ul>
+    					<li>Website: <span id="help-status-website">loading</span><span></li>
+    					<li>Weather: <span id="help-status-weather">loading</span><span></li>
+     				    <li>Services: <span id="help-status-services">loading</span><span></li>
+					</ul>
+
+					<h2>Contact</h2>
+					<ul>
+						<li>Documentation: <a href="https://bonjourr.fr/docs">bonjourr.fr/docs</a></li>
+						<li>On Telegram: <a href="https://t.me/@bonjourrStartpage">@BonjourrStartpage</a></li>
+						<li>Via email: bonjourr.app@protonmail.com</li>
+					</ul>
+
+					<h2>Storage</h2>
+					<h3>LocalStorage</h3>
+					<ul id="help-localstorage"></ul>
+
+					<h3>Extension Storage</h3>
+					<h4>Sync</h4>
+					<textarea id="help-storage-sync"></textarea>
+
+					<h4>Local</h4>
+					<textarea id="help-storage-local"></textarea>
+				</div>
+			</template>
+		</div>
 	</body>
 </html>
