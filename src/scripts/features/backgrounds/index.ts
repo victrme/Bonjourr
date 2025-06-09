@@ -1,8 +1,13 @@
-import { addLocalBackgrounds, getFileFromCache, getFilesAsCollection, initFilesSettingsOptions } from './local.ts'
 import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
+import {
+	addLocalBackgrounds,
+	collectionFromLocalFiles,
+	imageFromLocalFiles,
+	initFilesSettingsOptions,
+} from './local.ts'
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
 import { turnRefreshButton } from '../../shared/dom.ts'
@@ -166,8 +171,9 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		local.backgroundCompressFiles = update.compress
 		storage.local.set({ backgroundCompressFiles: update.compress })
 
-		const [_ids, files] = await getFilesAsCollection(local)
-		const image = files[0]
+		const [ids, _] = collectionFromLocalFiles(local)
+		const image = await imageFromLocalFiles(ids[0], local)
+
 		applyBackground(image)
 	}
 
@@ -317,7 +323,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 
 	switch (backgrounds.type) {
 		case 'files': {
-			const [k, l] = await getFilesAsCollection(local)
+			const [k, l] = collectionFromLocalFiles(local)
 			keys = k
 			list = l
 			break
@@ -393,7 +399,12 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 	}
 
 	if (!needNew) {
-		applyBackground(list[0])
+		if (backgrounds.type === 'files') {
+			applyBackground(await imageFromLocalFiles(keys[0], local))
+		} else {
+			applyBackground(list[0])
+		}
+
 		return
 	}
 
@@ -403,8 +414,13 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 
 	if (backgrounds.type === 'files') {
 		const rand = Math.floor(Math.random() * list.length)
-		applyBackground(list[rand])
-		local.backgroundFiles[keys[rand]].lastUsed = userDate().toString()
+		const id = keys[rand]
+		const image = await imageFromLocalFiles(id, local)
+
+		local.backgroundFiles[id].lastUsed = userDate().toString()
+		storage.local.set(local)
+		applyBackground(image)
+
 		return
 	}
 
@@ -987,8 +1003,12 @@ async function getCurrentBackgrounds(sync?: Sync, local?: Local) {
 	local ??= await storage.local.get()
 
 	if (sync.backgrounds.type === 'files') {
-		const [_keys, images] = await getFilesAsCollection(local)
-		return [images[0], images[1]]
+		const [keys] = collectionFromLocalFiles(local)
+
+		return [
+			await imageFromLocalFiles(keys[0], local),
+			await imageFromLocalFiles(keys[1], local),
+		]
 	}
 	if (sync.backgrounds.type === 'images') {
 		const lists = getCollection(sync.backgrounds, local)

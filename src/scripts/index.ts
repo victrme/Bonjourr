@@ -1,5 +1,4 @@
 import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
-import { prepareIdbFormatMigration } from './features/backgrounds/local.ts'
 import { supportersNotifications } from './features/supporters.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { backgroundsInit } from './features/backgrounds/index.ts'
@@ -64,11 +63,11 @@ async function startup() {
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
 
-		try {
-			await prepareIdbFormatMigration(local)
-		} catch (e) {
-			console.warn(e)
-		}
+		// try {
+		// 	await prepareIdbFormatMigration(local)
+		// } catch (e) {
+		// 	console.warn(e)
+		// }
 
 		// <!> do not move, must delete old keys before upgrading storage
 		await storage.sync.clear()

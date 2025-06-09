@@ -5,7 +5,7 @@ import { IS_MOBILE } from '../../defaults.ts'
 import { userDate } from '../../shared/time.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
-import * as idb from 'idb-keyval'
+// import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
@@ -30,39 +30,6 @@ let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
 // Update
-
-async function saveFileToCache(blob: File | Blob, name: string, size: string) {
-	const start = globalThis.performance.now()
-	const cache = await caches.open('local-files')
-	const request = new Request(`https://mock.bonjourr.fr/${name}/${size}`)
-	const response = new Response(blob, { headers: { 'content-type': blob.type } })
-	await cache.put(request, response)
-
-	const time = globalThis.performance.now() - start
-	console.log('save', name, 'in: ', time, 'ms')
-
-	return true
-}
-
-export async function getFileFromCache(name: string): Promise<LocalFileData> {
-	const start = globalThis.performance.now()
-	const cache = await caches.open('local-files')
-	const fileData: LocalFileData = {}
-
-	for (const size of ['raw', 'full', 'medium', 'small']) {
-		const resp = await cache?.match(`https://mock.bonjourr.fr/${name}/${size}`)
-		const blob = await resp?.blob()
-
-		if (blob) {
-			fileData[size] = blob
-		}
-	}
-
-	const time = globalThis.performance.now() - start
-	console.log('got', name, 'in: ', time, 'ms')
-
-	return fileData
-}
 
 export async function addLocalBackgrounds(filelist: FileList | File[], local: Local) {
 	try {
@@ -113,7 +80,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const averagePixelHeight = short * ratio * density
 
 			const raw = file
-			const full = await compressMedia(file, { size: averagePixelHeight, q: 0.9 })
+			const full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
 			const medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
 			const small = await compressMedia(medium, { size: 360, q: 0.4 })
 
@@ -130,22 +97,15 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 			filesData[id] = { raw, full, medium, small }
 
-			saveFileToCache(raw, id, 'raw')
-			saveFileToCache(full, id, 'full')
-			saveFileToCache(medium, id, 'medium')
-			saveFileToCache(small, id, 'small')
-			storage.local.set({ backgroundFiles: local.backgroundFiles })
-
+			saveFileToCache(id, filesData[id])
 			addThumbnailImage(id, filesData[id])
+			storage.local.set({ backgroundFiles: local.backgroundFiles })
 		}
 
 		// 3. Apply background
 
 		const id = newids[0]
-		const data = filesData[id]
-		const file = local.backgroundFiles[id]
-		const isRaw = local.backgroundCompressFiles
-		const image = imageObjectFromStorage(file, data, isRaw)
+		const image = await imageFromLocalFiles(id, local)
 
 		unselectAll()
 		applyBackground(image)
@@ -166,7 +126,7 @@ async function removeLocalBackgrounds() {
 		}
 
 		for (const id of ids) {
-			idb.del(id)
+			removeFileFromCache(id)
 			delete local.backgroundFiles[id]
 
 			const thumbnail = document.querySelector<HTMLElement>(`#${id}`)
@@ -176,8 +136,8 @@ async function removeLocalBackgrounds() {
 			}, 100)
 		}
 
-		const [_, collection] = await getFilesAsCollection(local)
-		const image = collection[0]
+		const filesIds = lastUsedBackgroundFiles(local)
+		const image = await imageFromLocalFiles(filesIds[0], local)
 
 		if (image) {
 			applyBackground(image)
@@ -312,7 +272,7 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 		const id = target.id ?? ''
 
 		if (isIntersecting && target.classList.contains('loading')) {
-			getFile(id).then((data) => {
+			getFileFromCache(id).then((data) => {
 				if (data) {
 					addThumbnailImage(id, data)
 					thumbnailVisibilityObserver.unobserve(target)
@@ -387,140 +347,68 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 	}
 
 	if (isLeftClick) {
-		const data = await getFile(id)
 		const local = await storage.local.get()
-		const file = local.backgroundFiles[id]
-		const isRaw = local.backgroundCompressFiles
+		const metadata = local.backgroundFiles[id]
+		const image = await imageFromLocalFiles(id, local)
 
-		if (!(file && data)) {
-			console.warn('?')
+		if (!metadata || !image) {
+			console.warn('metadata: ', metadata)
+			console.warn('image: ', image)
 			return
 		}
 
 		unselectAll()
 		document.getElementById(id)?.classList?.add('selected')
 
-		const image = imageObjectFromStorage(file, data, isRaw)
-
 		local.backgroundFiles[id].lastUsed = userDate().toString()
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
 
 		handleFilesSettingsOptions(local)
-		handleFilesMoveOptions(file)
+		handleFilesMoveOptions(metadata)
 		applyBackground(image)
 	}
 }
 
-// Storage
+// Local to Background conversions
 
-export async function getFilesAsCollection(local: Local): Promise<[string[], BackgroundImage[]]> {
-	try {
-		const files = local.backgroundFiles ?? []
-		const filesData = [await getFileFromCache(Object.keys(files)[0])]
-		const entries = Object.entries(files)
+function lastUsedBackgroundFiles(local: Local): string[] {
+	const sortedMetadata = Object.entries(local.backgroundFiles).toSorted((a, b) => {
+		return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
+	})
 
-		// const sorted = entries.toSorted((a, b) => {
-		// 	return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
-		// })
-
-		// const images: BackgroundImage[] = []
-		// const keys = sorted.map((entry) => entry[0])
-
-		// for (const [key, file] of sorted) {
-		// 	const data = filesData[key]
-		// 	console.log(data)
-
-		// 	const isRaw = local.backgroundCompressFiles
-		// 	const image = imageObjectFromStorage(file, data, isRaw)
-		// 	images.push(image)
-		// }
-
-		const keys = Object.keys(files)
-		const images: BackgroundImage[] = [imageObjectFromStorage(entries[0][1], filesData[0], false)]
-
-		return [keys, images]
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return [[], []]
-	}
+	return sortedMetadata.map(([id, _]) => id)
 }
 
-function imageObjectFromStorage(file: BackgroundFile, data: LocalFileData, raw?: boolean): BackgroundImage {
+function imageObjectFromMetadatas(metadata: BackgroundFile): BackgroundImage {
 	return {
 		format: 'image',
-		size: file.position.size,
-		x: file.position.x,
-		y: file.position.y,
+		size: metadata.position.size,
+		x: metadata.position.x,
+		y: metadata.position.y,
 		urls: {
-			full: URL.createObjectURL(raw ? data.raw : data.full),
-			medium: URL.createObjectURL(data.medium),
-			small: URL.createObjectURL(data.small),
+			full: 'blob-full',
+			medium: 'blob-medium',
+			small: 'blob-small',
 		},
 	}
 }
 
-function validateBackgroundFiles(local: Local, idbKeys: string[]): Local['backgroundFiles'] {
-	const backgroundFiles: Record<string, BackgroundFile> = {}
-	const date = userDate().toString()
-	let change = false
-
-	for (const key of idbKeys) {
-		if (key in local.backgroundFiles) {
-			backgroundFiles[key] = local.backgroundFiles[key]
-		} else {
-			backgroundFiles[key] = { lastUsed: date, position: { size: 'cover', x: '50%', y: '50%' } }
-			change = true
-		}
-	}
-
-	local.backgroundFiles = backgroundFiles
-
-	if (change) {
-		storage.local.set({ backgroundFiles })
-	}
-
-	return backgroundFiles
+export function collectionFromLocalFiles(local: Local): [string[], BackgroundImage[]] {
+	const ids = lastUsedBackgroundFiles(local)
+	const images = ids.map((id) => imageObjectFromMetadatas(local.backgroundFiles[id]))
+	return [ids, images]
 }
 
-export async function prepareIdbFormatMigration(local: Local) {
-	try {
-		const localImages = await idb.get('localImages') as OldLocalImages
+export async function imageFromLocalFiles(id: string, local: Local): Promise<BackgroundImage> {
+	const isRaw = local.backgroundCompressFiles
+	const image = imageObjectFromMetadatas(local.backgroundFiles[id])
+	const data = await getFileFromCache(id)
 
-		if (!localImages) {
-			return
-		}
+	image.urls.full = URL.createObjectURL(isRaw ? data.raw : data.full)
+	image.urls.medium = URL.createObjectURL(data.medium)
+	image.urls.small = URL.createObjectURL(data.small)
 
-		const keys = (await idb.keys() as string[]).filter((k) => k !== 'localImages')
-		const selected = localImages.selected ?? ''
-		const selectedImage = await idb.get(selected)
-
-		await addLocalBackgrounds([selectedImage.background], local)
-
-		for (const key of keys) {
-			const file = await idb.get(key) as OldLocalImagesItem
-
-			const backgroundFile: BackgroundFile = {
-				lastUsed: userDate().toString(),
-				selected: key === selected,
-				position: { size: 'cover', x: '50%', y: '50%' },
-			}
-
-			const localFileData: LocalFileData = {
-				raw: file.background,
-				full: file.background,
-				medium: file.thumbnail,
-				small: file.thumbnail,
-			}
-
-			idb.set(key, localFileData)
-			local.backgroundFiles[key] = backgroundFile
-		}
-
-		idb.del('localImages')
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return
-	}
+	return image
 }
 
 //	Helpers
@@ -537,30 +425,45 @@ function getSelection(): string[] {
 	return ids
 }
 
-async function getFile(id: string): Promise<LocalFileData | undefined> {
-	try {
-		return await idb.get<LocalFileData>(id)
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return
+//  Storage
+
+async function saveFileToCache(id: string, filedata: LocalFileData) {
+	const cache = await caches.open('local-files')
+
+	for (const [size, blob] of Object.entries(filedata)) {
+		const request = new Request(`https://mock.bonjourr.fr/${id}/${size}`)
+		const response = new Response(blob, { headers: { 'content-type': blob.type } })
+		cache.put(request, response)
 	}
 }
 
-async function getAllFiles(ids: string[]): Promise<Record<string, LocalFileData>> {
-	try {
-		const result: Record<string, LocalFileData> = {}
+export async function getFileFromCache(id: string): Promise<LocalFileData> {
+	const start = globalThis.performance.now()
+	const cache = await caches.open('local-files')
+	const fileData: LocalFileData = {}
 
-		for (const id of ids) {
-			const file = await getFile(id)
+	for (const size of ['raw', 'full', 'medium', 'small']) {
+		const resp = await cache?.match(`https://mock.bonjourr.fr/${id}/${size}`)
+		const blob = await resp?.blob()
 
-			if (file) {
-				result[id] = file
-			}
+		if (blob) {
+			fileData[size] = blob
 		}
-
-		return result
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return {}
 	}
+
+	const time = globalThis.performance.now() - start
+	console.log('got', id, 'in: ', time, 'ms')
+
+	return fileData
+}
+
+async function removeFileFromCache(id: string) {
+	const cache = await caches.open('local-files')
+
+	cache.delete(`https://mock.bonjourr.fr/${id}/raw`)
+	cache.delete(`https://mock.bonjourr.fr/${id}/full`)
+	cache.delete(`https://mock.bonjourr.fr/${id}/medium`)
+	cache.delete(`https://mock.bonjourr.fr/${id}/small`)
+
+	return true
 }
