@@ -96,7 +96,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	const local = await storage.local.get()
 
 	if (update.blurenter) {
-		// blurResolutionControl()
+		blurResolutionControl(data, local)
 		return
 	}
 
@@ -316,22 +316,11 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 		return
 	}
 
-	const isImagesOrVideos = backgrounds.type === 'images' || backgrounds.type === 'videos'
-	const isFilesOrUrls = backgrounds.type === 'files' || backgrounds.type === 'urls'
-
 	// 1. Find correct list to use
 
 	let list: BackgroundVideo[] | BackgroundImage[] = []
-	let keys: string[] = []
 
 	switch (backgrounds.type) {
-		case 'urls': {
-			const [k, l] = getUrlsAsCollection(local)
-			keys = k
-			list = l
-			break
-		}
-
 		case 'images':
 			list = getCollection(backgrounds, local).images()
 			break
@@ -367,13 +356,13 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 		}
 	}
 
-	if (isImagesOrVideos && isPreloading) {
+	if (isPreloading) {
 		applyBackground(list[0])
 		preloadBackground(list[1])
 		return
 	}
 
-	if (isImagesOrVideos && !needNew && isPaused) {
+	if (!needNew && isPaused) {
 		if (backgrounds.pausedImage) {
 			applyBackground(backgrounds.pausedImage)
 			return
@@ -382,20 +371,10 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 			applyBackground(backgrounds.pausedVideo)
 			return
 		}
-		if (backgrounds.pausedUrl) {
-			const url = backgrounds.pausedUrl
-			const urls = { full: url, medium: url, small: url }
-			applyBackground({ format: 'image', urls: urls })
-		}
 	}
 
 	if (!needNew) {
-		if (backgrounds.type === 'files') {
-			applyBackground(await imageFromLocalFiles(keys[0], local))
-		} else {
-			applyBackground(list[0])
-		}
-
+		applyBackground(list[0])
 		return
 	}
 
@@ -403,7 +382,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 		list.shift()
 	}
 
-	if (isImagesOrVideos && backgrounds.frequency === 'pause') {
+	if (backgrounds.frequency === 'pause') {
 		if (backgrounds.type === 'images') {
 			backgrounds.pausedImage = list[0] as BackgroundImage
 		}
@@ -418,10 +397,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 
 		preloadBackground(list[1])
 
-		if (isImagesOrVideos) {
-			newlocal = setCollection(backgrounds, local).fromList(list)
-		}
-
+		newlocal = setCollection(backgrounds, local).fromList(list)
 		newlocal.backgroundLastChange = userDate().toString()
 		storage.local.set(newlocal)
 	}
@@ -430,7 +406,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 
 	applyBackground(list[0])
 
-	if (isImagesOrVideos && list.length === 1 && navigator.onLine) {
+	if (list.length === 1 && navigator.onLine) {
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
@@ -933,8 +909,15 @@ function handleBackgroundActions(backgrounds: Backgrounds) {
 	document.getElementById('b_interface-background-download')?.classList.toggle('shown', type === 'images')
 }
 
-async function blurResolutionControl() {
-	const [current, next] = await getCurrentBackgrounds()
+async function blurResolutionControl(sync: Sync, local: Local) {
+	if (sync.backgrounds.type === 'files') {
+		const [ids, _] = collectionFromLocalFiles(local)
+		const image = await imageFromLocalFiles(ids[0], local)
+		applyBackground(image, 'full')
+		return
+	}
+
+	const [current, next] = await getCurrentBackgrounds(sync, local)
 
 	preloadBackground(current, 'small')
 
@@ -950,17 +933,10 @@ async function blurResolutionControl() {
 
 //  Helpers
 
-async function getCurrentBackgrounds(sync?: Sync, local?: Local) {
-	sync ??= await storage.sync.get('backgrounds')
-	local ??= await storage.local.get()
-
+async function getCurrentBackgrounds(sync: Sync, local: Local) {
 	if (sync.backgrounds.type === 'files') {
 		const [ids, _] = collectionFromLocalFiles(local)
-
-		return [
-			await imageFromLocalFiles(ids[0], local),
-			await imageFromLocalFiles(ids[1], local),
-		]
+		return [await imageFromLocalFiles(ids[0], local)]
 	}
 	if (sync.backgrounds.type === 'images') {
 		const lists = getCollection(sync.backgrounds, local)

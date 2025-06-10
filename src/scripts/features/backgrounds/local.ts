@@ -127,7 +127,12 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 		// 3. Apply background
 
 		const id = newids[0]
-		const image = await imageFromLocalFiles(id, local)
+		const image = imageObjectFromMetadatas(local.backgroundFiles[id])
+		const isRaw = local.backgroundCompressFiles
+
+		image.urls.full = URL.createObjectURL(isRaw ? filesData[id].raw : filesData[id].full)
+		image.urls.medium = URL.createObjectURL(filesData[id].medium)
+		image.urls.small = URL.createObjectURL(filesData[id].small)
 
 		unselectAll()
 		applyBackground(image)
@@ -148,7 +153,7 @@ async function removeLocalBackgrounds() {
 		}
 
 		for (const id of ids) {
-			removeFileFromCache(id)
+			removeFilesFromCache([id])
 			delete local.backgroundFiles[id]
 
 			const thumbnail = document.querySelector<HTMLElement>(`#${id}`)
@@ -491,17 +496,23 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 	}
 }
 
-async function removeFileFromCache(id: string) {
+async function removeFilesFromCache(ids: string[]) {
 	const cache = await caches.open('local-files')
 
-	cache.delete(`https://mock.bonjourr.fr/${id}/raw`)
-	cache.delete(`https://mock.bonjourr.fr/${id}/full`)
-	cache.delete(`https://mock.bonjourr.fr/${id}/medium`)
-	cache.delete(`https://mock.bonjourr.fr/${id}/small`)
+	for (const id of ids) {
+		cache.delete(`https://mock.bonjourr.fr/${id}/raw`)
+		cache.delete(`https://mock.bonjourr.fr/${id}/full`)
+		cache.delete(`https://mock.bonjourr.fr/${id}/medium`)
+		cache.delete(`https://mock.bonjourr.fr/${id}/small`)
+	}
 
 	return true
 }
 
+/**
+ * Removes metadata in local storage or add default based on files
+ * found in CacheStorage "local-files"
+ */
 async function sanitizeMetadatas(local: Local): Promise<Local> {
 	const newMetadataList: Record<string, BackgroundFile> = {}
 	const cache = await caches.open('local-files')
