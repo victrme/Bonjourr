@@ -93,7 +93,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	const local = await storage.local.get()
 
 	if (update.blurenter) {
-		blurResolutionControl()
+		// blurResolutionControl()
 		return
 	}
 
@@ -1003,11 +1003,11 @@ async function getCurrentBackgrounds(sync?: Sync, local?: Local) {
 	local ??= await storage.local.get()
 
 	if (sync.backgrounds.type === 'files') {
-		const [keys] = collectionFromLocalFiles(local)
+		const [ids, _] = collectionFromLocalFiles(local)
 
 		return [
-			await imageFromLocalFiles(keys[0], local),
-			await imageFromLocalFiles(keys[1], local),
+			await imageFromLocalFiles(ids[0], local),
+			await imageFromLocalFiles(ids[1], local),
 		]
 	}
 	if (sync.backgrounds.type === 'images') {

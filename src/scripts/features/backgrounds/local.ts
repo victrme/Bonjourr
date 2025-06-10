@@ -136,7 +136,7 @@ async function removeLocalBackgrounds() {
 			}, 100)
 		}
 
-		const filesIds = lastUsedBackgroundFiles(local)
+		const filesIds = lastUsedBackgroundFiles(local.backgroundFiles)
 		const image = await imageFromLocalFiles(filesIds[0], local)
 
 		if (image) {
@@ -195,7 +195,9 @@ export function initFilesSettingsOptions(local: Local) {
 		container?.style.setProperty('--thumbnails-columns', '2')
 	}
 
-	handleFilesSettingsOptions(local)
+	sanitizeMetadatas(local).then((newlocal) => {
+		handleFilesSettingsOptions(newlocal)
+	})
 
 	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
 	onclickdown(document.getElementById('b_thumbnail-zoom'), handleGridView)
@@ -371,8 +373,8 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 
 // Local to Background conversions
 
-function lastUsedBackgroundFiles(local: Local): string[] {
-	const sortedMetadata = Object.entries(local.backgroundFiles).toSorted((a, b) => {
+function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): string[] {
+	const sortedMetadata = Object.entries(metadatas).toSorted((a, b) => {
 		return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
 	})
 
@@ -394,9 +396,15 @@ function imageObjectFromMetadatas(metadata: BackgroundFile): BackgroundImage {
 }
 
 export function collectionFromLocalFiles(local: Local): [string[], BackgroundImage[]] {
-	const ids = lastUsedBackgroundFiles(local)
-	const images = ids.map((id) => imageObjectFromMetadatas(local.backgroundFiles[id]))
-	return [ids, images]
+	const metadatas = local.backgroundFiles
+	const ids = lastUsedBackgroundFiles(metadatas)
+
+	if (ids.length > 0) {
+		const images = ids.map((id) => imageObjectFromMetadatas(metadatas[id]))
+		return [ids, images]
+	}
+
+	return [[], []]
 }
 
 export async function imageFromLocalFiles(id: string, local: Local): Promise<BackgroundImage> {
@@ -466,4 +474,43 @@ async function removeFileFromCache(id: string) {
 	cache.delete(`https://mock.bonjourr.fr/${id}/small`)
 
 	return true
+}
+
+async function sanitizeMetadatas(local: Local): Promise<Local> {
+	const newMetadataList: Record<string, BackgroundFile> = {}
+	const cache = await caches.open('local-files')
+	const cacheKeys = await cache.keys()
+
+	for (const request of cacheKeys) {
+		try {
+			const key = new URL(request.url).pathname.split('/')[1]
+			let metadata = local.backgroundFiles[key]
+
+			if (!metadata) {
+				metadata = {
+					lastUsed: new Date('01/01/1971').toString(),
+					position: {
+						size: 'cover',
+						x: '50%',
+						y: '50%',
+					},
+				}
+			}
+
+			newMetadataList[key] = metadata
+		} catch (err) {
+			console.info(err)
+		}
+	}
+
+	const oldKeys = Object.keys(local.backgroundFiles)
+	const newKeys = Object.keys(newMetadataList)
+
+	if (oldKeys.length !== newKeys.length) {
+		storage.local.set({ backgroundFiles: newMetadataList })
+	}
+
+	local.backgroundFiles = newMetadataList
+
+	return local
 }
