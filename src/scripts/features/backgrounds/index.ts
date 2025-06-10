@@ -7,6 +7,7 @@ import {
 	collectionFromLocalFiles,
 	imageFromLocalFiles,
 	initFilesSettingsOptions,
+	localFilesCacheControl,
 } from './local.ts'
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
@@ -81,6 +82,8 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 
 	if (sync.backgrounds.type === 'color') {
 		applyBackground(sync.backgrounds.color)
+	} else if (sync.backgrounds.type === 'files') {
+		localFilesCacheControl(sync, local)
 	} else {
 		backgroundCacheControl(sync.backgrounds, local)
 	}
@@ -322,13 +325,6 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 	let keys: string[] = []
 
 	switch (backgrounds.type) {
-		case 'files': {
-			const [k, l] = collectionFromLocalFiles(local)
-			keys = k
-			list = l
-			break
-		}
-
 		case 'urls': {
 			const [k, l] = getUrlsAsCollection(local)
 			keys = k
@@ -355,11 +351,6 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 	const isPreloading = localStorage.backgroundPreloading === 'true'
 
 	if (list.length === 0) {
-		if (isFilesOrUrls) {
-			removeBackgrounds()
-			return
-		}
-
 		const json = await fetchNewBackgrounds(backgrounds)
 
 		if (json) {
@@ -412,27 +403,12 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 		list.shift()
 	}
 
-	if (backgrounds.type === 'files') {
-		const rand = Math.floor(Math.random() * list.length)
-		const id = keys[rand]
-		const image = await imageFromLocalFiles(id, local)
-
-		local.backgroundFiles[id].lastUsed = userDate().toString()
-		storage.local.set(local)
-		applyBackground(image)
-
-		return
-	}
-
 	if (isImagesOrVideos && backgrounds.frequency === 'pause') {
 		if (backgrounds.type === 'images') {
 			backgrounds.pausedImage = list[0] as BackgroundImage
 		}
 		if (backgrounds.type === 'videos') {
 			backgrounds.pausedVideo = list[0] as BackgroundVideo
-		}
-		if (backgrounds.type === 'videos') {
-			backgrounds.pausedUrl = list[0].urls.full
 		}
 		storage.sync.set({ backgrounds })
 	}
@@ -444,9 +420,6 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 
 		if (isImagesOrVideos) {
 			newlocal = setCollection(backgrounds, local).fromList(list)
-		}
-		if (isFilesOrUrls) {
-			newlocal = setLastUsed(backgrounds, local, keys)
 		}
 
 		newlocal.backgroundLastChange = userDate().toString()
@@ -604,27 +577,6 @@ function setCollection(backgrounds: Backgrounds, local: Local) {
 	}
 
 	return { fromList, fromApi }
-}
-
-function setLastUsed(backgrounds: Backgrounds, local: Local, keys: string[]): Local {
-	switch (backgrounds.type) {
-		case 'images':
-		case 'videos':
-		case 'color': {
-			throw new Error('Cannot update with this type')
-		}
-
-		default:
-	}
-
-	if (backgrounds.type === 'urls') {
-		local.backgroundUrls[keys[0]].lastUsed = userDate().toString()
-	}
-	if (backgrounds.type === 'files') {
-		local.backgroundFiles[keys[0]].lastUsed = userDate().toString()
-	}
-
-	return local
 }
 
 // 	Apply to DOM

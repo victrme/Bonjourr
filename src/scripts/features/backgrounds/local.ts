@@ -2,13 +2,14 @@ import { applyBackground, removeBackgrounds } from './index.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { onclickdown } from 'clickdown/mod'
 import { IS_MOBILE } from '../../defaults.ts'
-import { userDate } from '../../shared/time.ts'
+import { needsChange, userDate } from '../../shared/time.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 // import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 type LocalFileData = {
 	raw: File
@@ -28,6 +29,27 @@ type OldLocalImagesItem = {
 
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
+
+export async function localFilesCacheControl(sync: Sync, local: Local) {
+	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
+	const metadata = local.backgroundFiles[ids[0]]
+	const freq = sync.backgrounds.frequency
+	const lastUsed = new Date(metadata.lastUsed).getTime()
+	const needNew = needsChange(freq, lastUsed)
+
+	if (needNew) {
+		ids.shift()
+
+		const rand = Math.floor(Math.random() * ids.length)
+		const id = ids[rand]
+
+		applyBackground(await imageFromLocalFiles(id, local))
+		local.backgroundFiles[id].lastUsed = userDate().toString()
+		storage.local.set(local)
+	} else {
+		applyBackground(await imageFromLocalFiles(ids[0], local))
+	}
+}
 
 // Update
 
@@ -448,21 +470,25 @@ async function saveFileToCache(id: string, filedata: LocalFileData) {
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
 	const start = globalThis.performance.now()
 	const cache = await caches.open('local-files')
-	const fileData: LocalFileData = {}
 
-	for (const size of ['raw', 'full', 'medium', 'small']) {
-		const resp = await cache?.match(`https://mock.bonjourr.fr/${id}/${size}`)
-		const blob = await resp?.blob()
+	const raw = await (await cache?.match(`https://mock.bonjourr.fr/${id}/raw`))?.blob() as (File | undefined)
+	const full = await (await cache?.match(`https://mock.bonjourr.fr/${id}/full`))?.blob()
+	const medium = await (await cache?.match(`https://mock.bonjourr.fr/${id}/medium`))?.blob()
+	const small = await (await cache?.match(`https://mock.bonjourr.fr/${id}/small`))?.blob()
 
-		if (blob) {
-			fileData[size] = blob
-		}
+	if (!full || !medium || !small || !raw) {
+		throw new Error(`${id} is undefined`)
 	}
 
 	const time = globalThis.performance.now() - start
 	console.log('got', id, 'in: ', time, 'ms')
 
-	return fileData
+	return {
+		raw,
+		full,
+		medium,
+		small,
+	}
 }
 
 async function removeFileFromCache(id: string) {
