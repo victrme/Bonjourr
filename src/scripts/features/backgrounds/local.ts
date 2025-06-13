@@ -1,10 +1,11 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
+import { needsChange, userDate } from '../../shared/time.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { onclickdown } from 'clickdown/mod'
 import { IS_MOBILE } from '../../defaults.ts'
-import { needsChange, userDate } from '../../shared/time.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
+import { parse } from '../../utils/parse.ts'
 // import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
@@ -27,11 +28,24 @@ type OldLocalImagesItem = {
 	thumbnail: Blob
 }
 
+interface SessionUrls {
+	raw: string
+	full: string
+	medium: string
+	small: string
+}
+
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
 export async function localFilesCacheControl(sync: Sync, local: Local) {
 	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
+
+	if (ids.length === 0) {
+		removeBackgrounds()
+		return
+	}
+
 	const metadata = local.backgroundFiles[ids[0]]
 	const freq = sync.backgrounds.frequency
 	const lastUsed = new Date(metadata.lastUsed).getTime()
@@ -120,19 +134,14 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			filesData[id] = { raw, full, medium, small }
 
 			saveFileToCache(id, filesData[id])
-			addThumbnailImage(id, filesData[id])
+			addThumbnailImage(id, local, filesData[id])
 			storage.local.set({ backgroundFiles: local.backgroundFiles })
 		}
 
 		// 3. Apply background
 
 		const id = newids[0]
-		const image = imageObjectFromMetadatas(local.backgroundFiles[id])
-		const isRaw = local.backgroundCompressFiles
-
-		image.urls.full = URL.createObjectURL(isRaw ? filesData[id].raw : filesData[id].full)
-		image.urls.medium = URL.createObjectURL(filesData[id].medium)
-		image.urls.small = URL.createObjectURL(filesData[id].small)
+		const image = await imageFromLocalFiles(id, local, filesData[id])
 
 		unselectAll()
 		applyBackground(image)
@@ -146,13 +155,13 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 async function removeLocalBackgrounds() {
 	try {
 		const local = await storage.local.get()
-		const ids = getSelection()
+		const selectedIds = getSelection()
 
-		if (ids.length === 0 || !local.backgroundFiles) {
+		if (selectedIds.length === 0 || !local.backgroundFiles) {
 			return
 		}
 
-		for (const id of ids) {
+		for (const id of selectedIds) {
 			removeFilesFromCache([id])
 			delete local.backgroundFiles[id]
 
@@ -164,20 +173,19 @@ async function removeLocalBackgrounds() {
 		}
 
 		const filesIds = lastUsedBackgroundFiles(local.backgroundFiles)
-		const image = await imageFromLocalFiles(filesIds[0], local)
 
-		if (image) {
-			applyBackground(image)
+		if (filesIds.length > 0) {
+			applyBackground(await imageFromLocalFiles(filesIds[0], local))
 		} else {
 			removeBackgrounds()
 			toggleLocalFileButtons()
 		}
-
 		handleFilesSettingsOptions(local)
+
 		storage.local.remove('backgroundFiles')
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
+	} catch (err) {
+		console.info(err)
 		return
 	}
 }
@@ -302,10 +310,12 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 
 		if (isIntersecting && target.classList.contains('loading')) {
 			getFileFromCache(id).then((data) => {
-				if (data) {
-					addThumbnailImage(id, data)
-					thumbnailVisibilityObserver.unobserve(target)
-				}
+				storage.local.get('backgroundFiles').then((local) => {
+					if (data) {
+						addThumbnailImage(id, local, data)
+						thumbnailVisibilityObserver.unobserve(target)
+					}
+				})
 			})
 		}
 	}
@@ -347,7 +357,7 @@ function createThumbnail(id: string): HTMLButtonElement {
 	return thb
 }
 
-function addThumbnailImage(id: string, data: LocalFileData): void {
+function addThumbnailImage(id: string, local: Local, data: LocalFileData): void {
 	const btn = document.querySelector<HTMLButtonElement>(`#${id}`)
 	const img = document.querySelector<HTMLImageElement>(`#${id} img`)
 
@@ -361,7 +371,9 @@ function addThumbnailImage(id: string, data: LocalFileData): void {
 		setTimeout(() => btn.classList.remove('loaded'), 2)
 	})
 
-	img.src = URL.createObjectURL(data.small)
+	imageFromLocalFiles(id, local, data).then((image) => {
+		img.src = image.urls.small
+	})
 }
 
 async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEvent) {
@@ -400,7 +412,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 
 // Local to Background conversions
 
-function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): string[] {
+export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): string[] {
 	const sortedMetadata = Object.entries(metadatas).toSorted((a, b) => {
 		return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
 	})
@@ -411,9 +423,9 @@ function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): string[] 
 function imageObjectFromMetadatas(metadata: BackgroundFile): BackgroundImage {
 	return {
 		format: 'image',
-		size: metadata.position.size,
-		x: metadata.position.x,
-		y: metadata.position.y,
+		size: metadata?.position.size ?? 'cover',
+		x: metadata?.position.x ?? '50%',
+		y: metadata?.position.y ?? '50%',
 		urls: {
 			full: 'blob-full',
 			medium: 'blob-medium',
@@ -422,26 +434,40 @@ function imageObjectFromMetadatas(metadata: BackgroundFile): BackgroundImage {
 	}
 }
 
-export function collectionFromLocalFiles(local: Local): [string[], BackgroundImage[]] {
-	const metadatas = local.backgroundFiles
-	const ids = lastUsedBackgroundFiles(metadatas)
+export async function imageFromLocalFiles(
+	id: string,
+	local: Local,
+	data?: LocalFileData,
+	force?: true,
+): Promise<BackgroundImage> {
+	const isRaw = local.backgroundCompressFiles === false
+	const image = imageObjectFromMetadatas(local.backgroundFiles[id])
 
-	if (ids.length > 0) {
-		const images = ids.map((id) => imageObjectFromMetadatas(metadatas[id]))
-		return [ids, images]
+	const sessionUrls = parse<SessionUrls>(sessionStorage.getItem(id) ?? '')
+
+	if (sessionUrls && !force) {
+		image.urls.full = isRaw ? sessionUrls.raw : sessionUrls.full
+		image.urls.medium = sessionUrls.medium
+		image.urls.small = sessionUrls.small
+		return image
 	}
 
-	return [[], []]
-}
+	if (!data) {
+		data = await getFileFromCache(id)
+	}
 
-export async function imageFromLocalFiles(id: string, local: Local): Promise<BackgroundImage> {
-	const isRaw = local.backgroundCompressFiles
-	const image = imageObjectFromMetadatas(local.backgroundFiles[id])
-	const data = await getFileFromCache(id)
+	const urls = {
+		raw: URL.createObjectURL(data.raw),
+		full: URL.createObjectURL(data.full),
+		medium: URL.createObjectURL(data.medium),
+		small: URL.createObjectURL(data.small),
+	}
 
-	image.urls.full = URL.createObjectURL(isRaw ? data.raw : data.full)
-	image.urls.medium = URL.createObjectURL(data.medium)
-	image.urls.small = URL.createObjectURL(data.small)
+	image.urls.full = isRaw ? urls.raw : urls.full
+	image.urls.medium = urls.medium
+	image.urls.small = urls.small
+
+	sessionStorage.setItem(id, JSON.stringify(urls))
 
 	return image
 }
@@ -466,8 +492,15 @@ async function saveFileToCache(id: string, filedata: LocalFileData) {
 	const cache = await caches.open('local-files')
 
 	for (const [size, blob] of Object.entries(filedata)) {
-		const request = new Request(`https://mock.bonjourr.fr/${id}/${size}`)
-		const response = new Response(blob, { headers: { 'content-type': blob.type } })
+		const request = new Request(`http://127.0.0.1:8888/${id}/${size}`)
+
+		const response = new Response(blob, {
+			headers: {
+				'content-type': blob.type,
+				'Cache-Control': 'max-age=604800',
+			},
+		})
+
 		cache.put(request, response)
 	}
 }
@@ -476,17 +509,17 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 	const start = globalThis.performance.now()
 	const cache = await caches.open('local-files')
 
-	const raw = await (await cache?.match(`https://mock.bonjourr.fr/${id}/raw`))?.blob() as (File | undefined)
-	const full = await (await cache?.match(`https://mock.bonjourr.fr/${id}/full`))?.blob()
-	const medium = await (await cache?.match(`https://mock.bonjourr.fr/${id}/medium`))?.blob()
-	const small = await (await cache?.match(`https://mock.bonjourr.fr/${id}/small`))?.blob()
+	const raw = await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob() as (File | undefined)
+	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
+	const medium = await (await cache?.match(`http://127.0.0.1:8888/${id}/medium`))?.blob()
+	const small = await (await cache?.match(`http://127.0.0.1:8888/${id}/small`))?.blob()
 
 	if (!full || !medium || !small || !raw) {
 		throw new Error(`${id} is undefined`)
 	}
 
-	const time = globalThis.performance.now() - start
-	console.log('got', id, 'in: ', time, 'ms')
+	const time = (globalThis.performance.now() - start).toFixed(2)
+	console.log(`Got ${id} in: ${time}ms`)
 
 	return {
 		raw,
@@ -500,10 +533,11 @@ async function removeFilesFromCache(ids: string[]) {
 	const cache = await caches.open('local-files')
 
 	for (const id of ids) {
-		cache.delete(`https://mock.bonjourr.fr/${id}/raw`)
-		cache.delete(`https://mock.bonjourr.fr/${id}/full`)
-		cache.delete(`https://mock.bonjourr.fr/${id}/medium`)
-		cache.delete(`https://mock.bonjourr.fr/${id}/small`)
+		sessionStorage.removeItem(id)
+		cache.delete(`http://127.0.0.1:8888/${id}/raw`)
+		cache.delete(`http://127.0.0.1:8888/${id}/full`)
+		cache.delete(`http://127.0.0.1:8888/${id}/medium`)
+		cache.delete(`http://127.0.0.1:8888/${id}/small`)
 	}
 
 	return true
