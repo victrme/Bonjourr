@@ -1,6 +1,21 @@
 globalThis.window.addEventListener('load', function () {
 	document.body.addEventListener('keydown', toggleHelpMode)
+
+	globalThis.setTimeout(() => {
+		displayHelpModePrompt()
+	}, 2000)
 })
+
+function displayHelpModePrompt() {
+	if (!document.body.className.includes('init')) {
+		return
+	}
+
+	const template = document.getElementById('help-mode-prompt-template')
+	const fragment = template.content.cloneNode(true)
+	const container = fragment.querySelector('#help-mode-prompt')
+	document.documentElement.prepend(container)
+}
 
 /**
  * @param {KeyboardEvent} event
@@ -20,9 +35,11 @@ function toggleHelpMode(event) {
 	}
 
 	if (document.body.style.display === 'none') {
-		document.body.style.removeProperty('display')
+		document.querySelector('#help-mode')?.setAttribute('style', 'display: none')
+		document.querySelector('body')?.removeAttribute('style')
 	} else {
-		document.body.style.display = 'none'
+		document.querySelector('#help-mode')?.removeAttribute('style')
+		document.querySelector('body')?.setAttribute('style', 'display: none')
 	}
 }
 
@@ -33,19 +50,25 @@ function createHelpModeDisplay() {
 	const template = document.getElementById('help-mode-template')
 	const fragment = template.content.cloneNode(true)
 	const container = fragment.querySelector('#help-mode')
-
+	const startTimer = globalThis.performance.now()
 	document.documentElement.prepend(container)
 
 	// Statuses
 
 	fetch('https://bonjourr.fr/').then((resp) => {
-		container.querySelector('#help-status-website').textContent = resp.ok ? 'OK' : resp.status
+		const endTimer = Math.round(globalThis.performance.now() - startTimer)
+		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
+		container.querySelector('#help-status-website').textContent = text
 	})
 	fetch('https://weather.bonjourr.fr/').then((resp) => {
-		container.querySelector('#help-status-weather').textContent = resp.ok ? 'OK' : resp.status
+		const endTimer = Math.round(globalThis.performance.now() - startTimer)
+		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
+		container.querySelector('#help-status-weather').textContent = text
 	})
 	fetch('https://services.bonjourr.fr').then((resp) => {
-		container.querySelector('#help-status-services').textContent = resp.ok ? 'OK' : resp.status
+		const endTimer = Math.round(globalThis.performance.now() - startTimer)
+		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
+		container.querySelector('#help-status-services').textContent = text
 	})
 
 	// LocalStorage
