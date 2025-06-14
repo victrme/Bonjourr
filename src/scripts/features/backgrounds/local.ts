@@ -5,7 +5,6 @@ import { onclickdown } from 'clickdown/mod'
 import { IS_MOBILE } from '../../defaults.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
-import { parse } from '../../utils/parse.ts'
 // import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
@@ -23,6 +22,7 @@ type OldLocalImages = {
 	ids: string[]
 	selected: string
 }
+
 type OldLocalImagesItem = {
 	background: File
 	thumbnail: Blob
@@ -174,6 +174,7 @@ async function removeLocalBackgrounds() {
 			thumbnail?.classList.toggle('hiding', true)
 			setTimeout(() => {
 				thumbnail?.remove()
+				toggleLocalFileButtons()
 			}, 100)
 		}
 
@@ -183,8 +184,8 @@ async function removeLocalBackgrounds() {
 			applyBackground(await imageFromLocalFiles(filesIds[0], local))
 		} else {
 			removeBackgrounds()
-			toggleLocalFileButtons()
 		}
+
 		handleFilesSettingsOptions(local)
 
 		storage.local.remove('backgroundFiles')
@@ -270,6 +271,8 @@ function handleFilesSettingsOptions(local: Local) {
 			}
 		}
 	}
+
+	toggleLocalFileButtons()
 }
 
 function handleFilesMoveOptions(file: BackgroundFile) {
@@ -434,24 +437,9 @@ export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): st
 	return sortedMetadata.map(([id, _]) => id)
 }
 
-function imageObjectFromMetadatas(metadata: BackgroundFile): BackgroundImage {
-	return {
-		format: 'image',
-		size: metadata?.position.size ?? 'cover',
-		x: metadata?.position.x ?? '50%',
-		y: metadata?.position.y ?? '50%',
-		urls: {
-			full: 'blob-full',
-			medium: 'blob-medium',
-			small: 'blob-small',
-		},
-	}
-}
-
 export async function imageFromLocalFiles(id: string, local: Local, data?: LocalFileData): Promise<BackgroundImage> {
 	const isRaw = local.backgroundCompressFiles === false
-	const image = imageObjectFromMetadatas(local.backgroundFiles[id])
-
+	const metadata = local.backgroundFiles[id]
 	data = data ?? await getFileFromCache(id)
 
 	const urls = {
@@ -461,9 +449,17 @@ export async function imageFromLocalFiles(id: string, local: Local, data?: Local
 		small: URL.createObjectURL(data.small),
 	}
 
-	image.urls.full = isRaw ? urls.raw : urls.full
-	image.urls.medium = urls.medium
-	image.urls.small = urls.small
+	const image: BackgroundImage = {
+		format: 'image',
+		size: metadata?.position.size ?? 'cover',
+		x: metadata?.position.x ?? '50%',
+		y: metadata?.position.y ?? '50%',
+		urls: {
+			full: isRaw ? urls.raw : urls.full,
+			medium: urls.medium,
+			small: urls.small,
+		},
+	}
 
 	return image
 }
