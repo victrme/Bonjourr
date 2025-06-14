@@ -3,7 +3,6 @@ import type { BackgroundImage, BackgroundVideo, Frequency, Link, Widgets } from 
 export interface Sync {
 	showall: boolean
 	quicklinks: boolean
-	syncbookmarks?: number
 	time: boolean
 	main: boolean
 	pagegap: number

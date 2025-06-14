@@ -44,21 +44,21 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
 
 	// Remove old fields
-	newcurrent.settingssync = undefined
-	newcurrent.custom_every = undefined
-	newcurrent.custom_time = undefined
-	newcurrent.searchbar_newtab = undefined
-	newcurrent.searchbar_newtab = undefined
-	newcurrent.searchbar_engine = undefined
-	newcurrent.cssHeight = undefined
-	newcurrent.linktabs = undefined
-	newcurrent.links = undefined
-	newcurrent.dynamic = undefined
-	newcurrent.unsplash = undefined
-	newcurrent.background_blur = undefined
-	newcurrent.background_bright = undefined
-	newcurrent.background_type = undefined
-	newcurrent.usdate = undefined
+	delete newcurrent.settingssync
+	delete newcurrent.custom_every
+	delete newcurrent.custom_time
+	delete newcurrent.searchbar_newtab
+	delete newcurrent.searchbar_newtab
+	delete newcurrent.searchbar_engine
+	delete newcurrent.cssHeight
+	delete newcurrent.linktabs
+	delete newcurrent.links
+	delete newcurrent.dynamic
+	delete newcurrent.unsplash
+	delete newcurrent.background_blur
+	delete newcurrent.background_bright
+	delete newcurrent.background_type
+	delete newcurrent.usdate
 
 	return newcurrent
 }
