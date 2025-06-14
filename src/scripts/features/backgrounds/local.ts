@@ -28,13 +28,6 @@ type OldLocalImagesItem = {
 	thumbnail: Blob
 }
 
-interface SessionUrls {
-	raw: string
-	full: string
-	medium: string
-	small: string
-}
-
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
@@ -51,7 +44,7 @@ export async function localFilesCacheControl(sync: Sync, local: Local) {
 	const lastUsed = new Date(metadata.lastUsed).getTime()
 	const needNew = needsChange(freq, lastUsed)
 
-	if (needNew) {
+	if (ids.length > 1 && needNew) {
 		ids.shift()
 
 		const rand = Math.floor(Math.random() * ids.length)
@@ -115,10 +108,22 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const ratio = Math.min(1.8, long / short)
 			const averagePixelHeight = short * ratio * density
 
-			const raw = file
-			const full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
-			const medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
-			const small = await compressMedia(medium, { size: 360, q: 0.4 })
+			let raw: File
+			let full: Blob
+			let medium: Blob
+			let small: Blob
+
+			if (file.type === 'image/gif') {
+				raw = file
+				full = file
+				medium = file
+				small = await compressMedia(file, { size: 360, q: 0.4 })
+			} else {
+				raw = file
+				full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
+				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
+				small = await compressMedia(medium, { size: 360, q: 0.4 })
+			}
 
 			// const exif = await getExif(file)
 
@@ -250,6 +255,7 @@ function handleFilesSettingsOptions(local: Local) {
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
+	const lastUsed = lastUsedBackgroundFiles(local.backgroundFiles)
 	const missingThumbnails = fileIds.filter((id) => !thumbIds.includes(id))
 
 	if (missingThumbnails.length > 0) {
@@ -258,6 +264,10 @@ function handleFilesSettingsOptions(local: Local) {
 			thumbnailsContainer?.appendChild(thumbnail)
 			thumbnailVisibilityObserver?.observe(thumbnail)
 			thumbnailSelectionObserver?.observe(thumbnail, { attributes: true })
+
+			if (id === lastUsed[0]) {
+				thumbnail.classList.add('selected')
+			}
 		}
 	}
 }
@@ -381,6 +391,10 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 	const isLeftClick = mouseEvent.button === 0
 	const id = this?.id ?? ''
 
+	if (this.classList.contains('selected')) {
+		return
+	}
+
 	if (isLeftClick && hasCtrl) {
 		document.getElementById('b_thumbnail-remove')?.removeAttribute('disabled')
 		document.getElementById(id)?.classList?.toggle('selected')
@@ -434,27 +448,11 @@ function imageObjectFromMetadatas(metadata: BackgroundFile): BackgroundImage {
 	}
 }
 
-export async function imageFromLocalFiles(
-	id: string,
-	local: Local,
-	data?: LocalFileData,
-	force?: true,
-): Promise<BackgroundImage> {
+export async function imageFromLocalFiles(id: string, local: Local, data?: LocalFileData): Promise<BackgroundImage> {
 	const isRaw = local.backgroundCompressFiles === false
 	const image = imageObjectFromMetadatas(local.backgroundFiles[id])
 
-	const sessionUrls = parse<SessionUrls>(sessionStorage.getItem(id) ?? '')
-
-	if (sessionUrls && !force) {
-		image.urls.full = isRaw ? sessionUrls.raw : sessionUrls.full
-		image.urls.medium = sessionUrls.medium
-		image.urls.small = sessionUrls.small
-		return image
-	}
-
-	if (!data) {
-		data = await getFileFromCache(id)
-	}
+	data = data ?? await getFileFromCache(id)
 
 	const urls = {
 		raw: URL.createObjectURL(data.raw),
@@ -466,8 +464,6 @@ export async function imageFromLocalFiles(
 	image.urls.full = isRaw ? urls.raw : urls.full
 	image.urls.medium = urls.medium
 	image.urls.small = urls.small
-
-	sessionStorage.setItem(id, JSON.stringify(urls))
 
 	return image
 }

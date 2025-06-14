@@ -175,7 +175,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		storage.local.set({ backgroundCompressFiles: update.compress })
 
 		const ids = lastUsedBackgroundFiles(local.backgroundFiles)
-		const image = await imageFromLocalFiles(ids[0], local, undefined, true)
+		const image = await imageFromLocalFiles(ids[0], local, undefined)
 
 		applyBackground(image)
 	}
