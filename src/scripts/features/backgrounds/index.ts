@@ -582,7 +582,7 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 		const opacity = 4 //s
 		const duration = 1000 * (media.duration - opacity)
 		const src = media.urls[resolution]
-		item = createVideoItem(src, duration)
+		item = createVideoItem(src, media, duration)
 	}
 
 	item.dataset.res = resolution
@@ -636,7 +636,7 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
 	return div
 }
 
-function createVideoItem(src: string, duration: number, callback?: () => void): HTMLDivElement {
+function createVideoItem(src: string, media: BackgroundVideo, duration: number): HTMLDivElement {
 	const backgroundsWrapper = document.getElementById('background-wrapper')
 	const div = document.createElement('div')
 	let videoInterval = 0
@@ -647,11 +647,8 @@ function createVideoItem(src: string, duration: number, callback?: () => void): 
 
 			vid.addEventListener('canplay', () => {
 				backgroundsWrapper?.classList.remove('hidden')
+				updateCredits(media)
 				resolve(true)
-
-				if (callback) {
-					callback()
-				}
 			})
 
 			vid.src = src
