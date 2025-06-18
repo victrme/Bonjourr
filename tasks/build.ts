@@ -165,16 +165,16 @@ function scripts(platform: Platform, env: Env) {
 		}
 	}
 
-	if (platform === 'online') {
-		Deno.copyFileSync(
-			'src/scripts/services/service-worker.js',
-			`release/${platform}/src/scripts/service-worker.js`,
-		)
-	} else {
-		Deno.copyFileSync(
-			'src/scripts/services/service-worker.js',
-			`release/${platform}/src/scripts/service-worker.js`,
-		)
+	Deno.copyFileSync(
+		'src/scripts/services/help-mode.js',
+		`release/${platform}/src/scripts/help-mode.js`,
+	)
+	Deno.copyFileSync(
+		'src/scripts/services/service-worker.js',
+		`release/${platform}/src/scripts/service-worker.js`,
+	)
+
+	if (platform !== 'online') {
 		Deno.copyFileSync(
 			'src/scripts/services/webext-storage.js',
 			`release/${platform}/src/scripts/webext-storage.js`,

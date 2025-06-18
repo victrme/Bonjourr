@@ -1,14 +1,15 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
+import { needsChange, userDate } from '../../shared/time.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { onclickdown } from 'clickdown/mod'
 import { IS_MOBILE } from '../../defaults.ts'
-import { userDate } from '../../shared/time.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
+import type { Sync } from '../../../types/sync.ts'
 
 type LocalFileData = {
 	raw: File
@@ -17,17 +18,38 @@ type LocalFileData = {
 	small: Blob
 }
 
-type OldLocalImages = {
-	ids: string[]
-	selected: string
-}
-type OldLocalImagesItem = {
-	background: File
-	thumbnail: Blob
-}
-
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
+
+export async function localFilesCacheControl(sync: Sync, local: Local) {
+	// To remove in a version or two
+	local = await indexedDbToCacheStorage(local)
+
+	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
+
+	if (ids.length === 0) {
+		removeBackgrounds()
+		return
+	}
+
+	const metadata = local.backgroundFiles[ids[0]]
+	const freq = sync.backgrounds.frequency
+	const lastUsed = new Date(metadata.lastUsed).getTime()
+	const needNew = needsChange(freq, lastUsed)
+
+	if (ids.length > 1 && needNew) {
+		ids.shift()
+
+		const rand = Math.floor(Math.random() * ids.length)
+		const id = ids[rand]
+
+		applyBackground(await imageFromLocalFiles(id, local))
+		local.backgroundFiles[id].lastUsed = userDate().toString()
+		storage.local.set(local)
+	} else {
+		applyBackground(await imageFromLocalFiles(ids[0], local))
+	}
+}
 
 // Update
 
@@ -79,10 +101,22 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const ratio = Math.min(1.8, long / short)
 			const averagePixelHeight = short * ratio * density
 
-			const raw = file
-			const full = await compressMedia(file, { size: averagePixelHeight, q: 0.9 })
-			const medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
-			const small = await compressMedia(medium, { size: 360, q: 0.4 })
+			let raw: File
+			let full: Blob
+			let medium: Blob
+			let small: Blob
+
+			if (file.type === 'image/gif') {
+				raw = file
+				full = file
+				medium = file
+				small = await compressMedia(file, { size: 360, q: 0.4 })
+			} else {
+				raw = file
+				full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
+				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
+				small = await compressMedia(medium, { size: 360, q: 0.4 })
+			}
 
 			// const exif = await getExif(file)
 
@@ -97,24 +131,21 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 			filesData[id] = { raw, full, medium, small }
 
-			addThumbnailImage(id, filesData[id])
-			await idb.set(id, filesData[id])
+			saveFileToCache(id, filesData[id])
+			addThumbnailImage(id, local, filesData[id])
 			storage.local.set({ backgroundFiles: local.backgroundFiles })
 		}
 
 		// 3. Apply background
 
 		const id = newids[0]
-		const data = filesData[id]
-		const file = local.backgroundFiles[id]
-		const isRaw = local.backgroundCompressFiles
-		const image = imageObjectFromStorage(file, data, isRaw)
+		const image = await imageFromLocalFiles(id, local, filesData[id])
 
 		unselectAll()
 		applyBackground(image)
 		handleFilesSettingsOptions(local)
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
+	} catch (e) {
+		console.info(e)
 		return
 	}
 }
@@ -122,38 +153,38 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 async function removeLocalBackgrounds() {
 	try {
 		const local = await storage.local.get()
-		const ids = getSelection()
+		const selectedIds = getSelection()
 
-		if (ids.length === 0 || !local.backgroundFiles) {
+		if (selectedIds.length === 0 || !local.backgroundFiles) {
 			return
 		}
 
-		for (const id of ids) {
-			idb.del(id)
+		for (const id of selectedIds) {
+			removeFilesFromCache([id])
 			delete local.backgroundFiles[id]
 
 			const thumbnail = document.querySelector<HTMLElement>(`#${id}`)
 			thumbnail?.classList.toggle('hiding', true)
 			setTimeout(() => {
 				thumbnail?.remove()
+				toggleLocalFileButtons()
 			}, 100)
 		}
 
-		const [_, collection] = await getFilesAsCollection(local)
-		const image = collection[0]
+		const filesIds = lastUsedBackgroundFiles(local.backgroundFiles)
 
-		if (image) {
-			applyBackground(image)
+		if (filesIds.length > 0) {
+			applyBackground(await imageFromLocalFiles(filesIds[0], local))
 		} else {
 			removeBackgrounds()
-			toggleLocalFileButtons()
 		}
 
 		handleFilesSettingsOptions(local)
+
 		storage.local.remove('backgroundFiles')
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
+	} catch (err) {
+		console.info(err)
 		return
 	}
 }
@@ -198,7 +229,9 @@ export function initFilesSettingsOptions(local: Local) {
 		container?.style.setProperty('--thumbnails-columns', '2')
 	}
 
-	handleFilesSettingsOptions(local)
+	sanitizeMetadatas(local).then((newlocal) => {
+		handleFilesSettingsOptions(newlocal)
+	})
 
 	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
 	onclickdown(document.getElementById('b_thumbnail-zoom'), handleGridView)
@@ -216,6 +249,7 @@ function handleFilesSettingsOptions(local: Local) {
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
+	const lastUsed = lastUsedBackgroundFiles(local.backgroundFiles)
 	const missingThumbnails = fileIds.filter((id) => !thumbIds.includes(id))
 
 	if (missingThumbnails.length > 0) {
@@ -224,8 +258,14 @@ function handleFilesSettingsOptions(local: Local) {
 			thumbnailsContainer?.appendChild(thumbnail)
 			thumbnailVisibilityObserver?.observe(thumbnail)
 			thumbnailSelectionObserver?.observe(thumbnail, { attributes: true })
+
+			if (id === lastUsed[0]) {
+				thumbnail.classList.add('selected')
+			}
 		}
 	}
+
+	toggleLocalFileButtons()
 }
 
 function handleFilesMoveOptions(file: BackgroundFile) {
@@ -275,11 +315,13 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 		const id = target.id ?? ''
 
 		if (isIntersecting && target.classList.contains('loading')) {
-			getFile(id).then((data) => {
-				if (data) {
-					addThumbnailImage(id, data)
-					thumbnailVisibilityObserver.unobserve(target)
-				}
+			getFileFromCache(id).then((data) => {
+				storage.local.get('backgroundFiles').then((local) => {
+					if (data) {
+						addThumbnailImage(id, local, data)
+						thumbnailVisibilityObserver.unobserve(target)
+					}
+				})
 			})
 		}
 	}
@@ -321,7 +363,7 @@ function createThumbnail(id: string): HTMLButtonElement {
 	return thb
 }
 
-function addThumbnailImage(id: string, data: LocalFileData): void {
+function addThumbnailImage(id: string, local: Local, data: LocalFileData): void {
 	const btn = document.querySelector<HTMLButtonElement>(`#${id}`)
 	const img = document.querySelector<HTMLImageElement>(`#${id} img`)
 
@@ -335,13 +377,19 @@ function addThumbnailImage(id: string, data: LocalFileData): void {
 		setTimeout(() => btn.classList.remove('loaded'), 2)
 	})
 
-	img.src = URL.createObjectURL(data.small)
+	imageFromLocalFiles(id, local, data).then((image) => {
+		img.src = image.urls.small
+	})
 }
 
 async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEvent) {
 	const hasCtrl = mouseEvent.ctrlKey || mouseEvent.metaKey
 	const isLeftClick = mouseEvent.button === 0
 	const id = this?.id ?? ''
+
+	if (this.classList.contains('selected')) {
+		return
+	}
 
 	if (isLeftClick && hasCtrl) {
 		document.getElementById('b_thumbnail-remove')?.removeAttribute('disabled')
@@ -350,136 +398,63 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 	}
 
 	if (isLeftClick) {
-		const data = await getFile(id)
 		const local = await storage.local.get()
-		const file = local.backgroundFiles[id]
-		const isRaw = local.backgroundCompressFiles
+		const metadata = local.backgroundFiles[id]
+		const image = await imageFromLocalFiles(id, local)
 
-		if (!(file && data)) {
-			console.warn('?')
+		if (!metadata || !image) {
+			console.warn('metadata: ', metadata)
+			console.warn('image: ', image)
 			return
 		}
 
 		unselectAll()
 		document.getElementById(id)?.classList?.add('selected')
 
-		const image = imageObjectFromStorage(file, data, isRaw)
-
 		local.backgroundFiles[id].lastUsed = userDate().toString()
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
 
 		handleFilesSettingsOptions(local)
-		handleFilesMoveOptions(file)
+		handleFilesMoveOptions(metadata)
 		applyBackground(image)
 	}
 }
 
-// Storage
+// Local to Background conversions
 
-export async function getFilesAsCollection(local: Local): Promise<[string[], BackgroundImage[]]> {
-	try {
-		const idbKeys = (await idb.keys()) as string[]
-		const files = validateBackgroundFiles(local, idbKeys)
-		const filesData = await getAllFiles(Object.keys(files))
-		const entries = Object.entries(files)
+export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): string[] {
+	const sortedMetadata = Object.entries(metadatas).toSorted((a, b) => {
+		return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
+	})
 
-		const sorted = entries.toSorted((a, b) => {
-			return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
-		})
-
-		const images: BackgroundImage[] = []
-		const keys = sorted.map((entry) => entry[0])
-
-		for (const [key, file] of sorted) {
-			const data = filesData[key]
-			const isRaw = local.backgroundCompressFiles
-			const image = imageObjectFromStorage(file, data, isRaw)
-			images.push(image)
-		}
-
-		return [keys, images]
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return [[], []]
-	}
+	return sortedMetadata.map(([id, _]) => id)
 }
 
-function imageObjectFromStorage(file: BackgroundFile, data: LocalFileData, raw?: boolean): BackgroundImage {
-	return {
+export async function imageFromLocalFiles(id: string, local: Local, data?: LocalFileData): Promise<BackgroundImage> {
+	const isRaw = local.backgroundCompressFiles === false
+	const metadata = local.backgroundFiles[id]
+	data = data ?? await getFileFromCache(id)
+
+	const urls = {
+		raw: URL.createObjectURL(data.raw),
+		full: URL.createObjectURL(data.full),
+		medium: URL.createObjectURL(data.medium),
+		small: URL.createObjectURL(data.small),
+	}
+
+	const image: BackgroundImage = {
 		format: 'image',
-		size: file.position.size,
-		x: file.position.x,
-		y: file.position.y,
+		size: metadata?.position.size ?? 'cover',
+		x: metadata?.position.x ?? '50%',
+		y: metadata?.position.y ?? '50%',
 		urls: {
-			full: URL.createObjectURL(raw ? data.raw : data.full),
-			medium: URL.createObjectURL(data.medium),
-			small: URL.createObjectURL(data.small),
+			full: isRaw ? urls.raw : urls.full,
+			medium: urls.medium,
+			small: urls.small,
 		},
 	}
-}
 
-function validateBackgroundFiles(local: Local, idbKeys: string[]): Local['backgroundFiles'] {
-	const backgroundFiles: Record<string, BackgroundFile> = {}
-	const date = userDate().toString()
-	let change = false
-
-	for (const key of idbKeys) {
-		if (key in local.backgroundFiles) {
-			backgroundFiles[key] = local.backgroundFiles[key]
-		} else {
-			backgroundFiles[key] = { lastUsed: date, position: { size: 'cover', x: '50%', y: '50%' } }
-			change = true
-		}
-	}
-
-	local.backgroundFiles = backgroundFiles
-
-	if (change) {
-		storage.local.set({ backgroundFiles })
-	}
-
-	return backgroundFiles
-}
-
-export async function prepareIdbFormatMigration(local: Local) {
-	try {
-		const localImages = await idb.get('localImages') as OldLocalImages
-
-		if (!localImages) {
-			return
-		}
-
-		const keys = (await idb.keys() as string[]).filter((k) => k !== 'localImages')
-		const selected = localImages.selected ?? ''
-		const selectedImage = await idb.get(selected)
-
-		await addLocalBackgrounds([selectedImage.background], local)
-
-		for (const key of keys) {
-			const file = await idb.get(key) as OldLocalImagesItem
-
-			const backgroundFile: BackgroundFile = {
-				lastUsed: userDate().toString(),
-				selected: key === selected,
-				position: { size: 'cover', x: '50%', y: '50%' },
-			}
-
-			const localFileData: LocalFileData = {
-				raw: file.background,
-				full: file.background,
-				medium: file.thumbnail,
-				small: file.thumbnail,
-			}
-
-			idb.set(key, localFileData)
-			local.backgroundFiles[key] = backgroundFile
-		}
-
-		idb.del('localImages')
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return
-	}
+	return image
 }
 
 //	Helpers
@@ -496,30 +471,175 @@ function getSelection(): string[] {
 	return ids
 }
 
-async function getFile(id: string): Promise<LocalFileData | undefined> {
-	try {
-		return await idb.get<LocalFileData>(id)
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return
+//  Storage
+
+async function saveFileToCache(id: string, filedata: LocalFileData) {
+	const cache = await caches.open('local-files')
+
+	for (const [size, blob] of Object.entries(filedata)) {
+		const request = new Request(`http://127.0.0.1:8888/${id}/${size}`)
+
+		const response = new Response(blob, {
+			headers: {
+				'content-type': blob.type,
+				'Cache-Control': 'max-age=604800',
+			},
+		})
+
+		cache.put(request, response)
 	}
 }
 
-async function getAllFiles(ids: string[]): Promise<Record<string, LocalFileData>> {
+export async function getFileFromCache(id: string): Promise<LocalFileData> {
+	const start = globalThis.performance.now()
+	const cache = await caches.open('local-files')
+
+	const raw = await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob() as (File | undefined)
+	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
+	const medium = await (await cache?.match(`http://127.0.0.1:8888/${id}/medium`))?.blob()
+	const small = await (await cache?.match(`http://127.0.0.1:8888/${id}/small`))?.blob()
+
+	if (!full || !medium || !small || !raw) {
+		throw new Error(`${id} is undefined`)
+	}
+
+	const time = (globalThis.performance.now() - start).toFixed(2)
+	console.log(`Got ${id} in: ${time}ms`)
+
+	return {
+		raw,
+		full,
+		medium,
+		small,
+	}
+}
+
+async function removeFilesFromCache(ids: string[]) {
+	const cache = await caches.open('local-files')
+
+	for (const id of ids) {
+		sessionStorage.removeItem(id)
+		cache.delete(`http://127.0.0.1:8888/${id}/raw`)
+		cache.delete(`http://127.0.0.1:8888/${id}/full`)
+		cache.delete(`http://127.0.0.1:8888/${id}/medium`)
+		cache.delete(`http://127.0.0.1:8888/${id}/small`)
+	}
+
+	return true
+}
+
+/**
+ * Removes metadata in local storage or add default based on files
+ * found in CacheStorage "local-files"
+ */
+async function sanitizeMetadatas(local: Local): Promise<Local> {
+	const newMetadataList: Record<string, BackgroundFile> = {}
+	const cache = await caches.open('local-files')
+	const cacheKeys = await cache.keys()
+
+	for (const request of cacheKeys) {
+		try {
+			const key = new URL(request.url).pathname.split('/')[1]
+			let metadata = local.backgroundFiles[key]
+
+			if (!metadata) {
+				metadata = {
+					lastUsed: new Date('01/01/1971').toString(),
+					position: {
+						size: 'cover',
+						x: '50%',
+						y: '50%',
+					},
+				}
+			}
+
+			newMetadataList[key] = metadata
+		} catch (err) {
+			console.info(err)
+		}
+	}
+
+	const oldKeys = Object.keys(local.backgroundFiles)
+	const newKeys = Object.keys(newMetadataList)
+
+	if (oldKeys.length !== newKeys.length) {
+		storage.local.set({ backgroundFiles: newMetadataList })
+	}
+
+	local.backgroundFiles = newMetadataList
+
+	return local
+}
+
+//  Compatibility
+
+/**
+ * For version 21, move local files from buggy idb
+ * to an hopefully more stable CacheStorage
+ */
+async function indexedDbToCacheStorage(local: Local): Promise<Local> {
+	if (localStorage.hasRemovedIndexedDB) {
+		return local
+	}
+
 	try {
-		const result: Record<string, LocalFileData> = {}
+		const entries = await idb.entries()
+		const newFileData: Record<string, LocalFileData> = {}
 
-		for (const id of ids) {
-			const file = await getFile(id)
+		if (entries.length === 0) {
+			return local
+		}
 
-			if (file) {
-				result[id] = file
+		for (const [key, value] of entries) {
+			const isOldIdb = 'background' in value && 'thumbnail' in value
+			const isNewIdb = 'raw' in value && 'full' in value && 'medium' in value && 'small' in value
+			const id = key as string
+
+			if (!isOldIdb && !isNewIdb) {
+				continue
+			}
+
+			if (isOldIdb) {
+				newFileData[id] = {
+					raw: value.background,
+					full: value.background,
+					medium: value.thumbnail,
+					small: value.thumbnail,
+				}
+			}
+			if (isNewIdb) {
+				newFileData[id] = {
+					raw: value.raw,
+					full: value.full,
+					medium: value.medium,
+					small: value.small,
+				}
+			}
+
+			local.backgroundFiles[id] = {
+				lastUsed: new Date('1971-01-01').toString(),
+				position: { size: 'cover', x: '50%', y: '50%' },
 			}
 		}
 
-		return result
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return {}
+		const saveAllFiles = Object.entries(newFileData).map(([id, filedata]) => {
+			return saveFileToCache(id, filedata)
+		})
+
+		storage.local.set({ backgroundFiles: local.backgroundFiles })
+		await Promise.all(saveAllFiles)
+
+		try {
+			idb.clear()
+			localStorage.hasRemovedIndexedDB = 'true'
+		} catch (err) {
+			console.warn('Failed to update indexedDB')
+			console.warn(err)
+		}
+	} catch (err) {
+		console.warn('Failed to import from indexedDB to CacheStorage')
+		console.warn(err)
 	}
+
+	return local
 }

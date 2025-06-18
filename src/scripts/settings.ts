@@ -88,6 +88,7 @@ function settingsInitEvent(event: Event) {
 	// 3. Can be deferred
 
 	setTimeout(() => {
+		console.log(structuredClone(sync))
 		initWorldClocksAndTimezone(sync)
 		updateSettingsJson(sync)
 		updateSettingsEvent()
