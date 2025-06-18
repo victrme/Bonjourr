@@ -1,5 +1,4 @@
 import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
-import { prepareIdbFormatMigration } from './features/backgrounds/local.ts'
 import { supportersNotifications } from './features/supporters.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { backgroundsInit } from './features/backgrounds/index.ts'
@@ -59,14 +58,10 @@ async function startup() {
 	if (oldVersion !== CURRENT_VERSION) {
 		console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
 
+		localStorage.setItem('upgrade-archive', JSON.stringify(sync))
+
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
-
-		try {
-			await prepareIdbFormatMigration(local)
-		} catch (e) {
-			console.warn(e)
-		}
 
 		// <!> do not move, must delete old keys before upgrading storage
 		await storage.sync.clear()
