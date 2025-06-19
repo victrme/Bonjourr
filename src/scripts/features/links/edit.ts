@@ -251,7 +251,7 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 	const { innerHeight, innerWidth } = window
 	const isMobileSized = innerWidth < 600
 	const docLang = document.documentElement.lang
-	const rightToLeft = docLang === 'ar' || docLang === 'fa'
+	const rightToLeft = docLang === 'ar' || docLang === 'fa' || docLang === 'he'
 
 	let x = 0
 	let y = 0
@@ -420,7 +420,7 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 		return
 	}
 
-	if (editStates.container.folder && domurl.value) {
+	if (editStates.container.folder && editStates.selected.length === 0 && domurl.value) {
 		quickLinks(undefined, {
 			addLinks: [{
 				group: editStates.folder,
@@ -462,6 +462,7 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
 		},
 	})
+	closeEditDialog()
 }
 
 function closeEditDialog() {
