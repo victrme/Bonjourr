@@ -281,9 +281,15 @@ function handleFilesMoveOptions(file: BackgroundFile) {
 	}
 }
 
-function handlePositionOption() {
+function handlePositionOption(show?: boolean) {
 	const domoptions = document.getElementById('background-position-options')
-	domoptions?.classList.toggle('shown')
+	if (!domoptions) return
+
+	if (typeof show === 'boolean') {
+		domoptions.classList.toggle('shown', show)
+	} else {
+		domoptions.classList.toggle('shown')
+	}
 }
 
 function handleGridView() {
@@ -339,6 +345,9 @@ function toggleLocalFileButtons(_?: MutationRecord[]) {
 	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
 	selected !== 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
+	// hides move options when no selection or more than one
+	if (selected === 0 || selected > 1) handlePositionOption(false)
+
 	if (selected === 1 && domoptions?.classList.contains('shown')) {
 		domoptions?.classList.remove('shown')
 	}
@@ -351,7 +360,7 @@ function createThumbnail(id: string): HTMLButtonElement {
 	const thbimg = document.createElement('img')
 
 	thb.id = id
-	thbimg.src = 'src/assets/interface/sand-clock.svg'
+	thbimg.src = 'src/assets/interface/loading.svg'
 	thb.className = 'thumbnail loading'
 	thbimg.setAttribute('alt', '')
 	thbimg.setAttribute('draggable', 'false')
@@ -387,13 +396,22 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 	const isLeftClick = mouseEvent.button === 0
 	const id = this?.id ?? ''
 
-	if (this.classList.contains('selected')) {
+	if (isLeftClick && hasCtrl) {
+		if (!this.classList.contains('selected')) {
+			document.getElementById('b_thumbnail-remove')?.removeAttribute('disabled')
+		}
+
+		document.getElementById(id)?.classList?.toggle('selected')
 		return
 	}
 
-	if (isLeftClick && hasCtrl) {
-		document.getElementById('b_thumbnail-remove')?.removeAttribute('disabled')
+	if (this.classList.contains('selected') && isLeftClick) {
+		unselectAll()
 		document.getElementById(id)?.classList?.toggle('selected')
+		return
+	}
+
+	if (this.classList.contains('selected')) {
 		return
 	}
 
@@ -433,7 +451,7 @@ export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): st
 export async function imageFromLocalFiles(id: string, local: Local, data?: LocalFileData): Promise<BackgroundImage> {
 	const isRaw = local.backgroundCompressFiles === false
 	const metadata = local.backgroundFiles[id]
-	data = data ?? await getFileFromCache(id)
+	data = data ?? (await getFileFromCache(id))
 
 	const urls = {
 		raw: URL.createObjectURL(data.raw),
@@ -494,7 +512,7 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 	const start = globalThis.performance.now()
 	const cache = await caches.open('local-files')
 
-	const raw = await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob() as (File | undefined)
+	const raw = (await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob()) as File | undefined
 	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
 	const medium = await (await cache?.match(`http://127.0.0.1:8888/${id}/medium`))?.blob()
 	const small = await (await cache?.match(`http://127.0.0.1:8888/${id}/small`))?.blob()

@@ -61,6 +61,10 @@
 	display: none;
 }
 
+#background-local-tooltip {
+	padding-block: 5px;
+}
+
 .thumbnail {
 	position: relative;
 	height: calc(230px / var(--thumbnails-columns));
@@ -107,9 +111,9 @@
 }
 
 .thumbnail.loading img {
-	width: 1em;
-	height: 1em;
-	opacity: 0.5;
+	width: 3em;
+	height: 3em;
+	opacity: 0.9;
 	object-fit: unset;
 	transition: none;
 }
