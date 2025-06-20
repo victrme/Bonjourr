@@ -50,6 +50,10 @@
 	padding-bottom: 5px;
 }
 
+#thumbnails-container:empty {
+	display: none;
+}
+
 .thumbnail {
 	position: relative;
 	height: calc(230px / var(--thumbnails-columns));
