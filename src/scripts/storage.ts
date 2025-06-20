@@ -388,6 +388,12 @@ async function clearall() {
 		return
 	}
 
+	try {
+		globalThis.caches.delete('local-files')
+	} catch (err) {
+		console.warn(err)
+	}
+
 	//@ts-expect-error: Type 'undefined' is not assignable to type ...
 	globalThis.startupStorage = undefined
 
