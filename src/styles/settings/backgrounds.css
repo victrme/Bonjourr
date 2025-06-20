@@ -14,7 +14,7 @@
 
 #background-local-actions > div {
 	display: flex;
-	gap: 4px;
+	gap: 8px;
 }
 
 #lbl_background-upload {
@@ -22,7 +22,9 @@
 }
 
 #lbl_background-upload > span {
-	display: block;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	padding: 0 1em;
 	height: 31px;
 	font-size: 13px;
@@ -50,7 +52,12 @@
 	padding-bottom: 5px;
 }
 
-#thumbnails-container:empty {
+#thumbnails-container:empty,
+#thumbnails-container:empty + #background-local-actions {
+	display: none;
+}
+
+#thumbnails-container:not(:empty) ~ #background-local-tooltip {
 	display: none;
 }
 

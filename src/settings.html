@@ -235,49 +235,16 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<div id="background-local-actions" class="wrapper">
-			<div>
-				<button
-					id="b_thumbnail-remove"
-					class="param-btn btn-red"
-					title="Delete selected background"
-					aria-label="Delete selected background"
-				>
-					<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
-					<!-- <span>&times;</span> -->
-					<span class="trn">Remove</span>
-				</button>
+		<div class="wrapper" style="display: flex; justify-content: space-between; align-items: center">
+			<h3>My files</h3>
 
-				<button
-					id="b_thumbnail-position"
-					class="trn param-btn"
-					title="Move selected background"
-					aria-label="Move selected background"
-				>
-					<img src="src/assets/labels/move.svg" height="15" alt="" />
-					<span class="trn">Move</span>
-				</button>
-			</div>
-
-			<div>
-				<button
-					id="b_thumbnail-zoom"
-					class="trn param-btn"
-					title="Increase background size on grid"
-					aria-label="Increase background size on grid"
-				>
-					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
-					<span class="trn">Zoom</span>
-				</button>
-
-				<label id="lbl_background-upload" title="Upload new background" aria-label="Upload new background">
-					<span class="param-btn">
-						<img src="src/assets/labels/add.svg" height="13" alt="" />
-						<span class="trn">Add</span>
-					</span>
-					<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
-				</label>
-			</div>
+			<label id="lbl_background-upload" title="Upload new background" aria-label="Upload new background">
+				<span class="param-btn">
+					<img src="src/assets/labels/add.svg" height="13" alt="" />
+					<span class="trn">Add new</span>
+				</span>
+				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+			</label>
 		</div>
 
 		<div id="background-position-options" class="dropdown">
@@ -325,6 +292,45 @@
 		</div>
 
 		<div id="thumbnails-container"></div>
+
+		<div id="background-local-actions" class="wrapper">
+			<div>
+				<button
+					id="b_thumbnail-zoom"
+					class="trn param-btn"
+					title="Increase background size on grid"
+					aria-label="Increase background size on grid"
+				>
+					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
+					<span class="trn">View</span>
+				</button>
+			</div>
+			<div>
+				<button
+					id="b_thumbnail-position"
+					class="trn param-btn"
+					title="Move selected background"
+					aria-label="Move selected background"
+				>
+					<img src="src/assets/labels/move.svg" height="15" alt="" />
+					<span class="trn">Move</span>
+				</button>
+
+				<button
+					id="b_thumbnail-remove"
+					class="param-btn btn-red"
+					title="Delete selected background"
+					aria-label="Delete selected background"
+				>
+					<img src="src/assets/labels/remove.svg" height="13" alt="" />
+					<span class="trn">Remove</span>
+				</button>
+			</div>
+		</div>
+
+		<p class="tooltiptext trn" id="background-local-tooltip"
+			>Click the button above and select some files from your device to use as backgrounds in Bonjourr.</p
+		>
 
 		<hr />
 
