@@ -11,7 +11,7 @@ import {
 } from './local.ts'
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
-import { turnRefreshButton } from '../../shared/dom.ts'
+import { colorInput, turnRefreshButton } from '../../shared/dom.ts'
 import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
 import { BROWSER } from '../../defaults.ts'
@@ -158,6 +158,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.color) {
+		colorInput('solid-background', update.color)
 		applyBackground(update.color)
 		colorUpdateDebounce(update.color)
 	}
@@ -185,6 +186,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	if (update.texturecolor !== undefined) {
 		data.backgrounds.texture.color = update.texturecolor
 		propertiesUpdateDebounce({ texture: data.backgrounds.texture })
+		colorInput('texture-color', update.texturecolor)
 		applyTexture(data.backgrounds.texture)
 	}
 
@@ -796,21 +798,13 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 	if (hasTexture) {
 		const iOpacity = document.querySelector<HTMLInputElement>('#i_texture-opacity')
 		const iSize = document.querySelector<HTMLInputElement>('#i_texture-size')
-		const iColor = document.querySelector<HTMLInputElement>('#i_texture-color')
+		const colorOption = document.querySelector<HTMLElement>('#background-texture-color-option')
+
 		const ranges = TEXTURE_RANGES[backgrounds.texture.type]
-		const { opacity, size, color } = backgrounds.texture
+		const { opacity, size } = backgrounds.texture
 
 		// shows and hides texture color option
-		document
-			.querySelector<HTMLElement>('#background-texture-color-option')
-			?.classList.toggle('shown', ranges.color !== undefined)
-
-		if (iColor && ranges.color !== undefined) {
-			iColor.value = color === undefined ? ranges.color : color
-
-			// to make the non native color button aware of the change
-			document.getElementById('i_texture-color')?.dispatchEvent(new Event('input', { bubbles: true }))
-		}
+		colorOption?.classList.toggle('shown', ranges.color !== undefined)
 
 		if (iOpacity) {
 			iOpacity.min = ranges.opacity.min

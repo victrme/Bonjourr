@@ -1,4 +1,4 @@
-import { colorButtonStyling, darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
+import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
@@ -15,7 +15,7 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
-import { fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
+import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { settingsNotifications } from './utils/notifications.ts'
@@ -200,7 +200,8 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
 	setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
 
-	colorButtonStyling(paramId('b_solid-background'), paramId('i_solid-background').value)
+	colorInput('solid-background', data.backgrounds.color)
+	colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
 
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
@@ -417,9 +418,7 @@ function initOptionsEvents() {
 		paramId('i_solid-background').click()
 	})
 
-	// when native color input value changes
 	paramId('i_solid-background').addEventListener('input', function () {
-		colorButtonStyling(paramId('b_solid-background'), this.value)
 		backgroundUpdate({ color: this.value })
 	})
 
@@ -463,15 +462,11 @@ function initOptionsEvents() {
 		backgroundUpdate({ texture: this.value })
 	})
 
-	colorButtonStyling(paramId('b_texture-color'), paramId('i_texture-color').value)
-
 	paramId('b_texture-color').addEventListener('click', function () {
 		paramId('i_texture-color').click()
 	})
 
-	// when native color input value changes
 	paramId('i_texture-color').addEventListener('input', function () {
-		colorButtonStyling(paramId('b_texture-color'), this.value)
 		backgroundUpdate({ texturecolor: this.value })
 	})
 
