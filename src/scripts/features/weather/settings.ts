@@ -118,7 +118,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 		locationForm.accept('i_city', weather.city)
 
 		storage.sync.set({ weather })
-		storage.local.set({ lastWeather })
+		storage.local.set({ lastWeather: newWeather })
 
 		displayWeather(weather, newWeather)
 	}

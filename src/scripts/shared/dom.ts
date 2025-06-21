@@ -1,3 +1,5 @@
+import { getReadableTextColor, hexToHSL, hexToRGB } from './generic.ts'
+
 export function toggleDisabled(element: Element | null, force?: boolean) {
 	if (element) {
 		const toggle = force !== undefined ? force : typeof element.getAttribute('disabled') === 'string'
@@ -98,4 +100,24 @@ export function hexColorFromSplitRange(id: string): string {
 	const alpha = opacity.toString(16)
 
 	return color + alpha
+}
+
+export function colorInput(id: string, color?: string) {
+	const wrapper = document.getElementById(id)
+	const button = wrapper?.querySelector<HTMLInputElement>('button')
+	const input = wrapper?.querySelector<HTMLInputElement>('input')
+
+	if (button && input) {
+		color ??= input.value
+
+		const hsl = hexToHSL(color)
+
+		// darker color for border
+		hsl.l = Math.max(0, hsl.l - 10)
+
+		button.style.borderColor = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`
+		button.textContent = color
+		button.style.backgroundColor = color
+		button.style.color = getReadableTextColor(hexToRGB(color))
+	}
 }

@@ -31,11 +31,17 @@ export function toggleCredits(backgrounds: Backgrounds) {
 			return
 		}
 
-		case 'videos':
 		case 'urls':
 		case 'files': {
 			domcontainer?.classList.add('shown')
 			domcredit?.classList.add('hidden')
+			domsave?.classList.add('hidden')
+			break
+		}
+
+		case 'videos': {
+			domcontainer?.classList.add('shown')
+			domcredit?.classList.remove('hidden')
 			domsave?.classList.add('hidden')
 			break
 		}
@@ -53,12 +59,19 @@ export function updateCredits(image?: Background) {
 	const domcredit = document.getElementById('credit')
 	const domsave = document.getElementById('download-background')
 
-	if (image?.format === 'video') {
-		console.info('No video credits now')
+	if (!(domcontainer && domcredit && image?.page && image?.username)) {
 		return
 	}
 
-	if (!(domcontainer && domcredit && image?.page && image?.username)) {
+	if (image?.format === 'video') {
+		if (image.username) {
+			const dompage = document.createElement('a')
+			dompage.textContent = tradThis(`Video by ${image.username}`)
+			dompage.href = image.page
+			domcredit.textContent = ''
+			domcredit.append(dompage)
+		}
+
 		return
 	}
 
@@ -110,15 +123,15 @@ export function updateCredits(image?: Background) {
 	domspacer.textContent = hasLocation ? ' - ' : ' '
 	domrest.textContent = rest
 
-	domlocation.href = `${image.page}?utm_source=Bonjourr&utm_medium=referral`
-	domartist.href = `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`
+	if (image.page.includes('unsplash')) {
+		domlocation.href = `${image.page}?utm_source=Bonjourr&utm_medium=referral`
+		domartist.href = `https://unsplash.com/@${image.username}?utm_source=Bonjourr&utm_medium=referral`
+	} else {
+		domlocation.href = image.page
+	}
 
 	domcredit.textContent = ''
-	domcredit.appendChild(domexif)
-	domcredit.appendChild(domlocation)
-	domcredit.appendChild(domspacer)
-	domcredit.appendChild(domartist)
-	domcredit.appendChild(domrest)
+	domcredit.append(domexif, domlocation, domspacer, domartist, domrest)
 
 	if (image.download && domsave) {
 		domsave.dataset.downloadUrl = image.download

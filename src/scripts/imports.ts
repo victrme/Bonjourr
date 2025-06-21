@@ -44,21 +44,21 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
 
 	// Remove old fields
-	newcurrent.settingssync = undefined
-	newcurrent.custom_every = undefined
-	newcurrent.custom_time = undefined
-	newcurrent.searchbar_newtab = undefined
-	newcurrent.searchbar_newtab = undefined
-	newcurrent.searchbar_engine = undefined
-	newcurrent.cssHeight = undefined
-	newcurrent.linktabs = undefined
-	newcurrent.links = undefined
-	newcurrent.dynamic = undefined
-	newcurrent.unsplash = undefined
-	newcurrent.background_blur = undefined
-	newcurrent.background_bright = undefined
-	newcurrent.background_type = undefined
-	newcurrent.usdate = undefined
+	delete newcurrent.settingssync
+	delete newcurrent.custom_every
+	delete newcurrent.custom_time
+	delete newcurrent.searchbar_newtab
+	delete newcurrent.searchbar_newtab
+	delete newcurrent.searchbar_engine
+	delete newcurrent.cssHeight
+	delete newcurrent.linktabs
+	delete newcurrent.links
+	delete newcurrent.dynamic
+	delete newcurrent.unsplash
+	delete newcurrent.background_blur
+	delete newcurrent.background_bright
+	delete newcurrent.background_type
+	delete newcurrent.usdate
 
 	return newcurrent
 }
@@ -219,6 +219,7 @@ function manualTimezonesToIntl(data: Import): Import {
 		'+2': '+02:00',
 		'+3': '+03:00',
 		'+5:30': '+05:30',
+		'+7': '+07:00',
 		'+8': '+08:00',
 		'+9': '+09:00',
 		'+10': '+10:00',
@@ -359,31 +360,28 @@ function improvedWeather(data: Import): Import {
 
 /** Version 21: migrate from generic fields to a single object */
 function newBackgroundsField(data: Import): Import {
-	if (data.backgrounds) {
-		return data
-	}
-
 	const olddata = data as Partial<OldSync>
 	const defaults = structuredClone(SYNC_DEFAULT)
 
-	data.backgrounds = defaults.backgrounds
+	if (!data.backgrounds) {
+		data.backgrounds = defaults.backgrounds
+	}
 
-	if (data.backgrounds) {
+	if (olddata.background_blur !== undefined) {
+		data.backgrounds.blur = olddata.background_blur
+	}
+	if (olddata.background_bright !== undefined) {
+		data.backgrounds.bright = olddata.background_bright
+	}
+	if (olddata.background_type !== undefined) {
+		data.backgrounds.type = olddata.background_type === 'unsplash' ? 'images' : 'files'
+	}
+	if (olddata.unsplash) {
 		data.backgrounds.frequency = olddata.unsplash?.every ?? 'hour'
-
-		if (olddata.background_blur !== undefined) {
-			data.backgrounds.blur = olddata.background_blur
-		}
-		if (olddata.background_bright !== undefined) {
-			data.backgrounds.bright = olddata.background_bright
-		}
-		if (olddata.background_type !== undefined) {
-			data.backgrounds.type = olddata.background_type === 'unsplash' ? 'images' : 'files'
-		}
-		if (olddata.unsplash?.collection) {
-			data.backgrounds.images = 'unsplash-images-collections'
-			data.backgrounds.queries = { 'unsplash-images-collections': olddata.unsplash.collection }
-		}
+	}
+	if (olddata.unsplash?.collection) {
+		data.backgrounds.images = 'unsplash-images-collections'
+		data.backgrounds.queries = { 'unsplash-images-collections': olddata.unsplash.collection }
 	}
 
 	return data

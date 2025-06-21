@@ -22,6 +22,7 @@
 		<style type="text/css" id="styles"></style>
 		<style type="text/css" id="fontface"></style>
 
+		<script src="src/scripts/help-mode.js" defer></script>
 		<script src="src/scripts/main.js" defer></script>
 	</head>
 
@@ -305,7 +306,7 @@
 			</div>
 		</dialog>
 
-		<div id="background-wrapper" class="hidden" data-type="omages" data-texture="none">
+		<div id="background-wrapper" class="hidden" data-type="images" data-texture="none">
 			<div id="background-media"></div>
 			<div id="background-color"></div>
 			<div id="background-texture"></div>
@@ -318,14 +319,10 @@
 						<h1 class="digital" data-hide="clock">
 							<span class="digital-ampm"
 								><span class="digital-am">am</span><span class="digital-pm">pm</span></span
-							>
-							<span class="digital-hh-leading-zero">0</span>
-							<span class="digital-hh"></span>
-							<span class="digital-hh-separator">:</span>
-							<span class="digital-mm"></span>
-							<span class="digital-mm-separator">:</span>
-							<span class="digital-ss"></span>
-							<span class="digital-number-width">0</span>
+							><span class="digital-hh-leading-zero">0</span><span class="digital-hh"></span
+							><span class="digital-hh-separator">:</span><span class="digital-mm"></span
+							><span class="digital-mm-separator">:</span><span class="digital-ss"></span
+							><span class="digital-number-width">0</span>
 						</h1>
 
 						<div class="analog" data-hide="clock">
@@ -428,7 +425,12 @@
 
 		<div id="background-actions">
 			<a id="download-background"></a>
-			<button id="b_interface-background-download" aria-label="Download the current background" class="idle">
+			<button
+				id="b_interface-background-download"
+				title="Download the current background"
+				aria-label="Download the current background"
+				class="idle"
+			>
 				<span id="idle-download">
 					<svg width="20" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path
@@ -454,7 +456,11 @@
 					</svg>
 				</span>
 			</button>
-			<button id="b_interface-background-pause" aria-label="Pause the current background">
+			<button
+				id="b_interface-background-pause"
+				title="Pause the current background"
+				aria-label="Pause the current background"
+			>
 				<span id="interface-background-pause-icon">
 					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M11 7H8V17H11V7Z" fill="currentColor" />
@@ -467,7 +473,12 @@
 					</svg>
 				</span>
 			</button>
-			<button id="b_interface-background-refresh" class="refresh-btn" aria-label="Change to another background">
+			<button
+				id="b_interface-background-refresh"
+				class="refresh-btn"
+				title="Change to another background"
+				aria-label="Change to another background"
+			>
 				<span>
 					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path
@@ -480,7 +491,7 @@
 		</div>
 
 		<div id="show-settings" data-hide="settingsicon">
-			<button aria-label="Toggle settings menu">
+			<button aria-label="Toggle settings menu" title="Toggle settings menu">
 				<img
 					src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTkuNjYiIGhlaWdodD0iMTk5LjkzIiB2aWV3Qm94PSIwIDAgNTIuODMgNTIuOSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5LjczIDUyLjU3Yy0uMjYtLjItLjkzLTEuNDEtMS40OC0yLjcxLTEuMS0yLjU3LTEuNDItMi45My0yLjQyLTIuNjgtLjUxLjEzLS44OS42Ni0xLjY3IDIuMzYtMS4yIDIuNTktMS42IDMuMTEtMi40IDMuMTEtMS4xIDAtMS4zNS0uNTgtMS41MS0zLjQ4LS4xMy0yLjM4LS4yMy0yLjc4LS43My0zLjItLjMyLS4yNS0uNy0uNDYtLjg0LS40NnMtMS4yNS45NS0yLjQ2IDIuMTJjLTEuMjIgMS4xNi0yLjM4IDIuMTEtMi41OSAyLjExLS41MiAwLTEuMjUtLjg2LTEuMjUtMS40OSAwLS4yOC4zLTEuNTYuNjctMi44NCAxLjEyLTMuODQuNDYtNC4zMS0zLjQ3LTIuNTQtMi4xNS45OC0yLjYgMS4xLTMuMTYuODMtMS4wOC0uNDktLjg1LTEuNDUuOTMtMy45IDEuNzItMi4zNyAxLjkxLTMuMDcgMS0zLjY2LS41LS4zLTEuMDYtLjMzLTMuMi0uMTEtMi45LjI5LTMuMjcuMjItMy42LS42NC0uMzMtLjg5LjA1LTEuMzcgMi4yLTIuODMgMS4wNy0uNzIgMi4xNC0xLjUgMi4zOC0xLjc0IDEuMS0xLjEuMTYtMS45Ny0yLjk3LTIuNzhDLjM4IDI3LjMzLS4yOCAyNi44Mi4xIDI1LjcyYy4yMy0uNjQuNTMtLjc5IDIuOTctMS40MiAxLjUtLjQgMi45LS44NSAzLjEtMS4wMy43Ny0uNjMuNDYtMS41NC0uODQtMi40NC0yLjM1LTEuNjItMy44LTIuODUtMy44LTMuMjEgMC0uMi4yMi0uNjQuNS0uOTcuNDgtLjYuNS0uNiAzLjM1LS4zIDIuNTYuMjkgMi45LjI3IDMuMzQtLjEyLjI3LS4yNC40OC0uNjQuNDgtLjg5IDAtLjI0LS43LTEuNS0xLjU4LTIuOC0uODgtMS4yOS0xLjU5LTIuNTMtMS41OS0yLjc3IDAtLjQ4LjgtMS4zIDEuMjctMS4zLjE3IDAgMS40My41NiAyLjggMS4yNCAyLjIyIDEuMSAyLjU5IDEuMiAzLjE5LjkzLjg0LS4zOC44Ni0uOTYuMTMtMy44Mi0uNjgtMi42OC0uNjEtMy40Mi4zNi0zLjc2LjY4LS4yNC44Ny0uMTIgMi45MSAxLjkxIDEuMiAxLjIgMi4zNyAyLjE3IDIuNiAyLjE3Ljg4IDAgMS4yNi0uODkgMS41NC0zLjdDMjEuMTMuNTkgMjEuNCAwIDIyLjQ0IDBjLjY3IDAgMS4xNy43MSAyLjI0IDMuMjMgMS40OCAzLjQ2IDIuMzggMy41IDMuOTguMTRDMjkuOTUuNjUgMzAuMjYuMjcgMzEuMi4yN2MxIDAgMS4xOS40NiAxLjM4IDMuNTMuMDkgMS40NC4zIDIuNzguNDYgMi45OC42OC44MiAxLjYxLjQgMy43LTEuNjIgMS4xMi0xLjEgMi4xOC0xLjk4IDIuMzUtMS45OC4xNyAwIC41NC4xMi44Mi4yNy43LjM4LjY2IDEuMzktLjIgNC4yMy0uNjggMi4zLS42OCAyLjM4LS4yMSAyLjkuNjYuNzQgMS4wNi42OCAzLjY3LS41MyAyLjQzLTEuMTIgMy4wNC0xLjI1IDMuNTUtLjc0LjY0LjY0LjMgMS42NC0xLjMgMy44NC0xLjI4IDEuNzgtMS41NyAyLjM1LTEuNDQgMi44OC4yMy45LjkgMS4wOSAzLjE0Ljg2IDMuMjUtLjMyIDMuNTctLjI5IDQuMDUuNDQuMzguNi4zOS43Mi4wMyAxLjI3LS4yMi4zNC0xLjM1IDEuMjQtMi41MiAyLTEuMTYuNzctMi4xNyAxLjYtMi4yMyAxLjg1LS4yNS45Mi4yNiAxLjU5IDEuNDQgMS45IDMuOTMgMS4wMiA0LjcgMS4zMyA0Ljg2IDEuOTYuMyAxLjI0LS4yMiAxLjYzLTMuMDUgMi4yOC00LjEuOTItNC40OCAxLjkzLTEuNTQgMy45NSAzLjE1IDIuMTcgMy42MyAyLjg5IDIuNTkgMy44NC0uNDguNDMtLjc0LjQ1LTMuMzQuMTUtMi41NS0uMjgtMi44NS0uMjctMy4zLjE0LS4yOC4yNS0uNS42NS0uNS44OCAwIC4yNC43IDEuNDkgMS41OCAyLjc4Ljg3IDEuMjkgMS41OSAyLjU2IDEuNTkgMi44M3MtLjMxLjY5LS42OS45M2MtLjY3LjQ0LS43NC40Mi0zLjMtLjgzLTIuMy0xLjE0LTIuNjgtMS4yNS0zLjI4LS45OC0uODQuMzgtLjg3IDEuMDktLjEzIDMuNzQuNzEgMi41Ni42MiAzLjUtLjM2IDMuODQtLjcuMjUtLjg2LjE0LTIuODgtMS45MS0zLjEtMy4xNi0zLjctMi45My00LjE0IDEuNTItLjIxIDIuMS0uMzkgMi44NS0uNzQgMy4xMS0uNTguNDMtLjkzLjQyLTEuNTMtLjAxem0uNzUtMTAuMjNjMS4xMi0uMjkgMi43OC0uOTEgMy42OC0xLjM5YTIwLjE2IDIwLjE2IDAgMCAwIDYuMjMtNS44N2MxLjE2LTIuMzcgMi4yNC00LjMzIDIuMDItNi45bC03LjQzLS4wN2MtNi44Mi0uMDctNy40Ni0uMDMtNy44NS40LS43Ny44Ni03LjA4IDEyLjAxLTcuMDggMTIuNTEgMCAxLjU3IDYuMzQgMi4zNyAxMC40MyAxLjMyem0tOS43My05LjEzYzEuOTYtMy40IDMuNTMtNi4zOCAzLjUzLTYuNzUgMC0xLjAzLTYuOTEtMTIuODItNy41Ny0xMi45MS0uNzQtLjExLTMuNjggMy4wNS00LjggNS4xNmExNi45OCAxNi45OCAwIDAgMC0uMDIgMTUuNDZjMS4xMiAyLjEgNC4wOCA1LjMgNC44IDUuMi4zOS0uMDYgMS41LTEuNzYgNC4wNi02LjE2em0yMS4xOC0xMi4xM0ExNyAxNyAwIDAgMCAzMC4xIDEwLjQyYy0zLjUzLS44OS05LjgtLjAyLTEwIDEuMzgtLjA4LjUgNi4wNSAxMS40OCA3LjAzIDEyLjYxLjM4LjQzIDEuMDIuNDYgNy44NC40bDcuNDMtLjA3Yy4xOS0xLjI3LS4xLTIuNi0uNDgtMy42NnoiLz48L3N2Zz4="
 					alt=""
@@ -488,6 +499,11 @@
 				/>
 			</button>
 		</div>
+
+
+		<aside id="settings" class="init hidden" style="display: none">
+			<!-- settings -->
+		</aside>
 
 		<div id="templates">
 			<template id="bookmarks-dialog-template">
@@ -573,34 +589,11 @@
 			<template id="popup-template">
 				<div id="popup">
 					<div id="popup_text">
-						<div id="popup_close">✕</div>
+						<div id="popup_close" tabindex="0">✕</div>
 						<img id="popup_icon" src="src/assets/interface/version-21-promo.png" alt="Version 21 icon" />
 						<p id="popup_desc"></p>
 					</div>
 					<div id="popup_buttons"></div>
-				</div>
-			</template>
-
-			<template id="supporters-notif-template">
-				<div id="supporters-notif-container" class="dropdown">
-					<div id="supporters-notif" tabindex="0">
-						<button id="supporters-notif-close" tabindex="0">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke-width="1.5"
-								class="size-6"
-							>
-								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-							</svg>
-						</button>
-
-						<div id="supporters-notif-content">
-							<h3 id="supporters-notif-title"></h3>
-							<button id="supporters-notif-button"></button>
-						</div>
-					</div>
 				</div>
 			</template>
 
@@ -609,36 +602,33 @@
 					<canvas id="glitter"></canvas>
 					<dialog id="supporters-modal">
 						<button id="supporters-modal-close" tabindex="0">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke-width="1.5"
-								class="size-6"
-							>
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
 								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
 							</svg>
 						</button>
 
-						<div id="top-section">
-							<h2>✨ <span class="trn" id="title"></span> ✨</h2>
-							<p id="desc" class="trn"></p>
+						<main>
+							<header>
+								<h2>✨ <span></span> ✨</h2>
+								<p></p>
+							</header>
 
-							<main>
-								<div id="monthly">
-									<h3 id="title" class="trn"></h3>
-									<ul id="list"></ul>
+							<section>
+								<div id="supporters-monthly">
+									<h3></h3>
+									<ul></ul>
 								</div>
 
-								<div id="once">
-									<h3 id="title" class="trn"></h3>
-									<ul id="list"></ul>
+								<div id="supporters-once">
+									<h3></h3>
+									<ul></ul>
 								</div>
-							</main>
-						</div>
+							</section>
+						</main>
 
-						<div id="bottom-section">
-							<span id="phrase" class="trn"></span>
+						<footer>
+							<p></p>
+
 							<a
 								id="donate-button"
 								href="https://ko-fi.com/bonjourr"
@@ -659,7 +649,7 @@
 								</svg>
 								<span id="donate-button-text" class="trn"></span>
 							</a>
-						</div>
+						</footer>
 					</dialog>
 				</div>
 			</template>
@@ -694,10 +684,105 @@
 					<button id="b_opera-explained" class="trn">Close and access Bonjourr</button>
 				</dialog>
 			</template>
-		</div>
 
-		<aside id="settings" class="init hidden" style="display: none">
-			<!-- settings -->
-		</aside>
+			<template id="help-mode-template">
+				<div id="help-mode">
+					<h1>HELP MODE</h1>
+
+					<p>If you have an issue with your page, <a href="https://github.com/victrme/Bonjourr/issues" target="_blank">look for similar problems on Github</a>. You might also have relevant information <a href="https://bonjourr.fr/docs/" target="_blank">on our documentation</a>. </p>
+
+
+					<h2>Server status</h2>
+					<ul>
+    					<li>Website: <span id="help-status-website">loading</span><span></li>
+    					<li>Weather: <span id="help-status-weather">loading</span><span></li>
+     				    <li>Services: <span id="help-status-services">loading</span><span></li>
+					</ul>
+
+					<h2>Contact</h2>
+					<ul>
+						<li>Via email: bonjourr.app@protonmail.com</li>
+						<li>On Telegram: <a href="https://t.me/BonjourrStartpage" target="_blank">@BonjourrStartpage</a></li>
+						<li>On bluesky: <a href="https://bsky.app/profile/bonjourr.fr" target="_blank">@bonjourr.fr</a></li>
+					</ul>
+
+					<h2>Storage</h2>
+
+					<p>Here you can see everything Bonjourr stores on you browser to be functionnal.</p>
+
+					<h3>Page storage <small>(localStorage)</small></h3>
+					<p>This storage is used to store simple data. When using online.bonjourr.fr however, all of your data is stored in here.</p>
+
+					<ul id="help-localstorage"></ul>
+
+					<h3>Extension Storage</h3>
+					<h4>Synchronized <small>(browser.storage.sync)</small></h4>
+					<p>This stores critical user data when using the extension. This is the data to <b>copy to make sure you don't lose anything.</b></p>
+					<textarea id="help-storage-sync"></textarea>
+
+					<h4>Local <small>(browser.storage.local)</small></h4>
+					<p>This stores large data that cannot or does not need to be saved.</p>
+					<textarea id="help-storage-local"></textarea>
+
+					<style>
+					    #help-mode {
+    					    font-family: system-ui;
+                            max-width: 550px;
+                            margin: 4em auto;
+                            color: #333;
+                            background-color: white;
+						}
+
+						#help-mode h1 {
+    						text-align: center;
+						}
+
+						#help-mode h2 {
+						    margin-top: 2em;
+						}
+
+						#help-mode textarea {
+						    width: 100%;
+							border: none;
+							resize: vertical;
+							background-color: #f6f6f6;
+						}
+
+						#help-storage-sync,
+						#help-storage-local {
+						    font-size: small;
+		                    min-height: 200px;
+						}
+					</style>
+				</div>
+			</template>
+
+			<template id="help-mode-prompt-template">
+                <div id="help-mode-prompt">
+                    <p>Stuck? Press <code>CTRL + Shift + ?</code> to show Help Mode</p>
+
+                    <style>
+                        #help-mode-prompt {
+                            position: fixed;
+                            top: 40vh;
+                            left: 0;
+                            right: 0;
+                            color: white;
+                            font-family: system-ui;
+                            font-size: 1.5em;
+                            text-align: center;
+                            z-index: -1;
+                        }
+
+                         #help-mode-prompt code {
+                            background-color: #555;
+                            padding: .3em;
+                            border-radius: .3em;
+                            margin-inline: .3em;
+                         }
+                    </style>
+                </div>
+			</template>
+		</div>
 	</body>
 </html>

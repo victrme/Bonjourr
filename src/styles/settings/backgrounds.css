@@ -14,7 +14,7 @@
 
 #background-local-actions > div {
 	display: flex;
-	gap: 4px;
+	gap: 8px;
 }
 
 #lbl_background-upload {
@@ -22,7 +22,9 @@
 }
 
 #lbl_background-upload > span {
-	display: block;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	padding: 0 1em;
 	height: 31px;
 	font-size: 13px;
@@ -48,6 +50,19 @@
 	overflow: auto;
 	grid-template-columns: repeat(var(--thumbnails-columns), 1fr);
 	padding-bottom: 5px;
+}
+
+#thumbnails-container:empty,
+#thumbnails-container:empty + #background-local-actions {
+	display: none;
+}
+
+#thumbnails-container:not(:empty) ~ #background-local-tooltip {
+	display: none;
+}
+
+#background-local-tooltip {
+	padding-block: 5px;
 }
 
 .thumbnail {
@@ -96,9 +111,9 @@
 }
 
 .thumbnail.loading img {
-	width: 1em;
-	height: 1em;
-	opacity: 0.5;
+	width: 3em;
+	height: 3em;
+	opacity: 0.9;
 	object-fit: unset;
 	transition: none;
 }

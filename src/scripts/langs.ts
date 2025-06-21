@@ -28,10 +28,12 @@ export const langList = {
 	uk: 'Українська',
 	ru: 'Русский',
 	tr: 'Türkçe',
+	he: 'עִברִית',
 	hy: 'Հայերեն',
-	az: 'Azərbaycan',
 	ar: 'العربية',
+	az: 'Azərbaycan',
 	fa: 'فارسی',
+	te: 'తెలుగు',
 	id: 'Indonesia',
 	vi: 'Tiếng Việt',
 	'zh-CN': '中国简体中文',
@@ -40,7 +42,6 @@ export const langList = {
 	'nan-Hant-TW': '臺灣台語（漢羅）',
 	ko: '한국어',
 	ja: '日本語',
-	te: 'తెలుగు',
 }
 
 // uses basic latin characters if not included
@@ -64,6 +65,7 @@ export const subsets = {
 	ja: 'japanese',
 	hy: 'armenian',
 	te: 'telugu',
+	he: 'hebrew',
 	'zh-CN': 'chinese-simplified',
 	'zh-HK': 'chinese-traditional',
 	'zh-TW': 'chinese-traditional',

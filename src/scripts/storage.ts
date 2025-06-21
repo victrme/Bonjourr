@@ -116,6 +116,8 @@ async function syncGet(key?: string | string[]): Promise<Sync> {
 }
 
 async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
+	console.log('sync set', JSON.stringify(keyval))
+
 	switch (storage.type.get()) {
 		case 'webext-sync': {
 			chrome.storage.sync.set(keyval, fn)
@@ -200,6 +202,8 @@ async function syncClear() {
 //	Local data
 
 function localSet(value: Record<string, unknown>) {
+	console.log('local set', JSON.stringify(value))
+
 	switch (storage.type.get()) {
 		case 'webext-sync':
 		case 'webext-local': {
@@ -376,7 +380,19 @@ async function init(): Promise<AllStorage> {
 async function clearall() {
 	sessionStorage.clear()
 	localStorage.clear()
-	idb.clear()
+
+	try {
+		idb.clear()
+	} catch (_) {
+		console.info('You are on Firefox Private Browsing')
+		return
+	}
+
+	try {
+		globalThis.caches.delete('local-files')
+	} catch (err) {
+		console.warn(err)
+	}
 
 	//@ts-expect-error: Type 'undefined' is not assignable to type ...
 	globalThis.startupStorage = undefined

@@ -45,6 +45,10 @@
 	filter: blur(var(--blur)) brightness(var(--brightness));
 }
 
+#background-media [data-res='small'] {
+	image-rendering: pixelated;
+}
+
 #background-media > div {
 	transition: opacity 1.2s;
 }
@@ -94,7 +98,9 @@ body.init #background-media > div video {
 		radial-gradient(var(--texture-color) 1.25px, transparent 1.25px),
 		radial-gradient(var(--texture-color) 1.25px, transparent 1.25px);
 	background-size: var(--texture-size) var(--texture-size);
-	background-position: 0 0, calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
+	background-position:
+		0 0,
+		calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
 }
 
 #background-wrapper[data-texture='checkerboard'] #background-texture {
@@ -109,14 +115,16 @@ body.init #background-media > div video {
 			var(--texture-color)
 		),
 		repeating-linear-gradient(
-		45deg,
-		var(--texture-color) 25%,
-		transparent 25%,
-		transparent 75%,
-		var(--texture-color) 75%,
-		var(--texture-color)
-	);
-	background-position: 0 0, calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
+			45deg,
+			var(--texture-color) 25%,
+			transparent 25%,
+			transparent 75%,
+			var(--texture-color) 75%,
+			var(--texture-color)
+		);
+	background-position:
+		0 0,
+		calc(var(--texture-size) / 2) calc(var(--texture-size) / 2);
 	background-size: var(--texture-size) var(--texture-size);
 }
 
@@ -132,47 +140,53 @@ body.init #background-media > div video {
 			var(--texture-color)
 		),
 		linear-gradient(
-		150deg,
-		var(--texture-color) 12%,
-		transparent 12.5%,
-		transparent 87%,
-		var(--texture-color) 87.5%,
-		var(--texture-color)
-	),
+			150deg,
+			var(--texture-color) 12%,
+			transparent 12.5%,
+			transparent 87%,
+			var(--texture-color) 87.5%,
+			var(--texture-color)
+		),
 		linear-gradient(
-		30deg,
-		var(--texture-color) 12%,
-		transparent 12.5%,
-		transparent 87%,
-		var(--texture-color) 87.5%,
-		var(--texture-color)
-	),
+			30deg,
+			var(--texture-color) 12%,
+			transparent 12.5%,
+			transparent 87%,
+			var(--texture-color) 87.5%,
+			var(--texture-color)
+		),
 		linear-gradient(
-		150deg,
-		var(--texture-color) 12%,
-		transparent 12.5%,
-		transparent 87%,
-		var(--texture-color) 87.5%,
-		var(--texture-color)
-	),
+			150deg,
+			var(--texture-color) 12%,
+			transparent 12.5%,
+			transparent 87%,
+			var(--texture-color) 87.5%,
+			var(--texture-color)
+		),
 		linear-gradient(
-		60deg,
-		var(--texture-color-transparent) 25%,
-		transparent 25.5%,
-		transparent 75%,
-		var(--texture-color-transparent) 75%,
-		var(--texture-color-transparent)
-	),
+			60deg,
+			var(--texture-color-transparent) 25%,
+			transparent 25.5%,
+			transparent 75%,
+			var(--texture-color-transparent) 75%,
+			var(--texture-color-transparent)
+		),
 		linear-gradient(
-		60deg,
-		var(--texture-color-transparent) 25%,
-		transparent 25.5%,
-		transparent 75%,
-		var(--texture-color-transparent) 75%,
-		var(--texture-color-transparent)
-	);
+			60deg,
+			var(--texture-color-transparent) 25%,
+			transparent 25.5%,
+			transparent 75%,
+			var(--texture-color-transparent) 75%,
+			var(--texture-color-transparent)
+		);
 	background-size: 44px 77px;
-	background-position: 0 0, 0 0, 22px 39px, 22px 39px, 0 0, 22px 39px;
+	background-position:
+		0 0,
+		0 0,
+		22px 39px,
+		22px 39px,
+		0 0,
+		22px 39px;
 }
 
 #background-wrapper[data-texture='topographic'] #background-texture {
