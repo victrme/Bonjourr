@@ -8,7 +8,7 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '21.0.0'
+export const CURRENT_VERSION = '21.0.2'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -95,12 +95,7 @@ export const SYNC_DEFAULT: Sync = {
 	time: true,
 	main: true,
 	dateformat: 'auto',
-	background_blur: 15,
-	background_bright: 0.8,
-	background_type: 'unsplash',
-	background_solid: '#222',
 	quicklinks: true,
-	syncbookmarks: undefined,
 	textShadow: 0.2,
 	announcements: 'major',
 	review: 0,
@@ -150,13 +145,6 @@ export const SYNC_DEFAULT: Sync = {
 		background: '#fff2',
 	},
 	worldclocks: [],
-	unsplash: {
-		every: 'hour',
-		collection: '',
-		lastCollec: 'day',
-		pausedImage: undefined,
-		time: undefined,
-	},
 	weather: {
 		city: undefined,
 		unit: 'metric',
@@ -215,7 +203,6 @@ export const LOCAL_DEFAULT: Local = {
 	backgroundFiles: {},
 	backgroundCollections: {},
 	backgroundCompressFiles: true,
-	backgroundPreloading: undefined,
 	backgroundLastChange: '',
 	lastWeather: undefined,
 }

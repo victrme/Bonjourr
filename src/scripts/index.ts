@@ -1,5 +1,4 @@
 import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
-import { prepareIdbFormatMigration } from './features/backgrounds/local.ts'
 import { supportersNotifications } from './features/supporters.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { backgroundsInit } from './features/backgrounds/index.ts'
@@ -59,9 +58,10 @@ async function startup() {
 	if (oldVersion !== CURRENT_VERSION) {
 		console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
 
+		localStorage.setItem('upgrade-archive', JSON.stringify(sync))
+
 		sync = upgradeSyncStorage(sync)
 		local = upgradeLocalStorage(local)
-		await prepareIdbFormatMigration(local)
 
 		// <!> do not move, must delete old keys before upgrading storage
 		await storage.sync.clear()
@@ -106,10 +106,7 @@ async function startup() {
 		setPotatoComputerMode()
 		userActions()
 
-		supportersNotifications({
-			supporters: sync.supporters,
-			review: sync.review,
-		})
+		supportersNotifications(sync)
 
 		interfacePopup({
 			announce: sync.announcements,
@@ -127,6 +124,11 @@ function upgradeSyncStorage(data: Sync): Sync {
 function upgradeLocalStorage(data: Local): Local {
 	data.translations = undefined
 	storage.local.remove('translations')
+
+	data = {
+		...LOCAL_DEFAULT,
+		...data,
+	}
 
 	return data
 }

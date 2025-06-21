@@ -15,7 +15,7 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://github.com/victrme/Bonjourr/releases/tag/v21.0.0'
+const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-21-the-background-update-R6R61FLG0Z'
 const ANNOUNCEMENT_VERSION = '21.0.0'
 
 const ANNOUNCEMENT_TRNS = {
@@ -23,7 +23,7 @@ const ANNOUNCEMENT_TRNS = {
 	fr: "<b>Bonjourr vient d'avoir une mise à jour majeure ! ✨</b> Découvrez les nouvelles fonctionnalités: arrière-plans vidéo, superpositions de textures, recherche d'arrière-plan et bien plus encore.",
 	de: '<b>Bonjourr hat gerade ein großes Update erhalten! ✨</b> Erfahren Sie alles über die neuen Funktionen: Videohintergründe, Textur-Overlays, Hintergrundsuche und vieles mehr.',
 	it: '<b>Bonjourr ha appena ricevuto un aggiornamento importante! ✨</b> Scopri tutte le nuove funzionalità: sfondi video, sovrapposizioni di texture, ricerca di sfondi e altro ancora.',
-	es: '<b>¡Bonjourr acaba de recibir una actualización importante! ✨</b> Descubre todas las nuevas funciones: fondos de video, superposiciones de texturas, búsqueda de fondos y mucho más.',
+	es: '<b>¡Bonjourr acaba de recibir una actualización importante! ✨</b> Mira todas las nuevas características: fondos de video, superposición de texturas, búsqueda de fondos y mucho más.',
 	'pt-BR':
 		'<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Saiba tudo sobre os novos recursos: planos de fundo em vídeo, sobreposições de textura, pesquisa de plano de fundo e muito mais.',
 	'pt-PT':

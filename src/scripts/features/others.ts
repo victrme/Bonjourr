@@ -1,6 +1,6 @@
-import { getReadableTextColor, hexToHSL, hexToRGB, stringMaxSize } from '../shared/generic.ts'
 import { BROWSER, SYNC_DEFAULT } from '../defaults.ts'
 import { minutator, suntime } from '../shared/time.ts'
+import { stringMaxSize } from '../shared/generic.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { tradThis } from '../utils/translations.ts'
 import { storage } from '../storage.ts'
@@ -105,24 +105,6 @@ export function textShadow(init?: number, event?: number) {
 	if (typeof event === 'number') {
 		eventDebounce({ textShadow: val })
 	}
-}
-
-// solid background button
-export function colorButtonStyling(colorButton: HTMLElement, color: string) {
-	const hsl = hexToHSL(color)
-
-	// darker color for border
-	hsl.l = Math.max(0, hsl.l - 10)
-	colorButton.style.borderColor = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`
-
-	// sets background color
-	colorButton.style.backgroundColor = color
-
-	// sets text color according to the background
-	colorButton.style.color = getReadableTextColor(hexToRGB(color))
-
-	// shows hex color value
-	colorButton.textContent = color
 }
 
 // Unfocus address bar on chromium

@@ -4,7 +4,7 @@ import { onclickdown } from 'clickdown/mod'
 import { debounce } from '../utils/debounce.ts'
 import { storage } from '../storage.ts'
 
-import type { Supporters, Sync } from '../../types/sync.ts'
+import type { Sync } from '../../types/sync.ts'
 
 interface SupportersApi {
 	date: string
@@ -18,13 +18,8 @@ interface SupportersApi {
 interface SupportersUpdate {
 	enabled?: boolean
 	closed?: boolean
-	month?: number
+	month?: true
 	translate?: true
-}
-
-interface SupportersInit {
-	supporters: Supporters
-	review: Sync['review']
 }
 
 const monthBackgrounds = [
@@ -42,10 +37,9 @@ const monthBackgrounds = [
 	'https://images.unsplash.com/photo-1513267257196-91be473829b3?q=80&w=700&auto=format&fit=crop',
 ]
 
-let supportersNotif: HTMLElement
-let supportersModal: HTMLElement
+let modalDataLoaded = false
 
-export function supportersNotifications(init?: SupportersInit, update?: SupportersUpdate) {
+export function supportersNotifications(init?: Sync, update?: SupportersUpdate) {
 	if (update?.translate) {
 		translateNotif()
 		return
@@ -56,90 +50,81 @@ export function supportersNotifications(init?: SupportersInit, update?: Supporte
 		return
 	}
 
-	if (!init?.supporters?.enabled) {
-		return
+	if (canShowSupporters(init)) {
+		updateSupportersOption({
+			closed: false,
+			month: true,
+		})
+
+		onSettingsLoad(() => {
+			initSupportersModal()
+		})
+
+		document.documentElement.dataset.supporters = ''
+	}
+}
+
+function canShowSupporters(sync?: Sync): boolean {
+	if (!sync?.supporters || !sync.supporters.enabled) {
+		return false
 	}
 
-	const closed = init?.supporters.closed
-	const month = init?.supporters.month
-	const hasClosedReview = init.review === -1
+	const closed = sync?.supporters.closed
+	const month = sync?.supporters.month
+	const hasClosedReview = sync?.review === -1
 	const currentMonth = new Date().getMonth() + 1
+	const closedThisMonth = currentMonth === month && closed
 
-	// Do not show supporters with or before review popup
-	if (!(hasClosedReview || closed)) {
-		updateSupportersOption({ closed: true })
+	return hasClosedReview && !closed && !closedThisMonth
+}
+
+export function initSupportersSettingsNotif(sync: Sync) {
+	if (!canShowSupporters(sync)) {
 		return
 	}
 
-	if (currentMonth === month && closed) {
-		return
-	}
+	const settingsNotifs = document.getElementById('supporters-notif-container')
+	const settingsNotifContent = document.getElementById('supporters-notif-content')
+	const notifClose = document.getElementById('supporters-notif-close')
+	const image = monthBackgrounds[sync.supporters.month - 1]
 
-	// extracts notification template from index.html
-	const template = document.getElementById('supporters-notif-template') as HTMLTemplateElement
-	const doc = document.importNode(template.content, true)
-	supportersNotif = doc.getElementById('supporters-notif-container') as HTMLElement
+	settingsNotifs?.classList.add('shown')
+	settingsNotifs?.style.setProperty('--background', `url(${image})`)
 
-	// resets closing and stores new month
-	updateSupportersOption({
-		closed: false,
-		month: currentMonth,
+	translateNotif()
+
+	onclickdown(settingsNotifContent, () => {
+		toggleSupportersModal(true)
+		loadModalData()
 	})
 
-	supportersNotif.classList.add('shown')
-	document.documentElement.dataset.supporters = ''
-
-	onSettingsLoad(() => {
-		const notifClose = doc.getElementById('supporters-notif-close')
-		const settingsNotifs = document.getElementById('settings-notifications')
-		const image = monthBackgrounds[currentMonth - 1]
-
-		supportersNotif.style.setProperty('--background', `url(${image})`)
-		settingsNotifs?.insertAdjacentElement('beforebegin', supportersNotif)
-
-		initSupportersModal()
-		translateNotif()
-
-		onclickdown(supportersNotif, (e) => {
-			if (e.target instanceof Element && !e.target.closest('#supporters-notif-close')) {
-				toggleSupportersModal(true)
-				loadModalData()
-			}
-		})
-
-		onclickdown(notifClose, () => {
-			delete document.documentElement.dataset.supporters
-			supportersNotif.classList.remove('shown')
-			updateSupportersOption({ closed: true })
-		})
+	onclickdown(notifClose, () => {
+		delete document.documentElement.dataset.supporters
+		settingsNotifs?.classList.remove('shown')
+		updateSupportersOption({ closed: true })
 	})
 }
 
 async function updateSupportersOption(update: SupportersUpdate) {
 	const data = await storage.sync.get()
-	const newSupporters = { ...data.supporters }
 
 	if (update.enabled !== undefined) {
-		newSupporters.enabled = update.enabled
+		data.supporters.enabled = update.enabled
 	}
-
 	if (update.closed !== undefined) {
-		newSupporters.closed = update.closed
+		data.supporters.closed = update.closed
 	}
-
 	if (update.month !== undefined) {
-		newSupporters.month = update.month
+		data.supporters.month = new Date().getMonth() + 1
 	}
 
-	storage.sync.set({
-		supporters: newSupporters,
-	})
+	storage.sync.set({ supporters: data.supporters })
 }
 
 function translateNotif() {
 	const currentMonthLocale = new Date().toLocaleDateString(getLang(), { month: 'long' })
 	const introString = 'This <currentMonth>, Bonjourr is brought to you by our lovely supporters.'
-	const notifTitle = document?.getElementById('supporters-notif-title')
+	const notifTitle = document.getElementById('supporters-notif-title')
 	const notifButton = document.getElementById('supporters-notif-button')
 
 	if (notifTitle && notifButton) {
@@ -151,43 +136,44 @@ function translateNotif() {
 function initSupportersModal() {
 	const template = document.getElementById('supporters-modal-template') as HTMLTemplateElement
 	const doc = document.importNode(template.content, true)
-	supportersModal = doc.getElementById('supporters-modal-container') as HTMLElement
+	const supportersModal = doc.getElementById('supporters-modal-container') as HTMLElement
 
-	onSettingsLoad(() => {
-		tradTemplateString(doc, '#title', 'Supporters like you make Bonjourr possible')
-		tradTemplateString(
-			doc,
-			'#desc',
-			'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.',
-		)
-		tradTemplateString(doc, '#monthly #title', 'Our monthly supporters')
-		tradTemplateString(doc, '#once #title', 'Our one-time supporters')
-		tradTemplateString(doc, '#phrase', 'Join the community and get your name in Bonjourr.')
-		tradTemplateString(doc, '#donate-button-text', 'Donate')
+	tradTemplateString(doc, 'header h2 span', 'Supporters like you make Bonjourr possible')
+	tradTemplateString(
+		doc,
+		'header p',
+		'Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.',
+	)
+	tradTemplateString(doc, '#supporters-monthly h3', 'Our monthly supporters')
+	tradTemplateString(doc, '#supporters-once h3', 'Our one-time supporters')
+	tradTemplateString(doc, 'footer p', 'Join the community and get your name in Bonjourr.')
+	tradTemplateString(doc, 'footer a span', 'Donate')
 
-		const close = doc.getElementById('supporters-modal-close') as HTMLElement
+	const close = doc.getElementById('supporters-modal-close') as HTMLElement
 
-		// inserts modal dom
-		document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supportersModal)
+	// inserts modal dom
+	document.querySelector('#interface')?.insertAdjacentElement('beforebegin', supportersModal)
 
-		// close button event
-		close.addEventListener('click', () => {
+	// close button event
+	close.addEventListener('click', () => {
+		toggleSupportersModal(false)
+	})
+
+	// close when click on background
+	supportersModal.addEventListener('click', (event) => {
+		if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
 			toggleSupportersModal(false)
-		})
+		}
+	})
 
-		// close when click on background
-		supportersModal.addEventListener('click', (event) => {
-			if ((event.target as HTMLElement)?.id === 'supporters-modal-container') {
-				toggleSupportersModal(false)
-			}
-		})
+	// close when esc key
+	document.addEventListener('keyup', (event) => {
+		const hasDataset = document.documentElement.dataset.supportersModal !== undefined
+		const isEscape = event.key === 'Escape'
 
-		// close when esc key
-		document.addEventListener('keyup', (event) => {
-			if (event.key === 'Escape' && document.documentElement.dataset.supportersModal !== undefined) {
-				toggleSupportersModal(false)
-			}
-		})
+		if (isEscape && hasDataset) {
+			toggleSupportersModal(false)
+		}
 	})
 }
 
@@ -196,13 +182,11 @@ function toggleSupportersModal(toggle: boolean) {
 
 	if (toggle) {
 		document.documentElement.dataset.supportersModal = ''
-	}
-	if (!toggle) {
+	} else {
 		delete document.documentElement.dataset.supportersModal
 	}
 }
 
-let modalDataLoaded = false
 export async function loadModalData() {
 	if (modalDataLoaded) {
 		return
@@ -214,61 +198,42 @@ export async function loadModalData() {
 
 	const currentMonth = new Date().getMonth() + 1
 	const currentYear = new Date().getFullYear()
+	const isJanuary = currentMonth === 1
 	let monthToGet: number
 	let yearToGet: number = currentYear
 
-	if (currentMonth === 1) {
-		// january exception
+	if (isJanuary) {
 		monthToGet = 12
 		yearToGet -= 1
 	} else {
 		monthToGet = currentMonth - 1
 	}
 
-	function injectError(string: string) {
-		const main = document.querySelector('#supporters-modal main')
-		if (main) {
-			main.innerHTML = `<i>${string}</i>`
-		}
-	}
-
-	function injectData(supporters: SupportersApi[] = []) {
-		// sorts in descending order
-		supporters.sort((a, b) => b.amount - a.amount)
-
-		const monthlyFragment = document.createDocumentFragment()
-		const onceFragment = document.createDocumentFragment()
-
-		for (const supporter of supporters) {
-			const li = document.createElement('li')
-			li.innerHTML = supporter.name
-
-			const targetFragment = supporter.monthly ? monthlyFragment : onceFragment
-			targetFragment.appendChild(li)
-		}
-
-		document.querySelector('#supporters-modal #monthly #list')?.appendChild(monthlyFragment)
-		document.querySelector('#supporters-modal #once #list')?.appendChild(onceFragment)
-	}
+	const modal = document.querySelector('#supporters-modal')
+	const main = document.querySelector('#supporters-modal main')
+	const monthly = document.querySelector('#supporters-monthly ul')
+	const once = document.querySelector('#supporters-once ul')
 
 	try {
-		let supporters: SupportersApi[] = []
-		const response = await fetch(`https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`)
-
-		if (response.ok) {
-			supporters = await response.json()
-		}
-
-		// removes loader
-		document.querySelector('#supporters-modal')?.classList.add('loaded')
+		const url = `https://kofi.bonjourr.fr/list?date=${yearToGet}-${monthToGet}`
+		const supporters: SupportersApi[] = await (await fetch(url))?.json()
 
 		if (supporters.length > 0) {
-			injectData(supporters)
-		} else {
-			injectError('An error occured or there were no supporters last month.')
+			supporters.sort((a, b) => b.amount - a.amount)
+
+			for (const supporter of supporters) {
+				const parent = supporter.monthly ? monthly : once
+				const li = `<li>${supporter.name}</li>`
+
+				parent?.insertAdjacentHTML('beforeend', li)
+			}
+
+			modal?.classList.add('loaded')
 		}
 	} catch (_error) {
-		injectError('An Internet connection is required to see the supporters names.')
+		if (main) {
+			main.innerHTML = `<i>An error occured or we might be offline!</i>`
+		}
 	}
 
 	modalDataLoaded = true
