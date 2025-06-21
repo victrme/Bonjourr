@@ -19,11 +19,11 @@
 }
 
 .all #background-provider-option.shown {
-	max-height: 120px;
+	max-height: 170px;
 }
 
 #background-user-coll-option.shown {
-	max-height: 60px;
+	max-height: 105px;
 }
 
 #background-user-search-option.shown {
@@ -47,7 +47,11 @@
 }
 
 #background-texture-options.shown {
-	max-height: 180px;
+	max-height: 185px;
+}
+
+#background-texture-color-option.shown {
+	max-height: 60px;
 }
 
 /* Dropdowns: Time & Date Options */
@@ -62,6 +66,10 @@
 
 #analog_options.shown {
 	max-height: 280px;
+}
+
+#greetings_options.shown {
+	max-height: 120px;
 }
 
 #ampm_label.shown {
@@ -79,7 +87,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-	max-height: 630px;
+	max-height: 670px;
 }
 
 #weather_provider.shown {
@@ -145,7 +153,7 @@
 }
 
 .all .as_texture {
-	max-height: 180px;
+	max-height: 245px;
 }
 
 .all .as_fadein {

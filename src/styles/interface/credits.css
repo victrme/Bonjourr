@@ -3,7 +3,7 @@
 #show-settings {
 	position: fixed;
 	pointer-events: all;
-	transition: opacity 0.05s;
+	transition: opacity 0.1s;
 }
 
 #credit-container {

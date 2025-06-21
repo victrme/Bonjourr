@@ -16,6 +16,7 @@
 	--notes-background-alpha: 0.1;
 	--searchbar-background-alpha: 0.1;
 	--font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
+	--monospace-font-family: Consolas, Monaco, Ubuntu Mono, monospace;
 	--font-weight-clock: 200;
 	--font-weight: 400;
 	--font-size: 1em;
@@ -213,14 +214,14 @@ body.potato #element-mover {
 	background-color: rgb(var(--color-param));
 }
 
-body.blurred .analog,
+/* body.blurred .analog,
 body.blurred .link-title,
 body.blurred .move-overlay,
 body.blurred #pocket-editor,
 body.blurred .link-folder > div {
 	backdrop-filter: none;
 	-webkit-backdrop-filter: none;
-}
+} */
 
 body .he_hidden,
 body #time .analog.he_hidden,

@@ -2,6 +2,21 @@
 	<div></div>
 </div>
 
+<div id="supporters-notif-container" class="dropdown">
+	<div id="supporters-notif" tabindex="0">
+		<button id="supporters-notif-close" tabindex="0">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+			</svg>
+		</button>
+
+		<div id="supporters-notif-content">
+			<h3 id="supporters-notif-title"></h3>
+			<button id="supporters-notif-button"></button>
+		</div>
+	</div>
+</div>
+
 <div id="settings-notifications">
 	<div class="settings-title"></div>
 
@@ -105,10 +120,7 @@
 		</div>
 
 		<p class="tooltiptext dropdown tthidesettingsicon">
-			<!-- prettier-ignore -->
-			<span class="trn"
-			>When this is enabled, clicking the bottom right corner will still
-				open settings.</span>
+			<span class="trn">When this is enabled, clicking the bottom right corner will still open settings.</span>
 			<a
 				class="trn"
 				href="https://bonjourr.fr/docs/overview/#hide-settings"
@@ -134,7 +146,7 @@
 				<option value="videos" class="trn">Videos</option>
 				<option value="files" class="trn">Local files</option>
 				<!-- <option value="urls" class="trn">URLs</option> -->
-				<option value="color" class="trn">Color</option>
+				<option value="color" class="trn">Solid color</option>
 			</select>
 			<small class="network-form-warning"></small>
 		</form>
@@ -152,7 +164,16 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_background-user-coll" class="trn">Custom collection</label>
+				<span>
+					<label for="i_collection" class="trn">Custom collection</label>
+					<button
+						class="tooltip ttcoll"
+						title="Tips on Unsplash collections"
+						aria-label="Tips on Unsplash collections"
+					>
+						?
+					</button>
+				</span>
 
 				<form id="f_background-user-coll" class="network-form">
 					<div>
@@ -171,6 +192,17 @@
 					<small class="network-form-warning"></small>
 				</form>
 			</div>
+
+			<p class="tooltiptext dropdown ttcoll">
+				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
+				<a
+					class="trn"
+					href="https://bonjourr.fr/docs/overview/#unsplash-collection"
+					rel="noreferrer noopener"
+					target="_blank"
+					>Learn more</a
+				>
+			</p>
 		</div>
 
 		<div id="background-user-search-option" class="dropdown">
@@ -188,6 +220,7 @@
 							placeholder="nature, winter"
 							aria-label="Background search"
 							maxlength="256"
+							autocomplete="off"
 						/>
 						<button type="submit">
 							<span></span>
@@ -202,34 +235,16 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<div id="background-local-actions" class="wrapper">
-			<div>
-				<button id="b_thumbnail-remove" class="param-btn btn-red">
-					<!-- <img src="src/assets/labels/remove.svg" height="13" alt="" /> -->
-					<!-- <span>&times;</span> -->
-					<span class="trn">Remove</span>
-				</button>
+		<div class="wrapper" style="display: flex; justify-content: space-between; align-items: center">
+			<h3>My files</h3>
 
-				<button id="b_thumbnail-position" class="trn param-btn">
-					<img src="src/assets/labels/move.svg" height="15" alt="" />
-					<span class="trn">Move</span>
-				</button>
-			</div>
-
-			<div>
-				<button id="b_thumbnail-zoom" class="trn param-btn">
-					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
-					<span>Zoom</span>
-				</button>
-
-				<label id="lbl_background-upload">
-					<span class="param-btn">
-						<img src="src/assets/labels/add.svg" height="13" alt="" />
-						Add
-					</span>
-					<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
-				</label>
-			</div>
+			<label id="lbl_background-upload" title="Upload new background" aria-label="Upload new background">
+				<span class="param-btn">
+					<img src="src/assets/labels/add.svg" height="13" alt="" />
+					<span class="trn">Add new</span>
+				</span>
+				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+			</label>
 		</div>
 
 		<div id="background-position-options" class="dropdown">
@@ -242,7 +257,7 @@
 					class="range"
 					min="0"
 					max="100"
-					step="10"
+					step="3"
 					value="50"
 				/>
 			</div>
@@ -256,7 +271,7 @@
 					class="range"
 					min="0"
 					max="100"
-					step="10"
+					step="3"
 					value="50"
 				/>
 			</div>
@@ -270,7 +285,7 @@
 					min="100"
 					max="200"
 					value="100"
-					step="10"
+					step="3"
 					class="range"
 				/>
 			</div>
@@ -278,10 +293,51 @@
 
 		<div id="thumbnails-container"></div>
 
+		<div id="background-local-actions" class="wrapper">
+			<div>
+				<button
+					id="b_thumbnail-zoom"
+					class="trn param-btn"
+					title="Increase background size on grid"
+					aria-label="Increase background size on grid"
+				>
+					<img src="src/assets/labels/zoom-out.svg" height="15" alt="" />
+					<span class="trn">View</span>
+				</button>
+			</div>
+			<div>
+				<button
+					id="b_thumbnail-position"
+					class="trn param-btn"
+					title="Move selected background"
+					aria-label="Move selected background"
+				>
+					<img src="src/assets/labels/move.svg" height="15" alt="" />
+					<span class="trn">Move</span>
+				</button>
+
+				<button
+					id="b_thumbnail-remove"
+					class="param-btn btn-red"
+					title="Delete selected background"
+					aria-label="Delete selected background"
+				>
+					<!-- prettier-ignore -->
+					<svg height="13" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path d="m8 11c-.55228 0-1 .4477-1 1s.44772 1 1 1h8c.5523 0 1-.4477 1-1s-.4477-1-1-1z"/><path clip-rule="evenodd" d="m1 5c0-2.20914 1.79086-4 4-4h14c2.2091 0 4 1.79086 4 4v14c0 2.2091-1.7909 4-4 4h-14c-2.20914 0-4-1.7909-4-4zm4-2h14c1.1046 0 2 .89543 2 2v14c0 1.1046-.8954 2-2 2h-14c-1.10457 0-2-.8954-2-2v-14c0-1.10457.89543-2 2-2z" fill-rule="evenodd"/></g></svg>
+
+					<span class="trn">Remove</span>
+				</button>
+			</div>
+		</div>
+
+		<p class="tooltiptext trn" id="background-local-tooltip"
+			>Click the button above and select some image files from your device to use as backgrounds in Bonjourr.</p
+		>
+
 		<hr />
 
 		<div class="wrapper">
-			<label for="i_background-local-compress" class="trn">Compress files</label>
+			<label for="i_background-local-compress" class="trn">Use compressed files</label>
 			<input id="i_background-local-compress" class="switch" type="checkbox" />
 		</div>
 	</div>
@@ -333,37 +389,10 @@
 
 		<div class="wrapper">
 			<label for="i_solid-background" class="trn">Background color</label>
-			<input type="color" id="i_solid-background" name="solid-background" />
-		</div>
-	</div>
 
-	<div class="as as_texture dropdown">
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_texture" class="trn">Texture</label>
-
-			<select id="i_texture">
-				<option value="none" class="trn">None</option>
-				<option value="grain" class="trn">Grain</option>
-				<option value="dots" class="trn">Dots</option>
-				<option value="topographic" class="trn">Topographic</option>
-			</select>
-		</div>
-
-		<div id="background-texture-options" class="dropdown shown">
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_texture-opacity" class="trn">Texture opacity</label>
-				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
-			</div>
-
-			<hr />
-
-			<div class="wrapper">
-				<label for="i_texture-size" class="trn">Texture size</label>
-				<input id="i_texture-size" name="texture-size" class="range" type="range" />
+			<div id="solid-background" class="color-button">
+				<input type="color" id="i_solid-background" name="solid-background" tabindex="-1" />
+				<button id="b_solid-background" class="trn">Pick a Color</button>
 			</div>
 		</div>
 	</div>
@@ -396,7 +425,7 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_fadein" class="trn">Fade in</label>
+				<label for="i_fadein" class="trn">Fade in time</label>
 				<input
 					id="i_fadein"
 					type="range"
@@ -407,6 +436,67 @@
 					value="400"
 					step="100"
 				/>
+			</div>
+		</div>
+	</div>
+
+	<div class="as as_texture dropdown">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_texture" class="trn">Texture overlay</label>
+
+			<select id="i_texture">
+				<option value="none" class="trn">None</option>
+				<option value="grain" class="trn">Grain</option>
+				<option value="vectorGrain" class="trn">Vector grain</option>
+				<option value="diagonalDots" class="trn">Diagonal dots</option>
+				<option value="verticalDots" class="trn">Vertical dots</option>
+				<option value="topographic" class="trn">Topographic</option>
+				<option value="aztec" class="trn">Aztec</option>
+				<option value="checkerboard" class="trn">Checkerboard</option>
+				<option value="isometric" class="trn">Isometric</option>
+				<option value="circuitBoard" class="trn">Circuit board</option>
+				<option value="ticTacToe" class="trn">Tic-tac-toe</option>
+				<option value="endlessClouds" class="trn">Endless clouds</option>
+				<option value="waves" class="trn">Waves</option>
+				<option value="honeycomb" class="trn">Honeycomb</option>
+				<option value="grid" class="trn">Grid</option>
+				<option value="verticalLines" class="trn">Vertical lines</option>
+				<option value="horizontalLines" class="trn">Horizontal lines</option>
+				<option value="diagonalLines" class="trn">Diagonal lines</option>
+				<option value="verticalStripes" class="trn">Vertical stripes</option>
+				<option value="horizontalStripes" class="trn">Horizontal stripes</option>
+				<option value="diagonalStripes" class="trn">Diagonal stripes</option>
+			</select>
+		</div>
+
+		<div id="background-texture-options" class="dropdown shown">
+			<div id="background-texture-color-option" class="dropdown">
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_texture-color" class="trn">Texture color</label>
+
+					<div id="texture-color" class="color-button">
+						<input type="color" id="i_texture-color" name="texture-color" tabindex="-1" />
+						<button id="b_texture-color" class="trn">Pick a Color</button>
+					</div>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-opacity" class="trn">Texture opacity</label>
+				<input id="i_texture-opacity" name="texture-opacity" class="range" type="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_texture-size" class="trn">Texture density</label>
+				<input id="i_texture-size" name="texture-size" class="range" type="range" />
 			</div>
 		</div>
 	</div>
@@ -1022,18 +1112,36 @@
 			<input id="i_detach" class="switch" type="checkbox" />
 		</div> -->
 
-		<hr />
+		<div id="greetings_options" class="dropdown">
+			<hr />
 
-		<div class="wrapper">
-			<label for="i_greeting" class="trn">Greeting name</label>
-			<input type="text" name="greeting" id="i_greeting" autocomplete="off" maxlength="64" placeholder="Name" />
-		</div>
+			<div class="wrapper">
+				<label for="i_greeting" class="trn">Greeting name</label>
+				<input
+					type="text"
+					name="greeting"
+					id="i_greeting"
+					autocomplete="off"
+					maxlength="64"
+					placeholder="Name"
+				/>
+			</div>
 
-		<hr />
+			<hr />
 
-		<div class="wrapper">
-			<label for="i_greetsize" class="trn">Greeting size</label>
-			<input id="i_greetsize" type="range" name="greetsize" min="1.5" max="5" value="3" step=".2" class="range" />
+			<div class="wrapper">
+				<label for="i_greetsize" class="trn">Greeting size</label>
+				<input
+					id="i_greetsize"
+					type="range"
+					name="greetsize"
+					min="1.5"
+					max="5"
+					value="3"
+					step=".2"
+					class="range"
+				/>
+			</div>
 		</div>
 	</div>
 </div>
@@ -1158,11 +1266,7 @@
 			<div class="wrapper">
 				<span>
 					<label for="i_sbengine" class="trn">Search engine</label>
-					<button
-						class="tooltip ttsearchengine"
-						title="I want more info on search engines"
-						aria-label="I want more info on search engines"
-					>
+					<button class="tooltip ttsearchengine" title="What does this do?" aria-label="What does this do?">
 						?
 					</button>
 				</span>
@@ -1183,7 +1287,6 @@
 			</div>
 
 			<p class="tooltiptext dropdown ttsearchengine">
-				<!-- prettier-ignore -->
 				<span class="trn">Change the endpoint of the search bar.</span>
 				<a
 					class="trn"
@@ -1405,8 +1508,8 @@
 				<label for="i_customfont" class="trn">Font family</label>
 				<button
 					class="tooltip ttfontfamily"
-					title="When can I preview these fonts?"
-					aria-label="When can I preview these fonts?"
+					title="Where can I preview these fonts?"
+					aria-label="Where can I preview these fonts?"
 				>
 					?
 				</button>
@@ -1426,7 +1529,6 @@
 		</div>
 
 		<p class="tooltiptext dropdown ttfontfamily">
-			<!-- prettier-ignore -->
 			<span class="trn">These fonts come from Fontsource.</span>
 			<a class="trn" href="https://fontsource.org/" rel="noreferrer noopener" target="_blank">Preview fonts</a>
 		</p>
@@ -1546,10 +1648,10 @@
 		</div>
 
 		<p class="tooltiptext dropdown ttsupporters">
-			<!-- prettier-ignore -->
 			<span class="trn"
-			>The supporters notification appears at the top of your settings to thank those who donate and support our
-				work.</span>
+				>The supporters notification appears at the top of your settings to thank those who donate and support
+				our work.</span
+			>
 			<a
 				class="trn"
 				href="https://bonjourr.fr/docs/overview/#supporters-notification"
@@ -1761,8 +1863,8 @@
 		<span class="trn">Are you sure?</span>
 
 		<div>
-			<button id="b_reset-apply" class="param-btn trn">I am sure</button>
-			<button id="b_reset-cancel" class="param-btn btn-red trn">No, go back</button>
+			<button id="b_reset-apply" class="param-btn btn-red trn">I am sure</button>
+			<button id="b_reset-cancel" class="param-btn trn">No, go back</button>
 		</div>
 	</div>
 </div>

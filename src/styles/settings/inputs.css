@@ -36,6 +36,11 @@ aside .param-btn {
 	border-radius: 1em;
 	white-space: nowrap;
 	background-color: rgba(var(--blue), 0.15);
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	gap: 5px;
+	cursor: pointer;
 }
 
 aside .param-btn img,
@@ -93,7 +98,7 @@ aside .input-btn.icon-only:active {
 
 aside textarea,
 aside .prism-code-editor {
-	font-family: Consolas, Monaco, Ubuntu Mono, monospace;
+	font-family: var(--monospace-font-family);
 }
 
 aside select,
@@ -269,9 +274,27 @@ aside input[type='range']::-ms-tooltip {
 	display: none;
 }
 
-aside input[type='color'] {
+aside .color-button {
+	position: relative;
+}
+
+aside .color-button input {
+	overflow: hidden;
+	position: absolute;
+	width: 0;
+	height: 0;
+	bottom: 0;
 	padding: 0;
-	background-color: transparent;
+}
+
+aside .color-button button {
+	border: 1px solid black;
+	height: 31px;
+	width: 155px;
+	text-align: left;
+	padding-inline-start: 1em;
+	outline-offset: 2px;
+	user-select: text;
 }
 
 label.input-file {
@@ -344,8 +367,9 @@ aside form button:disabled {
 }
 
 aside form button span {
-	display: block;
+	display: flex;
 	width: 31px;
+	justify-content: center;
 }
 
 aside form.valid button {
@@ -359,7 +383,8 @@ aside form.valid span::after {
 }
 
 aside form.valid.remove span::after {
-	content: '×';
+	content: url('../../assets/interface/close.svg');
+	width: 11px;
 }
 
 @media (hover: hover) {

@@ -1,7 +1,7 @@
 import { BROWSER, SYNC_DEFAULT } from '../defaults.ts'
 import { minutator, suntime } from '../shared/time.ts'
-import { eventDebounce } from '../utils/debounce.ts'
 import { stringMaxSize } from '../shared/generic.ts'
+import { eventDebounce } from '../utils/debounce.ts'
 import { tradThis } from '../utils/translations.ts'
 import { storage } from '../storage.ts'
 

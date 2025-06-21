@@ -1,8 +1,8 @@
 import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
+import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
-import { supportersNotifications } from './features/supporters.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
 import { moveElements } from './features/move/index.ts'
@@ -15,7 +15,7 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
-import { fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
+import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
 import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { settingsNotifications } from './utils/notifications.ts'
@@ -80,6 +80,7 @@ function settingsInitEvent(event: Event) {
 	traduction(settings, sync.lang)
 	translatePlaceholders()
 	initBackgroundOptions(sync, local)
+	initSupportersSettingsNotif(sync)
 	initOptionsValues(sync, local)
 	initOptionsEvents()
 	settingsFooter()
@@ -87,6 +88,7 @@ function settingsInitEvent(event: Event) {
 	// 3. Can be deferred
 
 	setTimeout(() => {
+		console.log(structuredClone(sync))
 		initWorldClocksAndTimezone(sync)
 		updateSettingsJson(sync)
 		updateSettingsEvent()
@@ -135,6 +137,9 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
 	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
 	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
+	setInput('i_texture-color', data.backgrounds.texture.color ?? '#ffffff')
+	setInput('i_pagewidth', data.pagewidth || 1600)
+	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
 	setInput('i_greeting', data.greeting ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
@@ -195,6 +200,9 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
 	setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
 
+	colorInput('solid-background', data.backgrounds.color)
+	colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
+
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
 		'on',
@@ -229,6 +237,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	// Activate feature options
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
+	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
 	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
@@ -405,6 +414,10 @@ function initOptionsEvents() {
 		backgroundUpdate({ type: this.value })
 	})
 
+	paramId('b_solid-background').addEventListener('click', function () {
+		paramId('i_solid-background').click()
+	})
+
 	paramId('i_solid-background').addEventListener('input', function () {
 		backgroundUpdate({ color: this.value })
 	})
@@ -449,6 +462,14 @@ function initOptionsEvents() {
 		backgroundUpdate({ texture: this.value })
 	})
 
+	paramId('b_texture-color').addEventListener('click', function () {
+		paramId('i_texture-color').click()
+	})
+
+	paramId('i_texture-color').addEventListener('input', function () {
+		backgroundUpdate({ texturecolor: this.value })
+	})
+
 	paramId('i_texture-size').addEventListener('input', function (this: HTMLInputElement) {
 		backgroundUpdate({ texturesize: this.value })
 	})
@@ -459,10 +480,6 @@ function initOptionsEvents() {
 
 	paramId('i_blur').addEventListener('focusin', function (this: HTMLInputElement) {
 		backgroundUpdate({ blurenter: true })
-	})
-
-	paramId('i_blur').addEventListener('pointerleave', function (this: HTMLInputElement) {
-		backgroundUpdate({ blurleave: true, blur: this.value })
 	})
 
 	paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
@@ -599,6 +616,7 @@ function initOptionsEvents() {
 	})
 
 	onclickdown(paramId('i_greethide'), (_, target) => {
+		document.getElementById('greetings_options')?.classList.toggle('shown', target.checked)
 		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 

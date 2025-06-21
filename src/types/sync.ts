@@ -3,7 +3,6 @@ import type { BackgroundImage, BackgroundVideo, Frequency, Link, Widgets } from 
 export interface Sync {
 	showall: boolean
 	quicklinks: boolean
-	syncbookmarks?: number
 	time: boolean
 	main: boolean
 	pagegap: number
@@ -77,9 +76,31 @@ export interface Backgrounds {
 	pausedVideo?: BackgroundVideo
 	queries: Record<string, string>
 	texture: {
-		type: 'none' | 'grain' | 'dots' | 'topographic'
+		type:
+			| 'none'
+			| 'grain'
+			| 'verticalDots'
+			| 'diagonalDots'
+			| 'topographic'
+			| 'checkerboard'
+			| 'isometric'
+			| 'grid'
+			| 'verticalLines'
+			| 'horizontalLines'
+			| 'diagonalStripes'
+			| 'verticalStripes'
+			| 'horizontalStripes'
+			| 'diagonalLines'
+			| 'aztec'
+			| 'circuitBoard'
+			| 'ticTacToe'
+			| 'endlessClouds'
+			| 'vectorGrain'
+			| 'waves'
+			| 'honeycomb'
 		size?: number
 		opacity?: number
+		color?: string
 	}
 }
 

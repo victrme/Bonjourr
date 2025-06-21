@@ -25,7 +25,6 @@ export interface Local {
 	backgroundCollections: Record<string, Background[]>
 	backgroundUrls: Record<string, BackgroundUrl>
 	backgroundFiles: Record<string, BackgroundFile>
-	backgroundPreloading?: true
 	backgroundLastChange?: string
 	backgroundCompressFiles?: boolean
 }
