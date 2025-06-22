@@ -1731,9 +1731,25 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="b_storage-persist" class="trn">Persistent storage</label>
+				<span>
+					<span class="trn">Persistent storage</span>
+					<button
+						class="tooltip ttpersistentstorage"
+						title="What is persistent storage?"
+						aria-label="What is persistent storage?"
+					>
+						?
+					</button>
+				</span>
 				<button id="b_storage-persist" class="param-btn trn">Ask permission</button>
 			</div>
+
+			<p class="tooltiptext dropdown ttpersistentstorage">
+				<span class="trn"
+					>Enabling persistent storage ensures that Firefox will remember your settings for as long as
+					possible.</span
+				>
+			</p>
 		</div>
 
 		<div id="gist-sync" class="dropdown">

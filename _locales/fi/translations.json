@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Siirrä asetuksesi useiden Bonjourr-esiintymien välillä.",
   "Synchronization type": "Synkronointityyppi",
   "Persistent storage": "Pysyvä tallennus",
+  "What is persistent storage?": "Mikä on pysyvä tallennustila?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Pysyvän tallennustilan käyttäminen varmistaa, että Firefox muistaa asetuksesi mahdollisimman pitkään.",
   "Authentification token": "Todennustunnus",
   "Browser": "Selain",
   "Get": "Saada",

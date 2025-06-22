@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "تنظیمات خود را بین چندین نسخه‌ی مختلف بُنژور انتقال دهید.",
   "Synchronization type": "نوع همگام سازی",
   "Persistent storage": "ذخیره‌سازی پایدار",
+  "What is persistent storage?": "ذخیره‌سازی پایدار چیست؟",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "فعال کردن ذخیره‌سازی پایدار اطمینان می‌دهد که فایرفاکس تنظیمات شما را تا حد امکان به خاطر بسپارد.",
   "Authentification token": "نشانه احراز هویت",
   "Browser": "مرورگر",
   "Get": "دریافت کنید",

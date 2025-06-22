@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Übertragen Sie Ihre Einstellungen zwischen mehreren Instanzen von Bonjourr.",
   "Synchronization type": "Synchronisierungstyp",
   "Persistent storage": "Persistenter Speicher",
+  "What is persistent storage?": "Was ist persistenter Speicher?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Durch Aktivierung des persistenten Speichers stellt Firefox sicher, dass Ihre Einstellungen so lange wie möglich gespeichert werden.",
   "Authentification token": "Authentifizierungstoken",
   "Browser": "Browser",
   "Get": "Erhalten",

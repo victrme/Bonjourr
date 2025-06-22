@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Transfer pengaturan Anda di antara beberapa instance Bonjourr.",
   "Synchronization type": "Jenis sinkronisasi",
   "Persistent storage": "Penyimpanan persisten",
+  "What is persistent storage?": "Apa itu penyimpanan persisten?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Mengaktifkan penyimpanan persisten memastikan Firefox akan mengingat pengaturan Anda selama mungkin.",
   "Authentification token": "Token autentikasi",
   "Browser": "Peramban",
   "Get": "Mendapatkan",

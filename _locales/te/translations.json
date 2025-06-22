@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "బహుళ Bonjourr సందర్భాల మధ్య మీ సెట్టింగ్‌లు బదిలీ చేయండి.",
   "Synchronization type": "సమకాలీకరణ రకం",
   "Persistent storage": "స్థిర నిల్వ",
+  "What is persistent storage?": "నిరంతర నిల్వ అంటే ఏమిటి?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "నిరంతర నిల్వ నిల్వను ప్రారంభించడం వల్ల Firefox మీ సెట్టింగ్‌లను సాధ్యమైనంత కాలం గుర్తుంచుకుంటుంది.",
   "Authentification token": "ఆధారధృవీకరణ టోకెన్",
   "Browser": "బ్రౌజర్",
   "Get": "పొందు",

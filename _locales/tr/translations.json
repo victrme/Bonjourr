@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Ayarlarınızı birden fazla Bonjourr örneği arasında aktarın.",
   "Synchronization type": "Senkronizasyon türü",
   "Persistent storage": "Kalıcı depolama",
+  "What is persistent storage?": "Kalıcı depolama nedir?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Kalıcı depolamayı etkinleştirmek, Firefox'un ayarlarınızı mümkün olduğunca uzun süre hatırlamasını sağlar.",
   "Authentification token": "Kimlik doğrulama belirteci",
   "Browser": "Tarayıcı",
   "Get": "Elde etmek",

@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Prenesite svoja podešavanja između više instanci Bonjourr-a.",
   "Synchronization type": "Тип синхронизације",
   "Persistent storage": "Трајно складиштење",
+  "What is persistent storage?": "Шта је трајно складиштење?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Омогућавање трајног складишта обезбеђује да Firefox памти ваша подешавања што је дуже могуће.",
   "Authentification token": "Токен за аутентификацију",
   "Browser": "Бровсер",
   "Get": "Гет",

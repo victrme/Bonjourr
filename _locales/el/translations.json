@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Μετεφέρε τις ρυθμίσεις σου σε διαφορετικές εγκαταστάσεις του Bonjourr.",
   "Synchronization type": "Τύπος συγχρονισμού",
   "Persistent storage": "Μόνιμη αποθήκευση",
+  "What is persistent storage?": "Τι είναι η μόνιμη αποθήκευση;",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Η ενεργοποίηση της μόνιμης αποθήκευσης διασφαλίζει ότι το Firefox θα θυμάται τις ρυθμίσεις σας για όσο το δυνατόν περισσότερο.",
   "Authentification token": "Διακριτικό ελέγχου ταυτότητας",
   "Browser": "Πρόγραμμα περιήγησης",
   "Get": "Παίρνω",

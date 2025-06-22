@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "在多個 Bonjourr 實例之間傳輸設定。",
   "Synchronization type": "同步型",
   "Persistent storage": "永久儲存空間",
+  "What is persistent storage?": "什麼是持久性儲存？",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "啟用持久性儲存可確保 Firefox 盡可能長時間記住您的設定。",
   "Authentification token": "身分驗證權杖",
   "Browser": "瀏覽器",
   "Get": "取得",

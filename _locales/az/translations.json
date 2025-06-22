@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Bonjourr-un bir neçə nüsxəsi arasında ayarlarınızı köçürün.",
   "Synchronization type": "Sinxronlaşdırma növü",
   "Persistent storage": "Daimi saxlama",
+  "What is persistent storage?": "Daimi saxlama nədir?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Daimi saxlama, Firefox-un parametrlərinizi mümkün qədər uzun müddət yadda saxlamasını təmin edir.",
   "Authentification token": "Autentifikasiya tokeni",
   "Browser": "Browser",
   "Get": "Əldə et",

@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "העבר את ההגדרות שלך בין מספר מופעים של בונז'ור.",
   "Synchronization type": "סוג סנכרון",
   "Persistent storage": "אחסון קבוע",
+  "What is persistent storage?": "מהו אחסון קבוע?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "הפעלת אחסון קבוע מבטיחה שפיירפוקס יזכור את ההגדרות שלך לאורך זמן ככל האפשר.",
   "Authentification token": "טוקן אימות",
   "Browser": "דפדפן",
   "Get": "קבל",

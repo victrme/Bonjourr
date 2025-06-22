@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "Փոխանցեք ձեր կայանքները Bonjourr-ի մի քանի օրինակների միջեւ:",
   "Synchronization type": "Համաժամացման տեսակը",
   "Persistent storage": "Մշտական պահեստարան",
+  "What is persistent storage?": "Ինչ է մշտական պահեստավորումը?",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "Մշտական պահեստավորումը ապահովում է, որ Firefox-ը հնարավորինս երկար հիշի ձեր կարգավորումները.",
   "Authentification token": "Նույնականացման նշան",
   "Browser": "Բրաուզեր",
   "Get": "Ստացեք",

@@ -306,6 +306,8 @@
   "Transfer your settings between multiple instances of Bonjourr.": "二つのBonjourrの間で設定を移行。",
   "Synchronization type": "同期タイプ",
   "Persistent storage": "永続的ストレージ",
+  "What is persistent storage?": "永続的なストレージとは何ですか？",
+  "Enabling persistent storage ensures that Firefox will remember your settings for as long as possible.": "永続的なストレージを有効にすることで、Firefoxは可能な限り長く設定を記憶します。",
   "Authentification token": "認証トークン",
   "Browser": "ブラウザ",
   "Get": "得る",
