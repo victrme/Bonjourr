@@ -234,8 +234,8 @@ export function initFilesSettingsOptions(local: Local) {
 	})
 
 	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
-	onclickdown(document.getElementById('b_thumbnail-zoom'), handleGridView)
-	onclickdown(document.getElementById('b_thumbnail-position'), handlePositionOption)
+	onclickdown(document.getElementById('b_thumbnail-position'), () => handlePositionOption())
+	document.getElementById('b_thumbnail-zoom')?.addEventListener('click', handleGridView)
 	document.getElementById('i_background-size')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-vertical')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-horizontal')?.addEventListener('input', handleFilePosition)
@@ -281,14 +281,11 @@ function handleFilesMoveOptions(file: BackgroundFile) {
 	}
 }
 
-function handlePositionOption(show?: boolean) {
+function handlePositionOption(force?: boolean) {
 	const domoptions = document.getElementById('background-position-options')
-	if (!domoptions) return
 
-	if (typeof show === 'boolean') {
-		domoptions.classList.toggle('shown', show)
-	} else {
-		domoptions.classList.toggle('shown')
+	if (domoptions) {
+		domoptions.classList.toggle('shown', force)
 	}
 }
 
@@ -346,7 +343,9 @@ function toggleLocalFileButtons(_?: MutationRecord[]) {
 	selected !== 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
 	// hides move options when no selection or more than one
-	if (selected === 0 || selected > 1) handlePositionOption(false)
+	if (selected === 0 || selected > 1) {
+		handlePositionOption(false)
+	}
 
 	if (selected === 1 && domoptions?.classList.contains('shown')) {
 		domoptions?.classList.remove('shown')
