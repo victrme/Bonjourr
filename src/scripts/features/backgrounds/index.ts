@@ -80,12 +80,20 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 	handleBackgroundActions(sync.backgrounds)
 	document.getElementById('background-wrapper')?.setAttribute('data-type', sync.backgrounds.type)
 
-	if (sync.backgrounds.type === 'color') {
-		applyBackground(sync.backgrounds.color)
-	} else if (sync.backgrounds.type === 'files') {
-		localFilesCacheControl(sync, local)
-	} else {
-		backgroundCacheControl(sync.backgrounds, local)
+	switch (sync.backgrounds.type) {
+		case 'files': {
+			localFilesCacheControl(sync.backgrounds, local)
+			break
+		}
+
+		case 'color': {
+			applyBackground(sync.backgrounds.color)
+			break
+		}
+
+		default: {
+			backgroundCacheControl(sync.backgrounds, local)
+		}
 	}
 }
 
@@ -152,8 +160,12 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.refresh) {
-		local.backgroundLastChange = new Date(0).toString()
-		backgroundsInit(data, local)
+		if (data.backgrounds.type === 'files') {
+			localFilesCacheControl(data.backgrounds, local, true)
+		} else {
+			backgroundCacheControl(data.backgrounds, local, true)
+		}
+
 		turnRefreshButton(update.refresh, true)
 	}
 
@@ -313,7 +325,7 @@ function previewFadein(ms: number) {
 
 //	Cache & network
 
-async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): Promise<void> {
+async function backgroundCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
 	if (backgrounds.type === 'color') {
 		return
 	}
@@ -337,9 +349,10 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local): P
 	// 2. Control change for specified list
 
 	const lastTime = new Date(local.backgroundLastChange ?? '01/01/1971').getTime()
-	const needNew = needsChange(backgrounds.frequency, lastTime)
 	const isPaused = backgrounds.frequency === 'pause'
 	const isPreloading = localStorage.backgroundPreloading === 'true'
+
+	needNew ??= needsChange(backgrounds.frequency, lastTime)
 
 	if (list.length === 0) {
 		const json = await fetchNewBackgrounds(backgrounds)

@@ -9,7 +9,7 @@ import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
-import type { Sync } from '../../../types/sync.ts'
+import type { Backgrounds } from '../../../types/sync.ts'
 
 type LocalFileData = {
 	raw: File
@@ -21,7 +21,7 @@ type LocalFileData = {
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
-export async function localFilesCacheControl(sync: Sync, local: Local) {
+export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
 	// To remove in a version or two
 	local = await indexedDbToCacheStorage(local)
 
@@ -32,10 +32,11 @@ export async function localFilesCacheControl(sync: Sync, local: Local) {
 		return
 	}
 
+	const freq = backgrounds.frequency
 	const metadata = local.backgroundFiles[ids[0]]
-	const freq = sync.backgrounds.frequency
 	const lastUsed = new Date(metadata.lastUsed).getTime()
-	const needNew = needsChange(freq, lastUsed)
+
+	needNew ??= needsChange(freq, lastUsed)
 
 	if (ids.length > 1 && needNew) {
 		ids.shift()
