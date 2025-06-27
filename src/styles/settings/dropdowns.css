@@ -11,7 +11,7 @@
 }
 
 #local_options.shown {
-	max-height: 500px;
+	max-height: 585px;
 }
 
 #background-urls-option.shown {
@@ -78,6 +78,10 @@
 
 #worldclocks_options.shown {
 	max-height: 200px;
+}
+
+#worldclocks-list .dropdown:not(.shown) {
+	padding: 0;
 }
 
 #worldclocks-list .dropdown.shown {

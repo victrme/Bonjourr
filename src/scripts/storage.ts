@@ -116,7 +116,7 @@ async function syncGet(key?: string | string[]): Promise<Sync> {
 }
 
 async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
-	console.log('sync set', JSON.stringify(keyval))
+	// console.log('sync set', JSON.stringify(keyval))
 
 	switch (storage.type.get()) {
 		case 'webext-sync': {
@@ -202,7 +202,7 @@ async function syncClear() {
 //	Local data
 
 function localSet(value: Record<string, unknown>) {
-	console.log('local set', JSON.stringify(value))
+	// console.log('local set', JSON.stringify(value))
 
 	switch (storage.type.get()) {
 		case 'webext-sync':

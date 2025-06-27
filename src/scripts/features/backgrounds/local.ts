@@ -334,12 +334,9 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 function toggleLocalFileButtons(_?: MutationRecord[]) {
 	const thmbRemove = document.getElementById('b_thumbnail-remove')
 	const thmbMove = document.getElementById('b_thumbnail-position')
-	const thmbZoom = document.getElementById('b_thumbnail-zoom')
-	const thumbnails = document.querySelectorAll('.thumbnail').length
 	const selected = document.querySelectorAll('.thumbnail.selected').length
 	const domoptions = document.getElementById('background-position-options')
 
-	thumbnails === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
 	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
 	selected !== 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
@@ -522,7 +519,7 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 	}
 
 	const time = (globalThis.performance.now() - start).toFixed(2)
-	console.log(`Got ${id} in: ${time}ms`)
+	// console.log(`Got ${id} in: ${time}ms`)
 
 	return {
 		raw,
