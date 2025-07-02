@@ -206,7 +206,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
 		'on',
-		(data.analogstyle?.background ?? '#fff').includes('#000')
+		(data.analogstyle?.background ?? '#fff').includes('#000'),
 	)
 	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
 	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))

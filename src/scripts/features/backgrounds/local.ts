@@ -71,6 +71,10 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const infosString = file.size.toString() + file.name + file.lastModified.toString()
 			const hashString = hashcode(infosString).toString()
 
+			console.log(hashString)
+			Object.keys(local.backgroundFiles).forEach(console.log)
+
+			// ?????
 			if (Object.keys(local.backgroundFiles).includes(hashString)) {
 				continue
 			}
@@ -139,12 +143,22 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		// 3. Apply background
 
-		const id = newids[0]
-		const image = await imageFromLocalFiles(id, local, filesData[id])
+		if (newids.length > 0) {
+			const id = newids[0]
+			const image = await imageFromLocalFiles(id, local, filesData[id])
 
-		unselectAll()
-		applyBackground(image)
-		handleFilesSettingsOptions(local)
+			unselectAll()
+			applyBackground(image)
+			handleFilesSettingsOptions(local)
+		}
+
+		// 4. Allow same file to be uploaded
+
+		const uploadInput = document.querySelector<HTMLInputElement>('#i_background-upload')
+
+		if (uploadInput) {
+			uploadInput.value = ''
+		}
 	} catch (e) {
 		console.info(e)
 		return
@@ -518,7 +532,7 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 		throw new Error(`${id} is undefined`)
 	}
 
-	const time = (globalThis.performance.now() - start).toFixed(2)
+	// const time = (globalThis.performance.now() - start).toFixed(2)
 	// console.log(`Got ${id} in: ${time}ms`)
 
 	return {
