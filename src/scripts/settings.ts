@@ -478,7 +478,7 @@ function initOptionsEvents() {
 		backgroundUpdate({ textureopacity: this.value })
 	})
 
-	paramId('i_blur').addEventListener('focusin', function (this: HTMLInputElement) {
+	paramId('i_blur').addEventListener('pointerdown', function (this: HTMLInputElement) {
 		backgroundUpdate({ blurenter: true })
 	})
 

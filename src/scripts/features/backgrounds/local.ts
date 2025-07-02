@@ -71,10 +71,6 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const infosString = file.size.toString() + file.name + file.lastModified.toString()
 			const hashString = hashcode(infosString).toString()
 
-			console.log(hashString)
-			Object.keys(local.backgroundFiles).forEach(console.log)
-
-			// ?????
 			if (Object.keys(local.backgroundFiles).includes(hashString)) {
 				continue
 			}
