@@ -61,7 +61,7 @@
 }
 
 #digital_options.shown {
-	max-height: 120px;
+	max-height: 180px;
 }
 
 #analog_options.shown {
@@ -73,6 +73,10 @@
 }
 
 #ampm_label.shown {
+	max-height: 60px;
+}
+
+#ampm_position.shown {
 	max-height: 60px;
 }
 
