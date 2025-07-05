@@ -16,8 +16,8 @@ import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
+import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
-import { IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { settingsNotifications } from './utils/notifications.ts'
 import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
@@ -301,6 +301,23 @@ function initOptionsValues(data: Sync, local: Local) {
 			input.addEventListener('input', () => {
 				form.classList.toggle('valid', form.checkValidity())
 			})
+		}
+	}
+
+	// Change Sync name based on browser
+	const browserSyncOption = document.querySelector<HTMLElement>("#i_synctype option[value='browser']")
+
+	if (browserSyncOption) {
+		if (PLATFORM === 'firefox') {
+			browserSyncOption.textContent = 'Firefox Sync'
+		} else if (PLATFORM === 'chrome' && BROWSER === 'edge') {
+			browserSyncOption.textContent = 'Edge Sync'
+		} else if (PLATFORM === 'chrome') {
+			browserSyncOption.textContent = 'Chrome Sync'
+		} else if (PLATFORM === 'safari') {
+			browserSyncOption.textContent = 'Safari'
+		} else {
+			browserSyncOption.textContent = tradThis('Automatic')
 		}
 	}
 
