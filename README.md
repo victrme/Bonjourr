@@ -102,7 +102,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇵🇱 Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92) & [Jakub Mikuło](https://github.com/jmikulo)
 -   **🇷🇺 Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 -   **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
--   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
+-   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.pages.dev) · [Github](https://github.com/adilsonfsantos)
 -   **🇸🇰 Slovak translation** · Tomáš Švec · [Github](https://github.com/Svec-Tomas) & Roman Bartík
 -   **🇨🇿 Czech translation** · Daniel Zima · [Github](https://github.com/ZimaDaniel)
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
