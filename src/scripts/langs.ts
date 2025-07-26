@@ -14,6 +14,7 @@ export const langList = {
 	da: 'Dansk',
 	sv: 'Svenska',
 	nb: 'Norsk',
+	is: 'Íslenska',
 	fi: 'suomi',
 	pl: 'Polski',
 	cs: 'Čeština',
