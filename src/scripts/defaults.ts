@@ -196,6 +196,7 @@ export const SYNC_DEFAULT: Sync = {
 
 export const LOCAL_DEFAULT: Local = {
 	syncType: PLATFORM === 'online' ? 'off' : 'browser',
+	gistToken: '',
 	userQuoteSelection: 0,
 	translations: undefined,
 	quotesCache: [],
