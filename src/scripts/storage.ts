@@ -250,7 +250,7 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 				const item = globalThis.localStorage.getItem(key)
 				const isJson = item && (item.startsWith('{') || item.startsWith('['))
 				const isBool = item && (item === 'true' || item === 'false')
-				const isNoom = item && Number.isNaN(Number.parseInt(item)) === false
+				const isNoom = item && Number.isNaN(Number(item)) === false
 
 				if (isJson) {
 					result[key] = parse(item)
