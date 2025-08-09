@@ -484,7 +484,7 @@ async function fetchNewBackgrounds(backgrounds: Backgrounds): Promise<Record<str
 	throw new Error('Received JSON is bad')
 }
 
-function findCollectionName(backgrounds: Backgrounds): string {
+function findCollectionName(backgrounds: Backgrounds, local: Local): string {
 	switch (backgrounds.type) {
 		case 'files':
 		case 'urls':
@@ -493,6 +493,13 @@ function findCollectionName(backgrounds: Backgrounds): string {
 		}
 
 		default:
+	}
+
+	if (backgrounds.pausedImage) {
+		return getCollectionNameFromMedia(backgrounds.pausedImage, local)
+	}
+	if (backgrounds.pausedVideo) {
+		return getCollectionNameFromMedia(backgrounds.pausedVideo, local)
 	}
 
 	const collectionName = backgrounds[backgrounds.type]
@@ -504,6 +511,20 @@ function findCollectionName(backgrounds: Backgrounds): string {
 	}
 
 	return collectionName
+}
+
+function getCollectionNameFromMedia(media: Background, local: Local): string {
+	const collMap = new Map()
+
+	// Flatten collections to a "url => coll" map
+
+	for (const [coll, medias] of Object.entries(local.backgroundCollections)) {
+		for (const media of medias) {
+			collMap.set(media.urls.full, coll)
+		}
+	}
+
+	return collMap.get(media.urls.full)
 }
 
 function getCollection(backgrounds: Backgrounds, local: Local) {
@@ -519,7 +540,7 @@ function getCollection(backgrounds: Backgrounds, local: Local) {
 
 	// Check collection storage
 
-	const collectionName = findCollectionName(backgrounds)
+	const collectionName = findCollectionName(backgrounds, local)
 	const collection = local.backgroundCollections[collectionName] ?? []
 
 	// Check collection format
@@ -561,7 +582,7 @@ function setCollection(backgrounds: Backgrounds, local: Local) {
 	}
 
 	function fromList(list: Background[]): Local {
-		const collectionName = findCollectionName(backgrounds)
+		const collectionName = findCollectionName(backgrounds, local)
 		local.backgroundCollections[collectionName] = list
 
 		return local
