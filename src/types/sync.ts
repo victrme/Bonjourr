@@ -111,6 +111,7 @@ export interface Clock {
 	timezone: string
 	size: number
 	ampmlabel: boolean
+	ampmposition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 	worldclocks: boolean
 	face?: 'none' | 'number' | 'roman' | 'marks'
 	style?: 'round' | 'square' | 'transparent'

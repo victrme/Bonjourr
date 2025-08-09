@@ -10,12 +10,14 @@ import { userDate } from '../shared/time.ts'
 import { storage } from '../storage.ts'
 
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
+import { retrieveGist } from './synchronization/gist.ts'
 
 type DateFormat = Sync['dateformat']
 
 type ClockUpdate = {
 	ampm?: boolean
 	ampmlabel?: boolean
+	ampmposition?: string
 	analog?: boolean
 	seconds?: boolean
 	dateformat?: string
@@ -150,6 +152,7 @@ async function clockUpdate(update: ClockUpdate) {
 		seconds: update.seconds ?? data.clock.seconds,
 		timezone: update.timezone ?? data.clock.timezone,
 		ampmlabel: update.ampmlabel ?? data.clock.ampmlabel,
+		ampmposition: isAmpmPosition(update.ampmposition) ? update.ampmposition : data.clock.ampmposition,
 		worldclocks: update.worldclocks ?? data.clock.worldclocks,
 	}
 
@@ -233,9 +236,7 @@ function startClock(clock: Clock, world: WorldClock[], greeting: string, datefor
 
 	const clocks: WorldClock[] = []
 
-	if (clock.seconds && !clock.analog) {
-		setSecondsWidthInCh()
-	}
+	setSecondsWidthInCh()
 
 	if (clock.worldclocks) {
 		clocks.push(...world.filter(({ region }) => region))
@@ -302,6 +303,7 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 	const hh = wrapper.querySelector('.digital-hh') as HTMLElement
 	const mm = wrapper.querySelector('.digital-mm') as HTMLElement
 	const ss = wrapper.querySelector('.digital-ss') as HTMLElement
+	const ampm = wrapper.querySelector('.digital-ampm') as HTMLElement
 
 	const m = fixunits(date.getMinutes())
 	const s = fixunits(date.getSeconds())
@@ -327,18 +329,34 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 		h = 12
 	}
 
-	if (clock.seconds) {
-		// Avoid layout shifts by rounding width
-		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
-		const width = getSecondsWidthInCh(second).toFixed(1)
-		domclock.style.setProperty('--seconds-width', `${width}ch`)
-	}
+	// Avoid layout shifts by rounding width
+	const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
+	const width = getSecondsWidthInCh(second).toFixed(1)
+	domclock.style.setProperty('--seconds-width', `${width}ch`)
 
 	domclock.classList.toggle('zero', !clock.ampm && h < 10)
 
 	hh.textContent = h.toString()
 	mm.textContent = m.toString()
 	ss.textContent = s.toString()
+	
+	if (clock.ampm) {
+		if (clock.ampmposition) {
+			domclock.dataset.ampmposition = clock.ampmposition
+		} else {
+			domclock.dataset.ampmposition = 'top-left'
+		}
+
+		if (clock.ampmposition === 'top-right' || clock.ampmposition === 'bottom-right') {
+			if (ampm && domclock.lastElementChild !== ampm) {
+				domclock.appendChild(ampm)
+			}
+		} else if (clock.ampmposition === 'top-left' || clock.ampmposition === 'bottom-left') {
+			if (ampm && domclock.firstElementChild !== ampm) {
+				domclock.insertBefore(ampm, domclock.firstElementChild)
+			}
+		}
+	}
 }
 
 function analog(wrapper: HTMLElement, clock: Clock, timezone: string) {
@@ -498,4 +516,8 @@ function isShape(str?: string): str is AnalogStyle['shape'] {
 
 function isDateFormat(str = ''): str is DateFormat {
 	return ['auto', 'eu', 'us', 'cn'].includes(str)
+}
+
+function isAmpmPosition(str?: string): str is "top-left" | "top-right" | "bottom-left" | "bottom-right" {
+	return ['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(str ?? '');
 }
