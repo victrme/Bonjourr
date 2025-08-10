@@ -495,14 +495,18 @@ function findCollectionName(backgrounds: Backgrounds, local: Local): string {
 		default:
 	}
 
-	if (backgrounds.pausedImage) {
-		return getCollectionNameFromMedia(backgrounds.pausedImage, local)
+	const { frequency, type, pausedImage, pausedVideo } = backgrounds
+	const isPausedOnImage = type === 'images' && frequency === 'pause' && pausedImage
+	const isPausedOnVideo = type === 'videos' && frequency === 'pause' && pausedVideo
+
+	if (isPausedOnImage) {
+		return getCollectionNameFromMedia(pausedImage, local)
 	}
-	if (backgrounds.pausedVideo) {
-		return getCollectionNameFromMedia(backgrounds.pausedVideo, local)
+	if (isPausedOnVideo) {
+		return getCollectionNameFromMedia(pausedVideo, local)
 	}
 
-	const collectionName = backgrounds[backgrounds.type]
+	const collectionName = backgrounds[type]
 	const isDaylight = collectionName.includes('daylight')
 
 	if (isDaylight) {
