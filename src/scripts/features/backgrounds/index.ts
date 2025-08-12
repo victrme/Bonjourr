@@ -706,7 +706,7 @@ function createVideoItem(src: string, media: BackgroundVideo, duration: number):
 	}
 
 	const loopVideo = async () => {
-		if (div) {
+		if (document.body.contains(div)) {
 			await prependVideo()
 			removeVideo()
 			return
