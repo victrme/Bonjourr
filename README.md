@@ -209,3 +209,15 @@ docker run --rm -p "8000:80/tcp" -it bonjourr/bonjourr
 -   Search for `bonjourr/bonjourr` Hub image
 -   Run a new container with `8000` as host port
 -   Go to http://0.0.0.0:8000/
+
+### Archive releases
+
+```bash
+version="0.0.0"
+
+for folder in ./release/*/; do
+  [ -d "$folder" ] || continue
+  name=$(basename "$folder")
+  zip -r "./release/bonjourr-${name}-${version}.zip" "$folder"
+done
+```
