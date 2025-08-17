@@ -52,12 +52,14 @@ async function translateFile(lang: string): Promise<void> {
 		const message = `${lang}\n${missingKeys.join('\n')}`
 		const translations = await claudeTranslation(message)
 
-		for (const index in missingKeys) {
-			const en = missingKeys[index]
-			const trn = translations[index]
+		if (translations) {
+			for (const index in missingKeys) {
+				const en = missingKeys[index]
+				const trn = translations[index]
 
-			newDict[en] = trn
-			added++
+				newDict[en] = trn
+				added++
+			}
 		}
 	}
 
@@ -80,7 +82,7 @@ async function translateFile(lang: string): Promise<void> {
 	console.info(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
 }
 
-async function claudeTranslation(body: string): Promise<string[]> {
+async function claudeTranslation(body: string): Promise<string[] | undefined> {
 	const path = 'https://translate.bonjourr.workers.dev/'
 	const response = await fetch(path, { body, method: 'POST' })
 
@@ -88,6 +90,4 @@ async function claudeTranslation(body: string): Promise<string[]> {
 		const text = await response.text()
 		return text.split('\n')
 	}
-
-	throw new Error(response.statusText)
 }
