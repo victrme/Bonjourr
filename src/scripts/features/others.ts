@@ -7,12 +7,14 @@ import { storage } from '../storage.ts'
 
 export function favicon(val?: string, isEvent?: true) {
 	function createFavicon(emoji?: string) {
-		const svg =
-			`data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="85">${emoji}</text></svg>`
-		const defaulticon = `/src/assets/${BROWSER === 'edge' ? 'monochrome.png' : 'favicon.ico'}`
+		const svgtext = `<text y=".9em" font-size="85">${emoji}</text>`
+		const svgtag = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${svgtext}</svg>`
+		const svgdata = `data:image/svg+xml,${svgtag}`
+		const filename = BROWSER === 'edge' ? 'favicon-128x128-monochrome.png' : 'favicon.ico'
+		const defaulticon = `/src/assets/favicons/${filename}`
 		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
 
-		domfavicon.href = emoji ? svg : defaulticon
+		domfavicon.href = emoji ? svgdata : defaulticon
 	}
 
 	if (isEvent) {

@@ -87,6 +87,7 @@ function addDirectories(platform: Platform) {
 		console.error('First build')
 	}
 
+	ensureDirSync(`release/${platform}/src/assets/favicons`)
 	ensureDirSync(`release/${platform}/src/assets`)
 	ensureDirSync(`release/${platform}/src/scripts`)
 	ensureDirSync(`release/${platform}/src/styles`)
@@ -183,10 +184,32 @@ function scripts(platform: Platform, env: Env) {
 }
 
 function assets(platform: Platform) {
-	copyDir(
-		'src/assets',
-		`release/${platform}/src/assets`,
+	const source = `src/assets`
+	const target = `release/${platform}/src/assets`
+
+	if (platform === 'online') {
+		Deno.copyFileSync(`${source}/favicons/apple-touch-icon.png`, `${target}/favicons/apple-touch-icon.png`)
+		Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
+		Deno.copyFileSync(`${source}/favicons/favicon-512x512.png`, `${target}/favicons/favicon-512x512.png`)
+		Deno.copyFileSync(`${source}/favicons/favicon-1024x1024.png`, `${target}/favicons/favicon-1024x1024.png`)
+
+		copyDir(`${source}/screenshots`, `${target}/screenshots`)
+	}
+
+	if (platform === 'edge') {
+		Deno.copyFileSync(
+			`${source}/favicons/favicon-128x128-monochrome.png`,
+			`${target}/favicons/favicon-128x128-monochrome.png`,
+		)
+	}
+
+	Deno.copyFileSync(
+		`${source}/favicons/favicon.ico`,
+		`${target}/favicons/favicon.ico`,
 	)
+
+	copyDir(`${source}/interface`, `${target}/interface`)
+	copyDir(`${source}/labels`, `${target}/labels`)
 }
 
 function manifests(platform: Platform) {

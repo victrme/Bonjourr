@@ -321,13 +321,13 @@
 }
 
 #time[data-hands='classic'] .analog-hours {
-	background-image: url('../../assets/interface/classic_hours.svg');
+	background-image: url('../../assets/interface/clock/classic_hours.svg');
 	height: calc(var(--clock-size) * 2.35);
 	width: calc(var(--clock-size) * 1.5);
 }
 
 #time[data-hands='classic'] .analog-minutes {
-	background-image: url('../../assets/interface/classic_minutes.svg');
+	background-image: url('../../assets/interface/clock/classic_minutes.svg');
 	height: calc(var(--clock-size) * 3.4);
 	width: calc(var(--clock-size) * 1.2);
 }
@@ -472,19 +472,19 @@
 }
 
 #time[data-face='swiss'] .analog-face {
-	background-image: url('../../assets/interface/swiss-railway-white.svg');
+	background-image: url('../../assets/interface/clock/swiss-railway-white.svg');
 }
 
 #time[data-face='braun'] .analog-face {
-	background-image: url('../../assets/interface/braun-white.svg');
+	background-image: url('../../assets/interface/clock/braun-white.svg');
 }
 
 #time[data-face='swiss'].white-opaque .analog-face {
-	background-image: url('../../assets/interface/swiss-railway-black.svg');
+	background-image: url('../../assets/interface/clock/swiss-railway-black.svg');
 }
 
 #time[data-face='braun'].white-opaque .analog-face {
-	background-image: url('../../assets/interface/braun-black.svg');
+	background-image: url('../../assets/interface/clock/braun-black.svg');
 }
 
 #time.white-opaque:not([data-hands='classic']) .analog .analog-minutes,
