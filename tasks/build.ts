@@ -187,14 +187,15 @@ function assets(platform: Platform) {
 	const source = `src/assets`
 	const target = `release/${platform}/src/assets`
 
+	// Huge icons on web application
+
 	if (platform === 'online') {
 		Deno.copyFileSync(`${source}/favicons/apple-touch-icon.png`, `${target}/favicons/apple-touch-icon.png`)
-		Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
 		Deno.copyFileSync(`${source}/favicons/favicon-512x512.png`, `${target}/favicons/favicon-512x512.png`)
-		Deno.copyFileSync(`${source}/favicons/favicon-1024x1024.png`, `${target}/favicons/favicon-1024x1024.png`)
-
 		copyDir(`${source}/screenshots`, `${target}/screenshots`)
 	}
+
+	// Obligatory monochrome icons on microsoft edge
 
 	if (platform === 'edge') {
 		Deno.copyFileSync(
@@ -203,11 +204,10 @@ function assets(platform: Platform) {
 		)
 	}
 
-	Deno.copyFileSync(
-		`${source}/favicons/favicon.ico`,
-		`${target}/favicons/favicon.ico`,
-	)
+	// All other assets
 
+	Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
+	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
 	copyDir(`${source}/interface`, `${target}/interface`)
 	copyDir(`${source}/labels`, `${target}/labels`)
 }

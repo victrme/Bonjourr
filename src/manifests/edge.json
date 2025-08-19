@@ -7,8 +7,7 @@
 	"author": "Victor Azevedo and Tahoe Beetschen",
 	"default_locale": "en",
 	"icons": {
-		"128": "src/assets/favicons/favicon-128x128.png",
-		"512": "src/assets/favicons/favicon-512x512.png"
+		"128": "src/assets/favicons/favicon-128x128.png"
 	},
 	"chrome_url_overrides": {
 		"newtab": "index.html"
