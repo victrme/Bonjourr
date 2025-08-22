@@ -161,6 +161,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
 	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
+	setInput('i_greetsize', data.greetingsize ?? 3)
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_geol', data.weather?.geolocation || 'approximate')
 	setInput('i_units', data.weather?.unit ?? 'metric')

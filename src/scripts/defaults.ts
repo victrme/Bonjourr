@@ -90,6 +90,7 @@ export const SYNC_DEFAULT: Sync = {
 	favicon: '',
 	tabtitle: '',
 	greeting: '',
+	greetingsize: '3',
 	pagegap: 1,
 	pagewidth: 1600,
 	time: true,
