@@ -104,7 +104,7 @@ aside .prism-code-editor {
 aside select,
 aside input,
 aside button {
-	border-radius: 8px;
+	border-radius: 12px;
 	color: var(--color-text);
 	-webkit-appearance: none;
 	appearance: none;
@@ -146,12 +146,12 @@ aside input[type='checkbox'] {
 aside .switch {
 	position: relative;
 	display: inline-block;
-	height: 31px;
-	width: 51px;
+	height: 26px;
+	width: 59px;
 	margin: 0;
 	border-radius: 16px;
 	border: 2px solid transparent;
-	background-color: var(--color-input);
+	background-color: #c6c4c7;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
@@ -162,12 +162,12 @@ aside .switch {
 aside .switch:after {
 	content: '';
 	position: absolute;
-	height: 27px;
-	width: 27px;
+	height: 22px;
+	width: 34px;
 	top: 0px;
 	left: 0px;
-	border-radius: 50%;
-	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
+	border-radius: 100px;
+	/* box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12); */
 	background-color: white;
 	transition: background-color 0.15s, transform 0.15s;
 }
@@ -178,7 +178,7 @@ aside .switch:checked {
 }
 
 aside .switch:checked:after {
-	transform: translateX(20px);
+	transform: translateX(21px);
 }
 
 @media only screen and (hover: hover) {
@@ -193,14 +193,14 @@ aside input::-webkit-calendar-picker-indicator {
 
 aside input[type='range'] {
 	position: relative;
-	height: 2px;
+	height: 4px;
 	opacity: 1;
 	margin: 0;
 	padding: 0;
 	cursor: grab;
 	overflow: unset;
 	border-radius: 1.5rem;
-	background-color: #c8c7cc;
+	background-color: var(--color-blue);
 	-webkit-appearance: none;
 	appearance: none;
 }
@@ -212,21 +212,21 @@ aside input[type='range']:active {
 aside input[type='range']::-moz-range-track {
 	height: 2px;
 	border-radius: 50px;
-	background: #c8c7cc;
+	background: var(--color-blue);
 }
 
 aside input[type='range']::-moz-range-progress {
 	height: 2px;
-	background-color: #c8c7cc;
+	background-color: var(--color-blue);
 }
 
 aside input[type='range']::-moz-range-thumb {
 	background: #fff;
 	height: 20px;
-	width: 20px;
+	width: 30px;
 	border-radius: 50px;
 	border: 0;
-	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
+	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.10);
 }
 
 aside input[type='range']::-webkit-slider-thumb {
@@ -396,9 +396,9 @@ aside form.valid.remove span::after {
 }
 
 .param {
-	margin-top: 18px;
-	padding: 10px 16px;
-	border-radius: 10px;
+	margin-top: 10px;
+	padding: 8px 14px;
+	border-radius: 25px;
 	background-color: rgb(var(--color-param));
 }
 

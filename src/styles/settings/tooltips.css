@@ -7,18 +7,16 @@ aside span {
 }
 
 aside h2 {
-	text-transform: uppercase;
-	font-weight: 400;
-	font-size: 0.8em;
-	letter-spacing: 1px;
+	font-weight: 500;
+	font-size: 1em;
 }
 
 .settings-title {
 	display: grid;
 	place-items: baseline;
 	grid-template-columns: 1fr min-content;
-	margin: 32px 26px 0px 26px;
-	color: var(--color-light-text);
+	margin: 32px 19px 0px 19px;
+	color: #85848b;
 }
 
 .settings-title .tooltiptext {
