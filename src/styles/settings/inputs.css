@@ -159,6 +159,10 @@ aside .switch {
 	transition: background-color 0.15s;
 }
 
+[data-theme='dark'] aside .switch {
+	background-color: #39393d;
+}
+
 aside .switch:after {
 	content: '';
 	position: absolute;
@@ -169,6 +173,7 @@ aside .switch:after {
 	border-radius: 100px;
 	/* box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12); */
 	background-color: white;
+	transform: translateX(0px);
 	transition: background-color 0.15s, transform 0.15s;
 }
 
@@ -191,87 +196,112 @@ aside input::-webkit-calendar-picker-indicator {
 	display: none !important;
 }
 
-aside input[type='range'] {
-	position: relative;
-	height: 4px;
-	opacity: 1;
-	margin: 0;
-	padding: 0;
-	cursor: grab;
-	overflow: unset;
-	border-radius: 1.5rem;
-	background-color: var(--color-blue);
+aside input[type=range] {
+	height: 2.2em;
 	-webkit-appearance: none;
 	appearance: none;
+	background-color: var(--color-param);
+	cursor: grab;
+	overflow: visible;
+	
+	/* progress support for webkit */
+	--range: calc(var(--max) - var(--min));
+	--ratio: calc((var(--value) - var(--min)) / var(--range));
+	--sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
 }
 
-aside input[type='range']:active {
-	cursor: grabbing;
+aside input[type=range]:active {
+    cursor: grabbing;
 }
 
-aside input[type='range']::-moz-range-track {
-	height: 2px;
-	border-radius: 50px;
-	background: var(--color-blue);
+aside input[type=range]:focus {
+  outline: none;
 }
 
-aside input[type='range']::-moz-range-progress {
-	height: 2px;
-	background-color: var(--color-blue);
-}
-
-aside input[type='range']::-moz-range-thumb {
+aside input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
 	background: #fff;
 	height: 20px;
 	width: 30px;
 	border-radius: 50px;
 	border: 0;
 	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.10);
+	margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
-aside input[type='range']::-webkit-slider-thumb {
-	-webkit-appearance: none;
+aside input[type=range]::-webkit-slider-runnable-track {
+	height: 4px;
+	border: none;
+	border-radius: 0.5em;
+	box-shadow: none;
+	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #efefef;
+}
+
+[data-theme='dark'] aside input[type=range]::-webkit-slider-runnable-track {
+	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #3d3c41;
+}
+
+/* firefox */
+aside input[type=range]::-moz-range-thumb {
 	background: #fff;
 	height: 20px;
-	width: 20px;
-	border: 0;
+	width: 30px;
 	border-radius: 50px;
-	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12);
+	border: 0;
+	box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.10);
+	margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
-aside input[type='range']::-ms-thumb {
-	margin: 0; /* Resets margin in Edge since it supports -webkit-slider-thumb as well */
+aside input[type=range]::-moz-range-track {
+	height: 4px;
+	border: none;
+	border-radius: 0.5em;
+	box-shadow: none;
+	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #efefef;
 }
 
-aside input[type='range']::-ms-fill-lower {
-	background: dodgerblue;
+[data-theme='dark'] aside input[type=range]::-moz-range-track {
+	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #3d3c41;
 }
 
-aside input[type='range']::-ms-thumb {
-	background: #fff;
-	border: 2px solid #999;
-	height: 40px;
-	width: 20px;
+/* old edge */
+aside input[type=range]::-ms-fill-upper {
+	background: transparent;
+	border-color: transparent;
+}
+
+aside input[type=range]::-ms-fill-lower {
+	background: transparent;
+	border-color: transparent;
+}
+
+aside input[type=range]::-ms-thumb {
+	width: 2em;
+	height: 2em;
+	border-radius: 1em;
+	background: var(--color-blue);
+	border: none;
+	box-shadow: 0 0 2px black;
+	margin-top: 0;
 	box-sizing: border-box;
 }
 
-aside input[type='range']::-ms-ticks-after {
-	display: none;
-}
-
-aside input[type='range']::-ms-ticks-before {
-	display: none;
-}
-
-aside input[type='range']::-ms-track {
-	background: #ddd;
-	color: transparent;
-	height: 40px;
+aside input[type=range]::-ms-track {
+	height: 1em;
+	border-radius: 0.5em;
+	background: #efefef;
 	border: none;
+	box-shadow: none;
+	box-sizing: border-box;
 }
 
-aside input[type='range']::-ms-tooltip {
-	display: none;
+aside input[type=range]::-ms-fill-lower {
+	height: 1em;
+	border-radius: 0.5em 0 0 0.5em;
+	margin: 0;
+	background: var(--color-blue);
+	border: none;
+	border-right-width: 0;
 }
 
 aside .color-button {
