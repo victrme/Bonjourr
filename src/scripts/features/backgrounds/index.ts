@@ -612,10 +612,12 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 	}
 
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-	const resolution = res ? res : detectBackgroundSize()
+	let resolution = res ? res : detectBackgroundSize()
 	let item: HTMLDivElement
 
 	if (media.format === 'image') {
+		// disables blur compression for animated gifs
+		resolution = media.animated ? 'full' : resolution
 		const src = media.urls[resolution]
 		item = createImageItem(src, media)
 	} else {

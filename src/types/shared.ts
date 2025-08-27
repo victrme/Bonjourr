@@ -35,6 +35,7 @@ export type WeatherConditions =
 
 export interface BackgroundImage {
 	format: 'image'
+	animated?: boolean
 	urls: {
 		full: string
 		medium: string
