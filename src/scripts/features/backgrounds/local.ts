@@ -469,8 +469,7 @@ export async function imageFromLocalFiles(id: string, local: Local, data?: Local
 
 	const image: BackgroundImage = {
 		format: 'image',
-		// known flaw: some GIF images are not animated
-		animated: data.raw.type === "image/gif", 
+		mimetype: data.raw.type,
 		size: metadata?.position.size ?? 'cover',
 		x: metadata?.position.x ?? '50%',
 		y: metadata?.position.y ?? '50%',

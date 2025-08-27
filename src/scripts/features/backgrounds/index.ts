@@ -616,8 +616,8 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 	let item: HTMLDivElement
 
 	if (media.format === 'image') {
-		// disables blur compression for animated gifs
-		resolution = media.animated ? 'full' : resolution
+		// disables blur compression for animated gifs (flawed since some gifs aren't animated)
+		resolution = media.mimetype === "image/gif" ? 'full' : resolution
 		const src = media.urls[resolution]
 		item = createImageItem(src, media)
 	} else {
