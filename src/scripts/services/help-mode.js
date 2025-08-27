@@ -1,9 +1,9 @@
 globalThis.window.addEventListener('load', function () {
-	document.body.addEventListener('keydown', toggleHelpMode)
+	// document.body.addEventListener('keydown', toggleHelpMode)
 
 	globalThis.setTimeout(() => {
 		displayHelpModePrompt()
-	}, 2000)
+	}, 300)
 })
 
 function displayHelpModePrompt() {
@@ -15,6 +15,9 @@ function displayHelpModePrompt() {
 	const fragment = template.content.cloneNode(true)
 	const container = fragment.querySelector('#help-mode-prompt')
 	document.documentElement.prepend(container)
+
+	let helpModeBtn = document.getElementById('open-help-mode')
+	helpModeBtn.addEventListener("click", toggleHelpMode)
 }
 
 /**
@@ -22,13 +25,13 @@ function displayHelpModePrompt() {
  * @returns {void}
  */
 function toggleHelpMode(event) {
-	const { key, shiftKey, ctrlKey } = event
-	const questionMarkKey = key === ',' || key === '/' || key === '?'
-	const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
+	// const { key, shiftKey, ctrlKey } = event
+	// const questionMarkKey = key === ',' || key === '/' || key === '?'
+	// const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
 
-	if (!ctrlShiftQuestion) {
-		return
-	}
+	// if (!ctrlShiftQuestion) {
+	// 	return
+	// }
 
 	if (!document.getElementById('help-mode')) {
 		createHelpModeDisplay()
@@ -72,18 +75,22 @@ function createHelpModeDisplay() {
 	})
 
 	// LocalStorage
+	if (Object.entries(localStorage).length !== 0) {
+		for (const [key, val] of Object.entries(localStorage)) {
+			const li = document.createElement('li')
+			const p = document.createElement('p')
+			const textarea = document.createElement('textarea')
 
-	for (const [key, val] of Object.entries(localStorage)) {
-		const li = document.createElement('li')
-		const p = document.createElement('p')
-		const textarea = document.createElement('textarea')
+			p.textContent = key
+			textarea.value = val
 
-		p.textContent = key
-		textarea.value = val
+			li.append(p, textarea)
+			container.querySelector('#help-localstorage')?.append(li)
+		}
 
-		li.append(p, textarea)
-		container.querySelector('#help-localstorage')?.append(li)
+		container.querySelector('#localstorage-container')?.classList.remove('hidden')
 	}
+	
 
 	// Chrome storage
 
