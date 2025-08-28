@@ -6,32 +6,139 @@ import { randomString } from './shared/generic.ts'
 import { deepmergeAll } from '@victr/deepmerge'
 import { bundleLinks } from './utils/bundlelinks.ts'
 
-import type { Sync } from '../types/sync.ts'
 import type { LinkElem, OldSync, Widgets } from '../types/shared.ts'
+import type { Sync } from '../types/sync.ts'
 
 type Import = Partial<Sync>
+
+type SemVer = {
+	major: number
+	minor: number
+	patch: number
+}
+
+function toSemVer(version = '0.0.0'): SemVer {
+	const result = {
+		major: 0,
+		minor: 0,
+		patch: 0,
+	}
+
+	if (typeof version === 'string') {
+		const arr = version.split('.')
+		const major = parseInt(arr[0] ?? '0')
+		const minor = parseInt(arr[1] ?? '0')
+		const patch = parseInt(arr[2] ?? '0')
+
+		if (!isNaN(major) && !isNaN(minor) && !isNaN(patch)) {
+			result.major = major
+			result.minor = minor
+			result.patch = patch
+		}
+	}
+
+	return result
+}
+
+// function detectVersionGap(version?: string): VersionGap {
+// 	if (version === undefined) {
+// 		return 'unknown'
+// 	}
+// 	if (version === CURRENT_VERSION) {
+// 		return 'same'
+// 	}
+
+// 	const user = toSemVer(version)
+// 	const curr = toSemVer(CURRENT_VERSION)
+
+// 	if (user.major + 1 < curr.major) {
+// 		return 'old'
+// 	}
+// 	if (user.major < curr.major) {
+// 		return 'major'
+// 	}
+// 	if (user.minor < curr.minor) {
+// 		return 'minor'
+// 	}
+// 	if (user.patch < curr.patch) {
+// 		return 'patch'
+// 	}
+
+// 	return 'unknown'
+// }
+
+export function syncVersionUpgrade(data: Sync): Sync {
+	// const gap = detectVersionGap(data.about.version)
+	// const current = toSemVer(SYNC_DEFAULT.about.version)
+	const user = toSemVer(data.about.version)
+	let partial = data as Partial<Sync>
+
+	partial = upgradeSettings(partial, user)
+
+	partial.about = {
+		browser: PLATFORM,
+		version: CURRENT_VERSION,
+	}
+
+	return data
+}
+
+export function upgradeSettings(data: Partial<Sync>, version: SemVer): Partial<Sync> {
+	const { major, minor } = version
+
+	// 21
+
+	if (major < 21) {
+		data = newBackgroundsField(data)
+		data = manualTimezonesToIntl(data)
+	}
+
+	// 20
+
+	if (major < 20) {
+		data = analogClockOptions(data)
+
+		if (minor < 1) {
+			data = validateLinkGroups(data)
+		}
+
+		if (minor < 4) {
+			data = addSupporters(data)
+			data = toIsoLanguageCode(data)
+		}
+	}
+
+	// 19
+
+	if (major < 19) {
+		data = newFontSystem(data)
+		data = newReviewData(data)
+		data = quotesJsonToCsv(data)
+
+		if (minor < 2) {
+			data = linksDataMigration(data)
+		}
+	}
+
+	// OLD
+
+	if (major < 18) {
+		data = booleanSearchbarToObject(data)
+		data = linkListToFlatObjects(data)
+		data = hideArrayToObject(data)
+		data = improvedWeather(data)
+		data = clockDateFormat(data)
+	}
+
+	return data
+}
 
 export function filterImports(current: Sync, target: Partial<Sync>) {
 	let newtarget = target
 	let newcurrent = current
 
 	// Prepare imported data compatibility
-	newtarget = convertOldCssSelectors(newtarget) // all
-	newtarget = booleanSearchbarToObject(newtarget) // 9.0
-	newtarget = linkListToFlatObjects(newtarget) // 13.0
-	newtarget = hideArrayToObject(newtarget) // 16.0
-	newtarget = improvedWeather(newtarget) // 18.1
-	newtarget = clockDateFormat(newtarget)
-	newtarget = newFontSystem(newtarget) // 19.0
-	newtarget = newReviewData(newtarget)
-	newtarget = quotesJsonToCsv(newtarget)
-	newtarget = linksDataMigration(newtarget) // 19.2
-	newtarget = analogClockOptions(newtarget) // 20.0
-	newtarget = validateLinkGroups(newtarget) // 20.1
-	newtarget = addSupporters(newtarget) // 20.4
-	newtarget = toIsoLanguageCode(newtarget)
-	newtarget = newBackgroundsField(newtarget) // 21.0
-	newtarget = manualTimezonesToIntl(newtarget) // 21.0
+	newtarget = upgradeSettings(newtarget, toSemVer())
 
 	// Detect if merging between settings is needed
 	const currentKeyAmount = Object.keys(newcurrent).length
@@ -367,7 +474,7 @@ function improvedWeather(data: Import): Import {
 	return data
 }
 
-/** Version 21: migrate from generic fields to a single object */
+/** Version 21: migrate from generic fields to a single "backgrounds" object */
 function newBackgroundsField(data: Import): Import {
 	const olddata = data as Partial<OldSync>
 	const defaults = structuredClone(SYNC_DEFAULT)
