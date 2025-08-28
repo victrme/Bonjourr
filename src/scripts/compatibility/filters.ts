@@ -1,185 +1,21 @@
-import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from './features/move/helpers.ts'
-import { API_DOMAIN, CURRENT_VERSION, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
-import { countryCodeToLanguageCode } from './utils/translations.ts'
-import { oldJSONToCSV } from './features/quotes.ts'
-import { randomString } from './shared/generic.ts'
-import { deepmergeAll } from '@victr/deepmerge'
-import { bundleLinks } from './utils/bundlelinks.ts'
+import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers.ts'
+import { countryCodeToLanguageCode } from '../utils/translations.ts'
+import { API_DOMAIN, SYNC_DEFAULT } from '../defaults.ts'
+import { oldJSONToCSV } from '../features/quotes.ts'
+import { randomString } from '../shared/generic.ts'
+import { bundleLinks } from '../utils/bundlelinks.ts'
 
-import type { LinkElem, OldSync, Widgets } from '../types/shared.ts'
-import type { Sync } from '../types/sync.ts'
+import type { LinkElem, OldSync, Widgets } from '../../types/shared.ts'
+import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
-type SemVer = {
-	major: number
-	minor: number
-	patch: number
-}
+//
+//	1. Create compatibility filters here
+//  2. Add your filter to applyCompatibilityFilters in index.ts with versionning
+//
 
-function toSemVer(version = '0.0.0'): SemVer {
-	const result = {
-		major: 0,
-		minor: 0,
-		patch: 0,
-	}
-
-	if (typeof version === 'string') {
-		const arr = version.split('.')
-		const major = parseInt(arr[0] ?? '0')
-		const minor = parseInt(arr[1] ?? '0')
-		const patch = parseInt(arr[2] ?? '0')
-
-		if (!isNaN(major) && !isNaN(minor) && !isNaN(patch)) {
-			result.major = major
-			result.minor = minor
-			result.patch = patch
-		}
-	}
-
-	return result
-}
-
-// function detectVersionGap(version?: string): VersionGap {
-// 	if (version === undefined) {
-// 		return 'unknown'
-// 	}
-// 	if (version === CURRENT_VERSION) {
-// 		return 'same'
-// 	}
-
-// 	const user = toSemVer(version)
-// 	const curr = toSemVer(CURRENT_VERSION)
-
-// 	if (user.major + 1 < curr.major) {
-// 		return 'old'
-// 	}
-// 	if (user.major < curr.major) {
-// 		return 'major'
-// 	}
-// 	if (user.minor < curr.minor) {
-// 		return 'minor'
-// 	}
-// 	if (user.patch < curr.patch) {
-// 		return 'patch'
-// 	}
-
-// 	return 'unknown'
-// }
-
-export function syncVersionUpgrade(data: Sync): Sync {
-	// const gap = detectVersionGap(data.about.version)
-	// const current = toSemVer(SYNC_DEFAULT.about.version)
-	const user = toSemVer(data.about.version)
-	let partial = data as Partial<Sync>
-
-	partial = upgradeSettings(partial, user)
-
-	partial.about = {
-		browser: PLATFORM,
-		version: CURRENT_VERSION,
-	}
-
-	return data
-}
-
-export function upgradeSettings(data: Partial<Sync>, version: SemVer): Partial<Sync> {
-	const { major, minor } = version
-
-	// 21
-
-	if (major < 21) {
-		data = newBackgroundsField(data)
-		data = manualTimezonesToIntl(data)
-	}
-
-	// 20
-
-	if (major < 20) {
-		data = analogClockOptions(data)
-
-		if (minor < 1) {
-			data = validateLinkGroups(data)
-		}
-
-		if (minor < 4) {
-			data = addSupporters(data)
-			data = toIsoLanguageCode(data)
-		}
-	}
-
-	// 19
-
-	if (major < 19) {
-		data = newFontSystem(data)
-		data = newReviewData(data)
-		data = quotesJsonToCsv(data)
-
-		if (minor < 2) {
-			data = linksDataMigration(data)
-		}
-	}
-
-	// OLD
-
-	if (major < 18) {
-		data = booleanSearchbarToObject(data)
-		data = linkListToFlatObjects(data)
-		data = hideArrayToObject(data)
-		data = improvedWeather(data)
-		data = clockDateFormat(data)
-	}
-
-	return data
-}
-
-export function filterImports(current: Sync, target: Partial<Sync>) {
-	let newtarget = target
-	let newcurrent = current
-
-	// Prepare imported data compatibility
-	newtarget = upgradeSettings(newtarget, toSemVer())
-
-	// Detect if merging between settings is needed
-	const currentKeyAmount = Object.keys(newcurrent).length
-	const targetKeyAmount = Object.keys(newtarget).length
-	const needMerging = targetKeyAmount !== currentKeyAmount
-
-	if (needMerging) {
-		newcurrent = deepmergeAll(newcurrent, newtarget) as Sync
-
-		// After merge only
-		newcurrent = removeLinkgroupDuplicates(newcurrent)
-		newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
-		newcurrent = toggleMoveWidgets(newcurrent, newtarget)
-	}
-
-	newcurrent.about = {
-		browser: PLATFORM,
-		version: CURRENT_VERSION,
-	}
-
-	// Remove old fields
-	delete newcurrent.settingssync
-	delete newcurrent.custom_every
-	delete newcurrent.custom_time
-	delete newcurrent.searchbar_newtab
-	delete newcurrent.searchbar_newtab
-	delete newcurrent.searchbar_engine
-	delete newcurrent.cssHeight
-	delete newcurrent.linktabs
-	delete newcurrent.links
-	delete newcurrent.dynamic
-	delete newcurrent.unsplash
-	delete newcurrent.background_blur
-	delete newcurrent.background_bright
-	delete newcurrent.background_type
-	delete newcurrent.usdate
-
-	return newcurrent
-}
-
-function addSupporters(data: Import): Import {
+export function addSupporters(data: Import): Import {
 	if (data.supporters === undefined) {
 		data.supporters = {
 			enabled: true,
@@ -191,7 +27,7 @@ function addSupporters(data: Import): Import {
 	return data
 }
 
-function hideArrayToObject(data: Import): Import {
+export function hideArrayToObject(data: Import): Import {
 	const newhide: Sync['hide'] = {}
 
 	if (Array.isArray(data.hide)) {
@@ -222,7 +58,7 @@ function hideArrayToObject(data: Import): Import {
 	return data
 }
 
-function booleanSearchbarToObject(data: Import): Import {
+export function booleanSearchbarToObject(data: Import): Import {
 	if (typeof data.searchbar === 'boolean') {
 		data.searchbar = {
 			...SYNC_DEFAULT.searchbar,
@@ -236,7 +72,7 @@ function booleanSearchbarToObject(data: Import): Import {
 	return data
 }
 
-function linkListToFlatObjects(data: Import): Import {
+export function linkListToFlatObjects(data: Import): Import {
 	if (Array.isArray(data.links)) {
 		if (data.links.length > 0 && data.quicklinks === undefined) {
 			data.quicklinks = true
@@ -265,7 +101,7 @@ function linkListToFlatObjects(data: Import): Import {
 	return data
 }
 
-function newFontSystem(data: Import): Import {
+export function newFontSystem(data: Import): Import {
 	if (data.font) {
 		data.font.weightlist = data.font?.availWeights ?? []
 		data.font.url = undefined
@@ -280,7 +116,7 @@ function newFontSystem(data: Import): Import {
 	return data
 }
 
-function newReviewData(data: Import): Import {
+export function newReviewData(data: Import): Import {
 	if (data.reviewPopup) {
 		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
 	}
@@ -288,19 +124,19 @@ function newReviewData(data: Import): Import {
 	return data
 }
 
-function quotesJsonToCsv(data: Import): Import {
+export function quotesJsonToCsv(data: Import): Import {
 	if (Array.isArray(data?.quotes?.userlist)) {
 		data.quotes.userlist = oldJSONToCSV(data.quotes.userlist)
 	}
 	return data
 }
 
-function toIsoLanguageCode(data: Import): Import {
+export function toIsoLanguageCode(data: Import): Import {
 	data.lang = countryCodeToLanguageCode(data.lang ?? 'en')
 	return data
 }
 
-function clockDateFormat(data: Import): Import {
+export function clockDateFormat(data: Import): Import {
 	const old = data as Partial<OldSync>
 
 	if (old.usdate) {
@@ -312,7 +148,7 @@ function clockDateFormat(data: Import): Import {
 	return data
 }
 
-function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
+export function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
 	if (target.worldclocks && current.worldclocks) {
 		current.worldclocks = target.worldclocks
 	}
@@ -320,7 +156,7 @@ function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
 	return current
 }
 
-function manualTimezonesToIntl(data: Import): Import {
+export function manualTimezonesToIntl(data: Import): Import {
 	const timezoneMatches: Record<string, string> = {
 		'-10': '-10:00',
 		'-9': '-09:00',
@@ -359,7 +195,7 @@ function manualTimezonesToIntl(data: Import): Import {
 	return data
 }
 
-function validateLinkGroups(current: Import): Import {
+export function validateLinkGroups(current: Import): Import {
 	// (1)
 	let links = bundleLinks(current)
 	let parents = [...new Set(links.map((link) => link.parent))]
@@ -437,7 +273,7 @@ function validateLinkGroups(current: Import): Import {
 	return current
 }
 
-function linksDataMigration(data: Import): Import {
+export function linksDataMigration(data: Import): Import {
 	if (data?.linktabs || data?.linkgroups) {
 		return data
 	}
@@ -455,7 +291,7 @@ function linksDataMigration(data: Import): Import {
 	return data
 }
 
-function improvedWeather(data: Import): Import {
+export function improvedWeather(data: Import): Import {
 	if (data.weather && data.weather?.geolocation === undefined) {
 		//@ts-expect-error -> old types
 		const oldLocation = data.weather?.location ?? []
@@ -475,7 +311,7 @@ function improvedWeather(data: Import): Import {
 }
 
 /** Version 21: migrate from generic fields to a single "backgrounds" object */
-function newBackgroundsField(data: Import): Import {
+export function newBackgroundsField(data: Import): Import {
 	const olddata = data as Partial<OldSync>
 	const defaults = structuredClone(SYNC_DEFAULT)
 
@@ -503,7 +339,7 @@ function newBackgroundsField(data: Import): Import {
 	return data
 }
 
-function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
+export function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 	if (data.clock?.style) {
 		data.analogstyle = {
 			background: '#fff2',
@@ -526,7 +362,7 @@ function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 	return data
 }
 
-function removeLinkgroupDuplicates(current: Sync): Sync {
+export function removeLinkgroupDuplicates(current: Sync): Sync {
 	// 1. Remove duplicate
 	current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
 	current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
@@ -548,7 +384,7 @@ function removeLinkgroupDuplicates(current: Sync): Sync {
 	return current
 }
 
-function toggleMoveWidgets(current: Sync, imported: Import): Sync {
+export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 	// When import doesn't have move, other widgets can still be different
 	// This updates current grid with the widgets states from import
 
@@ -624,7 +460,7 @@ function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 	return current
 }
 
-function convertOldCssSelectors(data: Import): Import {
+export function convertOldCssSelectors(data: Import): Import {
 	if (data?.css) {
 		data.css = data.css
 			.replaceAll('.block', '.link')

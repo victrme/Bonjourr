@@ -17,7 +17,6 @@ import { clock } from './features/clock.ts'
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { needsChange, suntime, userDate } from './shared/time.ts'
-import { syncVersionUpgrade } from './imports.ts'
 import { onSettingsLoad } from './utils/onsettingsload.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
@@ -35,7 +34,7 @@ import {
 } from './defaults.ts'
 
 import type { Local } from '../types/local.ts'
-import type { Sync } from '../types/sync.ts'
+import { dataFilterFromUpdate } from './compatibility/update.ts'
 
 try {
 	startup()
@@ -60,7 +59,7 @@ async function startup() {
 
 		localStorage.setItem('update-archive', JSON.stringify(sync))
 
-		sync = upgradeSyncStorage(sync)
+		sync = dataFilterFromUpdate(sync)
 		local = upgradeLocalStorage(local)
 
 		// <!> do not move
@@ -117,10 +116,6 @@ async function startup() {
 			old: oldVersion,
 		})
 	})
-}
-
-function upgradeSyncStorage(data: Sync): Sync {
-	return syncVersionUpgrade(data)
 }
 
 function upgradeLocalStorage(data: Local): Local {

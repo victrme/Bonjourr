@@ -22,7 +22,6 @@ import { settingsNotifications } from './utils/notifications.ts'
 import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
 import { loadCallbacks } from './utils/onsettingsload.ts'
-import { filterImports } from './imports.ts'
 import { onclickdown } from 'clickdown/mod'
 import { stringify } from './utils/stringify.ts'
 import { debounce } from './utils/debounce.ts'
@@ -33,6 +32,7 @@ import { parse } from './utils/parse.ts'
 import type { Langs } from '../types/shared.ts'
 import type { Sync } from '../types/sync.ts'
 import type { Local } from '../types/local.ts'
+import { filterImportData } from './compatibility/import.ts'
 
 // Initialization
 
@@ -1304,7 +1304,7 @@ async function importSettings(imported: Partial<Sync>) {
 			getPermissions('search')
 		}
 
-		data = filterImports(data, imported)
+		data = filterImportData(data, imported)
 
 		storage.sync.clear()
 		storage.sync.set(data)
