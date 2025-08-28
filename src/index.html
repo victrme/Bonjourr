@@ -668,8 +668,45 @@
 
 					<!-- <p>If you have an issue with your page, <a href="https://github.com/victrme/Bonjourr/issues" target="_blank">look for similar problems on Github</a>. You might also have relevant information <a href="https://bonjourr.fr/docs/" target="_blank">on our documentation</a>. </p> -->
 
+					<h2>What can I do?</h2>
+
+					<p>There are essentially two ways you can go about this.</p>
+
+					<details>
+						<summary>
+							<h3>The "I want to get on with my day" way</h3>
+						</summary>
+
+							<p>Crashes like these can often be quickly resolved by resetting your settings or reinstalling Bonjourr. <span class="important">If you do this however, you will lose your data, which is why you need to download it first.</span> You will then be able to import it back into your fresh installation, at the bottom of the settings panel.</p>
+					</details>
+
+					
+
+					<details>
+						<summary>
+							<h3>The "I need help and want to report this bug" way</h3>
+						</summary>
+
+						<p>If you are stuck in a bad situation and/or think this bug deserves attention, the best thing to do is get in touch with us. This can be done effectively in a few steps:</p>
+
+						<li>First, you should check out the GitHub issues to see if the bug hasn't already been reported.</li>
+						<li>If this isn't the case, you can either send us an email or create a new GitHub issue about your problem.</li>
+						<li>The two main things we will need to help are:
+							<ul>
+								<li>Context. Were you doing something specific before the crash? And any other information you might think is relevant.</li>
+								<li>Your settings file (download here).</li>
+							</ul>
+						</li>
+
+						<i>Keep in mind that your settings file includes personal informations from your Bonjourr installation (notes, links...), so email might be a better solution in some cases, as it won't be public.</i>
+					</details>
+
+					
+
+					
+
 					<h2>Server status</h2>
-					<p>These are external services Bonjourr relies on to work properly. If any of them are down, it likely is the culprit. You can either wait for them to get back up again, or get in touch with if you think we aren't aware of the problem.</p>
+					<p>These are external services Bonjourr relies on to work properly. If any of them are down, it likely is the culprit. You can either wait for them to get back up again, or get in touch with us if you think we aren't aware of the problem.</p>
 
 					<ul>
     					<li>Website: <span id="help-status-website">loading</span><span></li>
@@ -689,26 +726,12 @@
 					</div>
 					
 					<h4>Synchronized <small>(browser.storage.sync)</small></h4>
-					<p>This is your critical user data, essentially all your settings except local files. This is the data to <b class="important">copy to make sure you don't lose anything</b>.</p>
+					<p>This is your critical user data, essentially all your settings except local backgrounds. This is the data to <b class="important">copy to make sure you don't lose anything</b>.</p>
 					<textarea id="help-storage-sync"></textarea>
 
 					<h4>Local <small>(browser.storage.local)</small></h4>
 					<p>This stores large data that cannot or does not need to be saved.</p>
 					<textarea id="help-storage-local"></textarea>
-
-					<h2>Contact</h2>
-
-					<ul>
-						<li>Via email: bonjourr.app@protonmail.com</li>
-						<li>On Telegram: <a href="https://t.me/BonjourrStartpage" target="_blank">@BonjourrStartpage</a></li>
-						<li>On bluesky: <a href="https://bsky.app/profile/bonjourr.fr" target="_blank">@bonjourr.fr</a></li>
-					</ul>
-
-					<h2>Reset</h2>
-
-					<p>Many problems can be fixed by reseting Bonjourr to its default settings.</p>
-
-					<p>If that doesn't work, </p>
 
 					<style>
 					    #help-mode {
@@ -748,6 +771,30 @@
 
 						.important {
 							color: red;
+						}
+
+						details {
+							border-radius: 4px;
+							padding: 0.5em 0.5em 0;
+						}
+
+						summary {
+							font-weight: bold;
+							margin: -0.5em -0.5em 0;
+							padding: 0.5em;
+						}
+
+						summary h3 {
+							display: inline;
+						}
+
+						details[open] {
+							padding: 0.5em;
+						}
+
+						details[open] summary {
+							border-bottom: 1px solid #aaaaaa;
+							margin-bottom: 0.5em;
 						}
 					</style>
 				</div>
