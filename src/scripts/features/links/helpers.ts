@@ -40,8 +40,8 @@ export function createTitle(link: Link): string {
 	const isInline = document.getElementById('linkblocks')?.className.includes('inline')
 	const isText = document.getElementById('linkblocks')?.className.includes('text')
 
-	if (!(isInline || isText) || link.title !== '') {
-		return stringMaxSize(link.title, 64)
+	if (!(isInline || isText) || link?.title !== '') {
+		return stringMaxSize(link.title ?? '', 64)
 	}
 
 	try {

@@ -1,6 +1,6 @@
 import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from './features/move/helpers.ts'
-import { countryCodeToLanguageCode } from './utils/translations.ts'
 import { API_DOMAIN, CURRENT_VERSION, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
+import { countryCodeToLanguageCode } from './utils/translations.ts'
 import { oldJSONToCSV } from './features/quotes.ts'
 import { randomString } from './shared/generic.ts'
 import { deepmergeAll } from '@victr/deepmerge'
@@ -17,7 +17,6 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 
 	// Prepare imported data compatibility
 	newtarget = convertOldCssSelectors(newtarget) // all
-
 	newtarget = booleanSearchbarToObject(newtarget) // 9.0
 	newtarget = linkListToFlatObjects(newtarget) // 13.0
 	newtarget = hideArrayToObject(newtarget) // 16.0
@@ -34,14 +33,24 @@ export function filterImports(current: Sync, target: Partial<Sync>) {
 	newtarget = newBackgroundsField(newtarget) // 21.0
 	newtarget = manualTimezonesToIntl(newtarget) // 21.0
 
-	// Merge both settings
-	const defaultAbout = { about: { browser: PLATFORM, version: CURRENT_VERSION } }
-	newcurrent = deepmergeAll(newcurrent, newtarget, defaultAbout) as Sync
+	// Detect if merging between settings is needed
+	const currentKeyAmount = Object.keys(newcurrent).length
+	const targetKeyAmount = Object.keys(newtarget).length
+	const needMerging = targetKeyAmount !== currentKeyAmount
 
-	// After merge only
-	newcurrent = removeLinkgroupDuplicates(newcurrent)
-	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
-	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
+	if (needMerging) {
+		newcurrent = deepmergeAll(newcurrent, newtarget) as Sync
+
+		// After merge only
+		newcurrent = removeLinkgroupDuplicates(newcurrent)
+		newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
+		newcurrent = toggleMoveWidgets(newcurrent, newtarget)
+	}
+
+	newcurrent.about = {
+		browser: PLATFORM,
+		version: CURRENT_VERSION,
+	}
 
 	// Remove old fields
 	delete newcurrent.settingssync
