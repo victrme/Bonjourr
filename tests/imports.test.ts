@@ -1,8 +1,8 @@
 import './init.test.ts'
 
 // Import script after test init, document needs to be loaded first
+import { filterImportData } from '../src/scripts/compatibility/import.ts'
 import { SYNC_DEFAULT } from '../src/scripts/defaults.ts'
-import { filterImports } from '../src/scripts/imports.ts'
 import type { Link } from '../src/types/shared.ts'
 import { assert } from '@std/assert'
 
@@ -13,11 +13,11 @@ Deno.test('Global exists', () => {
 })
 
 Deno.test('Filter imports is working', () => {
-	filterImports(defaults, {})
+	filterImportData(defaults, {})
 })
 
 Deno.test('Current version small import', () => {
-	const config = filterImports(defaults, {
+	const config = filterImportData(defaults, {
 		time: false,
 		main: false,
 		lang: 'en',
@@ -31,7 +31,7 @@ Deno.test('Current version small import', () => {
 Deno.test('1.10.0', async (t) => {
 	const text = Deno.readTextFileSync('./tests/configs/10.0.0.json')
 	const old = JSON.parse(text)
-	const res = filterImports(defaults, old)
+	const res = filterImportData(defaults, old)
 
 	await t.step('Links', async (t) => {
 		const allkeys = Object.keys(res)
@@ -54,9 +54,20 @@ Deno.test('1.10.0', async (t) => {
 			const key = linkkeys[0]
 			const link = res[key] as Link
 
-			assert(typeof link._id === 'string')
-			assert(typeof link.order === 'number')
-			assert(link.parent === 'default')
+			assert(
+				typeof link._id === 'string',
+				`Link id is "${link._id}"`,
+			)
+
+			assert(
+				typeof link.order === 'number',
+				`Link order is "${link.order}"`,
+			)
+
+			assert(
+				link.parent === 'default',
+				`Link parent is "${link.parent}"`,
+			)
 		})
 	})
 
@@ -90,7 +101,7 @@ Deno.test('1.10.0', async (t) => {
 Deno.test('20.4.2', async (t) => {
 	const text = Deno.readTextFileSync('./tests/configs/20.4.2.json')
 	const old = JSON.parse(text)
-	const res = filterImports(defaults, old)
+	const res = filterImportData(defaults, old)
 
 	await t.step('Backgrounds', async (t) => {
 		await t.step('Local type', () => {
@@ -126,7 +137,7 @@ Deno.test('20.4.2', async (t) => {
 Deno.test('20.4.2-default', async (t) => {
 	const text = Deno.readTextFileSync('./tests/configs/20.4.2-default.json')
 	const old = JSON.parse(text)
-	const res = filterImports(defaults, old)
+	const res = filterImportData(defaults, old)
 
 	await t.step('Keep default link groups', () => {
 		assert(JSON.stringify(res.linkgroups.groups) === `["default"]`)

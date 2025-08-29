@@ -17,8 +17,8 @@ import { clock } from './features/clock.ts'
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { needsChange, suntime, userDate } from './shared/time.ts'
+import { filterUpdateData } from './compatibility/update.ts'
 import { onSettingsLoad } from './utils/onsettingsload.ts'
-import { filterImports } from './imports.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
 import { storage } from './storage.ts'
@@ -33,9 +33,6 @@ import {
 	SYNC_DEFAULT,
 	SYSTEM_OS,
 } from './defaults.ts'
-
-import type { Local } from '../types/local.ts'
-import type { Sync } from '../types/sync.ts'
 
 try {
 	startup()
@@ -58,17 +55,22 @@ async function startup() {
 	if (oldVersion !== CURRENT_VERSION) {
 		console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
 
-		localStorage.setItem('upgrade-archive', JSON.stringify(sync))
+		localStorage.setItem('update-archive', JSON.stringify(sync))
 
-		sync = upgradeSyncStorage(sync)
-		local = upgradeLocalStorage(local)
+		sync = filterUpdateData(sync)
 
-		// <!> do not move, must delete old keys before upgrading storage
+		local.translations = undefined
+		storage.local.remove('translations')
+		local = { ...LOCAL_DEFAULT, ...local }
+
+		// <!> do not move
+		// <!> must delete old keys before upgrading storage
 		await storage.sync.clear()
 		await storage.sync.set(sync)
 	}
 
 	await setTranslationCache(sync.lang, local)
+
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
 	userDate(sync.clock.timezone)
@@ -115,22 +117,6 @@ async function startup() {
 			old: oldVersion,
 		})
 	})
-}
-
-function upgradeSyncStorage(data: Sync): Sync {
-	return filterImports(data, data)
-}
-
-function upgradeLocalStorage(data: Local): Local {
-	data.translations = undefined
-	storage.local.remove('translations')
-
-	data = {
-		...LOCAL_DEFAULT,
-		...data,
-	}
-
-	return data
 }
 
 function onlineAndMobile() {

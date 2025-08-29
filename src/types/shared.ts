@@ -64,6 +64,7 @@ export interface BackgroundImage {
 export interface BackgroundVideo {
 	format: 'video'
 	mimetype?: string
+	duration: number
 	page?: string
 	username?: string
 	thumbnail?: string

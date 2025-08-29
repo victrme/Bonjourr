@@ -3,7 +3,7 @@ globalThis.window.addEventListener('load', function () {
 
 	globalThis.setTimeout(() => {
 		displayHelpModePrompt()
-	}, 300)
+	}, 5000)
 })
 
 function displayHelpModePrompt() {
@@ -17,7 +17,7 @@ function displayHelpModePrompt() {
 	document.documentElement.prepend(container)
 
 	let helpModeBtn = document.getElementById('open-help-mode')
-	helpModeBtn.addEventListener("click", toggleHelpMode)
+	helpModeBtn.addEventListener('click', toggleHelpMode)
 }
 
 /**
@@ -90,7 +90,6 @@ function createHelpModeDisplay() {
 
 		container.querySelector('#localstorage-container')?.classList.remove('hidden')
 	}
-	
 
 	// Chrome storage
 
