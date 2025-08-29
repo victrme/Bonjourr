@@ -84,6 +84,7 @@ export function linkListToFlatObjects(data: Import): Import {
 
 			data[id] = {
 				_id: id,
+				parent: 'default',
 				order: i,
 				title,
 				url,

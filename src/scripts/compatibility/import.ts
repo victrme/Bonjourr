@@ -11,7 +11,7 @@ export function filterImportData(current: Sync, target: Partial<Sync>) {
 	let newcurrent = current
 
 	// Prepare imported data compatibility
-	newtarget = applyCompatibilityFilters(newtarget, toSemVer())
+	newtarget = applyCompatibilityFilters(newtarget, toSemVer(undefined))
 
 	// Detect if merging between settings is needed
 	const currentKeyAmount = Object.keys(newcurrent).length

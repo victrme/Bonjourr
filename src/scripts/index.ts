@@ -17,6 +17,7 @@ import { clock } from './features/clock.ts'
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { needsChange, suntime, userDate } from './shared/time.ts'
+import { filterUpdateData } from './compatibility/update.ts'
 import { onSettingsLoad } from './utils/onsettingsload.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
@@ -32,9 +33,6 @@ import {
 	SYNC_DEFAULT,
 	SYSTEM_OS,
 } from './defaults.ts'
-
-import type { Local } from '../types/local.ts'
-import { dataFilterFromUpdate } from './compatibility/update.ts'
 
 try {
 	startup()
@@ -59,8 +57,11 @@ async function startup() {
 
 		localStorage.setItem('update-archive', JSON.stringify(sync))
 
-		sync = dataFilterFromUpdate(sync)
-		local = upgradeLocalStorage(local)
+		sync = filterUpdateData(sync)
+
+		local.translations = undefined
+		storage.local.remove('translations')
+		local = { ...LOCAL_DEFAULT, ...local }
 
 		// <!> do not move
 		// <!> must delete old keys before upgrading storage
@@ -116,18 +117,6 @@ async function startup() {
 			old: oldVersion,
 		})
 	})
-}
-
-function upgradeLocalStorage(data: Local): Local {
-	data.translations = undefined
-	storage.local.remove('translations')
-
-	data = {
-		...LOCAL_DEFAULT,
-		...data,
-	}
-
-	return data
 }
 
 function onlineAndMobile() {

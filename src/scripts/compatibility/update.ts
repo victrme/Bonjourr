@@ -4,7 +4,7 @@ import { toSemVer } from '../utils/semver.ts'
 
 import type { Sync } from '../../types/sync.ts'
 
-export function dataFilterFromUpdate(data: Sync): Sync {
+export function filterUpdateData(data: Sync): Sync {
 	//
 	const user = toSemVer(data.about.version)
 	let partial = data as Partial<Sync>

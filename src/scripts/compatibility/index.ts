@@ -1,23 +1,6 @@
-import {
-	addSupporters,
-	analogClockOptions,
-	booleanSearchbarToObject,
-	clockDateFormat,
-	hideArrayToObject,
-	improvedWeather,
-	linkListToFlatObjects,
-	linksDataMigration,
-	manualTimezonesToIntl,
-	newBackgroundsField,
-	newFontSystem,
-	newReviewData,
-	quotesJsonToCsv,
-	toIsoLanguageCode,
-	validateLinkGroups,
-} from './filters.ts'
-
-import type { SemVer } from '../utils/semver.ts'
+import * as filter from './filters.ts'
 import type { Sync } from '../../types/sync.ts'
+import type { SemVer } from '../utils/semver.ts'
 
 //
 //	1. Create compatibility filter in compatibility/filters.ts
@@ -27,48 +10,40 @@ import type { Sync } from '../../types/sync.ts'
 export function applyCompatibilityFilters(data: Partial<Sync>, version: SemVer): Partial<Sync> {
 	const { major, minor } = version
 
-	// 21
-
 	if (major < 21) {
-		data = newBackgroundsField(data)
-		data = manualTimezonesToIntl(data)
+		data = filter.newBackgroundsField(data)
+		data = filter.manualTimezonesToIntl(data)
 	}
 
-	// 20
-
 	if (major < 20) {
-		data = analogClockOptions(data)
+		data = filter.analogClockOptions(data)
 
 		if (minor < 1) {
-			data = validateLinkGroups(data)
+			data = filter.validateLinkGroups(data)
 		}
 
 		if (minor < 4) {
-			data = addSupporters(data)
-			data = toIsoLanguageCode(data)
+			data = filter.addSupporters(data)
+			data = filter.toIsoLanguageCode(data)
 		}
 	}
-
-	// 19
 
 	if (major < 19) {
-		data = newFontSystem(data)
-		data = newReviewData(data)
-		data = quotesJsonToCsv(data)
+		data = filter.newFontSystem(data)
+		data = filter.newReviewData(data)
+		data = filter.quotesJsonToCsv(data)
 
 		if (minor < 2) {
-			data = linksDataMigration(data)
+			data = filter.linksDataMigration(data)
 		}
 	}
 
-	// OLD
-
 	if (major < 18) {
-		data = booleanSearchbarToObject(data)
-		data = linkListToFlatObjects(data)
-		data = hideArrayToObject(data)
-		data = improvedWeather(data)
-		data = clockDateFormat(data)
+		data = filter.booleanSearchbarToObject(data)
+		data = filter.linkListToFlatObjects(data)
+		data = filter.hideArrayToObject(data)
+		data = filter.improvedWeather(data)
+		data = filter.clockDateFormat(data)
 	}
 
 	return data
