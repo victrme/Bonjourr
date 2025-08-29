@@ -50,5 +50,5 @@ function flattenKeys(obj: object): string[] {
 }
 
 function isObject(value: unknown): value is object {
-	return !Array.isArray(value) && typeof value === 'object'
+	return !Array.isArray(value) && value !== null && typeof value === 'object'
 }
