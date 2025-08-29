@@ -1,8 +1,8 @@
 import './init.test.ts'
 
 // Import script after test init, document needs to be loaded first
+import { filterImportData } from '../src/scripts/compatibility/import.ts'
 import { SYNC_DEFAULT } from '../src/scripts/defaults.ts'
-import { filterImportData } from '../src/scripts/imports.ts'
 import type { Link } from '../src/types/shared.ts'
 import { assert } from '@std/assert'
 
@@ -54,9 +54,20 @@ Deno.test('1.10.0', async (t) => {
 			const key = linkkeys[0]
 			const link = res[key] as Link
 
-			assert(typeof link._id === 'string')
-			assert(typeof link.order === 'number')
-			assert(link.parent === 'default')
+			assert(
+				typeof link._id === 'string',
+				`Link id is "${link._id}"`,
+			)
+
+			assert(
+				typeof link.order === 'number',
+				`Link order is "${link.order}"`,
+			)
+
+			assert(
+				link.parent === 'default',
+				`Link parent is "${link.parent}"`,
+			)
 		})
 	})
 

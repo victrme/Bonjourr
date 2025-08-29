@@ -9,7 +9,7 @@
 		"online": "deno run --allow-all ./tasks/build.ts online dev",
 		"docker": "deno run --allow-all ./tasks/build.ts online prod",
 		"translate": "deno run --allow-all ./tasks/translate.ts && deno fmt",
-		"test": "deno test --allow-read",
+		"test": "deno test --allow-read --reporter=dot",
 		"types": "deno check",
 		"format": "deno fmt"
 	},
@@ -30,9 +30,16 @@
 	},
 	"nodeModulesDir": "auto",
 	"lint": {
-		"include": ["src", "tasks", "tests", "_locales"],
+		"include": [
+			"src",
+			"tasks",
+			"tests",
+			"_locales"
+		],
 		"rules": {
-			"tags": ["recommended"],
+			"tags": [
+				"recommended"
+			],
 			"include": [
 				"eqeqeq",
 				"verbatim-module-syntax",
@@ -51,11 +58,22 @@
 		"useTabs": true,
 		"semiColons": false,
 		"singleQuote": true,
-		"include": ["**/*.ts", "**/*.js"]
+		"include": [
+			"**/*.ts",
+			"**/*.js"
+		]
 	},
 	"compilerOptions": {
 		"strict": true,
-		"lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
-		"types": ["@types/firefox-webext-browser", "@types/chrome"]
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"dom.asynciterable",
+			"deno.ns"
+		],
+		"types": [
+			"@types/firefox-webext-browser",
+			"@types/chrome"
+		]
 	}
 }
