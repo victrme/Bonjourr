@@ -1325,14 +1325,17 @@ function resetSettings(action: 'yes' | 'no' | 'first') {
 }
 
 export function updateSettingsJson(data?: Sync) {
-	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
+	try {
+		data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
+	} catch (err) {
+		console.warn(err)
+	}
 
 	function updateTextArea(data: Sync) {
 		const pre = document.getElementById('settings-data')
 
 		if (pre && data.about) {
 			const orderedJson = stringify(data)
-
 			data.about.browser = PLATFORM
 			pre.textContent = orderedJson
 		}
