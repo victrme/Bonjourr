@@ -56,22 +56,24 @@ function createHelpModeDisplay() {
 	const startTimer = globalThis.performance.now()
 	document.documentElement.prepend(container)
 
+	function setStatus(statusID, resp) {
+		const endTimer = Math.round(globalThis.performance.now() - startTimer)
+		const text = resp.ok ? ` · ${endTimer}ms` : resp.status
+		container.querySelector(`#${statusID}`).textContent = text
+		container.querySelector(`li:has(#${statusID})`).classList.add(resp.ok ? 'statusUp' : 'statusDown')
+	}
+
 	// Statuses
 
 	fetch('https://bonjourr.fr/').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-website').textContent = text
+		setStatus('help-status-website', resp)
 	})
+
 	fetch('https://weather.bonjourr.fr/').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-weather').textContent = text
+		setStatus('help-status-weather', resp)
 	})
 	fetch('https://services.bonjourr.fr').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-services').textContent = text
+		setStatus('help-status-services', resp)
 	})
 
 	// LocalStorage

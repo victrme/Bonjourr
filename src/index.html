@@ -668,7 +668,7 @@
 
 					<!-- <p>If you have an issue with your page, <a href="https://github.com/victrme/Bonjourr/issues" target="_blank">look for similar problems on Github</a>. You might also have relevant information <a href="https://bonjourr.fr/docs/" target="_blank">on our documentation</a>. </p> -->
 
-					<h2>What can I do?</h2>
+					<h2>I have a problem, what can I do?</h2>
 
 					<p>There are essentially two ways you can go about this.</p>
 
@@ -704,15 +704,16 @@
 					
 
 					
-
-					<h2>Server status</h2>
-					<p>These are external services Bonjourr relies on to work properly. If any of them are down, it likely is the culprit. You can either wait for them to get back up again, or get in touch with us if you think we aren't aware of the problem.</p>
-
-					<ul>
-    					<li>Website: <span id="help-status-website">loading</span><span></li>
-    					<li>Weather: <span id="help-status-weather">loading</span><span></li>
-     				    <li>Services: <span id="help-status-services">loading</span><span></li>
-					</ul>
+					<div id="server-status">
+						<h2>Server status</h2>
+						<p>These are external services Bonjourr relies on to work properly. If any of them are down, it likely is the culprit. You can either wait for them to get back up again, or get in touch with us if you think we aren't aware of the problem.</p>
+	
+						<ul>
+							<li>Website <span id="help-status-website"> · loading...</span><span></li>
+							<li>Weather <span id="help-status-weather"> · loading...</span><span></li>
+							 <li>Services <span id="help-status-services"> · loading...</span><span></li>
+						</ul>
+					</div>
 
 					<h2>Storage</h2>
 
@@ -796,6 +797,40 @@
 							border-bottom: 1px solid #aaaaaa;
 							margin-bottom: 0.5em;
 						}
+
+						/* server statuses */
+
+						#server-status ul {
+							list-style: none;
+						}
+
+						#server-status ul li {
+							position: relative;
+						}
+
+						#server-status ul li:before {
+							content: "";
+							position: absolute;
+							width: .35rem;
+							height: .35rem;
+							top: 50%;
+							transform: translateY(-50%);
+							left: -0.85em;
+							border-radius: 9999px;
+							background-color: #ff8000;
+							box-shadow: 0 0 5px #ffb366;
+						}
+
+						#server-status ul li.statusUp:before {
+							background-color: #00ff00;
+							box-shadow: 0 0 5px #00ff00;
+						}
+
+						#server-status ul li.statusDown:before {
+							background-color: #ff0000;
+							box-shadow: 0 0 5px #ff4d4d;
+						}
+
 					</style>
 				</div>
 			</template>
