@@ -662,87 +662,93 @@
 
 			<template id="help-mode-template">
 				<div id="help-mode">
-					<h1>HELP MODE</h1>
+					<div id="content">
+						<h1>HELP MODE (beta)</h1>
 
-					<p>Welcome to Help Mode! This page shows you all the resources you'll need to troubleshoot effectively and know what to do when Bonjourr breaks.</p>
+						<p>Welcome to Help Mode! This page gives you all the resources you'll need to troubleshoot effectively and know what to do if Bonjourr were to break.</p>
 
-					<!-- <p>If you have an issue with your page, <a href="https://github.com/victrme/Bonjourr/issues" target="_blank">look for similar problems on Github</a>. You might also have relevant information <a href="https://bonjourr.fr/docs/" target="_blank">on our documentation</a>. </p> -->
+						<!-- <p>If you have an issue with your page, <a href="https://github.com/victrme/Bonjourr/issues" target="_blank">look for similar problems on Github</a>. You might also have relevant information <a href="https://bonjourr.fr/docs/" target="_blank">on our documentation</a>. </p> -->
 
-					<h2>I have a problem, what can I do?</h2>
+						<h2>🤔 I have a problem, what can I do?</h2>
 
-					<p>There are essentially two ways you can go about this.</p>
+						<p>Depending on the intensity of your problem and your investment level, there are essentially two ways you can go about this.</p>
 
-					<details>
-						<summary>
-							<h3>The "I want to get on with my day" way</h3>
-						</summary>
+						<details>
+							<summary>
+								<h3>The "I want to get on with my day" way</h3>
+							</summary>
 
-							<p>Crashes like these can often be quickly resolved by resetting your settings or reinstalling Bonjourr. <span class="important">If you do this however, you will lose your data, which is why you need to download it first.</span> You will then be able to import it back into your fresh installation, at the bottom of the settings panel.</p>
-					</details>
+								<p>Crashes like these can often be quickly resolved by resetting your settings or reinstalling Bonjourr. <span class="important">If you do this however, you will lose your data, which is why you need to download it first.</span> You will then be able to import it back into your fresh installation, at the bottom of the settings panel.</p>
+						</details>
 
-					
+						<details>
+							<summary>
+								<h3>The "I need help and want to report this bug" way</h3>
+							</summary>
 
-					<details>
-						<summary>
-							<h3>The "I need help and want to report this bug" way</h3>
-						</summary>
+							<p>If you are stuck in a bad situation and/or think this bug deserves attention, the best thing to do is get in touch with us. This can be done effectively in a few steps:</p>
 
-						<p>If you are stuck in a bad situation and/or think this bug deserves attention, the best thing to do is get in touch with us. This can be done effectively in a few steps:</p>
+							<li>First, you should check out the GitHub issues to see if the bug hasn't already been reported.</li>
+							<li>If this isn't the case, you can either send us an email or create a new GitHub issue about your problem.</li>
+							<li>The two main things we will need to help are:
+								<ul>
+									<li>Context. Were you doing something specific before the crash? And any other information you might think is relevant.</li>
+									<li>Your settings file (download here).</li>
+								</ul>
+							</li>
 
-						<li>First, you should check out the GitHub issues to see if the bug hasn't already been reported.</li>
-						<li>If this isn't the case, you can either send us an email or create a new GitHub issue about your problem.</li>
-						<li>The two main things we will need to help are:
+							<i>Keep in mind that your settings file includes personal informations from your Bonjourr installation (notes, links, weather location...). Email might be a better solution in some cases, as it won't be public.</i>
+						</details>
+
+						
+
+						
+						<div id="server-status">
+							<h2>🗄️ Server status</h2>
+							<p>These are external services Bonjourr relies on to work properly. If any of them are down, it likely is the culprit. You can either wait for them to get back up again, or get in touch with us if you think we aren't aware of the problem.</p>
+		
 							<ul>
-								<li>Context. Were you doing something specific before the crash? And any other information you might think is relevant.</li>
-								<li>Your settings file (download here).</li>
+								<li>Website <span id="help-status-website"> · loading...</span><span></li>
+								<li>Weather <span id="help-status-weather"> · loading...</span><span></li>
+								<li>Services <span id="help-status-services"> · loading...</span><span></li>
 							</ul>
-						</li>
+						</div>
 
-						<i>Keep in mind that your settings file includes personal informations from your Bonjourr installation (notes, links...), so email might be a better solution in some cases, as it won't be public.</i>
-					</details>
+						<h2>💾 Storage</h2>
 
-					
+						<p>The way(s) Bonjourr stores data in your browser.</p>
 
-					
-					<div id="server-status">
-						<h2>Server status</h2>
-						<p>These are external services Bonjourr relies on to work properly. If any of them are down, it likely is the culprit. You can either wait for them to get back up again, or get in touch with us if you think we aren't aware of the problem.</p>
-	
-						<ul>
-							<li>Website <span id="help-status-website"> · loading...</span><span></li>
-							<li>Weather <span id="help-status-weather"> · loading...</span><span></li>
-							 <li>Services <span id="help-status-services"> · loading...</span><span></li>
-						</ul>
-					</div>
+						<div id="localstorage-container" class="hidden">
+							<h3>Page storage <small>(localStorage)</small></h3>
+							<p>This storage is used to store simple data. When using online.bonjourr.fr however, all of your data is stored in here.</p>
 
-					<h2>Storage</h2>
+							<ul id="help-localstorage"></ul>
+						</div>
+						
+						<h4>Synchronized <small>(browser.storage.sync)</small></h4>
+						<p>This is your critical user data, essentially all your settings except local backgrounds. This is the data to <b class="important">copy to make sure you don't lose anything</b>.</p>
+						<textarea id="help-storage-sync" readonly></textarea>
 
-					<p>The way(s) Bonjourr stores data in your browser.</p>
-
-					<div id="localstorage-container" class="hidden">
-						<h3>Page storage <small>(localStorage)</small></h3>
-						<p>This storage is used to store simple data. When using online.bonjourr.fr however, all of your data is stored in here.</p>
-
-						<ul id="help-localstorage"></ul>
+						<h4>Local <small>(browser.storage.local)</small></h4>
+						<p>This stores large data that cannot or does not need to be saved.</p>
+						<textarea id="help-storage-local" readonly></textarea>
 					</div>
 					
-					<h4>Synchronized <small>(browser.storage.sync)</small></h4>
-					<p>This is your critical user data, essentially all your settings except local backgrounds. This is the data to <b class="important">copy to make sure you don't lose anything</b>.</p>
-					<textarea id="help-storage-sync"></textarea>
-
-					<h4>Local <small>(browser.storage.local)</small></h4>
-					<p>This stores large data that cannot or does not need to be saved.</p>
-					<textarea id="help-storage-local"></textarea>
 
 					<style>
 					    #help-mode {
     					    font-family: system-ui;
-                            max-width: 550px;
-                            margin: 4em auto;
-                            color: #333;
-                            background-color: white;
+                            color: #eeeeee;
+                            background-color: black;
 							position: relative;
 							z-index: 2;
+							display: flow-root;
+							padding: 0 20px;
+						}
+
+						#help-mode #content {
+							max-width: 600px;
+							margin: 4em auto;
 						}
 
 						#help-mode h1 {
@@ -757,7 +763,14 @@
 						    width: 100%;
 							border: none;
 							resize: vertical;
-							background-color: #f6f6f6;
+							font-family: var(--monospace-font-family);
+							background-color: #1c1c1e;
+							color: #eeeeee;
+							border-radius: 10px;
+							margin: 6px 0;
+							padding: 15px 21px;
+							max-width: 100%;
+							box-sizing: border-box;
 						}
 
 						#help-storage-sync,
@@ -817,6 +830,7 @@
 							transform: translateY(-50%);
 							left: -0.85em;
 							border-radius: 9999px;
+							animation: pulse 2s ease infinite;
 							background-color: #ff8000;
 							box-shadow: 0 0 5px #ffb366;
 						}
@@ -831,6 +845,18 @@
 							box-shadow: 0 0 5px #ff4d4d;
 						}
 
+						@keyframes pulse {
+							  0%,
+								to {
+									opacity:1;
+									transform:scale(1) translateY(-50%)
+								}
+								50% {
+									opacity:.4;
+									transform:scale(1.2) translateY(-50%)
+								}
+						}
+
 					</style>
 				</div>
 			</template>
@@ -840,18 +866,21 @@
 					<h1>😶‍🌫️ Uh oh, Bonjourr had a problem.</h1>
 					<p>Seems like a bug was triggered by an unexpected situation. <br>No worries though, as your settings were saved.</p>
 
-					<button id="b_file-save" title="Export a new settings file" aria-label="Export a new settings file">
-						<img src="src/assets/labels/download.svg" height="16" alt="">
-						<span class="trn">Download settings</span>
-					</button>
+					<div id="help-buttons">
+						<button id="help-export" class="help-btn" title="Export a new settings file" aria-label="Export a new settings file">
+							<img src="src/assets/labels/download.svg" height="16" alt="">
+							<span class="trn">Download settings</span>
+						</button>
 
-					<button id="open-help-mode" title="Export a new settings file" aria-label="Export a new settings file">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-						</svg>
+						<button id="open-help-mode" class="help-btn" title="Export a new settings file" aria-label="Export a new settings file">
+							<svg xmlns="http://www.w3.org/2000/svg" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+							</svg>
 
-						<span class="trn">Get help</span>
-					</button>
+							<span class="trn">Get help</span>
+						</button>
+					</div>
+					
 
                     <style>
                         #help-mode-prompt {
@@ -859,7 +888,7 @@
                             top: 40vh;
                             left: 0;
                             right: 0;
-                            color: white;
+                            color: #eeeeee;
                             font-family: system-ui;
                             font-size: 1em;
                             text-align: center;
@@ -872,6 +901,31 @@
                             border-radius: .3em;
                             margin-inline: .3em;
                          }
+
+						 #help-buttons {
+							display: flex;
+							justify-content: center;
+							gap: 1em;
+						 }
+
+						.help-btn {
+							cursor: pointer;
+							height: 31px;
+							padding: 0 1em;
+							color: var(--color-blue);
+							border: none;
+							border-radius: 1em;
+							#eeeeee-space: nowrap;
+							background-color: rgba(var(--blue),.25);
+							display: inline-flex;
+							justify-content: center;
+							align-items: center;
+							gap: 5px;
+						}
+
+						.help-btn:hover {
+							background-color: rgba(var(--blue), .35);
+						}
                     </style>
                 </div>
 			</template>
