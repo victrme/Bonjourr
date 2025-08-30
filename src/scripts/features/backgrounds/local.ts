@@ -1,8 +1,9 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
 import { needsChange, userDate } from '../../shared/time.ts'
+import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { onclickdown } from 'clickdown/mod'
-import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
+import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 import * as idb from 'idb-keyval'
@@ -499,7 +500,7 @@ function getSelection(): string[] {
 //  Storage
 
 async function saveFileToCache(id: string, filedata: LocalFileData) {
-	const cache = await getCache("local-files");
+	const cache = await getCache('local-files')
 
 	for (const [size, blob] of Object.entries(filedata)) {
 		const request = new Request(`http://127.0.0.1:8888/${id}/${size}`)
@@ -516,7 +517,6 @@ async function saveFileToCache(id: string, filedata: LocalFileData) {
 }
 
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
-	const start = globalThis.performance.now()
 	const cache = await getCache('local-files')
 
 	const raw = (await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob()) as File | undefined
@@ -527,9 +527,6 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 	if (!full || !medium || !small || !raw) {
 		throw new Error(`${id} is undefined`)
 	}
-
-	// const time = (globalThis.performance.now() - start).toFixed(2)
-	// console.log(`Got ${id} in: ${time}ms`)
 
 	return {
 		raw,
@@ -560,7 +557,7 @@ async function removeFilesFromCache(ids: string[]) {
 async function sanitizeMetadatas(local: Local): Promise<Local> {
 	const newMetadataList: Record<string, BackgroundFile> = {}
 	const cache = await getCache('local-files')
-	const cacheKeys = await cache.keys(); // works in both Safari & Chrome/Firefox
+	const cacheKeys = await cache.keys()
 
 	for (const request of cacheKeys) {
 		try {
@@ -594,6 +591,15 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	local.backgroundFiles = newMetadataList
 
 	return local
+}
+
+function getCache(name: string): Promise<Cache | IDBCache> {
+	if (PLATFORM === 'safari') {
+		// CacheStorage doesn't work on Safari extensions, need indexedDB
+		return Promise.resolve(new IDBCache(name))
+	}
+
+	return caches.open(name)
 }
 
 //  Compatibility
@@ -667,73 +673,4 @@ async function indexedDbToCacheStorage(local: Local): Promise<Local> {
 	}
 
 	return local
-}
-
-
-
-// Fallback "Cache" for Safari using IndexedDB
-class IDBCache {
-	private dbPromise: Promise<IDBDatabase>;
-
-	constructor(private name: string) {
-		this.dbPromise = new Promise((resolve, reject) => {
-			const request = indexedDB.open(name, 1);
-			request.onupgradeneeded = () => {
-				request.result.createObjectStore("files");
-			};
-			request.onsuccess = () => resolve(request.result);
-			request.onerror = () => reject(request.error);
-		});
-	}
-
-	private async withStore<T>(
-		mode: IDBTransactionMode,
-		fn: (store: IDBObjectStore) => IDBRequest<T>
-	): Promise<T> {
-		const db = await this.dbPromise;
-		return new Promise<T>((resolve, reject) => {
-			const tx = db.transaction("files", mode);
-			const store = tx.objectStore("files");
-			const req = fn(store);
-			req.onsuccess = () => resolve(req.result);
-			req.onerror = () => reject(req.error);
-		});
-	}
-
-	async put(request: Request, response: Response) {
-		const blob = await response.blob();
-		await this.withStore("readwrite", (s) => s.put(blob, request.url));
-	}
-
-	async match(request: Request | string): Promise<Response | undefined> {
-		const key = typeof request === "string" ? request : request.url;
-		const blob = await this.withStore("readonly", (s) => s.get(key));
-		return blob ? new Response(blob) : undefined;
-	}
-
-	async delete(request: Request | string) {
-		const key = typeof request === "string" ? request : request.url;
-		await this.withStore("readwrite", (s) => s.delete(key));
-	}
-
-	async keys(): Promise<Request[]> {
-		const db = await this.dbPromise;
-		return new Promise<Request[]>((resolve, reject) => {
-			const tx = db.transaction("files", "readonly");
-			const store = tx.objectStore("files");
-			const req = store.getAllKeys();
-			req.onsuccess = () => {
-				const keys = (req.result as string[]).map((url) => new Request(url));
-				resolve(keys);
-			};
-			req.onerror = () => reject(req.error);
-		});
-	}
-}
-
-function getCache(name: string): Promise<Cache | IDBCache> {
-	if (PLATFORM === 'safari'){
-		return Promise.resolve(new IDBCache(name));
-	}
-	return caches.open(name);
 }
