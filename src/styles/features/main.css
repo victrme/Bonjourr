@@ -67,25 +67,25 @@
 }
 
 #weather-icon {
-	--day-clearsky: url('../../assets/weather/day/clearsky.svg');
-	--day-fewclouds: url('../../assets/weather/day/fewclouds.svg');
-	--day-brokenclouds: url('../../assets/weather/day/brokenclouds.svg');
-	--day-overcastclouds: url('../../assets/weather/day/overcastclouds.svg');
-	--day-sunnyrain: url('../../assets/weather/day/sunnyrain.svg');
-	--day-lightrain: url('../../assets/weather/day/lightrain.svg');
-	--day-rain: url('../../assets/weather/day/rain.svg');
-	--day-snow: url('../../assets/weather/day/snow.svg');
-	--day-mist: url('../../assets/weather/day/mist.svg');
-	--day-thunderstorm: url('../../assets/weather/day/thunderstorm.svg');
-	--night-clearsky: url('../../assets/weather/night/clearsky.svg');
-	--night-fewclouds: url('../../assets/weather/night/fewclouds.svg');
-	--night-brokenclouds: url('../../assets/weather/night/brokenclouds.svg');
-	--night-overcastclouds: url('../../assets/weather/night/overcastclouds.svg');
-	--night-lightrain: url('../../assets/weather/night/lightrain.svg');
-	--night-rain: url('../../assets/weather/night/rain.svg');
-	--night-snow: url('../../assets/weather/night/snow.svg');
-	--night-mist: url('../../assets/weather/night/mist.svg');
-	--night-thunderstorm: url('../../assets/weather/night/thunderstorm.svg');
+	--day-clearsky: url('../../assets/interface/weather/day/clearsky.svg');
+	--day-fewclouds: url('../../assets/interface/weather/day/fewclouds.svg');
+	--day-brokenclouds: url('../../assets/interface/weather/day/brokenclouds.svg');
+	--day-overcastclouds: url('../../assets/interface/weather/day/overcastclouds.svg');
+	--day-sunnyrain: url('../../assets/interface/weather/day/sunnyrain.svg');
+	--day-lightrain: url('../../assets/interface/weather/day/lightrain.svg');
+	--day-rain: url('../../assets/interface/weather/day/rain.svg');
+	--day-snow: url('../../assets/interface/weather/day/snow.svg');
+	--day-mist: url('../../assets/interface/weather/day/mist.svg');
+	--day-thunderstorm: url('../../assets/interface/weather/day/thunderstorm.svg');
+	--night-clearsky: url('../../assets/interface/weather/night/clearsky.svg');
+	--night-fewclouds: url('../../assets/interface/weather/night/fewclouds.svg');
+	--night-brokenclouds: url('../../assets/interface/weather/night/brokenclouds.svg');
+	--night-overcastclouds: url('../../assets/interface/weather/night/overcastclouds.svg');
+	--night-lightrain: url('../../assets/interface/weather/night/lightrain.svg');
+	--night-rain: url('../../assets/interface/weather/night/rain.svg');
+	--night-snow: url('../../assets/interface/weather/night/snow.svg');
+	--night-mist: url('../../assets/interface/weather/night/mist.svg');
+	--night-thunderstorm: url('../../assets/interface/weather/night/thunderstorm.svg');
 }
 
 /* Clear clouds */

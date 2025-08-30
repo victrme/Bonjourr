@@ -24,6 +24,7 @@ export interface Sync {
 	favicon: string
 	tabtitle: string
 	greeting: string
+	greetingsize: string
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'

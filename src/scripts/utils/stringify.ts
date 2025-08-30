@@ -12,13 +12,16 @@ export function stringify(data: Partial<Sync>) {
 	}
 
 	// 1b. Add missing fields inside default objects
-	for (const key of Object.keys(data)) {
-		const curr = data[key]
-		const def = defaultSyncData[key]
-		const bothObjects = isObject(curr) && isObject(def)
+	for (const [key, value] of Object.entries(data)) {
+		const defaultValue = defaultSyncData[key]
 
-		if (bothObjects) {
-			defaultSyncData[key] = { ...def, ...curr }
+		if (isObject(value) && isObject(defaultValue)) {
+			defaultSyncData[key] = {
+				...defaultValue,
+				...value,
+			}
+		} else {
+			defaultSyncData[key] = value
 		}
 	}
 
@@ -47,5 +50,5 @@ function flattenKeys(obj: object): string[] {
 }
 
 function isObject(value: unknown): value is object {
-	return !Array.isArray(value) && typeof value === 'object'
+	return !Array.isArray(value) && value !== null && typeof value === 'object'
 }

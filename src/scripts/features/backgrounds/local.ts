@@ -1,15 +1,16 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
 import { needsChange, userDate } from '../../shared/time.ts'
+import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { onclickdown } from 'clickdown/mod'
-import { IS_MOBILE } from '../../defaults.ts'
+import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
-import type { Sync } from '../../../types/sync.ts'
+import type { Backgrounds } from '../../../types/sync.ts'
 
 type LocalFileData = {
 	raw: File
@@ -21,7 +22,7 @@ type LocalFileData = {
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
-export async function localFilesCacheControl(sync: Sync, local: Local) {
+export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
 	// To remove in a version or two
 	local = await indexedDbToCacheStorage(local)
 
@@ -32,10 +33,11 @@ export async function localFilesCacheControl(sync: Sync, local: Local) {
 		return
 	}
 
+	const freq = backgrounds.frequency
 	const metadata = local.backgroundFiles[ids[0]]
-	const freq = sync.backgrounds.frequency
 	const lastUsed = new Date(metadata.lastUsed).getTime()
-	const needNew = needsChange(freq, lastUsed)
+
+	needNew ??= needsChange(freq, lastUsed)
 
 	if (ids.length > 1 && needNew) {
 		ids.shift()
@@ -138,12 +140,22 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		// 3. Apply background
 
-		const id = newids[0]
-		const image = await imageFromLocalFiles(id, local, filesData[id])
+		if (newids.length > 0) {
+			const id = newids[0]
+			const image = await imageFromLocalFiles(id, local, filesData[id])
 
-		unselectAll()
-		applyBackground(image)
-		handleFilesSettingsOptions(local)
+			unselectAll()
+			applyBackground(image)
+			handleFilesSettingsOptions(local)
+		}
+
+		// 4. Allow same file to be uploaded
+
+		const uploadInput = document.querySelector<HTMLInputElement>('#i_background-upload')
+
+		if (uploadInput) {
+			uploadInput.value = ''
+		}
 	} catch (e) {
 		console.info(e)
 		return
@@ -234,8 +246,8 @@ export function initFilesSettingsOptions(local: Local) {
 	})
 
 	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
-	onclickdown(document.getElementById('b_thumbnail-zoom'), handleGridView)
-	onclickdown(document.getElementById('b_thumbnail-position'), handlePositionOption)
+	onclickdown(document.getElementById('b_thumbnail-position'), () => handlePositionOption())
+	document.getElementById('b_thumbnail-zoom')?.addEventListener('click', handleGridView)
 	document.getElementById('i_background-size')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-vertical')?.addEventListener('input', handleFilePosition)
 	document.getElementById('i_background-horizontal')?.addEventListener('input', handleFilePosition)
@@ -281,14 +293,11 @@ function handleFilesMoveOptions(file: BackgroundFile) {
 	}
 }
 
-function handlePositionOption(show?: boolean) {
+function handlePositionOption(force?: boolean) {
 	const domoptions = document.getElementById('background-position-options')
-	if (!domoptions) return
 
-	if (typeof show === 'boolean') {
-		domoptions.classList.toggle('shown', show)
-	} else {
-		domoptions.classList.toggle('shown')
+	if (domoptions) {
+		domoptions.classList.toggle('shown', force)
 	}
 }
 
@@ -336,17 +345,16 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 function toggleLocalFileButtons(_?: MutationRecord[]) {
 	const thmbRemove = document.getElementById('b_thumbnail-remove')
 	const thmbMove = document.getElementById('b_thumbnail-position')
-	const thmbZoom = document.getElementById('b_thumbnail-zoom')
-	const thumbnails = document.querySelectorAll('.thumbnail').length
 	const selected = document.querySelectorAll('.thumbnail.selected').length
 	const domoptions = document.getElementById('background-position-options')
 
-	thumbnails === 0 ? thmbZoom?.setAttribute('disabled', '') : thmbZoom?.removeAttribute('disabled')
 	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
 	selected !== 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
 
 	// hides move options when no selection or more than one
-	if (selected === 0 || selected > 1) handlePositionOption(false)
+	if (selected === 0 || selected > 1) {
+		handlePositionOption(false)
+	}
 
 	if (selected === 1 && domoptions?.classList.contains('shown')) {
 		domoptions?.classList.remove('shown')
@@ -462,6 +470,7 @@ export async function imageFromLocalFiles(id: string, local: Local, data?: Local
 
 	const image: BackgroundImage = {
 		format: 'image',
+		mimetype: data.raw.type,
 		size: metadata?.position.size ?? 'cover',
 		x: metadata?.position.x ?? '50%',
 		y: metadata?.position.y ?? '50%',
@@ -492,7 +501,7 @@ function getSelection(): string[] {
 //  Storage
 
 async function saveFileToCache(id: string, filedata: LocalFileData) {
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	for (const [size, blob] of Object.entries(filedata)) {
 		const request = new Request(`http://127.0.0.1:8888/${id}/${size}`)
@@ -509,8 +518,7 @@ async function saveFileToCache(id: string, filedata: LocalFileData) {
 }
 
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
-	const start = globalThis.performance.now()
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	const raw = (await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob()) as File | undefined
 	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
@@ -521,9 +529,6 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 		throw new Error(`${id} is undefined`)
 	}
 
-	const time = (globalThis.performance.now() - start).toFixed(2)
-	console.log(`Got ${id} in: ${time}ms`)
-
 	return {
 		raw,
 		full,
@@ -533,7 +538,7 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 }
 
 async function removeFilesFromCache(ids: string[]) {
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	for (const id of ids) {
 		sessionStorage.removeItem(id)
@@ -552,7 +557,7 @@ async function removeFilesFromCache(ids: string[]) {
  */
 async function sanitizeMetadatas(local: Local): Promise<Local> {
 	const newMetadataList: Record<string, BackgroundFile> = {}
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 	const cacheKeys = await cache.keys()
 
 	for (const request of cacheKeys) {
@@ -587,6 +592,15 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	local.backgroundFiles = newMetadataList
 
 	return local
+}
+
+function getCache(name: string): Promise<Cache | IDBCache> {
+	if (PLATFORM === 'safari') {
+		// CacheStorage doesn't work on Safari extensions, need indexedDB
+		return Promise.resolve(new IDBCache(name))
+	}
+
+	return caches.open(name)
 }
 
 //  Compatibility
