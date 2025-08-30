@@ -98,6 +98,7 @@ function addDirectories(platform: Platform) {
 function html(platform: Platform) {
 	const indexdata = Deno.readTextFileSync('src/index.html')
 	const settingsdata = Deno.readTextFileSync('src/settings.html')
+	const helpModeData = Deno.readTextFileSync('src/help-mode.html')
 
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
@@ -119,6 +120,7 @@ function html(platform: Platform) {
 	}
 
 	html = html.replace('<!-- settings -->', settingsdata)
+	html = html.replace('<!-- help-mode -->', helpModeData)
 
 	Deno.writeTextFileSync(`release/${platform}/index.html`, html)
 }
