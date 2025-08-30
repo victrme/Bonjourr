@@ -2,12 +2,7 @@ import * as filter from './filters.ts'
 import type { Sync } from '../../types/sync.ts'
 import type { SemVer } from '../utils/semver.ts'
 
-//
-//	1. Create compatibility filter in compatibility/filters.ts
-//  2. Add your filter to here with correct versionning
-//
-
-export function applyCompatibilityFilters(data: Partial<Sync>, version: SemVer): Partial<Sync> {
+export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<Sync> {
 	const { major, minor } = version
 
 	if (major < 21) {

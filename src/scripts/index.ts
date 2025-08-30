@@ -17,10 +17,10 @@ import { clock } from './features/clock.ts'
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { needsChange, suntime, userDate } from './shared/time.ts'
-import { filterUpdateData } from './compatibility/update.ts'
 import { onSettingsLoad } from './utils/onsettingsload.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
+import { filterData } from './compatibility/apply.ts'
 import { storage } from './storage.ts'
 
 import {
@@ -57,7 +57,7 @@ async function startup() {
 
 		localStorage.setItem('update-archive', JSON.stringify(sync))
 
-		sync = filterUpdateData(sync)
+		sync = filterData('update', sync)
 
 		local.translations = undefined
 		storage.local.remove('translations')

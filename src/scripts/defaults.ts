@@ -8,7 +8,7 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '21.1.2'
+export const CURRENT_VERSION = '21.2.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 

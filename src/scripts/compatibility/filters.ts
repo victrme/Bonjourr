@@ -10,11 +10,6 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
-//
-//	1. Create compatibility filters here
-//  2. Add your filter to applyCompatibilityFilters in index.ts with versionning
-//
-
 export function addSupporters(data: Import): Import {
 	if (data.supporters === undefined) {
 		data.supporters = {
