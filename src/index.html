@@ -667,41 +667,45 @@
 
 						<p>Welcome to Help Mode! This page gives you all the resources you'll need to troubleshoot effectively and know what to do if Bonjourr were to break.</p>
 
-						<!-- <p>If you have an issue with your page, <a href="https://github.com/victrme/Bonjourr/issues" target="_blank">look for similar problems on Github</a>. You might also have relevant information <a href="https://bonjourr.fr/docs/" target="_blank">on our documentation</a>. </p> -->
+						<div id="troubleshoot">
+							<h2>🤔 I have a problem, what can I do?</h2>
 
-						<h2>🤔 I have a problem, what can I do?</h2>
+							<p>Depending on the intensity of your problem and your investment level, there are essentially two ways you can go about this.</p>
 
-						<p>Depending on the intensity of your problem and your investment level, there are essentially two ways you can go about this.</p>
+							<details>
+								<summary>
+									<h3>The "I want to get on with my day" way</h3>
+								</summary>
 
-						<details>
-							<summary>
-								<h3>The "I want to get on with my day" way</h3>
-							</summary>
+								<p>If you're experiencing a crash, you should know that they can often be quickly resolved by resetting your settings. <b class="important">If you do this however, you will lose your data, which is why you need to download it first.</b> You will then be able to start afresh or import it back into your new installation, at the bottom of the settings panel.</p>
 
-								<p>Crashes like these can often be quickly resolved by resetting your settings or reinstalling Bonjourr. <span class="important">If you do this however, you will lose your data, which is why you need to download it first.</span> You will then be able to import it back into your fresh installation, at the bottom of the settings panel.</p>
-						</details>
+								<p>In some rare situations, the settings file itself might be what's causing the crash. In this case, we recommend following the next step to get in touch with us.</p>
+							</details>
 
-						<details>
-							<summary>
+							<details>
+								<summary>
 								<h3>The "I need help and want to report this bug" way</h3>
 							</summary>
 
-							<p>If you are stuck in a bad situation and/or think this bug deserves attention, the best thing to do is get in touch with us. This can be done effectively in a few steps:</p>
+							<p>If you are stuck in a bad situation and/or found a bug deserving attention, the best thing to do is get in touch with us. This can be done effectively in a few steps:</p>
 
-							<li>First, you should check out the GitHub issues to see if the bug hasn't already been reported.</li>
-							<li>If this isn't the case, you can either send us an email or create a new GitHub issue about your problem.</li>
-							<li>The two main things we will need to help are:
-								<ul>
-									<li>Context. Were you doing something specific before the crash? And any other information you might think is relevant.</li>
-									<li>Your settings file (download here).</li>
-								</ul>
-							</li>
-
+							<ol>
+								<li>First, you should check out the GitHub issues to see if the bug hasn't already been reported.</li>
+								<li>If this isn't the case, you can either send us an email or create a new GitHub issue about your problem.</li>
+								<li>The two main things we will need to help are:
+									<ul>
+										<li>Context. Were you doing something specific before the crash? And any other information you might think is relevant.</li>
+										<li>Your settings file (download here).</li>
+									</ul>
+								</li>
+							</ol>
+							
 							<i>Keep in mind that your settings file includes personal informations from your Bonjourr installation (notes, links, weather location...). Email might be a better solution in some cases, as it won't be public.</i>
 						</details>
+						</div>
 
 						
-
+							
 						
 						<div id="server-status">
 							<h2>🗄️ Server status</h2>
@@ -714,26 +718,62 @@
 							</ul>
 						</div>
 
-						<h2>💾 Storage</h2>
+						<div id="storage-data">
+							<h2>💾 Storage</h2>
 
-						<p>The way(s) Bonjourr stores data in your browser.</p>
+							<p>The way(s) Bonjourr stores data in your browser.</p>
 
-						<div id="localstorage-container" class="hidden">
-							<h3>Page storage <small>(localStorage)</small></h3>
-							<p>This storage is used to store simple data. When using online.bonjourr.fr however, all of your data is stored in here.</p>
+							<div id="localstorage-container" class="hidden">
+								<h3>Page storage <small>(localStorage)</small></h3>
+								<p>This storage is used to store simple data. When using online.bonjourr.fr however, all of your data is stored in here.</p>
 
-							<ul id="help-localstorage"></ul>
+								<ul id="help-localstorage"></ul>
+							</div>
+
+							<details>
+								<summary>
+									<h4>Synchronized <small>(browser.storage.sync)</small></h4>
+								</summary>
+
+								<p>This is your critical user data, essentially all your settings except local backgrounds. This is the data to <b class="important">copy to make sure you don't lose anything</b>.</p>
+								<textarea id="help-storage-sync" readonly></textarea>
+							</details>
+							
+							
+							<details>
+								<summary>
+									<h4>Local <small>(browser.storage.local)</small></h4>
+								</summary>
+
+								<p>This stores large data that cannot or does not need to be saved.</p>
+								<textarea id="help-storage-local" readonly></textarea>
+							</details>
+
+							
+							
 						</div>
-						
-						<h4>Synchronized <small>(browser.storage.sync)</small></h4>
-						<p>This is your critical user data, essentially all your settings except local backgrounds. This is the data to <b class="important">copy to make sure you don't lose anything</b>.</p>
-						<textarea id="help-storage-sync" readonly></textarea>
 
-						<h4>Local <small>(browser.storage.local)</small></h4>
-						<p>This stores large data that cannot or does not need to be saved.</p>
-						<textarea id="help-storage-local" readonly></textarea>
+						<div id="reset">
+							<h2>🔄 Resetting Bonjourr</h2>
+
+							<p>If you need to reset Bonjourr, please <b class="important">download your settings</b> and read the <a href="#troubleshoot">first section</a> of this guide first.</p>
+
+							<div id="help-buttons">
+								<button id="help-export" class="help-btn" title="Export a new settings file" aria-label="Export a new settings file">
+									<img src="src/assets/labels/download.svg" height="16" alt="">
+									<span class="trn">Download settings</span>
+								</button>
+
+								<button disabled id="open-help-mode" class="help-btn" title="Export a new settings file" aria-label="Export a new settings file">
+									<svg xmlns="http://www.w3.org/2000/svg" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+										<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+									</svg>
+
+									<span class="trn">Reset Bonjourr</span>
+								</button>
+							</div>
+						</div>
 					</div>
-					
 
 					<style>
 					    #help-mode {
@@ -796,9 +836,10 @@
 							font-weight: bold;
 							margin: -0.5em -0.5em 0;
 							padding: 0.5em;
+							cursor: pointer;
 						}
 
-						summary h3 {
+						summary h3, summary h4 {
 							display: inline;
 						}
 
@@ -846,11 +887,11 @@
 						}
 
 						@keyframes pulse {
-							  0%,
-								to {
+							  0%, to {
 									opacity:1;
 									transform:scale(1) translateY(-50%)
 								}
+
 								50% {
 									opacity:.4;
 									transform:scale(1.2) translateY(-50%)
@@ -915,7 +956,7 @@
 							color: var(--color-blue);
 							border: none;
 							border-radius: 1em;
-							#eeeeee-space: nowrap;
+							white-space: nowrap;
 							background-color: rgba(var(--blue),.25);
 							display: inline-flex;
 							justify-content: center;
@@ -925,6 +966,12 @@
 
 						.help-btn:hover {
 							background-color: rgba(var(--blue), .35);
+						}
+
+						.help-btn[disabled] {
+							color: #777777;
+							background-color: #282828;
+							cursor: not-allowed;
 						}
                     </style>
                 </div>
