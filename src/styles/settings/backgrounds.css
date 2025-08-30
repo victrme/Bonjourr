@@ -50,6 +50,7 @@
 	overflow: auto;
 	grid-template-columns: repeat(var(--thumbnails-columns), 1fr);
 	padding-bottom: 5px;
+	box-sizing: border-box;
 }
 
 #thumbnails-container:empty,

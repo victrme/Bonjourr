@@ -87,6 +87,7 @@ function addDirectories(platform: Platform) {
 		console.error('First build')
 	}
 
+	ensureDirSync(`release/${platform}/src/assets/favicons`)
 	ensureDirSync(`release/${platform}/src/assets`)
 	ensureDirSync(`release/${platform}/src/scripts`)
 	ensureDirSync(`release/${platform}/src/styles`)
@@ -97,6 +98,7 @@ function addDirectories(platform: Platform) {
 function html(platform: Platform) {
 	const indexdata = Deno.readTextFileSync('src/index.html')
 	const settingsdata = Deno.readTextFileSync('src/settings.html')
+	const helpModeData = Deno.readTextFileSync('src/help-mode.html')
 
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
@@ -118,6 +120,7 @@ function html(platform: Platform) {
 	}
 
 	html = html.replace('<!-- settings -->', settingsdata)
+	html = html.replace('<!-- help-mode -->', helpModeData)
 
 	Deno.writeTextFileSync(`release/${platform}/index.html`, html)
 }
@@ -183,10 +186,32 @@ function scripts(platform: Platform, env: Env) {
 }
 
 function assets(platform: Platform) {
-	copyDir(
-		'src/assets',
-		`release/${platform}/src/assets`,
-	)
+	const source = `src/assets`
+	const target = `release/${platform}/src/assets`
+
+	// Huge icons on web application
+
+	if (platform === 'online') {
+		Deno.copyFileSync(`${source}/favicons/apple-touch-icon.png`, `${target}/favicons/apple-touch-icon.png`)
+		Deno.copyFileSync(`${source}/favicons/favicon-512x512.png`, `${target}/favicons/favicon-512x512.png`)
+		copyDir(`${source}/screenshots`, `${target}/screenshots`)
+	}
+
+	// Obligatory monochrome icons on microsoft edge
+
+	if (platform === 'edge') {
+		Deno.copyFileSync(
+			`${source}/favicons/favicon-128x128-monochrome.png`,
+			`${target}/favicons/favicon-128x128-monochrome.png`,
+		)
+	}
+
+	// All other assets
+
+	Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
+	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
+	copyDir(`${source}/interface`, `${target}/interface`)
+	copyDir(`${source}/labels`, `${target}/labels`)
 }
 
 function manifests(platform: Platform) {

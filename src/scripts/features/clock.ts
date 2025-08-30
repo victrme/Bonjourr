@@ -58,6 +58,7 @@ export function clock(init?: Sync, event?: ClockUpdate) {
 
 	try {
 		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu')
+		greetingSize(init?.greetingsize)
 		analogStyle(init?.analogstyle)
 		clockSize(clock.size)
 		displayInterface('clock')
@@ -91,6 +92,7 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.greetingsize !== undefined) {
 		greetingSize(update.greetingsize)
+		storage.sync.set({ greetingsize: update.greetingsize })
 	}
 
 	if (update.timezone !== undefined) {

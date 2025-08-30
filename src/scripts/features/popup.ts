@@ -16,7 +16,7 @@ type PopupUpdate = {
 }
 
 const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-21-the-background-update-R6R61FLG0Z'
-const ANNOUNCEMENT_VERSION = '21.0.0'
+const ANNOUNCEMENT_VERSION = '21.1.0'
 
 const ANNOUNCEMENT_TRNS = {
 	en: '<b>Bonjourr just got a major update! ✨</b> Learn all about the new features: video backgrounds, texture overlays, background search and more.',

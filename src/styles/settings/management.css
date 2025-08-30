@@ -26,8 +26,6 @@
 	margin: 6px 0;
 	padding: 10px 16px;
 	tab-size: 1.5em;
-	text-overflow: ellipsis;
-	overflow: hidden;
 	resize: vertical;
 	cursor: pointer;
 	box-sizing: border-box;
@@ -45,6 +43,7 @@
 	overflow-y: auto;
 	opacity: unset;
 	cursor: inherit;
+	white-space: nowrap;
 	min-height: 300px;
 }
 

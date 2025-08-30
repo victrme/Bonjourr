@@ -60,7 +60,7 @@ Here's a list of things you can do to help us out:
 If you just want to say thank you and support our work, here's some ideas:
 
 -   Tweet what you like about Bonjourr! (tag us, on [Bluesky](https://bsky.app/profile/bonjourr.fr) or [Twitter](https://twitter.com/BonjourrTeam/))
--   Leave a review on [Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd?hl=fr&authuser=0), [Firefox](https://addons.mozilla.org/fr/firefox/addon/bonjourr-startpage/) or [Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid)
+-   Leave a review on [Chrome](https://chrome.google.com/webstore/detail/bonjourr-%C2%B7-minimalist-lig/dlnejlppicbjfcfcedcflplfjajinajd), [Firefox](https://addons.mozilla.org/firefox/addon/bonjourr-startpage/) or [Edge](https://microsoftedge.microsoft.com/addons/detail/bonjourr-%C2%B7-minimalist-l/dehmmlejmefjphdeoagelkpaoolicmid)
 -   Add a GitHub Star to the repository ⭐️
 
 <br>
@@ -102,7 +102,7 @@ If you feel like we've earned it and you want to support independant open source
 -   **🇵🇱 Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92) & [Jakub Mikuło](https://github.com/jmikulo)
 -   **🇷🇺 Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 -   **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
--   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.netlify.com) · [Github](https://github.com/adilsonfsantos)
+-   **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.pages.dev) · [Github](https://github.com/adilsonfsantos)
 -   **🇸🇰 Slovak translation** · Tomáš Švec · [Github](https://github.com/Svec-Tomas) & Roman Bartík
 -   **🇨🇿 Czech translation** · Daniel Zima · [Github](https://github.com/ZimaDaniel)
 -   **🇩🇪 German translation** · [Bernhard Wittmann](https://bernhardwittmann.com/) · [GitHub](https://github.com/berniwittmann)
@@ -209,3 +209,15 @@ docker run --rm -p "8000:80/tcp" -it bonjourr/bonjourr
 -   Search for `bonjourr/bonjourr` Hub image
 -   Run a new container with `8000` as host port
 -   Go to http://0.0.0.0:8000/
+
+### Archive releases
+
+```bash
+version="0.0.0"
+
+for folder in ./release/*/; do
+  [ -d "$folder" ] || continue
+  name=$(basename "$folder")
+  zip -r "./release/bonjourr-${name}-${version}.zip" "$folder"
+done
+```

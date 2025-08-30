@@ -1,9 +1,9 @@
 globalThis.window.addEventListener('load', function () {
-	document.body.addEventListener('keydown', toggleHelpMode)
+	// document.body.addEventListener('keydown', toggleHelpMode)
 
 	globalThis.setTimeout(() => {
 		displayHelpModePrompt()
-	}, 2000)
+	}, 5000)
 })
 
 function displayHelpModePrompt() {
@@ -15,6 +15,9 @@ function displayHelpModePrompt() {
 	const fragment = template.content.cloneNode(true)
 	const container = fragment.querySelector('#help-mode-prompt')
 	document.documentElement.prepend(container)
+
+	let helpModeBtn = document.getElementById('open-help-mode')
+	helpModeBtn.addEventListener('click', toggleHelpMode)
 }
 
 /**
@@ -22,13 +25,13 @@ function displayHelpModePrompt() {
  * @returns {void}
  */
 function toggleHelpMode(event) {
-	const { key, shiftKey, ctrlKey } = event
-	const questionMarkKey = key === ',' || key === '/' || key === '?'
-	const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
+	// const { key, shiftKey, ctrlKey } = event
+	// const questionMarkKey = key === ',' || key === '/' || key === '?'
+	// const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
 
-	if (!ctrlShiftQuestion) {
-		return
-	}
+	// if (!ctrlShiftQuestion) {
+	// 	return
+	// }
 
 	if (!document.getElementById('help-mode')) {
 		createHelpModeDisplay()
@@ -53,47 +56,57 @@ function createHelpModeDisplay() {
 	const startTimer = globalThis.performance.now()
 	document.documentElement.prepend(container)
 
+	function setStatus(statusID, resp) {
+		const endTimer = Math.round(globalThis.performance.now() - startTimer)
+		const text = resp.ok ? ` · ${endTimer}ms` : resp.status
+		container.querySelector(`#${statusID}`).textContent = text
+		container.querySelector(`li:has(#${statusID})`).classList.add(resp.ok ? 'statusUp' : 'statusDown')
+	}
+
 	// Statuses
 
 	fetch('https://bonjourr.fr/').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-website').textContent = text
+		setStatus('help-status-website', resp)
 	})
+
 	fetch('https://weather.bonjourr.fr/').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-weather').textContent = text
+		setStatus('help-status-weather', resp)
 	})
 	fetch('https://services.bonjourr.fr').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-services').textContent = text
+		setStatus('help-status-services', resp)
 	})
 
 	// LocalStorage
+	if (Object.entries(localStorage).length !== 0) {
+		for (const [key, val] of Object.entries(localStorage)) {
+			if (val === 'undefined' || val === '' || val === '{}' || val === '0') {
+				continue
+			}
 
-	for (const [key, val] of Object.entries(localStorage)) {
-		const li = document.createElement('li')
-		const p = document.createElement('p')
-		const textarea = document.createElement('textarea')
+			const li = document.createElement('li')
+			const p = document.createElement('p')
+			const pre = document.createElement('pre')
 
-		p.textContent = key
-		textarea.value = val
+			p.textContent = key
+			pre.textContent = val
 
-		li.append(p, textarea)
-		container.querySelector('#help-localstorage')?.append(li)
+			li.append(p, pre)
+			container.querySelector('#help-localstorage')?.append(li)
+		}
+
+		container.querySelector('#localstorage-container')?.classList.remove('hidden')
 	}
 
 	// Chrome storage
-
 	if (chrome?.storage) {
 		chrome.storage.sync.get().then((data) => {
-			container.querySelector('#help-storage-sync').value = JSON.stringify(data, undefined, 2)
+			container.querySelector('#help-storage-sync').textContent = JSON.stringify(data, undefined, 2)
+			container.querySelector('#syncstorage-container')?.classList.remove('hidden')
 		})
 
 		chrome.storage.local.get().then((data) => {
-			container.querySelector('#help-storage-local').value = JSON.stringify(data, undefined, 2)
+			container.querySelector('#help-storage-local').textContent = JSON.stringify(data, undefined, 2)
+			container.querySelector('#browserstorage-container')?.classList.remove('hidden')
 		})
 	}
 }
