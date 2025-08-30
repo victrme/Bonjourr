@@ -470,6 +470,7 @@ export async function imageFromLocalFiles(id: string, local: Local, data?: Local
 
 	const image: BackgroundImage = {
 		format: 'image',
+		mimetype: data.raw.type,
 		size: metadata?.position.size ?? 'cover',
 		x: metadata?.position.x ?? '50%',
 		y: metadata?.position.y ?? '50%',

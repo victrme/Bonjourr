@@ -1,9 +1,9 @@
 globalThis.window.addEventListener('load', function () {
-	document.body.addEventListener('keydown', toggleHelpMode)
+	// document.body.addEventListener('keydown', toggleHelpMode)
 
 	globalThis.setTimeout(() => {
 		displayHelpModePrompt()
-	}, 2000)
+	}, 5000)
 })
 
 function displayHelpModePrompt() {
@@ -15,6 +15,9 @@ function displayHelpModePrompt() {
 	const fragment = template.content.cloneNode(true)
 	const container = fragment.querySelector('#help-mode-prompt')
 	document.documentElement.prepend(container)
+
+	let helpModeBtn = document.getElementById('open-help-mode')
+	helpModeBtn.addEventListener('click', toggleHelpMode)
 }
 
 /**
@@ -22,13 +25,13 @@ function displayHelpModePrompt() {
  * @returns {void}
  */
 function toggleHelpMode(event) {
-	const { key, shiftKey, ctrlKey } = event
-	const questionMarkKey = key === ',' || key === '/' || key === '?'
-	const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
+	// const { key, shiftKey, ctrlKey } = event
+	// const questionMarkKey = key === ',' || key === '/' || key === '?'
+	// const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
 
-	if (!ctrlShiftQuestion) {
-		return
-	}
+	// if (!ctrlShiftQuestion) {
+	// 	return
+	// }
 
 	if (!document.getElementById('help-mode')) {
 		createHelpModeDisplay()
@@ -53,36 +56,41 @@ function createHelpModeDisplay() {
 	const startTimer = globalThis.performance.now()
 	document.documentElement.prepend(container)
 
+	function setStatus(statusID, resp) {
+		const endTimer = Math.round(globalThis.performance.now() - startTimer)
+		const text = resp.ok ? ` · ${endTimer}ms` : resp.status
+		container.querySelector(`#${statusID}`).textContent = text
+		container.querySelector(`li:has(#${statusID})`).classList.add(resp.ok ? 'statusUp' : 'statusDown')
+	}
+
 	// Statuses
 
 	fetch('https://bonjourr.fr/').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-website').textContent = text
+		setStatus('help-status-website', resp)
 	})
+
 	fetch('https://weather.bonjourr.fr/').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-weather').textContent = text
+		setStatus('help-status-weather', resp)
 	})
 	fetch('https://services.bonjourr.fr').then((resp) => {
-		const endTimer = Math.round(globalThis.performance.now() - startTimer)
-		const text = resp.ok ? `OK - ${endTimer}ms` : resp.status
-		container.querySelector('#help-status-services').textContent = text
+		setStatus('help-status-services', resp)
 	})
 
 	// LocalStorage
+	if (Object.entries(localStorage).length !== 0) {
+		for (const [key, val] of Object.entries(localStorage)) {
+			const li = document.createElement('li')
+			const p = document.createElement('p')
+			const textarea = document.createElement('textarea')
 
-	for (const [key, val] of Object.entries(localStorage)) {
-		const li = document.createElement('li')
-		const p = document.createElement('p')
-		const textarea = document.createElement('textarea')
+			p.textContent = key
+			textarea.value = val
 
-		p.textContent = key
-		textarea.value = val
+			li.append(p, textarea)
+			container.querySelector('#help-localstorage')?.append(li)
+		}
 
-		li.append(p, textarea)
-		container.querySelector('#help-localstorage')?.append(li)
+		container.querySelector('#localstorage-container')?.classList.remove('hidden')
 	}
 
 	// Chrome storage

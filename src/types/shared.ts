@@ -35,6 +35,7 @@ export type WeatherConditions =
 
 export interface BackgroundImage {
 	format: 'image'
+	mimetype?: string
 	urls: {
 		full: string
 		medium: string
@@ -62,6 +63,7 @@ export interface BackgroundImage {
 
 export interface BackgroundVideo {
 	format: 'video'
+	mimetype?: string
 	duration: number
 	page?: string
 	username?: string
