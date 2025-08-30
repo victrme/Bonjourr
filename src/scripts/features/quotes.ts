@@ -255,15 +255,14 @@ function controlCacheList(list: Quote[], lang: string, type: Quotes['type'], url
 	}
 
 	if (list.length > 1) {
-		list.shift()
+		const quote = list.shift()
 		storage.local.set({ quotesCache: list })
+		return quote ?? { author: '', content: '' }
 	}
 
-	if (list.length < 2) {
-		tryFetchQuotes(lang, type, url).then((list) => {
-			storage.local.set({ quotesCache: list })
-		})
-	}
+	tryFetchQuotes(lang, type, url).then((list) => {
+		storage.local.set({ quotesCache: list })
+	})
 
 	return list[0]
 }
