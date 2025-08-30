@@ -79,14 +79,18 @@ function createHelpModeDisplay() {
 	// LocalStorage
 	if (Object.entries(localStorage).length !== 0) {
 		for (const [key, val] of Object.entries(localStorage)) {
+			if (val === 'undefined' || val === '' || val === '{}' || val === '0') {
+				continue
+			}
+
 			const li = document.createElement('li')
 			const p = document.createElement('p')
-			const textarea = document.createElement('textarea')
+			const pre = document.createElement('pre')
 
 			p.textContent = key
-			textarea.value = val
+			pre.textContent = val
 
-			li.append(p, textarea)
+			li.append(p, pre)
 			container.querySelector('#help-localstorage')?.append(li)
 		}
 
@@ -94,14 +98,15 @@ function createHelpModeDisplay() {
 	}
 
 	// Chrome storage
-
 	if (chrome?.storage) {
 		chrome.storage.sync.get().then((data) => {
-			container.querySelector('#help-storage-sync').value = JSON.stringify(data, undefined, 2)
+			container.querySelector('#help-storage-sync').textContent = JSON.stringify(data, undefined, 2)
+			container.querySelector('#syncstorage-container')?.classList.remove('hidden')
 		})
 
 		chrome.storage.local.get().then((data) => {
-			container.querySelector('#help-storage-local').value = JSON.stringify(data, undefined, 2)
+			container.querySelector('#help-storage-local').textContent = JSON.stringify(data, undefined, 2)
+			container.querySelector('#browserstorage-container')?.classList.remove('hidden')
 		})
 	}
 }
