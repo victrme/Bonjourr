@@ -1,8 +1,9 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
 import { needsChange, userDate } from '../../shared/time.ts'
+import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { onclickdown } from 'clickdown/mod'
-import { IS_MOBILE } from '../../defaults.ts'
+import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 import * as idb from 'idb-keyval'
@@ -500,7 +501,7 @@ function getSelection(): string[] {
 //  Storage
 
 async function saveFileToCache(id: string, filedata: LocalFileData) {
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	for (const [size, blob] of Object.entries(filedata)) {
 		const request = new Request(`http://127.0.0.1:8888/${id}/${size}`)
@@ -517,8 +518,7 @@ async function saveFileToCache(id: string, filedata: LocalFileData) {
 }
 
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
-	const start = globalThis.performance.now()
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	const raw = (await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob()) as File | undefined
 	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
@@ -529,9 +529,6 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 		throw new Error(`${id} is undefined`)
 	}
 
-	// const time = (globalThis.performance.now() - start).toFixed(2)
-	// console.log(`Got ${id} in: ${time}ms`)
-
 	return {
 		raw,
 		full,
@@ -541,7 +538,7 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 }
 
 async function removeFilesFromCache(ids: string[]) {
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	for (const id of ids) {
 		sessionStorage.removeItem(id)
@@ -560,7 +557,7 @@ async function removeFilesFromCache(ids: string[]) {
  */
 async function sanitizeMetadatas(local: Local): Promise<Local> {
 	const newMetadataList: Record<string, BackgroundFile> = {}
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 	const cacheKeys = await cache.keys()
 
 	for (const request of cacheKeys) {
@@ -595,6 +592,15 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	local.backgroundFiles = newMetadataList
 
 	return local
+}
+
+function getCache(name: string): Promise<Cache | IDBCache> {
+	if (PLATFORM === 'safari') {
+		// CacheStorage doesn't work on Safari extensions, need indexedDB
+		return Promise.resolve(new IDBCache(name))
+	}
+
+	return caches.open(name)
 }
 
 //  Compatibility
