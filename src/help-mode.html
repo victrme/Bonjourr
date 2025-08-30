@@ -17,7 +17,6 @@
                 <span class="trn">Get help</span>
             </button>
         </div>
-        
 
         <style>
             #help-mode-prompt {
@@ -32,18 +31,20 @@
                 z-index: 1;
             }
 
-            #help-mode-prompt code {
-                background-color: #555;
-                padding: .3em;
-                border-radius: .3em;
-                margin-inline: .3em;
-                }
+            #help-mode-prompt h1 {
+                margin-bottom: 0;
+            }
+
+            #help-mode-prompt p {
+                margin-top: 0.5em;
+            }
 
             #help-buttons {
+                margin-top: 1.5em;
                 display: flex;
                 justify-content: center;
                 gap: 1em;
-                }
+            }
 
             .help-btn {
                 cursor: pointer;
@@ -173,9 +174,10 @@
                         <span class="trn">Download settings</span>
                     </button>
 
-                    <button disabled id="open-help-mode" class="help-btn" title="Export a new settings file" aria-label="Export a new settings file">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="16" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    <button disabled id="open-help-mode" class="help-btn" title="Please download your settings before the reset">
+
+                        <svg height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                         </svg>
 
                         <span class="trn">Reset Bonjourr</span>
@@ -187,7 +189,7 @@
         <style>
             #help-mode {
                 font-family: system-ui;
-                color: #eeeeee;
+                color: #ccc;
                 background-color: black;
                 position: relative;
                 z-index: 2;
@@ -200,12 +202,38 @@
                 margin: 4em auto;
             }
 
+            #help-mode a {
+                color: white;
+                text-decoration: underline;
+            }
+
+            #help-mode h1, #help-mode h2, #help-mode h3, #help-mode h4 {
+                color: white;
+            }
+
             #help-mode h1 {
                 text-align: center;
             }
 
             #help-mode h2 {
                 margin-top: 2em;
+                margin-bottom: .5em;
+            }
+
+            #help-mode p {
+                margin-top: .5em;
+                margin: 0.75rem 0;
+                color: #d1d5db;
+                font-size: 0.95rem;
+                line-height: 1.4;
+            }
+
+            #help-mode .hidden {
+                display: none;
+            }
+
+            #help-mode .important {
+                color: red;
             }
 
             #help-mode pre {
@@ -213,57 +241,69 @@
                 border: none;
                 resize: vertical;
                 font-family: var(--monospace-font-family);
-                background-color: #1c1c1e;
-                color: #eeeeee;
+                font-size: 0.8rem;
+                background-color: rgb(53, 53, 57);
                 border-radius: 10px;
                 margin: 6px 0;
                 padding: 15px 21px;
                 max-width: 100%;
-                height: 6em;
+                height: 12em;
                 box-sizing: border-box;
-                /* white-space: pre-wrap; */
                 text-wrap: wrap;
                 overflow: auto;
                 word-break: break-all;
+                color: #e5e7eb; 
             }
 
-            #help-storage-sync,
-            #help-storage-local {
-                font-size: small;
-                min-height: 200px;
+            #help-mode details {
+                background: #1c1c1e; 
+                border: 1px solid #2a2a2d;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin: 1rem 0;
+                transition: all 0.15s ease-in-out;
+                color: #e5e7eb;
             }
 
-            .hidden {
-                display: none;
+            #help-mode details[open] {
+                background: #1e1e21;
+                border-color: #2d2d30;
             }
 
-            .important {
-                color: red;
-            }
-
-            details {
-                border-radius: 4px;
-                padding: 0.5em 0.5em 0;
-            }
-
-            summary {
-                font-weight: bold;
-                margin: -0.5em -0.5em 0;
-                padding: 0.5em;
+            #help-mode summary {
                 cursor: pointer;
+                list-style: none;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
             }
 
-            summary h3, summary h4 {
-                display: inline;
+            #help-mode summary h3 {
+                margin-block: 10px;
             }
 
-            details[open] {
-                padding: 0.5em;
+            #help-mode summary h4 {
+                margin: 0;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #f3f4f6; 
             }
 
-            details[open] summary {
-                border-bottom: 1px solid #aaaaaa;
-                margin-bottom: 0.5em;
+            #help-mode summary small {
+                font-weight: 400;
+                color: #9ca3af; 
+            }
+
+            #help-mode summary::after {
+                content: "▸";
+                font-size: 1.2rem;
+                color: #9ca3af;
+                transition: transform 0.2s ease, color 0.2s ease;
+            }
+
+            #help-mode details[open] summary::after {
+                transform: rotate(90deg);
+                color: #f3f4f6;
             }
 
             /* server statuses */
@@ -311,7 +351,6 @@
                         transform:scale(1.2) translateY(-50%)
                     }
             }
-
         </style>
     </div>
 </template>
