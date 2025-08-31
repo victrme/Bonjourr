@@ -40,28 +40,35 @@ function displayHelpModePrompt() {
 }
 
 function downloadSettings() {
-	if (chrome?.storage) {
-		chrome.storage.sync.get(null, (items) => {
-			const json = JSON.stringify(items, null, 2);
-			const blob = new Blob([json], { type: "application/json" });
-			const url = URL.createObjectURL(blob);
+	function exportToJsonFile(json) {
+		const blob = new Blob([json], { type: "application/json" });
+		const url = URL.createObjectURL(blob);
 
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = "bonjourr-settings.json";
-			a.click();
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = "bonjourr-settings.json";
+		a.click();
 
-			URL.revokeObjectURL(url); // clean up
-		})
+		URL.revokeObjectURL(url); // clean up
 
 		if (document.querySelector('.reset')) {
 			document.querySelector('.reset').disabled = false
 		}
-
 		hasExportedSettings = true
-	} else {
-
 	}
+
+	if (typeof chrome !== 'undefined' && chrome?.storage) {
+		chrome.storage.sync.get(null, (items) => {
+			exportToJsonFile(JSON.stringify(items, null, 2))
+		})
+	} else if (Object.entries(localStorage).length !== 0) {
+		for (const [key, val] of Object.entries(localStorage)) {
+			if (key === 'bonjourr') {
+				exportToJsonFile(val)
+			}
+		}
+	}
+
 }
 
 // when reset button is clicked once, asks for confirmation
@@ -160,7 +167,7 @@ function createHelpModeDisplay() {
 	}
 
 	// Chrome storage
-	if (chrome?.storage) {
+	if (typeof chrome !== 'undefined' && chrome?.storage) {
 		chrome.storage.sync.get().then((data) => {
 			container.querySelector('#help-storage-sync').textContent = JSON.stringify(data, undefined, 2)
 			container.querySelector('#syncstorage-container')?.classList.remove('hidden')

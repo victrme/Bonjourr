@@ -15,10 +15,6 @@ function keyboardUserActions(event: KeyboardEvent) {
 	const domsuggestions = document.getElementById('sb-suggestions')
 
 	if (event.code === 'Escape') {
-		if (document.querySelector('#help-mode.shown')) {
-			return
-		}
-
 		if (domsuggestions?.classList.contains('shown')) {
 			domsuggestions?.classList.remove('shown')
 			return
