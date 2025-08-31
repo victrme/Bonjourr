@@ -1,11 +1,27 @@
 let hasExportedSettings = false
+let helpModeShown = false
 
 globalThis.window.addEventListener('load', function () {
-	document.body.addEventListener('keydown', toggleHelpMode)
-
+	// if Bonjourr hasn't loaded after 5s, shows prompt
 	globalThis.setTimeout(() => {
 		displayHelpModePrompt()
-	}, 50)
+	}, 5000)
+
+	document.addEventListener('keydown', function (event) {
+		// help mode ctrl + shift + ? hotkey
+		const { key, shiftKey, ctrlKey } = event
+		const questionMarkKey = key === ',' || key === '/' || key === '?'
+		const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
+
+		if (ctrlShiftQuestion) {
+			toggleHelpMode()
+		}
+
+		// when help mode is open, escape to quit
+		if (key === 'Escape' && helpModeShown) {
+			toggleHelpMode(false)
+		}
+	})
 })
 
 function displayHelpModePrompt() {
@@ -18,10 +34,9 @@ function displayHelpModePrompt() {
 	const container = fragment.querySelector('#help-mode-prompt')
 	document.documentElement.prepend(container)
 
-	let helpModeBtn = document.getElementById('open-help-mode')
-	helpModeBtn.addEventListener('click', toggleHelpMode)
+	document.getElementById('open-help-mode')?.addEventListener('click', () => toggleHelpMode(true))
 
-	this.document.querySelector('.export').addEventListener("click", downloadSettings)
+	document.querySelector('.export')?.addEventListener("click", downloadSettings)
 }
 
 function downloadSettings() {
@@ -49,11 +64,14 @@ function downloadSettings() {
 	}
 }
 
+// when reset button is clicked once, asks for confirmation
 function resetOnce() {
-	let resetBtn = document.querySelector('.reset')
+	let resetBtn = document.querySelector('#help-mode .reset')
+
 	resetBtn.title = "You're about to reset Bonjourr to its default configuration."
-	resetBtn.querySelector('span').textContent = "Are you sure?"
 	resetBtn.classList.add('danger')
+	resetBtn.querySelector('span').textContent = "Are you sure?"
+
 	resetBtn.addEventListener("click", resetApply)
 }
 
@@ -62,33 +80,24 @@ function resetApply() {
 }
 
 /**
- * @param {KeyboardEvent | MouseEvent} event
+ * @param {boolean} on 
  * @returns {void}
  */
-function toggleHelpMode(event) {
-	if (event.type === "keydown") {
-		const { key, shiftKey, ctrlKey } = event
-		const questionMarkKey = key === ',' || key === '/' || key === '?'
-		const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
-
-		if (!ctrlShiftQuestion) {
-			return
-		}
-	} else if (event.type !== 'click') {
-		return
-	} 
-
+function toggleHelpMode(on = !helpModeShown) {
+	// first time 
 	if (!document.getElementById('help-mode')) {
 		createHelpModeDisplay()
 	}
 
-	if (document.body.style.display === 'none') {
+	if (on) {
+		document.querySelector('#help-mode')?.removeAttribute('style')
+		document.querySelector('body')?.setAttribute('style', 'position: fixed') // not using display: none, otherwise it disables events
+	} else {
 		document.querySelector('#help-mode')?.setAttribute('style', 'display: none')
 		document.querySelector('body')?.removeAttribute('style')
-	} else {
-		document.querySelector('#help-mode')?.removeAttribute('style')
-		document.querySelector('body')?.setAttribute('style', 'display: none')
 	}
+
+	helpModeShown = !helpModeShown
 }
 
 /**
@@ -110,24 +119,23 @@ function createHelpModeDisplay() {
 		resetBtn.disabled = false
 	}
 
-	function setStatus(statusID, resp) {
+	function setServerStatus(statusID, resp) {
 		const endTimer = Math.round(globalThis.performance.now() - startTimer)
 		const text = resp.ok ? ` · ${endTimer}ms` : resp.status
 		container.querySelector(`#${statusID}`).textContent = text
 		container.querySelector(`li:has(#${statusID})`).classList.add(resp.ok ? 'statusUp' : 'statusDown')
 	}
 
-	// Statuses
-
+	// Server statuses
 	fetch('https://bonjourr.fr/').then((resp) => {
-		setStatus('help-status-website', resp)
+		setServerStatus('help-status-website', resp)
 	})
 
 	fetch('https://weather.bonjourr.fr/').then((resp) => {
-		setStatus('help-status-weather', resp)
+		setServerStatus('help-status-weather', resp)
 	})
 	fetch('https://services.bonjourr.fr').then((resp) => {
-		setStatus('help-status-services', resp)
+		setServerStatus('help-status-services', resp)
 	})
 
 	// LocalStorage
