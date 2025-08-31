@@ -90,10 +90,10 @@ function toggleHelpMode(on = !helpModeShown) {
 	}
 
 	if (on) {
-		document.querySelector('#help-mode')?.removeAttribute('style')
+		document.querySelector('#help-mode')?.classList.add("shown")
 		document.querySelector('body')?.setAttribute('style', 'position: fixed') // not using display: none, otherwise it disables events
 	} else {
-		document.querySelector('#help-mode')?.setAttribute('style', 'display: none')
+		document.querySelector('#help-mode')?.classList.remove("shown")
 		document.querySelector('body')?.removeAttribute('style')
 	}
 

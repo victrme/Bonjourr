@@ -21,7 +21,7 @@
 </template>
 
 <template id="help-mode-template">
-    <div id="help-mode">
+    <div id="help-mode" class="shown">
         <div id="content">
             <h1>HELP MODE (beta)</h1>
 
@@ -139,8 +139,12 @@
                 background-color: black;
                 position: relative;
                 z-index: 2;
-                display: flow-root;
+                display: none;
                 padding: 0 20px;
+            }
+
+            #help-mode.shown {
+                display: flow-root;
             }
 
             #help-mode #content {
