@@ -9,11 +9,11 @@ globalThis.window.addEventListener('load', function () {
 
 	document.addEventListener('keydown', function (event) {
 		// help mode ctrl + shift + ? hotkey
-		const { key, shiftKey, ctrlKey } = event
+		const { key, shiftKey, ctrlKey, metaKey } = event
 		const questionMarkKey = key === ',' || key === '/' || key === '?'
-		const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
+		const helpHotkey = (ctrlKey || metaKey) && shiftKey && questionMarkKey
 
-		if (ctrlShiftQuestion) {
+		if (helpHotkey) {
 			toggleHelpMode()
 		}
 
