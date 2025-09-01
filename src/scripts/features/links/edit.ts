@@ -1,12 +1,10 @@
 import { getLink, getSelectedIds } from './helpers.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
+import { positionDialog, closeDialog } from '../dialog.ts'
 
-import { IS_MOBILE, SYSTEM_OS } from '../../defaults.ts'
 import { getComposedPath } from '../../shared/dom.ts'
-import { transitioner } from '../../utils/transitioner.ts'
 import { tradThis } from '../../utils/translations.ts'
-import { debounce } from '../../utils/debounce.ts'
 import { storage } from '../../storage.ts'
 
 interface EditStates {
@@ -29,8 +27,8 @@ interface EditStates {
 	}
 }
 
-const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-const domeditlink = document.getElementById('editlink') as HTMLDialogElement
+let domeditlink: HTMLDialogElement
+
 const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
 const domicon = document.getElementById('e-icon') as HTMLInputElement
@@ -41,20 +39,14 @@ let editStates: EditStates
 // Display
 //
 
-export async function openEditDialog(event: Event) {
+export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDialogElement) {
+	domeditlink = domdialog
+	
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
 	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
-
-	const pointer = event as PointerEvent
-	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
-	const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
-
-	if (ctrlRightClick || pressingE) {
-		return
-	}
 
 	const container: EditStates['container'] = {
 		mini: path.some((element) => element?.id?.includes('link-mini')),
@@ -87,13 +79,13 @@ export async function openEditDialog(event: Event) {
 		selected: getSelectedIds(),
 	}
 
-	const inputs = toggleEditInputs()
+	const inputs = toggleEditInputs(domeditlink)
 	const folderTitle = container.folder && target.title
 	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
 
 	if (noInputs || folderTitle || noSelection || dragging) {
-		closeEditDialog()
+		closeDialog()
 		return
 	}
 
@@ -145,14 +137,122 @@ export async function openEditDialog(event: Event) {
 	// Must be placed after "li?.classList.add('selected')"
 	editStates.selected = getSelectedIds()
 
-	const contextmenuTransition = transitioner()
-	contextmenuTransition.first(() => domeditlink?.show())
-	contextmenuTransition.after(() => domeditlink?.classList?.add('shown'))
-	contextmenuTransition.transition(10)
+	// Once dialog is populated, calculates its position
+	positionDialog(event)
+}
 
-	const { x, y } = newEditDialogPosition(event)
-	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
-	domtitle?.focus()
+export async function openEditDialog(event: Event) {
+// 	const path = getComposedPath(event.target)
+// 	const classNames = path.map((element) => element.className ?? '')
+// 	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
+// 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
+// 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
+
+// 	const pointer = event as PointerEvent
+// 	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
+// 	const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
+
+// 	if (ctrlRightClick || pressingE) {
+// 		return
+// 	}
+
+// 	const container: EditStates['container'] = {
+// 		mini: path.some((element) => element?.id?.includes('link-mini')),
+// 		group: classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
+// 		folder: classNames.some((cl) => cl.includes('link-group') && cl.includes('in-folder')),
+// 	}
+
+// 	const target: EditStates['target'] = {
+// 		link: classNames.some((cl) => cl.includes('link-elem')),
+// 		folder: classNames.some((cl) => cl.includes('link-folder')),
+// 		title: classNames.some((cl) => cl.includes('link-title')),
+// 		synced: classNames.some((cl) => cl.includes('synced')),
+// 		addgroup: classNames.some((cl) => cl.includes('add-group')),
+// 	}
+
+// 	const selectall = classNames.some((cl) => cl.includes('select-all'))
+// 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
+// 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
+
+// 	const domfolder = document.querySelector<HTMLElement>('.link-group.in-folder')
+// 	const folder = domfolder?.dataset?.folder ?? ''
+
+// 	editStates = {
+// 		group,
+// 		folder,
+// 		selectall,
+// 		container,
+// 		dragging,
+// 		target,
+// 		selected: getSelectedIds(),
+// 	}
+
+// 	const inputs = toggleEditInputs()
+// 	const folderTitle = container.folder && target.title
+// 	const noSelection = selectall && editStates.selected.length === 0
+// 	const noInputs = inputs.length === 0
+
+// 	if (noInputs || folderTitle || noSelection || dragging) {
+// 		closeEditDialog()
+// 		return
+// 	}
+
+// 	document.dispatchEvent(new Event('stop-select-all'))
+// 	event.preventDefault()
+
+// 	const data = await storage.sync.get()
+
+// 	if (target.title) {
+// 		const { groups, pinned } = data.linkgroups
+// 		const title = editStates.target.addgroup ? '' : editStates.group
+
+// 		domeditlink.dataset.group = title
+// 		domtitle.value = title
+
+// 		const onlyOneTitleUnpinned = groups.length - pinned.length < 2
+// 		const onlyOneTitleLeft = groups.length < 2
+
+// 		if (onlyOneTitleUnpinned) {
+// 			document.getElementById('edit-pin')?.setAttribute('disabled', '')
+// 		}
+// 		if (onlyOneTitleLeft) {
+// 			document.getElementById('edit-delete')?.setAttribute('disabled', '')
+// 		}
+// 	}
+
+// 	if (target.folder || target.link) {
+// 		const pathLis = path.filter((el) => el.tagName === 'LI')
+// 		const li = pathLis[0]
+// 		const id = li?.id
+// 		const link = getLink(data, id)
+
+// 		domtitle.value = link?.title ?? ''
+
+// 		if (link && !link.folder) {
+// 			const icon = link.icon ?? ''
+// 			domurl.value = link.url ?? ''
+// 			domicon.value = Number.isNaN(Number.parseInt(icon)) ? icon : ''
+// 		}
+// 	}
+
+// 	if (!selectall) {
+// 		for (const node of document.querySelectorAll('.link-title.selected, .link.selected') ?? []) {
+// 			node.classList.remove('selected')
+// 		}
+// 		;(target.title ? linktitle : linkelem)?.classList.add('selected')
+// 	}
+
+// 	// Must be placed after "li?.classList.add('selected')"
+// 	editStates.selected = getSelectedIds()
+
+// 	const contextmenuTransition = transitioner()
+// 	contextmenuTransition.first(() => domeditlink?.show())
+// 	contextmenuTransition.after(() => domeditlink?.classList?.add('shown'))
+// 	contextmenuTransition.transition(10)
+
+// 	const { x, y } = newEditDialogPosition(event)
+// 	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
+// 	domtitle?.focus()
 }
 
 function toggleEditInputs(): string[] {
@@ -244,75 +344,11 @@ function toggleEditInputs(): string[] {
 	return inputs
 }
 
-function newEditDialogPosition(event: Event): { x: number; y: number } {
-	const editRects = domeditlink.getBoundingClientRect()
-	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
-	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
-	const { innerHeight, innerWidth } = window
-	const isMobileSized = innerWidth < 600
-	const docLang = document.documentElement.lang
-	const rightToLeft = docLang === 'ar' || docLang === 'fa' || docLang === 'he'
-
-	let x = 0
-	let y = 0
-
-	if (withPointer && isMobileSized) {
-		x = (innerWidth - editRects.width) / 2
-		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) -
-			60 -
-			editRects.height
-	} //
-	else if (withPointer) {
-		// gets coordinates differently from touchstart or contextmenu
-		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 20
-		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 20
-	} //
-	else if (withKeyboard) {
-		x = (event.target as HTMLElement).offsetLeft
-		y = (event.target as HTMLElement).offsetTop
-	}
-
-	const w = editRects.width + 30
-	const h = editRects.height + 30
-
-	if (x + w > innerWidth) {
-		x -= x + w - innerWidth
-	}
-
-	if (y + h > innerHeight) {
-		y -= h
-	}
-
-	if (rightToLeft) {
-		x *= -1
-	}
-
-	return { x, y }
-}
-
 //
 // Events
 //
 queueMicrotask(() => {
-	document.addEventListener('close-edit', closeEditDialog)
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
-	domlinkblocks?.addEventListener('contextmenu', openEditDialog)
-
-	if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
-		const handleLongPress = debounce((event: TouchEvent) => {
-			openEditDialog(event)
-		}, 500)
-
-		domlinkblocks?.addEventListener('touchstart', (event) => {
-			handleLongPress(event)
-		})
-
-		domlinkblocks?.addEventListener('touchend', () => {
-			handleLongPress.cancel()
-		})
-
-		globalThis.addEventListener('resize', closeEditDialog)
-	}
 })
 
 function submitChanges(event: SubmitEvent) {
@@ -394,17 +430,17 @@ function submitChanges(event: SubmitEvent) {
 	}
 
 	event.preventDefault()
-	setTimeout(closeEditDialog)
+	setTimeout(closeDialog)
 }
 
-function applyLinkChanges(origin: 'inputs' | 'button') {
+function applyLinkChanges(origin: 'inputs' | 'button', ) {
 	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
 	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (editStates.target.addgroup) {
 		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })
-		closeEditDialog()
+		closeDialog()
 		return
 	}
 
@@ -415,7 +451,7 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 				new: domtitle.value,
 			},
 		})
-		closeEditDialog()
+		closeDialog()
 		return
 	}
 
@@ -427,7 +463,7 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 				url: domurl.value,
 			}],
 		})
-		closeEditDialog()
+		closeDialog()
 		return
 	}
 
@@ -439,7 +475,7 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 				url: domurl.value,
 			}],
 		})
-		closeEditDialog()
+		closeDialog()
 		return
 	}
 
@@ -461,19 +497,5 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
 		},
 	})
-	closeEditDialog()
-}
-
-function closeEditDialog() {
-	if (domeditlink.open) {
-		const selected = document.querySelectorAll('.link-title.selected, .link.selected')
-
-		for (const node of selected) {
-			node?.classList.remove('selected')
-		}
-
-		domeditlink.removeAttribute('data-tab')
-		domeditlink.classList.remove('shown')
-		domeditlink.close()
-	}
+	closeDialog()
 }

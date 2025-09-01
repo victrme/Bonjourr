@@ -1,5 +1,7 @@
 import { getComposedPath } from '../shared/dom.ts'
 import { transitioner } from '../utils/transitioner.ts'
+import { populateDialogWithEditLink } from './links/edit.ts'
+import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
 
 interface eventLocation {
 	link: boolean
@@ -15,15 +17,18 @@ let eventLocation: eventLocation
 export async function openDialog(event: Event) {
     const target = event.target as HTMLElement
 
-    const path = getComposedPath(event.target)
-	const classNames = path.map((element) => element.className ?? '')
-
     eventLocation: eventLocation = {
         link: !!target.closest('#linkblocks'),
         general: false
     }
 
-    console.log(eventLocation)
+    // const pointer = event as PointerEvent
+	// const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
+	// const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
+
+	// if (ctrlRightClick || pressingE) {
+	// 	return
+	// }
 
     event.preventDefault()
 
@@ -35,13 +40,14 @@ export async function openDialog(event: Event) {
     contextmenuTransition.after(() => domdialog?.classList?.add('shown'))
     contextmenuTransition.transition(10)
 
-    const { x, y } = newDialogPosition(event)
-    domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
+    if (eventLocation.link) {
+        populateDialogWithEditLink(event, domdialog)
+    }
 
 }
 
 
-function newDialogPosition(event: Event): { x: number; y: number } {
+export function positionDialog(event: Event) {
 	const editRects = domdialog.getBoundingClientRect()
 	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
@@ -79,25 +85,36 @@ function newDialogPosition(event: Event): { x: number; y: number } {
 	if (y + h > innerHeight) {
 		y -= h
 	}
-
+   
 	if (rightToLeft) {
 		x *= -1
 	}
 
-	return { x, y }
+	domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 }
-
-console.log(mainInterface)
 
 queueMicrotask(() => {
     document.addEventListener('close-edit', closeDialog)
-    // document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
     mainInterface?.addEventListener('contextmenu', openDialog)
     
+    if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
+        // const handleLongPress = debounce((event: TouchEvent) => {
+        //     openEditDialog(event)
+        // }, 500)
 
+        // domdialog?.addEventListener('touchstart', (event) => {
+        //     handleLongPress(event)
+        // })
+
+        // domdialog?.addEventListener('touchend', () => {
+        //     handleLongPress.cancel()
+        // })
+
+        globalThis.addEventListener('resize', closeDialog)
+    }
 })
 
-function closeDialog() {
+export function closeDialog() {
 	if (domdialog.open) {
 		const selected = document.querySelectorAll('.link-title.selected, .link.selected')
 
