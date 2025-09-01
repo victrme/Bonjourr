@@ -379,7 +379,12 @@ async function init(): Promise<AllStorage> {
 
 async function clearall() {
 	sessionStorage.clear()
-	localStorage.clear()
+
+	Object.keys(localStorage).forEach((key) => {
+		if (key.startsWith('bonjourr-archive-') === false) {
+			localStorage.removeItem(key)
+		}
+	})
 
 	try {
 		idb.clear()

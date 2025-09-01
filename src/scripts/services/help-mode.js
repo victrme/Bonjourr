@@ -36,72 +36,108 @@ function displayHelpModePrompt() {
 
 	document.getElementById('open-help-mode')?.addEventListener('click', () => toggleHelpMode(true))
 
-	document.querySelector('.export')?.addEventListener("click", downloadSettings)
+	document.querySelector('.export')?.addEventListener('click', downloadSettings)
 }
 
-function downloadSettings() {
-	function exportToJsonFile(json) {
-		const blob = new Blob([json], { type: "application/json" });
-		const url = URL.createObjectURL(blob);
+function exportToJsonFile(json) {
+	const blob = new Blob([json], { type: 'application/json' })
+	const url = URL.createObjectURL(blob)
 
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = "bonjourr-settings.json";
-		a.click();
+	const a = document.createElement('a')
+	a.href = url
+	a.download = `bonjourr-${new Date().toLocaleString()}.json`
+	a.click()
 
-		URL.revokeObjectURL(url); // clean up
+	URL.revokeObjectURL(url) // clean up
 
-		if (document.querySelector('.reset')) {
-			document.querySelector('.reset').disabled = false
-		}
-		hasExportedSettings = true
+	if (document.querySelector('.reset')) {
+		document.querySelector('.reset').disabled = false
 	}
+	hasExportedSettings = true
+}
 
+async function downloadSettings() {
+	exportToJsonFile(await getDataAsString())
+}
+
+/**
+ * @returns Promise<string>
+ */
+async function getDataAsString() {
 	if (typeof chrome !== 'undefined' && chrome?.storage) {
-		chrome.storage.sync.get(null, (items) => {
-			exportToJsonFile(JSON.stringify(items, null, 2))
-		})
-	} else if (Object.entries(localStorage).length !== 0) {
-		for (const [key, val] of Object.entries(localStorage)) {
-			if (key === 'bonjourr') {
-				exportToJsonFile(val)
-			}
-		}
+		return JSON.stringify(await chrome.storage.sync.get(), null, 2)
 	}
 
+	return localStorage.bonjourr ?? ''
 }
 
 // when reset button is clicked once, asks for confirmation
 function resetOnce() {
-	let resetBtn = document.querySelector('#help-mode .reset')
+	const resetBtn = document.querySelector('#help-mode .reset')
+	const resetBtnSpan = resetBtn.querySelector('span')
 
 	resetBtn.title = "You're about to reset Bonjourr to its default configuration."
 	resetBtn.classList.add('danger')
-	resetBtn.querySelector('span').textContent = "Are you sure?"
+	resetBtnSpan.textContent = 'Are you sure?'
 
-	resetBtn.addEventListener("click", resetApply)
+	resetBtn.addEventListener('click', resetApply)
 }
 
-function resetApply() {
-	alert('goodbye')
+async function resetApply() {
+	// const archiveData = btoa(encodeURI(await getDataAsString()))
+	const archiveData = await getDataAsString()
+	const archiveName = `bonjourr-archive-${new Date().toLocaleString()}`
+
+	// Reset
+
+	if (chrome?.storage) {
+		chrome.storage.sync.clear()
+		chrome.storage.local.clear()
+	}
+	if (localStorage) {
+		Object.keys(localStorage).forEach((key) => {
+			if (key.startsWith('bonjourr-archive-') === false) {
+				localStorage.removeItem(key)
+			}
+		})
+	}
+
+	// Apply archive back to localStorage
+
+	localStorage[archiveName] = archiveData
+
+	// Update button
+
+	const resetBtn = document.querySelector('#help-mode .reset')
+	const resetBtnSpan = resetBtn.querySelector('span')
+
+	resetBtn.setAttribute('disabled', '')
+	resetBtnSpan.textContent = 'Waiting for reload'
+
+	// Reload to all back defaults
+
+	setTimeout(() => {
+		globalThis.window.location.reload()
+	}, 1000)
 }
 
 /**
- * @param {boolean} on 
+ * @param {boolean} on
  * @returns {void}
  */
 function toggleHelpMode(on = !helpModeShown) {
-	// first time 
+	// first time
 	if (!document.getElementById('help-mode')) {
 		createHelpModeDisplay()
 	}
 
 	if (on) {
-		document.querySelector('#help-mode')?.classList.add("shown")
-		document.querySelector('body')?.setAttribute('style', 'position: fixed') // not using display: none, otherwise it disables events
+		// not using display: none, otherwise it disables events
+		document.querySelector('body')?.setAttribute('style', 'position: fixed; visibility: hidden')
+		document.querySelector('#help-mode')?.classList.add('shown')
 	} else {
-		document.querySelector('#help-mode')?.classList.remove("shown")
 		document.querySelector('body')?.removeAttribute('style')
+		document.querySelector('#help-mode')?.classList.remove('shown')
 	}
 
 	helpModeShown = !helpModeShown
@@ -115,13 +151,13 @@ function createHelpModeDisplay() {
 	const fragment = template.content.cloneNode(true)
 	const container = fragment.querySelector('#help-mode')
 	const startTimer = globalThis.performance.now()
-	
+
 	document.documentElement.prepend(container)
-	
+
 	const resetBtn = this.document.querySelector('.reset')
-	this.document.querySelector('.export').addEventListener("click", downloadSettings)
-	resetBtn.addEventListener("click", resetOnce)
-	
+	this.document.querySelector('.export').addEventListener('click', downloadSettings)
+	resetBtn.addEventListener('click', resetOnce)
+
 	if (hasExportedSettings) {
 		resetBtn.disabled = false
 	}
@@ -137,7 +173,6 @@ function createHelpModeDisplay() {
 	fetch('https://bonjourr.fr/').then((resp) => {
 		setServerStatus('help-status-website', resp)
 	})
-
 	fetch('https://weather.bonjourr.fr/').then((resp) => {
 		setServerStatus('help-status-weather', resp)
 	})
