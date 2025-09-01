@@ -100,6 +100,15 @@ function clickUserActions(event: MouseEvent) {
 		return
 	}
 
+	if (open.dialog && !on.editlink) {
+		
+
+		console.log('bjrrr')
+
+		document.dispatchEvent(new Event('close-edit'))
+		return
+	}
+
 	if ((on.body || on.interface) === false) {
 		return
 	}
@@ -123,6 +132,7 @@ function isOpen() {
 		folder: !!document.querySelector('.in-folder'),
 		selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
 		contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
+		dialog: document.querySelector<HTMLDialogElement>('#dialog')?.open,
 	}
 }
 
