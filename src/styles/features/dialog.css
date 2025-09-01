@@ -1,0 +1,94 @@
+dialog#dialog {
+	position: fixed;
+	left: 0;
+	top: 0;
+	opacity: 0;
+	width: 240px;
+	padding: 6px;
+	margin: 0;
+	z-index: 4;
+	transition: opacity 0.05s;
+}
+
+dialog#dialog.shown {
+	opacity: 1;
+}
+
+dialog#dialog label {
+	width: 100%;
+	opacity: 0.7;
+	column-gap: 4px;
+	margin-top: 6px;
+	padding-inline: 12px 4px;
+	place-items: center;
+	grid-template-columns: 42px 1fr;
+	box-sizing: border-box;
+}
+
+dialog#dialog label span {
+	font-size: 12px;
+	justify-self: start;
+	max-width: 45px;
+	overflow: hidden;
+	display: inline-block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+dialog#dialog label:focus-within {
+	opacity: 1;
+}
+
+dialog#dialog input {
+	color: var(--color-text);
+	width: 100%;
+	height: 2.3em;
+	padding: 0 10px;
+	border: none;
+	border-radius: 8px;
+	box-sizing: border-box;
+	background-color: transparent;
+}
+
+dialog#dialog input::placeholder {
+	color: var(--color-dialog-input-text);
+}
+
+dialog#dialog input:focus {
+	opacity: 1;
+	color: var(--color-text);
+	background-color: var(--color-dialog-input-bg);
+	outline: 3px solid rgba(var(--blue), 0.5);
+	outline-offset: -2px;
+	transition: background-color 0.1s;
+}
+
+dialog#dialog button {
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	padding: 4px 12px;
+	font-weight: 400;
+	gap: 0.5em;
+}
+
+dialog#dialog button svg {
+	height: 18px;
+}
+
+/* Active buttons and inputs */
+
+dialog#dialog hr,
+dialog#dialog label,
+dialog#dialog button {
+	display: none;
+}
+
+dialog#dialog hr.on,
+dialog#dialog button.on {
+	display: flex;
+}
+
+dialog#dialog label.on {
+	display: grid;
+}

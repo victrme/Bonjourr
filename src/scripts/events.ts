@@ -101,10 +101,6 @@ function clickUserActions(event: MouseEvent) {
 	}
 
 	if (open.dialog && !on.editlink) {
-		
-
-		console.log('bjrrr')
-
 		document.dispatchEvent(new Event('close-edit'))
 		return
 	}

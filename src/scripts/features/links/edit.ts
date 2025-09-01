@@ -144,7 +144,6 @@ export async function openEditDialog(event: Event) {
 
 	// Must be placed after "li?.classList.add('selected')"
 	editStates.selected = getSelectedIds()
-	console.log(editStates.selected)
 
 	const contextmenuTransition = transitioner()
 	contextmenuTransition.first(() => domeditlink?.show())
@@ -154,7 +153,6 @@ export async function openEditDialog(event: Event) {
 	const { x, y } = newEditDialogPosition(event)
 	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 	domtitle?.focus()
-		console.log(domtitle)
 }
 
 function toggleEditInputs(): string[] {
@@ -295,7 +293,6 @@ function newEditDialogPosition(event: Event): { x: number; y: number } {
 //
 // Events
 //
-console.log('bonjour')
 queueMicrotask(() => {
 	document.addEventListener('close-edit', closeEditDialog)
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
@@ -398,7 +395,6 @@ function submitChanges(event: SubmitEvent) {
 
 	event.preventDefault()
 	setTimeout(closeEditDialog)
-	console.log("sub")
 }
 
 function applyLinkChanges(origin: 'inputs' | 'button') {

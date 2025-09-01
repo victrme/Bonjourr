@@ -1,33 +1,48 @@
 import { getComposedPath } from '../shared/dom.ts'
 import { transitioner } from '../utils/transitioner.ts'
 
+interface eventLocation {
+	link: boolean
+	general: boolean
+}
+
+
 const mainInterface = document.getElementById('interface') as HTMLDivElement
-const domeditlink = document.getElementById('editlink') as HTMLDialogElement
+const domdialog = document.getElementById('dialog') as HTMLDialogElement
+
+let eventLocation: eventLocation
 
 export async function openDialog(event: Event) {
+    const target = event.target as HTMLElement
+
     const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
 
+    eventLocation: eventLocation = {
+        link: !!target.closest('#linkblocks'),
+        general: false
+    }
 
+    console.log(eventLocation)
 
     event.preventDefault()
 
     // Must be placed after "li?.classList.add('selected')"
-    // editStates.selected = getSelectedIds()
+    // eventLocation.selected = getSelectedIds()
 
     const contextmenuTransition = transitioner()
-    contextmenuTransition.first(() => domeditlink?.show())
-    contextmenuTransition.after(() => domeditlink?.classList?.add('shown'))
+    contextmenuTransition.first(() => domdialog?.show())
+    contextmenuTransition.after(() => domdialog?.classList?.add('shown'))
     contextmenuTransition.transition(10)
 
     const { x, y } = newDialogPosition(event)
-    domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
+    domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 
 }
 
 
 function newDialogPosition(event: Event): { x: number; y: number } {
-	const editRects = domeditlink.getBoundingClientRect()
+	const editRects = domdialog.getBoundingClientRect()
 	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
 	const { innerHeight, innerWidth } = window
@@ -75,7 +90,7 @@ function newDialogPosition(event: Event): { x: number; y: number } {
 console.log(mainInterface)
 
 queueMicrotask(() => {
-    // document.addEventListener('close-edit', closeEditDialog)
+    document.addEventListener('close-edit', closeDialog)
     // document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
     mainInterface?.addEventListener('contextmenu', openDialog)
     
@@ -83,15 +98,15 @@ queueMicrotask(() => {
 })
 
 function closeDialog() {
-	if (domeditlink.open) {
+	if (domdialog.open) {
 		const selected = document.querySelectorAll('.link-title.selected, .link.selected')
 
 		for (const node of selected) {
 			node?.classList.remove('selected')
 		}
 
-		domeditlink.removeAttribute('data-tab')
-		domeditlink.classList.remove('shown')
-		domeditlink.close()
+		domdialog.removeAttribute('data-tab')
+		domdialog.classList.remove('shown')
+		domdialog.close()
 	}
 }
