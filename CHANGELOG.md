@@ -1,3 +1,74 @@
+## 21.2.0
+
+- 	Improvements:
+	-	Safer settings import checks
+	-	Complete "Help Mode", access with CTRL+SHIFT+?
+- 	Fixes:
+	-	Greeting size not saving properly (#680)
+	-	Gifs not moving when blurred (#676)
+	-	Safari forgetting local files on restart
+	-	Fix fail data check breaking menu (#658, #636, #634)
+-	Translations:
+	-	Portugese update by @Blackspirits
+	-	Russian update by Shlerspet
+
+## 21.1.0
+
+
+-	Migrate local files from indexedDB to CacheStorage
+-	Added Help Mode to debug more easily, accessible with CTRL+Shift+?
+-	Added video credits
+-	Fixes and improvements:
+	-	Fixed folder links duplicating #642
+	-	Fixed broken google search #668
+	-	Fixed background refresh not working while paused
+	-	Improved gist sync error messages #666
+	-	Cleaner local files UI
+-	Translations:
+	-	Added Icelandic by @JonGretar, thanks !
+	-	German small fix by @DanielGilbert
+	-	Russian changes by Shlerspet
+
+## 21.0.0
+
+-	Background rework:
+	-	New features:
+		-	Video backgrounds (#471)
+		-	Plain color backgrounds (#399)
+		-	Search images or videos with keywords
+		-	Option for startup fade in duration
+		-	Pause, download, and refresh background buttons in interface (#425)
+		-	Textured background overlay (#122, #544)
+	-	Local backgrounds:
+		-	Added position & size options
+		-	Added multi selection to remove multiple backgrounds at once with CTRL + click
+		-	Improve performance by automatically compressing huge images
+		-	More accessible local background thumbnail list
+		-	Prevent duplicate when uploading multiple files (#474)
+	-	Improvements:
+		-	10x less bandwidth and better performance by scaling down blurred backgrounds
+		-	Search bar leading to broken site when using dots in search query
+		-	Fix ultra-wide crop issue by limiting screen ratio to 2:1 (#516)
+		-	Fix weather sometimes triggering when disabled
+-	Other:
+	-	Added quotes from The Office, thanks @Stelage ! (#542)
+	-	Fix worldclock and timezone issues (#601)
+	-	Fix search bar issue with chinese websites, thanks @angine04 ! (#591)
+-	Translations (thank you everyone 🙏 ):
+	-	Added:
+		-	Azerbaijani by @Hajiaga-Sadikhov
+		-	Taigi (Hanji) by @GJRobert
+		-	Belarussian by @The518thGuy
+		-	Telugu by @ShrekCoding21
+	-	Updates:
+		-	Finnish by Bezier at suppo.fi
+		-	Portuguese by @Blackspirits
+		-	Brazilian Portuguese by @RickyM7
+		-	Czech by @ZimaDaniel
+		-	Traditional chinese by @unknownnumbers
+		-	Spanish by @palacios22c
+
+
 ## 20.3.0
 
 -   Added:
