@@ -8,13 +8,12 @@ interface eventLocation {
 	general: boolean
 }
 
-
 const mainInterface = document.getElementById('interface') as HTMLDivElement
-const domdialog = document.getElementById('dialog') as HTMLDialogElement
+const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
 
 let eventLocation: eventLocation
 
-export async function openDialog(event: Event) {
+export async function openContextMenu(event: Event) {
     const target = event.target as HTMLElement
 
     eventLocation: eventLocation = {
@@ -47,7 +46,7 @@ export async function openDialog(event: Event) {
 }
 
 
-export function positionDialog(event: Event) {
+export function positionContextMenu(event: Event) {
 	const editRects = domdialog.getBoundingClientRect()
 	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
@@ -94,8 +93,8 @@ export function positionDialog(event: Event) {
 }
 
 queueMicrotask(() => {
-    document.addEventListener('close-edit', closeDialog)
-    mainInterface?.addEventListener('contextmenu', openDialog)
+    document.addEventListener('close-edit', closeContextMenu)
+    mainInterface?.addEventListener('contextmenu', openContextMenu)
     
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
         // const handleLongPress = debounce((event: TouchEvent) => {
@@ -110,11 +109,11 @@ queueMicrotask(() => {
         //     handleLongPress.cancel()
         // })
 
-        globalThis.addEventListener('resize', closeDialog)
+        globalThis.addEventListener('resize', closeContextMenu)
     }
 })
 
-export function closeDialog() {
+export function closeContextMenu() {
 	if (domdialog.open) {
 		const selected = document.querySelectorAll('.link-title.selected, .link.selected')
 

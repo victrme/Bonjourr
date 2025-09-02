@@ -1,4 +1,4 @@
-dialog#dialog {
+dialog#contextmenu {
 	position: fixed;
 	left: 0;
 	top: 0;
@@ -10,11 +10,11 @@ dialog#dialog {
 	transition: opacity 0.05s;
 }
 
-dialog#dialog.shown {
+dialog#contextmenu.shown {
 	opacity: 1;
 }
 
-dialog#dialog label {
+dialog#contextmenu label {
 	width: 100%;
 	opacity: 0.7;
 	column-gap: 4px;
@@ -25,7 +25,7 @@ dialog#dialog label {
 	box-sizing: border-box;
 }
 
-dialog#dialog label span {
+dialog#contextmenu label span {
 	font-size: 12px;
 	justify-self: start;
 	max-width: 45px;
@@ -35,11 +35,11 @@ dialog#dialog label span {
 	text-overflow: ellipsis;
 }
 
-dialog#dialog label:focus-within {
+dialog#contextmenu label:focus-within {
 	opacity: 1;
 }
 
-dialog#dialog input {
+dialog#contextmenu input {
 	color: var(--color-text);
 	width: 100%;
 	height: 2.3em;
@@ -50,11 +50,11 @@ dialog#dialog input {
 	background-color: transparent;
 }
 
-dialog#dialog input::placeholder {
+dialog#contextmenu input::placeholder {
 	color: var(--color-dialog-input-text);
 }
 
-dialog#dialog input:focus {
+dialog#contextmenu input:focus {
 	opacity: 1;
 	color: var(--color-text);
 	background-color: var(--color-dialog-input-bg);
@@ -63,7 +63,7 @@ dialog#dialog input:focus {
 	transition: background-color 0.1s;
 }
 
-dialog#dialog button {
+dialog#contextmenu button {
 	flex-direction: row;
 	align-items: center;
 	width: 100%;
@@ -72,23 +72,23 @@ dialog#dialog button {
 	gap: 0.5em;
 }
 
-dialog#dialog button svg {
+dialog#contextmenu button svg {
 	height: 18px;
 }
 
 /* Active buttons and inputs */
 
-dialog#dialog hr,
-dialog#dialog label,
-dialog#dialog button {
+dialog#contextmenu hr,
+dialog#contextmenu label,
+dialog#contextmenu button {
 	display: none;
 }
 
-dialog#dialog hr.on,
-dialog#dialog button.on {
+dialog#contextmenu hr.on,
+dialog#contextmenu button.on {
 	display: flex;
 }
 
-dialog#dialog label.on {
+dialog#contextmenu label.on {
 	display: grid;
 }

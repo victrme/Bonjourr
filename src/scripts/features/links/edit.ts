@@ -1,7 +1,7 @@
 import { getLink, getSelectedIds } from './helpers.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
-import { positionDialog, closeDialog } from '../dialog.ts'
+import { positionContextMenu, closeContextMenu } from '../contextmenu.ts'
 
 import { getComposedPath } from '../../shared/dom.ts'
 import { tradThis } from '../../utils/translations.ts'
@@ -41,6 +41,8 @@ let editStates: EditStates
 
 export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDialogElement) {
 	domeditlink = domdialog
+
+	console.log('alors')
 	
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
@@ -79,13 +81,13 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 		selected: getSelectedIds(),
 	}
 
-	const inputs = toggleEditInputs(domeditlink)
+	const inputs = toggleEditInputs()
 	const folderTitle = container.folder && target.title
 	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
 
 	if (noInputs || folderTitle || noSelection || dragging) {
-		closeDialog()
+		closeContextMenu()
 		return
 	}
 
@@ -138,7 +140,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	editStates.selected = getSelectedIds()
 
 	// Once dialog is populated, calculates its position
-	positionDialog(event)
+	positionContextMenu(event)
 }
 
 export async function openEditDialog(event: Event) {
@@ -430,7 +432,7 @@ function submitChanges(event: SubmitEvent) {
 	}
 
 	event.preventDefault()
-	setTimeout(closeDialog)
+	// setTimeout(closeContextMenu)
 }
 
 function applyLinkChanges(origin: 'inputs' | 'button', ) {
@@ -440,7 +442,7 @@ function applyLinkChanges(origin: 'inputs' | 'button', ) {
 
 	if (editStates.target.addgroup) {
 		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })
-		closeDialog()
+		closeContextMenu()
 		return
 	}
 
@@ -451,7 +453,7 @@ function applyLinkChanges(origin: 'inputs' | 'button', ) {
 				new: domtitle.value,
 			},
 		})
-		closeDialog()
+		closeContextMenu()
 		return
 	}
 
@@ -463,7 +465,7 @@ function applyLinkChanges(origin: 'inputs' | 'button', ) {
 				url: domurl.value,
 			}],
 		})
-		closeDialog()
+		closeContextMenu()
 		return
 	}
 
@@ -475,7 +477,7 @@ function applyLinkChanges(origin: 'inputs' | 'button', ) {
 				url: domurl.value,
 			}],
 		})
-		closeDialog()
+		closeContextMenu()
 		return
 	}
 
@@ -497,5 +499,5 @@ function applyLinkChanges(origin: 'inputs' | 'button', ) {
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
 		},
 	})
-	closeDialog()
+	closeContextMenu()
 }

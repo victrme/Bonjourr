@@ -72,7 +72,7 @@ function clickUserActions(event: MouseEvent) {
 		localfiles: path.some((el) => el.id === 'local_options'),
 		localthumbnail: path.some((el) => el.className.includes('thumbnail')),
 		interface: pathIds.includes('interface'),
-		editlink: pathIds.includes('editlink'),
+		contextmenu: pathIds.includes('contextmenu'),
 		settings: path.some((el) => el.id === 'settings'),
 		showsettings: path.some((el) => el.id === 'show-settings'),
 	}
@@ -91,16 +91,11 @@ function clickUserActions(event: MouseEvent) {
 		document.dispatchEvent(new Event('toggle-settings'))
 	}
 
-	if (open.contextmenu && !on.editlink) {
+	if (open.contextmenu && !on.contextmenu) {
 		if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
 			return
 		}
 
-		document.dispatchEvent(new Event('close-edit'))
-		return
-	}
-
-	if (open.dialog && !on.editlink) {
 		document.dispatchEvent(new Event('close-edit'))
 		return
 	}
@@ -127,8 +122,7 @@ function isOpen() {
 		settings: !!document.getElementById('settings')?.classList.contains('shown'),
 		folder: !!document.querySelector('.in-folder'),
 		selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
-		contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
-		dialog: document.querySelector<HTMLDialogElement>('#dialog')?.open,
+		contextmenu: document.querySelector<HTMLDialogElement>('#contextmenu')?.open
 	}
 }
 
