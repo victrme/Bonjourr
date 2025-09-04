@@ -6,7 +6,7 @@ import { eventDebounce } from '../utils/debounce.ts'
 import { stringMaxSize } from '../shared/generic.ts'
 import { getVnCalendar } from '../dependencies/vietnamese-calendar.ts'
 import { SYNC_DEFAULT } from '../defaults.ts'
-import { userDate } from '../shared/time.ts'
+import { setUserDate, userDate } from '../shared/time.ts'
 import { storage } from '../storage.ts'
 
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
@@ -95,11 +95,6 @@ async function clockUpdate(update: ClockUpdate) {
 		storage.sync.set({ greetingsize: update.greetingsize })
 	}
 
-	if (update.timezone !== undefined) {
-		userDate(update.timezone)
-		greetings(data.greeting)
-	}
-
 	if (isHands(update.hands)) {
 		analogstyle.hands = update.hands
 	}
@@ -128,6 +123,11 @@ async function clockUpdate(update: ClockUpdate) {
 		return
 	}
 
+	if (update.worldclocks !== undefined) {
+		data.clock.worldclocks = update.worldclocks
+		toggleTimezoneOptions(data)
+	}
+
 	if (update.world !== undefined) {
 		const index = update.world.index
 		const baseclock = { region: defaultRegions[index], timezone: defaultTimezones[index] }
@@ -143,6 +143,7 @@ async function clockUpdate(update: ClockUpdate) {
 
 		data.worldclocks[index] = worldclock
 		toggleWorldClocksOptions()
+		toggleTimezoneOptions(data)
 	}
 
 	data.clock = {
@@ -247,10 +248,12 @@ function startClock(clock: Clock, world: WorldClock[], greeting: string, datefor
 		clocks.push({ region: '', timezone: clock.timezone })
 	}
 
-	clearInterval(clockInterval)
+	// <!> First timezone becomes global timezone
+	// <!> for everything in Bonjourr !
+	setUserDate(clocks[0].timezone)
 
 	start(true)
-
+	clearInterval(clockInterval)
 	clockInterval = setInterval(start, 1000)
 
 	function start(firstStart?: true) {
@@ -452,12 +455,24 @@ function greetings(name?: string) {
 function toggleWorldClocksOptions() {
 	const parents = document.querySelectorAll<HTMLElement>('.worldclocks-item')
 	const inputs = document.querySelectorAll<HTMLInputElement>('.worldclocks-item input')
+	let hasWorld = false
 
 	parents.forEach((parent, i) => {
 		const currHasText = !!inputs[i]?.value
 		const nextHasText = !!inputs[i - 1]?.value
 		parent?.classList.toggle('shown', i === 0 || currHasText || nextHasText)
+
+		if (!hasWorld && currHasText) {
+			hasWorld = true
+		}
 	})
+}
+
+function toggleTimezoneOptions(data: Sync) {
+	const timezoneOptions = document.getElementById('timezone_options')
+	const hasWorldClock = data.clock.worldclocks && !!data?.worldclocks[0]?.region
+
+	timezoneOptions?.classList.toggle('shown', !hasWorldClock)
 }
 
 // Helpers

@@ -76,6 +76,10 @@
 	max-height: 60px;
 }
 
+#timezone_options.shown {
+	max-height: 60px;
+}
+
 #worldclocks_options.shown {
 	max-height: 200px;
 }
