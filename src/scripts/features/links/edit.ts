@@ -42,7 +42,7 @@ let editStates: EditStates
 export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDialogElement) {
 	domeditlink = domdialog
 
-	console.log('alors')
+	console.info("populateDialogWithEditLink()")
 	
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')

@@ -114,6 +114,7 @@ queueMicrotask(() => {
 })
 
 export function closeContextMenu() {
+	console.info("closeContextMenu()")
 	if (domdialog.open) {
 		const selected = document.querySelectorAll('.link-title.selected, .link.selected')
 

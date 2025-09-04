@@ -92,7 +92,8 @@ function clickUserActions(event: MouseEvent) {
 	}
 
 	if (open.contextmenu && !on.contextmenu) {
-		if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
+		// if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
+		if (on.addgroup) {
 			return
 		}
 
