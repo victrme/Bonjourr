@@ -248,6 +248,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 	li.id = link._id
 	span.textContent = createTitle(link)
 	li.addEventListener('mouseup', folderClick)
+	li.addEventListener('keydown', folderClick)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
