@@ -141,6 +141,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 
 	// Once dialog is populated, calculates its position
 	positionContextMenu(event)
+	domtitle?.focus()
 }
 
 export async function openEditDialog(event: Event) {

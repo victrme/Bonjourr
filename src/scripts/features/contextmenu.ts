@@ -21,13 +21,13 @@ export async function openContextMenu(event: Event) {
         general: false
     }
 
-    // const pointer = event as PointerEvent
-	// const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
-	// const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
+    const pointer = event as PointerEvent
+	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
+	const notPressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
 
-	// if (ctrlRightClick || pressingE) {
-	// 	return
-	// }
+	if (ctrlRightClick || notPressingE) {
+		return
+	}
 
     event.preventDefault()
 
@@ -42,11 +42,11 @@ export async function openContextMenu(event: Event) {
     if (eventLocation.link) {
         populateDialogWithEditLink(event, domdialog)
     }
-
 }
 
 
 export function positionContextMenu(event: Event) {
+	console.log(event)
 	const editRects = domdialog.getBoundingClientRect()
 	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
@@ -70,8 +70,11 @@ export function positionContextMenu(event: Event) {
 		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 20
 	} //
 	else if (withKeyboard) {
-		x = (event.target as HTMLElement).offsetLeft
-		y = (event.target as HTMLElement).offsetTop
+		const targetEl = event.target as HTMLElement
+		const rect = targetEl.getBoundingClientRect()
+
+		x = rect.right
+		y = rect.bottom + 4
 	}
 
 	const w = editRects.width + 30
