@@ -127,6 +127,9 @@ function settingsToggle(event: CustomEvent) {
 		}
 	}
 
+	// prevents closing if a scrollTo has been requested
+	if (!isClosed && scrollTo) return
+
 	domsettings?.classList.toggle('shown', isClosed)
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)

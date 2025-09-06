@@ -4,9 +4,17 @@ import { populateDialogWithEditLink } from './links/edit.ts'
 import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
 
 interface eventLocation {
-	link: boolean
-	time: boolean
-	general: boolean
+    widgets: {
+        link: boolean
+        time: boolean
+		weather: boolean
+    }
+    interface: boolean
+}
+
+const sectionMatching: Record<string, string> = {
+	openTime: "time_options",
+	openWeatherGreetings: "main_options",
 }
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
@@ -19,49 +27,58 @@ export async function openContextMenu(event: Event) {
     const target = event.target as HTMLElement
 
     eventLocation = {
-        link: !!target.closest('#linkblocks'),
-		time: !!target.closest('#time'),
-        general: false
+		widgets: {
+			link: !!target.closest('#linkblocks'),
+			time: !!target.closest('#time'),
+			weather: !!target.closest('#main'),
+		},
+        interface: target.matches("main#interface") 
     }
 
     const pointer = event as PointerEvent
 	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
 	const notPressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
 
+	const menuWillOpen = !(ctrlRightClick || notPressingE) ||
+		Object.values(eventLocation.widgets).some(v => v) || // checks if any widget is true
+		eventLocation.interface
+
+	if (!menuWillOpen) return
+
+	// hides content from previous context menu
 	for (const node of domdialog.querySelectorAll('label, button, hr')) {
 		node.classList.remove('on')
 	}
 
-	if (ctrlRightClick || notPressingE) {
-		return
-	}
+	// prevents OS context menu
+	event.preventDefault()
 
-	if (eventLocation.link || eventLocation.time) {
-		event.preventDefault()
+	// Must be placed after "li?.classList.add('selected')"
+	// eventLocation.selected = getSelectedIds()
 
-		// Must be placed after "li?.classList.add('selected')"
-		// eventLocation.selected = getSelectedIds()
-
-		const contextmenuTransition = transitioner()
+	const contextmenuTransition = transitioner()
 		contextmenuTransition.first(() => domdialog?.show())
 		contextmenuTransition.after(() => domdialog?.classList?.add('shown'))
 		contextmenuTransition.transition(10)
 
-		if (eventLocation.link) {
-			populateDialogWithEditLink(event, domdialog)
-		} else if (eventLocation.time) {
-			populateDialogWithOpenSettings(event, 'time')
-		}
+	if (eventLocation.widgets.link) {
+		populateDialogWithEditLink(event, domdialog)
+	} else if (eventLocation.widgets.time) {
+		populateDialogWithOpenSettings(event, '#openTime')
+	} else if (eventLocation.widgets.weather) {
+		populateDialogWithOpenSettings(event, '#openWeatherGreetings')
+	}
+	
+	if (eventLocation.interface) {
+		
 	}
 
 
 }
 
 function populateDialogWithOpenSettings(event: Event, settings: string) {
-	if (settings === "time") {
-		domdialog.querySelector('#openTime')?.classList.add('on')
-	}
-
+	domdialog.querySelector(settings)?.classList.add('on')
+	
 	positionContextMenu(event)
 }
 
@@ -120,11 +137,15 @@ export function contextMenuEvents(event: Event) {
 	const target = event.target
 
 	if (target instanceof HTMLButtonElement) {
-		if (target.id === 'openTime') {
+		const sectionToScrollTo = sectionMatching[target.id]
+
+		if (sectionToScrollTo) {
 			document.dispatchEvent(new CustomEvent('toggle-settings', {
-				detail: { scrollTo: "#time_options" }
+				detail: { scrollTo: `#${sectionToScrollTo}` }
 			}))
 		}
+
+		closeContextMenu()
 	}
 }
 
@@ -132,7 +153,9 @@ queueMicrotask(() => {
     document.addEventListener('close-edit', closeContextMenu)
     mainInterface?.addEventListener('contextmenu', openContextMenu)
 
-	domdialog.querySelector('#openTime')?.addEventListener('click', contextMenuEvents)
+	for (const [key] of Object.entries(sectionMatching)) {
+		domdialog.querySelector(`#${key}`)?.addEventListener('click', contextMenuEvents)
+	}
     
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
         // const handleLongPress = debounce((event: TouchEvent) => {
