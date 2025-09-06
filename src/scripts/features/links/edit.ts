@@ -264,10 +264,6 @@ function toggleEditInputs(): string[] {
 	const { container, target, selectall } = editStates
 	let inputs: string[] = []
 
-	for (const node of domeditlink.querySelectorAll('label, button, hr')) {
-		node.classList.remove('on')
-	}
-
 	document.querySelector('#edit-delete')?.removeAttribute('disabled')
 	document.querySelector('#edit-pin')?.removeAttribute('disabled')
 

@@ -5,6 +5,7 @@ import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
 
 interface eventLocation {
 	link: boolean
+	time: boolean
 	general: boolean
 }
 
@@ -14,10 +15,12 @@ const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
 let eventLocation: eventLocation
 
 export async function openContextMenu(event: Event) {
+	console.info('openContextMenu()')
     const target = event.target as HTMLElement
 
-    eventLocation: eventLocation = {
+    eventLocation = {
         link: !!target.closest('#linkblocks'),
+		time: !!target.closest('#time'),
         general: false
     }
 
@@ -25,28 +28,44 @@ export async function openContextMenu(event: Event) {
 	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
 	const notPressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
 
+	for (const node of domdialog.querySelectorAll('label, button, hr')) {
+		node.classList.remove('on')
+	}
+
 	if (ctrlRightClick || notPressingE) {
 		return
 	}
 
-    event.preventDefault()
+	if (eventLocation.link || eventLocation.time) {
+		event.preventDefault()
 
-    // Must be placed after "li?.classList.add('selected')"
-    // eventLocation.selected = getSelectedIds()
+		// Must be placed after "li?.classList.add('selected')"
+		// eventLocation.selected = getSelectedIds()
 
-    const contextmenuTransition = transitioner()
-    contextmenuTransition.first(() => domdialog?.show())
-    contextmenuTransition.after(() => domdialog?.classList?.add('shown'))
-    contextmenuTransition.transition(10)
+		const contextmenuTransition = transitioner()
+		contextmenuTransition.first(() => domdialog?.show())
+		contextmenuTransition.after(() => domdialog?.classList?.add('shown'))
+		contextmenuTransition.transition(10)
 
-    if (eventLocation.link) {
-        populateDialogWithEditLink(event, domdialog)
-    }
+		if (eventLocation.link) {
+			populateDialogWithEditLink(event, domdialog)
+		} else if (eventLocation.time) {
+			populateDialogWithOpenSettings(event, 'time')
+		}
+	}
+
+
 }
 
+function populateDialogWithOpenSettings(event: Event, settings: string) {
+	if (settings === "time") {
+		domdialog.querySelector('#openTime')?.classList.add('on')
+	}
+
+	positionContextMenu(event)
+}
 
 export function positionContextMenu(event: Event) {
-	console.log(event)
 	const editRects = domdialog.getBoundingClientRect()
 	const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
 	const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
@@ -95,9 +114,25 @@ export function positionContextMenu(event: Event) {
 	domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 }
 
+
+
+export function contextMenuEvents(event: Event) {
+	const target = event.target
+
+	if (target instanceof HTMLButtonElement) {
+		if (target.id === 'openTime') {
+			document.dispatchEvent(new CustomEvent('toggle-settings', {
+				detail: { scrollTo: "#time_options" }
+			}))
+		}
+	}
+}
+
 queueMicrotask(() => {
     document.addEventListener('close-edit', closeContextMenu)
     mainInterface?.addEventListener('contextmenu', openContextMenu)
+
+	domdialog.querySelector('#openTime')?.addEventListener('click', contextMenuEvents)
     
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
         // const handleLongPress = debounce((event: TouchEvent) => {

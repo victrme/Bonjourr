@@ -10,6 +10,10 @@ dialog#contextmenu {
 	transition: opacity 0.05s;
 }
 
+dialog#contextmenu:focus-visible {
+	outline: none;
+}
+
 dialog#contextmenu.shown {
 	opacity: 1;
 }

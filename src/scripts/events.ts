@@ -27,7 +27,7 @@ function keyboardUserActions(event: KeyboardEvent) {
 			document.dispatchEvent(new Event('close-edit'))
 		} //
 		else if (open.settings && keyup) {
-			document.dispatchEvent(new Event('toggle-settings'))
+			document.dispatchEvent(new CustomEvent('toggle-settings'))
 		} //
 		else if (open.selectall) {
 			document.dispatchEvent(new Event('remove-select-all'))
@@ -39,7 +39,7 @@ function keyboardUserActions(event: KeyboardEvent) {
 			// condition to avoid conflicts with esc key on supporters modal
 			// likely to be improved
 			if (document.documentElement.dataset.supportersModal === undefined) {
-				document.dispatchEvent(new Event('toggle-settings'))
+				document.dispatchEvent(new CustomEvent('toggle-settings'))
 			}
 		}
 
@@ -88,7 +88,7 @@ function clickUserActions(event: MouseEvent) {
 	}
 
 	if (on.showsettings) {
-		document.dispatchEvent(new Event('toggle-settings'))
+		document.dispatchEvent(new CustomEvent('toggle-settings'))
 	}
 
 	if (open.contextmenu && !on.contextmenu) {
@@ -106,7 +106,7 @@ function clickUserActions(event: MouseEvent) {
 	}
 
 	if (open.settings) {
-		document.dispatchEvent(new Event('toggle-settings'))
+		document.dispatchEvent(new CustomEvent('toggle-settings'))
 	} //
 	else if (open.selectall && !on.link) {
 		document.dispatchEvent(new Event('remove-select-all'))
@@ -139,7 +139,7 @@ function closeSettingsOnMoveOpen() {
 		const moverHasOpened = elementmover?.classList.contains('hidden') === false
 
 		if (moverHasOpened) {
-			document.dispatchEvent(new Event('toggle-settings'))
+			document.dispatchEvent(new CustomEvent('toggle-settings'))
 		}
 	}, 20)
 }

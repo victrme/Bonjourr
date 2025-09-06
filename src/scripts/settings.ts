@@ -41,12 +41,14 @@ let settingsInitLocal: Local
 
 export function settingsInit(sync: Sync, local: Local) {
 	const showsettings = document.getElementById('show-settings')
+	const opensettingscontextmenu = document.getElementById('openSettings') 
 
 	settingsInitSync = sync
 	settingsInitLocal = local
 
 	document.body?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
+	opensettingscontextmenu?.addEventListener('pointerdown', settingsInitEvent)
 }
 
 function settingsInitEvent(event: Event) {
@@ -100,13 +102,30 @@ function settingsInitEvent(event: Event) {
 	}, 500)
 }
 
-function settingsToggle() {
+function settingsToggle(event: CustomEvent) {
 	const dombackgroundactions = document.getElementById('background-actions')
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domsettings = document.getElementById('settings')
 	const domedit = document.getElementById('editlink')
 	const isClosed = domsettings?.classList.contains('shown') === false
+
+	const scrollTo = event?.detail?.scrollTo ?? false
+	const target = domsettings?.querySelector(scrollTo)
+
+	// scrolls requested section into view (and avoids doing the animation again if section is already into view)
+	if (target && domsettings) {
+		const targetRect = target.getBoundingClientRect()
+		const panelRect = domsettings.getBoundingClientRect()
+
+		const isVisible =
+			targetRect.top >= panelRect.top &&
+			targetRect.bottom <= panelRect.bottom
+
+		if (!isVisible) {
+			target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		}
+	}
 
 	domsettings?.classList.toggle('shown', isClosed)
 	domedit?.classList.toggle('pushed', isClosed)
