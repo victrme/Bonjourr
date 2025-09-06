@@ -121,7 +121,7 @@
 }
 
 #searchbar_request.shown {
-	max-height: 60px;
+	max-height: 120px;
 }
 
 #quotes_options.shown {

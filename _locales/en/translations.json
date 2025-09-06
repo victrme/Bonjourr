@@ -265,6 +265,8 @@
 	"yahoo": "yahoo",
 	"bing": "bing",
 	"URL request": "URL request",
+	"URL seems wrong": "URL seems wrong",
+	"No %s present in URL": "No %s present in URL",
 	"%s Not found": "%s Not found",
 	"Search query: %s": "Search query: %s",
 	"Placeholder text": "Placeholder text",

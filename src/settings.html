@@ -139,17 +139,13 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_type" class="trn">Background type</label>
-
-		<form id="f_background-provider" class="network-form">
-			<select id="i_type">
-				<option value="images" class="trn">Images</option>
-				<option value="videos" class="trn">Videos</option>
-				<option value="files" class="trn">Local files</option>
-				<!-- <option value="urls" class="trn">URLs</option> -->
-				<option value="color" class="trn">Solid color</option>
-			</select>
-			<small class="network-form-warning"></small>
-		</form>
+		<select id="i_type">
+			<option value="images" class="trn">Images</option>
+			<option value="videos" class="trn">Videos</option>
+			<option value="files" class="trn">Local files</option>
+			<!-- <option value="urls" class="trn">URLs</option> -->
+			<option value="color" class="trn">Solid color</option>
+		</select>
 	</div>
 
 	<div id="background-provider-option" class="as as_provider dropdown">
@@ -1306,13 +1302,22 @@
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
-					<input
-						id="i_sbrequest"
-						name="sbrequest"
-						type="text"
-						placeholder="Search query: %s"
-						maxlength="512"
-					/>
+
+					<form id="f_sbrequest" class="network-form">
+						<div>
+							<input
+								id="i_sbrequest"
+								name="sbrequest"
+								type="text"
+								placeholder="Search query: %s"
+								maxlength="512"
+							/>
+							<button type="submit">
+								<span></span>
+							</button>
+						</div>
+						<small class="network-form-warning"></small>
+					</form>
 				</div>
 			</div>
 
