@@ -140,18 +140,6 @@ export function toIsoLanguageCode(data: Import): Import {
 	return data
 }
 
-export function clockDateFormat(data: Import): Import {
-	const old = data as Partial<OldSync>
-
-	if (old.usdate) {
-		data.dateformat = 'us'
-	} else {
-		data.dateformat = 'auto'
-	}
-
-	return data
-}
-
 export function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
 	if (target.worldclocks && current.worldclocks) {
 		current.worldclocks = target.worldclocks
@@ -302,13 +290,6 @@ export function improvedWeather(data: Import): Import {
 
 		data.weather.geolocation = 'approximate'
 		data.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
-
-		//@ts-expect-error -> old types
-		data.weather.location = undefined
-		//@ts-expect-error -> old types
-		data.weather.lastState = undefined
-		//@ts-expect-error -> old types
-		data.weather.lastCall = undefined
 	}
 
 	return data

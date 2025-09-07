@@ -38,6 +38,8 @@ export function filterData(from: 'update' | 'import', current: Sync, target?: Pa
 			newcurrent = removeLinkgroupDuplicates(newcurrent)
 			newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
 			newcurrent = toggleMoveWidgets(newcurrent, newtarget)
+		} else {
+			newcurrent = newtarget as Sync
 		}
 	}
 
@@ -64,6 +66,12 @@ export function filterData(from: 'update' | 'import', current: Sync, target?: Pa
 	delete newcurrent.background_bright
 	delete newcurrent.background_type
 	delete newcurrent.usdate
+	//@ts-ignore -> Property '...' does not exist on type '...'
+	delete newcurrent?.weather?.location
+	//@ts-ignore -> Property '...' does not exist on type '...'
+	delete newcurrent?.weather?.lastState
+	//@ts-ignore -> Property '...' does not exist on type '...'
+	delete newcurrent?.weather?.lastCall
 
 	return newcurrent
 }
