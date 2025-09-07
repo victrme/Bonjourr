@@ -19,6 +19,8 @@ aside h2 {
 	grid-template-columns: 1fr min-content;
 	margin: 32px 26px 0px 26px;
 	color: var(--color-light-text);
+	/* offset for when section is automatically getting scrolled to */
+	scroll-margin-top: 20px; 
 }
 
 .settings-title .tooltiptext {

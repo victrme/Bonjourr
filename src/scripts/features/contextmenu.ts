@@ -7,16 +7,25 @@ interface eventLocation {
     widgets: {
         link: boolean
         time: boolean
-		weather: boolean
-		quotes_container: boolean
+		main: boolean
+		quotes: boolean
     }
     interface: boolean
 }
 
-const sectionMatching: Record<string, string> = {
-	time: "time_options",
-	main: "main_options",
-	quotes_container: "quotes_options"
+const sectionMatching = {
+	time: {
+		section: "#time",
+		scrollto: "time_title"
+	},
+	main: {
+		section: "#main",
+		scrollto: "main_title"
+	},
+	quotes: {
+		section: "#quotes_container",
+		scrollto: "quotes_title"
+	}
 }
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
@@ -25,8 +34,6 @@ const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
 let eventLocation: eventLocation
 
 export async function openContextMenu(event: Event) {
-	console.info('openContextMenu()')
-
 	// imperfect selected text detection to allow for OS context menu
 	const selection = window.getSelection()
     if (selection && !selection.isCollapsed) {
@@ -38,9 +45,9 @@ export async function openContextMenu(event: Event) {
     eventLocation = {
 		widgets: {
 			link: !!target.closest('#linkblocks'),
-			time: !!target.closest('#time'),
-			weather: !!target.closest('#main'),
-			quotes_container: !!target.closest('#quotes_container')
+			time: !!target.closest(sectionMatching.time.section),
+			main: !!target.closest(sectionMatching.main.section),
+			quotes: !!target.closest(sectionMatching.quotes.section)
 		},
         interface: target.matches("main#interface") 
     }
@@ -50,7 +57,7 @@ export async function openContextMenu(event: Event) {
 	const notPressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
 
 	const clickedOnWidgets = Object.values(eventLocation.widgets).some(v => v)
-	const menuWillOpen = !(ctrlRightClick || notPressingE) || clickedOnWidgets || eventLocation.interface
+	const menuWillOpen = !(ctrlRightClick || notPressingE) && clickedOnWidgets || eventLocation.interface
 
 	if (!menuWillOpen) return
 
@@ -73,26 +80,23 @@ export async function openContextMenu(event: Event) {
 	if (eventLocation.widgets.link) {
 		populateDialogWithEditLink(event, domdialog)
 	} else if (clickedOnWidgets) {
-		let actionToShow: string | undefined
-
-		for (const [key, value] of Object.entries(sectionMatching)) {
-			actionToShow = target.closest(`#${key}`) ? value : undefined
-			console.log("bjr")
-			// gets out of loop once it's found the corresponding widget that's been clicked on
-			if (actionToShow) break
+		// for each widget that's been clicked on
+		for (const [key, value] of Object.entries(eventLocation.widgets)) {
+			if (value) {
+				// shows its corresponding action button
+				populateDialogWithAction(sectionMatching[key].scrollto)
+			}
 		}
 
-		console.log(actionToShow)
-		
-		if (actionToShow) populateDialogWithActions(event, actionToShow)
-	} 
-	
+		positionContextMenu(event)
+	} else if (eventLocation.interface) {
+		populateDialogWithAction("background_title")
+		positionContextMenu(event)
+	}
 }
 
-function populateDialogWithActions(event: Event, actionToShow: string) {
-	domdialog.querySelector<HTMLButtonElement>(`[data-scrollto="${actionToShow}"]`)?.classList.add('on')
-
-	positionContextMenu(event)
+function populateDialogWithAction(actionToShow: string) {
+	domdialog.querySelector<HTMLButtonElement>(`[data-scroll-to="${actionToShow}"]`)?.classList.add('on')
 }
 
 export function positionContextMenu(event: Event) {
@@ -144,25 +148,9 @@ export function positionContextMenu(event: Event) {
 	domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 }
 
-export function contextMenuEvents(event: Event) {
-	const target = event.target
-
-	if (target instanceof HTMLButtonElement) {
-		const sectionToScrollTo = sectionMatching[target.id]
-
-		if (sectionToScrollTo) {
-			document.dispatchEvent(new CustomEvent('toggle-settings', {
-				detail: { scrollTo: `#${sectionToScrollTo}` }
-			}))
-		}
-
-		closeContextMenu()
-	}
-}
-
 export function openSettingsButtonEvent(event: Event) {
 	const target = event.target as HTMLButtonElement
-	const sectionToScrollTo = target.getAttribute('data-scrollto')
+	const sectionToScrollTo = target.getAttribute('data-scroll-to')
 	
 	if (sectionToScrollTo) {
 		document.dispatchEvent(new CustomEvent('toggle-settings', {
