@@ -35,6 +35,7 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
 		data = filter.linkListToFlatObjects(data)
 		data = filter.hideArrayToObject(data)
 		data = filter.improvedWeather(data)
+		data = filter.clockDateFormat(data)
 	}
 
 	return data
