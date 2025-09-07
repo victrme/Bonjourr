@@ -198,10 +198,18 @@
 				<button type="submit" class="trn" id="edit-synced">Synced links cannot be modified</button>
 			</form>
 
-			<div id="openSettings">
-				<button id="openTime">Edit time settings</button>
-				<button id="openWeatherGreetings">Edit weather & greetings settings</button>
+			<div id="contextActions">
+				<button data-action="openTheseSettings" data-scrollto="time_options">
+					Edit time settings
+				</button>
 
+				<button data-action="openTheseSettings" data-scrollto="main_options">
+					Edit weather & greetings settings
+				</button>
+
+				<button data-action="openTheseSettings" data-scrollto="quotes_options">
+					Edit quotes settings
+				</button>
 			</div>
 		</dialog>
 

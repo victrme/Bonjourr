@@ -8,13 +8,15 @@ interface eventLocation {
         link: boolean
         time: boolean
 		weather: boolean
+		quotes_container: boolean
     }
     interface: boolean
 }
 
 const sectionMatching: Record<string, string> = {
-	openTime: "time_options",
-	openWeatherGreetings: "main_options",
+	time: "time_options",
+	main: "main_options",
+	quotes_container: "quotes_options"
 }
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
@@ -24,6 +26,13 @@ let eventLocation: eventLocation
 
 export async function openContextMenu(event: Event) {
 	console.info('openContextMenu()')
+
+	// imperfect selected text detection to allow for OS context menu
+	const selection = window.getSelection()
+    if (selection && !selection.isCollapsed) {
+        return
+    }
+
     const target = event.target as HTMLElement
 
     eventLocation = {
@@ -31,6 +40,7 @@ export async function openContextMenu(event: Event) {
 			link: !!target.closest('#linkblocks'),
 			time: !!target.closest('#time'),
 			weather: !!target.closest('#main'),
+			quotes_container: !!target.closest('#quotes_container')
 		},
         interface: target.matches("main#interface") 
     }
@@ -39,9 +49,8 @@ export async function openContextMenu(event: Event) {
 	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
 	const notPressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
 
-	const menuWillOpen = !(ctrlRightClick || notPressingE) ||
-		Object.values(eventLocation.widgets).some(v => v) || // checks if any widget is true
-		eventLocation.interface
+	const clickedOnWidgets = Object.values(eventLocation.widgets).some(v => v)
+	const menuWillOpen = !(ctrlRightClick || notPressingE) || clickedOnWidgets || eventLocation.interface
 
 	if (!menuWillOpen) return
 
@@ -63,22 +72,26 @@ export async function openContextMenu(event: Event) {
 
 	if (eventLocation.widgets.link) {
 		populateDialogWithEditLink(event, domdialog)
-	} else if (eventLocation.widgets.time) {
-		populateDialogWithOpenSettings(event, '#openTime')
-	} else if (eventLocation.widgets.weather) {
-		populateDialogWithOpenSettings(event, '#openWeatherGreetings')
-	}
-	
-	if (eventLocation.interface) {
+	} else if (clickedOnWidgets) {
+		let actionToShow: string | undefined
+
+		for (const [key, value] of Object.entries(sectionMatching)) {
+			actionToShow = target.closest(`#${key}`) ? value : undefined
+			console.log("bjr")
+			// gets out of loop once it's found the corresponding widget that's been clicked on
+			if (actionToShow) break
+		}
+
+		console.log(actionToShow)
 		
-	}
-
-
+		if (actionToShow) populateDialogWithActions(event, actionToShow)
+	} 
+	
 }
 
-function populateDialogWithOpenSettings(event: Event, settings: string) {
-	domdialog.querySelector(settings)?.classList.add('on')
-	
+function populateDialogWithActions(event: Event, actionToShow: string) {
+	domdialog.querySelector<HTMLButtonElement>(`[data-scrollto="${actionToShow}"]`)?.classList.add('on')
+
 	positionContextMenu(event)
 }
 
@@ -131,8 +144,6 @@ export function positionContextMenu(event: Event) {
 	domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 }
 
-
-
 export function contextMenuEvents(event: Event) {
 	const target = event.target
 
@@ -149,13 +160,31 @@ export function contextMenuEvents(event: Event) {
 	}
 }
 
+export function openSettingsButtonEvent(event: Event) {
+	const target = event.target as HTMLButtonElement
+	const sectionToScrollTo = target.getAttribute('data-scrollto')
+	
+	if (sectionToScrollTo) {
+		document.dispatchEvent(new CustomEvent('toggle-settings', {
+			detail: { scrollTo: `#${sectionToScrollTo}` }
+		}))
+		
+		closeContextMenu()
+	} else {
+		console.error(`Section "${sectionToScrollTo}" doesn't match anything`)
+	}
+
+}
+
 queueMicrotask(() => {
     document.addEventListener('close-edit', closeContextMenu)
     mainInterface?.addEventListener('contextmenu', openContextMenu)
 
-	for (const [key] of Object.entries(sectionMatching)) {
-		domdialog.querySelector(`#${key}`)?.addEventListener('click', contextMenuEvents)
-	}
+	const openSettingsButtons = domdialog.querySelectorAll<HTMLButtonElement>(`[data-action="openTheseSettings"]`)
+
+	openSettingsButtons?.forEach(btn => {
+		btn?.addEventListener('click', openSettingsButtonEvent)
+	})
     
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
         // const handleLongPress = debounce((event: TouchEvent) => {

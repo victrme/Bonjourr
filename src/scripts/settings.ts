@@ -41,17 +41,22 @@ let settingsInitLocal: Local
 
 export function settingsInit(sync: Sync, local: Local) {
 	const showsettings = document.getElementById('show-settings')
-	const opensettingscontextmenu = document.getElementById('openSettings') 
 
 	settingsInitSync = sync
 	settingsInitLocal = local
 
 	document.body?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
-	opensettingscontextmenu?.addEventListener('pointerdown', settingsInitEvent)
+
+	const openSettingsButtonsFromContextMenu = document.body.querySelectorAll<HTMLButtonElement>(`[data-action="openTheseSettings"]`)
+
+	openSettingsButtonsFromContextMenu.forEach(btn => {
+		btn?.addEventListener('pointerdown', settingsInitEvent)
+	})
 }
 
 function settingsInitEvent(event: Event) {
+	console.info('settingsInitEvent()')
 	const showsettings = document.getElementById('show-settings')
 	const settings = document.getElementById('settings')
 
@@ -74,7 +79,11 @@ function settingsInitEvent(event: Event) {
 	settings?.removeAttribute('style')
 	settings?.classList.remove('hidden')
 	document.dispatchEvent(new Event('settings'))
-	document.addEventListener('toggle-settings', settingsToggle)
+
+	document.addEventListener('toggle-settings', ((e: CustomEvent) => {
+		settingsToggle(e)
+	}) as EventListener)
+
 	document.body?.removeEventListener('keydown', settingsInitEvent)
 	showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 
@@ -115,7 +124,7 @@ function settingsToggle(event: CustomEvent) {
 
 	// scrolls requested section into view 
 	if (target && domsettings) {
-		// starts scrolling only once the settings have been rendered (otherwise starts animation again even if unnecessary)
+		// starts scrolling only once the settings have been rendered (otherwise starts full animation again even if unnecessary)
 		requestAnimationFrame(() => {
 			setTimeout(() => {
 				target.scrollIntoView({ behavior: 'smooth', block: 'start' })

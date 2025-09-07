@@ -49,7 +49,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
-
+	
 	const container: EditStates['container'] = {
 		mini: path.some((element) => element?.id?.includes('link-mini')),
 		group: classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
