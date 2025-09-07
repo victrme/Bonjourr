@@ -5,6 +5,12 @@ import type { SemVer } from '../utils/semver.ts'
 export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<Sync> {
 	const { major, minor } = version
 
+	if (major <= 21) {
+		if (minor < 3) {
+			data = filter.fixNullBrightness(data)
+		}
+	}
+
 	if (major < 21) {
 		data = filter.newBackgroundsField(data)
 		data = filter.manualTimezonesToIntl(data)
@@ -12,25 +18,16 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
 
 	if (major < 20) {
 		data = filter.analogClockOptions(data)
-
-		if (minor < 1) {
-			data = filter.validateLinkGroups(data)
-		}
-
-		if (minor < 4) {
-			data = filter.addSupporters(data)
-			data = filter.toIsoLanguageCode(data)
-		}
+		data = filter.validateLinkGroups(data)
+		data = filter.addSupporters(data)
+		data = filter.toIsoLanguageCode(data)
 	}
 
 	if (major < 19) {
 		data = filter.newFontSystem(data)
 		data = filter.newReviewData(data)
 		data = filter.quotesJsonToCsv(data)
-
-		if (minor < 2) {
-			data = filter.linksDataMigration(data)
-		}
+		data = filter.linksDataMigration(data)
 	}
 
 	if (major < 18) {

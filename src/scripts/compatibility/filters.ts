@@ -10,6 +10,14 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function fixNullBrightness(data: Import): Import {
+	if (data.backgrounds?.bright === null) {
+		data.backgrounds.bright = SYNC_DEFAULT.backgrounds.bright
+	}
+
+	return data
+}
+
 export function addSupporters(data: Import): Import {
 	if (data.supporters === undefined) {
 		data.supporters = {
