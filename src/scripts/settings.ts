@@ -113,18 +113,14 @@ function settingsToggle(event: CustomEvent) {
 	const scrollTo = event?.detail?.scrollTo ?? false
 	const target = domsettings?.querySelector(scrollTo)
 
-	// scrolls requested section into view (and avoids doing the animation again if section is already into view)
+	// scrolls requested section into view 
 	if (target && domsettings) {
-		const targetRect = target.getBoundingClientRect()
-		const panelRect = domsettings.getBoundingClientRect()
-
-		const isVisible =
-			targetRect.top >= panelRect.top &&
-			targetRect.bottom <= panelRect.bottom
-
-		if (!isVisible) {
-			target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-		}
+		// starts scrolling only once the settings have been rendered (otherwise starts animation again even if unnecessary)
+		requestAnimationFrame(() => {
+			setTimeout(() => {
+				target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+			}, 0)
+		})
 	}
 
 	// prevents closing if a scrollTo has been requested
