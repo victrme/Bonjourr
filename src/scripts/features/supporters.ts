@@ -93,7 +93,8 @@ export function initSupportersSettingsNotif(sync: Sync) {
 
 	translateNotif()
 
-	onclickdown(settingsNotifContent, () => {
+	onclickdown(settingsNotifContent, (e) => {
+		if (e instanceof PointerEvent && e.button !== 0) return // only left click
 		toggleSupportersModal(true)
 		loadModalData()
 	})
@@ -178,7 +179,7 @@ function initSupportersModal() {
 }
 
 function toggleSupportersModal(toggle: boolean) {
-	document.dispatchEvent(new Event('toggle-settings'))
+	document.dispatchEvent(new CustomEvent('toggle-settings'))
 
 	if (toggle) {
 		document.documentElement.dataset.supportersModal = ''

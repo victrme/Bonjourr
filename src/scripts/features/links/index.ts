@@ -1,6 +1,6 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
-import { openEditDialog } from './edit.ts'
+import { openContextMenu } from '../contextmenu.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
@@ -194,7 +194,8 @@ export function initblocks(data: Sync, isInit?: true): true {
 				: createFolder(link, linksInFolders, data.linkstyle)
 
 			fragment.appendChild(li)
-			li.addEventListener('keyup', openEditDialog)
+
+			li.addEventListener('keyup', openContextMenu)
 
 			if (!group.synced) {
 				li.addEventListener('click', selectAll)
@@ -248,6 +249,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 	li.id = link._id
 	span.textContent = createTitle(link)
 	li.addEventListener('mouseup', folderClick)
+	li.addEventListener('keydown', folderClick)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]

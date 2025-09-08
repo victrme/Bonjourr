@@ -1,9 +1,27 @@
-globalThis.window.addEventListener('load', function () {
-	// document.body.addEventListener('keydown', toggleHelpMode)
+let hasExportedSettings = false
+let helpModeShown = false
 
+globalThis.window.addEventListener('load', function () {
+	// if Bonjourr hasn't loaded after 5s, shows prompt
 	globalThis.setTimeout(() => {
 		displayHelpModePrompt()
 	}, 5000)
+
+	document.addEventListener('keydown', function (event) {
+		// help mode ctrl + shift + ? hotkey
+		const { key, shiftKey, ctrlKey, metaKey } = event
+		const questionMarkKey = key === ',' || key === '/' || key === '?'
+		const helpHotkey = (ctrlKey || metaKey) && shiftKey && questionMarkKey
+
+		if (helpHotkey) {
+			toggleHelpMode()
+		}
+
+		// when help mode is open, escape to quit
+		if (key === 'Escape' && helpModeShown) {
+			toggleHelpMode(false)
+		}
+	})
 })
 
 function displayHelpModePrompt() {
@@ -16,34 +34,77 @@ function displayHelpModePrompt() {
 	const container = fragment.querySelector('#help-mode-prompt')
 	document.documentElement.prepend(container)
 
-	let helpModeBtn = document.getElementById('open-help-mode')
-	helpModeBtn.addEventListener('click', toggleHelpMode)
+	document.getElementById('open-help-mode')?.addEventListener('click', () => toggleHelpMode(true))
+
+	document.querySelector('.export')?.addEventListener("click", downloadSettings)
+}
+
+function downloadSettings() {
+	function exportToJsonFile(json) {
+		const blob = new Blob([json], { type: "application/json" });
+		const url = URL.createObjectURL(blob);
+
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = "bonjourr-settings.json";
+		a.click();
+
+		URL.revokeObjectURL(url); // clean up
+
+		if (document.querySelector('.reset')) {
+			document.querySelector('.reset').disabled = false
+		}
+		hasExportedSettings = true
+	}
+
+	if (typeof chrome !== 'undefined' && chrome?.storage) {
+		chrome.storage.sync.get(null, (items) => {
+			exportToJsonFile(JSON.stringify(items, null, 2))
+		})
+	} else if (Object.entries(localStorage).length !== 0) {
+		for (const [key, val] of Object.entries(localStorage)) {
+			if (key === 'bonjourr') {
+				exportToJsonFile(val)
+			}
+		}
+	}
+
+}
+
+// when reset button is clicked once, asks for confirmation
+function resetOnce() {
+	let resetBtn = document.querySelector('#help-mode .reset')
+
+	resetBtn.title = "You're about to reset Bonjourr to its default configuration."
+	resetBtn.classList.add('danger')
+	resetBtn.querySelector('span').textContent = "Are you sure?"
+
+	resetBtn.addEventListener("click", resetApply)
+}
+
+function resetApply() {
+	alert('goodbye')
 }
 
 /**
- * @param {KeyboardEvent} event
+ * @param {boolean} on 
  * @returns {void}
  */
-function toggleHelpMode(event) {
-	// const { key, shiftKey, ctrlKey } = event
-	// const questionMarkKey = key === ',' || key === '/' || key === '?'
-	// const ctrlShiftQuestion = ctrlKey && shiftKey && questionMarkKey
-
-	// if (!ctrlShiftQuestion) {
-	// 	return
-	// }
-
+function toggleHelpMode(on = !helpModeShown) {
+	// first time 
 	if (!document.getElementById('help-mode')) {
 		createHelpModeDisplay()
 	}
 
-	if (document.body.style.display === 'none') {
-		document.querySelector('#help-mode')?.setAttribute('style', 'display: none')
-		document.querySelector('body')?.removeAttribute('style')
+	if (on) {
+		document.querySelector('#help-mode')?.classList.add("shown")
+		document.querySelector('body')?.setAttribute('style', 'position: fixed') // not using display: none, otherwise it disables events
 	} else {
-		document.querySelector('#help-mode')?.removeAttribute('style')
-		document.querySelector('body')?.setAttribute('style', 'display: none')
+		document.querySelector('#help-mode')?.classList.remove("shown")
+		document.querySelector('body')?.removeAttribute('style')
 	}
+
+	helpModeShown = !helpModeShown
 }
 
 /**
@@ -54,26 +115,34 @@ function createHelpModeDisplay() {
 	const fragment = template.content.cloneNode(true)
 	const container = fragment.querySelector('#help-mode')
 	const startTimer = globalThis.performance.now()
+	
 	document.documentElement.prepend(container)
+	
+	const resetBtn = this.document.querySelector('.reset')
+	this.document.querySelector('.export').addEventListener("click", downloadSettings)
+	resetBtn.addEventListener("click", resetOnce)
+	
+	if (hasExportedSettings) {
+		resetBtn.disabled = false
+	}
 
-	function setStatus(statusID, resp) {
+	function setServerStatus(statusID, resp) {
 		const endTimer = Math.round(globalThis.performance.now() - startTimer)
 		const text = resp.ok ? ` · ${endTimer}ms` : resp.status
 		container.querySelector(`#${statusID}`).textContent = text
 		container.querySelector(`li:has(#${statusID})`).classList.add(resp.ok ? 'statusUp' : 'statusDown')
 	}
 
-	// Statuses
-
+	// Server statuses
 	fetch('https://bonjourr.fr/').then((resp) => {
-		setStatus('help-status-website', resp)
+		setServerStatus('help-status-website', resp)
 	})
 
 	fetch('https://weather.bonjourr.fr/').then((resp) => {
-		setStatus('help-status-weather', resp)
+		setServerStatus('help-status-weather', resp)
 	})
 	fetch('https://services.bonjourr.fr').then((resp) => {
-		setStatus('help-status-services', resp)
+		setServerStatus('help-status-services', resp)
 	})
 
 	// LocalStorage
@@ -98,7 +167,7 @@ function createHelpModeDisplay() {
 	}
 
 	// Chrome storage
-	if (chrome?.storage) {
+	if (typeof chrome !== 'undefined' && chrome?.storage) {
 		chrome.storage.sync.get().then((data) => {
 			container.querySelector('#help-storage-sync').textContent = JSON.stringify(data, undefined, 2)
 			container.querySelector('#syncstorage-container')?.classList.remove('hidden')

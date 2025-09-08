@@ -27,7 +27,7 @@
 	</head>
 
 	<body class="init loading">
-		<dialog id="editlink">
+		<dialog id="contextmenu">
 			<form id="editlink-form">
 				<label id="edit-title" autofocus>
 					<span class="trn">Title</span>
@@ -222,6 +222,24 @@
 				</button>
 				<button type="submit" class="trn" id="edit-synced">Synced links cannot be modified</button>
 			</form>
+
+			<div id="contextActions">
+				<button data-action="openTheseSettings" data-scroll-to="time_title">
+					Edit time settings
+				</button>
+
+				<button data-action="openTheseSettings" data-scroll-to="main_title">
+					Edit weather & greetings settings
+				</button>
+
+				<button data-action="openTheseSettings" data-scroll-to="quotes_title">
+					Edit quotes settings
+				</button>
+
+				<button data-action="openTheseSettings" data-scroll-to="background_title">
+					Edit background settings
+				</button>
+			</div>
 		</dialog>
 
 		<dialog id="element-mover" class="hidden">
@@ -686,6 +704,64 @@
 			</template>
 
 			<!-- help-mode -->
+			<style>
+				#help-mode-prompt {
+					position: fixed;
+					top: 40vh;
+					left: 0;
+					right: 0;
+					color: #eeeeee;
+					font-family: system-ui;
+					font-size: 1em;
+					text-align: center;
+					z-index: 1;
+				}
+
+				#help-mode-prompt h1 {
+					margin-bottom: 0;
+				}
+
+				#help-mode-prompt p {
+					margin-top: 0.5em;
+				}
+
+				#help-buttons {
+					margin-top: 1.5em;
+					display: flex;
+					justify-content: center;
+					gap: 1em;
+				}
+
+				.help-btn {
+					cursor: pointer;
+					height: 31px;
+					padding: 0 1em;
+					color: var(--color-blue);
+					border: none;
+					border-radius: 1em;
+					white-space: nowrap;
+					background-color: rgba(var(--blue),.25);
+					display: inline-flex;
+					justify-content: center;
+					align-items: center;
+					gap: 5px;
+				}
+
+				.help-btn:hover {
+					background-color: rgba(var(--blue), .35);
+				}
+
+				.help-btn[disabled] {
+					color: #777777;
+					background-color: #282828;
+					cursor: not-allowed;
+				}
+
+				.help-btn.danger:hover {
+					color: var(--color-red);
+					background-color: rgba(var(--red), 0.25);
+				}
+			</style>
 		</div>
 	</body>
 </html>

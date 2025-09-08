@@ -47,9 +47,16 @@ export function settingsInit(sync: Sync, local: Local) {
 
 	document.body?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
+
+	const openSettingsButtonsFromContextMenu = document.body.querySelectorAll<HTMLButtonElement>(`[data-action="openTheseSettings"]`)
+
+	openSettingsButtonsFromContextMenu.forEach(btn => {
+		btn?.addEventListener('pointerdown', settingsInitEvent)
+	})
 }
 
 function settingsInitEvent(event: Event) {
+	console.info('settingsInitEvent()')
 	const showsettings = document.getElementById('show-settings')
 	const settings = document.getElementById('settings')
 
@@ -72,7 +79,11 @@ function settingsInitEvent(event: Event) {
 	settings?.removeAttribute('style')
 	settings?.classList.remove('hidden')
 	document.dispatchEvent(new Event('settings'))
-	document.addEventListener('toggle-settings', settingsToggle)
+
+	document.addEventListener('toggle-settings', ((e: CustomEvent) => {
+		settingsToggle(e)
+	}) as EventListener)
+
 	document.body?.removeEventListener('keydown', settingsInitEvent)
 	showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 
@@ -100,13 +111,29 @@ function settingsInitEvent(event: Event) {
 	}, 500)
 }
 
-function settingsToggle() {
+function settingsToggle(event: CustomEvent) {
 	const dombackgroundactions = document.getElementById('background-actions')
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domsettings = document.getElementById('settings')
 	const domedit = document.getElementById('editlink')
 	const isClosed = domsettings?.classList.contains('shown') === false
+
+	const scrollTo = event?.detail?.scrollTo ?? false
+	const target = domsettings?.querySelector(scrollTo)
+
+	// scrolls requested section into view 
+	if (target && domsettings) {
+		// starts scrolling only once the settings have been rendered (otherwise starts full animation again even if unnecessary)
+		requestAnimationFrame(() => {
+			setTimeout(() => {
+				target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+			}, 0)
+		})
+	}
+
+	// prevents closing if a scrollTo has been requested
+	if (!isClosed && scrollTo) return
 
 	domsettings?.classList.toggle('shown', isClosed)
 	domedit?.classList.toggle('pushed', isClosed)
