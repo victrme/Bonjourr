@@ -36,18 +36,9 @@ export function traduction(scope: Element | null, lang = 'en') {
 		const tags = dom.querySelectorAll('.trn')
 		let text: string
 
-
 		for (const tag of tags) {
-			
 			text = tag.textContent?.trim() ?? ''
 			tag.textContent = (trns[text] as string) ?? text
-
-			if (text === "Check out our") {
-				console.log(trns)
-				console.log((trns[text] as string))
-				// tag.textContent = "aaa"
-			}
-			
 		}
 	}
 
