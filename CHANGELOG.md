@@ -1,3 +1,10 @@
+## 21.2.1
+
+- Weather is not triggered when choosing manual location
+- With world clocks, first clock is the main timezone (#678)
+- Explicit search bar error when typing bad custom provider
+- Fix null brightness in some configs breaking backgrounds
+
 ## 21.2.0
 
 - 	Improvements:
