@@ -39,10 +39,8 @@ let editStates: EditStates
 // Display
 //
 
-export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDialogElement) {
+export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDialogElement, newLinkFromGlobal?: boolean) {
 	domeditlink = domdialog
-
-	console.info("populateDialogWithEditLink()")
 	
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
@@ -52,7 +50,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	
 	const container: EditStates['container'] = {
 		mini: path.some((element) => element?.id?.includes('link-mini')),
-		group: classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
+		group: newLinkFromGlobal ?? classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
 		folder: classNames.some((cl) => cl.includes('link-group') && cl.includes('in-folder')),
 	}
 
@@ -85,7 +83,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	const folderTitle = container.folder && target.title
 	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
-
+	
 	if (noInputs || folderTitle || noSelection || dragging) {
 		closeContextMenu()
 		return
@@ -93,6 +91,11 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 
 	document.dispatchEvent(new Event('stop-select-all'))
 	event.preventDefault()
+
+	// removes buttons from the global context menu
+	domeditlink.querySelectorAll('#contextActions button').forEach(function(contextButton) {
+		contextButton.classList.remove('on')
+	})
 
 	const data = await storage.sync.get()
 
@@ -140,7 +143,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	editStates.selected = getSelectedIds()
 
 	// Once dialog is populated, calculates its position
-	positionContextMenu(event)
+	if (!newLinkFromGlobal) positionContextMenu(event)
 	domtitle?.focus()
 }
 
@@ -430,6 +433,7 @@ function submitChanges(event: SubmitEvent) {
 
 	event.preventDefault()
 	// setTimeout(closeContextMenu)
+	setTimeout(closeContextMenu)
 }
 
 function applyLinkChanges(origin: 'inputs' | 'button', ) {

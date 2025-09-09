@@ -450,10 +450,15 @@ export async function linksUpdate(update: LinksUpdate) {
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 	const type = args.type
 	let newlinks: Link[] = []
-
+	
 	if (type === 'link') {
 		for (const link of args.links) {
-			newlinks.push(validateLink(link.title, link.url, link.group))
+			newlinks.push(validateLink(
+				link.title,
+				link.url,
+				// if no group is specified, adds to the selected one
+				link.group || data.linkgroups.selected
+			))
 		}
 	}
 

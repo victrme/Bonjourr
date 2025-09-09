@@ -84,19 +84,26 @@ export async function openContextMenu(event: Event) {
 		for (const [key, value] of Object.entries(eventLocation.widgets)) {
 			if (value) {
 				// shows its corresponding action button
-				populateDialogWithAction(sectionMatching[key].scrollto)
+				populateDialogWithAction("openTheseSettings", sectionMatching[key].scrollto)
 			}
 		}
 
 		positionContextMenu(event)
 	} else if (eventLocation.interface) {
-		populateDialogWithAction("background_title")
+		populateDialogWithAction("openTheseSettings", "background_title")
+		populateDialogWithAction("add-new-link")
 		positionContextMenu(event)
 	}
 }
 
-function populateDialogWithAction(actionToShow: string) {
-	domdialog.querySelector<HTMLButtonElement>(`[data-scroll-to="${actionToShow}"]`)?.classList.add('on')
+function populateDialogWithAction(actionType: string, attribute?: string) {
+	let selector = `[data-action="${actionType}"]`
+
+	if (attribute) {
+		selector += `[data-attribute="${attribute}"]`
+	}
+
+	domdialog.querySelector<HTMLButtonElement>(selector)?.classList.add("on")
 }
 
 export function positionContextMenu(event: Event) {
@@ -119,8 +126,8 @@ export function positionContextMenu(event: Event) {
 	} //
 	else if (withPointer) {
 		// gets coordinates differently from touchstart or contextmenu
-		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 20
-		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 20
+		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 10
+		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 10
 	} //
 	else if (withKeyboard) {
 		const targetEl = event.target as HTMLElement
@@ -130,8 +137,8 @@ export function positionContextMenu(event: Event) {
 		y = rect.bottom + 4
 	}
 
-	const w = editRects.width + 30
-	const h = editRects.height + 30
+	const w = editRects.width + 20
+	const h = editRects.height + 20
 
 	if (x + w > innerWidth) {
 		x -= x + w - innerWidth
@@ -150,7 +157,7 @@ export function positionContextMenu(event: Event) {
 
 export function openSettingsButtonEvent(event: Event) {
 	const target = event.target as HTMLButtonElement
-	const sectionToScrollTo = target.getAttribute('data-scroll-to')
+	const sectionToScrollTo = target.getAttribute('data-attribute')
 	
 	if (sectionToScrollTo) {
 		document.dispatchEvent(new CustomEvent('toggle-settings', {
@@ -173,6 +180,12 @@ queueMicrotask(() => {
 	openSettingsButtons?.forEach(btn => {
 		btn?.addEventListener('click', openSettingsButtonEvent)
 	})
+
+	const addNewLinkButton = domdialog.querySelector<HTMLButtonElement>(`[data-action="add-new-link"]`)
+	addNewLinkButton?.addEventListener('click', (e) =>
+		populateDialogWithEditLink(e, domdialog, true)
+	)
+
     
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
         // const handleLongPress = debounce((event: TouchEvent) => {
