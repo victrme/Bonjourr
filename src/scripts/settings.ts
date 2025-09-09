@@ -695,8 +695,9 @@ function initOptionsEvents() {
 		searchbar(undefined, { width: this.value })
 	})
 
-	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(undefined, { request: this })
+	paramId('f_sbrequest').addEventListener('submit', function (this, event: SubmitEvent) {
+		searchbar(undefined, { request: true })
+		event.preventDefault()
 	})
 
 	onclickdown(paramId('i_sbnewtab'), (_, target) => {

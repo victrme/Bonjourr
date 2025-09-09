@@ -10,6 +10,14 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function fixNullBrightness(data: Import): Import {
+	if (data.backgrounds?.bright === null) {
+		data.backgrounds.bright = SYNC_DEFAULT.backgrounds.bright
+	}
+
+	return data
+}
+
 export function addSupporters(data: Import): Import {
 	if (data.supporters === undefined) {
 		data.supporters = {
@@ -294,13 +302,6 @@ export function improvedWeather(data: Import): Import {
 
 		data.weather.geolocation = 'approximate'
 		data.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
-
-		//@ts-expect-error -> old types
-		data.weather.location = undefined
-		//@ts-expect-error -> old types
-		data.weather.lastState = undefined
-		//@ts-expect-error -> old types
-		data.weather.lastCall = undefined
 	}
 
 	return data

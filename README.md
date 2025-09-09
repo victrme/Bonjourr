@@ -218,6 +218,6 @@ version="0.0.0"
 for folder in ./release/*/; do
   [ -d "$folder" ] || continue
   name=$(basename "$folder")
-  zip -r "./release/bonjourr-${name}-${version}.zip" "$folder"
+  (cd "$folder" && zip -r "../bonjourr-${name}-${version}.zip" .)
 done
 ```

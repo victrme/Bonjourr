@@ -10,14 +10,14 @@ let dusk = 60
 
 let userSetDate: Date
 
-export function userDate(timezone = 'auto'): Date {
-	const date = new Date()
+export function userDate(timezone?: string): Date {
+	let date = new Date()
 
-	if (timezone === 'auto' && userSetDate) {
+	if (!timezone && userSetDate) {
 		return userSetDate
 	}
 
-	if (timezone === 'auto') {
+	if (!timezone || timezone === 'auto') {
 		return date
 	}
 
@@ -28,15 +28,17 @@ export function userDate(timezone = 'auto'): Date {
 			timeStyle: 'medium',
 		})
 
-		userSetDate = new Date(intl.format(date))
-
-		return userSetDate
+		date = new Date(intl.format(date))
 	} catch (e) {
 		console.warn(e)
 		console.info('Your timezone is not valid')
 	}
 
 	return date
+}
+
+export function setUserDate(timezone: string): void {
+	userSetDate = userDate(timezone)
 }
 
 export function daylightPeriod(time?: number) {
