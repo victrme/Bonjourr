@@ -265,6 +265,8 @@
 	"yahoo": "yahoo",
 	"bing": "bing",
 	"URL request": "URL request",
+	"URL seems wrong": "URL seems wrong",
+	"No %s present in URL": "No %s present in URL",
 	"%s Not found": "%s Not found",
 	"Search query: %s": "Search query: %s",
 	"Placeholder text": "Placeholder text",
@@ -310,7 +312,7 @@
 	"Custom Style": "Custom Style",
 	"Tips on Custom styles": "Tips on Custom styles",
 	"Make cool things happen with CSS.": "Make cool things happen with CSS.",
-	"Check out our ": "Check out our",
+	"Check out our": "Check out our",
 	"CSS snippets.": "CSS snippets.",
 	"Type in your custom CSS": "Type in your custom CSS",
 

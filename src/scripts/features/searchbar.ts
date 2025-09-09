@@ -9,6 +9,7 @@ import { parse } from '../utils/parse.ts'
 
 import type { SearchEngines } from '../../types/shared.ts'
 import type { Searchbar } from '../../types/sync.ts'
+import { networkForm } from '../shared/form.ts'
 
 type SearchbarUpdate = {
 	engine?: string
@@ -16,7 +17,7 @@ type SearchbarUpdate = {
 	width?: string
 	suggestions?: boolean
 	placeholder?: string
-	request?: HTMLInputElement
+	request?: true
 	background?: true
 }
 
@@ -27,6 +28,8 @@ type Suggestions = {
 }[]
 
 type UndefinedElement = Element | undefined | null
+
+const customEngineForm = networkForm('f_sbrequest')
 
 let socket: WebSocket | undefined
 const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
@@ -132,13 +135,29 @@ async function updateSearchbar({
 	}
 
 	if (request) {
-		if (!request.value.includes('%s')) {
+		const form = document.querySelector<HTMLFormElement>('#f_sbrequest')
+
+		if (!form) {
 			return
 		}
 
-		searchbar.request = stringMaxSize(request.value, 512)
+		const formdata = new FormData(form)
+		const value = formdata.get('sbrequest')?.toString() ?? ''
+		const noQueryPlaceholder = !value.includes('%s') && value.length > 0
+		const badCustomDomain = !value.match(domainPattern)
+
+		if (badCustomDomain) {
+			customEngineForm.warn(tradThis('URL seems wrong'))
+			return
+		}
+		if (noQueryPlaceholder) {
+			customEngineForm.warn(tradThis('No %s present in URL'))
+			return
+		}
+
+		searchbar.request = stringMaxSize(value, 512)
 		setRequest(searchbar.request)
-		request.blur()
+		customEngineForm.accept()
 	}
 
 	eventDebounce({ searchbar })
@@ -159,7 +178,7 @@ function isValidUrl(string: string): boolean {
 }
 
 function createSearchUrl(val: string, engine: string): string {
-	const urLs: Record<SearchEngines, string> = {
+	const urls: Record<SearchEngines, string> = {
 		default: '',
 		google: 'https://www.google.com/search?q=%s',
 		ddg: 'https://duckduckgo.com/?q=%s',
@@ -174,14 +193,22 @@ function createSearchUrl(val: string, engine: string): string {
 		custom: domcontainer?.dataset.request || '',
 	}
 
-	let searchUrl = ''
-
-	if (isValidEngine(engine)) {
-		const trad = tradThis(engine)
-		searchUrl = trad.includes('%s') ? trad : urLs[engine]
+	if (!isValidEngine(engine)) {
+		return 'about:blank'
 	}
 
-	return searchUrl.replace('%s', encodeURIComponent(val ?? ''))
+	if (engine === 'custom' && !urls.custom) {
+		return 'about:blank'
+	}
+
+	let result = ''
+	const query = encodeURIComponent(val ?? '')
+	const localizedEngine = tradThis(engine)
+
+	result = localizedEngine.includes('%s') ? localizedEngine : urls[engine]
+	result = result.replace('%s', query)
+
+	return result
 }
 
 function submitSearch(e: Event) {
