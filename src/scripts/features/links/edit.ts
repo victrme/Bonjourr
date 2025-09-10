@@ -93,7 +93,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	event.preventDefault()
 
 	// removes buttons from the global context menu
-	domeditlink.querySelectorAll('#contextActions button').forEach(function(contextButton) {
+	domeditlink.querySelectorAll('#contextActions button, #background-actions').forEach(function(contextButton) {
 		contextButton.classList.remove('on')
 	})
 
