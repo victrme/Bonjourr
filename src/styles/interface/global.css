@@ -24,8 +24,7 @@
 	}
 }
 
-#interface.pushed,
-#background-actions.pushed {
+#interface.pushed {
 	transform: translateX(-100px);
 }
 

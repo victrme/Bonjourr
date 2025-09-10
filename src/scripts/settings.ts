@@ -112,7 +112,6 @@ function settingsInitEvent(event: Event) {
 }
 
 function settingsToggle(event: CustomEvent) {
-	const dombackgroundactions = document.getElementById('background-actions')
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domsettings = document.getElementById('settings')
@@ -139,7 +138,6 @@ function settingsToggle(event: CustomEvent) {
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
 	domshowsettings?.classList.toggle('shown', isClosed)
-	dombackgroundactions?.classList.toggle('pushed', isClosed)
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')

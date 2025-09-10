@@ -432,7 +432,6 @@ function submitChanges(event: SubmitEvent) {
 	}
 
 	event.preventDefault()
-	// setTimeout(closeContextMenu)
 	setTimeout(closeContextMenu)
 }
 

@@ -1,8 +1,7 @@
-import { getComposedPath } from '../shared/dom.ts'
 import { transitioner } from '../utils/transitioner.ts'
 import { populateDialogWithEditLink } from './links/edit.ts'
 import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
-
+import type { Backgrounds } from '../../types/sync.ts'
 interface eventLocation {
     widgets: {
         link: boolean
@@ -91,7 +90,14 @@ export async function openContextMenu(event: Event) {
 		positionContextMenu(event)
 	} else if (eventLocation.interface) {
 		populateDialogWithAction("openTheseSettings", "background_title")
-		populateDialogWithAction("add-new-link")
+		
+		// add new link button if quick links are enabled
+		if (!document.querySelector('#linkblocks.hidden')) {
+			populateDialogWithAction("add-new-link")
+		}
+
+		showTheseElements('#background-actions button, #background-actions hr')
+
 		positionContextMenu(event)
 	}
 }
@@ -103,7 +109,7 @@ function populateDialogWithAction(actionType: string, attribute?: string) {
 		selector += `[data-attribute="${attribute}"]`
 	}
 
-	domdialog.querySelector<HTMLButtonElement>(selector)?.classList.add("on")
+	showTheseElements(selector)
 }
 
 export function positionContextMenu(event: Event) {
@@ -171,6 +177,22 @@ export function openSettingsButtonEvent(event: Event) {
 
 }
 
+export function handleBackgroundActions(backgrounds: Backgrounds) {
+	console.info('handleBackgroundActions()')
+	const type = backgrounds.type
+	const freq = backgrounds.frequency
+
+	document.getElementById('background-actions')?.classList.toggle('on', type !== 'color')
+	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
+	document.getElementById('b_interface-background-download')?.classList.toggle('shown', type === 'images')
+}
+
+function showTheseElements(query: string) {
+	document.querySelectorAll<HTMLElement>(query).forEach(element => {
+		element.classList.add("on")
+	})
+}
+
 queueMicrotask(() => {
     document.addEventListener('close-edit', closeContextMenu)
     mainInterface?.addEventListener('contextmenu', openContextMenu)
@@ -182,11 +204,10 @@ queueMicrotask(() => {
 	})
 
 	const addNewLinkButton = domdialog.querySelector<HTMLButtonElement>(`[data-action="add-new-link"]`)
-	addNewLinkButton?.addEventListener('click', (e) =>
-		populateDialogWithEditLink(e, domdialog, true)
+	addNewLinkButton?.addEventListener('click', (event) =>
+		populateDialogWithEditLink(event, domdialog, true)
 	)
 
-    
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
         // const handleLongPress = debounce((event: TouchEvent) => {
         //     openEditDialog(event)
