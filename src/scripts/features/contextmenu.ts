@@ -61,7 +61,7 @@ export async function openContextMenu(event: Event) {
 	if (!menuWillOpen) return
 
 	// hides content from previous context menu
-	for (const node of domdialog.querySelectorAll('label, button, hr')) {
+	for (const node of domdialog.querySelectorAll('label, button, hr, #background-actions')) {
 		node.classList.remove('on')
 	}
 
@@ -96,7 +96,7 @@ export async function openContextMenu(event: Event) {
 			populateDialogWithAction("add-new-link")
 		}
 
-		showTheseElements('#background-actions button, #background-actions hr')
+		showTheseElements('#background-actions')
 
 		positionContextMenu(event)
 	}
@@ -182,9 +182,10 @@ export function handleBackgroundActions(backgrounds: Backgrounds) {
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
 
-	document.getElementById('background-actions')?.classList.toggle('on', type !== 'color')
+	// document.getElementById('background-actions')?.classList.toggle('on', type !== 'color')
+	document.getElementById('background-actions')?.setAttribute("data-type", type)
 	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
-	document.getElementById('b_interface-background-download')?.classList.toggle('shown', type === 'images')
+	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
 }
 
 function showTheseElements(query: string) {

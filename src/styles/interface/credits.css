@@ -60,7 +60,11 @@
 	display: none;
 }
 
-#background-actions.on {
+#background-actions.on:not([data-type="color"]) {
+	display: block;
+}
+
+dialog#contextmenu #background-actions hr, dialog#contextmenu #background-actions label, dialog#contextmenu #background-actions button {
 	display: block;
 }
 
