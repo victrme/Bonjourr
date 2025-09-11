@@ -76,10 +76,6 @@ dialog#contextmenu button {
 	gap: 0.5em;
 }
 
-dialog#contextmenu button svg {
-	height: 18px;
-}
-
 /* Active buttons and inputs */
 
 dialog#contextmenu hr,
@@ -95,4 +91,56 @@ dialog#contextmenu button.on {
 
 dialog#contextmenu label.on {
 	display: grid;
+}
+
+/* background actions */
+
+#background-actions {
+	display: none;
+}
+
+#background-actions.on:not([data-type="color"]) {
+	display: block;
+}
+
+dialog#contextmenu #background-actions hr, dialog#contextmenu #background-actions label, dialog#contextmenu #background-actions button {
+	display: flex;
+}
+
+#background-actions .buttons {
+	display: flex;
+}
+
+dialog#contextmenu #background-actions button {
+	display: flex;
+	width: unset;
+}
+
+#background-actions button span {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#background-actions button span svg {
+	height: 12px;
+}
+
+#download-background {
+	display: none;
+}
+
+#b_interface-background-download.idle span:last-child,
+#b_interface-background-download.loading span:first-child {
+	display: none;
+}
+
+#b_interface-background-pause #interface-background-pause-icon,
+#b_interface-background-pause.paused #interface-background-play-icon {
+	display: flex;
+}
+
+#b_interface-background-pause #interface-background-play-icon,
+#b_interface-background-pause.paused #interface-background-pause-icon {
+	display: none;
 }

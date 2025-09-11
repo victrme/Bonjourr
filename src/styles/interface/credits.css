@@ -30,7 +30,6 @@
 	opacity: 1;
 }
 
-#a_interface-background-download.hidden,
 #credit.hidden {
 	display: none;
 }
@@ -55,69 +54,3 @@
 	opacity: 0;
 	transition: opacity 0.4s;
 }
-
-#background-actions {
-	display: none;
-}
-
-#background-actions.on:not([data-type="color"]) {
-	display: block;
-}
-
-dialog#contextmenu #background-actions hr, dialog#contextmenu #background-actions label, dialog#contextmenu #background-actions button {
-	display: block;
-}
-
-#background-actions .buttons {
-	display: flex;
-	margin: auto;
-	padding: 4px 12px;
-}
-
-#background-actions .buttons button {
-	padding: unset;
-	width: unset;
-}
-
-#download-background {
-	display: none;
-}
-
-#b_interface-background-download.idle span:last-child,
-#b_interface-background-download.loading span:first-child {
-	display: none;
-}
-
-#b_interface-background-pause:active svg {
-	transform: scale(0.9);
-}
-
-#b_interface-background-pause #interface-background-pause-icon,
-#b_interface-background-pause.paused #interface-background-play-icon {
-	display: initial;
-}
-
-#b_interface-background-pause #interface-background-play-icon,
-#b_interface-background-pause.paused #interface-background-pause-icon {
-	display: none;
-}
-
-/* .save {
-	display: inline-block;
-	cursor: pointer;
-	margin-left: 10px;
-	width: 16px;
-	height: 15px;
-	background-color: #fff9;
-	-webkit-mask-image: url('../../assets/interface/download.svg');
-	mask-image: url('../../assets/interface/download.svg');
-}
-
-.save:hover {
-	background-color: #fffe;
-}
-
-.save.loading {
-	pointer-events: none;
-	--icon: url('../../assets/interface/loading.svg');
-} */

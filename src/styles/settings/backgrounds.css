@@ -1,13 +1,3 @@
-.refresh-btn {
-	padding: 0 8px;
-	display: flex;
-	align-items: center;
-}
-
-.refresh-btn svg {
-	height: 18px;
-}
-
 .freq_wrap select {
 	width: 100%;
 }

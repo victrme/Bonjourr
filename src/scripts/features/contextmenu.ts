@@ -250,7 +250,6 @@ export function handleBackgroundActions(backgrounds: Backgrounds) {
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
 
-	// document.getElementById('background-actions')?.classList.toggle('on', type !== 'color')
 	document.getElementById('background-actions')?.setAttribute("data-type", type)
 	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
 	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
