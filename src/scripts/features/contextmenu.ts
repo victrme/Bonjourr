@@ -60,9 +60,13 @@ export async function openContextMenu(event: Event) {
 
 	if (!menuWillOpen) return
 
-	// hides content from previous context menu
-	for (const node of domdialog.querySelectorAll('label, button, hr, #background-actions')) {
+	// hides/resets content from previous context menu
+	for (const node of domdialog.querySelectorAll('label, button, hr, #background-actions, input')) {
 		node.classList.remove('on')
+		
+		if (node instanceof HTMLInputElement) {
+			node.required = false
+		}
 	}
 
 	// prevents OS context menu

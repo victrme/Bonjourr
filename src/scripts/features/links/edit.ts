@@ -147,120 +147,6 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	domtitle?.focus()
 }
 
-export async function openEditDialog(event: Event) {
-// 	const path = getComposedPath(event.target)
-// 	const classNames = path.map((element) => element.className ?? '')
-// 	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
-// 	const linkgroup = path.find((el) => el?.className?.includes('link-group'))
-// 	const linktitle = path.find((el) => el?.className?.includes('link-title'))
-
-// 	const pointer = event as PointerEvent
-// 	const ctrlRightClick = pointer.button === 2 && !!pointer.ctrlKey && event.type === 'contextmenu'
-// 	const pressingE = event.type === 'keyup' && (event as KeyboardEvent).code !== 'KeyE'
-
-// 	if (ctrlRightClick || pressingE) {
-// 		return
-// 	}
-
-// 	const container: EditStates['container'] = {
-// 		mini: path.some((element) => element?.id?.includes('link-mini')),
-// 		group: classNames.some((cl) => cl.includes('link-group') && !cl.includes('in-folder')),
-// 		folder: classNames.some((cl) => cl.includes('link-group') && cl.includes('in-folder')),
-// 	}
-
-// 	const target: EditStates['target'] = {
-// 		link: classNames.some((cl) => cl.includes('link-elem')),
-// 		folder: classNames.some((cl) => cl.includes('link-folder')),
-// 		title: classNames.some((cl) => cl.includes('link-title')),
-// 		synced: classNames.some((cl) => cl.includes('synced')),
-// 		addgroup: classNames.some((cl) => cl.includes('add-group')),
-// 	}
-
-// 	const selectall = classNames.some((cl) => cl.includes('select-all'))
-// 	const dragging = classNames.some((cl) => cl.includes('dragging') || cl.includes('dropping'))
-// 	const group = (container.mini ? linktitle : linkgroup)?.dataset.group ?? ''
-
-// 	const domfolder = document.querySelector<HTMLElement>('.link-group.in-folder')
-// 	const folder = domfolder?.dataset?.folder ?? ''
-
-// 	editStates = {
-// 		group,
-// 		folder,
-// 		selectall,
-// 		container,
-// 		dragging,
-// 		target,
-// 		selected: getSelectedIds(),
-// 	}
-
-// 	const inputs = toggleEditInputs()
-// 	const folderTitle = container.folder && target.title
-// 	const noSelection = selectall && editStates.selected.length === 0
-// 	const noInputs = inputs.length === 0
-
-// 	if (noInputs || folderTitle || noSelection || dragging) {
-// 		closeEditDialog()
-// 		return
-// 	}
-
-// 	document.dispatchEvent(new Event('stop-select-all'))
-// 	event.preventDefault()
-
-// 	const data = await storage.sync.get()
-
-// 	if (target.title) {
-// 		const { groups, pinned } = data.linkgroups
-// 		const title = editStates.target.addgroup ? '' : editStates.group
-
-// 		domeditlink.dataset.group = title
-// 		domtitle.value = title
-
-// 		const onlyOneTitleUnpinned = groups.length - pinned.length < 2
-// 		const onlyOneTitleLeft = groups.length < 2
-
-// 		if (onlyOneTitleUnpinned) {
-// 			document.getElementById('edit-pin')?.setAttribute('disabled', '')
-// 		}
-// 		if (onlyOneTitleLeft) {
-// 			document.getElementById('edit-delete')?.setAttribute('disabled', '')
-// 		}
-// 	}
-
-// 	if (target.folder || target.link) {
-// 		const pathLis = path.filter((el) => el.tagName === 'LI')
-// 		const li = pathLis[0]
-// 		const id = li?.id
-// 		const link = getLink(data, id)
-
-// 		domtitle.value = link?.title ?? ''
-
-// 		if (link && !link.folder) {
-// 			const icon = link.icon ?? ''
-// 			domurl.value = link.url ?? ''
-// 			domicon.value = Number.isNaN(Number.parseInt(icon)) ? icon : ''
-// 		}
-// 	}
-
-// 	if (!selectall) {
-// 		for (const node of document.querySelectorAll('.link-title.selected, .link.selected') ?? []) {
-// 			node.classList.remove('selected')
-// 		}
-// 		;(target.title ? linktitle : linkelem)?.classList.add('selected')
-// 	}
-
-// 	// Must be placed after "li?.classList.add('selected')"
-// 	editStates.selected = getSelectedIds()
-
-// 	const contextmenuTransition = transitioner()
-// 	contextmenuTransition.first(() => domeditlink?.show())
-// 	contextmenuTransition.after(() => domeditlink?.classList?.add('shown'))
-// 	contextmenuTransition.transition(10)
-
-// 	const { x, y } = newEditDialogPosition(event)
-// 	domeditlink.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
-// 	domtitle?.focus()
-}
-
 function toggleEditInputs(): string[] {
 	const deleteButtonTxt = document.querySelector<HTMLButtonElement>('#edit-delete span')
 	const addButtonTxt = document.querySelector<HTMLButtonElement>('#edit-add span')
@@ -278,7 +164,7 @@ function toggleEditInputs(): string[] {
 		if (target.synced) {
 			inputs = ['pin', 'delete']
 		} else if (target.addgroup) {
-			inputs = ['title', 'add']
+			inputs = ['title*', 'add'] // * for required inputs
 		} else if (target.title) {
 			inputs = ['title', 'delete', 'pin', 'apply']
 		}
@@ -296,9 +182,9 @@ function toggleEditInputs(): string[] {
 		} else if (target.folder) {
 			inputs = ['title', 'delete', 'apply']
 		} else if (target.link) {
-			inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply']
+			inputs = ['title', 'url*', 'icon', 'delete', 'refresh', 'apply']
 		} else {
-			inputs = ['title', 'url', 'add']
+			inputs = ['title', 'url*', 'add']
 		}
 	}
 
@@ -308,17 +194,26 @@ function toggleEditInputs(): string[] {
 		} else if (selectall) {
 			inputs = ['delete', 'unfolder']
 		} else if (target.link) {
-			inputs = ['title', 'url', 'icon', 'delete', 'apply', 'unfolder']
+			inputs = ['title', 'url*', 'icon', 'delete', 'apply', 'unfolder']
 		} else {
-			inputs = ['title', 'url', 'add']
+			inputs = ['title', 'url*', 'add']
 		}
 	}
 
+	// shows every input, button and label needed
 	for (const id of inputs) {
-		domeditlink.querySelector(`#edit-${id}`)?.classList.add('on')
+		const required = id.endsWith('*')
+		const cleanId = required ? id.slice(0, -1) : id
+
+		domeditlink.querySelector<HTMLLabelElement>(`#edit-${cleanId}`)?.classList.add('on')
+
+		if (required) {
+			domeditlink.querySelector<HTMLInputElement>(`#e-${cleanId}`)!.required = true
+		}
 	}
 
-	const hasLabels = inputs.includes('title') || inputs.includes('url') || inputs.includes('icon')
+
+	const hasLabels = inputs.includes('title') || inputs.includes('title*') || inputs.includes('url*') || inputs.includes('icon')
 	domeditlink.querySelector('hr')?.classList.toggle('on', hasLabels)
 
 	if (deleteButtonTxt) {
@@ -388,7 +283,7 @@ function submitChanges(event: SubmitEvent) {
 					url: domurl.value,
 				}],
 			})
-		} else if (target.title) {
+		} else if (target.title && domtitle.value) { // new group
 			quickLinks(undefined, {
 				addGroups: [{
 					title: domtitle.value,
@@ -403,6 +298,7 @@ function submitChanges(event: SubmitEvent) {
 				},
 			})
 		} else if (container.group) {
+
 			quickLinks(undefined, {
 				addLinks: [{
 					group,
