@@ -32,6 +32,7 @@ let domeditlink: HTMLDialogElement
 const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
 const domicon = document.getElementById('e-icon') as HTMLInputElement
+let inputToFocus: HTMLInputElement
 
 let editStates: EditStates
 
@@ -144,7 +145,8 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 
 	// Once dialog is populated, calculates its position
 	if (!newLinkFromGlobal) positionContextMenu(event)
-	domtitle?.focus()
+
+	inputToFocus?.focus()
 }
 
 function toggleEditInputs(): string[] {
@@ -152,6 +154,8 @@ function toggleEditInputs(): string[] {
 	const addButtonTxt = document.querySelector<HTMLButtonElement>('#edit-add span')
 	const { container, target, selectall } = editStates
 	let inputs: string[] = []
+
+	inputToFocus = domtitle
 
 	document.querySelector('#edit-delete')?.removeAttribute('disabled')
 	document.querySelector('#edit-pin')?.removeAttribute('disabled')
@@ -185,6 +189,7 @@ function toggleEditInputs(): string[] {
 			inputs = ['title', 'url*', 'icon', 'delete', 'refresh', 'apply']
 		} else {
 			inputs = ['title', 'url*', 'add']
+			inputToFocus = domurl
 		}
 	}
 
@@ -197,6 +202,7 @@ function toggleEditInputs(): string[] {
 			inputs = ['title', 'url*', 'icon', 'delete', 'apply', 'unfolder']
 		} else {
 			inputs = ['title', 'url*', 'add']
+			inputToFocus = domurl
 		}
 	}
 
