@@ -181,17 +181,6 @@ export function openSettingsButtonEvent(event: Event) {
 
 }
 
-export function handleBackgroundActions(backgrounds: Backgrounds) {
-	console.info('handleBackgroundActions()')
-	const type = backgrounds.type
-	const freq = backgrounds.frequency
-
-	// document.getElementById('background-actions')?.classList.toggle('on', type !== 'color')
-	document.getElementById('background-actions')?.setAttribute("data-type", type)
-	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
-	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
-}
-
 function showTheseElements(query: string) {
 	document.querySelectorAll<HTMLElement>(query).forEach(element => {
 		element.classList.add("on")
@@ -199,11 +188,22 @@ function showTheseElements(query: string) {
 }
 
 queueMicrotask(() => {
-    document.addEventListener('close-edit', closeContextMenu)
-    mainInterface?.addEventListener('contextmenu', openContextMenu)
+	document.addEventListener('contextmenu', (event) => {
+		// if right click inside interface, custom context menu
+		if (mainInterface?.contains(event.target as Node)) {
+			openContextMenu(event)
+			return
+		}
 
+		// Otherwise, closes the custom one and opens the regular one
+		closeContextMenu()
+	})
+
+	// for when needing to close context menu from elsewhere
+	document.addEventListener('close-edit', closeContextMenu)
+
+	// these are "open x settings" inside context menu
 	const openSettingsButtons = domdialog.querySelectorAll<HTMLButtonElement>(`[data-action="openTheseSettings"]`)
-
 	openSettingsButtons?.forEach(btn => {
 		btn?.addEventListener('click', openSettingsButtonEvent)
 	})
@@ -243,4 +243,15 @@ export function closeContextMenu() {
 		domdialog.classList.remove('shown')
 		domdialog.close()
 	}
+}
+
+export function handleBackgroundActions(backgrounds: Backgrounds) {
+	console.info('handleBackgroundActions()')
+	const type = backgrounds.type
+	const freq = backgrounds.frequency
+
+	// document.getElementById('background-actions')?.classList.toggle('on', type !== 'color')
+	document.getElementById('background-actions')?.setAttribute("data-type", type)
+	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
+	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
 }
