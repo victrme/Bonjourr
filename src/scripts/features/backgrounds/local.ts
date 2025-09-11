@@ -6,7 +6,6 @@ import { onclickdown } from 'clickdown/mod'
 import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
-import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
@@ -23,8 +22,7 @@ let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
 export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
-	// To remove in a version or two
-	local = await indexedDbToCacheStorage(local)
+	local = await sanitizeMetadatas(local)
 
 	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
 
@@ -601,77 +599,4 @@ function getCache(name: string): Promise<Cache | IDBCache> {
 	}
 
 	return caches.open(name)
-}
-
-//  Compatibility
-
-/**
- * For version 21, move local files from buggy idb
- * to an hopefully more stable CacheStorage
- */
-async function indexedDbToCacheStorage(local: Local): Promise<Local> {
-	if (localStorage.hasRemovedIndexedDB) {
-		return local
-	}
-
-	try {
-		const entries = await idb.entries()
-		const newFileData: Record<string, LocalFileData> = {}
-
-		if (entries.length === 0) {
-			return local
-		}
-
-		for (const [key, value] of entries) {
-			const isOldIdb = 'background' in value && 'thumbnail' in value
-			const isNewIdb = 'raw' in value && 'full' in value && 'medium' in value && 'small' in value
-			const id = key as string
-
-			if (!isOldIdb && !isNewIdb) {
-				continue
-			}
-
-			if (isOldIdb) {
-				newFileData[id] = {
-					raw: value.background,
-					full: value.background,
-					medium: value.thumbnail,
-					small: value.thumbnail,
-				}
-			}
-			if (isNewIdb) {
-				newFileData[id] = {
-					raw: value.raw,
-					full: value.full,
-					medium: value.medium,
-					small: value.small,
-				}
-			}
-
-			local.backgroundFiles[id] = {
-				lastUsed: new Date('1971-01-01').toString(),
-				position: { size: 'cover', x: '50%', y: '50%' },
-			}
-		}
-
-		const saveAllFiles = Object.entries(newFileData).map(([id, filedata]) => {
-			return saveFileToCache(id, filedata)
-		})
-
-		storage.local.set({ backgroundFiles: local.backgroundFiles })
-		await Promise.all(saveAllFiles)
-
-		try {
-			idb.clear()
-			localStorage.hasRemovedIndexedDB = 'true'
-		} catch (err) {
-			console.warn('Failed to update indexedDB')
-			console.warn(err)
-		}
-	} catch (err) {
-		console.warn('Failed to import from indexedDB to CacheStorage')
-		console.warn(err)
-	}
-
-	return local
 }
