@@ -2,6 +2,8 @@ import { transitioner } from '../utils/transitioner.ts'
 import { populateDialogWithEditLink } from './links/edit.ts'
 import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
 import type { Backgrounds } from '../../types/sync.ts'
+import { debounce } from '../utils/debounce.ts'
+
 interface eventLocation {
     widgets: {
         link: boolean
@@ -178,7 +180,6 @@ export function openSettingsButtonEvent(event: Event) {
 	} else {
 		console.error(`Section "${sectionToScrollTo}" doesn't match anything`)
 	}
-
 }
 
 function showTheseElements(query: string) {
@@ -214,17 +215,17 @@ queueMicrotask(() => {
 	)
 
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
-        // const handleLongPress = debounce((event: TouchEvent) => {
-        //     openEditDialog(event)
-        // }, 500)
+        const handleLongPress = debounce((event: TouchEvent) => {
+            openContextMenu(event)
+        }, 500)
 
-        // domdialog?.addEventListener('touchstart', (event) => {
-        //     handleLongPress(event)
-        // })
+        document?.addEventListener('touchstart', (event) => {
+            handleLongPress(event)
+        })
 
-        // domdialog?.addEventListener('touchend', () => {
-        //     handleLongPress.cancel()
-        // })
+        document?.addEventListener('touchend', () => {
+            handleLongPress.cancel()
+        })
 
         globalThis.addEventListener('resize', closeContextMenu)
     }
