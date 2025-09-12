@@ -1,7 +1,6 @@
 import { LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { deepEqual } from './dependencies/deepequal.ts'
 import { parse } from './utils/parse.ts'
-import * as idb from 'idb-keyval'
 
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
@@ -385,13 +384,6 @@ async function clearall() {
 			localStorage.removeItem(key)
 		}
 	})
-
-	try {
-		idb.clear()
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return
-	}
 
 	try {
 		globalThis.caches.delete('local-files')
