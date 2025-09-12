@@ -76,6 +76,15 @@ dialog#contextmenu button {
 	gap: 0.5em;
 }
 
+/* so that it doesn't break JS events when clicking on elements inside the buttons */
+dialog#contextmenu button * {
+	pointer-events: none;
+}
+
+dialog#contextmenu button svg {
+	height: 18px;
+}
+
 /* Active buttons and inputs */
 
 dialog#contextmenu hr,
@@ -120,10 +129,11 @@ dialog#contextmenu #background-actions button {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	width: 13px;
 }
 
 #background-actions button span svg {
-	height: 12px;
+	height: 13px;
 }
 
 #download-background {
