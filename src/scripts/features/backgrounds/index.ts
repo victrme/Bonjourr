@@ -378,11 +378,11 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local, ne
 	}
 
 	if (!needNew && isPaused) {
-		if (backgrounds.pausedImage) {
+		if (backgrounds.pausedImage && backgrounds.type) {
 			applyBackground(backgrounds.pausedImage)
 			return
 		}
-		if (backgrounds.pausedVideo) {
+		if (backgrounds.pausedVideo && backgrounds.videos) {
 			applyBackground(backgrounds.pausedVideo)
 			return
 		}
