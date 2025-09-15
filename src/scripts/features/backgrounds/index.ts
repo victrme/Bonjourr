@@ -133,6 +133,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		createProviderSelect(data.backgrounds)
 		handleBackgroundOptions(data.backgrounds)
 		backgroundsInit(data, local)
+		return
 	}
 
 	if (isFrequency(update.freq)) {
@@ -378,11 +379,11 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local, ne
 	}
 
 	if (!needNew && isPaused) {
-		if (backgrounds.pausedImage && backgrounds.type) {
+		if (backgrounds.pausedImage && backgrounds.type === 'images') {
 			applyBackground(backgrounds.pausedImage)
 			return
 		}
-		if (backgrounds.pausedVideo && backgrounds.videos) {
+		if (backgrounds.pausedVideo && backgrounds.videos === 'videos') {
 			applyBackground(backgrounds.pausedVideo)
 			return
 		}
