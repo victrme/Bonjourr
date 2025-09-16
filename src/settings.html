@@ -139,17 +139,13 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_type" class="trn">Background type</label>
-
-		<form id="f_background-provider" class="network-form">
-			<select id="i_type">
-				<option value="images" class="trn">Images</option>
-				<option value="videos" class="trn">Videos</option>
-				<option value="files" class="trn">Local files</option>
-				<!-- <option value="urls" class="trn">URLs</option> -->
-				<option value="color" class="trn">Solid color</option>
-			</select>
-			<small class="network-form-warning"></small>
-		</form>
+		<select id="i_type">
+			<option value="images" class="trn">Images</option>
+			<option value="videos" class="trn">Videos</option>
+			<option value="files" class="trn">Local files</option>
+			<!-- <option value="urls" class="trn">URLs</option> -->
+			<option value="color" class="trn">Solid color</option>
+		</select>
 	</div>
 
 	<div id="background-provider-option" class="as as_provider dropdown">
@@ -906,16 +902,18 @@
 				</div>
 			</div>
 
-			<hr />
+			<div id="timezone_options" class="dropdown shown">
+				<hr />
 
-			<div class="wrapper">
-				<label for="i_timezone" class="trn">Time zone</label>
-				<select id="i_timezone" class="">
-					<optgroup label="Automatic">
-						<option value="auto" class="trn">Automatic</option>
-					</optgroup>
-					<optgroup></optgroup>
-				</select>
+				<div class="wrapper">
+					<label for="i_timezone" class="trn">Time zone</label>
+					<select id="i_timezone" class="">
+						<optgroup label="Automatic">
+							<option value="auto" class="trn">Automatic</option>
+						</optgroup>
+						<optgroup></optgroup>
+					</select>
+				</div>
 			</div>
 
 			<hr />
@@ -1304,13 +1302,22 @@
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
-					<input
-						id="i_sbrequest"
-						name="sbrequest"
-						type="text"
-						placeholder="Search query: %s"
-						maxlength="512"
-					/>
+
+					<form id="f_sbrequest" class="network-form">
+						<div>
+							<input
+								id="i_sbrequest"
+								name="sbrequest"
+								type="text"
+								placeholder="Search query: %s"
+								maxlength="512"
+							/>
+							<button type="submit">
+								<span></span>
+							</button>
+						</div>
+						<small class="network-form-warning"></small>
+					</form>
 				</div>
 			</div>
 
@@ -1640,7 +1647,7 @@
 
 		<p class="tooltiptext dropdown ttcss">
 			<span class="trn">Make cool things happen with CSS.</span>
-			<span class="trn instructions">Check out our </span>
+			<span class="trn">Check out our</span>
 			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank"
 				>CSS snippets.</a
 			>
@@ -2007,7 +2014,7 @@
 		<option value="HST">HST -10</option>
 		<option value="PST">PST -8</option>
 		<option value="MST">MST -7</option>
-		<option value="CST">CST -6</option>
+		<option value="CDT">CDT -6</option>
 		<option value="EST">EST -5</option>
 		<option value="AST">AST -4</option>
 		<option value="UTC">UTC +0</option>

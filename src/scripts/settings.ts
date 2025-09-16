@@ -22,8 +22,8 @@ import { settingsNotifications } from './utils/notifications.ts'
 import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
 import { loadCallbacks } from './utils/onsettingsload.ts'
-import { filterImports } from './imports.ts'
 import { onclickdown } from 'clickdown/mod'
+import { filterData } from './compatibility/apply.ts'
 import { stringify } from './utils/stringify.ts'
 import { debounce } from './utils/debounce.ts'
 import { langList } from './langs.ts'
@@ -710,8 +710,9 @@ function initOptionsEvents() {
 		searchbar(undefined, { width: this.value })
 	})
 
-	paramId('i_sbrequest').addEventListener('change', function (this: HTMLInputElement) {
-		searchbar(undefined, { request: this })
+	paramId('f_sbrequest').addEventListener('submit', function (this, event: SubmitEvent) {
+		searchbar(undefined, { request: true })
+		event.preventDefault()
 	})
 
 	onclickdown(paramId('i_sbnewtab'), (_, target) => {
@@ -1319,7 +1320,7 @@ async function importSettings(imported: Partial<Sync>) {
 			getPermissions('search')
 		}
 
-		data = filterImports(data, imported)
+		data = filterData('import', data, imported)
 
 		storage.sync.clear()
 		storage.sync.set(data)
@@ -1340,14 +1341,17 @@ function resetSettings(action: 'yes' | 'no' | 'first') {
 }
 
 export function updateSettingsJson(data?: Sync) {
-	data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
+	try {
+		data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
+	} catch (err) {
+		console.warn(err)
+	}
 
 	function updateTextArea(data: Sync) {
 		const pre = document.getElementById('settings-data')
 
 		if (pre && data.about) {
 			const orderedJson = stringify(data)
-
 			data.about.browser = PLATFORM
 			pre.textContent = orderedJson
 		}

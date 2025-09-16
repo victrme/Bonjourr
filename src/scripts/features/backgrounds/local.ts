@@ -1,11 +1,11 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
 import { needsChange, userDate } from '../../shared/time.ts'
+import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { onclickdown } from 'clickdown/mod'
-import { IS_MOBILE } from '../../defaults.ts'
+import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
-import * as idb from 'idb-keyval'
 
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
@@ -22,8 +22,7 @@ let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
 export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
-	// To remove in a version or two
-	local = await indexedDbToCacheStorage(local)
+	local = await sanitizeMetadatas(local)
 
 	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
 
@@ -469,6 +468,7 @@ export async function imageFromLocalFiles(id: string, local: Local, data?: Local
 
 	const image: BackgroundImage = {
 		format: 'image',
+		mimetype: data.raw.type,
 		size: metadata?.position.size ?? 'cover',
 		x: metadata?.position.x ?? '50%',
 		y: metadata?.position.y ?? '50%',
@@ -499,7 +499,7 @@ function getSelection(): string[] {
 //  Storage
 
 async function saveFileToCache(id: string, filedata: LocalFileData) {
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	for (const [size, blob] of Object.entries(filedata)) {
 		const request = new Request(`http://127.0.0.1:8888/${id}/${size}`)
@@ -516,8 +516,7 @@ async function saveFileToCache(id: string, filedata: LocalFileData) {
 }
 
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
-	const start = globalThis.performance.now()
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	const raw = (await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob()) as File | undefined
 	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
@@ -528,9 +527,6 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 		throw new Error(`${id} is undefined`)
 	}
 
-	// const time = (globalThis.performance.now() - start).toFixed(2)
-	// console.log(`Got ${id} in: ${time}ms`)
-
 	return {
 		raw,
 		full,
@@ -540,7 +536,7 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 }
 
 async function removeFilesFromCache(ids: string[]) {
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 
 	for (const id of ids) {
 		sessionStorage.removeItem(id)
@@ -559,7 +555,7 @@ async function removeFilesFromCache(ids: string[]) {
  */
 async function sanitizeMetadatas(local: Local): Promise<Local> {
 	const newMetadataList: Record<string, BackgroundFile> = {}
-	const cache = await caches.open('local-files')
+	const cache = await getCache('local-files')
 	const cacheKeys = await cache.keys()
 
 	for (const request of cacheKeys) {
@@ -596,75 +592,11 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	return local
 }
 
-//  Compatibility
-
-/**
- * For version 21, move local files from buggy idb
- * to an hopefully more stable CacheStorage
- */
-async function indexedDbToCacheStorage(local: Local): Promise<Local> {
-	if (localStorage.hasRemovedIndexedDB) {
-		return local
+function getCache(name: string): Promise<Cache | IDBCache> {
+	if (PLATFORM === 'safari') {
+		// CacheStorage doesn't work on Safari extensions, need indexedDB
+		return Promise.resolve(new IDBCache(name))
 	}
 
-	try {
-		const entries = await idb.entries()
-		const newFileData: Record<string, LocalFileData> = {}
-
-		if (entries.length === 0) {
-			return local
-		}
-
-		for (const [key, value] of entries) {
-			const isOldIdb = 'background' in value && 'thumbnail' in value
-			const isNewIdb = 'raw' in value && 'full' in value && 'medium' in value && 'small' in value
-			const id = key as string
-
-			if (!isOldIdb && !isNewIdb) {
-				continue
-			}
-
-			if (isOldIdb) {
-				newFileData[id] = {
-					raw: value.background,
-					full: value.background,
-					medium: value.thumbnail,
-					small: value.thumbnail,
-				}
-			}
-			if (isNewIdb) {
-				newFileData[id] = {
-					raw: value.raw,
-					full: value.full,
-					medium: value.medium,
-					small: value.small,
-				}
-			}
-
-			local.backgroundFiles[id] = {
-				lastUsed: new Date('1971-01-01').toString(),
-				position: { size: 'cover', x: '50%', y: '50%' },
-			}
-		}
-
-		const saveAllFiles = Object.entries(newFileData).map(([id, filedata]) => {
-			return saveFileToCache(id, filedata)
-		})
-
-		storage.local.set({ backgroundFiles: local.backgroundFiles })
-		await Promise.all(saveAllFiles)
-
-		try {
-			idb.clear()
-			localStorage.hasRemovedIndexedDB = 'true'
-		} catch (err) {
-			console.warn('Failed to update indexedDB')
-			console.warn(err)
-		}
-	} catch (err) {
-		console.warn('Failed to import from indexedDB to CacheStorage')
-		console.warn(err)
-	}
-
-	return local
+	return caches.open(name)
 }

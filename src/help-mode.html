@@ -1,0 +1,390 @@
+<template id="help-mode-prompt-template">
+	<div id="help-mode-prompt">
+		<h1>😶‍🌫️ Uh oh, Bonjourr had a problem.</h1>
+		<p
+			>Seems like a bug was triggered by an unexpected situation. <br />No worries though, as your settings were
+			saved.</p
+		>
+
+		<div id="help-buttons">
+			<button class="help-btn export" title="Export a new settings file" aria-label="Export a new settings file">
+				<img src="src/assets/labels/download.svg" height="16" alt="" />
+				<span class="trn">Download settings</span>
+			</button>
+
+			<button
+				id="open-help-mode"
+				class="help-btn"
+				title="Export a new settings file"
+				aria-label="Export a new settings file"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					height="16"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="size-6"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+				</svg>
+
+				<span class="trn">Get help</span>
+			</button>
+		</div>
+	</div>
+</template>
+
+<template id="help-mode-template">
+	<div id="help-mode" class="shown">
+		<div id="content">
+			<h1>HELP MODE (beta)</h1>
+
+			<p
+				>Welcome to <b>Help Mode</b>! This page gives you all the resources you'll need to troubleshoot
+				effectively and know what to do if Bonjourr were to break.</p
+			>
+
+			<div id="troubleshoot">
+				<h2>🤔 I have a problem, what can I do?</h2>
+
+				<p
+					>Depending on the intensity of your problem and your investment level, there are essentially two
+					ways you can go about this.</p
+				>
+
+				<details>
+					<summary>
+						<h3>The "I want to get on with my day" way</h3>
+					</summary>
+
+					<p
+						>If Bonjourr crashes, the quickest solution is often to <b>reset your settings</b> at the bottom
+						of this page.
+						<b class="important"
+							>If you do this, you will lose your data, which is why you need to download it first.</b
+						>
+						You can then start fresh or <b>import your data</b> back into your new installation using the
+						Import button at the bottom of the settings panel.</p
+					>
+
+					<p
+						>In rare situations, the <b>settings file</b> itself might be causing the crash. If that
+						happens, we recommend following the next section to <b>report the problem</b>.</p
+					>
+				</details>
+
+				<details>
+					<summary>
+						<h3>The "I need help and want to report this bug" way</h3>
+					</summary>
+
+					<p
+						>If you’re stuck or have discovered a bug, the best thing to do is <b>get in touch with us</b>.
+						This can be done effectively in a few steps:</p
+					>
+
+					<ol>
+						<li
+							>First, check the
+							<a href="https://github.com/victrme/Bonjourr/issues"><b>GitHub issues</b></a> to see if the
+							bug has already been reported.</li
+						>
+						<li
+							>If not, you can either
+							<a href="mailto:bonjourr.app@protonmail.com"><b>send us an email</b></a> or create a new
+							GitHub issue about your problem.</li
+						>
+						<li
+							>The two main things we need to help are:
+							<ul>
+								<li
+									><b>Context</b>: What is the problem? Were you doing something specific before the
+									crash? And any other relevant details.</li
+								>
+								<li><b>Your settings file</b>: download it at the bottom of this page.</li>
+							</ul>
+						</li>
+					</ol>
+
+					<p
+						><i
+							>⚠️ Keep in mind that your <b>settings file</b> includes personal information (notes, links,
+							weather location...). Email might be safer than GitHub in some cases, as it won’t be
+							public.</i
+						></p
+					>
+				</details>
+			</div>
+
+			<div id="server-status">
+				<h2>🗄️ Server status</h2>
+				<p
+					>These are external services Bonjourr relies on to work properly. If any of them are down, it might
+					cause issues. You can wait for them to recover or <b>contact us</b> if you think we aren't aware of
+					the problem.</p
+				>
+
+				<ul>
+					<li><b>Website</b> <span id="help-status-website"> · loading...</span></li>
+					<li><b>Weather</b> <span id="help-status-weather"> · loading...</span></li>
+					<li
+						><b>Services</b> (quotes, backgrounds, and other APIs)
+						<span id="help-status-services"> · loading...</span></li
+					>
+				</ul>
+			</div>
+
+			<div id="storage-data">
+				<h2>💾 Storage</h2>
+
+				<p>The way(s) Bonjourr stores data in your browser.</p>
+
+				<details id="localstorage-container" class="hidden">
+					<summary>
+						<h4>Page storage <small>(localStorage)</small></h4>
+					</summary>
+					<p>Stores all your data when using online.bonjourr.fr (settings, cache, backgrounds...).</p>
+					<ul id="help-localstorage"></ul>
+				</details>
+
+				<details open id="syncstorage-container" class="hidden">
+					<summary>
+						<h4>Synchronized <small>(browser.storage.sync)</small></h4>
+					</summary>
+					<p
+						><b>Critical user data</b> is stored here: essentially all your settings except local
+						backgrounds. This is the content of your downloaded <b>settings file</b>.</p
+					>
+					<pre id="help-storage-sync" readonly></pre>
+				</details>
+
+				<details id="browserstorage-container" class="hidden">
+					<summary>
+						<h4>Local <small>(browser.storage.local)</small></h4>
+					</summary>
+					<p>Stores large data that either cannot or does not need to be synced.</p>
+					<pre id="help-storage-local" readonly></pre>
+				</details>
+			</div>
+
+			<div id="reset">
+				<h2>🔄 Settings management & reset</h2>
+
+				<p
+					>If you need to <b>reset Bonjourr</b>, please <b class="important">download your settings</b> and
+					read the <a href="#troubleshoot">first section</a> of this guide first.</p
+				>
+
+				<div id="help-buttons">
+					<button
+						class="help-btn export"
+						title="Export a new settings file"
+						aria-label="Export a new settings file"
+					>
+						<img src="src/assets/labels/download.svg" height="16" alt="" />
+						<span class="trn">Download settings</span>
+					</button>
+
+					<button disabled class="help-btn reset" title="Please download your settings before the reset">
+						<svg
+							height="16"
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke-width="1.5"
+							stroke="currentColor"
+							class="size-6"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+							/>
+						</svg>
+						<span class="trn">Reset Bonjourr and reload</span>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<style>
+			#help-mode {
+				font-family: system-ui;
+				color: #ccc;
+				background-color: black;
+				position: relative;
+				z-index: 2;
+				display: none;
+				padding: 0 20px;
+			}
+
+			#help-mode.shown {
+				display: flow-root;
+			}
+
+			#help-mode #content {
+				max-width: 600px;
+				margin: 4em auto;
+			}
+
+			#help-mode a {
+				color: white;
+				text-decoration: underline;
+			}
+
+			#help-mode h1,
+			#help-mode h2,
+			#help-mode h3,
+			#help-mode h4 {
+				color: white;
+			}
+
+			#help-mode h1 {
+				text-align: center;
+			}
+
+			#help-mode h2 {
+				margin-top: 2em;
+				margin-bottom: 0.5em;
+			}
+
+			#help-mode p {
+				margin-top: 0.5em;
+				margin: 0.75rem 0;
+				color: #d1d5db;
+				font-size: 0.95rem;
+				line-height: 1.4;
+			}
+
+			#help-mode .hidden {
+				display: none;
+			}
+
+			#help-mode .important {
+				color: red;
+			}
+
+			#help-mode pre {
+				width: 100%;
+				border: none;
+				resize: vertical;
+				font-family: var(--monospace-font-family);
+				font-size: 0.8rem;
+				background-color: rgb(53, 53, 57);
+				border-radius: 10px;
+				margin: 6px 0;
+				padding: 15px 21px;
+				max-width: 100%;
+				height: 12em;
+				min-height: 12em;
+				box-sizing: border-box;
+				text-wrap: wrap;
+				overflow: auto;
+				word-break: break-all;
+				color: #e5e7eb;
+			}
+
+			#help-mode details {
+				background: #1c1c1e;
+				border: 1px solid #2a2a2d;
+				border-radius: 0.75rem;
+				padding: 1rem;
+				margin: 1rem 0;
+				transition: all 0.15s ease-in-out;
+				color: #e5e7eb;
+			}
+
+			#help-mode details[open] {
+				background: #1e1e21;
+				border-color: #2d2d30;
+			}
+
+			#help-mode summary {
+				cursor: pointer;
+				list-style: none;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			#help-mode summary h3 {
+				margin-block: 10px;
+			}
+
+			#help-mode summary h4 {
+				margin: 0;
+				font-size: 1rem;
+				font-weight: 600;
+				color: #f3f4f6;
+			}
+
+			#help-mode summary small {
+				font-weight: 400;
+				color: #9ca3af;
+			}
+
+			#help-mode summary::after {
+				content: '▸';
+				font-size: 1.2rem;
+				color: #9ca3af;
+				transition:
+					transform 0.2s ease,
+					color 0.2s ease;
+			}
+
+			#help-mode details[open] summary::after {
+				transform: rotate(90deg);
+				color: #f3f4f6;
+			}
+
+			/* server statuses */
+
+			#server-status ul {
+				list-style: none;
+			}
+
+			#server-status ul li {
+				position: relative;
+			}
+
+			#server-status ul li:before {
+				content: '';
+				position: absolute;
+				width: 0.35rem;
+				height: 0.35rem;
+				top: 50%;
+				transform: translateY(-50%);
+				left: -0.85em;
+				border-radius: 9999px;
+				animation: pulse 2s ease infinite;
+				background-color: #ff8000;
+				box-shadow: 0 0 5px #ffb366;
+			}
+
+			#server-status ul li.statusUp:before {
+				background-color: #00ff00;
+				box-shadow: 0 0 5px #00ff00;
+			}
+
+			#server-status ul li.statusDown:before {
+				background-color: #ff0000;
+				box-shadow: 0 0 5px #ff4d4d;
+			}
+
+			@keyframes pulse {
+				0%,
+				to {
+					opacity: 1;
+					transform: scale(1) translateY(-50%);
+				}
+
+				50% {
+					opacity: 0.4;
+					transform: scale(1.2) translateY(-50%);
+				}
+			}
+		</style>
+	</div>
+</template>

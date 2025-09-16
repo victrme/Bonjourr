@@ -1,7 +1,6 @@
 import { LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { deepEqual } from './dependencies/deepequal.ts'
 import { parse } from './utils/parse.ts'
-import * as idb from 'idb-keyval'
 
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
@@ -379,14 +378,12 @@ async function init(): Promise<AllStorage> {
 
 async function clearall() {
 	sessionStorage.clear()
-	localStorage.clear()
 
-	try {
-		idb.clear()
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return
-	}
+	Object.keys(localStorage).forEach((key) => {
+		if (key.startsWith('bonjourr-archive-') === false) {
+			localStorage.removeItem(key)
+		}
+	})
 
 	try {
 		globalThis.caches.delete('local-files')

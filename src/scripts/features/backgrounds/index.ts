@@ -133,6 +133,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		createProviderSelect(data.backgrounds)
 		handleBackgroundOptions(data.backgrounds)
 		backgroundsInit(data, local)
+		return
 	}
 
 	if (isFrequency(update.freq)) {
@@ -378,11 +379,11 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local, ne
 	}
 
 	if (!needNew && isPaused) {
-		if (backgrounds.pausedImage) {
+		if (backgrounds.pausedImage && backgrounds.type === 'images') {
 			applyBackground(backgrounds.pausedImage)
 			return
 		}
-		if (backgrounds.pausedVideo) {
+		if (backgrounds.pausedVideo && backgrounds.videos === 'videos') {
 			applyBackground(backgrounds.pausedVideo)
 			return
 		}
@@ -612,10 +613,12 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 	}
 
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-	const resolution = res ? res : detectBackgroundSize()
+	let resolution = res ? res : detectBackgroundSize()
 	let item: HTMLDivElement
 
 	if (media.format === 'image') {
+		// disables blur compression for animated gifs (flawed since some gifs aren't animated)
+		resolution = media.mimetype === 'image/gif' ? 'full' : resolution
 		const src = media.urls[resolution]
 		item = createImageItem(src, media)
 	} else {
