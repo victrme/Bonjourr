@@ -154,3 +154,13 @@ dialog#contextmenu #background-actions button {
 #b_interface-background-pause.paused #interface-background-pause-icon {
 	display: none;
 }
+
+/* animation for the background downloading icon */
+.spin path:last-child {
+	transform-origin: 12px 12px;
+	animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
