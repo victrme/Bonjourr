@@ -524,6 +524,14 @@
 	font-size: 1.5em;
 }
 
+#time .clock-date-aa {
+	display: inline-block;
+}
+
+#time .clock-date-aa::first-letter {
+	text-transform: uppercase;
+}
+
 #time.analog .clock-date {
 	margin-top: 1em;
 }
