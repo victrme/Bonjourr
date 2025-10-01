@@ -84,6 +84,14 @@ function settingsInitEvent(event: Event) {
 		settingsToggle(e)
 	}) as EventListener)
 
+	// if init by touch, opens settings right away
+	if ((event as PointerEvent).pointerType === "touch") {
+		// tricks the browser into thinking it's not the same event that inits and opens
+		setTimeout(() => {
+			 document.dispatchEvent(new CustomEvent('toggle-settings'))
+		}, 0)
+    }
+
 	document.body?.removeEventListener('keydown', settingsInitEvent)
 	showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 

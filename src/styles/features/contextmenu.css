@@ -118,6 +118,7 @@ dialog#contextmenu #background-actions hr, dialog#contextmenu #background-action
 
 #background-actions .buttons {
 	display: flex;
+	justify-content: center;
 }
 
 dialog#contextmenu #background-actions button {
