@@ -1,7 +1,7 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
-import { needsChange, userDate } from '../../shared/time.ts'
 import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
+import { needsChange } from '../../shared/time.ts'
 import { onclickdown } from 'clickdown/mod'
 import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
@@ -44,7 +44,7 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 		const id = ids[rand]
 
 		applyBackground(await imageFromLocalFiles(id, local))
-		local.backgroundFiles[id].lastUsed = userDate().toString()
+		local.backgroundFiles[id].lastUsed = new Date().toString()
 		storage.local.set(local)
 	} else {
 		applyBackground(await imageFromLocalFiles(ids[0], local))
@@ -55,7 +55,6 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 
 export async function addLocalBackgrounds(filelist: FileList | File[], local: Local) {
 	try {
-		const dateString = userDate().toString()
 		const thumbnailsContainer = document.getElementById('thumbnails-container')
 		const filesData: Record<string, LocalFileData> = {}
 		const newids: string[] = []
@@ -121,7 +120,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			// const exif = await getExif(file)
 
 			local.backgroundFiles[id] = {
-				lastUsed: dateString,
+				lastUsed: new Date().toString(),
 				position: {
 					size: 'cover',
 					x: '50%',
@@ -435,7 +434,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 		unselectAll()
 		document.getElementById(id)?.classList?.add('selected')
 
-		local.backgroundFiles[id].lastUsed = userDate().toString()
+		local.backgroundFiles[id].lastUsed = new Date().toString()
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
 
 		handleFilesSettingsOptions(local)
