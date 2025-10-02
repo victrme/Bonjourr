@@ -15,6 +15,8 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
+import { openSettingsButtonEvent } from './features/contextmenu.ts'
+
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
@@ -88,7 +90,12 @@ function settingsInitEvent(event: Event) {
 	if ((event as PointerEvent).pointerType === "touch") {
 		// tricks the browser into thinking it's not the same event that inits and opens
 		setTimeout(() => {
-			 document.dispatchEvent(new CustomEvent('toggle-settings'))
+			// when requesting specific settings section
+			if ((event.target as HTMLElement).getAttribute("data-attribute")) {
+				openSettingsButtonEvent(event)
+			} else {
+				document.dispatchEvent(new CustomEvent('toggle-settings'))
+			}
 		}, 0)
     }
 

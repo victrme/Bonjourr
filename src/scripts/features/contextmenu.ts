@@ -138,8 +138,8 @@ export function positionContextMenu(event: Event) {
 	} //
 	else if (withPointer) {
 		// gets coordinates differently from touchstart or contextmenu
-		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 10
-		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 10
+		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x)
+		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y)
 	} //
 	else if (withKeyboard) {
 		const targetEl = event.target as HTMLElement
@@ -149,8 +149,8 @@ export function positionContextMenu(event: Event) {
 		y = rect.bottom + 4
 	}
 
-	const w = editRects.width + 20
-	const h = editRects.height + 20
+	const w = editRects.width
+	const h = editRects.height 
 
 	if (x + w > innerWidth) {
 		x -= x + w - innerWidth
