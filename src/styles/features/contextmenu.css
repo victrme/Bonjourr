@@ -76,6 +76,11 @@ dialog#contextmenu button {
 	gap: 0.5em;
 }
 
+/* so that it doesn't break JS events when clicking on elements inside the buttons */
+dialog#contextmenu button * {
+	pointer-events: none;
+}
+
 dialog#contextmenu button svg {
 	height: 18px;
 }
@@ -95,4 +100,68 @@ dialog#contextmenu button.on {
 
 dialog#contextmenu label.on {
 	display: grid;
+}
+
+/* background actions */
+
+#background-actions {
+	display: none;
+}
+
+#background-actions.on:not([data-type="color"]) {
+	display: block;
+}
+
+dialog#contextmenu #background-actions hr, dialog#contextmenu #background-actions label, dialog#contextmenu #background-actions button {
+	display: flex;
+}
+
+#background-actions .buttons {
+	display: flex;
+	justify-content: center;
+}
+
+dialog#contextmenu #background-actions button {
+	display: flex;
+	width: unset;
+}
+
+#background-actions button span {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 13px;
+}
+
+#background-actions button span svg {
+	height: 13px;
+}
+
+#download-background {
+	display: none;
+}
+
+#b_interface-background-download.idle span:last-child,
+#b_interface-background-download.loading span:first-child {
+	display: none;
+}
+
+#b_interface-background-pause #interface-background-pause-icon,
+#b_interface-background-pause.paused #interface-background-play-icon {
+	display: flex;
+}
+
+#b_interface-background-pause #interface-background-play-icon,
+#b_interface-background-pause.paused #interface-background-pause-icon {
+	display: none;
+}
+
+/* animation for the background downloading icon */
+.spin path:last-child {
+	transform-origin: 12px 12px;
+	animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
 }

@@ -15,6 +15,8 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
+import { openSettingsButtonEvent } from './features/contextmenu.ts'
+
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
@@ -84,6 +86,19 @@ function settingsInitEvent(event: Event) {
 		settingsToggle(e)
 	}) as EventListener)
 
+	// if init by touch, opens settings right away
+	if ((event as PointerEvent).pointerType === "touch") {
+		// tricks the browser into thinking it's not the same event that inits and opens
+		setTimeout(() => {
+			// when requesting specific settings section
+			if ((event.target as HTMLElement).getAttribute("data-attribute")) {
+				openSettingsButtonEvent(event)
+			} else {
+				document.dispatchEvent(new CustomEvent('toggle-settings'))
+			}
+		}, 0)
+    }
+
 	document.body?.removeEventListener('keydown', settingsInitEvent)
 	showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 
@@ -112,7 +127,6 @@ function settingsInitEvent(event: Event) {
 }
 
 function settingsToggle(event: CustomEvent) {
-	const dombackgroundactions = document.getElementById('background-actions')
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domsettings = document.getElementById('settings')
@@ -139,7 +153,6 @@ function settingsToggle(event: CustomEvent) {
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
 	domshowsettings?.classList.toggle('shown', isClosed)
-	dombackgroundactions?.classList.toggle('pushed', isClosed)
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')

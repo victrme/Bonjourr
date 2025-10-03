@@ -1,7 +1,8 @@
-import { getComposedPath } from '../shared/dom.ts'
 import { transitioner } from '../utils/transitioner.ts'
 import { populateDialogWithEditLink } from './links/edit.ts'
 import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
+import type { Backgrounds } from '../../types/sync.ts'
+import { debounce } from '../utils/debounce.ts'
 
 interface eventLocation {
     widgets: {
@@ -61,9 +62,13 @@ export async function openContextMenu(event: Event) {
 
 	if (!menuWillOpen) return
 
-	// hides content from previous context menu
-	for (const node of domdialog.querySelectorAll('label, button, hr')) {
+	// hides/resets content from previous context menu
+	for (const node of domdialog.querySelectorAll('label, button, hr, #background-actions, input')) {
 		node.classList.remove('on')
+		
+		if (node instanceof HTMLInputElement) {
+			node.required = false
+		}
 	}
 
 	// prevents OS context menu
@@ -84,19 +89,33 @@ export async function openContextMenu(event: Event) {
 		for (const [key, value] of Object.entries(eventLocation.widgets)) {
 			if (value) {
 				// shows its corresponding action button
-				populateDialogWithAction(sectionMatching[key].scrollto)
+				populateDialogWithAction("openTheseSettings", sectionMatching[key].scrollto)
 			}
 		}
 
 		positionContextMenu(event)
 	} else if (eventLocation.interface) {
-		populateDialogWithAction("background_title")
+		populateDialogWithAction("openTheseSettings", "background_title")
+		
+		// add new link button if quick links are enabled
+		if (!document.querySelector('#linkblocks.hidden')) {
+			populateDialogWithAction("add-new-link")
+		}
+
+		showTheseElements('#background-actions')
+
 		positionContextMenu(event)
 	}
 }
 
-function populateDialogWithAction(actionToShow: string) {
-	domdialog.querySelector<HTMLButtonElement>(`[data-scroll-to="${actionToShow}"]`)?.classList.add('on')
+function populateDialogWithAction(actionType: string, attribute?: string) {
+	let selector = `[data-action="${actionType}"]`
+
+	if (attribute) {
+		selector += `[data-attribute="${attribute}"]`
+	}
+
+	showTheseElements(selector)
 }
 
 export function positionContextMenu(event: Event) {
@@ -119,8 +138,8 @@ export function positionContextMenu(event: Event) {
 	} //
 	else if (withPointer) {
 		// gets coordinates differently from touchstart or contextmenu
-		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x) + 20
-		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y) + 20
+		x = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientX : (event as PointerEvent).x)
+		y = (event.type === 'touchstart' ? (event as TouchEvent).touches[0].clientY : (event as PointerEvent).y)
 	} //
 	else if (withKeyboard) {
 		const targetEl = event.target as HTMLElement
@@ -130,8 +149,8 @@ export function positionContextMenu(event: Event) {
 		y = rect.bottom + 4
 	}
 
-	const w = editRects.width + 30
-	const h = editRects.height + 30
+	const w = editRects.width
+	const h = editRects.height 
 
 	if (x + w > innerWidth) {
 		x -= x + w - innerWidth
@@ -150,7 +169,7 @@ export function positionContextMenu(event: Event) {
 
 export function openSettingsButtonEvent(event: Event) {
 	const target = event.target as HTMLButtonElement
-	const sectionToScrollTo = target.getAttribute('data-scroll-to')
+	const sectionToScrollTo = target.getAttribute('data-attribute')
 	
 	if (sectionToScrollTo) {
 		document.dispatchEvent(new CustomEvent('toggle-settings', {
@@ -161,31 +180,52 @@ export function openSettingsButtonEvent(event: Event) {
 	} else {
 		console.error(`Section "${sectionToScrollTo}" doesn't match anything`)
 	}
+}
 
+function showTheseElements(query: string) {
+	document.querySelectorAll<HTMLElement>(query).forEach(element => {
+		element.classList.add("on")
+	})
 }
 
 queueMicrotask(() => {
-    document.addEventListener('close-edit', closeContextMenu)
-    mainInterface?.addEventListener('contextmenu', openContextMenu)
+	document.addEventListener('contextmenu', (event) => {
+		// if right click inside interface, custom context menu
+		if (mainInterface?.contains(event.target as Node)) {
+			openContextMenu(event)
+			return
+		}
 
+		// Otherwise, closes the custom one and opens the regular one
+		closeContextMenu()
+	})
+
+	// for when needing to close context menu from elsewhere
+	document.addEventListener('close-edit', closeContextMenu)
+
+	// these are "open x settings" inside context menu
 	const openSettingsButtons = domdialog.querySelectorAll<HTMLButtonElement>(`[data-action="openTheseSettings"]`)
-
 	openSettingsButtons?.forEach(btn => {
 		btn?.addEventListener('click', openSettingsButtonEvent)
 	})
-    
+
+	const addNewLinkButton = domdialog.querySelector<HTMLButtonElement>(`[data-action="add-new-link"]`)
+	addNewLinkButton?.addEventListener('click', (event) =>
+		populateDialogWithEditLink(event, domdialog, true)
+	)
+
     if (SYSTEM_OS === 'ios' || !IS_MOBILE) {
-        // const handleLongPress = debounce((event: TouchEvent) => {
-        //     openEditDialog(event)
-        // }, 500)
+        const handleLongPress = debounce((event: TouchEvent) => {
+            openContextMenu(event)
+        }, 500)
 
-        // domdialog?.addEventListener('touchstart', (event) => {
-        //     handleLongPress(event)
-        // })
+        document?.addEventListener('touchstart', (event) => {
+            handleLongPress(event)
+        })
 
-        // domdialog?.addEventListener('touchend', () => {
-        //     handleLongPress.cancel()
-        // })
+        document?.addEventListener('touchend', () => {
+            handleLongPress.cancel()
+        })
 
         globalThis.addEventListener('resize', closeContextMenu)
     }
@@ -204,4 +244,14 @@ export function closeContextMenu() {
 		domdialog.classList.remove('shown')
 		domdialog.close()
 	}
+}
+
+export function handleBackgroundActions(backgrounds: Backgrounds) {
+	console.info('handleBackgroundActions()')
+	const type = backgrounds.type
+	const freq = backgrounds.frequency
+
+	document.getElementById('background-actions')?.setAttribute("data-type", type)
+	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
+	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
 }
