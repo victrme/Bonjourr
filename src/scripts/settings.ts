@@ -14,7 +14,6 @@ import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
-
 import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'

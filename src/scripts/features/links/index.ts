@@ -32,8 +32,10 @@ type AddLinks = {
 type UpdateLink = {
 	id: string
 	url?: string
-	icon?: string
 	title: string
+	icon?: string // icon type
+	icon_url?: string
+	icon_svg?: string
 }
 
 type AddGroups = {

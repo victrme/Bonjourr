@@ -247,7 +247,6 @@ export function closeContextMenu() {
 }
 
 export function handleBackgroundActions(backgrounds: Backgrounds) {
-	console.info('handleBackgroundActions()')
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
 

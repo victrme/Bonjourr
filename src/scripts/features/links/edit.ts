@@ -31,7 +31,11 @@ let domeditlink: HTMLDialogElement
 
 const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
-const domicon = document.getElementById('e-icon') as HTMLInputElement
+
+const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
+const domiconurl = document.getElementById('e-icon') as HTMLInputElement
+const domiconstatic = document.getElementById('e-icon-svg') as HTMLInputElement
+
 let inputToFocus: HTMLInputElement
 
 let editStates: EditStates
@@ -128,14 +132,15 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 
 		if (link && !link.folder) {
 			const icon = link.icon ?? ''
-			const type = icon.startsWith('svg:') ? 'svg' : icon.startsWith('file:') ? 'file' : 'url'
+			let type = icon.startsWith('svg:') ? 'svg' : icon.startsWith('file:') ? 'file' : 'url'
+
+			// type = "svg"
+			// console.info(type)
 
 			domurl.value = link.url ?? ''
-			domicon.value = Number.isNaN(parseInt(icon)) ? icon : ''
+			domiconurl.value = Number.isNaN(parseInt(icon)) ? icon : ''
 
-			document.getElementById('edit-icon-url')?.classList.toggle('on', type === 'url')
-			document.getElementById('edit-icon-svg')?.classList.toggle('on', type === 'svg')
-			document.getElementById('edit-icon-file')?.classList.toggle('on', type === 'file')
+			toggleIconType(type)
 		}
 	}
 
@@ -167,7 +172,7 @@ function toggleEditInputs(): string[] {
 	document.querySelector('#edit-pin')?.removeAttribute('disabled')
 
 	domurl.value = ''
-	domicon.value = ''
+	domiconurl.value = ''
 	domtitle.value = ''
 
 	if (container.mini) {
@@ -258,13 +263,30 @@ function toggleEditInputs(): string[] {
 //
 queueMicrotask(() => {
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
+	domicontype?.addEventListener('change', toggleIconType)
 })
 
-function toggleIconType(event: Event) {
-	const value = event.target.value
-	document.getElementById('edit-icon-url')?.classList.toggle('on', value === 'url')
-	document.getElementById('edit-icon-svg')?.classList.toggle('on', value === 'svg')
-	document.getElementById('edit-icon-file')?.classList.toggle('on', value === 'file')
+function toggleIconType(iconType: Event | string) {
+	if (iconType instanceof Event) { // figures out the needed icon type if it's from event change
+		const target = iconType.target as HTMLInputElement
+		iconType = target.value
+	}
+
+	const selectIconType = document.getElementById('e-icon-type') as HTMLSelectElement
+
+	if (selectIconType) { 
+		selectIconType.value = iconType
+	} 
+
+	const editIconUrl = document.getElementById('e-icon') as HTMLInputElement
+
+	if (editIconUrl) { // disables the input when it's hidden, otherwise HTML complains
+		editIconUrl.disabled = iconType !== 'url'
+	}
+
+	document.getElementById('edit-icon-url')?.classList.toggle('on', iconType === 'url')
+	document.getElementById('edit-icon-svg')?.classList.toggle('on', iconType === 'svg')
+	document.getElementById('edit-icon-file')?.classList.toggle('on', iconType === 'file')
 }
 
 function submitChanges(event: SubmitEvent) {
@@ -416,9 +438,12 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 		updateLink: {
 			id: id,
 			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
-			icon: document.querySelector<HTMLInputElement>('#e-icon')?.value,
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
+			icon: domicontype?.value,
+			icon_svg: domiconstatic?.value,
+			icon_url: domiconurl.value,
 		},
 	})
+	
 	closeContextMenu()
 }
