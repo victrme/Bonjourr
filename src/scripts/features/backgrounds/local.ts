@@ -7,8 +7,8 @@ import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 
+import type { Background, BackgroundImage, BackgroundVideo } from '../../../types/shared.ts'
 import type { BackgroundFile, Local } from '../../../types/local.ts'
-import type { BackgroundImage } from '../../../types/shared.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
 
 type LocalFileData = {
@@ -20,6 +20,41 @@ type LocalFileData = {
 
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
+
+async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
+	const video = document.createElement('video')
+
+	const url = URL.createObjectURL(file)
+	video.src = url
+
+	video.load()
+
+	await new Promise((r) => {
+		video.addEventListener('loadedmetadata', () => r(true))
+	})
+
+	URL.revokeObjectURL(url)
+
+	return video
+}
+
+async function createThumbnailFromVideo(file: File): Promise<Blob | null> {
+	const video = document.createElement('video')
+	video.setAttribute('src', URL.createObjectURL(file))
+	video.load()
+
+	const blob = await new Promise<Blob | null>(function (resolve) {
+		video.addEventListener('load', function () {
+			const canvas = document.querySelector<HTMLCanvasElement>('canvas')
+			const ctx = canvas?.getContext('2d')
+
+			ctx?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+			ctx?.canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.75)
+		})
+	})
+
+	return blob
+}
 
 export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
 	local = await sanitizeMetadatas(local)
@@ -43,11 +78,11 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 		const rand = Math.floor(Math.random() * ids.length)
 		const id = ids[rand]
 
-		applyBackground(await imageFromLocalFiles(id, local))
+		applyBackground(await mediaFromBackgroundFiles(id, local))
 		local.backgroundFiles[id].lastUsed = new Date().toString()
 		storage.local.set(local)
 	} else {
-		applyBackground(await imageFromLocalFiles(ids[0], local))
+		applyBackground(await mediaFromBackgroundFiles(ids[0], local))
 	}
 }
 
@@ -110,11 +145,17 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 				full = file
 				medium = file
 				small = await compressMedia(file, { size: 360, q: 0.4 })
-			} else {
+			} //
+			else if (file.type.includes('image/')) {
 				raw = file
 				full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
 				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
 				small = await compressMedia(medium, { size: 360, q: 0.4 })
+			} else {
+				raw = file
+				full = file
+				medium = file
+				small = file
 			}
 
 			// const exif = await getExif(file)
@@ -137,12 +178,14 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		// 3. Apply background
 
+		console.log(newids)
+
 		if (newids.length > 0) {
 			const id = newids[0]
-			const image = await imageFromLocalFiles(id, local, filesData[id])
+			const media = await mediaFromBackgroundFiles(id, local, filesData[id])
 
 			unselectAll()
-			applyBackground(image)
+			applyBackground(media)
 			handleFilesSettingsOptions(local)
 		}
 
@@ -183,7 +226,7 @@ async function removeLocalBackgrounds() {
 		const filesIds = lastUsedBackgroundFiles(local.backgroundFiles)
 
 		if (filesIds.length > 0) {
-			applyBackground(await imageFromLocalFiles(filesIds[0], local))
+			applyBackground(await mediaFromBackgroundFiles(filesIds[0], local))
 		} else {
 			removeBackgrounds()
 		}
@@ -391,7 +434,7 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 		setTimeout(() => btn.classList.remove('loaded'), 2)
 	})
 
-	imageFromLocalFiles(id, local, data).then((image) => {
+	mediaFromBackgroundFiles(id, local, data).then((image) => {
 		img.src = image.urls.small
 	})
 }
@@ -423,7 +466,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 	if (isLeftClick) {
 		const local = await storage.local.get()
 		const metadata = local.backgroundFiles[id]
-		const image = await imageFromLocalFiles(id, local)
+		const image = await mediaFromBackgroundFiles(id, local)
 
 		if (!metadata || !image) {
 			console.warn('metadata: ', metadata)
@@ -453,32 +496,60 @@ export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): st
 	return sortedMetadata.map(([id, _]) => id)
 }
 
-export async function imageFromLocalFiles(id: string, local: Local, data?: LocalFileData): Promise<BackgroundImage> {
+export async function mediaFromBackgroundFiles(
+	id: string,
+	local: Local,
+	data?: LocalFileData,
+): Promise<Background> {
 	const isRaw = local.backgroundCompressFiles === false
 	const metadata = local.backgroundFiles[id]
 	data = data ?? (await getFileFromCache(id))
 
-	const urls = {
-		raw: URL.createObjectURL(data.raw),
-		full: URL.createObjectURL(data.full),
-		medium: URL.createObjectURL(data.medium),
-		small: URL.createObjectURL(data.small),
-	}
+	const isVideo = data.raw.type.includes('video/')
 
-	const image: BackgroundImage = {
-		format: 'image',
-		mimetype: data.raw.type,
-		size: metadata?.position.size ?? 'cover',
-		x: metadata?.position.x ?? '50%',
-		y: metadata?.position.y ?? '50%',
-		urls: {
-			full: isRaw ? urls.raw : urls.full,
-			medium: urls.medium,
-			small: urls.small,
-		},
-	}
+	if (isVideo) {
+		const htmlvideo = await getLoadedVideo(data.raw)
+		const duration = htmlvideo.duration
 
-	return image
+		htmlvideo.remove()
+
+		const url = URL.createObjectURL(data.raw)
+		const video: BackgroundVideo = {
+			format: 'video',
+			duration: duration,
+			mimetype: data.raw.type,
+			urls: {
+				full: url,
+				medium: url,
+				small: url,
+			},
+		}
+
+		return video
+	} //
+	else {
+		const urls = {
+			raw: URL.createObjectURL(data.raw),
+			full: URL.createObjectURL(data.full),
+			medium: URL.createObjectURL(data.medium),
+			small: URL.createObjectURL(data.small),
+		}
+
+		const image: BackgroundImage = {
+			format: 'image',
+			mimetype: data.raw.type,
+			size: metadata?.position.size ?? 'cover',
+			x: metadata?.position.x ?? '50%',
+			y: metadata?.position.y ?? '50%',
+			urls: {
+				full: isRaw ? urls.raw : urls.full,
+				medium: urls.medium,
+				small: urls.small,
+			},
+		}
+
+		return image
+	}
 }
 
 //	Helpers

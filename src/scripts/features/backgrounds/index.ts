@@ -4,10 +4,10 @@ import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 import {
 	addLocalBackgrounds,
-	imageFromLocalFiles,
 	initFilesSettingsOptions,
 	lastUsedBackgroundFiles,
 	localFilesCacheControl,
+	mediaFromBackgroundFiles,
 } from './local.ts'
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
@@ -189,7 +189,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		storage.local.set({ backgroundCompressFiles: update.compress })
 
 		const ids = lastUsedBackgroundFiles(local.backgroundFiles)
-		const image = await imageFromLocalFiles(ids[0], local, undefined)
+		const image = await mediaFromBackgroundFiles(ids[0], local, undefined)
 
 		applyBackground(image)
 	}
@@ -944,7 +944,7 @@ function handleBackgroundActions(backgrounds: Backgrounds) {
 async function blurResolutionControl(sync: Sync, local: Local) {
 	if (sync.backgrounds.type === 'files') {
 		const ids = lastUsedBackgroundFiles(local.backgroundFiles)
-		const image = await imageFromLocalFiles(ids[0], local)
+		const image = await mediaFromBackgroundFiles(ids[0], local)
 		applyBackground(image, 'full')
 		return
 	}
@@ -968,8 +968,8 @@ async function blurResolutionControl(sync: Sync, local: Local) {
 async function getCurrentBackgrounds(sync: Sync, local: Local) {
 	if (sync.backgrounds.type === 'files') {
 		const ids = lastUsedBackgroundFiles(local.backgroundFiles)
-		const current = await imageFromLocalFiles(ids[0], local)
-		const next = await imageFromLocalFiles(ids[1], local)
+		const current = await mediaFromBackgroundFiles(ids[0], local)
+		const next = await mediaFromBackgroundFiles(ids[1], local)
 		return [current, next]
 	}
 	if (sync.backgrounds.type === 'images') {
