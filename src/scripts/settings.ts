@@ -57,7 +57,6 @@ export function settingsInit(sync: Sync, local: Local) {
 }
 
 function settingsInitEvent(event: Event) {
-	console.info('settingsInitEvent()')
 	const showsettings = document.getElementById('show-settings')
 	const settings = document.getElementById('settings')
 

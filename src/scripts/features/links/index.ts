@@ -20,7 +20,7 @@ import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { Link, LinkElem, LinkFolder } from '../../../types/shared.ts'
+import type { Link, LinkElem, LinkIcon, LinkFolder } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
@@ -33,9 +33,7 @@ type UpdateLink = {
 	id: string
 	url?: string
 	title: string
-	icon?: string // icon type
-	icon_url?: string
-	icon_svg?: string
+	icon?: LinkIcon
 }
 
 type AddGroups = {
@@ -281,11 +279,17 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	span.textContent = createTitle(link)
 
 	if (style !== 'text') {
-		const iconurl = link.icon ?? ''
-		const refresh = new Date(Number.parseInt(iconurl))?.getTime()
-		const isDefaultRefreshed = Number.isInteger(refresh)
-		const icon = !isDefaultRefreshed && link.icon ? link.icon : getDefaultIcon(link.url, refresh)
+		let icon = getDefaultIcon(link.url)
 
+		if (link.icon) {
+			if (link.icon.type === "auto" || link.icon.type === "url") {
+				const iconurl = link.icon.value ?? ''
+				const refresh = new Date(Number.parseInt(iconurl))?.getTime()
+				const isDefaultRefreshed = Number.isInteger(refresh)
+				icon = !isDefaultRefreshed && link.icon.value ? link.icon.value : getDefaultIcon(link.url, refresh)
+			}
+		}
+		
 		initIconList.push([img, icon])
 	}
 
@@ -298,6 +302,8 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 
 function createIcons(isInit?: true) {
 	const loadingTimeout = isInit ? 400 : 0
+
+	console.log(initIconList)
 
 	for (const [img, url] of initIconList) {
 		img.src = url
@@ -464,6 +470,8 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 		}
 	}
 
+	console.log(newlinks)
+
 	if (type === 'folder') {
 		const { ids, title, group } = args
 		newlinks = addLinkFolder(ids, title, group)
@@ -543,11 +551,20 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 
 	if (!link.folder) {
 		if (icondom) {
-			const url = (icon ? stringMaxSize(icon, 7500) : undefined) ?? getDefaultIcon(link.url)
 			const img = document.createElement('img')
+			let url = getDefaultIcon(link.url) as string
 
-			link.icon = url ? url : undefined
+			if (icon?.type === "auto") {
+				icon.value = undefined
+			} else if (icon?.type === "url") {
+				if (icon.value && stringMaxSize(icon.value, 7500)) {
+					url = icon.value
+				} else {
+					console.error(`There was a problem with this icon URL: ${icon.value}`)
+				}
+			}
 
+			link.icon = icon
 			icondom.src = 'src/assets/interface/loading.svg'
 
 			img.onload = () => {
@@ -567,6 +584,8 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 	}
 
 	data[id] = link
+
+	console.log(link)
 	return data
 }
 

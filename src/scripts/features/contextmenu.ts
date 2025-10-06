@@ -232,7 +232,6 @@ queueMicrotask(() => {
 })
 
 export function closeContextMenu() {
-	console.info("closeContextMenu()")
 	if (domdialog.open) {
 		const selected = document.querySelectorAll('.link-title.selected, .link.selected')
 
@@ -243,6 +242,9 @@ export function closeContextMenu() {
 		domdialog.removeAttribute('data-tab')
 		domdialog.classList.remove('shown')
 		domdialog.close()
+		
+		// stops multi-selection mode for quick links
+		document.dispatchEvent(new Event('remove-select-all'))
 	}
 }
 

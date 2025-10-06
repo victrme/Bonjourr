@@ -6,6 +6,7 @@ import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 import { getComposedPath } from '../../shared/dom.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
+import { LinkIcon } from '../../../types/shared.ts'
 
 interface EditStates {
 	group: string
@@ -37,6 +38,7 @@ const domiconurl = document.getElementById('e-icon') as HTMLInputElement
 const domiconstatic = document.getElementById('e-icon-svg') as HTMLInputElement
 
 let inputToFocus: HTMLInputElement
+let buttonToSubmit: HTMLButtonElement
 
 let editStates: EditStates
 
@@ -132,15 +134,18 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 
 		if (link && !link.folder) {
 			const icon = link.icon ?? ''
-			let type = icon.startsWith('svg:') ? 'svg' : icon.startsWith('file:') ? 'file' : 'url'
+			console.log(icon)
+			// let type = icon.startsWith('svg:') ? 'svg' : icon.startsWith('file:') ? 'file' : 'url'
 
 			// type = "svg"
 			// console.info(type)
 
 			domurl.value = link.url ?? ''
-			domiconurl.value = Number.isNaN(parseInt(icon)) ? icon : ''
 
-			toggleIconType(type)
+			// if (icon.type ===)
+			// domiconurl.value = Number.isNaN(parseInt(icon)) ? icon : ''
+
+			toggleIconType(link.icon ? link.icon.type : "auto")
 		}
 	}
 
@@ -167,6 +172,7 @@ function toggleEditInputs(): string[] {
 	let inputs: string[] = []
 
 	inputToFocus = domtitle
+	setSubmitOnEnter('edit-apply')
 
 	document.querySelector('#edit-delete')?.removeAttribute('disabled')
 	document.querySelector('#edit-pin')?.removeAttribute('disabled')
@@ -180,6 +186,7 @@ function toggleEditInputs(): string[] {
 			inputs = ['pin', 'delete']
 		} else if (target.addgroup) {
 			inputs = ['title*', 'add'] // * for required inputs
+			setSubmitOnEnter('edit-add')
 		} else if (target.title) {
 			inputs = ['title', 'delete', 'pin', 'apply']
 		}
@@ -192,6 +199,7 @@ function toggleEditInputs(): string[] {
 			inputs = ['unpin', 'delete']
 		} else if (selectall) {
 			inputs = ['delete', 'refresh', 'add']
+			setSubmitOnEnter('edit-add')
 		} else if (target.title) {
 			inputs = ['title', 'delete', 'unpin', 'apply']
 		} else if (target.folder) {
@@ -201,6 +209,7 @@ function toggleEditInputs(): string[] {
 		} else {
 			inputs = ['title', 'url*', 'add']
 			inputToFocus = domurl
+			setSubmitOnEnter('edit-add')
 		}
 	}
 
@@ -214,10 +223,11 @@ function toggleEditInputs(): string[] {
 		} else {
 			inputs = ['title', 'url*', 'add']
 			inputToFocus = domurl
+			setSubmitOnEnter('edit-add')
 		}
 	}
 
-	// shows every input, button and label needed
+	// shows/enables every input, button and label needed
 	for (const id of inputs) {
 		const required = id.endsWith('*')
 		const cleanId = required ? id.slice(0, -1) : id
@@ -266,6 +276,23 @@ queueMicrotask(() => {
 	domicontype?.addEventListener('change', toggleIconType)
 })
 
+// HTML has peculiar (and limiting) ways of figuring out which button to submit to on enter
+// this is needed to be sure hitting enter triggers the same reaction as clicking the right button
+function setSubmitOnEnter(theButton: string) {
+	if (!buttonToSubmit) {
+		buttonToSubmit = document.getElementById(theButton ?? 'edit-apply') as HTMLButtonElement
+
+		document.getElementById('editlink-form')?.addEventListener('keydown', function(e) {
+			if (e.key === 'Enter') {
+				e.preventDefault() // prevent default submit
+				buttonToSubmit.click() // triggers demanded button
+			}
+		})
+	} else {
+		buttonToSubmit = document.getElementById(theButton) as HTMLButtonElement
+	}
+}
+
 function toggleIconType(iconType: Event | string) {
 	if (iconType instanceof Event) { // figures out the needed icon type if it's from event change
 		const target = iconType.target as HTMLInputElement
@@ -292,6 +319,8 @@ function toggleIconType(iconType: Event | string) {
 function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
 	const { container, target, group, folder, selected, selectall } = editStates
+	
+	console.info(change)
 
 	if (change === 'edit-apply') {
 		applyLinkChanges('button')
@@ -305,13 +334,11 @@ function submitChanges(event: SubmitEvent) {
 		quickLinks(undefined, { refreshIcons: selected })
 	}
 
-	if (change === 'edit-inputs') {
-		console.log('toggle icon type')
-
-		applyLinkChanges('inputs')
-		event.preventDefault()
-		return
-	}
+	// if (change === 'edit-inputs') {
+	// 	applyLinkChanges('inputs')
+	// 	event.preventDefault()
+	// 	return
+	// }
 
 	if (change === 'edit-delete') {
 		if (target.title) {
@@ -322,7 +349,7 @@ function submitChanges(event: SubmitEvent) {
 	}
 
 	if (change === 'edit-add') {
-		if (container.folder) {
+		if (container.folder) { // new link inside folder
 			quickLinks(undefined, {
 				addLinks: [{
 					group: folder,
@@ -337,15 +364,14 @@ function submitChanges(event: SubmitEvent) {
 				}],
 			})
 		} else if (selectall) {
-			document.dispatchEvent(new Event('remove-select-all'))
+			document.dispatchEvent(new Event('remove-select-all')) // new folder from multi-selection
 			quickLinks(undefined, {
 				addFolder: {
 					ids: selected,
 					group: group,
 				},
 			})
-		} else if (container.group) {
-
+		} else if (container.group) { // new link
 			quickLinks(undefined, {
 				addLinks: [{
 					group,
@@ -428,20 +454,24 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 		return
 	}
 
-	if (origin === 'inputs') {
-		for (const node of inputs) {
-			node.blur()
-		}
-	}
+	// if (origin === 'inputs') {
+	// 	for (const node of inputs) {
+	// 		node.blur()
+	// 	}
+	// }
 
 	quickLinks(undefined, {
 		updateLink: {
 			id: id,
 			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
-			icon: domicontype?.value,
-			icon_svg: domiconstatic?.value,
-			icon_url: domiconurl.value,
+			icon: {
+				type: domicontype?.value as LinkIcon['type'],
+				value: domiconurl.value
+			}
+			// icon: domicontype?.value,
+			// icon_svg: domiconstatic?.value,
+			// icon_url: domiconurl.value,
 		},
 	})
 	
