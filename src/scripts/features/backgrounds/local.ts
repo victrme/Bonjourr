@@ -30,27 +30,35 @@ async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
 	video.load()
 
 	await new Promise((r) => {
-		video.addEventListener('loadedmetadata', () => r(true))
+		video.addEventListener('loadeddata', () => r(true))
 	})
 
-	URL.revokeObjectURL(url)
+	// URL.revokeObjectURL(url)
 
 	return video
 }
 
 async function createThumbnailFromVideo(file: File): Promise<Blob | null> {
-	const video = document.createElement('video')
-	video.setAttribute('src', URL.createObjectURL(file))
-	video.load()
+	const video = await getLoadedVideo(file)
+	const canvas = document.createElement('canvas')
+	const ctx = canvas.getContext('2d')
 
-	const blob = await new Promise<Blob | null>(function (resolve) {
-		video.addEventListener('load', function () {
-			const canvas = document.querySelector<HTMLCanvasElement>('canvas')
-			const ctx = canvas?.getContext('2d')
+	document.body.append(video)
 
-			ctx?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
-			ctx?.canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.75)
-		})
+	video.play()
+	video.pause()
+
+	const blob = await new Promise<Blob>((res, rej) => {
+		const callback: BlobCallback = (blob) => blob ? res(blob) : rej(true)
+
+		setTimeout(() => {
+			if (ctx) {
+				ctx?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+				ctx.canvas.toBlob(callback, 'image/jpeg', 0.75)
+			} else {
+				rej(true)
+			}
+		}, 100)
 	})
 
 	return blob
@@ -152,10 +160,13 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
 				small = await compressMedia(medium, { size: 360, q: 0.4 })
 			} else {
+				const thumb = await createThumbnailFromVideo(file)
 				raw = file
 				full = file
 				medium = file
-				small = file
+				small = thumb!
+
+				console.log(thumb)
 			}
 
 			// const exif = await getExif(file)
@@ -177,8 +188,6 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 		}
 
 		// 3. Apply background
-
-		console.log(newids)
 
 		if (newids.length > 0) {
 			const id = newids[0]
@@ -435,7 +444,12 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 	})
 
 	mediaFromBackgroundFiles(id, local, data).then((image) => {
-		img.src = image.urls.small
+		if (image.format === 'image') {
+			img.src = image.urls.small
+		}
+		if (image.format === 'video' && image.thumbnail) {
+			img.src = image.thumbnail
+		}
 	})
 }
 
@@ -513,15 +527,18 @@ export async function mediaFromBackgroundFiles(
 
 		htmlvideo.remove()
 
-		const url = URL.createObjectURL(data.raw)
+		const videoUrl = URL.createObjectURL(data.raw)
+		const thumbnailUrl = URL.createObjectURL(data.small)
+
 		const video: BackgroundVideo = {
 			format: 'video',
 			duration: duration,
 			mimetype: data.raw.type,
+			thumbnail: thumbnailUrl,
 			urls: {
-				full: url,
-				medium: url,
-				small: url,
+				full: videoUrl,
+				medium: videoUrl,
+				small: videoUrl,
 			},
 		}
 
