@@ -27,13 +27,12 @@ async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
 	const url = URL.createObjectURL(file)
 	video.src = url
 
-	video.load()
-
 	await new Promise((r) => {
 		video.addEventListener('loadeddata', () => r(true))
+		video.load()
 	})
 
-	// URL.revokeObjectURL(url)
+	URL.revokeObjectURL(url)
 
 	return video
 }
@@ -43,23 +42,30 @@ async function createThumbnailFromVideo(file: File): Promise<Blob | null> {
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
 
-	document.body.append(video)
+	if (!ctx) {
+		throw new Error('Canvas context failed for ' + file.name)
+	}
 
+	ctx.canvas.width = video.videoWidth
+	ctx.canvas.height = video.videoHeight
+
+	document.body.append(video)
+	video.style.display = 'none'
 	video.play()
 	video.pause()
 
-	const blob = await new Promise<Blob>((res, rej) => {
-		const callback: BlobCallback = (blob) => blob ? res(blob) : rej(true)
+	const blob = await new Promise<Blob>((resolve, reject) => {
+		const toBlobCallback: BlobCallback = (blob) => blob ? resolve(blob) : reject(true)
 
+		// <!> 300ms is completely arbitrary,
+		// <!> videos taking more than that to load will show a black thumbnail
 		setTimeout(() => {
-			if (ctx) {
-				ctx?.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
-				ctx.canvas.toBlob(callback, 'image/jpeg', 0.75)
-			} else {
-				rej(true)
-			}
-		}, 100)
+			ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+			ctx.canvas.toBlob(toBlobCallback, 'image/jpeg', 0.8)
+		}, 300)
 	})
+
+	video.remove()
 
 	return blob
 }
@@ -86,11 +92,11 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 		const rand = Math.floor(Math.random() * ids.length)
 		const id = ids[rand]
 
-		applyBackground(await mediaFromBackgroundFiles(id, local))
+		applyBackground(await mediaFromFiles(id, local))
 		local.backgroundFiles[id].lastUsed = new Date().toString()
 		storage.local.set(local)
 	} else {
-		applyBackground(await mediaFromBackgroundFiles(ids[0], local))
+		applyBackground(await mediaFromFiles(ids[0], local))
 	}
 }
 
@@ -143,30 +149,24 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const ratio = Math.min(1.8, long / short)
 			const averagePixelHeight = short * ratio * density
 
-			let raw: File
-			let full: Blob
-			let medium: Blob
-			let small: Blob
+			const raw: File = file
+			let full: Blob = file
+			let medium: Blob = file
+			let small: Blob = file
 
-			if (file.type === 'image/gif') {
-				raw = file
-				full = file
-				medium = file
+			if (file.type.includes('image/gif')) {
 				small = await compressMedia(file, { size: 360, q: 0.4 })
-			} //
-			else if (file.type.includes('image/')) {
-				raw = file
+			}
+			if (file.type.includes('image/')) {
 				full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
 				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
-				small = await compressMedia(medium, { size: 360, q: 0.4 })
-			} else {
+				small = await compressMedia(medium, { size: 360, q: 0.3 })
+			}
+			if (file.type.includes('video/')) {
 				const thumb = await createThumbnailFromVideo(file)
-				raw = file
-				full = file
-				medium = file
-				small = thumb!
-
-				console.log(thumb)
+				if (thumb) {
+					small = await compressMedia(thumb, { size: 360, q: 0.3 })
+				}
 			}
 
 			// const exif = await getExif(file)
@@ -191,7 +191,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		if (newids.length > 0) {
 			const id = newids[0]
-			const media = await mediaFromBackgroundFiles(id, local, filesData[id])
+			const media = await mediaFromFiles(id, local, filesData[id])
 
 			unselectAll()
 			applyBackground(media)
@@ -235,7 +235,7 @@ async function removeLocalBackgrounds() {
 		const filesIds = lastUsedBackgroundFiles(local.backgroundFiles)
 
 		if (filesIds.length > 0) {
-			applyBackground(await mediaFromBackgroundFiles(filesIds[0], local))
+			applyBackground(await mediaFromFiles(filesIds[0], local))
 		} else {
 			removeBackgrounds()
 		}
@@ -443,7 +443,7 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 		setTimeout(() => btn.classList.remove('loaded'), 2)
 	})
 
-	mediaFromBackgroundFiles(id, local, data).then((image) => {
+	mediaFromFiles(id, local, data).then((image) => {
 		if (image.format === 'image') {
 			img.src = image.urls.small
 		}
@@ -480,7 +480,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 	if (isLeftClick) {
 		const local = await storage.local.get()
 		const metadata = local.backgroundFiles[id]
-		const image = await mediaFromBackgroundFiles(id, local)
+		const image = await mediaFromFiles(id, local)
 
 		if (!metadata || !image) {
 			console.warn('metadata: ', metadata)
@@ -510,18 +510,13 @@ export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): st
 	return sortedMetadata.map(([id, _]) => id)
 }
 
-export async function mediaFromBackgroundFiles(
-	id: string,
-	local: Local,
-	data?: LocalFileData,
-): Promise<Background> {
+export async function mediaFromFiles(id: string, local: Local, data?: LocalFileData): Promise<Background> {
 	const isRaw = local.backgroundCompressFiles === false
 	const metadata = local.backgroundFiles[id]
+
 	data = data ?? (await getFileFromCache(id))
 
-	const isVideo = data.raw.type.includes('video/')
-
-	if (isVideo) {
+	if (data.raw.type.includes('video/')) {
 		const htmlvideo = await getLoadedVideo(data.raw)
 		const duration = htmlvideo.duration
 
