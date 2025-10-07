@@ -34,7 +34,7 @@ const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
 
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
-const domiconurl = document.getElementById('e-icon') as HTMLInputElement
+const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
 const domiconstatic = document.getElementById('e-icon-svg') as HTMLInputElement
 
 let inputToFocus: HTMLInputElement
@@ -141,6 +141,11 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 			// console.info(type)
 
 			domurl.value = link.url ?? ''
+			
+			if (link.icon && link.icon.value) {
+				domiconurl.value = link.icon.value
+			}
+			
 
 			// if (icon.type ===)
 			// domiconurl.value = Number.isNaN(parseInt(icon)) ? icon : ''
@@ -205,7 +210,7 @@ function toggleEditInputs(): string[] {
 		} else if (target.folder) {
 			inputs = ['title', 'delete', 'apply']
 		} else if (target.link) {
-			inputs = ['title', 'url*', 'icon', 'delete', 'refresh', 'apply']
+			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'refresh', 'apply']
 		} else {
 			inputs = ['title', 'url*', 'add']
 			inputToFocus = domurl
@@ -219,7 +224,7 @@ function toggleEditInputs(): string[] {
 		} else if (selectall) {
 			inputs = ['delete', 'unfolder']
 		} else if (target.link) {
-			inputs = ['title', 'url*', 'icon', 'delete', 'apply', 'unfolder']
+			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'apply', 'unfolder']
 		} else {
 			inputs = ['title', 'url*', 'add']
 			inputToFocus = domurl
@@ -299,12 +304,13 @@ function toggleIconType(iconType: Event | string) {
 		iconType = target.value
 	}
 
+
 	const selectIconType = document.getElementById('e-icon-type') as HTMLSelectElement
 	if (selectIconType) { 
 		selectIconType.value = iconType
 	} 
 
-	const editIconUrl = document.getElementById('e-icon') as HTMLInputElement
+	const editIconUrl = document.getElementById('e-icon-url') as HTMLInputElement
 	if (editIconUrl) { // disables the input when it's hidden, otherwise HTML complains
 		editIconUrl.disabled = iconType !== 'url'
 	}

@@ -286,7 +286,6 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 				icon = link.icon.value
 			} else if (link.icon.type === "url" && link.icon.value) {
 				icon = link.icon.value
-				console.log(icon)
 			}
 		}
 		
