@@ -300,15 +300,21 @@ function toggleIconType(iconType: Event | string) {
 	}
 
 	const selectIconType = document.getElementById('e-icon-type') as HTMLSelectElement
-
 	if (selectIconType) { 
 		selectIconType.value = iconType
 	} 
 
 	const editIconUrl = document.getElementById('e-icon') as HTMLInputElement
-
 	if (editIconUrl) { // disables the input when it's hidden, otherwise HTML complains
 		editIconUrl.disabled = iconType !== 'url'
+	}
+
+	// only shows refresh button when auto or url type
+	const refreshButton = document.getElementById('edit-refresh') as HTMLButtonElement
+	if (refreshButton) {
+		const showsRefreshButton = ['auto', 'url'].includes(iconType)
+		refreshButton.disabled = !showsRefreshButton
+		refreshButton?.classList.toggle('on', showsRefreshButton)
 	}
 
 	document.getElementById('edit-icon-url')?.classList.toggle('on', iconType === 'url')

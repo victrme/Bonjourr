@@ -282,11 +282,11 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 		let icon = getDefaultIcon(link.url)
 
 		if (link.icon) {
-			if (link.icon.type === "auto" || link.icon.type === "url") {
-				const iconurl = link.icon.value ?? ''
-				const refresh = new Date(Number.parseInt(iconurl))?.getTime()
-				const isDefaultRefreshed = Number.isInteger(refresh)
-				icon = !isDefaultRefreshed && link.icon.value ? link.icon.value : getDefaultIcon(link.url, refresh)
+			if (link.icon.type === "auto" && link.icon.value) {
+				icon = link.icon.value
+			} else if (link.icon.type === "url" && link.icon.value) {
+				icon = link.icon.value
+				console.log(icon)
 			}
 		}
 		
@@ -392,6 +392,8 @@ function removeSelectAll() {
 
 export async function linksUpdate(update: LinksUpdate) {
 	let data = await storage.sync.get()
+
+	console.log(data)
 
 	if (update.addLinks) {
 		data = linkSubmission({ type: 'link', links: update.addLinks }, data)
@@ -693,7 +695,15 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 		const link = data[id] as LinkElem
 
 		if (link._id) {
-			link.icon = Date.now().toString()
+			const unixDate = Date.now().toString()
+
+			if (!link.icon || link.icon.type === "auto") {
+				link.icon = link.icon ?? { type: "auto", value: "" } // when link was just added, it doesn't have the icon property, so creates it
+				link.icon.value = getDefaultIcon(link.url) + `?r=${unixDate}`
+			} else if (link.icon.type === "url") {
+				link.icon.value = `${link.icon.value}?r=${unixDate}`
+			}
+			
 			data[id] = link
 		}
 	}
