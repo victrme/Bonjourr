@@ -37,7 +37,7 @@ async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
 	return video
 }
 
-async function createThumbnailFromVideo(file: File): Promise<Blob | null> {
+async function generateImageFromVideo(file: File): Promise<Blob | null> {
 	const video = await getLoadedVideo(file)
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
@@ -157,13 +157,16 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			if (file.type.includes('image/gif')) {
 				small = await compressMedia(file, { size: 360, q: 0.4 })
 			}
+
 			if (file.type.includes('image/')) {
 				full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
 				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
 				small = await compressMedia(medium, { size: 360, q: 0.3 })
 			}
+
 			if (file.type.includes('video/')) {
-				const thumb = await createThumbnailFromVideo(file)
+				const thumb = await generateImageFromVideo(file)
+
 				if (thumb) {
 					small = await compressMedia(thumb, { size: 360, q: 0.3 })
 				}
@@ -415,15 +418,20 @@ function toggleLocalFileButtons(_?: MutationRecord[]) {
 function createThumbnail(id: string): HTMLButtonElement {
 	const thb = document.createElement('button')
 	const thbimg = document.createElement('img')
+	const formatIcon = document.createElement('span')
 
 	thb.id = id
-	thbimg.src = 'src/assets/interface/loading.svg'
 	thb.className = 'thumbnail loading'
-	thbimg.setAttribute('alt', '')
-	thbimg.setAttribute('draggable', 'false')
 	thb.setAttribute('aria-label', 'Select this background')
 
+	thbimg.src = 'src/assets/interface/loading.svg'
+	thbimg.setAttribute('alt', '')
+	thbimg.setAttribute('draggable', 'false')
+
+	formatIcon.className = 'thumbnail-format-icon'
+
 	thb.appendChild(thbimg)
+	thb.appendChild(formatIcon)
 	thb.addEventListener('click', handleThumbnailClick)
 
 	return thb
@@ -433,8 +441,8 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 	const btn = document.querySelector<HTMLButtonElement>(`#${id}`)
 	const img = document.querySelector<HTMLImageElement>(`#${id} img`)
 
-	if (!(img && btn)) {
-		console.warn('?')
+	if (!img || !btn) {
+		console.warn('Cannot find thumbnail or button for ' + id)
 		return
 	}
 
@@ -444,11 +452,17 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 	})
 
 	mediaFromFiles(id, local, data).then((image) => {
-		if (image.format === 'image') {
-			img.src = image.urls.small
+		const { format, urls } = image
+
+		btn.dataset.format = format
+
+		if (format === 'image') {
+			img.src = urls.small
 		}
-		if (image.format === 'video' && image.thumbnail) {
-			img.src = image.thumbnail
+		if (format === 'video') {
+			if (image.thumbnail) {
+				img.src = image.thumbnail
+			}
 		}
 	})
 }
