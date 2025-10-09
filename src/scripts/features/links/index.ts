@@ -300,17 +300,18 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 }
 
 function createIcons(isInit?: true) {
-	const loadingTimeout = isInit ? 400 : 0
-
-	console.log(initIconList)
-
 	for (const [img, url] of initIconList) {
 		img.src = url
 	}
 
 	setTimeout(() => {
-		const incomplete = initIconList.filter(([img]) => !img.complete)
+		// naturalWidth is needed here because complete doesn't tell the whole story
+		// it only says if it's finished loading or not, even an error code will say "complete"
+		const incomplete = initIconList.filter(
+			([img]) => !img.complete || img.naturalWidth === 0
+		)
 
+		// if images still haven't loaded after 400ms
 		for (const [img, url] of incomplete) {
 			img.src = 'src/assets/interface/loading.svg'
 
@@ -320,11 +321,23 @@ function createIcons(isInit?: true) {
 				img.src = url
 			})
 
+			// if obvious error (dead link...), shows fallback
+			newimg.addEventListener('error', () => {
+				img.src = 'https://services.bonjourr.fr/favicon/blob/error'
+			})
+
 			newimg.src = url
+
+			// If image still isn't responding after 5s, gives up 
+			setTimeout(() => {
+				if (!newimg.complete || newimg.naturalWidth === 0) {
+					img.src = 'https://services.bonjourr.fr/favicon/blob/error'
+				}
+			}, 5000)
 		}
 
 		initIconList = []
-	}, loadingTimeout)
+	}, 400)
 }
 
 function initRows(row: number, style: string) {
