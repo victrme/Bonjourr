@@ -257,7 +257,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 		const isIconShown = img && isElem(elem) && style !== 'text'
 
 		if (isIconShown) {
-			initIconList.push([img, elem.icon ?? getDefaultIcon(elem.url)])
+			initIconList.push([img, getIconFromLinkElem(elem)])
 		}
 	}
 
@@ -279,17 +279,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	span.textContent = createTitle(link)
 
 	if (style !== 'text') {
-		let icon = getDefaultIcon(link.url)
-
-		if (link.icon) {
-			if (link.icon.type === "auto" && link.icon.value) {
-				icon = link.icon.value
-			} else if (link.icon.type === "url" && link.icon.value) {
-				icon = link.icon.value
-			}
-		}
-		
-		initIconList.push([img, icon])
+		initIconList.push([img, getIconFromLinkElem(link)])
 	}
 
 	if (openInNewtab) {
@@ -841,4 +831,18 @@ function correctLinksOrder(data: Sync): Sync {
 
 function isLinkStyle(s: string): s is Sync['linkstyle'] {
 	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
+}
+
+function getIconFromLinkElem(link: LinkElem): string {
+	let icon = getDefaultIcon(link.url)
+
+	if (link.icon) {
+		if (link.icon.type === "auto" && link.icon.value) {
+			icon = link.icon.value
+		} else if (link.icon.type === "url" && link.icon.value) {
+			icon = link.icon.value
+		}
+	}
+
+	return icon
 }
