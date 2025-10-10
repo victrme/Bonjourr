@@ -1,3 +1,17 @@
+## 22.0.0
+
+- 	Context menu on the whole page, allows you to: 
+	-	Add quick links from anywhere
+	-	Access widget settings easily
+	-	Control your background
+- 	New quick link icon types:
+	-	Automatic
+	-	URL
+	-	Choose from library
+	-	Import your own
+- 	Fixes and improvements:
+	-	More reliable touch screen interactions 
+
 ## 21.2.1
 
 - Weather is not triggered when choosing manual location

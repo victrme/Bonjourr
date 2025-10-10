@@ -330,7 +330,8 @@ function createIcons(isInit?: true) {
 
 			// If image still isn't responding after 5s, gives up 
 			setTimeout(() => {
-				if (!newimg.complete || newimg.naturalWidth === 0) {
+				if (!newimg.complete && newimg.naturalWidth === 0) {
+					console.error("Icon link took too long to load: " + url)
 					img.src = 'https://services.bonjourr.fr/favicon/blob/error'
 				}
 			}, 5000)
@@ -404,8 +405,6 @@ function removeSelectAll() {
 
 export async function linksUpdate(update: LinksUpdate) {
 	let data = await storage.sync.get()
-
-	console.log(data)
 
 	if (update.addLinks) {
 		data = linkSubmission({ type: 'link', links: update.addLinks }, data)
@@ -483,8 +482,6 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 			))
 		}
 	}
-
-	console.log(newlinks)
 
 	if (type === 'folder') {
 		const { ids, title, group } = args
@@ -599,7 +596,6 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 
 	data[id] = link
 
-	console.log(link)
 	return data
 }
 
