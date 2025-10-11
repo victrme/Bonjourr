@@ -139,6 +139,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 		for (let i = 0; i < newids.length; i++) {
 			const file = filelist[i]
 			const id = newids[i]
+			const format = file.type.includes('video') ? 'video' : 'image'
 
 			// 2a. This finds a reasonable resolution for compression
 
@@ -175,12 +176,23 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			// const exif = await getExif(file)
 
 			local.backgroundFiles[id] = {
+				format: 'image',
 				lastUsed: new Date().toString(),
-				position: {
+			}
+
+			if (format === 'video') {
+				local.backgroundFiles[id].format = 'video'
+				local.backgroundFiles[id].video = {
+					playbackRate: 1,
+					zoom: 1,
+				}
+			} else {
+				local.backgroundFiles[id].format = 'image'
+				local.backgroundFiles[id].position = {
 					size: 'cover',
 					x: '50%',
 					y: '50%',
-				},
+				}
 			}
 
 			filesData[id] = { raw, full, medium, small }
@@ -657,10 +669,12 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	for (const request of cacheKeys) {
 		try {
 			const key = new URL(request.url).pathname.split('/')[1]
+			const surelyVideo = request.url.includes('.mp4') || request.url.includes('.webm')
 			let metadata = local.backgroundFiles[key]
 
 			if (!metadata) {
 				metadata = {
+					format: surelyVideo ? 'video' : 'image',
 					lastUsed: new Date('01/01/1971').toString(),
 					position: {
 						size: 'cover',
