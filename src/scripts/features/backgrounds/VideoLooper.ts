@@ -12,8 +12,8 @@ export class VideoLooper {
 		this.video1 = this.createVideo(src)
 		this.video2 = this.createVideo(src)
 
-		this.video1.id = 'HelloVideo'
-		this.video2.id = 'DeuxiemeVideo'
+		this.video1.id = 'first-looped-video'
+		this.video2.id = 'second-looped-video'
 
 		this.container.appendChild(this.video1)
 		this.container.appendChild(this.video2)

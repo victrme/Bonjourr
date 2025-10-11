@@ -1,6 +1,7 @@
 import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
+import { VideoLooper } from './VideoLooper.ts'
 import { PROVIDERS } from './providers.ts'
 import {
 	addLocalBackgrounds,
@@ -12,6 +13,7 @@ import {
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
 import { colorInput, turnRefreshButton } from '../../shared/dom.ts'
+import { networkForm } from '../../shared/form.ts'
 import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
 import { BROWSER } from '../../defaults.ts'
@@ -20,7 +22,6 @@ import { storage } from '../../storage.ts'
 import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '../../../types/shared.ts'
 import type { Backgrounds, Sync } from '../../../types/sync.ts'
 import type { Local } from '../../../types/local.ts'
-import { networkForm } from '../../shared/form.ts'
 
 type BackgroundSize = 'full' | 'medium' | 'small'
 
@@ -614,7 +615,7 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 
 	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
 	let resolution = res ? res : detectBackgroundSize()
-	let item: HTMLDivElement
+	let item: HTMLElement
 
 	if (media.format === 'image') {
 		// disables blur compression for animated gifs (flawed since some gifs aren't animated)
@@ -622,10 +623,9 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 		const src = media.urls[resolution]
 		item = createImageItem(src, media)
 	} else {
-		const opacity = 4 //s
-		const duration = 1000 * (media.duration - opacity)
+		const opacity = 4 // 4000ms
 		const src = media.urls[resolution]
-		item = createVideoItem(src, media, duration)
+		item = createVideoItem(src, media, opacity)
 	}
 
 	item.dataset.res = resolution
@@ -679,50 +679,17 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
 	return div
 }
 
-function createVideoItem(src: string, media: BackgroundVideo, duration: number): HTMLDivElement {
+function createVideoItem(src: string, media: BackgroundVideo, duration: number): HTMLElement {
 	const backgroundsWrapper = document.getElementById('background-wrapper')
-	const div = document.createElement('div')
-	let videoInterval = 0
+	const looper = new VideoLooper(src, duration)
+	const container = looper.getContainer()
 
-	const prependVideo = () => {
-		return new Promise((resolve) => {
-			const vid = document.createElement('video')
+	console.info(media)
+	looper.loop()
 
-			vid.addEventListener('canplay', () => {
-				backgroundsWrapper?.classList.remove('hidden')
-				updateCredits(media)
-				resolve(true)
-			})
+	backgroundsWrapper?.classList.remove('hidden')
 
-			vid.src = src
-			vid.volume = 0
-			vid.muted = true
-			vid.autoplay = true
-			vid.playbackRate = 1
-			div.prepend(vid)
-		})
-	}
-
-	const removeVideo = () => {
-		div?.lastElementChild?.classList.add('hiding')
-		setTimeout(() => div?.lastElementChild?.remove(), 4000)
-	}
-
-	const loopVideo = async () => {
-		if (document.body.contains(div)) {
-			await prependVideo()
-			removeVideo()
-			return
-		}
-
-		clearInterval(videoInterval)
-	}
-
-	prependVideo().then(() => {
-		videoInterval = setInterval(loopVideo, duration)
-	})
-
-	return div
+	return container
 }
 
 function preloadBackground(media: Background | undefined, res?: BackgroundSize) {
