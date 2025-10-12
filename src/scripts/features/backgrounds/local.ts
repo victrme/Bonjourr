@@ -7,8 +7,8 @@ import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 
+import type { Background, BackgroundImage, BackgroundVideo } from '../../../types/shared.ts'
 import type { BackgroundFile, Local } from '../../../types/local.ts'
-import type { BackgroundImage } from '../../../types/shared.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
 
 type LocalFileData = {
@@ -18,8 +18,59 @@ type LocalFileData = {
 	small: Blob
 }
 
+type LocalFileOption = 'size' | 'vertical' | 'horizontal' | 'video-zoom' | 'playback-rate' | 'loop-fade'
+
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
+
+async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
+	const video = document.createElement('video')
+
+	const url = URL.createObjectURL(file)
+	video.src = url
+
+	await new Promise((r) => {
+		video.addEventListener('loadeddata', () => r(true))
+		video.load()
+	})
+
+	URL.revokeObjectURL(url)
+
+	return video
+}
+
+async function generateImageFromVideo(file: File): Promise<Blob | null> {
+	const video = await getLoadedVideo(file)
+	const canvas = document.createElement('canvas')
+	const ctx = canvas.getContext('2d')
+
+	if (!ctx) {
+		throw new Error('Canvas context failed for ' + file.name)
+	}
+
+	ctx.canvas.width = video.videoWidth
+	ctx.canvas.height = video.videoHeight
+
+	document.body.append(video)
+	video.style.display = 'none'
+	video.play()
+	video.pause()
+
+	const blob = await new Promise<Blob>((resolve, reject) => {
+		const toBlobCallback: BlobCallback = (blob) => blob ? resolve(blob) : reject(true)
+
+		// <!> 300ms is completely arbitrary,
+		// <!> videos taking more than that to load will show a black thumbnail
+		setTimeout(() => {
+			ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+			ctx.canvas.toBlob(toBlobCallback, 'image/jpeg', 0.8)
+		}, 300)
+	})
+
+	video.remove()
+
+	return blob
+}
 
 export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
 	local = await sanitizeMetadatas(local)
@@ -43,11 +94,11 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 		const rand = Math.floor(Math.random() * ids.length)
 		const id = ids[rand]
 
-		applyBackground(await imageFromLocalFiles(id, local))
+		applyBackground(await mediaFromFiles(id, local))
 		local.backgroundFiles[id].lastUsed = new Date().toString()
 		storage.local.set(local)
 	} else {
-		applyBackground(await imageFromLocalFiles(ids[0], local))
+		applyBackground(await mediaFromFiles(ids[0], local))
 	}
 }
 
@@ -90,6 +141,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 		for (let i = 0; i < newids.length; i++) {
 			const file = filelist[i]
 			const id = newids[i]
+			const format = file.type.includes('video') ? 'video' : 'image'
 
 			// 2a. This finds a reasonable resolution for compression
 
@@ -100,32 +152,50 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const ratio = Math.min(1.8, long / short)
 			const averagePixelHeight = short * ratio * density
 
-			let raw: File
-			let full: Blob
-			let medium: Blob
-			let small: Blob
+			const raw: File = file
+			let full: Blob = file
+			let medium: Blob = file
+			let small: Blob = file
 
-			if (file.type === 'image/gif') {
-				raw = file
-				full = file
-				medium = file
+			if (file.type.includes('image/gif')) {
 				small = await compressMedia(file, { size: 360, q: 0.4 })
-			} else {
-				raw = file
+			}
+
+			if (file.type.includes('image/')) {
 				full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
 				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
-				small = await compressMedia(medium, { size: 360, q: 0.4 })
+				small = await compressMedia(medium, { size: 360, q: 0.3 })
+			}
+
+			if (file.type.includes('video/')) {
+				const thumb = await generateImageFromVideo(file)
+
+				if (thumb) {
+					small = await compressMedia(thumb, { size: 360, q: 0.3 })
+				}
 			}
 
 			// const exif = await getExif(file)
 
 			local.backgroundFiles[id] = {
+				format: 'image',
 				lastUsed: new Date().toString(),
-				position: {
+			}
+
+			if (format === 'video') {
+				local.backgroundFiles[id].format = 'video'
+				local.backgroundFiles[id].video = {
+					playbackRate: 1,
+					fade: 1,
+					zoom: 1,
+				}
+			} else {
+				local.backgroundFiles[id].format = 'image'
+				local.backgroundFiles[id].position = {
 					size: 'cover',
 					x: '50%',
 					y: '50%',
-				},
+				}
 			}
 
 			filesData[id] = { raw, full, medium, small }
@@ -139,10 +209,10 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 		if (newids.length > 0) {
 			const id = newids[0]
-			const image = await imageFromLocalFiles(id, local, filesData[id])
+			const media = await mediaFromFiles(id, local, filesData[id])
 
 			unselectAll()
-			applyBackground(image)
+			applyBackground(media)
 			handleFilesSettingsOptions(local)
 		}
 
@@ -183,7 +253,7 @@ async function removeLocalBackgrounds() {
 		const filesIds = lastUsedBackgroundFiles(local.backgroundFiles)
 
 		if (filesIds.length > 0) {
-			applyBackground(await imageFromLocalFiles(filesIds[0], local))
+			applyBackground(await mediaFromFiles(filesIds[0], local))
 		} else {
 			removeBackgrounds()
 		}
@@ -198,29 +268,69 @@ async function removeLocalBackgrounds() {
 	}
 }
 
-async function updateBackgroundPosition(type: 'size' | 'vertical' | 'horizontal', value: string) {
-	const img = document.querySelector<HTMLElement>('#background-media div')
+async function updateFileOptions(option: LocalFileOption, value: string) {
 	const selection = getSelection()[0]
 	const local = await storage.local.get('backgroundFiles')
 	const file = local.backgroundFiles[selection]
+	const isVideo = file.format === 'video'
+	const isImage = !isVideo
 
-	if (!(img && file)) {
+	const backgroundImage = document.querySelector<HTMLElement>('#background-media div')
+	const videoContainer = document.querySelector<HTMLElement>('#background-media .video-looper')
+
+	if (!file) {
+		console.error('Cannot find file')
+		return
+	}
+	if (!backgroundImage || !videoContainer) {
+		console.error('Cannot find backgrounds in dom')
 		return
 	}
 
-	if (type === 'size') {
-		file.position.size = value === '100' ? 'cover' : `${value}%`
-		img.style.backgroundSize = file.position.size
+	if (isImage) {
+		if (!file.position) {
+			file.position = {
+				size: 'cover',
+				x: '50%',
+				y: '50%',
+			}
+		}
+
+		if (option === 'size') {
+			file.position.size = value === '100' ? 'cover' : `${value}%`
+			backgroundImage.style.backgroundSize = file.position.size
+		}
+		if (option === 'vertical') {
+			file.position.y = `${value}%`
+			backgroundImage.style.backgroundPositionY = file.position.y
+		}
+		if (option === 'horizontal') {
+			file.position.x = `${value}%`
+			backgroundImage.style.backgroundPositionX = file.position.x
+		}
 	}
 
-	if (type === 'vertical') {
-		file.position.y = `${value}%`
-		img.style.backgroundPositionY = file.position.y
-	}
+	if (isVideo) {
+		if (!file.video) {
+			file.video = {
+				playbackRate: 1,
+				fade: 4,
+				zoom: 1,
+			}
+		}
 
-	if (type === 'horizontal') {
-		file.position.x = `${value}%`
-		img.style.backgroundPositionX = file.position.x
+		if (option === 'playback-rate') {
+			file.video.playbackRate = parseInt(value)
+			console.log('Do something with video looper')
+		}
+		if (option === 'video-zoom') {
+			file.video.zoom = parseInt(value)
+			videoContainer.style.transform = `scale(${file.video.zoom}%)`
+		}
+		if (option === 'loop-fade') {
+			file.video.fade = parseInt(value)
+			console.log('Do something with video looper')
+		}
 	}
 
 	local.backgroundFiles[selection] = file
@@ -243,11 +353,14 @@ export function initFilesSettingsOptions(local: Local) {
 	})
 
 	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
-	onclickdown(document.getElementById('b_thumbnail-position'), () => handlePositionOption())
+	onclickdown(document.getElementById('b_thumbnail-options'), () => toggleFileOptions())
 	document.getElementById('b_thumbnail-zoom')?.addEventListener('click', handleGridView)
-	document.getElementById('i_background-size')?.addEventListener('input', handleFilePosition)
-	document.getElementById('i_background-vertical')?.addEventListener('input', handleFilePosition)
-	document.getElementById('i_background-horizontal')?.addEventListener('input', handleFilePosition)
+	document.getElementById('i_background-size')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-vertical')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-horizontal')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-loop-fade')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-video-zoom')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-playback-rate')?.addEventListener('input', fileOptionsEvent)
 }
 
 function handleFilesSettingsOptions(local: Local) {
@@ -277,24 +390,46 @@ function handleFilesSettingsOptions(local: Local) {
 	toggleLocalFileButtons()
 }
 
-function handleFilesMoveOptions(file: BackgroundFile) {
-	const backgroundSize = document.querySelector<HTMLInputElement>('#i_background-size')
-	const backgroundVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
-	const backgroundHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
-	const rangesExist = backgroundSize && backgroundVertical && backgroundHorizontal
+function handleFileOptions(file: BackgroundFile) {
+	const domSize = document.querySelector<HTMLInputElement>('#i_background-size')
+	const domVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
+	const domHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
+	const domLoopFade = document.querySelector<HTMLInputElement>('#i_background-loop-fade')
+	const domVideoZoom = document.querySelector<HTMLInputElement>('#i_background-video-zoom')
+	const domPlaybackRate = document.querySelector<HTMLInputElement>('#i_background-playback-rate')
+	const imageRangesExist = domSize && domVertical && domHorizontal
+	const videoRangesExist = domLoopFade && domVideoZoom && domPlaybackRate
 
-	if (rangesExist) {
-		backgroundSize.value = (file.position.size === 'cover' ? '100' : file.position.size).replace('%', '')
-		backgroundVertical.value = file.position.y.replace('%', '')
-		backgroundHorizontal.value = file.position.x.replace('%', '')
+	const domFileImage = document.getElementById('background-file-image')
+	const domFileVideo = document.getElementById('background-file-video')
+	const groupsExist = domFileImage && domFileVideo
+	const isVideo = file.format === 'video'
+	const isImage = !isVideo
+
+	const imageDefaults: BackgroundFile['position'] = { size: 'cover', x: '50%', y: '50%' }
+	const videoDefaults: BackgroundFile['video'] = { playbackRate: 1, fade: 4, zoom: 1 }
+
+	// 1. Toggle option groups based on file format
+
+	if (groupsExist) {
+		domFileImage.style.display = isVideo ? 'none' : 'block'
+		domFileVideo.style.display = isVideo ? 'block' : 'none'
 	}
-}
 
-function handlePositionOption(force?: boolean) {
-	const domoptions = document.getElementById('background-position-options')
+	// 2. Add correct values to inputs
 
-	if (domoptions) {
-		domoptions.classList.toggle('shown', force)
+	if (imageRangesExist && isImage) {
+		const pos = file.position ?? imageDefaults
+		domSize.value = (pos.size === 'cover' ? '100' : pos.size).replace('%', '')
+		domVertical.value = pos.y.replace('%', '')
+		domHorizontal.value = pos.x.replace('%', '')
+	}
+
+	if (videoRangesExist && isVideo) {
+		const video = file.video ?? videoDefaults
+		domLoopFade.value = video.fade.toString()
+		domVideoZoom.value = video.zoom.toString()
+		domPlaybackRate.value = video.playbackRate.toString()
 	}
 }
 
@@ -308,17 +443,34 @@ function handleGridView() {
 	}
 }
 
-function handleFilePosition(this: HTMLInputElement) {
+function toggleFileOptions(force?: boolean) {
+	const domoptions = document.getElementById('background-file-options')
+
+	if (domoptions) {
+		domoptions.classList.toggle('shown', force)
+	}
+}
+
+function fileOptionsEvent(this: HTMLInputElement) {
 	const { id, value } = this
 
 	if (id === 'i_background-size') {
-		updateBackgroundPosition('size', value)
+		updateFileOptions('size', value)
 	}
 	if (id === 'i_background-vertical') {
-		updateBackgroundPosition('vertical', value)
+		updateFileOptions('vertical', value)
 	}
 	if (id === 'i_background-horizontal') {
-		updateBackgroundPosition('horizontal', value)
+		updateFileOptions('horizontal', value)
+	}
+	if (id === 'i_background-video-zoom') {
+		updateFileOptions('video-zoom', value)
+	}
+	if (id === 'i_background-playback-rate') {
+		updateFileOptions('playback-rate', value)
+	}
+	if (id === 'i_background-loop-fade') {
+		updateFileOptions('loop-fade', value)
 	}
 }
 
@@ -350,7 +502,7 @@ function toggleLocalFileButtons(_?: MutationRecord[]) {
 
 	// hides move options when no selection or more than one
 	if (selected === 0 || selected > 1) {
-		handlePositionOption(false)
+		toggleFileOptions(false)
 	}
 
 	if (selected === 1 && domoptions?.classList.contains('shown')) {
@@ -363,15 +515,20 @@ function toggleLocalFileButtons(_?: MutationRecord[]) {
 function createThumbnail(id: string): HTMLButtonElement {
 	const thb = document.createElement('button')
 	const thbimg = document.createElement('img')
+	const formatIcon = document.createElement('span')
 
 	thb.id = id
-	thbimg.src = 'src/assets/interface/loading.svg'
 	thb.className = 'thumbnail loading'
-	thbimg.setAttribute('alt', '')
-	thbimg.setAttribute('draggable', 'false')
 	thb.setAttribute('aria-label', 'Select this background')
 
+	thbimg.src = 'src/assets/interface/loading.svg'
+	thbimg.setAttribute('alt', '')
+	thbimg.setAttribute('draggable', 'false')
+
+	formatIcon.className = 'thumbnail-format-icon'
+
 	thb.appendChild(thbimg)
+	thb.appendChild(formatIcon)
 	thb.addEventListener('click', handleThumbnailClick)
 
 	return thb
@@ -381,8 +538,8 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 	const btn = document.querySelector<HTMLButtonElement>(`#${id}`)
 	const img = document.querySelector<HTMLImageElement>(`#${id} img`)
 
-	if (!(img && btn)) {
-		console.warn('?')
+	if (!img || !btn) {
+		console.warn('Cannot find thumbnail or button for ' + id)
 		return
 	}
 
@@ -391,8 +548,19 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 		setTimeout(() => btn.classList.remove('loaded'), 2)
 	})
 
-	imageFromLocalFiles(id, local, data).then((image) => {
-		img.src = image.urls.small
+	mediaFromFiles(id, local, data).then((image) => {
+		const { format, urls } = image
+
+		btn.dataset.format = format
+
+		if (format === 'image') {
+			img.src = urls.small
+		}
+		if (format === 'video') {
+			if (image.thumbnail) {
+				img.src = image.thumbnail
+			}
+		}
 	})
 }
 
@@ -423,7 +591,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 	if (isLeftClick) {
 		const local = await storage.local.get()
 		const metadata = local.backgroundFiles[id]
-		const image = await imageFromLocalFiles(id, local)
+		const image = await mediaFromFiles(id, local)
 
 		if (!metadata || !image) {
 			console.warn('metadata: ', metadata)
@@ -438,7 +606,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
 
 		handleFilesSettingsOptions(local)
-		handleFilesMoveOptions(metadata)
+		handleFileOptions(metadata)
 		applyBackground(image)
 	}
 }
@@ -453,32 +621,58 @@ export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): st
 	return sortedMetadata.map(([id, _]) => id)
 }
 
-export async function imageFromLocalFiles(id: string, local: Local, data?: LocalFileData): Promise<BackgroundImage> {
+export async function mediaFromFiles(id: string, local: Local, data?: LocalFileData): Promise<Background> {
 	const isRaw = local.backgroundCompressFiles === false
 	const metadata = local.backgroundFiles[id]
+
 	data = data ?? (await getFileFromCache(id))
 
-	const urls = {
-		raw: URL.createObjectURL(data.raw),
-		full: URL.createObjectURL(data.full),
-		medium: URL.createObjectURL(data.medium),
-		small: URL.createObjectURL(data.small),
-	}
+	if (data.raw.type.includes('video/')) {
+		const htmlvideo = await getLoadedVideo(data.raw)
+		const duration = htmlvideo.duration
 
-	const image: BackgroundImage = {
-		format: 'image',
-		mimetype: data.raw.type,
-		size: metadata?.position.size ?? 'cover',
-		x: metadata?.position.x ?? '50%',
-		y: metadata?.position.y ?? '50%',
-		urls: {
-			full: isRaw ? urls.raw : urls.full,
-			medium: urls.medium,
-			small: urls.small,
-		},
-	}
+		htmlvideo.remove()
 
-	return image
+		const videoUrl = URL.createObjectURL(data.raw)
+		const thumbnailUrl = URL.createObjectURL(data.small)
+
+		const video: BackgroundVideo = {
+			format: 'video',
+			duration: duration,
+			mimetype: data.raw.type,
+			thumbnail: thumbnailUrl,
+			urls: {
+				full: videoUrl,
+				medium: videoUrl,
+				small: videoUrl,
+			},
+		}
+
+		return video
+	} //
+	else {
+		const urls = {
+			raw: URL.createObjectURL(data.raw),
+			full: URL.createObjectURL(data.full),
+			medium: URL.createObjectURL(data.medium),
+			small: URL.createObjectURL(data.small),
+		}
+
+		const image: BackgroundImage = {
+			format: 'image',
+			mimetype: data.raw.type,
+			size: metadata?.position?.size ?? 'cover',
+			x: metadata?.position?.x ?? '50%',
+			y: metadata?.position?.y ?? '50%',
+			urls: {
+				full: isRaw ? urls.raw : urls.full,
+				medium: urls.medium,
+				small: urls.small,
+			},
+		}
+
+		return image
+	}
 }
 
 //	Helpers
@@ -560,10 +754,12 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	for (const request of cacheKeys) {
 		try {
 			const key = new URL(request.url).pathname.split('/')[1]
+			const surelyVideo = request.url.includes('.mp4') || request.url.includes('.webm')
 			let metadata = local.backgroundFiles[key]
 
 			if (!metadata) {
 				metadata = {
+					format: surelyVideo ? 'video' : 'image',
 					lastUsed: new Date('01/01/1971').toString(),
 					position: {
 						size: 'cover',
