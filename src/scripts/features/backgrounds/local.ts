@@ -18,6 +18,8 @@ type LocalFileData = {
 	small: Blob
 }
 
+type LocalFileOption = 'size' | 'vertical' | 'horizontal' | 'video-zoom' | 'playback-rate' | 'loop-fade'
+
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 
@@ -184,6 +186,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 				local.backgroundFiles[id].format = 'video'
 				local.backgroundFiles[id].video = {
 					playbackRate: 1,
+					fade: 1,
 					zoom: 1,
 				}
 			} else {
@@ -265,29 +268,69 @@ async function removeLocalBackgrounds() {
 	}
 }
 
-async function updateBackgroundPosition(type: 'size' | 'vertical' | 'horizontal', value: string) {
-	const img = document.querySelector<HTMLElement>('#background-media div')
+async function updateFileOptions(option: LocalFileOption, value: string) {
 	const selection = getSelection()[0]
 	const local = await storage.local.get('backgroundFiles')
 	const file = local.backgroundFiles[selection]
+	const isVideo = file.format === 'video'
+	const isImage = !isVideo
 
-	if (!(img && file)) {
+	const backgroundImage = document.querySelector<HTMLElement>('#background-media div')
+	const videoContainer = document.querySelector<HTMLElement>('#background-media .video-looper')
+
+	if (!file) {
+		console.error('Cannot find file')
+		return
+	}
+	if (!backgroundImage || !videoContainer) {
+		console.error('Cannot find backgrounds in dom')
 		return
 	}
 
-	if (type === 'size') {
-		file.position.size = value === '100' ? 'cover' : `${value}%`
-		img.style.backgroundSize = file.position.size
+	if (isImage) {
+		if (!file.position) {
+			file.position = {
+				size: 'cover',
+				x: '50%',
+				y: '50%',
+			}
+		}
+
+		if (option === 'size') {
+			file.position.size = value === '100' ? 'cover' : `${value}%`
+			backgroundImage.style.backgroundSize = file.position.size
+		}
+		if (option === 'vertical') {
+			file.position.y = `${value}%`
+			backgroundImage.style.backgroundPositionY = file.position.y
+		}
+		if (option === 'horizontal') {
+			file.position.x = `${value}%`
+			backgroundImage.style.backgroundPositionX = file.position.x
+		}
 	}
 
-	if (type === 'vertical') {
-		file.position.y = `${value}%`
-		img.style.backgroundPositionY = file.position.y
-	}
+	if (isVideo) {
+		if (!file.video) {
+			file.video = {
+				playbackRate: 1,
+				fade: 4,
+				zoom: 1,
+			}
+		}
 
-	if (type === 'horizontal') {
-		file.position.x = `${value}%`
-		img.style.backgroundPositionX = file.position.x
+		if (option === 'playback-rate') {
+			file.video.playbackRate = parseInt(value)
+			console.log('Do something with video looper')
+		}
+		if (option === 'video-zoom') {
+			file.video.zoom = parseInt(value)
+			videoContainer.style.transform = `scale(${file.video.zoom}%)`
+		}
+		if (option === 'loop-fade') {
+			file.video.fade = parseInt(value)
+			console.log('Do something with video looper')
+		}
 	}
 
 	local.backgroundFiles[selection] = file
@@ -310,11 +353,14 @@ export function initFilesSettingsOptions(local: Local) {
 	})
 
 	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
-	onclickdown(document.getElementById('b_thumbnail-position'), () => handlePositionOption())
+	onclickdown(document.getElementById('b_thumbnail-options'), () => toggleFileOptions())
 	document.getElementById('b_thumbnail-zoom')?.addEventListener('click', handleGridView)
-	document.getElementById('i_background-size')?.addEventListener('input', handleFilePosition)
-	document.getElementById('i_background-vertical')?.addEventListener('input', handleFilePosition)
-	document.getElementById('i_background-horizontal')?.addEventListener('input', handleFilePosition)
+	document.getElementById('i_background-size')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-vertical')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-horizontal')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-loop-fade')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-video-zoom')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-playback-rate')?.addEventListener('input', fileOptionsEvent)
 }
 
 function handleFilesSettingsOptions(local: Local) {
@@ -344,24 +390,46 @@ function handleFilesSettingsOptions(local: Local) {
 	toggleLocalFileButtons()
 }
 
-function handleFilesMoveOptions(file: BackgroundFile) {
-	const backgroundSize = document.querySelector<HTMLInputElement>('#i_background-size')
-	const backgroundVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
-	const backgroundHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
-	const rangesExist = backgroundSize && backgroundVertical && backgroundHorizontal
+function handleFileOptions(file: BackgroundFile) {
+	const domSize = document.querySelector<HTMLInputElement>('#i_background-size')
+	const domVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
+	const domHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
+	const domLoopFade = document.querySelector<HTMLInputElement>('#i_background-loop-fade')
+	const domVideoZoom = document.querySelector<HTMLInputElement>('#i_background-video-zoom')
+	const domPlaybackRate = document.querySelector<HTMLInputElement>('#i_background-playback-rate')
+	const imageRangesExist = domSize && domVertical && domHorizontal
+	const videoRangesExist = domLoopFade && domVideoZoom && domPlaybackRate
 
-	if (rangesExist) {
-		backgroundSize.value = (file.position.size === 'cover' ? '100' : file.position.size).replace('%', '')
-		backgroundVertical.value = file.position.y.replace('%', '')
-		backgroundHorizontal.value = file.position.x.replace('%', '')
+	const domFileImage = document.getElementById('background-file-image')
+	const domFileVideo = document.getElementById('background-file-video')
+	const groupsExist = domFileImage && domFileVideo
+	const isVideo = file.format === 'video'
+	const isImage = !isVideo
+
+	const imageDefaults: BackgroundFile['position'] = { size: 'cover', x: '50%', y: '50%' }
+	const videoDefaults: BackgroundFile['video'] = { playbackRate: 1, fade: 4, zoom: 1 }
+
+	// 1. Toggle option groups based on file format
+
+	if (groupsExist) {
+		domFileImage.style.display = isVideo ? 'none' : 'block'
+		domFileVideo.style.display = isVideo ? 'block' : 'none'
 	}
-}
 
-function handlePositionOption(force?: boolean) {
-	const domoptions = document.getElementById('background-position-options')
+	// 2. Add correct values to inputs
 
-	if (domoptions) {
-		domoptions.classList.toggle('shown', force)
+	if (imageRangesExist && isImage) {
+		const pos = file.position ?? imageDefaults
+		domSize.value = (pos.size === 'cover' ? '100' : pos.size).replace('%', '')
+		domVertical.value = pos.y.replace('%', '')
+		domHorizontal.value = pos.x.replace('%', '')
+	}
+
+	if (videoRangesExist && isVideo) {
+		const video = file.video ?? videoDefaults
+		domLoopFade.value = video.fade.toString()
+		domVideoZoom.value = video.zoom.toString()
+		domPlaybackRate.value = video.playbackRate.toString()
 	}
 }
 
@@ -375,17 +443,34 @@ function handleGridView() {
 	}
 }
 
-function handleFilePosition(this: HTMLInputElement) {
+function toggleFileOptions(force?: boolean) {
+	const domoptions = document.getElementById('background-file-options')
+
+	if (domoptions) {
+		domoptions.classList.toggle('shown', force)
+	}
+}
+
+function fileOptionsEvent(this: HTMLInputElement) {
 	const { id, value } = this
 
 	if (id === 'i_background-size') {
-		updateBackgroundPosition('size', value)
+		updateFileOptions('size', value)
 	}
 	if (id === 'i_background-vertical') {
-		updateBackgroundPosition('vertical', value)
+		updateFileOptions('vertical', value)
 	}
 	if (id === 'i_background-horizontal') {
-		updateBackgroundPosition('horizontal', value)
+		updateFileOptions('horizontal', value)
+	}
+	if (id === 'i_background-video-zoom') {
+		updateFileOptions('video-zoom', value)
+	}
+	if (id === 'i_background-playback-rate') {
+		updateFileOptions('playback-rate', value)
+	}
+	if (id === 'i_background-loop-fade') {
+		updateFileOptions('loop-fade', value)
 	}
 }
 
@@ -417,7 +502,7 @@ function toggleLocalFileButtons(_?: MutationRecord[]) {
 
 	// hides move options when no selection or more than one
 	if (selected === 0 || selected > 1) {
-		handlePositionOption(false)
+		toggleFileOptions(false)
 	}
 
 	if (selected === 1 && domoptions?.classList.contains('shown')) {
@@ -521,7 +606,7 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
 
 		handleFilesSettingsOptions(local)
-		handleFilesMoveOptions(metadata)
+		handleFileOptions(metadata)
 		applyBackground(image)
 	}
 }
@@ -576,9 +661,9 @@ export async function mediaFromFiles(id: string, local: Local, data?: LocalFileD
 		const image: BackgroundImage = {
 			format: 'image',
 			mimetype: data.raw.type,
-			size: metadata?.position.size ?? 'cover',
-			x: metadata?.position.x ?? '50%',
-			y: metadata?.position.y ?? '50%',
+			size: metadata?.position?.size ?? 'cover',
+			x: metadata?.position?.x ?? '50%',
+			y: metadata?.position?.y ?? '50%',
 			urls: {
 				full: isRaw ? urls.raw : urls.full,
 				medium: urls.medium,

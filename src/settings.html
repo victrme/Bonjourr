@@ -265,10 +265,10 @@
 			</div>
 			<div>
 				<button
-					id="b_thumbnail-position"
+					id="b_thumbnail-options"
 					class="param-btn"
-					title="Move selected background"
-					aria-label="Move selected background"
+					title="Show background options"
+					aria-label="Show background options"
 				>
 					<img src="src/assets/labels/move.svg" height="15" alt="" />
 					<span class="trn">Move</span>
@@ -288,75 +288,93 @@
 			</div>
 		</div>
 
-		<div id="background-position-options" class="dropdown">
-			<div class="wrapper">
-				<label for="i_background-vertical" class="trn">Vertical</label>
-				<input
-					id="i_background-vertical"
-					name="background-vertical"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
+		<div id="background-file-options" class="dropdown">
+			<div id="background-file-image">
+				<div class="wrapper">
+					<label for="i_background-vertical" class="trn">Vertical</label>
+					<input
+						id="i_background-vertical"
+						name="background-vertical"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-horizontal" class="trn">Horizontal</label>
+					<input
+						id="i_background-horizontal"
+						name="background-horizontal"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-size" class="trn">Size</label>
+					<input
+						id="i_background-size"
+						name="background-size"
+						type="range"
+						min="100"
+						max="200"
+						value="100"
+						step="3"
+						class="range"
+					/>
+				</div>
 			</div>
 
-			<div class="wrapper">
-				<label for="i_background-horizontal" class="trn">Horizontal</label>
-				<input
-					id="i_background-horizontal"
-					name="background-horizontal"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
-			</div>
+			<div id="background-file-video">
+				<div class="wrapper">
+					<label for="i_background-video-zoom" class="trn">Zoom</label>
+					<input
+						id="i_background-video-zoom"
+						name="background-video-zoom"
+						type="range"
+						min="100"
+						max="200"
+						value="100"
+						step="3"
+						class="range"
+					/>
+				</div>
 
-			<div class="wrapper">
-				<label for="i_background-size" class="trn">Size</label>
-				<input
-					id="i_background-size"
-					name="background-size"
-					type="range"
-					min="100"
-					max="200"
-					value="100"
-					step="3"
-					class="range"
-				/>
-			</div>
+				<div class="wrapper">
+					<label for="i_background-playback-rate" class="trn">Playback rate</label>
+					<input
+						id="i_background-playback-rate"
+						name="background-playback-rate"
+						type="range"
+						min=".2"
+						max="3"
+						value="1"
+						step=".2"
+						class="range"
+					/>
+				</div>
 
-			<div class="wrapper">
-				<label for="i_background-zoom" class="trn">Zoom</label>
-				<input
-					id="i_background-zoom"
-					name="background-zoom"
-					type="range"
-					min="100"
-					max="200"
-					value="100"
-					step="3"
-					class="range"
-				/>
-			</div>
-
-			<div class="wrapper">
-				<label for="i_background-playback-rate" class="trn">Playback rate</label>
-				<input
-					id="i_background-playback-rate"
-					name="background-playback-rate"
-					type="range"
-					min=".2"
-					max="3"
-					value="1"
-					step=".2"
-					class="range"
-				/>
+				<div class="wrapper">
+					<label for="i_background-loop-fade" class="trn">Loop fade</label>
+					<input
+						id="i_background-loop-fade"
+						name="background-loop-fade"
+						type="range"
+						min="0"
+						max="6"
+						value="4"
+						step=".5"
+						class="range"
+					/>
+				</div>
 			</div>
 		</div>
 

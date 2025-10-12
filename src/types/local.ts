@@ -56,7 +56,7 @@ export interface BackgroundUrl {
 /**
  * Bad planning in version 21: interface structure is image only.
  *
- * Video options "zoom" & "playbackRate" have been added separately
+ * Video options "zoom, fade, playbackRate" have been added separately
  * "position" remains image only...
  */
 export interface BackgroundFile {
@@ -65,6 +65,7 @@ export interface BackgroundFile {
 	selected?: boolean
 	video?: {
 		playbackRate: number
+		fade: number
 		zoom: number
 	}
 	position?: {
