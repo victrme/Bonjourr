@@ -1,4 +1,5 @@
 import { hexColorFromSplitRange } from '../shared/dom.ts'
+import { setUserDate, userDate } from '../shared/time.ts'
 import { getLang, tradThis } from '../utils/translations.ts'
 import { displayInterface } from '../shared/display.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
@@ -6,7 +7,6 @@ import { eventDebounce } from '../utils/debounce.ts'
 import { stringMaxSize } from '../shared/generic.ts'
 import { getVnCalendar } from '../dependencies/vietnamese-calendar.ts'
 import { SYNC_DEFAULT } from '../defaults.ts'
-import { setUserDate, userDate } from '../shared/time.ts'
 import { storage } from '../storage.ts'
 
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'

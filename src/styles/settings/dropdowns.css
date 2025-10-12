@@ -30,8 +30,8 @@
 	max-height: 60px;
 }
 
-#background-position-options.shown {
-	max-height: 120px;
+#background-file-options.shown {
+	max-height: 240px;
 }
 
 #thumbnail-action-buttons.shown {
