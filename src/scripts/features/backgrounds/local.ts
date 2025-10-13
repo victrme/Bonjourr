@@ -246,7 +246,7 @@ async function removeLocalBackgrounds() {
 			thumbnail?.classList.toggle('hiding', true)
 			setTimeout(() => {
 				thumbnail?.remove()
-				toggleLocalFileButtons()
+				toggleFileButtons()
 			}, 100)
 		}
 
@@ -340,7 +340,7 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 //	Settings options
 
 export function initFilesSettingsOptions(local: Local) {
-	thumbnailSelectionObserver = new MutationObserver(toggleLocalFileButtons)
+	thumbnailSelectionObserver = new MutationObserver(toggleFileButtons)
 	thumbnailVisibilityObserver = new IntersectionObserver(intersectionEvent)
 
 	if (IS_MOBILE) {
@@ -365,14 +365,13 @@ export function initFilesSettingsOptions(local: Local) {
 
 function handleFilesSettingsOptions(local: Local) {
 	const backgroundFiles = local.backgroundFiles
-
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
-
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
-	const lastUsed = lastUsedBackgroundFiles(local.backgroundFiles)
+	const lastUsedIds = lastUsedBackgroundFiles(local.backgroundFiles)
 	const missingThumbnails = fileIds.filter((id) => !thumbIds.includes(id))
+	const lastUsed = local.backgroundFiles[lastUsedIds[0]]
 
 	if (missingThumbnails.length > 0) {
 		for (const id of missingThumbnails) {
@@ -381,13 +380,17 @@ function handleFilesSettingsOptions(local: Local) {
 			thumbnailVisibilityObserver?.observe(thumbnail)
 			thumbnailSelectionObserver?.observe(thumbnail, { attributes: true })
 
-			if (id === lastUsed[0]) {
+			if (id === lastUsedIds[0]) {
 				thumbnail.classList.add('selected')
 			}
 		}
 	}
 
-	toggleLocalFileButtons()
+	if (lastUsed) {
+		handleFileOptions(lastUsed)
+	}
+
+	toggleFileButtons()
 }
 
 function handleFileOptions(file: BackgroundFile) {
@@ -491,7 +494,7 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 	}
 }
 
-function toggleLocalFileButtons(_?: MutationRecord[]) {
+function toggleFileButtons(_?: MutationRecord[]) {
 	const thmbRemove = document.getElementById('b_thumbnail-remove')
 	const thmbMove = document.getElementById('b_thumbnail-position')
 	const selected = document.querySelectorAll('.thumbnail.selected').length
@@ -606,7 +609,6 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
 
 		handleFilesSettingsOptions(local)
-		handleFileOptions(metadata)
 		applyBackground(image)
 	}
 }
