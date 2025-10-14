@@ -3,6 +3,7 @@ import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { needsChange } from '../../shared/time.ts'
 import { onclickdown } from 'clickdown/mod'
+import { VideoLooper } from './VideoLooper.ts'
 import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
@@ -22,6 +23,16 @@ type LocalFileOption = 'size' | 'vertical' | 'horizontal' | 'video-zoom' | 'play
 
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
+let currentVideoLooper: VideoLooper
+
+export function setCurrentVideo(src: string, fade: number, playback: number): VideoLooper {
+	currentVideoLooper = new VideoLooper(src, fade, playback)
+	return currentVideoLooper
+}
+
+export function getCurrentVideo(): VideoLooper | undefined {
+	return currentVideoLooper
+}
 
 async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
 	const video = document.createElement('video')
@@ -311,6 +322,12 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 	}
 
 	if (isVideo) {
+		const video = getCurrentVideo()
+
+		if (!video) {
+			return
+		}
+
 		if (!file.video) {
 			file.video = {
 				playbackRate: 1,
@@ -319,17 +336,17 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 			}
 		}
 
-		if (option === 'playback-rate') {
-			file.video.playbackRate = parseInt(value)
-			console.log('Do something with video looper')
-		}
 		if (option === 'video-zoom') {
 			file.video.zoom = parseInt(value)
 			videoContainer.style.transform = `scale(${file.video.zoom}%)`
 		}
+		if (option === 'playback-rate') {
+			file.video.playbackRate = parseInt(value)
+			video.setPlaybackRate(parseInt(value))
+		}
 		if (option === 'loop-fade') {
 			file.video.fade = parseInt(value)
-			console.log('Do something with video looper')
+			video.setFadeTime(parseInt(value))
 		}
 	}
 
