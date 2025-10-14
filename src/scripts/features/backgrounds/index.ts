@@ -666,14 +666,12 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
 
 	div.style.backgroundImage = `url(${src})`
 
-	if (media.size) {
-		div.style.backgroundSize = media.size
-	}
-	if (media.x) {
-		div.style.backgroundPositionX = media.x
-	}
-	if (media.y) {
-		div.style.backgroundPositionY = media.y
+	if (media?.file?.position) {
+		const { size, x, y } = media.file.position
+
+		div.style.backgroundSize = size
+		div.style.backgroundPositionX = x
+		div.style.backgroundPositionY = y
 	}
 
 	return div
@@ -684,8 +682,15 @@ function createVideoItem(src: string, media: BackgroundVideo, duration: number):
 	const looper = setCurrentVideo(src, duration, 1)
 	const container = looper.getContainer()
 
-	console.info(media)
 	looper.loop()
+
+	if (media?.file?.video) {
+		const { playbackRate, zoom, fade } = media.file.video
+
+		container.style.transform = `scale(${zoom})`
+		looper.setPlaybackRate(playbackRate)
+		looper.setFadeTime(fade)
+	}
 
 	backgroundsWrapper?.classList.remove('hidden')
 

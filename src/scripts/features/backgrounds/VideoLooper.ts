@@ -130,6 +130,10 @@ export class VideoLooper {
 			this.setFadeTime(this.fadetime)
 		})
 
+		elem.addEventListener('ratechange', () => {
+			this.setFadeTime(this.fadetime)
+		})
+
 		elem.addEventListener('ended', () => {
 			elem.currentTime = 0
 			elem.classList.remove('hiding')
