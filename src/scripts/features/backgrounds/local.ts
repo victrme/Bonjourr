@@ -3,6 +3,7 @@ import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { needsChange } from '../../shared/time.ts'
 import { onclickdown } from 'clickdown/mod'
+import { VideoLooper } from './VideoLooper.ts'
 import { IDBCache } from '../../dependencies/idbcache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
@@ -22,6 +23,16 @@ type LocalFileOption = 'size' | 'vertical' | 'horizontal' | 'video-zoom' | 'play
 
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
+let currentVideoLooper: VideoLooper
+
+export function setCurrentVideo(src: string, fade: number, playback: number): VideoLooper {
+	currentVideoLooper = new VideoLooper(src, fade, playback)
+	return currentVideoLooper
+}
+
+export function getCurrentVideo(): VideoLooper | undefined {
+	return currentVideoLooper
+}
 
 async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
 	const video = document.createElement('video')
@@ -246,7 +257,7 @@ async function removeLocalBackgrounds() {
 			thumbnail?.classList.toggle('hiding', true)
 			setTimeout(() => {
 				thumbnail?.remove()
-				toggleLocalFileButtons()
+				toggleFileButtons()
 			}, 100)
 		}
 
@@ -311,6 +322,12 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 	}
 
 	if (isVideo) {
+		const video = getCurrentVideo()
+
+		if (!video) {
+			return
+		}
+
 		if (!file.video) {
 			file.video = {
 				playbackRate: 1,
@@ -319,17 +336,19 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 			}
 		}
 
-		if (option === 'playback-rate') {
-			file.video.playbackRate = parseInt(value)
-			console.log('Do something with video looper')
-		}
 		if (option === 'video-zoom') {
-			file.video.zoom = parseInt(value)
-			videoContainer.style.transform = `scale(${file.video.zoom}%)`
+			file.video.zoom = parseFloat(value)
+			videoContainer.style.transform = `scale(${file.video.zoom})`
+		}
+		if (option === 'playback-rate') {
+			file.video.playbackRate = parseFloat(value)
+			video.setPlaybackRate(parseFloat(value))
+			video.stop()
+			video.loop()
 		}
 		if (option === 'loop-fade') {
 			file.video.fade = parseInt(value)
-			console.log('Do something with video looper')
+			video.setFadeTime(parseInt(value))
 		}
 	}
 
@@ -340,7 +359,7 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 //	Settings options
 
 export function initFilesSettingsOptions(local: Local) {
-	thumbnailSelectionObserver = new MutationObserver(toggleLocalFileButtons)
+	thumbnailSelectionObserver = new MutationObserver(toggleFileButtons)
 	thumbnailVisibilityObserver = new IntersectionObserver(intersectionEvent)
 
 	if (IS_MOBILE) {
@@ -365,14 +384,13 @@ export function initFilesSettingsOptions(local: Local) {
 
 function handleFilesSettingsOptions(local: Local) {
 	const backgroundFiles = local.backgroundFiles
-
 	const thumbnailsContainer = document.getElementById('thumbnails-container')
-
 	const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
 	const thumbIds = Object.values(thumbs).map((el) => el.id)
 	const fileIds = Object.keys(backgroundFiles) ?? []
-	const lastUsed = lastUsedBackgroundFiles(local.backgroundFiles)
+	const lastUsedIds = lastUsedBackgroundFiles(local.backgroundFiles)
 	const missingThumbnails = fileIds.filter((id) => !thumbIds.includes(id))
+	const lastUsed = local.backgroundFiles[lastUsedIds[0]]
 
 	if (missingThumbnails.length > 0) {
 		for (const id of missingThumbnails) {
@@ -381,13 +399,17 @@ function handleFilesSettingsOptions(local: Local) {
 			thumbnailVisibilityObserver?.observe(thumbnail)
 			thumbnailSelectionObserver?.observe(thumbnail, { attributes: true })
 
-			if (id === lastUsed[0]) {
+			if (id === lastUsedIds[0]) {
 				thumbnail.classList.add('selected')
 			}
 		}
 	}
 
-	toggleLocalFileButtons()
+	if (lastUsed) {
+		handleFileOptions(lastUsed)
+	}
+
+	toggleFileButtons()
 }
 
 function handleFileOptions(file: BackgroundFile) {
@@ -491,14 +513,14 @@ function intersectionEvent(entries: IntersectionObserverEntry[]) {
 	}
 }
 
-function toggleLocalFileButtons(_?: MutationRecord[]) {
+function toggleFileButtons(_?: MutationRecord[]) {
 	const thmbRemove = document.getElementById('b_thumbnail-remove')
-	const thmbMove = document.getElementById('b_thumbnail-position')
+	const thmbOptions = document.getElementById('b_thumbnail-options')
 	const selected = document.querySelectorAll('.thumbnail.selected').length
-	const domoptions = document.getElementById('background-position-options')
+	const domoptions = document.getElementById('background-options-options')
 
 	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
-	selected !== 1 ? thmbMove?.setAttribute('disabled', '') : thmbMove?.removeAttribute('disabled')
+	selected !== 1 ? thmbOptions?.setAttribute('disabled', '') : thmbOptions?.removeAttribute('disabled')
 
 	// hides move options when no selection or more than one
 	if (selected === 0 || selected > 1) {
@@ -606,7 +628,6 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
 		storage.local.set({ backgroundFiles: local.backgroundFiles })
 
 		handleFilesSettingsOptions(local)
-		handleFileOptions(metadata)
 		applyBackground(image)
 	}
 }
@@ -641,6 +662,7 @@ export async function mediaFromFiles(id: string, local: Local, data?: LocalFileD
 			duration: duration,
 			mimetype: data.raw.type,
 			thumbnail: thumbnailUrl,
+			file: metadata,
 			urls: {
 				full: videoUrl,
 				medium: videoUrl,
@@ -661,9 +683,7 @@ export async function mediaFromFiles(id: string, local: Local, data?: LocalFileD
 		const image: BackgroundImage = {
 			format: 'image',
 			mimetype: data.raw.type,
-			size: metadata?.position?.size ?? 'cover',
-			x: metadata?.position?.x ?? '50%',
-			y: metadata?.position?.y ?? '50%',
+			file: metadata,
 			urls: {
 				full: isRaw ? urls.raw : urls.full,
 				medium: urls.medium,

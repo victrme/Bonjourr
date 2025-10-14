@@ -1,7 +1,6 @@
 import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
-import { VideoLooper } from './VideoLooper.ts'
 import { PROVIDERS } from './providers.ts'
 import {
 	addLocalBackgrounds,
@@ -9,6 +8,7 @@ import {
 	lastUsedBackgroundFiles,
 	localFilesCacheControl,
 	mediaFromFiles,
+	setCurrentVideo,
 } from './local.ts'
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
@@ -623,9 +623,9 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 		const src = media.urls[resolution]
 		item = createImageItem(src, media)
 	} else {
-		const opacity = 4 // 4000ms
+		const fade = 4000 //ms
 		const src = media.urls[resolution]
-		item = createVideoItem(src, media, opacity)
+		item = createVideoItem(src, media, fade)
 	}
 
 	item.dataset.res = resolution
@@ -666,14 +666,12 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
 
 	div.style.backgroundImage = `url(${src})`
 
-	if (media.size) {
-		div.style.backgroundSize = media.size
-	}
-	if (media.x) {
-		div.style.backgroundPositionX = media.x
-	}
-	if (media.y) {
-		div.style.backgroundPositionY = media.y
+	if (media?.file?.position) {
+		const { size, x, y } = media.file.position
+
+		div.style.backgroundSize = size
+		div.style.backgroundPositionX = x
+		div.style.backgroundPositionY = y
 	}
 
 	return div
@@ -681,11 +679,18 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
 
 function createVideoItem(src: string, media: BackgroundVideo, duration: number): HTMLElement {
 	const backgroundsWrapper = document.getElementById('background-wrapper')
-	const looper = new VideoLooper(src, duration)
+	const looper = setCurrentVideo(src, duration, 1)
 	const container = looper.getContainer()
 
-	console.info(media)
 	looper.loop()
+
+	if (media?.file?.video) {
+		const { playbackRate, zoom, fade } = media.file.video
+
+		container.style.transform = `scale(${zoom})`
+		looper.setPlaybackRate(playbackRate)
+		looper.setFadeTime(fade)
+	}
 
 	backgroundsWrapper?.classList.remove('hidden')
 

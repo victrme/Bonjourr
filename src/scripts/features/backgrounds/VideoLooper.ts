@@ -3,9 +3,13 @@ export class VideoLooper {
 	private video2: HTMLVideoElement
 	private container: HTMLElement
 	private fadetime: number
+	private playbackRate: number
 	private listener: () => void
 
-	constructor(src: string, fadetime = 4) {
+	constructor(src: string, fadetime = 4000, playbackRate = 1) {
+		this.fadetime = fadetime
+		this.playbackRate = playbackRate
+
 		this.container = document.createElement('div')
 		this.container.classList.add('video-looper')
 
@@ -18,8 +22,9 @@ export class VideoLooper {
 		this.container.appendChild(this.video1)
 		this.container.appendChild(this.video2)
 
-		this.fadetime = fadetime ?? 4
-		this.setTransitionDuration(this.fadetime)
+		// <!>
+		// Listener needs to be stored to correctly remove
+		// the document eventListener
 
 		this.listener = () => {
 			this.stop()
@@ -82,7 +87,7 @@ export class VideoLooper {
 					this.listener,
 				)
 			}
-		}, this.fadetime * 1000)
+		}, this.fadetime)
 	}
 
 	public getContainer(): HTMLElement {
@@ -90,8 +95,23 @@ export class VideoLooper {
 	}
 
 	public setFadeTime(fadetime: number) {
-		this.fadetime = fadetime
-		this.setTransitionDuration(fadetime)
+		const realDuration = this.getRealDuration()
+		const halfDurationInMs = Math.round((realDuration / 2) * 1000)
+		const isFadeTooLong = halfDurationInMs < fadetime
+
+		if (isFadeTooLong) {
+			this.fadetime = halfDurationInMs
+		} else {
+			this.fadetime = fadetime
+		}
+
+		this.addTransitionDuration(this.fadetime)
+	}
+
+	public setPlaybackRate(playbackRate: number) {
+		this.playbackRate = playbackRate
+		this.video1.playbackRate = playbackRate
+		this.video2.playbackRate = playbackRate
 	}
 
 	//
@@ -104,6 +124,15 @@ export class VideoLooper {
 		elem.muted = true
 		elem.src = src
 		elem.autoplay = autoplay
+		elem.playbackRate = this.playbackRate
+
+		elem.addEventListener('loadedmetadata', () => {
+			this.setFadeTime(this.fadetime)
+		})
+
+		elem.addEventListener('ratechange', () => {
+			this.setFadeTime(this.fadetime)
+		})
 
 		elem.addEventListener('ended', () => {
 			elem.currentTime = 0
@@ -114,11 +143,31 @@ export class VideoLooper {
 		return elem
 	}
 
-	private setTransitionDuration(fadetime: number) {
-		this.container.style.setProperty('--video-fadetime', fadetime + 's')
+	/**
+	 * Javascript counts seconds faster instead of using real time.
+	 * This returns the video duration based on its speed.
+	 *
+	 * If triggered before video loaded, returns 8 seconds to cap fadetime
+	 */
+	private getRealDuration(): number {
+		try {
+			const durationInMs = this.video1.duration
+			const playbackRate = this.video1.playbackRate
+			return durationInMs / playbackRate
+		} catch (_) {
+			console.info('Video duration was guessed to eight seconds')
+			return 8
+		}
+	}
+
+	private addTransitionDuration(fadetime: number) {
+		this.container.style.setProperty('--video-fadetime', fadetime + 'ms')
 	}
 
 	private isEnding(vid: HTMLVideoElement) {
-		return Math.round(vid.currentTime) > vid.duration - this.fadetime
+		const currentTime = (vid.currentTime * 1000) / this.playbackRate
+		const duration = (vid.duration * 1000) / this.playbackRate
+
+		return currentTime > duration - this.fadetime
 	}
 }
