@@ -281,10 +281,9 @@ aside .color-button {
 aside .color-button input {
 	overflow: hidden;
 	position: absolute;
-	width: 0;
-	height: 0;
 	bottom: 0;
 	padding: 0;
+	opacity: 0;
 }
 
 aside .color-button button {
@@ -295,6 +294,7 @@ aside .color-button button {
 	padding-inline-start: 1em;
 	outline-offset: 2px;
 	user-select: text;
+	cursor: pointer;
 }
 
 label.input-file {

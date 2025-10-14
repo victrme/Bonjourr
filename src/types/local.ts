@@ -53,10 +53,22 @@ export interface BackgroundUrl {
 	state: BackgroundUrlState
 }
 
+/**
+ * Bad planning in version 21: interface structure is image only.
+ *
+ * Video options "zoom, fade, playbackRate" have been added separately
+ * "position" remains image only...
+ */
 export interface BackgroundFile {
+	format: 'image' | 'video'
 	lastUsed: string
 	selected?: boolean
-	position: {
+	video?: {
+		playbackRate: number
+		fade: number
+		zoom: number
+	}
+	position?: {
 		size: string
 		x: string
 		y: string

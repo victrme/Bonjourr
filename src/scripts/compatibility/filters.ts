@@ -1,69 +1,24 @@
-import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from './features/move/helpers.ts'
-import { countryCodeToLanguageCode } from './utils/translations.ts'
-import { API_DOMAIN, CURRENT_VERSION, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
-import { oldJSONToCSV } from './features/quotes.ts'
-import { randomString } from './shared/generic.ts'
-import { deepmergeAll } from '@victr/deepmerge'
-import { bundleLinks } from './utils/bundlelinks.ts'
+import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers.ts'
+import { countryCodeToLanguageCode } from '../utils/translations.ts'
+import { API_DOMAIN, SYNC_DEFAULT } from '../defaults.ts'
+import { oldJSONToCSV } from '../features/quotes.ts'
+import { randomString } from '../shared/generic.ts'
+import { bundleLinks } from '../utils/bundlelinks.ts'
 
-import type { Sync } from '../types/sync.ts'
-import type { LinkElem, OldSync, Widgets } from '../types/shared.ts'
+import type { LinkElem, OldSync, Widgets } from '../../types/shared.ts'
+import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
-export function filterImports(current: Sync, target: Partial<Sync>) {
-	let newtarget = target
-	let newcurrent = current
+export function fixNullBrightness(data: Import): Import {
+	if (data.backgrounds?.bright === null) {
+		data.backgrounds.bright = SYNC_DEFAULT.backgrounds.bright
+	}
 
-	// Prepare imported data compatibility
-	newtarget = convertOldCssSelectors(newtarget) // all
-
-	newtarget = booleanSearchbarToObject(newtarget) // 9.0
-	newtarget = linkListToFlatObjects(newtarget) // 13.0
-	newtarget = hideArrayToObject(newtarget) // 16.0
-	newtarget = improvedWeather(newtarget) // 18.1
-	newtarget = clockDateFormat(newtarget)
-	newtarget = newFontSystem(newtarget) // 19.0
-	newtarget = newReviewData(newtarget)
-	newtarget = quotesJsonToCsv(newtarget)
-	newtarget = linksDataMigration(newtarget) // 19.2
-	newtarget = analogClockOptions(newtarget) // 20.0
-	newtarget = validateLinkGroups(newtarget) // 20.1
-	newtarget = addSupporters(newtarget) // 20.4
-	newtarget = toIsoLanguageCode(newtarget)
-	newtarget = newBackgroundsField(newtarget) // 21.0
-	newtarget = manualTimezonesToIntl(newtarget) // 21.0
-
-	// Merge both settings
-	const defaultAbout = { about: { browser: PLATFORM, version: CURRENT_VERSION } }
-	newcurrent = deepmergeAll(newcurrent, newtarget, defaultAbout) as Sync
-
-	// After merge only
-	newcurrent = removeLinkgroupDuplicates(newcurrent)
-	newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
-	newcurrent = toggleMoveWidgets(newcurrent, newtarget)
-
-	// Remove old fields
-	delete newcurrent.settingssync
-	delete newcurrent.custom_every
-	delete newcurrent.custom_time
-	delete newcurrent.searchbar_newtab
-	delete newcurrent.searchbar_newtab
-	delete newcurrent.searchbar_engine
-	delete newcurrent.cssHeight
-	delete newcurrent.linktabs
-	delete newcurrent.links
-	delete newcurrent.dynamic
-	delete newcurrent.unsplash
-	delete newcurrent.background_blur
-	delete newcurrent.background_bright
-	delete newcurrent.background_type
-	delete newcurrent.usdate
-
-	return newcurrent
+	return data
 }
 
-function addSupporters(data: Import): Import {
+export function addSupporters(data: Import): Import {
 	if (data.supporters === undefined) {
 		data.supporters = {
 			enabled: true,
@@ -75,7 +30,7 @@ function addSupporters(data: Import): Import {
 	return data
 }
 
-function hideArrayToObject(data: Import): Import {
+export function hideArrayToObject(data: Import): Import {
 	const newhide: Sync['hide'] = {}
 
 	if (Array.isArray(data.hide)) {
@@ -106,7 +61,7 @@ function hideArrayToObject(data: Import): Import {
 	return data
 }
 
-function booleanSearchbarToObject(data: Import): Import {
+export function booleanSearchbarToObject(data: Import): Import {
 	if (typeof data.searchbar === 'boolean') {
 		data.searchbar = {
 			...SYNC_DEFAULT.searchbar,
@@ -120,7 +75,7 @@ function booleanSearchbarToObject(data: Import): Import {
 	return data
 }
 
-function linkListToFlatObjects(data: Import): Import {
+export function linkListToFlatObjects(data: Import): Import {
 	if (Array.isArray(data.links)) {
 		if (data.links.length > 0 && data.quicklinks === undefined) {
 			data.quicklinks = true
@@ -132,6 +87,7 @@ function linkListToFlatObjects(data: Import): Import {
 
 			data[id] = {
 				_id: id,
+				parent: 'default',
 				order: i,
 				title,
 				url,
@@ -149,7 +105,7 @@ function linkListToFlatObjects(data: Import): Import {
 	return data
 }
 
-function newFontSystem(data: Import): Import {
+export function newFontSystem(data: Import): Import {
 	if (data.font) {
 		data.font.weightlist = data.font?.availWeights ?? []
 		data.font.url = undefined
@@ -164,7 +120,7 @@ function newFontSystem(data: Import): Import {
 	return data
 }
 
-function newReviewData(data: Import): Import {
+export function newReviewData(data: Import): Import {
 	if (data.reviewPopup) {
 		data.review = data.reviewPopup === 'removed' ? -1 : +data.reviewPopup
 	}
@@ -172,19 +128,19 @@ function newReviewData(data: Import): Import {
 	return data
 }
 
-function quotesJsonToCsv(data: Import): Import {
+export function quotesJsonToCsv(data: Import): Import {
 	if (Array.isArray(data?.quotes?.userlist)) {
 		data.quotes.userlist = oldJSONToCSV(data.quotes.userlist)
 	}
 	return data
 }
 
-function toIsoLanguageCode(data: Import): Import {
+export function toIsoLanguageCode(data: Import): Import {
 	data.lang = countryCodeToLanguageCode(data.lang ?? 'en')
 	return data
 }
 
-function clockDateFormat(data: Import): Import {
+export function clockDateFormat(data: Import): Import {
 	const old = data as Partial<OldSync>
 
 	if (old.usdate) {
@@ -196,7 +152,7 @@ function clockDateFormat(data: Import): Import {
 	return data
 }
 
-function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
+export function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
 	if (target.worldclocks && current.worldclocks) {
 		current.worldclocks = target.worldclocks
 	}
@@ -204,7 +160,7 @@ function removeWorldClocksDuplicate(current: Sync, target: Import): Sync {
 	return current
 }
 
-function manualTimezonesToIntl(data: Import): Import {
+export function manualTimezonesToIntl(data: Import): Import {
 	const timezoneMatches: Record<string, string> = {
 		'-10': '-10:00',
 		'-9': '-09:00',
@@ -243,7 +199,7 @@ function manualTimezonesToIntl(data: Import): Import {
 	return data
 }
 
-function validateLinkGroups(current: Import): Import {
+export function validateLinkGroups(current: Import): Import {
 	// (1)
 	let links = bundleLinks(current)
 	let parents = [...new Set(links.map((link) => link.parent))]
@@ -321,7 +277,7 @@ function validateLinkGroups(current: Import): Import {
 	return current
 }
 
-function linksDataMigration(data: Import): Import {
+export function linksDataMigration(data: Import): Import {
 	if (data?.linktabs || data?.linkgroups) {
 		return data
 	}
@@ -339,27 +295,20 @@ function linksDataMigration(data: Import): Import {
 	return data
 }
 
-function improvedWeather(data: Import): Import {
+export function improvedWeather(data: Import): Import {
 	if (data.weather && data.weather?.geolocation === undefined) {
 		//@ts-expect-error -> old types
 		const oldLocation = data.weather?.location ?? []
 
 		data.weather.geolocation = 'approximate'
 		data.weather.geolocation = oldLocation.length === 0 ? 'off' : 'precise'
-
-		//@ts-expect-error -> old types
-		data.weather.location = undefined
-		//@ts-expect-error -> old types
-		data.weather.lastState = undefined
-		//@ts-expect-error -> old types
-		data.weather.lastCall = undefined
 	}
 
 	return data
 }
 
-/** Version 21: migrate from generic fields to a single object */
-function newBackgroundsField(data: Import): Import {
+/** Version 21: migrate from generic fields to a single "backgrounds" object */
+export function newBackgroundsField(data: Import): Import {
 	const olddata = data as Partial<OldSync>
 	const defaults = structuredClone(SYNC_DEFAULT)
 
@@ -387,7 +336,7 @@ function newBackgroundsField(data: Import): Import {
 	return data
 }
 
-function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
+export function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 	if (data.clock?.style) {
 		data.analogstyle = {
 			background: '#fff2',
@@ -410,7 +359,7 @@ function analogClockOptions<Data extends Sync | Import>(data: Data): Data {
 	return data
 }
 
-function removeLinkgroupDuplicates(current: Sync): Sync {
+export function removeLinkgroupDuplicates(current: Sync): Sync {
 	// 1. Remove duplicate
 	current.linkgroups.groups = [...new Set(current.linkgroups.groups)]
 	current.linkgroups.pinned = [...new Set(current.linkgroups.pinned)]
@@ -432,7 +381,7 @@ function removeLinkgroupDuplicates(current: Sync): Sync {
 	return current
 }
 
-function toggleMoveWidgets(current: Sync, imported: Import): Sync {
+export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 	// When import doesn't have move, other widgets can still be different
 	// This updates current grid with the widgets states from import
 
@@ -508,7 +457,7 @@ function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 	return current
 }
 
-function convertOldCssSelectors(data: Import): Import {
+export function convertOldCssSelectors(data: Import): Import {
 	if (data?.css) {
 		data.css = data.css
 			.replaceAll('.block', '.link')

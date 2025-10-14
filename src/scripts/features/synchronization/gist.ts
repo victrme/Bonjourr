@@ -220,11 +220,11 @@ function gistHeaders(token: string) {
 }
 
 const GIST_ERROR = {
-	ID: tradThis('Gist id in settings is invalid'),
-	TOKEN: tradThis('Invalid token'),
-	NOGIST: tradThis('Cannot find bonjourr file in gists'),
-	NOCONN: tradThis('Cannot access Github servers right now'),
-	JSON: tradThis('Response is not valid JSON'),
-	OTHER: tradThis('Some Github Gist error happend'),
-	DEFAULT: tradThis('Tried to send default config'),
+	ID: tradThis('Invalid Gist ID in settings.'),
+	TOKEN: tradThis('Invalid token.'),
+	NOGIST: tradThis('Bonjourr file not found in Gists.'),
+	NOCONN: tradThis('Cannot connect to GitHub.'),
+	JSON: tradThis('Invalid JSON response from GitHub.'),
+	OTHER: tradThis('Unexpected GitHub Gist error.'),
+	DEFAULT: tradThis('Tried to send default config.'),
 }

@@ -11,7 +11,7 @@
 }
 
 #local_options.shown {
-	max-height: 500px;
+	max-height: 585px;
 }
 
 #background-urls-option.shown {
@@ -30,7 +30,7 @@
 	max-height: 60px;
 }
 
-#background-position-options.shown {
+#background-file-options.shown {
 	max-height: 120px;
 }
 
@@ -69,15 +69,23 @@
 }
 
 #greetings_options.shown {
-	max-height: 120px;
+	max-height: 130px;
 }
 
 #ampm_label.shown {
 	max-height: 60px;
 }
 
+#timezone_options.shown {
+	max-height: 60px;
+}
+
 #worldclocks_options.shown {
 	max-height: 200px;
+}
+
+#worldclocks-list .dropdown:not(.shown) {
+	padding: 0;
 }
 
 #worldclocks-list .dropdown.shown {
@@ -113,7 +121,7 @@
 }
 
 #searchbar_request.shown {
-	max-height: 60px;
+	max-height: 120px;
 }
 
 #quotes_options.shown {
@@ -131,7 +139,7 @@
 /* Dropdowns: Settings management Options */
 
 #disabled-sync.shown {
-	max-height: 60px;
+	max-height: 100px;
 }
 
 #url-sync.shown {

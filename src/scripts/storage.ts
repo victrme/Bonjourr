@@ -1,7 +1,6 @@
 import { LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { deepEqual } from './dependencies/deepequal.ts'
 import { parse } from './utils/parse.ts'
-import * as idb from 'idb-keyval'
 
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
@@ -116,7 +115,7 @@ async function syncGet(key?: string | string[]): Promise<Sync> {
 }
 
 async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
-	console.log('sync set', JSON.stringify(keyval))
+	// console.log('sync set', JSON.stringify(keyval))
 
 	switch (storage.type.get()) {
 		case 'webext-sync': {
@@ -202,7 +201,7 @@ async function syncClear() {
 //	Local data
 
 function localSet(value: Record<string, unknown>) {
-	console.log('local set', JSON.stringify(value))
+	// console.log('local set', JSON.stringify(value))
 
 	switch (storage.type.get()) {
 		case 'webext-sync':
@@ -250,7 +249,7 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 				const item = globalThis.localStorage.getItem(key)
 				const isJson = item && (item.startsWith('{') || item.startsWith('['))
 				const isBool = item && (item === 'true' || item === 'false')
-				const isNoom = item && Number.isNaN(Number.parseInt(item)) === false
+				const isNoom = item && Number.isNaN(Number(item)) === false
 
 				if (isJson) {
 					result[key] = parse(item)
@@ -379,14 +378,12 @@ async function init(): Promise<AllStorage> {
 
 async function clearall() {
 	sessionStorage.clear()
-	localStorage.clear()
 
-	try {
-		idb.clear()
-	} catch (_) {
-		console.info('You are on Firefox Private Browsing')
-		return
-	}
+	Object.keys(localStorage).forEach((key) => {
+		if (key.startsWith('bonjourr-archive-') === false) {
+			localStorage.removeItem(key)
+		}
+	})
 
 	try {
 		globalThis.caches.delete('local-files')

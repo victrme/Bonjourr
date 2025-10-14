@@ -67,6 +67,7 @@ export async function weatherUpdate(update: WeatherUpdate) {
 	}
 
 	if (update.geol) {
+		console.log(update.geol)
 		updateGeolocation(update.geol, weather, lastWeather)
 		return
 	}
@@ -127,6 +128,11 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
 async function updateGeolocation(geol: string, weather: Weather, lastWeather?: LastWeather) {
 	geolForm.load()
 
+	if (!isGeolocation(geol)) {
+		geolForm.warn('bad geolocation type')
+		return
+	}
+
 	// Don't update if precise geolocation fails
 	if (geol === 'precise') {
 		if (!(await getGeolocation('precise'))) {
@@ -135,21 +141,23 @@ async function updateGeolocation(geol: string, weather: Weather, lastWeather?: L
 		}
 	}
 
-	if (isGeolocation(geol)) {
-		weather.geolocation = geol
+	weather.geolocation = geol
+	handleGeolOption(weather)
+	storage.sync.set({ weather })
+
+	if (geol === 'off') {
+		geolForm.accept()
+		return
 	}
 
 	const newWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
-
-	geolForm.accept()
-	handleGeolOption(weather)
-
-	storage.sync.set({ weather })
 
 	if (newWeather) {
 		storage.local.set({ lastWeather })
 		displayWeather(weather, newWeather)
 	}
+
+	geolForm.accept()
 }
 
 export function handleGeolOption(data: Weather) {

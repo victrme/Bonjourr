@@ -8,7 +8,7 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '21.0.2'
+export const CURRENT_VERSION = '21.2.2'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -90,6 +90,7 @@ export const SYNC_DEFAULT: Sync = {
 	favicon: '',
 	tabtitle: '',
 	greeting: '',
+	greetingsize: '3',
 	pagegap: 1,
 	pagewidth: 1600,
 	time: true,
@@ -196,6 +197,7 @@ export const SYNC_DEFAULT: Sync = {
 
 export const LOCAL_DEFAULT: Local = {
 	syncType: PLATFORM === 'online' ? 'off' : 'browser',
+	gistToken: '',
 	userQuoteSelection: 0,
 	translations: undefined,
 	quotesCache: [],

@@ -632,104 +632,65 @@
 				</dialog>
 			</template>
 
-			<template id="help-mode-template">
-				<div id="help-mode">
-					<h1>HELP MODE</h1>
+			<!-- help-mode -->
+			<style>
+				#help-mode-prompt {
+					position: fixed;
+					top: 40vh;
+					left: 0;
+					right: 0;
+					color: #eeeeee;
+					font-family: system-ui;
+					font-size: 1em;
+					text-align: center;
+					z-index: 1;
+				}
 
-					<p>If you have an issue with your page, <a href="https://github.com/victrme/Bonjourr/issues" target="_blank">look for similar problems on Github</a>. You might also have relevant information <a href="https://bonjourr.fr/docs/" target="_blank">on our documentation</a>. </p>
+				#help-mode-prompt h1 {
+					margin-bottom: 0;
+				}
 
+				#help-mode-prompt p {
+					margin-top: 0.5em;
+				}
 
-					<h2>Server status</h2>
-					<ul>
-    					<li>Website: <span id="help-status-website">loading</span><span></li>
-    					<li>Weather: <span id="help-status-weather">loading</span><span></li>
-     				    <li>Services: <span id="help-status-services">loading</span><span></li>
-					</ul>
+				#help-buttons {
+					margin-top: 1.5em;
+					display: flex;
+					justify-content: center;
+					gap: 1em;
+				}
 
-					<h2>Contact</h2>
-					<ul>
-						<li>Via email: bonjourr.app@protonmail.com</li>
-						<li>On Telegram: <a href="https://t.me/BonjourrStartpage" target="_blank">@BonjourrStartpage</a></li>
-						<li>On bluesky: <a href="https://bsky.app/profile/bonjourr.fr" target="_blank">@bonjourr.fr</a></li>
-					</ul>
+				.help-btn {
+					cursor: pointer;
+					height: 31px;
+					padding: 0 1em;
+					color: var(--color-blue);
+					border: none;
+					border-radius: 1em;
+					white-space: nowrap;
+					background-color: rgba(var(--blue),.25);
+					display: inline-flex;
+					justify-content: center;
+					align-items: center;
+					gap: 5px;
+				}
 
-					<h2>Storage</h2>
+				.help-btn:hover {
+					background-color: rgba(var(--blue), .35);
+				}
 
-					<p>Here you can see everything Bonjourr stores on you browser to be functionnal.</p>
+				.help-btn[disabled] {
+					color: #777777;
+					background-color: #282828;
+					cursor: not-allowed;
+				}
 
-					<h3>Page storage <small>(localStorage)</small></h3>
-					<p>This storage is used to store simple data. When using online.bonjourr.fr however, all of your data is stored in here.</p>
-
-					<ul id="help-localstorage"></ul>
-
-					<h3>Extension Storage</h3>
-					<h4>Synchronized <small>(browser.storage.sync)</small></h4>
-					<p>This stores critical user data when using the extension. This is the data to <b>copy to make sure you don't lose anything.</b></p>
-					<textarea id="help-storage-sync"></textarea>
-
-					<h4>Local <small>(browser.storage.local)</small></h4>
-					<p>This stores large data that cannot or does not need to be saved.</p>
-					<textarea id="help-storage-local"></textarea>
-
-					<style>
-					    #help-mode {
-    					    font-family: system-ui;
-                            max-width: 550px;
-                            margin: 4em auto;
-                            color: #333;
-                            background-color: white;
-						}
-
-						#help-mode h1 {
-    						text-align: center;
-						}
-
-						#help-mode h2 {
-						    margin-top: 2em;
-						}
-
-						#help-mode textarea {
-						    width: 100%;
-							border: none;
-							resize: vertical;
-							background-color: #f6f6f6;
-						}
-
-						#help-storage-sync,
-						#help-storage-local {
-						    font-size: small;
-		                    min-height: 200px;
-						}
-					</style>
-				</div>
-			</template>
-
-			<template id="help-mode-prompt-template">
-                <div id="help-mode-prompt">
-                    <p>Stuck? Press <code>CTRL + Shift + ?</code> to show Help Mode</p>
-
-                    <style>
-                        #help-mode-prompt {
-                            position: fixed;
-                            top: 40vh;
-                            left: 0;
-                            right: 0;
-                            color: white;
-                            font-family: system-ui;
-                            font-size: 1.5em;
-                            text-align: center;
-                            z-index: -1;
-                        }
-
-                         #help-mode-prompt code {
-                            background-color: #555;
-                            padding: .3em;
-                            border-radius: .3em;
-                            margin-inline: .3em;
-                         }
-                    </style>
-                </div>
-			</template>
+				.help-btn.danger:hover {
+					color: var(--color-red);
+					background-color: rgba(var(--red), 0.25);
+				}
+			</style>
 		</div>
 	</body>
 </html>

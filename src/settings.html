@@ -139,17 +139,13 @@
 <div class="param">
 	<div class="wrapper">
 		<label for="i_type" class="trn">Background type</label>
-
-		<form id="f_background-provider" class="network-form">
-			<select id="i_type">
-				<option value="images" class="trn">Images</option>
-				<option value="videos" class="trn">Videos</option>
-				<option value="files" class="trn">Local files</option>
-				<!-- <option value="urls" class="trn">URLs</option> -->
-				<option value="color" class="trn">Solid color</option>
-			</select>
-			<small class="network-form-warning"></small>
-		</form>
+		<select id="i_type">
+			<option value="images" class="trn">Images</option>
+			<option value="videos" class="trn">Videos</option>
+			<option value="files" class="trn">Local files</option>
+			<!-- <option value="urls" class="trn">URLs</option> -->
+			<option value="color" class="trn">Solid color</option>
+		</select>
 	</div>
 
 	<div id="background-provider-option" class="as as_provider dropdown">
@@ -235,69 +231,31 @@
 	<div id="local_options" class="dropdown">
 		<hr />
 
-		<div class="wrapper" style="display: flex; justify-content: space-between; align-items: center">
-			<h3>My files</h3>
+		<div class="wrapper">
+			<span class="trn">My files</span>
 
 			<label id="lbl_background-upload" title="Upload new background" aria-label="Upload new background">
 				<span class="param-btn">
 					<img src="src/assets/labels/add.svg" height="13" alt="" />
 					<span class="trn">Add new</span>
 				</span>
-				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+				<input
+					id="i_background-upload"
+					type="file"
+					name="background_file"
+					multiple
+					accept="image/*, video/mp4, video/webm"
+				/>
 			</label>
 		</div>
 
-		<div id="background-position-options" class="dropdown">
-			<div class="wrapper">
-				<label for="i_background-vertical" class="trn">Vertical</label>
-				<input
-					id="i_background-vertical"
-					name="background-vertical"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
-			</div>
-
-			<div class="wrapper">
-				<label for="i_background-horizontal" class="trn">Horizontal</label>
-				<input
-					id="i_background-horizontal"
-					name="background-horizontal"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
-			</div>
-
-			<div class="wrapper">
-				<label for="i_background-size" class="trn">Size</label>
-				<input
-					id="i_background-size"
-					name="background-size"
-					type="range"
-					min="100"
-					max="200"
-					value="100"
-					step="3"
-					class="range"
-				/>
-			</div>
-		</div>
-
-		<div id="thumbnails-container"></div>
+		<div class="wrapper" id="thumbnails-container"></div>
 
 		<div id="background-local-actions" class="wrapper">
 			<div>
 				<button
 					id="b_thumbnail-zoom"
-					class="trn param-btn"
+					class="param-btn"
 					title="Increase background size on grid"
 					aria-label="Increase background size on grid"
 				>
@@ -307,10 +265,10 @@
 			</div>
 			<div>
 				<button
-					id="b_thumbnail-position"
-					class="trn param-btn"
-					title="Move selected background"
-					aria-label="Move selected background"
+					id="b_thumbnail-options"
+					class="param-btn"
+					title="Show background options"
+					aria-label="Show background options"
 				>
 					<img src="src/assets/labels/move.svg" height="15" alt="" />
 					<span class="trn">Move</span>
@@ -330,8 +288,98 @@
 			</div>
 		</div>
 
+		<div id="background-file-options" class="dropdown">
+			<div id="background-file-image">
+				<div class="wrapper">
+					<label for="i_background-vertical" class="trn">Vertical</label>
+					<input
+						id="i_background-vertical"
+						name="background-vertical"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-horizontal" class="trn">Horizontal</label>
+					<input
+						id="i_background-horizontal"
+						name="background-horizontal"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-size" class="trn">Size</label>
+					<input
+						id="i_background-size"
+						name="background-size"
+						type="range"
+						min="100"
+						max="200"
+						value="100"
+						step="3"
+						class="range"
+					/>
+				</div>
+			</div>
+
+			<div id="background-file-video">
+				<div class="wrapper">
+					<label for="i_background-video-zoom" class="trn">Zoom</label>
+					<input
+						id="i_background-video-zoom"
+						name="background-video-zoom"
+						type="range"
+						min="1"
+						max="2"
+						value="1"
+						step=".1"
+						class="range"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-playback-rate" class="trn">Playback rate</label>
+					<input
+						id="i_background-playback-rate"
+						name="background-playback-rate"
+						type="range"
+						min=".2"
+						max="3"
+						value="1"
+						step=".2"
+						class="range"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-loop-fade" class="trn">Loop fade</label>
+					<input
+						id="i_background-loop-fade"
+						name="background-loop-fade"
+						type="range"
+						min="0"
+						max="6000"
+						value="4000"
+						step="200"
+						class="range"
+					/>
+				</div>
+			</div>
+		</div>
+
 		<p class="tooltiptext trn" id="background-local-tooltip"
-			>Click the button above and select some image files from your device to use as backgrounds in Bonjourr.</p
+			>Use the button above to import files from your device and set them as backgrounds in Bonjourr.</p
 		>
 
 		<hr />
@@ -905,16 +953,18 @@
 				</div>
 			</div>
 
-			<hr />
+			<div id="timezone_options" class="dropdown shown">
+				<hr />
 
-			<div class="wrapper">
-				<label for="i_timezone" class="trn">Time zone</label>
-				<select id="i_timezone" class="">
-					<optgroup label="Automatic">
-						<option value="auto" class="trn">Automatic</option>
-					</optgroup>
-					<optgroup></optgroup>
-				</select>
+				<div class="wrapper">
+					<label for="i_timezone" class="trn">Time zone</label>
+					<select id="i_timezone" class="">
+						<optgroup label="Automatic">
+							<option value="auto" class="trn">Automatic</option>
+						</optgroup>
+						<optgroup></optgroup>
+					</select>
+				</div>
 			</div>
 
 			<hr />
@@ -1081,6 +1131,8 @@
 						type="text"
 						placeholder="https://weatherbug.com/"
 						maxlength="512"
+						autocomplete="off"
+						spellcheck="false"
 					/>
 				</div>
 			</div>
@@ -1301,13 +1353,22 @@
 				<hr />
 				<div class="wrapper">
 					<label for="i_sbrequest" class="trn">URL request</label>
-					<input
-						id="i_sbrequest"
-						name="sbrequest"
-						type="text"
-						placeholder="Search query: %s"
-						maxlength="512"
-					/>
+
+					<form id="f_sbrequest" class="network-form">
+						<div>
+							<input
+								id="i_sbrequest"
+								name="sbrequest"
+								type="text"
+								placeholder="Search query: %s"
+								maxlength="512"
+							/>
+							<button type="submit">
+								<span></span>
+							</button>
+						</div>
+						<small class="network-form-warning"></small>
+					</form>
 				</div>
 			</div>
 
@@ -1603,8 +1664,8 @@
 		<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
 
 		<p class="tooltiptext dropdown ttcss">
-			<span class="trn">Make cool things happen with CSS. </span>
-			<span class="trn instructions">Check out our </span>
+			<span class="trn">Make cool things happen with CSS.</span>
+			<span class="trn">Check out our</span>
 			<a class="trn" href="https://bonjourr.fr/docs/styles/" rel="noreferrer noopener" target="_blank"
 				>CSS snippets.</a
 			>
@@ -1697,9 +1758,25 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="b_storage-persist" class="trn">Persistent storage</label>
+				<span>
+					<span class="trn">Persistent storage</span>
+					<button
+						class="tooltip ttpersistentstorage"
+						title="What is persistent storage?"
+						aria-label="What is persistent storage?"
+					>
+						?
+					</button>
+				</span>
 				<button id="b_storage-persist" class="param-btn trn">Ask permission</button>
 			</div>
+
+			<p class="tooltiptext dropdown ttpersistentstorage">
+				<span class="trn"
+					>Enabling persistent storage ensures that Firefox will remember your settings for as long as
+					possible.</span
+				>
+			</p>
 		</div>
 
 		<div id="gist-sync" class="dropdown">
