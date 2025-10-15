@@ -8,15 +8,6 @@ import {
 	setGridAreas,
 } from './dom.ts'
 import { toggleWidget, toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets.ts'
-import {
-	alignButtons,
-	gridButtons,
-	layoutButtons,
-	resetButton,
-	showSpanButtons,
-	spanButtons,
-	toolboxEvents,
-} from './toolbox.ts'
 
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
 import { transitioner } from '../../utils/transitioner.ts'
@@ -32,7 +23,6 @@ import {
 	gridFind,
 	gridParse,
 	gridStringify,
-	isEditing,
 	isRowEmpty,
 	spansInGridArea,
 	updateWidgetsStorage,
@@ -76,10 +66,6 @@ export function moveElements(init?: Move, events?: UpdateMove) {
 
 		setAllAligns(items)
 		setGridAreas(gridStringify(grid))
-		onSettingsLoad(() => {
-			toolboxEvents()
-			showSpanButtons(init.selection)
-		})
 	}
 }
 
@@ -104,9 +90,6 @@ export async function updateMoveElement(event: UpdateMove) {
 	}
 	if (event.widget) {
 		toggleWidget(data, event.widget)
-	}
-	if (event.select) {
-		elementSelection(data.move, event.select)
 	}
 	if (event.box !== undefined) {
 		alignChange(data.move, event.box, 'box')
@@ -190,7 +173,6 @@ function gridChange(move: Move, gridpos: { x?: string; y?: string }) {
 	storage.sync.set({ move: move })
 
 	setGridAreas(grid)
-	gridButtons(widget)
 }
 
 function alignChange(move: Move, value: string, type: 'box' | 'text') {
@@ -212,7 +194,6 @@ function alignChange(move: Move, value: string, type: 'box' | 'text') {
 	move.layouts[move.selection] = layout
 	storage.sync.set({ move: move })
 
-	alignButtons(align)
 	setAlign(widget, align)
 }
 
@@ -251,17 +232,10 @@ function layoutChange(data: Sync, column: string) {
 		const layout = getLayout(newdata)
 		setAllAligns(layout.items)
 		setGridAreas(layout.grid)
-		layoutButtons(newdata.move.selection)
-		showSpanButtons(newdata.move.selection)
 		removeSelection()
 
 		toggleWidgetInSettings(list)
 		toggleWidgetOnInterface(list)
-
-		if (widget) {
-			gridButtons(widget)
-			alignButtons(layout.items[widget])
-		}
 	})
 
 	interfaceTransition.finally(() => {
@@ -274,10 +248,6 @@ function layoutChange(data: Sync, column: string) {
 function layoutReset(data: Sync) {
 	const enabledWidgets = getWidgetsStorage(data)
 	let grid = ''
-
-	if (resetButton() === false) {
-		return
-	}
 
 	for (const id of enabledWidgets) {
 		grid = addGridWidget(grid, id, data.move.selection)
@@ -300,23 +270,6 @@ function layoutReset(data: Sync) {
 		searchbar: undefined,
 		quotes: undefined,
 	})
-}
-
-function elementSelection(move: Move, select: string) {
-	removeSelection()
-
-	// Remove selection modifiers and quit if failed to get id
-	if (!(isEditing() && select)) {
-		return
-	}
-
-	widget = select as Widgets
-
-	alignButtons(getLayout(move).items[widget])
-	spanButtons(widget)
-	gridButtons(widget)
-
-	document.getElementById(`ove-overlay-${widget}`)?.classList.add('selected')
 }
 
 function toggleMoveStatus(data: Sync, force?: boolean) {
@@ -358,8 +311,6 @@ function toggleGridSpans(move: Move, dir: 'col' | 'row') {
 	storage.sync.set({ move: move })
 
 	setGridAreas(gridWithSpan)
-	gridButtons(widget)
-	spanButtons(widget)
 }
 
 function pageWidthOverlay(move: Move, overlay?: boolean) {

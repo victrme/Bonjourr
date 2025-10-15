@@ -118,7 +118,7 @@ async function startup() {
 		})
 
 		// to remove
-		// moveElements(undefined, { toggle: true })
+		moveElements(undefined, { toggle: true })
 	})
 }
 
