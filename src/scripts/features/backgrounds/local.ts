@@ -19,7 +19,7 @@ type LocalFileData = {
 	small: Blob
 }
 
-type LocalFileOption = 'size' | 'vertical' | 'horizontal' | 'video-zoom' | 'playback-rate' | 'loop-fade'
+type LocalFileOption = 'size' | 'vertical' | 'horizontal' | 'video-zoom' | 'playback-speed' | 'loop-fade'
 
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
@@ -340,7 +340,7 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 			file.video.zoom = parseFloat(value)
 			videoContainer.style.transform = `scale(${file.video.zoom})`
 		}
-		if (option === 'playback-rate') {
+		if (option === 'playback-speed') {
 			file.video.playbackRate = parseFloat(value)
 			video.setPlaybackRate(parseFloat(value))
 			video.stop()
@@ -379,7 +379,7 @@ export function initFilesSettingsOptions(local: Local) {
 	document.getElementById('i_background-horizontal')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-loop-fade')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-video-zoom')?.addEventListener('input', fileOptionsEvent)
-	document.getElementById('i_background-playback-rate')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-playback-speed')?.addEventListener('input', fileOptionsEvent)
 }
 
 function handleFilesSettingsOptions(local: Local) {
@@ -418,7 +418,7 @@ function handleFileOptions(file: BackgroundFile) {
 	const domHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
 	const domLoopFade = document.querySelector<HTMLInputElement>('#i_background-loop-fade')
 	const domVideoZoom = document.querySelector<HTMLInputElement>('#i_background-video-zoom')
-	const domPlaybackRate = document.querySelector<HTMLInputElement>('#i_background-playback-rate')
+	const domPlaybackRate = document.querySelector<HTMLInputElement>('#i_background-playback-speed')
 	const imageRangesExist = domSize && domVertical && domHorizontal
 	const videoRangesExist = domLoopFade && domVideoZoom && domPlaybackRate
 
@@ -488,8 +488,8 @@ function fileOptionsEvent(this: HTMLInputElement) {
 	if (id === 'i_background-video-zoom') {
 		updateFileOptions('video-zoom', value)
 	}
-	if (id === 'i_background-playback-rate') {
-		updateFileOptions('playback-rate', value)
+	if (id === 'i_background-playback-speed') {
+		updateFileOptions('playback-speed', value)
 	}
 	if (id === 'i_background-loop-fade') {
 		updateFileOptions('loop-fade', value)
