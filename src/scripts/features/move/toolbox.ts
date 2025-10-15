@@ -7,7 +7,6 @@ import type { Move, MoveAlign } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'
 import { onclickdown } from 'clickdown/mod'
 
-const moverdom = document.querySelector<HTMLElement>('#element-mover')
 let resetTimeout: number
 let firstPos = { x: 0, y: 0 }
 let moverPos = { x: 0, y: 0 }
@@ -49,20 +48,13 @@ export function toolboxEvents() {
 	closeBtn?.addEventListener('click', () => updateMoveElement({ toggle: false }))
 	resetBtn?.addEventListener('click', () => updateMoveElement({ reset: true }))
 
-	moverdom?.addEventListener('mousedown', startDrag)
-	moverdom?.addEventListener('mouseup', removeDrag)
-	moverdom?.addEventListener('mouseleave', removeDrag)
-
-	moverdom?.addEventListener('touchstart', startDrag, { passive: false })
-	moverdom?.addEventListener('touchend', removeDrag)
-
 	function startDrag(event: Event) {
 		const target = event.target as HTMLElement
 		const validTags = target?.tagName === 'HR' || target?.tagName === 'P'
 		const validIds = target?.id === 'element-mover' || target?.id === 'close-mover-wrapper'
 
 		if (validTags || validIds) {
-			moverdom?.addEventListener(event.type.includes('touch') ? 'touchmove' : 'mousemove', moverDrag)
+			// moverdom?.addEventListener(event.type.includes('touch') ? 'touchmove' : 'mousemove', moverDrag)
 		}
 	}
 
@@ -83,19 +75,19 @@ export function toolboxEvents() {
 			y: y - firstPos.y,
 		}
 
-		if (moverdom) {
-			document.documentElement.style.overscrollBehavior = 'none'
-			moverdom.style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
-		}
+		// if (moverdom) {
+		// 	document.documentElement.style.overscrollBehavior = 'none'
+		// 	moverdom.style.transform = `translate(${moverPos.x}px, ${moverPos.y}px)`
+		// }
 	}
 
-	function removeDrag() {
-		firstPos = { x: 0, y: 0 }
-		;(moverdom as HTMLElement).style.removeProperty('cursor')
-		document.documentElement.style.removeProperty('overscroll-behavior')
-		moverdom?.removeEventListener('mousemove', moverDrag)
-		moverdom?.removeEventListener('touchmove', moverDrag)
-	}
+	// function removeDrag() {
+	// 	firstPos = { x: 0, y: 0 }
+	// 	;(moverdom as HTMLElement).style.removeProperty('cursor')
+	// 	document.documentElement.style.removeProperty('overscroll-behavior')
+	// 	moverdom?.removeEventListener('mousemove', moverDrag)
+	// 	moverdom?.removeEventListener('touchmove', moverDrag)
+	// }
 }
 
 export function layoutButtons(selection: Move['selection']) {

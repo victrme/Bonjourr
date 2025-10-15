@@ -317,11 +317,9 @@ function elementSelection(move: Move, select: string) {
 	gridButtons(widget)
 
 	document.getElementById(`ove-overlay-${widget}`)?.classList.add('selected')
-	document.getElementById('element-mover')?.classList.add('active')
 }
 
 function toggleMoveStatus(data: Sync, force?: boolean) {
-	const mover = document.getElementById('element-mover') as HTMLElement
 	const bEditmove = document.getElementById('b_editmove') as HTMLButtonElement
 	const isEditing = dominterface?.classList.contains('move-edit')
 	const hasOverlay = document.querySelector('.move-overlay') === null
@@ -331,19 +329,16 @@ function toggleMoveStatus(data: Sync, force?: boolean) {
 	if (!state) {
 		bEditmove.textContent = tradThis('Open')
 		dominterface?.classList.remove('move-edit')
-		mover.classList.add('hidden')
 		removeOverlay()
 	} //
 	else if (hasOverlay) {
 		bEditmove.textContent = tradThis('Close')
 		dominterface?.classList.add('move-edit')
-		mover.classList.remove('hidden')
 		for (const id of getWidgetsStorage(data)) {
 			addOverlay(id)
 		}
 	}
 
-	mover?.classList.remove('active')
 	removeSelection()
 }
 

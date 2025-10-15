@@ -116,6 +116,9 @@ async function startup() {
 			new: CURRENT_VERSION,
 			old: oldVersion,
 		})
+
+		// to remove
+		// moveElements(undefined, { toggle: true })
 	})
 }
 
