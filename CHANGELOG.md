@@ -7,10 +7,13 @@
 - 	New quick link icon types:
 	-	Automatic
 	-	URL
-	-	Choose from library
 	-	Import your own
+- 	Import your own video files as backgrounds
 - 	Fixes and improvements:
+	-	Restored centered default positioning for backgrounds
 	-	More reliable touch screen interactions 
+	-	Fix most languages not having a capital letter on date
+
 
 ## 21.2.1
 
