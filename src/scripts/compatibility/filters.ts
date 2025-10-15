@@ -10,6 +10,34 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+// converts old link data to new typing (Bonjourr 22 with icon options)
+export function newLinkIcons(data: Import): Import {
+	let links: any[] = []   
+
+	// gathers all links from previous data
+	Object.entries(data).map(([key, val]) => {
+		if (key.length === 11 && key.startsWith('links')) {
+			links.push(val)
+		}
+	})
+
+	links.forEach(function(link) {
+		if (link.icon && typeof link.icon === "string") {
+			const faviconWasAutomatic = link.icon.startsWith('https://services.bonjourr.fr')
+
+			link.icon = {
+				type: faviconWasAutomatic ? "auto" : "url",
+				// if URL was defined by user, stores its value 
+				...(faviconWasAutomatic ? {} : { value: link.icon })
+			}
+		}
+
+		data[link._id] = link
+	})
+
+	return data
+}
+
 export function fixNullBrightness(data: Import): Import {
 	if (data.backgrounds?.bright === null) {
 		data.backgrounds.bright = SYNC_DEFAULT.backgrounds.bright

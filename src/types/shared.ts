@@ -81,7 +81,12 @@ export interface LinkElem {
 	order: number
 	title: string
 	url: string
-	icon?: string
+	icon?: LinkIcon
+}
+
+export interface LinkIcon {
+	type: 'auto' | 'library' | 'upload' | 'url'
+	value?: string
 }
 
 export interface LinkFolder {

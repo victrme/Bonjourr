@@ -139,7 +139,7 @@ body button {
 	box-sizing: border-box;
 }
 
-body.tabbing a:focus,
+body.tabbing #settings a:focus,
 body.tabbing input:focus,
 body.tabbing textarea:focus,
 body.tabbing .pce-focus,
@@ -148,9 +148,8 @@ body.tabbing button:focus,
 body.tabbing button:focus,
 body.tabbing #bookmarks li:focus-visible,
 body.tabbing #link-title div:focus-visible,
-body.tabbing #linkblocks .link a:focus-visible,
-body.tabbing #linkblocks .link.folder:focus-visible,
-body.tabbing #linkblocks.text a:focus-visible span,
+body.tabbing #linkblocks .link:has(a:focus-visible),
+body.tabbing #linkblocks .link-folder:focus-visible,
 body.tabbing #notes_toolbar:focus-visible,
 body.tabbing input:focus-visible + .slider {
 	outline-width: 2px;
@@ -158,9 +157,9 @@ body.tabbing input:focus-visible + .slider {
 	outline-style: dashed;
 }
 
-/* Outline is invisible on Chrome without this. Why. */
-body.tabbing #linkblocks .link a:focus-visible {
-	outline-style: auto;
+body.tabbing #linkblocks .link {
+	border-radius: 10px;
+	outline-offset: 3px;
 }
 
 body.tabbing button.btn-red:focus-visible {

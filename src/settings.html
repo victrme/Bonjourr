@@ -30,7 +30,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="general_title">
 	<h2 class="trn">General</h2>
 </div>
 
@@ -132,7 +132,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="background_title">
 	<h2 class="trn">Background</h2>
 </div>
 
@@ -406,16 +406,17 @@
 				</select>
 				<button
 					id="i_refresh"
-					class="input-btn refresh-btn"
+					class="input-btn refresh-btn icon-only"
 					title="Next background"
 					aria-label="Next background"
 				>
-					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<span><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path
 							d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
 							fill="currentColor"
 						/>
-					</svg>
+					</svg></span>
+					
 				</button>
 			</div>
 		</div>
@@ -550,7 +551,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="links_title">
 	<h2 class="trn">Quick Links</h2>
 
 	<button class="tooltip ttlinks" title="Tips on Quick Links" aria-label="Tips on Quick Links">?</button>
@@ -690,7 +691,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="time_title">
 	<h2 class="trn">Time & Date</h2>
 </div>
 
@@ -982,7 +983,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="main_title">
 	<h2 class="trn">Weather & Greetings</h2>
 </div>
 
@@ -1199,7 +1200,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="notes_title">
 	<h2 id="lbl-notes" class="trn">Notes</h2>
 
 	<button class="tooltip ttnotes" title="Tips on Notes" aria-label="Tips Notes">?</button>
@@ -1212,7 +1213,7 @@
 	</p>
 </div>
 
-<div class="param">
+<div class="param" id="notes_title">
 	<div class="activate_notes wrapper">
 		<label for="i_notes" class="trn">Enable</label>
 		<input id="i_notes" class="switch" type="checkbox" />
@@ -1288,7 +1289,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="searchbar_title">
 	<h2 class="trn">Search bar</h2>
 </div>
 
@@ -1436,7 +1437,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="quotes_title">
 	<h2 id="lbl-quotes" class="trn">Quotes</h2>
 
 	<button class="tooltip ttquotes" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
@@ -1546,13 +1547,16 @@
 					<option value="day" class="trn">Every day</option>
 					<option value="pause" class="trn">Pause</option>
 				</select>
-				<button id="i_qtrefresh" class="input-btn refresh-btn" aria-label="Next quote" title="Next quote">
-					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path
-							d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
-							fill="currentColor"
-						/>
-					</svg>
+				<button id="i_qtrefresh" class="input-btn refresh-btn icon-only" aria-label="Next quote" title="Next quote">
+					<span>
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
+								fill="currentColor"
+							/>
+						</svg>
+					</span>
+					
 				</button>
 			</div>
 		</div>
@@ -1560,7 +1564,7 @@
 </div>
 
 <div class="as as_fonts dropdown">
-	<div class="settings-title">
+	<div class="settings-title" id="fonts_title">
 		<h2 class="trn">Fonts</h2>
 	</div>
 
@@ -1629,7 +1633,7 @@
 </div>
 
 <div class="as as_page dropdown">
-	<div class="settings-title">
+	<div class="settings-title" id="layout_title">
 		<h2 class="trn">Page layout</h2>
 
 		<button class="tooltip ttgrid" title="Tips on page grid layout" aria-label="Tips on page grid layout">?</button>
@@ -1692,7 +1696,7 @@
 </div>
 
 <div class="as as_css dropdown cssEditor">
-	<div class="settings-title">
+	<div class="settings-title" id="css_title">
 		<h2 id="lbl-css" class="trn">Custom Style</h2>
 
 		<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
@@ -1709,7 +1713,7 @@
 	<div class="param" id="css-editor"></div>
 </div>
 
-<div class="as as_updates dropdown">
+<div class="as as_updates dropdown" id="notifications_title">
 	<div class="settings-title">
 		<h2 class="trn">Notifications</h2>
 	</div>
@@ -1758,7 +1762,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="settings-management_title">
 	<h2 class="trn">Settings management</h2>
 
 	<button class="tooltip ttexport" title="Tips on imports & exports" aria-label="Tips on imports & exports">?</button>

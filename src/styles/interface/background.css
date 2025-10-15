@@ -60,6 +60,7 @@
 #background-media > div {
 	object-fit: cover;
 	background-size: cover;
+	background-position: center;
 	transform: scale(1.1);
 	filter: blur(var(--blur)) brightness(var(--brightness));
 }

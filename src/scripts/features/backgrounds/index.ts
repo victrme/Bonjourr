@@ -1,4 +1,5 @@
 import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
+import { handleBackgroundActions } from '../contextmenu.ts'
 import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
@@ -903,14 +904,6 @@ function createProviderSelect(backgrounds: Backgrounds) {
 
 		default:
 	}
-}
-
-function handleBackgroundActions(backgrounds: Backgrounds) {
-	const type = backgrounds.type
-	const freq = backgrounds.frequency
-	document.getElementById('background-actions')?.classList.toggle('shown', type !== 'color')
-	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
-	document.getElementById('b_interface-background-download')?.classList.toggle('shown', type === 'images')
 }
 
 async function blurResolutionControl(sync: Sync, local: Local) {

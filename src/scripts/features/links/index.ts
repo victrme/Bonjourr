@@ -1,6 +1,6 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
-import { openEditDialog } from './edit.ts'
+import { openContextMenu } from '../contextmenu.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
@@ -20,7 +20,7 @@ import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { Link, LinkElem, LinkFolder } from '../../../types/shared.ts'
+import type { Link, LinkElem, LinkIcon, LinkFolder } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
@@ -32,8 +32,8 @@ type AddLinks = {
 type UpdateLink = {
 	id: string
 	url?: string
-	icon?: string
 	title: string
+	icon?: LinkIcon
 }
 
 type AddGroups = {
@@ -194,7 +194,8 @@ export function initblocks(data: Sync, isInit?: true): true {
 				: createFolder(link, linksInFolders, data.linkstyle)
 
 			fragment.appendChild(li)
-			li.addEventListener('keyup', openEditDialog)
+
+			li.addEventListener('keyup', openContextMenu)
 
 			if (!group.synced) {
 				li.addEventListener('click', selectAll)
@@ -248,6 +249,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 	li.id = link._id
 	span.textContent = createTitle(link)
 	li.addEventListener('mouseup', folderClick)
+	li.addEventListener('keydown', folderClick)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
@@ -255,7 +257,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 		const isIconShown = img && isElem(elem) && style !== 'text'
 
 		if (isIconShown) {
-			initIconList.push([img, elem.icon ?? getDefaultIcon(elem.url)])
+			initIconList.push([img, getIconFromLinkElem(elem)])
 		}
 	}
 
@@ -277,12 +279,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	span.textContent = createTitle(link)
 
 	if (style !== 'text') {
-		const iconurl = link.icon ?? ''
-		const refresh = new Date(Number.parseInt(iconurl))?.getTime()
-		const isDefaultRefreshed = Number.isInteger(refresh)
-		const icon = !isDefaultRefreshed && link.icon ? link.icon : getDefaultIcon(link.url, refresh)
-
-		initIconList.push([img, icon])
+		initIconList.push([img, getIconFromLinkElem(link)])
 	}
 
 	if (openInNewtab) {
@@ -293,15 +290,18 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 }
 
 function createIcons(isInit?: true) {
-	const loadingTimeout = isInit ? 400 : 0
-
 	for (const [img, url] of initIconList) {
 		img.src = url
 	}
 
 	setTimeout(() => {
-		const incomplete = initIconList.filter(([img]) => !img.complete)
+		// naturalWidth is needed here because complete doesn't tell the whole story
+		// it only says if it's finished loading or not, even an error code will say "complete"
+		const incomplete = initIconList.filter(
+			([img]) => !img.complete || img.naturalWidth === 0
+		)
 
+		// if images still haven't loaded after 400ms
 		for (const [img, url] of incomplete) {
 			img.src = 'src/assets/interface/loading.svg'
 
@@ -311,11 +311,24 @@ function createIcons(isInit?: true) {
 				img.src = url
 			})
 
+			// if obvious error (dead link...), shows fallback
+			newimg.addEventListener('error', () => {
+				img.src = 'https://services.bonjourr.fr/favicon/blob/error'
+			})
+
 			newimg.src = url
+
+			// If image still isn't responding after 5s, gives up 
+			setTimeout(() => {
+				if (!newimg.complete && newimg.naturalWidth === 0) {
+					console.error("Icon link took too long to load: " + url)
+					img.src = 'https://services.bonjourr.fr/favicon/blob/error'
+				}
+			}, 5000)
 		}
 
 		initIconList = []
-	}, loadingTimeout)
+	}, 400)
 }
 
 function initRows(row: number, style: string) {
@@ -448,10 +461,15 @@ export async function linksUpdate(update: LinksUpdate) {
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 	const type = args.type
 	let newlinks: Link[] = []
-
+	
 	if (type === 'link') {
 		for (const link of args.links) {
-			newlinks.push(validateLink(link.title, link.url, link.group))
+			newlinks.push(validateLink(
+				link.title,
+				link.url,
+				// if no group is specified, adds to the selected one
+				link.group || data.linkgroups.selected
+			))
 		}
 	}
 
@@ -534,11 +552,20 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 
 	if (!link.folder) {
 		if (icondom) {
-			const url = (icon ? stringMaxSize(icon, 7500) : undefined) ?? getDefaultIcon(link.url)
 			const img = document.createElement('img')
+			let url = getDefaultIcon(link.url) as string
 
-			link.icon = url ? url : undefined
+			if (icon?.type === "auto") {
+				icon.value = undefined
+			} else if (icon?.type === "url") {
+				if (icon.value && stringMaxSize(icon.value, 7500)) {
+					url = icon.value
+				} else {
+					console.error(`There was a problem with this icon URL: ${icon.value}`)
+				}
+			}
 
+			link.icon = icon
 			icondom.src = 'src/assets/interface/loading.svg'
 
 			img.onload = () => {
@@ -558,6 +585,7 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 	}
 
 	data[id] = link
+
 	return data
 }
 
@@ -665,7 +693,15 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 		const link = data[id] as LinkElem
 
 		if (link._id) {
-			link.icon = Date.now().toString()
+			const unixDate = Date.now().toString()
+
+			if (!link.icon || link.icon.type === "auto") {
+				link.icon = link.icon ?? { type: "auto", value: "" } // when link was just added, it doesn't have the icon property, so creates it
+				link.icon.value = getDefaultIcon(link.url) + `?r=${unixDate}`
+			} else if (link.icon.type === "url") {
+				link.icon.value = `${link.icon.value}?r=${unixDate}`
+			}
+			
 			data[id] = link
 		}
 	}
@@ -795,4 +831,18 @@ function correctLinksOrder(data: Sync): Sync {
 
 function isLinkStyle(s: string): s is Sync['linkstyle'] {
 	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
+}
+
+function getIconFromLinkElem(link: LinkElem): string {
+	let icon = getDefaultIcon(link.url)
+
+	if (link.icon) {
+		if (link.icon.type === "auto" && link.icon.value) {
+			icon = link.icon.value
+		} else if (link.icon.type === "url" && link.icon.value) {
+			icon = link.icon.value
+		}
+	}
+
+	return icon
 }
