@@ -4,7 +4,7 @@ interface CompressOptions {
 	q?: number
 }
 
-export async function compressMedia(blob: Blob, options: CompressOptions) {
+export async function compressMedia(blob: Blob, options: CompressOptions): Promise<Blob> {
 	const blobUrl = globalThis.URL.createObjectURL(blob)
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')

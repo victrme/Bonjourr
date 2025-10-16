@@ -1,12 +1,13 @@
 import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
-import { getLink, getSelectedIds } from './helpers.ts'
+import { getLink, getSelectedIds, isLinkIconType } from './helpers.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
 
 import { getComposedPath } from '../../shared/dom.ts'
-import type { LinkIcon } from '../../../types/shared.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
+
+import type { LinkIcon } from '../../../types/shared.ts'
 
 interface EditStates {
 	group: string
@@ -327,8 +328,6 @@ function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
 	const { container, target, group, folder, selected, selectall } = editStates
 
-	// console.info(change)
-
 	if (change === 'edit-apply') {
 		applyLinkChanges('button')
 	}
@@ -451,8 +450,16 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 		return
 	}
 
-	if (!(id && li)) {
+	if (!id || !li) {
 		return
+	}
+
+	const iconType = isLinkIconType(domicontype.value) ? domicontype.value : 'auto'
+	const iconValue = iconType === 'url' ? domiconurl.value : undefined
+
+	const icon: LinkIcon = {
+		type: iconType,
+		value: iconValue,
 	}
 
 	quickLinks(undefined, {
@@ -460,10 +467,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 			id: id,
 			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
-			icon: {
-				type: domicontype?.value as LinkIcon['type'],
-				value: domiconurl.value,
-			},
+			icon: icon,
 		},
 	})
 

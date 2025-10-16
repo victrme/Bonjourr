@@ -22,6 +22,8 @@ import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
+import { getCache } from '../../shared/cache.ts'
+import { compressMedia } from '../../shared/compress.ts'
 
 type AddLinks = {
 	title: string
@@ -543,6 +545,16 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
 	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
 	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
+
+	const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
+	const file = domiconfile.files?.[0]
+
+	if (file) {
+		addIconFileToCache(id, file)
+	}
+
+	console.log(file)
+
 	const link = data[id] as Link
 
 	if (titledom && title !== undefined) {
@@ -709,6 +721,31 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 	initblocks(data)
 
 	return data
+}
+
+async function addIconFileToCache(id: string, file: File) {
+	// 1. Compress willing files
+
+	const compressibleTypes = ['jpeg', 'png', 'webp']
+	const imageType = file.type.replace('image/', '')
+	const isCompressible = compressibleTypes.includes(imageType)
+
+	if (isCompressible) {
+		file = await compressMedia(file, {
+			size: 200,
+			q: .8,
+		}) as File
+	}
+
+	// 2. Add to cache
+
+	const cache = await getCache('local-icons')
+	const request = new Request(`http://127.0.0.1:8888/${id}/`)
+	const headers = { 'content-type': file.type, 'Cache-Control': 'max-age=604800' }
+
+	const response = new Response(file, { headers: headers })
+
+	cache.put(request, response)
 }
 
 function setOpenInNewTab(newtab: boolean, data: Sync): Sync {

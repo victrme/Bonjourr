@@ -1,10 +1,10 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
-import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
 import { compressMedia } from '../../shared/compress.ts'
 import { needsChange } from '../../shared/time.ts'
 import { onclickdown } from 'clickdown/mod'
 import { VideoLooper } from './VideoLooper.ts'
-import { IDBCache } from '../../dependencies/idbcache.ts'
+import { IS_MOBILE } from '../../defaults.ts'
+import { getCache } from '../../shared/cache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 
@@ -805,13 +805,4 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	local.backgroundFiles = newMetadataList
 
 	return local
-}
-
-function getCache(name: string): Promise<Cache | IDBCache> {
-	if (PLATFORM === 'safari') {
-		// CacheStorage doesn't work on Safari extensions, need indexedDB
-		return Promise.resolve(new IDBCache(name))
-	}
-
-	return caches.open(name)
 }
