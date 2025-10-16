@@ -123,7 +123,7 @@ function isOpen() {
 		settings: !!document.getElementById('settings')?.classList.contains('shown'),
 		folder: !!document.querySelector('.in-folder'),
 		selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
-		contextmenu: document.querySelector<HTMLDialogElement>('#contextmenu')?.open
+		contextmenu: document.querySelector<HTMLDialogElement>('#contextmenu')?.open,
 	}
 }
 

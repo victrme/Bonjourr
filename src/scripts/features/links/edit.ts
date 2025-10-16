@@ -1,12 +1,12 @@
+import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 import { getLink, getSelectedIds } from './helpers.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
-import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 
 import { getComposedPath } from '../../shared/dom.ts'
+import type { LinkIcon } from '../../../types/shared.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
-import { LinkIcon } from '../../../types/shared.ts'
 
 interface EditStates {
 	group: string
@@ -35,7 +35,7 @@ const domurl = document.getElementById('e-url') as HTMLInputElement
 
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
-const domiconstatic = document.getElementById('e-icon-svg') as HTMLInputElement
+const _domiconstatic = document.getElementById('e-icon-svg') as HTMLInputElement
 
 let inputToFocus: HTMLInputElement
 let buttonToSubmit: HTMLButtonElement
@@ -46,9 +46,13 @@ let editStates: EditStates
 // Display
 //
 
-export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDialogElement, newLinkFromGlobal?: boolean) {
+export async function populateDialogWithEditLink(
+	event: Event,
+	domdialog: HTMLDialogElement,
+	newLinkFromGlobal?: boolean,
+) {
 	domeditlink = domdialog
-	
+
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
 	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
@@ -90,7 +94,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	const folderTitle = container.folder && target.title
 	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
-	
+
 	if (noInputs || folderTitle || noSelection || dragging) {
 		closeContextMenu()
 		return
@@ -100,7 +104,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	event.preventDefault()
 
 	// removes buttons from the global context menu
-	domeditlink.querySelectorAll('#contextActions button, #background-actions').forEach(function(contextButton) {
+	domeditlink.querySelectorAll('#contextActions button, #background-actions').forEach(function (contextButton) {
 		contextButton.classList.remove('on')
 	})
 
@@ -141,16 +145,15 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 			// console.info(type)
 
 			domurl.value = link.url ?? ''
-			
+
 			if (link.icon && link.icon.value) {
 				domiconurl.value = link.icon.value
 			}
-			
 
 			// if (icon.type ===)
 			// domiconurl.value = Number.isNaN(parseInt(icon)) ? icon : ''
 
-			toggleIconType(link.icon ? link.icon.type : "auto")
+			toggleIconType(link.icon ? link.icon.type : 'auto')
 		}
 	}
 
@@ -165,7 +168,9 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	editStates.selected = getSelectedIds()
 
 	// Once dialog is populated, calculates its position
-	if (!newLinkFromGlobal) positionContextMenu(event)
+	if (!newLinkFromGlobal) {
+		positionContextMenu(event)
+	}
 
 	inputToFocus?.focus()
 }
@@ -244,8 +249,8 @@ function toggleEditInputs(): string[] {
 		}
 	}
 
-
-	const hasLabels = inputs.includes('title') || inputs.includes('title*') || inputs.includes('url*') || inputs.includes('icon')
+	const hasLabels = inputs.includes('title') || inputs.includes('title*') || inputs.includes('url*') ||
+		inputs.includes('icon')
 	domeditlink.querySelector('hr')?.classList.toggle('on', hasLabels)
 
 	if (deleteButtonTxt) {
@@ -281,13 +286,15 @@ queueMicrotask(() => {
 	domicontype?.addEventListener('change', toggleIconType)
 })
 
-// HTML has peculiar (and limiting) ways of figuring out which button to submit to on enter
-// this is needed to be sure hitting enter triggers the same reaction as clicking the right button
+/**
+ * HTML has peculiar (and limiting) ways of figuring out which button to submit to on enter
+ * this is needed to be sure hitting enter triggers the same reaction as clicking the right button
+ */
 function setSubmitOnEnter(theButton: string) {
 	if (!buttonToSubmit) {
 		buttonToSubmit = document.getElementById(theButton ?? 'edit-apply') as HTMLButtonElement
 
-		document.getElementById('editlink-form')?.addEventListener('keydown', function(e) {
+		document.getElementById('editlink-form')?.addEventListener('keydown', function (e) {
 			if (e.key === 'Enter') {
 				e.preventDefault() // prevent default submit
 				buttonToSubmit.click() // triggers demanded button
@@ -304,11 +311,10 @@ function toggleIconType(iconType: Event | string) {
 		iconType = target.value
 	}
 
-
 	const selectIconType = document.getElementById('e-icon-type') as HTMLSelectElement
-	if (selectIconType) { 
+	if (selectIconType) {
 		selectIconType.value = iconType
-	} 
+	}
 
 	const editIconUrl = document.getElementById('e-icon-url') as HTMLInputElement
 	if (editIconUrl) { // disables the input when it's hidden, otherwise HTML complains
@@ -331,8 +337,8 @@ function toggleIconType(iconType: Event | string) {
 function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
 	const { container, target, group, folder, selected, selectall } = editStates
-	
-	console.info(change)
+
+	// console.info(change)
 
 	if (change === 'edit-apply') {
 		applyLinkChanges('button')
@@ -416,10 +422,10 @@ function submitChanges(event: SubmitEvent) {
 	setTimeout(closeContextMenu)
 }
 
-function applyLinkChanges(origin: 'inputs' | 'button') {
+function applyLinkChanges(_origin: 'inputs' | 'button') {
 	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
-	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
+	const _inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (editStates.target.addgroup) {
 		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })
@@ -479,13 +485,13 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
 			icon: {
 				type: domicontype?.value as LinkIcon['type'],
-				value: domiconurl.value
-			}
+				value: domiconurl.value,
+			},
 			// icon: domicontype?.value,
 			// icon_svg: domiconstatic?.value,
 			// icon_url: domiconurl.value,
 		},
 	})
-	
+
 	closeContextMenu()
 }

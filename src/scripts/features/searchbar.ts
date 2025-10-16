@@ -77,11 +77,11 @@ export function searchbar(init?: Searchbar, update?: SearchbarUpdate) {
 		domsearchbar?.addEventListener('input', handleUserInput)
 
 		// closes context menu when searchbar is focused
-		domsearchbar?.addEventListener("focus", () => {
-			document.dispatchEvent(new Event("close-edit"))
+		domsearchbar?.addEventListener('focus', () => {
+			document.dispatchEvent(new Event('close-edit'))
 			domsearchbar.focus()
 		})
-		
+
 		document.addEventListener('keydown', searchbarShortcut)
 	} catch (_) {
 		//...

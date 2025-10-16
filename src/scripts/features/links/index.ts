@@ -20,7 +20,7 @@ import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { Link, LinkElem, LinkIcon, LinkFolder } from '../../../types/shared.ts'
+import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
@@ -289,7 +289,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	return li
 }
 
-function createIcons(isInit?: true) {
+function createIcons(_isInit?: true) {
 	for (const [img, url] of initIconList) {
 		img.src = url
 	}
@@ -298,7 +298,7 @@ function createIcons(isInit?: true) {
 		// naturalWidth is needed here because complete doesn't tell the whole story
 		// it only says if it's finished loading or not, even an error code will say "complete"
 		const incomplete = initIconList.filter(
-			([img]) => !img.complete || img.naturalWidth === 0
+			([img]) => !img.complete || img.naturalWidth === 0,
 		)
 
 		// if images still haven't loaded after 400ms
@@ -318,10 +318,10 @@ function createIcons(isInit?: true) {
 
 			newimg.src = url
 
-			// If image still isn't responding after 5s, gives up 
+			// If image still isn't responding after 5s, gives up
 			setTimeout(() => {
 				if (!newimg.complete && newimg.naturalWidth === 0) {
-					console.error("Icon link took too long to load: " + url)
+					console.error('Icon link took too long to load: ' + url)
 					img.src = 'https://services.bonjourr.fr/favicon/blob/error'
 				}
 			}, 5000)
@@ -461,14 +461,14 @@ export async function linksUpdate(update: LinksUpdate) {
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 	const type = args.type
 	let newlinks: Link[] = []
-	
+
 	if (type === 'link') {
 		for (const link of args.links) {
 			newlinks.push(validateLink(
 				link.title,
 				link.url,
 				// if no group is specified, adds to the selected one
-				link.group || data.linkgroups.selected
+				link.group || data.linkgroups.selected,
 			))
 		}
 	}
@@ -555,9 +555,9 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 			const img = document.createElement('img')
 			let url = getDefaultIcon(link.url) as string
 
-			if (icon?.type === "auto") {
+			if (icon?.type === 'auto') {
 				icon.value = undefined
-			} else if (icon?.type === "url") {
+			} else if (icon?.type === 'url') {
 				if (icon.value && stringMaxSize(icon.value, 7500)) {
 					url = icon.value
 				} else {
@@ -695,13 +695,13 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 		if (link._id) {
 			const unixDate = Date.now().toString()
 
-			if (!link.icon || link.icon.type === "auto") {
-				link.icon = link.icon ?? { type: "auto", value: "" } // when link was just added, it doesn't have the icon property, so creates it
+			if (!link.icon || link.icon.type === 'auto') {
+				link.icon = link.icon ?? { type: 'auto', value: '' } // when link was just added, it doesn't have the icon property, so creates it
 				link.icon.value = getDefaultIcon(link.url) + `?r=${unixDate}`
-			} else if (link.icon.type === "url") {
+			} else if (link.icon.type === 'url') {
 				link.icon.value = `${link.icon.value}?r=${unixDate}`
 			}
-			
+
 			data[id] = link
 		}
 	}
@@ -837,9 +837,9 @@ function getIconFromLinkElem(link: LinkElem): string {
 	let icon = getDefaultIcon(link.url)
 
 	if (link.icon) {
-		if (link.icon.type === "auto" && link.icon.value) {
+		if (link.icon.type === 'auto' && link.icon.value) {
 			icon = link.icon.value
-		} else if (link.icon.type === "url" && link.icon.value) {
+		} else if (link.icon.type === 'url' && link.icon.value) {
 			icon = link.icon.value
 		}
 	}

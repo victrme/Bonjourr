@@ -76,7 +76,7 @@ export interface BackgroundVideo {
 
 export interface LinkElem {
 	_id: string
-	parent?: string | number
+	parent?: string
 	folder?: false
 	order: number
 	title: string
