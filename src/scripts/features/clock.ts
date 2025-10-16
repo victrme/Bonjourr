@@ -349,7 +349,7 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 
 		if (clock.ampmposition === 'top-right' || clock.ampmposition === 'bottom-right') {
 			if (ampm && domclock.lastElementChild !== ampm) {
-				domclock.appendChild(ampm)
+				domclock.insertBefore(ampm, domclock.lastElementChild)
 			}
 		} else if (clock.ampmposition === 'top-left' || clock.ampmposition === 'bottom-left') {
 			if (ampm && domclock.firstElementChild !== ampm) {
