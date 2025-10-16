@@ -239,6 +239,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
+	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
@@ -284,6 +285,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
+	paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
 	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
@@ -615,6 +617,13 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_ampm-label'), (_, target) => {
 		clock(undefined, { ampmlabel: target.checked })
+
+		// shows/hides ampm_position option
+		paramId('ampm_position')?.classList.toggle('shown', target.checked)
+	})
+
+	paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { ampmposition: this.value })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {

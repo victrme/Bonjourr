@@ -46,6 +46,11 @@
 	direction: ltr;
 }
 
+.digital[data-ampm-label][data-ampm][data-ampmposition='top-right'],
+.digital[data-ampm-label][data-ampm][data-ampmposition='bottom-right'] {
+	margin-left: var(--seconds-width);
+}
+
 .digital span {
 	text-align: left;
 }
@@ -85,14 +90,31 @@
 	display: none;
 }
 
-[data-ampm-label][data-ampm] .digital-ampm,
-[data-ampm-label][data-ampm='am'] .digital-am,
-[data-ampm-label][data-ampm='pm'] .digital-pm {
+[data-ampm-label][data-ampm][data-ampmposition] .digital-ampm,
+[data-ampm-label][data-ampm='am'][data-ampmposition] .digital-am,
+[data-ampm-label][data-ampm='pm'][data-ampmposition] .digital-pm {
 	display: inline-block;
 }
 
 [data-ampm-label][data-ampm] {
 	margin-inline-end: 0.5em;
+}
+
+#time[class] * * [data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm,
+#time * * [data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm,
+[data-ampm-label][data-ampm][data-ampmposition='bottom-left'] .digital-ampm {
+	vertical-align: bottom;
+}
+
+/* am/pm top right, seconds */
+#time[class='seconds'] * * [data-ampm-label][data-ampm][data-ampmposition='top-right'] .digital-ampm {
+	margin-left: 1ch;
+}
+
+/* am/pm bottom right, seconds */
+#time[class='seconds'] * * [data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm {
+	margin-left: 1ch;
+	vertical-align: bottom;
 }
 
 #time.seconds .digital-ss {
