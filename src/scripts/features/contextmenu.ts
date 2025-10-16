@@ -97,7 +97,7 @@ export function openContextMenu(event: Event) {
 
 	if (clickedOnWidgets) {
 		const allWidgets = Object.entries(eventLocation.widgets)
-		const clickedOnWidgets = allWidgets.filter((_, clicked) => clicked)
+		const clickedOnWidgets = allWidgets.filter(([_, clicked]) => clicked)
 
 		for (const [widget] of clickedOnWidgets) {
 			const section = sectionMatching[widget]
