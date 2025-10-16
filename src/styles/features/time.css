@@ -106,12 +106,12 @@
 	vertical-align: bottom;
 }
 
-/* am/pm top right, seconds */
+/* AM/PM top right, seconds */
 #time[class='seconds'] * * [data-ampm-label][data-ampm][data-ampmposition='top-right'] .digital-ampm {
 	margin-left: 1ch;
 }
 
-/* am/pm bottom right, seconds */
+/* AM/PM bottom right, seconds */
 #time[class='seconds'] * * [data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm {
 	margin-left: 1ch;
 	vertical-align: bottom;

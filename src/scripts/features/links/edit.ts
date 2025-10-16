@@ -35,7 +35,6 @@ const domurl = document.getElementById('e-url') as HTMLInputElement
 
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
-const _domiconstatic = document.getElementById('e-icon-svg') as HTMLInputElement
 
 let inputToFocus: HTMLInputElement
 let buttonToSubmit: HTMLButtonElement
@@ -137,21 +136,11 @@ export async function populateDialogWithEditLink(
 		domtitle.value = link?.title ?? ''
 
 		if (link && !link.folder) {
-			const icon = link.icon ?? ''
-			console.log(icon)
-			// let type = icon.startsWith('svg:') ? 'svg' : icon.startsWith('file:') ? 'file' : 'url'
-
-			// type = "svg"
-			// console.info(type)
-
 			domurl.value = link.url ?? ''
 
 			if (link.icon && link.icon.value) {
 				domiconurl.value = link.icon.value
 			}
-
-			// if (icon.type ===)
-			// domiconurl.value = Number.isNaN(parseInt(icon)) ? icon : ''
 
 			toggleIconType(link.icon ? link.icon.type : 'auto')
 		}
@@ -352,12 +341,6 @@ function submitChanges(event: SubmitEvent) {
 		quickLinks(undefined, { refreshIcons: selected })
 	}
 
-	// if (change === 'edit-inputs') {
-	// 	applyLinkChanges('inputs')
-	// 	event.preventDefault()
-	// 	return
-	// }
-
 	if (change === 'edit-delete') {
 		if (target.title) {
 			quickLinks(undefined, { deleteGroup: group })
@@ -472,12 +455,6 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 		return
 	}
 
-	// if (origin === 'inputs') {
-	// 	for (const node of inputs) {
-	// 		node.blur()
-	// 	}
-	// }
-
 	quickLinks(undefined, {
 		updateLink: {
 			id: id,
@@ -487,9 +464,6 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 				type: domicontype?.value as LinkIcon['type'],
 				value: domiconurl.value,
 			},
-			// icon: domicontype?.value,
-			// icon_svg: domiconstatic?.value,
-			// icon_url: domiconurl.value,
 		},
 	})
 

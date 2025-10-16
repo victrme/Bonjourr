@@ -9,6 +9,7 @@
 	-	URL
 	-	Import your own
 - 	Import your own video files as backgrounds
+- 	Choose the AM/PM position when 12-Hour Time is enabled (thank you ShrekCoding21!!)
 - 	Fixes and improvements:
 	-	Restored centered default positioning for backgrounds
 	-	More reliable touch screen interactions 
