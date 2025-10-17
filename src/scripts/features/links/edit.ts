@@ -1,5 +1,5 @@
-import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 import { getLink, getSelectedIds, isLinkIconType } from './helpers.ts'
+import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
 
@@ -7,7 +7,7 @@ import { getComposedPath } from '../../shared/dom.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { LinkIcon } from '../../../types/shared.ts'
+import type { LinkIconType } from '../../../types/shared.ts'
 
 interface EditStates {
 	group: string
@@ -34,6 +34,7 @@ let domeditlink: HTMLDialogElement
 const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
 
+const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
 
@@ -139,8 +140,11 @@ export async function populateDialogWithEditLink(
 		if (link && !link.folder) {
 			domurl.value = link.url ?? ''
 
-			if (link.icon && link.icon.value) {
-				domiconurl.value = link.icon.value
+			const iconType = link.icon?.type ?? 'auto'
+			const iconValue = link.icon?.value ?? ''
+
+			if (iconType === 'url' && iconValue) {
+				domiconurl.value = iconValue
 			}
 
 			toggleIconType(link.icon ? link.icon.type : 'auto')
@@ -454,20 +458,42 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 		return
 	}
 
-	const iconType = isLinkIconType(domicontype.value) ? domicontype.value : 'auto'
-	const iconValue = iconType === 'url' ? domiconurl.value : undefined
+	// Step: Handle icon input data
 
-	const icon: LinkIcon = {
-		type: iconType,
-		value: iconValue,
+	let iconType: LinkIconType = 'auto'
+	let iconValue: string | undefined = undefined
+	const iconUrl = domiconurl.value
+	const iconFile = domiconfile.files?.[0]
+
+	if (isLinkIconType(domicontype.value)) {
+		iconType = domicontype.value
+
+		if (iconType === 'url') {
+			iconValue = iconUrl
+		}
+
+		if (iconType === 'file' && iconFile) {
+			iconValue = iconFile.name
+		}
+
+		if (iconType === 'file' && !iconFile) {
+			iconType = 'auto'
+			iconValue = undefined
+		}
 	}
+
+	// Step: Send data to link update
 
 	quickLinks(undefined, {
 		updateLink: {
 			id: id,
 			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
-			icon: icon,
+			icon: {
+				type: iconType,
+				value: iconValue,
+			},
+			file: iconFile,
 		},
 	})
 

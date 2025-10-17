@@ -1,4 +1,5 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
+import { getIconFile, removeIconFile, storeIconFile } from './fileicons.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { folderClick } from './folders.ts'
@@ -22,8 +23,6 @@ import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
-import { getCache } from '../../shared/cache.ts'
-import { compressMedia } from '../../shared/compress.ts'
 
 type AddLinks = {
 	title: string
@@ -36,6 +35,7 @@ type UpdateLink = {
 	url?: string
 	title: string
 	icon?: LinkIcon
+	file?: File
 }
 
 type AddGroups = {
@@ -259,7 +259,9 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 		const isIconShown = img && isElem(elem) && style !== 'text'
 
 		if (isIconShown) {
-			initIconList.push([img, getIconFromLinkElem(elem)])
+			getIconFromLinkElem(elem).then((url) => {
+				initIconList.push([img, url])
+			})
 		}
 	}
 
@@ -281,7 +283,9 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	span.textContent = createTitle(link)
 
 	if (style !== 'text') {
-		initIconList.push([img, getIconFromLinkElem(link)])
+		getIconFromLinkElem(link).then((url) => {
+			initIconList.push([img, url])
+		})
 	}
 
 	if (openInNewtab) {
@@ -541,19 +545,10 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
 	]
 }
 
-function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
+function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Sync {
 	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
 	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
 	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
-
-	const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
-	const file = domiconfile.files?.[0]
-
-	if (file) {
-		addIconFileToCache(id, file)
-	}
-
-	console.log(file)
 
 	const link = data[id] as Link
 
@@ -562,14 +557,18 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 		titledom.textContent = link.title
 	}
 
-	if (!link.folder) {
-		if (icondom) {
+	if (isElem(link)) {
+		if (icondom && icon) {
 			const img = document.createElement('img')
-			let url = getDefaultIcon(link.url) as string
+			let url = getDefaultIcon(link.url)
 
-			if (icon?.type === 'auto') {
+			icondom.src = 'src/assets/interface/loading.svg'
+
+			if (icon.type === 'auto') {
 				icon.value = undefined
-			} else if (icon?.type === 'url') {
+			}
+
+			if (icon.type === 'url') {
 				if (icon.value && stringMaxSize(icon.value, 7500)) {
 					url = icon.value
 				} else {
@@ -577,16 +576,17 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 				}
 			}
 
-			link.icon = icon
-			icondom.src = 'src/assets/interface/loading.svg'
+			if (icon.type === 'file' && file) {
+				storeIconFile(id, file)
+				url = URL.createObjectURL(file)
+			}
 
 			img.onload = () => {
-				if (icondom) {
-					icondom.src = url
-				}
+				icondom.src = url
 			}
 
 			img.src = url
+			link.icon = icon
 		}
 
 		if (titledom && urldom && url !== undefined) {
@@ -671,6 +671,12 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 			}
 		}
 
+		if (isElem(link)) {
+			if (link.icon?.type === 'file') {
+				removeIconFile(id)
+			}
+		}
+
 		delete data[id]
 	}
 
@@ -721,31 +727,6 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 	initblocks(data)
 
 	return data
-}
-
-async function addIconFileToCache(id: string, file: File) {
-	// 1. Compress willing files
-
-	const compressibleTypes = ['jpeg', 'png', 'webp']
-	const imageType = file.type.replace('image/', '')
-	const isCompressible = compressibleTypes.includes(imageType)
-
-	if (isCompressible) {
-		file = await compressMedia(file, {
-			size: 200,
-			q: .8,
-		}) as File
-	}
-
-	// 2. Add to cache
-
-	const cache = await getCache('local-icons')
-	const request = new Request(`http://127.0.0.1:8888/${id}/`)
-	const headers = { 'content-type': file.type, 'Cache-Control': 'max-age=604800' }
-
-	const response = new Response(file, { headers: headers })
-
-	cache.put(request, response)
 }
 
 function setOpenInNewTab(newtab: boolean, data: Sync): Sync {
@@ -870,15 +851,23 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
 	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }
 
-function getIconFromLinkElem(link: LinkElem): string {
+async function getIconFromLinkElem(link: LinkElem): Promise<string> {
 	let icon = getDefaultIcon(link.url)
 
-	if (link.icon) {
-		if (link.icon.type === 'auto' && link.icon.value) {
-			icon = link.icon.value
-		} else if (link.icon.type === 'url' && link.icon.value) {
-			icon = link.icon.value
-		}
+	if (!link.icon) {
+		return icon
+	}
+
+	const { type, value } = link.icon
+
+	if (type === 'auto' && value) {
+		icon = value
+	} else if (type === 'url' && value) {
+		icon = value
+	} else if (type === 'file') {
+		const file = await getIconFile(link._id)
+		const url = file ? URL.createObjectURL(file) : icon
+		icon = url
 	}
 
 	return icon
