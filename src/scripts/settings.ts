@@ -237,6 +237,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_notes', data.notes?.on ?? false)
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
+	setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
 	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
@@ -800,6 +801,12 @@ function initOptionsEvents() {
 		event.preventDefault()
 
 		quotes(undefined, { url: paramId('i_qturl').value })
+	})
+
+	// Pomodoro
+
+	onclickdown(paramId('i_pomodoro'), (_, target) => {
+		moveElements(undefined, { widget: ['pomodoro', target.checked] })
 	})
 
 	// Custom fonts

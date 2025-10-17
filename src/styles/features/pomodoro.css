@@ -1,0 +1,15 @@
+#pomodoro_container {
+	display: block;
+	row-gap: 1em;
+	width: 50vw;
+	max-width: 45em;
+	min-width: 20em;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	user-select: text;
+	cursor: initial;
+}
+
+#pomodoro_container.hidden {
+    display: none;
+}

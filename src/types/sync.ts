@@ -36,6 +36,7 @@ export interface Sync {
 	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes
+	pomodoro: Pomodoro
 	font: Font
 	move: Move
 	about: {
@@ -206,4 +207,8 @@ export interface Weather {
 	temperature: 'actual' | 'feelslike' | 'both'
 	moreinfo: 'none' | 'msnw' | 'yhw' | 'windy' | 'accu' | 'custom'
 	provider?: string
+}
+
+export interface Pomodoro {
+	on: boolean
 }

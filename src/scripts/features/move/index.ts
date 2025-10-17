@@ -234,6 +234,7 @@ function layoutChange(data: Sync, column: string) {
 		['main', widgetsInGrid.includes('main')],
 		['notes', widgetsInGrid.includes('notes')],
 		['quotes', widgetsInGrid.includes('quotes')],
+		['pomodoro', widgetsInGrid.includes('pomodoro')],
 		['searchbar', widgetsInGrid.includes('searchbar')],
 		['quicklinks', widgetsInGrid.includes('quicklinks')],
 	]
@@ -299,6 +300,7 @@ function layoutReset(data: Sync) {
 		notes: undefined,
 		searchbar: undefined,
 		quotes: undefined,
+		pomodoro: undefined
 	})
 }
 

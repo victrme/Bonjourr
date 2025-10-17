@@ -178,6 +178,9 @@ export const SYNC_DEFAULT: Sync = {
 		frequency: 'day',
 		last: undefined,
 	},
+	pomodoro: {
+		on: false,
+	},
 	font: {
 		family: '',
 		size: '14',
