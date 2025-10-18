@@ -14,14 +14,19 @@ interface Time {
   end?: number
 }
 
+let currentPomodoroData: Pomodoro
+
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 
 const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
 let countdown: number
 
-const setMode = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
-const getTimeForMode = (p: Pomodoro) => p.mode && p.time_for[p.mode]
+const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
+const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!) =>
+	currentPomodoroData.time_for[mode]
+
+const stopTimer = () => clearInterval(countdown)
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     if (update) {
@@ -33,12 +38,14 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
         return
     }
 
+    currentPomodoroData = init
+
     // makes pomodoro show up in #interface
     document.getElementById('pomodoro_container')?.classList.toggle('hidden', !init.on)
     displayInterface('pomodoro')
 
     handleUserInput()
-    setMode(init.mode)
+    setModeButton(init.mode)
 
     // receiving data from other tabs
     broadcast.onmessage = ({ data = {} }) => {
@@ -59,10 +66,14 @@ function handleUserInput() {
     radioButtons.forEach(function(btn) {
         btn.addEventListener('change', (e) => {
             const target = e.target as HTMLInputElement
+            const newMode = target.value as PomodoroMode
 
+            // save
             updatePomodoro({
-                mode: target.value as PomodoroMode
+                mode: newMode
             })
+
+            switchMode(newMode)
         })
     })
 
@@ -77,10 +88,17 @@ function handleUserInput() {
     }
 }
 
+async function switchMode(mode: PomodoroMode) {
+    stopTimer()
+
+    const seconds = getTimeForMode(mode) as number
+    displayTimeLeft(seconds)
+}
+
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
 
 async function startTimer(end?: number) {
-    clearInterval(countdown)
+    stopTimer()
 
     const { pomodoro } = await storage.sync.get(['pomodoro'])
 
@@ -90,7 +108,7 @@ async function startTimer(end?: number) {
     }
 
     if (!end) {
-        let seconds = getTimeForMode(pomodoro)
+        let seconds = getTimeForMode(pomodoro.mode)
 
         time.end = time.start + seconds * 1000
         updatePomodoro({end: time.end})
@@ -101,11 +119,11 @@ async function startTimer(end?: number) {
 
         // time's up
         if (secondsLeft <= 0) {
-            clearInterval(countdown);
+            stopTimer()
         }
 
         displayTimeLeft(secondsLeft)
-    }, 1000)
+    }, 10)
 }
 
 function displayTimeLeft(seconds: number) {
@@ -132,4 +150,6 @@ async function updatePomodoro({ end, mode }: PomodoroUpdate) {
     }
 
     storage.sync.set({ pomodoro: data.pomodoro })
+    
+    currentPomodoroData = data.pomodoro
 }
