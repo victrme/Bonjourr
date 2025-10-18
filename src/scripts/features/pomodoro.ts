@@ -5,6 +5,7 @@ import { storage } from '../storage.ts'
 type PomodoroUpdate = {
 	on?: boolean
     end?: number
+    mode?: 'pomodoro' | 'break' | 'long_break'
 }
 
 interface Time {
@@ -25,10 +26,11 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     document.getElementById('pomodoro_container')?.classList.toggle('hidden', !init.on)
 
     displayInterface('pomodoro')
+    interfaceUpdates()
 
     const pomodoroStart = document.getElementById('pmdr_start')
     
-    const broadCast = new BroadcastChannel('audio-player');
+    const broadCast = new BroadcastChannel('pomodoro');
 
     broadCast.onmessage = ({ data = {} }) => {
         if (data.type === "start-pomodoro") {
@@ -36,6 +38,7 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
         }
     }
 
+    // if end is in the future, then the countdown needs to continue
     if (init.end && Date.now() < init.end) {
         startTimer(init.end)
     }
@@ -49,7 +52,20 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
             })
         }
     }
+}
 
+function interfaceUpdates() {
+    const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
+
+    radioButtons.forEach(function(btn) {
+        btn.addEventListener('change', (e) => {
+            const target = e.target as HTMLInputElement
+            
+            updatePomodoro({
+                mode: target.value as "pomodoro" | "break" | "long_break"
+            })
+        })
+    })
 }
 
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
@@ -81,7 +97,7 @@ function startTimer(end?: number) {
     }, 1000)
 }
 
-export function displayTimeLeft(seconds: number) {
+function displayTimeLeft(seconds: number) {
     const timer_dom = document.getElementById('pmdr_timer')
 
     if (!timer_dom) return
@@ -93,11 +109,15 @@ export function displayTimeLeft(seconds: number) {
     timer_dom.textContent = displayTime
 }
 
-async function updatePomodoro({ end }: PomodoroUpdate) {
+async function updatePomodoro({ end, mode }: PomodoroUpdate) {
     const data = await storage.sync.get(['pomodoro'])
 
     if (end) {
         data.pomodoro.end = end
+    }
+
+    if (mode) {
+        data.pomodoro.mode = mode
     }
 
     storage.sync.set({ pomodoro: data.pomodoro })

@@ -481,7 +481,24 @@
 			</form>
 
 			<div id="pomodoro_container" class="hidden">
-				<span id="pmdr_timer"></span>
+				<fieldset id="pmdr_modes">
+					<div>
+						<input type="radio" id="pmdr-default-mode" name="pomodoro_modes" value="pomodoro" checked />
+						<label for="pmdr-default-mode">Pomodoro</label>
+					</div>
+
+					<div>
+						<input type="radio" id="pmdr-break" name="pomodoro_modes" value="break" />
+						<label for="pmdr-break">Break</label>
+					</div>
+
+					<div>
+						<input type="radio" id="pmdr-long-break" name="pomodoro_modes" value="long_break" />
+						<label for="pmdr-long-break">Long break</label>
+					</div>
+				</fieldset>
+
+				<span id="pmdr_timer">25:00</span>
 				<button id="pmdr_start">Start</button>
 			</div>
 

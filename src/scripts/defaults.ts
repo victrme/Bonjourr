@@ -180,6 +180,7 @@ export const SYNC_DEFAULT: Sync = {
 	},
 	pomodoro: {
 		on: false,
+		mode: 'pomodoro'
 	},
 	font: {
 		family: '',

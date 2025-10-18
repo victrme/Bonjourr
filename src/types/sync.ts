@@ -212,4 +212,5 @@ export interface Weather {
 export interface Pomodoro {
 	on: boolean
 	end?: number
+	mode?: 'pomodoro' | 'break' | 'long_break'
 }
