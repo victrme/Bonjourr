@@ -1,5 +1,5 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
-import { getIconFile, removeIconFile, storeIconFile } from './fileicons.ts'
+import { getAllIconsSync, getIconCacheSync, getIconFile, removeIconFile, storeIconFile } from './fileicons.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { folderClick } from './folders.ts'
@@ -259,9 +259,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 		const isIconShown = img && isElem(elem) && style !== 'text'
 
 		if (isIconShown) {
-			getIconFromLinkElem(elem).then((url) => {
-				initIconList.push([img, url])
-			})
+			initIconList.push([img, getIconFromLinkElem(elem)])
 		}
 	}
 
@@ -283,9 +281,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	span.textContent = createTitle(link)
 
 	if (style !== 'text') {
-		getIconFromLinkElem(link).then((url) => {
-			initIconList.push([img, url])
-		})
+		initIconList.push([img, getIconFromLinkElem(link)])
 	}
 
 	if (openInNewtab) {
@@ -299,6 +295,16 @@ function createIcons(_isInit?: true) {
 	for (const [img, url] of initIconList) {
 		img.src = url
 	}
+
+	getIconCacheSync((cache) => {
+		for (const [img, url] of initIconList) {
+			cache.match(`http://127.0.0.1:8888/${url}/`).then((icon) => {
+				icon?.blob().then((blob) => {
+					img.src = URL.createObjectURL(blob)
+				})
+			})
+		}
+	})
 
 	setTimeout(() => {
 		// naturalWidth is needed here because complete doesn't tell the whole story
@@ -847,28 +853,17 @@ function correctLinksOrder(data: Sync): Sync {
 	return data
 }
 
-function isLinkStyle(s: string): s is Sync['linkstyle'] {
-	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
+function getIconFromLinkElem(link: LinkElem): string {
+	if (!link.icon?.value) {
+		return getDefaultIcon(link.url)
+	}
+	if (link.icon.type === 'file') {
+		return link._id
+	}
+
+	return link.icon.value
 }
 
-async function getIconFromLinkElem(link: LinkElem): Promise<string> {
-	let icon = getDefaultIcon(link.url)
-
-	if (!link.icon) {
-		return icon
-	}
-
-	const { type, value } = link.icon
-
-	if (type === 'auto' && value) {
-		icon = value
-	} else if (type === 'url' && value) {
-		icon = value
-	} else if (type === 'file') {
-		const file = await getIconFile(link._id)
-		const url = file ? URL.createObjectURL(file) : icon
-		icon = url
-	}
-
-	return icon
+function isLinkStyle(s: string): s is Sync['linkstyle'] {
+	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }

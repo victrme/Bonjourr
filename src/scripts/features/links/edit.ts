@@ -467,6 +467,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 
 	if (isLinkIconType(domicontype.value)) {
 		iconType = domicontype.value
+		iconValue = undefined
 
 		if (iconType === 'url') {
 			iconValue = iconUrl
