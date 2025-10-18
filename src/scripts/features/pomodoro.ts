@@ -51,6 +51,9 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     broadcast.onmessage = ({ data = {} }) => {
         if (data.type === "start-pomodoro") {
             startTimer()
+        } else if (data.type === "switch-mode") {
+            setModeButton(data.mode)
+            switchMode(data.mode)
         }
     }
 
@@ -74,6 +77,11 @@ function handleUserInput() {
             })
 
             switchMode(newMode)
+
+            broadcast.postMessage({
+                type: 'switch-mode',
+                mode: newMode
+            })
         })
     })
 
