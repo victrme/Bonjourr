@@ -211,4 +211,5 @@ export interface Weather {
 
 export interface Pomodoro {
 	on: boolean
+	end?: number
 }

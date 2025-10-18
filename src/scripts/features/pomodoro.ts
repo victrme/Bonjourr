@@ -1,16 +1,23 @@
 import type { Pomodoro } from '../../types/sync.ts'
 import { displayInterface } from '../shared/display.ts'
+import { storage } from '../storage.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
+    end?: number
 }
 
 interface Time {
-  start: number;
-  end?: number; // optional
+  start: number
+  end?: number
 }
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
+    if (update) {
+		updatePomodoro(update)
+		return
+	}
+
     if (!init) {
         return
     }
@@ -29,6 +36,10 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
         }
     }
 
+    if (init.end && Date.now() < init.end) {
+        startTimer(init.end)
+    }
+
     if (pomodoroStart) {
         pomodoroStart.onclick = function() {
             startTimer()
@@ -44,14 +55,19 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
 let countdown: number
 
-function startTimer() {
-    let seconds = 1500 // 25mins in seconds
+function startTimer(end?: number) {
+    clearInterval(countdown)
 
     let time : Time = {
-        start: Date.now()
+        start: Date.now(),
+        end: end ?? undefined
     }
 
-    time.end = time.start + seconds * 1000 // end goal 25mins from now 
+    if (!end) {
+        let seconds = 1500 // 25mins in seconds
+        time.end = time.start + seconds * 1000 // end goal 25mins from now 
+        updatePomodoro({end: time.end})
+    }
 
     countdown = setInterval(() => {
         const secondsLeft = Math.round((time.end - Date.now()) / 1000);
@@ -75,4 +91,14 @@ export function displayTimeLeft(seconds: number) {
     const displayTime = `${minutes}:${secondsRemaining < 10 ? "0" : ""}${secondsRemaining}`
 
     timer_dom.textContent = displayTime
+}
+
+async function updatePomodoro({ end }: PomodoroUpdate) {
+    const data = await storage.sync.get(['pomodoro'])
+
+    if (end) {
+        data.pomodoro.end = end
+    }
+
+    storage.sync.set({ pomodoro: data.pomodoro })
 }
