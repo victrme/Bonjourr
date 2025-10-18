@@ -7,6 +7,7 @@ type PomodoroUpdate = {
 	on?: boolean
     end?: number
     mode?: PomodoroMode
+    pause?: number | false
 }
 
 interface Time {
@@ -17,6 +18,7 @@ interface Time {
 let currentPomodoroData: Pomodoro
 
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
+const pomodoroPause = document.getElementById('pmdr_pause') as HTMLButtonElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 
 const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
@@ -26,7 +28,10 @@ const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) 
 const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!) =>
 	currentPomodoroData.time_for[mode]
 
-const stopTimer = () => clearInterval(countdown)
+
+function stopTimer() {
+    clearInterval(countdown)
+}
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     if (update) {
@@ -94,6 +99,16 @@ function handleUserInput() {
             })
         }
     }
+
+    if (pomodoroPause) {
+        pomodoroPause.onclick = function() {
+            pauseTimer()
+
+            // broadcast.postMessage({
+            //     type: 'start-pomodoro',
+            // })
+        }
+    }
 }
 
 async function switchMode(mode: PomodoroMode) {
@@ -114,14 +129,29 @@ async function startTimer(end?: number) {
         start: Date.now(),
         end: end ?? undefined
     }
-
+    
     if (!end) {
-        let seconds = getTimeForMode(pomodoro.mode)
+        if (pomodoro.pause) {
+            // Resuming after pause
+            const remaining = pomodoro.end - pomodoro.pause
+            const now = Date.now()
 
-        time.end = time.start + seconds * 1000
-        updatePomodoro({end: time.end})
+            time = {
+                start: now,
+                end: now + remaining
+            }
+        } else if (!end) { // fresh timer
+            let seconds = getTimeForMode(pomodoro.mode)
+
+            time.end = time.start + seconds * 1000
+        }
+        
+        updatePomodoro({
+            end: time.end,
+            pause: false
+        })
     }
-
+    
     countdown = setInterval(() => {
         const secondsLeft = Math.round((time.end - Date.now()) / 1000);
 
@@ -132,6 +162,19 @@ async function startTimer(end?: number) {
 
         displayTimeLeft(secondsLeft)
     }, 10)
+
+    toggleStartPause(true)
+}
+
+async function pauseTimer() {
+    const { pomodoro } = await storage.sync.get(['pomodoro'])
+    const pauseTime = Date.now()
+
+    updatePomodoro({ pause: pauseTime })
+
+
+    stopTimer()
+    toggleStartPause(false)
 }
 
 function displayTimeLeft(seconds: number) {
@@ -146,7 +189,7 @@ function displayTimeLeft(seconds: number) {
     timer_dom.textContent = displayTime
 }
 
-async function updatePomodoro({ end, mode }: PomodoroUpdate) {
+async function updatePomodoro({ end, mode, pause }: PomodoroUpdate) {
     const data = await storage.sync.get(['pomodoro'])
 
     if (end) {
@@ -157,7 +200,16 @@ async function updatePomodoro({ end, mode }: PomodoroUpdate) {
         data.pomodoro.mode = mode
     }
 
+    if (pause) {
+        data.pomodoro.pause = pause
+    }
+
     storage.sync.set({ pomodoro: data.pomodoro })
     
     currentPomodoroData = data.pomodoro
+}
+
+function toggleStartPause(pause: boolean) {
+    pomodoroPause.classList.toggle('hidden', !pause)
+    pomodoroStart.classList.toggle('hidden', pause)
 }

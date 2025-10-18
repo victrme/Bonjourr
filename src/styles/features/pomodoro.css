@@ -13,3 +13,7 @@
 #pomodoro_container.hidden {
     display: none;
 }
+
+#pomodoro_container button.hidden {
+	display: none;
+}
