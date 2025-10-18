@@ -8,6 +8,7 @@ export type Background = BackgroundImage | BackgroundVideo
 export type QuoteUserInput = [string, string][]
 export type Widgets = 'time' | 'main' | 'quicklinks' | 'notes' | 'quotes' | 'searchbar' | 'pomodoro'
 export type Frequency = 'tabs' | 'hour' | 'day' | 'period' | 'pause'
+export type PomodoroMode = 'pomodoro' | 'break' | 'longbreak'
 export type SearchEngines =
 	| 'default'
 	| 'google'
@@ -32,6 +33,7 @@ export type WeatherConditions =
 	| 'thunderstorm'
 	| 'snow'
 	| 'mist'
+
 
 export interface BackgroundImage {
 	format: 'image'

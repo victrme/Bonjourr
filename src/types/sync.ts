@@ -1,4 +1,4 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, Widgets } from './shared.ts'
+import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
 
 export interface Sync {
 	showall: boolean
@@ -212,5 +212,6 @@ export interface Weather {
 export interface Pomodoro {
 	on: boolean
 	end?: number
-	mode?: 'pomodoro' | 'break' | 'long_break'
+	mode?: PomodoroMode
+	time_for: Record<PomodoroMode, number>
 }

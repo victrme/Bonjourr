@@ -1,17 +1,27 @@
 import type { Pomodoro } from '../../types/sync.ts'
+import type { PomodoroMode } from '../../types/shared.ts'
 import { displayInterface } from '../shared/display.ts'
 import { storage } from '../storage.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
     end?: number
-    mode?: 'pomodoro' | 'break' | 'long_break'
+    mode?: PomodoroMode
 }
 
 interface Time {
   start: number
   end?: number
 }
+
+const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
+const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
+
+const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
+let countdown: number
+
+const setMode = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
+const getTimeForMode = (p: Pomodoro) => p.mode && p.time_for[p.mode]
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     if (update) {
@@ -23,56 +33,56 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
         return
     }
 
+    // makes pomodoro show up in #interface
     document.getElementById('pomodoro_container')?.classList.toggle('hidden', !init.on)
-
     displayInterface('pomodoro')
-    interfaceUpdates()
 
-    const pomodoroStart = document.getElementById('pmdr_start')
-    
-    const broadCast = new BroadcastChannel('pomodoro');
+    handleUserInput()
+    setMode(init.mode)
 
-    broadCast.onmessage = ({ data = {} }) => {
+    // receiving data from other tabs
+    broadcast.onmessage = ({ data = {} }) => {
         if (data.type === "start-pomodoro") {
             startTimer()
         }
     }
 
-    // if end is in the future, then the countdown needs to continue
+    // on page init, if end is in the future, then the countdown needs to continue
     if (init.end && Date.now() < init.end) {
         startTimer(init.end)
     }
+}
+
+// events 
+function handleUserInput() {
+    // different modes
+    radioButtons.forEach(function(btn) {
+        btn.addEventListener('change', (e) => {
+            const target = e.target as HTMLInputElement
+
+            updatePomodoro({
+                mode: target.value as PomodoroMode
+            })
+        })
+    })
 
     if (pomodoroStart) {
         pomodoroStart.onclick = function() {
             startTimer()
 
-            broadCast.postMessage({
+            broadcast.postMessage({
                 type: 'start-pomodoro',
             })
         }
     }
 }
 
-function interfaceUpdates() {
-    const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
-
-    radioButtons.forEach(function(btn) {
-        btn.addEventListener('change', (e) => {
-            const target = e.target as HTMLInputElement
-            
-            updatePomodoro({
-                mode: target.value as "pomodoro" | "break" | "long_break"
-            })
-        })
-    })
-}
-
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
-let countdown: number
 
-function startTimer(end?: number) {
+async function startTimer(end?: number) {
     clearInterval(countdown)
+
+    const { pomodoro } = await storage.sync.get(['pomodoro'])
 
     let time : Time = {
         start: Date.now(),
@@ -80,8 +90,9 @@ function startTimer(end?: number) {
     }
 
     if (!end) {
-        let seconds = 1500 // 25mins in seconds
-        time.end = time.start + seconds * 1000 // end goal 25mins from now 
+        let seconds = getTimeForMode(pomodoro)
+
+        time.end = time.start + seconds * 1000
         updatePomodoro({end: time.end})
     }
 

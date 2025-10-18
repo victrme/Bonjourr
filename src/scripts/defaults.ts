@@ -180,7 +180,12 @@ export const SYNC_DEFAULT: Sync = {
 	},
 	pomodoro: {
 		on: false,
-		mode: 'pomodoro'
+		mode: 'pomodoro',
+		time_for: {
+			pomodoro: 1500,
+			break: 300,
+			longbreak: 600
+		}
 	},
 	font: {
 		family: '',
