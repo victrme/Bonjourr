@@ -182,6 +182,7 @@ export const SYNC_DEFAULT: Sync = {
 		on: false,
 		mode: 'pomodoro',
 		pause: 0,
+		end: 0,
 		time_for: {
 			pomodoro: 1500,
 			break: 300,

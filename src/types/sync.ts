@@ -211,7 +211,7 @@ export interface Weather {
 
 export interface Pomodoro {
 	on: boolean
-	end?: number
+	end: number
 	pause: number
 	mode?: PomodoroMode
 	time_for: Record<PomodoroMode, number>

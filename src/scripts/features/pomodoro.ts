@@ -15,15 +15,15 @@ let currentPomodoroData: Pomodoro
 const pomodoroContainer = document.getElementById('pomodoro_container') as HTMLDivElement
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
 const pomodoroPause = document.getElementById('pmdr_pause') as HTMLButtonElement
+const timer_dom = document.getElementById('pmdr_timer') as HTMLSpanElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 
 const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
 let countdown: number
 
 const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
-const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!) =>
-	currentPomodoroData.time_for[mode]
-
+const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number =>
+    currentPomodoroData.time_for[mode]
 
 function stopTimer() {
     clearInterval(countdown)
@@ -69,8 +69,7 @@ function handleUserInput() {
     // different modes
     radioButtons.forEach(function(btn) {
         btn.addEventListener('change', (e) => {
-            const target = e.target as HTMLInputElement
-            const newMode = target.value as PomodoroMode
+            const newMode = (e.target as HTMLInputElement).value as PomodoroMode
 
             switchMode(newMode)
 
@@ -81,25 +80,21 @@ function handleUserInput() {
         })
     })
 
-    if (pomodoroStart) {
-        pomodoroStart.onclick = function(e) {
-            startTimer(true)
+    pomodoroStart?.addEventListener('click', () => {
+        startTimer(true)
 
-            broadcast.postMessage({
-                type: 'start-pomodoro',
-            })
-        }
-    }
+        broadcast.postMessage({
+            type: 'start-pomodoro',
+        })
+    })
 
-    if (pomodoroPause) {
-        pomodoroPause.onclick = function() {
-            pauseTimer()
+    pomodoroPause?.addEventListener('click', () => {
+        pauseTimer()
 
-            broadcast.postMessage({
-                type: 'pause-pomodoro',
-            })
-        }
-    }
+        broadcast.postMessage({
+            type: 'pause-pomodoro',
+        })
+    })
 }
 
 async function switchMode(mode: PomodoroMode) {
@@ -112,8 +107,7 @@ async function switchMode(mode: PomodoroMode) {
         pause: 0
     })
 
-    const seconds = getTimeForMode(mode) as number
-    insertTime(seconds)
+    insertTime(getTimeForMode(mode))
 }
 
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
@@ -136,22 +130,24 @@ async function startTimer(fromButton: boolean = false) {
     const wasPaused = pomodoro.pause !== 0
     const now = Date.now()
 
+    let remaining: number = 0
+
+    if (wasPaused) {
+        remaining = pomodoro.end - pomodoro.pause
+    }
+
     if (fromButton) {
         if (wasPaused) {
             console.info("From event: timer resumed")
-            const remaining = pomodoro.end - pomodoro.pause
+
             const newEnd = now + remaining
 
-            countdown = setInterval(() => {
-                insertTime(calculateSecondsLeft(newEnd))
-            }, 10)
+            startCountdown(newEnd)
 
             updatePomodoro({
                 end: newEnd,
                 pause: 0
             })
-
-            toggleStartPause(true)
         } else {
             console.info("From event: new timer started")
             
@@ -162,29 +158,28 @@ async function startTimer(fromButton: boolean = false) {
                 end: end,
                 pause: 0
             })
-        
-            countdown = setInterval(() => {
-                insertTime(calculateSecondsLeft(end))
-            }, 10)
-    
-            toggleStartPause(true)
+
+            startCountdown(end)
         }
 
     } else { // from refresh/new tab
         if (wasPaused) {
             console.info("After refresh: timer paused")
-            const remaining = pomodoro.end - pomodoro.pause
+            
             insertTime(calculateSecondsLeft(now + remaining))
         } else {
             console.info('After refresh: timer resumed')
-            
-            countdown = setInterval(() => {
-                insertTime(calculateSecondsLeft(pomodoro.end))
-            }, 10)
-
-            toggleStartPause(true)
+            startCountdown(pomodoro.end)
         }
     }
+}
+
+function startCountdown(endtime: number) {
+    countdown = setInterval(() => {
+        insertTime(calculateSecondsLeft(endtime))
+    }, 10)
+
+    toggleStartPause(true)
 }
 
 async function pauseTimer() {
@@ -208,8 +203,6 @@ function calculateSecondsLeft(end: number) {
 }
 
 function insertTime(seconds: number) {
-    const timer_dom = document.getElementById('pmdr_timer')
-
     if (!timer_dom) return
 
     const minutes = Math.floor(seconds / 60)
