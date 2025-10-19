@@ -187,7 +187,8 @@ export const SYNC_DEFAULT: Sync = {
 			pomodoro: 1500,
 			break: 300,
 			longbreak: 600
-		}
+		},
+		focus: false
 	},
 	font: {
 		family: '',

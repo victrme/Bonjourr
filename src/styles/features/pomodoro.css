@@ -1,3 +1,23 @@
+/* vignette */
+body #background-wrapper:after {
+	content: "";
+	transition: box-shadow 0.3s ease;
+	position: absolute;
+	inset: 0;
+}
+
+body.pomodoro-focus #background-wrapper:after {
+	box-shadow: inset 0px 0px 285px rgba(0, 0, 0, 0.9);
+}
+
+body.pomodoro-focus #interface > *:not(#pomodoro_container) {
+	display: none;
+}
+
+body.pomodoro-focus #interface {
+	grid-template-areas: "pomodoro";
+}
+
 #pomodoro_container {
 	display: block;
 	row-gap: 1em;

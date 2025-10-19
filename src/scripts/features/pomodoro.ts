@@ -8,6 +8,7 @@ type PomodoroUpdate = {
     end?: number
     mode?: PomodoroMode
     pause?: number
+    focus?: boolean
 }
 
 let currentPomodoroData: Pomodoro
@@ -17,6 +18,7 @@ const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
 const pomodoroPause = document.getElementById('pmdr_pause') as HTMLButtonElement
 const timer_dom = document.getElementById('pmdr_timer') as HTMLSpanElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
+const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 
 const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
 let countdown: number
@@ -48,6 +50,7 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
 
     handleUserInput()
     setModeButton(init.mode)
+    togglePomodoroFocus(init.focus)
 
     // receiving data from other tabs
     broadcast.onmessage = ({ data = {} }) => {
@@ -58,6 +61,8 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
             switchMode(data.mode)
         } else if (data.type === "pause-pomodoro") {
             pauseTimer()
+        } else if (data.type === "toggle-focus") {
+            togglePomodoroFocus(data.on)
         }
     }
 
@@ -93,6 +98,17 @@ function handleUserInput() {
 
         broadcast.postMessage({
             type: 'pause-pomodoro',
+        })
+    })
+
+    focusButton?.addEventListener('change', (e) => {
+        const focusIsChecked = (e.target as HTMLInputElement).checked as boolean
+
+        togglePomodoroFocus(focusIsChecked)
+
+        broadcast.postMessage({
+            type: 'toggle-focus',
+            on: focusIsChecked
         })
     })
 }
@@ -212,7 +228,7 @@ function insertTime(seconds: number) {
     timer_dom.textContent = displayTime
 }
 
-async function updatePomodoro({ end, mode, pause }: PomodoroUpdate) {
+async function updatePomodoro({ end, mode, pause, focus }: PomodoroUpdate) {
     const data = await storage.sync.get(['pomodoro'])
 
     if (end !== undefined) {
@@ -226,6 +242,10 @@ async function updatePomodoro({ end, mode, pause }: PomodoroUpdate) {
     if (pause !== undefined) {
         data.pomodoro.pause = pause
     }
+
+    if (focus !== undefined) {
+        data.pomodoro.focus = focus
+    }
     
     storage.sync.set({ pomodoro: data.pomodoro })
 
@@ -235,4 +255,14 @@ async function updatePomodoro({ end, mode, pause }: PomodoroUpdate) {
 function toggleStartPause(started: boolean) {
     if (!pomodoroContainer) return
     pomodoroContainer.classList.toggle('started', started)
+}
+
+export function togglePomodoroFocus(on: boolean) {
+    document.body.classList.toggle('pomodoro-focus', on)
+
+    focusButton.checked = on
+
+    updatePomodoro({
+        focus: on
+    })
 }

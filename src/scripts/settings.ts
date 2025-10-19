@@ -14,6 +14,7 @@ import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
+import { togglePomodoroFocus } from './features/pomodoro.ts'
 import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
@@ -807,6 +808,7 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_pomodoro'), (_, target) => {
 		moveElements(undefined, { widget: ['pomodoro', target.checked] })
+		togglePomodoroFocus(false)
 	})
 
 	// Custom fonts
@@ -838,6 +840,8 @@ function initOptionsEvents() {
 		moveElements(undefined, {
 			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
 		})
+		
+		togglePomodoroFocus(false)
 	})
 
 	paramId('i_pagecolumns').addEventListener('change', function () {
