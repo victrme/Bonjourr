@@ -14,6 +14,12 @@
     display: none;
 }
 
-#pomodoro_container button.hidden {
+#pomodoro_container #pmdr_pause,
+#pomodoro_container.started #pmdr_start {
 	display: none;
+}
+
+#pomodoro_container #pmdr_start,
+#pomodoro_container.started #pmdr_pause {
+	display: inline-block;
 }

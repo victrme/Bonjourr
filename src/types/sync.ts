@@ -212,7 +212,7 @@ export interface Weather {
 export interface Pomodoro {
 	on: boolean
 	end?: number
-	pause: number | false
+	pause: number
 	mode?: PomodoroMode
 	time_for: Record<PomodoroMode, number>
 }
