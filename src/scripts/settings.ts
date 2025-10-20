@@ -823,9 +823,33 @@ function initOptionsEvents() {
 			} 
 		})
 	})
-
+	
 	paramId('i_pmdr_pomodoro').addEventListener('change', () => {
 		paramId('i_pmdr_pomodoro').blur()
+	})
+
+	paramId('i_pmdr_break').addEventListener('input', function () {
+		pomodoro(undefined, { 
+			time_for: { 
+				break: Number(this.value)
+			} 
+		})
+	})
+	
+	paramId('i_pmdr_break').addEventListener('change', () => {
+		paramId('i_pmdr_break').blur()
+	})
+
+	paramId('i_pmdr_longbreak').addEventListener('input', function () {
+		pomodoro(undefined, { 
+			time_for: { 
+				longbreak: Number(this.value)
+			} 
+		})
+	})
+	
+	paramId('i_pmdr_longbreak').addEventListener('change', () => {
+		paramId('i_pmdr_longbreak').blur()
 	})
 
 	// Custom fonts
