@@ -1596,15 +1596,54 @@
 		<input id="i_pomodoro" class="switch" type="checkbox" />
 	</div>
 
-	<div id="quotes_options" class="dropdown">
-		<hr />
+	<div id="pomodoro_options" class="dropdown">
+		<div class="as as_pomodoro dropdown">
+			<hr />
 
-		<!-- <div class="as as_quote_type">
 			<div class="wrapper">
-				<label for="i_qtauthor" class="trn">Always show author</label>
-				<input id="i_qtauthor" class="switch" type="checkbox" />
+				<label for="i_pmdr_pomodoro_time" class="trn">Default minutes</label>
+				<input
+					type="number"
+					name="i_pmdr_pomodoro_time"
+					id="i_pmdr_pomodoro"
+					autocomplete="off"
+					min="0"
+					max="59"
+					placeholder="Minutes"
+				/>
 			</div>
-		</div> -->
+			
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_break_time" class="trn">Break time</label>
+				<input
+					type="number"
+					name="i_pmdr_break_time"
+					id="i_pmdr_break"
+					autocomplete="off"
+					min="0"
+					max="59"
+					placeholder="Minutes"
+				/>
+			</div>
+			
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_longbreak_time" class="trn">Long break time</label>
+				<input
+					type="number"
+					name="i_pmdr_longbreak_time"
+					id="i_pmdr_longbreak"
+					autocomplete="off"
+					min="0"
+					max="59"
+					placeholder="Minutes"
+				/>
+			</div>
+
+		</div>
 	</div>
 </div>
 

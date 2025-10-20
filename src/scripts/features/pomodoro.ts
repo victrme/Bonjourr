@@ -10,6 +10,7 @@ type PomodoroUpdate = {
     mode?: PomodoroMode
     pause?: number
     focus?: boolean
+    time_for?: Partial<Record<PomodoroMode, number>>
 }
 
 let currentPomodoroData: Pomodoro
@@ -81,6 +82,7 @@ function handleUserInput() {
 
         broadcast.postMessage({
             type: 'start-pomodoro',
+            time: getTimeForMode(currentPomodoroData.mode)
         })
     })
 
@@ -116,7 +118,7 @@ function listenToBroadcast() {
     // receiving data from other tabs
     broadcast.onmessage = ({ data = {} }) => {
         if (data.type === "start-pomodoro") {
-            startTimer(true)
+            startTimer(true, data.time)
         } else if (data.type === "switch-mode") {
             setModeButton(data.mode)
             switchMode(data.mode)
@@ -152,11 +154,11 @@ async function initTimer(pomodoro: Pomodoro) {
 }
 
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
-async function startTimer(fromButton: boolean = false) {
+async function startTimer(fromButton: boolean = false, time?: number) {
     stopTimer()
 
     const { pomodoro } = await storage.sync.get(['pomodoro'])
-    const defaultTime = getTimeForMode(pomodoro.mode)
+    const defaultTime = time ?? getTimeForMode(pomodoro.mode)
     const wasPaused = pomodoro.pause !== 0
     const now = Date.now()
 
@@ -232,7 +234,6 @@ function stopTimer() {
 }
 
 function resetTimer() {
-    stopTimer()
     switchMode(currentPomodoroData.mode as PomodoroMode)
 }
 
@@ -266,7 +267,7 @@ export async function togglePomodoroFocus(focus: boolean) {
     })
 }
 
-async function updatePomodoro({ on, end, mode, pause, focus }: PomodoroUpdate) {
+async function updatePomodoro({ on, end, mode, pause, focus, time_for }: PomodoroUpdate) {
     const data = await storage.sync.get(['pomodoro'])
 
     if (on !== undefined) {
@@ -288,8 +289,22 @@ async function updatePomodoro({ on, end, mode, pause, focus }: PomodoroUpdate) {
     if (focus !== undefined) {
         data.pomodoro.focus = focus
     }
+
+    if (time_for) {
+        for (const mode of Object.keys(time_for) as PomodoroMode[]) {
+            const value = time_for[mode]
+
+            if (value !== undefined) {
+                data.pomodoro.time_for[mode] = value * 60
+            }
+        }
+    }
     
     await storage.sync.set({ pomodoro: data.pomodoro })
 
     currentPomodoroData = data.pomodoro
+
+    if (time_for) {
+        resetTimer()
+    }
 }

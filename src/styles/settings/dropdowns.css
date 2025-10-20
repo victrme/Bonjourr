@@ -140,6 +140,10 @@
 	max-height: 450px;
 }
 
+#pomodoro_options.shown {
+	max-height: 460px;
+}
+
 /* Dropdowns: Settings management Options */
 
 #disabled-sync.shown {
@@ -223,4 +227,8 @@
 
 .all .as_sync {
 	max-height: 280px;
+}
+
+.all .as_pomodoro {
+	max-height: 190px;
 }

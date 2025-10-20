@@ -43,3 +43,8 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 #pomodoro_container.started #pmdr_pause {
 	display: inline-block;
 }
+
+#pomodoro_options input[type="number"]:after {
+	content: "mn";
+	display: none;
+}
