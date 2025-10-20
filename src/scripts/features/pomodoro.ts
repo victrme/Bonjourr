@@ -17,6 +17,7 @@ let currentPomodoroData: Pomodoro
 const pomodoroContainer = document.getElementById('pomodoro_container') as HTMLDivElement
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
 const pomodoroPause = document.getElementById('pmdr_pause') as HTMLButtonElement
+const pomodoroReset = document.getElementById('pmdr_reset') as HTMLButtonElement
 const timer_dom = document.getElementById('pmdr_timer') as HTMLSpanElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
@@ -46,7 +47,7 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
 
 function initPomodoro(init: Pomodoro) {
     currentPomodoroData = init
-    
+
     handleToggle(init.on)
     displayInterface('pomodoro')
 
@@ -91,6 +92,14 @@ function handleUserInput() {
         })
     })
 
+    pomodoroReset?.addEventListener('click', () => {
+        resetTimer()
+
+        broadcast.postMessage({
+            type: 'reset-pomodoro',
+        })
+    })
+
     focusButton?.addEventListener('change', (e) => {
         const focusIsChecked = (e.target as HTMLInputElement).checked as boolean
 
@@ -115,6 +124,8 @@ function listenToBroadcast() {
             pauseTimer()
         } else if (data.type === "toggle-focus") {
             togglePomodoroFocus(data.on)
+        } else if (data.type === "reset-pomodoro") {
+            resetTimer()
         }
     }
 }
@@ -220,10 +231,15 @@ function stopTimer() {
     toggleStartPause(false)
 }
 
+function resetTimer() {
+    stopTimer()
+    switchMode(currentPomodoroData.mode as PomodoroMode)
+}
+
 function calculateSecondsLeft(end: number) {
     const secondsLeft = Math.round((end - Date.now()) / 1000)
 
-    // time's up
+    // time's up!
     if (secondsLeft <= 0) {
         stopTimer()
     }
