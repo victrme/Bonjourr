@@ -808,7 +808,6 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_pomodoro'), (_, target) => {
 		moveElements(undefined, { widget: ['pomodoro', target.checked] })
-		togglePomodoroFocus(false)
 	})
 
 	// Custom fonts
@@ -837,11 +836,11 @@ function initOptionsEvents() {
 	// Page layout
 
 	onclickdown(paramId('b_editmove'), () => {
+		togglePomodoroFocus(false)
+
 		moveElements(undefined, {
 			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
 		})
-		
-		togglePomodoroFocus(false)
 	})
 
 	paramId('i_pagecolumns').addEventListener('change', function () {

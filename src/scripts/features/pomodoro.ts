@@ -2,6 +2,7 @@ import type { Pomodoro } from '../../types/sync.ts'
 import type { PomodoroMode } from '../../types/shared.ts'
 import { displayInterface } from '../shared/display.ts'
 import { storage } from '../storage.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -27,46 +28,35 @@ const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) 
 const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number =>
     currentPomodoroData.time_for[mode]
 
-function stopTimer() {
-    clearInterval(countdown)
-    toggleStartPause(false)
+function handleToggle(state: boolean) {
+	pomodoroContainer?.classList.toggle('hidden', !state)
 }
+
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     if (update) {
-		updatePomodoro(update)
-		return
-	}
-
-    if (!init) {
+        updatePomodoro(update)
         return
     }
 
-    currentPomodoroData = init
+    if (init) {
+        init.on ? initPomodoro(init) : onSettingsLoad(() => initPomodoro(init))
+    }
+}
 
-    // makes pomodoro show up in #interface
-    pomodoroContainer?.classList.toggle('hidden', !init.on)
+function initPomodoro(init: Pomodoro) {
+    currentPomodoroData = init
+    
+    handleToggle(init.on)
     displayInterface('pomodoro')
 
+    togglePomodoroFocus(init.focus && init.on)
+
     handleUserInput()
-    setModeButton(init.mode)
-    togglePomodoroFocus(init.focus)
-
-    // receiving data from other tabs
-    broadcast.onmessage = ({ data = {} }) => {
-        if (data.type === "start-pomodoro") {
-            startTimer(true)
-        } else if (data.type === "switch-mode") {
-            setModeButton(data.mode)
-            switchMode(data.mode)
-        } else if (data.type === "pause-pomodoro") {
-            pauseTimer()
-        } else if (data.type === "toggle-focus") {
-            togglePomodoroFocus(data.on)
-        }
-    }
-
     initTimer(init)
+    setModeButton(init.mode)
+
+    listenToBroadcast()
 }
 
 // events 
@@ -113,6 +103,22 @@ function handleUserInput() {
     })
 }
 
+function listenToBroadcast() {
+    // receiving data from other tabs
+    broadcast.onmessage = ({ data = {} }) => {
+        if (data.type === "start-pomodoro") {
+            startTimer(true)
+        } else if (data.type === "switch-mode") {
+            setModeButton(data.mode)
+            switchMode(data.mode)
+        } else if (data.type === "pause-pomodoro") {
+            pauseTimer()
+        } else if (data.type === "toggle-focus") {
+            togglePomodoroFocus(data.on)
+        }
+    }
+}
+
 async function switchMode(mode: PomodoroMode) {
     stopTimer()
 
@@ -126,11 +132,7 @@ async function switchMode(mode: PomodoroMode) {
     insertTime(getTimeForMode(mode))
 }
 
-// inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
-
 async function initTimer(pomodoro: Pomodoro) {
-    console.info(pomodoro)
-    
     if (pomodoro.end && Date.now() < pomodoro.end) { // running timer
         startTimer()
     } else if (!pomodoro.end || Date.now() > pomodoro.end) { // default unstarted timer
@@ -138,6 +140,7 @@ async function initTimer(pomodoro: Pomodoro) {
     }
 }
 
+// inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
 async function startTimer(fromButton: boolean = false) {
     stopTimer()
 
@@ -207,8 +210,18 @@ async function pauseTimer() {
     })
 }
 
+function toggleStartPause(started: boolean) {
+    if (!pomodoroContainer) return
+    pomodoroContainer.classList.toggle('started', started)
+}
+
+function stopTimer() {
+    clearInterval(countdown)
+    toggleStartPause(false)
+}
+
 function calculateSecondsLeft(end: number) {
-    const secondsLeft = Math.round((end - Date.now()) / 1000);
+    const secondsLeft = Math.round((end - Date.now()) / 1000)
 
     // time's up
     if (secondsLeft <= 0) {
@@ -228,8 +241,21 @@ function insertTime(seconds: number) {
     timer_dom.textContent = displayTime
 }
 
-async function updatePomodoro({ end, mode, pause, focus }: PomodoroUpdate) {
+export async function togglePomodoroFocus(focus: boolean) {
+    document.body.classList.toggle('pomodoro-focus', focus)
+    focusButton.checked = focus
+
+    await updatePomodoro({
+        focus: focus
+    })
+}
+
+async function updatePomodoro({ on, end, mode, pause, focus }: PomodoroUpdate) {
     const data = await storage.sync.get(['pomodoro'])
+
+    if (on !== undefined) {
+        data.pomodoro.on = on
+    }
 
     if (end !== undefined) {
         data.pomodoro.end = end
@@ -247,22 +273,7 @@ async function updatePomodoro({ end, mode, pause, focus }: PomodoroUpdate) {
         data.pomodoro.focus = focus
     }
     
-    storage.sync.set({ pomodoro: data.pomodoro })
+    await storage.sync.set({ pomodoro: data.pomodoro })
 
     currentPomodoroData = data.pomodoro
-}
-
-function toggleStartPause(started: boolean) {
-    if (!pomodoroContainer) return
-    pomodoroContainer.classList.toggle('started', started)
-}
-
-export function togglePomodoroFocus(on: boolean) {
-    document.body.classList.toggle('pomodoro-focus', on)
-
-    focusButton.checked = on
-
-    updatePomodoro({
-        focus: on
-    })
 }

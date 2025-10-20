@@ -6,15 +6,15 @@ body #background-wrapper:after {
 	inset: 0;
 }
 
-body.pomodoro-focus #background-wrapper:after {
+body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #background-wrapper:after {
 	box-shadow: inset 0px 0px 285px rgba(0, 0, 0, 0.9);
 }
 
-body.pomodoro-focus #interface > *:not(#pomodoro_container) {
+body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface > *:not(#pomodoro_container) {
 	display: none;
 }
 
-body.pomodoro-focus #interface {
+body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	grid-template-areas: "pomodoro";
 }
 
