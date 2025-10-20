@@ -3,6 +3,7 @@ import type { PomodoroMode } from '../../types/shared.ts'
 import { displayInterface } from '../shared/display.ts'
 import { storage } from '../storage.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
+import { turnRefreshButton } from '../shared/dom.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -94,12 +95,14 @@ function handleUserInput() {
         })
     })
 
-    pomodoroReset?.addEventListener('click', () => {
+    pomodoroReset?.addEventListener('pointerdown', (e) => {
         resetTimer()
 
         broadcast.postMessage({
             type: 'reset-pomodoro',
         })
+
+        turnRefreshButton(e, true)
     })
 
     focusButton?.addEventListener('change', (e) => {

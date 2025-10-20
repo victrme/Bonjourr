@@ -19,9 +19,9 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #pomodoro_container {
-	display: block;
-	row-gap: 1em;
-	width: 50vw;
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
 	max-width: 45em;
 	min-width: 20em;
 	-webkit-user-select: text;
@@ -41,10 +41,208 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 #pomodoro_container #pmdr_start,
 #pomodoro_container.started #pmdr_pause {
-	display: inline-block;
+	display: flex;
 }
 
 #pomodoro_options input[type="number"]:after {
 	content: "mn";
 	display: none;
+}
+
+#pmdr_modes {
+	border: unset;
+	display: flex;
+	border-radius: 100px;
+	justify-content: center;
+	align-items: center;
+	gap: 1em;
+	padding: 7px;
+}
+
+.glass {
+	position: relative;
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(2px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.7);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.3);
+}
+
+.glass::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 2rem;
+	backdrop-filter: blur(1px);
+	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+				inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+	opacity: 0.6;
+	z-index: -1;
+	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+}
+
+#pmdr_modes .pomodoro_mode:has(input:checked) {
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(2px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.7);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.3);
+	/* color: rgb(var(--blue)); */
+}
+
+
+#interface #pmdr_modes .pomodoro_mode {
+	border: 1px solid transparent;
+	border-radius: 100px;
+	padding: 5px;
+	padding-inline: 15px;
+	font-weight: 600;
+	font-size: 1.1em;
+}
+
+#pmdr_modes .pomodoro_mode label {
+	cursor: pointer;
+	text-shadow: unset;
+}
+
+#pmdr_modes .pomodoro_mode input {
+	display: none;
+}
+
+#pmdr_timer {
+	display: block;
+	font-size: 6em;
+	font-weight: 600;
+}
+
+#interface #bottomControls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1em;
+}
+
+#interface #bottomControls button {
+	padding: 3px;
+	box-sizing: border-box;
+	justify-content: center;
+	align-items: center;
+	height: 3em;
+	width: 3em;
+	border-radius: 100%;
+	position: relative;
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(2px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.7);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.3);
+	color: white;
+}
+
+#interface #bottomControls button:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 2rem;
+	backdrop-filter: blur(1px);
+	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+				inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+	opacity: 0.6;
+	z-index: -1;
+	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+}
+
+#interface #bottomControls button svg {
+	width: 17px;
+}
+
+
+
+.focus-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: white;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid transparent;
+}
+
+.focus-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.focus-toggle:hover {
+	position: relative;
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(2px) saturate(180%);
+	border: 1px solid rgba(255, 255, 255, 0.7);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.3);
+	transition: all .2s ease;
+}
+
+.focus-toggle:hover:after {
+	  content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 2rem;
+	backdrop-filter: blur(1px);
+	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+				inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+	opacity: 0.6;
+	z-index: -1;
+	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+}
+
+
+
+.focus-toggle input {
+	display: none;
+}
+
+.focus-toggle .slider {
+	width: 32px;
+	height: 18px;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 9999px;
+	position: relative;
+	transition: background 0.3s;
+}
+
+.focus-toggle .slider::after {
+	content: '';
+	position: absolute;
+	left: 2px;
+	top: 2px;
+	width: 14px;
+	height: 14px;
+	background: white;
+	border-radius: 50%;
+	transition: transform 0.3s;
+}
+
+.focus-toggle input:checked + .slider {
+	background: var(--color-orange);
+}
+
+.focus-toggle input:checked + .slider::after {
+	transform: translateX(14px);
 }

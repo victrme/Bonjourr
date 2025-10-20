@@ -276,10 +276,10 @@
 						aria-label="Pause the current background"
 					>
 						<span id="interface-background-pause-icon">
-							<svg fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 8 10" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero"><path d="m0 0h3v10h-3z"/><path d="m5 0h3v10h-3z"/></g></svg>
+							<svg class="w-64 h-64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M48 64C21.5 64 0 85.5 0 112L0 400c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48L48 64zm192 0c-26.5 0-48 21.5-48 48l0 288c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48l-32 0z"></path></svg>
 						</span>
 						<span id="interface-background-play-icon">
-							<svg fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 6 9" xmlns="http://www.w3.org/2000/svg"><path d="m17 12.33-6 4.33v-8.66z" fill-rule="nonzero" transform="translate(-11 -8)"/></svg>
+							<svg class="w-64 h-64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"></path></svg>
 						</span>
 					</button>
 					<button
@@ -481,31 +481,45 @@
 			</form>
 
 			<div id="pomodoro_container" class="hidden">
-				<fieldset id="pmdr_modes">
-					<div>
+				<fieldset id="pmdr_modes" class="glass">
+					<div class="pomodoro_mode">
 						<input type="radio" id="pmdr-pomodoro" name="pomodoro_modes" value="pomodoro" checked />
-						<label for="pmdr-pomodoro">Pomodoro time</label>
+						<label for="pmdr-pomodoro">Pomodoro</label>
 					</div>
 
-					<div>
+					<div class="pomodoro_mode">
 						<input type="radio" id="pmdr-break" name="pomodoro_modes" value="break" />
-						<label for="pmdr-break">Break time</label>
+						<label for="pmdr-break">Break</label>
 					</div>
 
-					<div>
+					<div class="pomodoro_mode">
 						<input type="radio" id="pmdr-longbreak" name="pomodoro_modes" value="longbreak" />
-						<label for="pmdr-longbreak">Long break time</label>
+						<label for="pmdr-longbreak">Long break</label>
 					</div>
 				</fieldset>
 
 				<span id="pmdr_timer"></span>
-				<button id="pmdr_start">Start</button>
-				<button id="pmdr_pause">Pause</button>
-				<button id="pmdr_reset">Reset</button>
 
-				<div>
-					<input type="checkbox" id="pmdr-focus" name="pmdr-focus" value="pmdr-focus" />
-					<label for="pmdr-focus">Focus</label>
+				<div id="bottomControls">
+					<button id="pmdr_start">
+						<svg class="w-64 h-64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"></path></svg>
+					</button>
+
+					<button id="pmdr_pause">
+						<svg class="w-64 h-64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M48 64C21.5 64 0 85.5 0 112L0 400c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48L48 64zm192 0c-26.5 0-48 21.5-48 48l0 288c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48l-32 0z"></path></svg>
+					</button>
+
+					<button id="pmdr_reset">
+						<svg clip-rule="evenodd" fill="currentColor" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg"><path d="m13.146 11.05-.174-1.992 2.374-.208c-.899-.867-2.122-1.4-3.469-1.4-2.762 0-5 2.239-5 5 0 2.762 2.238 5 5 5 1.821 0 3.414-.973 4.288-2.428l2.003.501c-1.138 2.326-3.527 3.927-6.291 3.927-3.866 0-7-3.134-7-7s3.134-7 7-7c1.946 0 3.707.795 4.976 2.077l-.245-2.803 1.992-.174.523 5.977z" fill-rule="nonzero" transform="translate(-4.87689 -4.5498)"></path></svg>
+					</button>
+
+					
+
+					<label class="focus-toggle">
+						<input type="checkbox" id="pmdr-focus" name="pmdr-focus" value="pmdr-focus" />
+						<span class="slider" for="pmdr-focus"></span>
+						Focus
+					</label>
 				</div>
 			</div>
 
