@@ -68,9 +68,9 @@ function handleUserInput() {
     radioButtons.forEach(function(btn) {
         btn.addEventListener('change', (e) => {
             const newMode = (e.target as HTMLInputElement).value as PomodoroMode
-
+            
             switchMode(newMode)
-
+            
             broadcast.postMessage({
                 type: 'switch-mode',
                 mode: newMode
@@ -138,6 +138,7 @@ function listenToBroadcast() {
 async function switchMode(mode: PomodoroMode) {
     stopTimer()
 
+    console.log(mode)
     // save
     updatePomodoro({
         mode: mode,
@@ -146,6 +147,20 @@ async function switchMode(mode: PomodoroMode) {
     })
 
     insertTime(getTimeForMode(mode))
+
+    // select animation
+    let radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
+    let glider = document.querySelector('.glider') as HTMLSpanElement
+
+    if (glider && radioBtn?.parentElement) {
+        let offsetLeft = radioBtn.parentElement.offsetLeft
+        let offsetWidth = radioBtn.parentElement.offsetWidth
+    
+        glider.style.left = `${offsetLeft}px`;
+        // glider.style.transform = `translateX(${offsetLeft}px)`;
+        glider.style.width = `${offsetWidth}px`;
+    }
+
 }
 
 async function initTimer(pomodoro: Pomodoro) {

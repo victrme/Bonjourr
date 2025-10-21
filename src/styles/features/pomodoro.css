@@ -50,13 +50,29 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #pmdr_modes {
-	border: unset;
 	display: flex;
+	position: relative;
+	border: unset;
 	border-radius: 100px;
-	justify-content: center;
 	align-items: center;
-	gap: 1em;
+	gap: 1.25em;
 	padding: 7px;
+	padding-inline: 10px;
+}
+
+.glider {
+    position: absolute;
+    display: flex;
+    height: 31px;
+    z-index: 1;
+    border-radius: 99px;
+	z-index: 0;
+	background: rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(2px) saturate(180%);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.3);
+	will-change: left, width;
+    transition: 0.2s ease;
 }
 
 .glass {
@@ -85,23 +101,15 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
 
-#pmdr_modes .pomodoro_mode:has(input:checked) {
-	background: rgba(255, 255, 255, 0.15);
-	backdrop-filter: blur(2px) saturate(180%);
-	border: 1px solid rgba(255, 255, 255, 0.7);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.3);
-	/* color: rgb(var(--blue)); */
-}
-
 
 #interface #pmdr_modes .pomodoro_mode {
 	border: 1px solid transparent;
 	border-radius: 100px;
-	padding: 5px;
-	padding-inline: 15px;
+	padding-block: 5px;
+	padding-inline: 13px;
 	font-weight: 600;
 	font-size: 1.1em;
+	z-index: 1;
 }
 
 #pmdr_modes .pomodoro_mode label {
