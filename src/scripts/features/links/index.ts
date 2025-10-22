@@ -1,5 +1,5 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
-import { getAllIconsSync, getIconCacheSync, getIconFile, removeIconFile, storeIconFile } from './fileicons.ts'
+import { getIconCacheSync, removeIconFile, storeIconFile } from './fileicons.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { folderClick } from './folders.ts'
@@ -293,14 +293,16 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 
 function createIcons(_isInit?: true) {
 	for (const [img, url] of initIconList) {
-		img.src = url
+		if (!url.startsWith('link')) {
+			img.src = url
+		}
 	}
 
 	getIconCacheSync((cache) => {
 		for (const [img, url] of initIconList) {
-			cache.match(`http://127.0.0.1:8888/${url}/`).then((icon) => {
-				icon?.blob().then((blob) => {
-					img.src = URL.createObjectURL(blob)
+			cache.match(`http://127.0.0.1:8888/${url}/`).then((response) => {
+				response?.text().then((text) => {
+					img.src = text
 				})
 			})
 		}
@@ -570,28 +572,36 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 
 			icondom.src = 'src/assets/interface/loading.svg'
 
+			img.onload = () => {
+				icondom.src = img.src
+			}
+
 			if (icon.type === 'auto') {
 				icon.value = undefined
+				img.src = url
 			}
 
 			if (icon.type === 'url') {
 				if (icon.value && stringMaxSize(icon.value, 7500)) {
 					url = icon.value
+					img.src = url
 				} else {
 					console.error(`There was a problem with this icon URL: ${icon.value}`)
 				}
 			}
 
-			if (icon.type === 'file' && file) {
-				storeIconFile(id, file)
-				url = URL.createObjectURL(file)
+			if (icon.type === 'file') {
+				if (!file) {
+					throw new Error('Chose file but no file uploaded')
+				}
+
+				url = id
+
+				storeIconFile(id, file).then((uri) => {
+					img.src = uri
+				})
 			}
 
-			img.onload = () => {
-				icondom.src = url
-			}
-
-			img.src = url
 			link.icon = icon
 		}
 
