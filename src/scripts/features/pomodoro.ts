@@ -35,7 +35,6 @@ function handleToggle(state: boolean) {
 	pomodoroContainer?.classList.toggle('hidden', !state)
 }
 
-
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     if (update) {
         updatePomodoro(update)
@@ -156,9 +155,8 @@ async function switchMode(mode: PomodoroMode) {
         let offsetLeft = radioBtn.parentElement.offsetLeft
         let offsetWidth = radioBtn.parentElement.offsetWidth
     
-        glider.style.left = `${offsetLeft}px`;
-        // glider.style.transform = `translateX(${offsetLeft}px)`;
-        glider.style.width = `${offsetWidth}px`;
+        glider.style.left = `${offsetLeft}px`
+        glider.style.width = `${offsetWidth}px`
     }
 
 }
@@ -277,12 +275,55 @@ function insertTime(seconds: number) {
 }
 
 export async function togglePomodoroFocus(focus: boolean) {
-    document.body.classList.toggle('pomodoro-focus', focus)
     focusButton.checked = focus
 
-    await updatePomodoro({
-        focus: focus
-    })
+    // needed for sliding animation 
+    const enablingFocus = focus && !currentPomodoroData.focus
+    const disablingFocus = !focus && currentPomodoroData.focus
+    const switching = disablingFocus || enablingFocus
+
+    await updatePomodoro({ focus })
+
+    // if not switching, no animation (for when toggling from page refresh or smt)
+    // also animation won't play if the tab isn't open 
+    if (switching && document.visibilityState === 'visible') {
+        const originalRect = pomodoroContainer.getBoundingClientRect()
+
+        // Clone the element
+        const clone = pomodoroContainer.cloneNode(true) as HTMLDivElement
+            clone.style.position = 'absolute'
+            clone.style.top = originalRect.top + 'px'
+            clone.style.left = originalRect.left + 'px'
+
+        document.body.appendChild(clone);
+        
+        // Apply focus mode to the DOM so we can measure the target position
+        pomodoroContainer.style.visibility = 'hidden'
+        document.body.classList.toggle('pomodoro-focus', enablingFocus)
+
+        // once the original pomodoro is moved to its final location, stores and figures out its position 
+        const targetRect = pomodoroContainer.getBoundingClientRect()
+        const deltaX = targetRect.left - originalRect.left
+        const deltaY = targetRect.top - originalRect.top
+
+        // Start the animation
+        requestAnimationFrame(() => {
+            clone.style.transform = `translate(${deltaX}px, ${deltaY}px)`
+        })
+
+        // Cleanup after animation
+        clone.addEventListener('transitionend', (e) => {
+            if (e.propertyName !== 'transform') return
+
+            // sets visibility back to real pomodoro
+            pomodoroContainer.style.visibility = 'visible'
+
+            // yeets the clone
+            clone.remove()
+        })
+    } else {
+        document.body.classList.toggle('pomodoro-focus', focus)
+    }
 }
 
 async function updatePomodoro({ on, end, mode, pause, focus, time_for }: PomodoroUpdate) {
