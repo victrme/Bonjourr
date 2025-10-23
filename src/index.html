@@ -199,41 +199,6 @@
 			</form>
 		</dialog>
 
-		<dialog id="element-mover" class="hidden">
-			<div id="grid-spanner-container">
-				<button class="grid-spanner trn" id="grid-span-rows">Fill row</button>
-				<button class="grid-spanner trn" id="grid-span-cols">Fill column</button>
-			</div>
-
-			<div>
-				<p class="trn">Text alignment</p>
-				<div id="text-alignment-mover" class="mover">
-					<button data-align="left">
-						<i class="text-left"></i>
-					</button>
-					<button data-align="center">
-						<i class="text-center"></i>
-					</button>
-					<button data-align="right">
-						<i class="text-right"></i>
-					</button>
-				</div>
-			</div>
-
-			<div>
-				<p class="trn">Fill</p>
-				<div>
-					<button class="param-btn">Fill column</button>
-					<button class="param-btn">Fill row</button>
-				</div>
-			</div>
-
-			<div>
-				<p class="trn">Box margin</p>
-				<input type="range" name="box-margin" id="i_box-margin" min="0" max="1" value="0" step=".1" />
-			</div>
-		</dialog>
-
 		<div id="background-wrapper" class="hidden" data-type="images" data-texture="none">
 			<div id="background-media"></div>
 			<div id="background-color"></div>
@@ -428,7 +393,6 @@
 			</button>
 		</div>
 
-
 		<aside id="settings" class="init hidden" style="display: none">
 			<!-- settings -->
 		</aside>
@@ -438,17 +402,59 @@
 				<div class="move-overlay">
 					<ul class="move-overlay-grid" aria-label="Widget grid move options">
 						<li><button id="move-grid-top">↑</button></li>
-						<li><button id="move-grid-left">←</button></li>
 						<li><button id="move-grid-right">→</button></li>
 						<li><button id="move-grid-bottom">↓</button></li>
+						<li><button id="move-grid-left">←</button></li>
 					</ul>
 					<ul class="move-overlay-align" aria-label="Widget grid alignment options">
 						<li>
-							<input type="range" name="move-align-vertical" min="0" max="2" step="1" value="1" />
+							<label for="i_move-align-vertical">
+								<img src="src/assets/move/align-middle.svg" alt="Align widget vertically" />
+							</label>
+							<input
+								type="range"
+								id="i_move-align-vertical"
+								name="move-align-vertical"
+								min="0"
+								max="2"
+								step="1"
+								value="1"
+							/>
 						</li>
 						<li>
-							<input type="range" name="move-align-horizontal" min="0" max="2" step="1" value="1" />
+							<label for="i_move-align-horizontal">
+								<img src="src/assets/move/align-center.svg" alt="Align widget horizontally" />
+							</label>
+							<input
+								type="range"
+								id="i_move-align-horizontal"
+								name="move-align-horizontal"
+								min="0"
+								max="2"
+								step="1"
+								value="1"
+							/>
 						</li>
+						<li>
+							<label for="i_move-align-text">
+								<img src="src/assets/move/format-left.svg" alt="Align widget text" />
+							</label>
+							<input
+								type="range"
+								id="i_move-align-text"
+								name="move-align-text"
+								min="0"
+								max="2"
+								step="1"
+								value="1"
+							/>
+						</li>
+					</ul>
+					<ul class="move-overlay-span" aria-label="Widget grid span options">
+						<li><div id="move-span-top"></div></li>
+						<li><div id="move-span-right"></div></li>
+						<li><div id="move-span-bottom"></div></li>
+						<li><div id="move-span-left"></div></li>
 					</ul>
 				</div>
 			</template>
@@ -669,7 +675,7 @@
 					border: none;
 					border-radius: 1em;
 					white-space: nowrap;
-					background-color: rgba(var(--blue),.25);
+					background-color: rgba(var(--blue), 0.25);
 					display: inline-flex;
 					justify-content: center;
 					align-items: center;
@@ -677,7 +683,7 @@
 				}
 
 				.help-btn:hover {
-					background-color: rgba(var(--blue), .35);
+					background-color: rgba(var(--blue), 0.35);
 				}
 
 				.help-btn[disabled] {

@@ -134,11 +134,11 @@ function detectTargetAsInputs(event: Event) {
 
 function closeSettingsOnMoveOpen() {
 	setTimeout(() => {
-		const elementmover = document.getElementById('element-mover')
-		const moverHasOpened = elementmover?.classList.contains('hidden') === false
+		// const elementmover = document.getElementById('element-mover')
+		// const moverHasOpened = elementmover?.classList.contains('hidden') === false
 
-		if (moverHasOpened) {
-			document.dispatchEvent(new Event('toggle-settings'))
-		}
+		// if (moverHasOpened) {
+		// 	document.dispatchEvent(new Event('toggle-settings'))
+		// }
 	}, 20)
 }

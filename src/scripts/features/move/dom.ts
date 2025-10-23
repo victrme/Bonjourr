@@ -59,7 +59,7 @@ export function removeOverlay(id?: Widgets) {
 }
 
 export function removeSelection() {
-	const toolbox = document.getElementById('element-mover')
+	// const toolbox = document.getElementById('element-mover')
 	const elements = document.querySelectorAll<HTMLElement>(
 		'.move-overlay, #grid-mover button, .grid-spanner, #element-mover button',
 	)
@@ -69,7 +69,7 @@ export function removeSelection() {
 		elem.removeAttribute('disabled')
 	}
 
-	toolbox?.classList.remove('active')
+	// toolbox?.classList.remove('active')
 }
 
 export function interfaceFade(fade: 'in' | 'out') {
