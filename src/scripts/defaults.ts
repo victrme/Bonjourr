@@ -14,6 +14,9 @@ export const API_DOMAIN = 'https://services.bonjourr.fr'
 
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
+// attributes an ID to this tab to keep track of them
+export const TAB_ID = crypto.randomUUID() 
+
 export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
 		(navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
 	? 'ios'

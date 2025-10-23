@@ -34,6 +34,7 @@ import {
 	PLATFORM,
 	SYNC_DEFAULT,
 	SYSTEM_OS,
+	TAB_ID
 } from './defaults.ts'
 
 try {
@@ -97,6 +98,7 @@ async function startup() {
 	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
+	keepTrackOfTabs()
 
 	document.documentElement.dataset.system = SYSTEM_OS as string
 	document.documentElement.dataset.browser = BROWSER as string
@@ -280,5 +282,20 @@ function operaExtensionExplainer(explained?: true) {
 		storage.local.set({ operaExplained: true })
 		document.body.classList.remove('loading')
 		dialog.close()
+	})
+}
+
+// to keep track of which Bonjourr tab the user interacted with last
+function keepTrackOfTabs() {
+	// Whenever the tab becomes visible or focused, mark it as active
+	function updateLastActiveTab() {
+		localStorage.setItem('lastActiveTab', TAB_ID)
+	}
+
+	window.addEventListener('focus', updateLastActiveTab)
+	window.addEventListener('visibilitychange', () => {
+		if (!document.hidden) {
+			updateLastActiveTab()
+		}
 	})
 }

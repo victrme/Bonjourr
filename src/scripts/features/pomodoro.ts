@@ -5,7 +5,7 @@ import { storage } from '../storage.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
 import { tabTitle } from './others.ts'
-// import alarmSound from '../../assets/sounds/clock-alarm-classic.mp3'
+import { TAB_ID } from '../defaults.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -17,6 +17,8 @@ type PomodoroUpdate = {
 }
 
 let currentPomodoroData: Pomodoro
+
+const alarmSound = new Audio('src/assets/sounds/clock-alarm-classic.mp3');
 
 const pomodoroContainer = document.getElementById('pomodoro_container') as HTMLDivElement
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
@@ -121,6 +123,7 @@ function handleUserInput() {
 function listenToBroadcast() {
     // receiving data from other tabs
     broadcast.onmessage = ({ data = {} }) => {
+        console.log(data)
         if (data.type === "start-pomodoro") {
             startTimer(true, data.time)
         } else if (data.type === "switch-mode") {
@@ -225,7 +228,7 @@ function startCountdown(endtime: number) {
 
     countdown = setInterval(() => {
         insertTime(calculateSecondsLeft(endtime))
-    }, 250)
+    }, 100)
 
     toggleStartPause(true)
 }
@@ -254,13 +257,17 @@ function resetTimer() {
 
 function calculateSecondsLeft(end: number) {
     const secondsLeft = Math.round((end - Date.now()) / 1000)
-    
+
     // time's up!
     if (secondsLeft <= 0) {
         stopTimer()
+        if (secondsLeft <= 0) {
+            stopTimer()
 
-        // const audio = new Audio(alarmSound)
-        // audio.play()
+            ringTheAlarm()
+
+            return 0;
+        }
 
         return 0
     }
@@ -296,7 +303,7 @@ function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
 
         setTimeout(() => {
             tabTitle(afterPipe) // resets to the original tab title
-        }, 30000)
+        }, 15000)
     }
 
     tabTitle(newTitle)
@@ -351,6 +358,15 @@ export async function togglePomodoroFocus(focus: boolean) {
         })
     } else {
         document.body.classList.toggle('pomodoro-focus', focus)
+    }
+}
+
+function ringTheAlarm() {
+    // only rings on the last active tab
+    const lastTab = localStorage.getItem('lastActiveTab')
+
+    if (lastTab === TAB_ID) {
+        alarmSound.play()
     }
 }
 

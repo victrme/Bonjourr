@@ -135,6 +135,7 @@ function styles(platform: Platform, env: Env) {
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
+				'.mp3': 'file',
 			},
 		})
 	} catch (err) {
