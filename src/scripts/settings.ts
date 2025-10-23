@@ -244,6 +244,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
 	setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
+	setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
 	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
@@ -814,6 +815,10 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_pomodoro'), (_, target) => {
 		moveElements(undefined, { widget: ['pomodoro', target.checked] })
+	})
+
+	onclickdown(paramId('i_pmdr_sound'), (_, target) => {
+		pomodoro(undefined, { sound: target.checked })
 	})
 
 	paramId('i_pmdr_pomodoro').addEventListener('input', function () {

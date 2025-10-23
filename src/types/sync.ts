@@ -216,4 +216,5 @@ export interface Pomodoro {
 	mode?: PomodoroMode
 	time_for: Record<PomodoroMode, number>
 	focus: boolean
+	sound: boolean
 }

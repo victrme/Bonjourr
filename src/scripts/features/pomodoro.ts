@@ -14,6 +14,7 @@ type PomodoroUpdate = {
     pause?: number
     focus?: boolean
     time_for?: Partial<Record<PomodoroMode, number>>
+    sound?: boolean
 }
 
 let currentPomodoroData: Pomodoro
@@ -29,7 +30,9 @@ const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]'
 const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 
 const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
+
 let countdown: number
+const timeBeforeReset: number = 10000 // time before the timer resets after the end
 
 const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
 const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number =>
@@ -261,13 +264,11 @@ function calculateSecondsLeft(end: number) {
     // time's up!
     if (secondsLeft <= 0) {
         stopTimer()
-        if (secondsLeft <= 0) {
-            stopTimer()
+        ringTheAlarm()
 
-            ringTheAlarm()
-
-            return 0;
-        }
+        setTimeout(() => {
+            switchMode(currentPomodoroData.mode as PomodoroMode) // resets to the original tab title
+        }, timeBeforeReset)
 
         return 0
     }
@@ -303,7 +304,7 @@ function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
 
         setTimeout(() => {
             tabTitle(afterPipe) // resets to the original tab title
-        }, 15000)
+        }, timeBeforeReset)
     }
 
     tabTitle(newTitle)
@@ -362,6 +363,8 @@ export async function togglePomodoroFocus(focus: boolean) {
 }
 
 function ringTheAlarm() {
+    if (!currentPomodoroData.sound) return
+
     // only rings on the last active tab
     const lastTab = localStorage.getItem('lastActiveTab')
 
@@ -370,11 +373,15 @@ function ringTheAlarm() {
     }
 }
 
-async function updatePomodoro({ on, end, mode, pause, focus, time_for }: PomodoroUpdate) {
+async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: PomodoroUpdate) {
     const data = await storage.sync.get(['pomodoro'])
 
     if (on !== undefined) {
         data.pomodoro.on = on
+    }
+
+    if (sound !== undefined) {
+        data.pomodoro.sound = sound
     }
 
     if (end !== undefined) {

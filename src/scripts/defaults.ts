@@ -191,7 +191,8 @@ export const SYNC_DEFAULT: Sync = {
 			break: 300,
 			longbreak: 600
 		},
-		focus: false
+		focus: false,
+		sound: true
 	},
 	font: {
 		family: '',
