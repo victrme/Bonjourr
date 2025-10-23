@@ -75,6 +75,11 @@ function clickUserActions(event: MouseEvent) {
 		contextmenu: pathIds.includes('contextmenu'),
 		settings: path.some((el) => el.id === 'settings'),
 		showsettings: path.some((el) => el.id === 'show-settings'),
+		interactable: path.some((el) => 
+			el instanceof HTMLElement && (
+				el.matches('a[href], button, input, select, textarea, label, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]')
+			)
+		)
 	}
 
 	if (document.body.classList.contains('tabbing')) {
@@ -105,7 +110,7 @@ function clickUserActions(event: MouseEvent) {
 		return
 	}
 
-	if (open.settings) {
+	if (open.settings && !on.interactable) {
 		document.dispatchEvent(new CustomEvent('toggle-settings'))
 	} //
 	else if (open.selectall && !on.link) {

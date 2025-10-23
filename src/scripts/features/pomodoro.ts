@@ -4,6 +4,7 @@ import { displayInterface } from '../shared/display.ts'
 import { storage } from '../storage.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
+import { tabTitle } from './others.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -137,7 +138,6 @@ function listenToBroadcast() {
 async function switchMode(mode: PomodoroMode) {
     stopTimer()
 
-    console.log(mode)
     // save
     updatePomodoro({
         mode: mode,
@@ -145,7 +145,7 @@ async function switchMode(mode: PomodoroMode) {
         pause: 0
     })
 
-    insertTime(getTimeForMode(mode))
+    insertTime(getTimeForMode(mode), false)
 
     // select animation
     let radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
@@ -259,19 +259,44 @@ function calculateSecondsLeft(end: number) {
     // time's up!
     if (secondsLeft <= 0) {
         stopTimer()
+        return 0
     }
 
     return secondsLeft
 }
 
-function insertTime(seconds: number) {
+
+function insertTime(seconds: number, timerIsStarted: boolean = true) {
     if (!timer_dom) return
 
     const minutes = Math.floor(seconds / 60)
     const secondsRemaining = seconds % 60
     const displayTime = `${minutes}:${secondsRemaining < 10 ? "0" : ""}${secondsRemaining}`
 
+    // inserts to dom
     timer_dom.textContent = displayTime
+
+    handleTabTitle(displayTime, timerIsStarted)
+}
+
+function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
+    const originalTitle = document.title
+    const match = originalTitle.match(/\| (.*)/)
+    const afterPipe = match?.[1] ?? originalTitle
+
+    let newTitle: string
+
+    if (displayTime !== '0:00') {
+        newTitle = timerIsStarted ? `${displayTime} | ${afterPipe}` : afterPipe
+    } else {
+        newTitle = `Time's up! | ${afterPipe}`
+
+        setTimeout(() => {
+            tabTitle(afterPipe) // resets to the original tab title
+        }, 30000)
+    }
+
+    tabTitle(newTitle)
 }
 
 export async function togglePomodoroFocus(focus: boolean) {
@@ -295,7 +320,7 @@ export async function togglePomodoroFocus(focus: boolean) {
             clone.style.top = originalRect.top + 'px'
             clone.style.left = originalRect.left + 'px'
 
-        document.body.appendChild(clone);
+        document.body.appendChild(clone)
         
         // Apply focus mode to the DOM so we can measure the target position
         pomodoroContainer.style.visibility = 'hidden'

@@ -1,13 +1,16 @@
 /* vignette */
 body #background-wrapper:after {
 	content: "";
-	transition: box-shadow .5s ease;
+	transition: opacity .5s ease;
 	position: absolute;
 	inset: 0;
+	will-change: opacity;
+	opacity: 0;
+	box-shadow: inset 0px 0px 285px rgba(0, 0, 0, 0.9);
 }
 
 body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #background-wrapper:after {
-	box-shadow: inset 0px 0px 285px rgba(0, 0, 0, 0.9);
+	opacity: 1; /* transition on opacity instead of box-shadow, otherwise flicker during transition */
 }
 
 body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface > *:not(#pomodoro_container) {
@@ -31,7 +34,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	font-size: 14px; /* important for focus animation */ 
 
 	will-change: transform;
-	transform: translateZ(0), translate3d(0, 0, 0); /* creates its own compositor layer */
 	transition: transform .2s ease;
 }
 
@@ -78,7 +80,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	inset 0 4px 20px rgba(255, 255, 255, 0.3);
 	will-change: left, width;
     transition: left 0.2s ease, width 0.2s ease;
-	/* display: none; */
 }
 
 .glass {
@@ -181,36 +182,34 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 
 .focus-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  color: white;
-  backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.1);
-  padding: 6px 12px;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: background 0.2s;
-  border: 1px solid transparent;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 500;
+	color: white;
+	padding: 6px 12px;
+	border-radius: 9999px;
+	cursor: pointer;
+
+	backdrop-filter: blur(10px);
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid transparent;
+	transition: 
+		backdrop-filter .2s ease,
+		background .2s ease,
+		box-shadow .2s ease,
+		border .2s ease;
 }
 
 .focus-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.focus-toggle:hover {
-	position: relative;
 	background: rgba(255, 255, 255, 0.15);
 	backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.7);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.3);
-	/* transition: all .2s ease; */
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), inset 0 4px 20px rgba(255, 255, 255, 0.3);
 }
 
-.focus-toggle:hover:after {
-	  content: '';
+.focus-toggle:after {
+	content: '';
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -221,9 +220,13 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	backdrop-filter: blur(1px);
 	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
 				inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
-	opacity: 0.6;
 	z-index: -1;
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+	opacity: 0;
+}
+
+.focus-toggle:hover:after {
+	opacity: 0.6;
 }
 
 
