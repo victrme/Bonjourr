@@ -8,6 +8,7 @@ export type Background = BackgroundImage | BackgroundVideo
 export type QuoteUserInput = [string, string][]
 export type Widgets = 'time' | 'main' | 'quicklinks' | 'notes' | 'quotes' | 'searchbar'
 export type Frequency = 'tabs' | 'hour' | 'day' | 'period' | 'pause'
+export type LinkIconType = 'auto' | 'library' | 'file' | 'url'
 export type SearchEngines =
 	| 'default'
 	| 'google'
@@ -85,7 +86,7 @@ export interface LinkElem {
 }
 
 export interface LinkIcon {
-	type: 'auto' | 'library' | 'upload' | 'url'
+	type: LinkIconType
 	value?: string
 }
 

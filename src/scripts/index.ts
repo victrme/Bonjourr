@@ -90,7 +90,7 @@ async function startup() {
 	customCss(sync.css)
 	hideElements(sync.hide)
 	backgroundsInit(sync, local, true)
-	quickLinks(sync)
+	quickLinks({ sync, local })
 	synchronization(local)
 	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })

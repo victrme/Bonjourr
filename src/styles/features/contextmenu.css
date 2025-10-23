@@ -43,7 +43,8 @@ dialog#contextmenu label:focus-within {
 	opacity: 1;
 }
 
-dialog#contextmenu input, dialog#contextmenu select {
+dialog#contextmenu input,
+dialog#contextmenu select {
 	width: 100%;
 	height: 2.3em;
 	padding: 0 10px;
@@ -58,13 +59,14 @@ dialog#contextmenu input {
 }
 
 dialog#contextmenu select {
-	background-color: rgb(var(--color-param));
+	background-color: transparent;
 }
 
 dialog#contextmenu input::placeholder {
 	color: var(--color-dialog-input-text);
 }
 
+dialog#contextmenu select:focus,
 dialog#contextmenu input:focus {
 	opacity: 1;
 	color: var(--color-text);
@@ -72,6 +74,25 @@ dialog#contextmenu input:focus {
 	outline: 3px solid rgba(var(--blue), 0.5);
 	outline-offset: -2px;
 	transition: background-color 0.1s;
+}
+
+dialog#contextmenu input[type='file'] {
+	color: transparent;
+}
+
+dialog#contextmenu input[type='file'],
+dialog#contextmenu input[type='file'] + span {
+	grid-area: 1 / 2;
+}
+
+dialog#contextmenu input[type='file'] + span {
+	display: inline-block;
+	font-size: 13px;
+	padding-inline: 10px;
+	width: calc(100% - 20px);
+	max-width: unset;
+	cursor: pointer;
+	text-align: left;
 }
 
 dialog#contextmenu button {
@@ -115,11 +136,13 @@ dialog#contextmenu label.on {
 	display: none;
 }
 
-#background-actions.on:not([data-type="color"]) {
+#background-actions.on:not([data-type='color']) {
 	display: block;
 }
 
-dialog#contextmenu #background-actions hr, dialog#contextmenu #background-actions label, dialog#contextmenu #background-actions button {
+dialog#contextmenu #background-actions hr,
+dialog#contextmenu #background-actions label,
+dialog#contextmenu #background-actions button {
 	display: flex;
 }
 
@@ -170,5 +193,7 @@ dialog#contextmenu #background-actions button {
 }
 
 @keyframes spin {
-	to { transform: rotate(360deg); }
+	to {
+		transform: rotate(360deg);
+	}
 }

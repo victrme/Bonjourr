@@ -452,6 +452,7 @@ function verifyDataAsSync(data: Partial<Sync> = {}): Sync {
 }
 
 function verifyDataAsLocal(data: Partial<Local> = {}): Local {
+	//@ts-ignore -> `x-icon-${string}` index signatures are incompatible.
 	return {
 		...LOCAL_DEFAULT,
 		...data,

@@ -4,6 +4,7 @@ import { transitioner } from '../utils/transitioner.ts'
 import { debounce } from '../utils/debounce.ts'
 
 import type { Backgrounds } from '../../types/sync.ts'
+import { tradThis } from '../utils/translations.ts'
 
 interface EventLocation {
 	widgets: {
@@ -213,6 +214,19 @@ queueMicrotask(() => {
 
 		// Otherwise, closes the custom one and opens the regular one
 		closeContextMenu()
+	})
+
+	// Update spans next to file inputs on value change
+	domdialog.querySelectorAll<HTMLInputElement>('input[type="file"]')?.forEach((input) => {
+		input.addEventListener('change', function (this) {
+			const span = this.nextElementSibling
+			const isSpan = span?.tagName === 'SPAN'
+			const file = this.files?.[0]
+
+			if (span && file && isSpan) {
+				span.textContent = file.name
+			}
+		})
 	})
 
 	// for when needing to close context menu from elsewhere

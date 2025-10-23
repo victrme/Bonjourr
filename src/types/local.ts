@@ -27,6 +27,9 @@ export interface Local {
 	backgroundFiles: Record<string, BackgroundFile>
 	backgroundLastChange?: string
 	backgroundCompressFiles?: boolean
+
+	// Links
+	[key: `x-icon-${string}`]: string
 }
 
 export interface LastWeather {

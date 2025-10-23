@@ -10,7 +10,6 @@ import { SYNC_DEFAULT } from '../defaults.ts'
 import { storage } from '../storage.ts'
 
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
-import { retrieveGist } from './synchronization/gist.ts'
 
 type DateFormat = Sync['dateformat']
 
@@ -344,7 +343,7 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 	hh.textContent = h.toString()
 	mm.textContent = m.toString()
 	ss.textContent = s.toString()
-	
+
 	if (clock.ampm) {
 		if (clock.ampmposition) {
 			domclock.dataset.ampmposition = clock.ampmposition
@@ -535,6 +534,6 @@ function isDateFormat(str = ''): str is DateFormat {
 	return ['auto', 'eu', 'us', 'cn'].includes(str)
 }
 
-function isAmpmPosition(str?: string): str is "top-left" | "top-right" | "bottom-left" | "bottom-right" {
-	return ['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(str ?? '');
+function isAmpmPosition(str?: string): str is 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' {
+	return ['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(str ?? '')
 }

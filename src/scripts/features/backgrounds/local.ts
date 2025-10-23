@@ -1,10 +1,10 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
-import { IS_MOBILE, PLATFORM } from '../../defaults.ts'
-import { compressMedia } from '../../shared/compress.ts'
+import { compressAsBlob } from '../../shared/compress.ts'
 import { needsChange } from '../../shared/time.ts'
 import { onclickdown } from 'clickdown/mod'
 import { VideoLooper } from './VideoLooper.ts'
-import { IDBCache } from '../../dependencies/idbcache.ts'
+import { IS_MOBILE } from '../../defaults.ts'
+import { getCache } from '../../shared/cache.ts'
 import { hashcode } from '../../utils/hash.ts'
 import { storage } from '../../storage.ts'
 
@@ -169,20 +169,20 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			let small: Blob = file
 
 			if (file.type.includes('image/gif')) {
-				small = await compressMedia(file, { size: 360, q: 0.4 })
+				small = await compressAsBlob(file, { size: 360, q: 0.4 })
 			}
 
 			if (file.type.includes('image/')) {
-				full = await compressMedia(file, { size: averagePixelHeight, q: 0.8 })
-				medium = await compressMedia(full, { size: averagePixelHeight / 3, q: 0.6 })
-				small = await compressMedia(medium, { size: 360, q: 0.3 })
+				full = await compressAsBlob(file, { size: averagePixelHeight, q: 0.8 })
+				medium = await compressAsBlob(full, { size: averagePixelHeight / 3, q: 0.6 })
+				small = await compressAsBlob(medium, { size: 360, q: 0.3 })
 			}
 
 			if (file.type.includes('video/')) {
 				const thumb = await generateImageFromVideo(file)
 
 				if (thumb) {
-					small = await compressMedia(thumb, { size: 360, q: 0.3 })
+					small = await compressAsBlob(thumb, { size: 360, q: 0.3 })
 				}
 			}
 
@@ -805,13 +805,4 @@ async function sanitizeMetadatas(local: Local): Promise<Local> {
 	local.backgroundFiles = newMetadataList
 
 	return local
-}
-
-function getCache(name: string): Promise<Cache | IDBCache> {
-	if (PLATFORM === 'safari') {
-		// CacheStorage doesn't work on Safari extensions, need indexedDB
-		return Promise.resolve(new IDBCache(name))
-	}
-
-	return caches.open(name)
 }

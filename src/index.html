@@ -66,7 +66,8 @@
 
 				<label id="edit-icon-file">
 					<span class="trn">File</span>
-					<input id="e-icon-file" type="file" name="e-icon" accept="image/png" />
+					<input id="e-icon-file" type="file" name="edit-icon-file" accept="image/*" />
+					<span id="e-icon-file-label" class="trn">No file chosen</span>
 				</label>
 
 				<label id="edit-icon-url">
@@ -213,37 +214,138 @@
 			</form>
 
 			<div id="contextActions">
-				<button data-action="openTheseSettings" data-attribute="time_title" title="Open the time settings" aria-label="Open the time settings">
-					<svg clip-rule="evenodd" fill-rule="evenodd" fill="currentColor" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0)"><path d="m9 7h2v5h5v2h-7z" fill-rule="nonzero"/><path d="m22 12c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-2 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"/></g></svg>
+				<button
+					data-action="openTheseSettings"
+					data-attribute="time_title"
+					title="Open the time settings"
+					aria-label="Open the time settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill-rule="evenodd"
+						fill="currentColor"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g transform="translate(0)">
+							<path d="m9 7h2v5h5v2h-7z" fill-rule="nonzero" />
+							<path
+								d="m22 12c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-2 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"
+							/>
+						</g>
+					</svg>
 					<span class="trn">Edit time settings</span>
 				</button>
 
-				<button data-action="openTheseSettings" data-attribute="main_title" title="Open the weather settings" aria-label="Open the weather settings">
-					<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor" transform="translate(-0 -.00002)"><path d="m12 16c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"/><path d="m11 0h2v4.062c-.328-.041-.661-.062-1-.062s-.672.021-1 .062zm-3.906 5.68-2.872-2.872-1.414 1.414 2.872 2.872c.411-.528.886-1.003 1.414-1.414zm-3.032 5.32h-4.062v2h4.062c-.041-.328-.062-.661-.062-1s.021-.672.062-1zm1.618 5.906-2.872 2.872 1.414 1.414 2.872-2.872c-.528-.411-1.003-.886-1.414-1.414zm5.32 3.032v4.062h2v-4.062c-.328.041-.661.062-1 .062s-.672-.021-1-.062zm5.906-1.618 2.872 2.872 1.414-1.414-2.872-2.872c-.411.528-.886 1.003-1.414 1.414zm3.032-5.32h4.062v-2h-4.062c.041.328.062.661.062 1s-.021.672-.062 1zm-1.618-5.906 2.872-2.872-1.414-1.414-2.872 2.872c.528.411 1.003.886 1.414 1.414z"/></g></svg>
-			
+				<button
+					data-action="openTheseSettings"
+					data-attribute="main_title"
+					title="Open the weather settings"
+					aria-label="Open the weather settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill-rule="evenodd"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g fill="currentColor" transform="translate(-0 -.00002)">
+							<path
+								d="m12 16c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"
+							/>
+							<path
+								d="m11 0h2v4.062c-.328-.041-.661-.062-1-.062s-.672.021-1 .062zm-3.906 5.68-2.872-2.872-1.414 1.414 2.872 2.872c.411-.528.886-1.003 1.414-1.414zm-3.032 5.32h-4.062v2h4.062c-.041-.328-.062-.661-.062-1s.021-.672.062-1zm1.618 5.906-2.872 2.872 1.414 1.414 2.872-2.872c-.528-.411-1.003-.886-1.414-1.414zm5.32 3.032v4.062h2v-4.062c-.328.041-.661.062-1 .062s-.672-.021-1-.062zm5.906-1.618 2.872 2.872 1.414-1.414-2.872-2.872c-.411.528-.886 1.003-1.414 1.414zm3.032-5.32h4.062v-2h-4.062c.041.328.062.661.062 1s-.021.672-.062 1zm-1.618-5.906 2.872-2.872-1.414-1.414-2.872 2.872c.528.411 1.003.886 1.414 1.414z"
+							/>
+						</g>
+					</svg>
+
 					<span class="trn">Edit weather settings</span>
 				</button>
 
-				<button data-action="openTheseSettings" data-attribute="quotes_title" title="Open the quotes settings" aria-label="Open the quotes settings">
-					<svg clip-rule="evenodd" fill-rule="evenodd" fill="currentColor" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero" transform="translate(-.00001 0)"><path d="m9.135 9h3l-2.135 5.608h-3z"/><path d="m14.135 9h3l-2.135 5.608h-3z"/></g></svg>
+				<button
+					data-action="openTheseSettings"
+					data-attribute="quotes_title"
+					title="Open the quotes settings"
+					aria-label="Open the quotes settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill-rule="evenodd"
+						fill="currentColor"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g fill-rule="nonzero" transform="translate(-.00001 0)">
+							<path d="m9.135 9h3l-2.135 5.608h-3z" />
+							<path d="m14.135 9h3l-2.135 5.608h-3z" />
+						</g>
+					</svg>
 
 					<span class="trn">Edit quotes settings</span>
 				</button>
 
-				<button data-action="openTheseSettings" data-attribute="background_title" title="Open the background settings" aria-label="Open the background settings">
-					<svg clip-rule="evenodd" fill="currentColor" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g transform="translate(0 -.00001)"><path d="m7 7c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm-1 3c0-.552.448-1 1-1s1 .448 1 1-.448 1-1 1-1-.448-1-1z"/><path d="m3 3c-1.657 0-3 1.343-3 3v12c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-12c0-1.657-1.343-3-3-3zm18 2h-18c-.552 0-1 .448-1 1v12c0 .552.448 1 1 1h4.314l6.878-6.879c1.172-1.171 3.072-1.171 4.243 0l3.565 3.565v-9.686c0-.552-.448-1-1-1zm0 14h-10.858l5.465-5.464c.39-.391 1.023-.391 1.414 0l4.886 4.886c-.159.341-.505.578-.907.578z"/></g></svg>
+				<button
+					data-action="openTheseSettings"
+					data-attribute="background_title"
+					title="Open the background settings"
+					aria-label="Open the background settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill="currentColor"
+						fill-rule="evenodd"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g transform="translate(0 -.00001)">
+							<path
+								d="m7 7c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm-1 3c0-.552.448-1 1-1s1 .448 1 1-.448 1-1 1-1-.448-1-1z"
+							/>
+							<path
+								d="m3 3c-1.657 0-3 1.343-3 3v12c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-12c0-1.657-1.343-3-3-3zm18 2h-18c-.552 0-1 .448-1 1v12c0 .552.448 1 1 1h4.314l6.878-6.879c1.172-1.171 3.072-1.171 4.243 0l3.565 3.565v-9.686c0-.552-.448-1-1-1zm0 14h-10.858l5.465-5.464c.39-.391 1.023-.391 1.414 0l4.886 4.886c-.159.341-.505.578-.907.578z"
+							/>
+						</g>
+					</svg>
 
 					<span class="trn">Edit background settings</span>
 				</button>
 
 				<button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
-					<svg clip-rule="evenodd" fill="currentColor" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero"><path d="m14.828 12 1.415 1.414 2.828-2.828c1.562-1.562 1.562-4.095 0-5.657s-4.095-1.562-5.657 0l-2.828 2.828 1.414 1.415 2.828-2.829c.782-.781 2.048-.781 2.829 0s.781 2.047 0 2.829z"/><path d="m12 14.829 1.414 1.414-2.828 2.828c-1.562 1.562-4.095 1.562-5.657 0s-1.562-4.095 0-5.657l2.828-2.828 1.415 1.414-2.829 2.829c-.781.781-.781 2.047 0 2.828s2.048.781 2.829 0z"/><path d="m14.829 10.586c.39-.391.39-1.024 0-1.415-.391-.39-1.024-.39-1.415 0l-4.242 4.243c-.391.391-.391 1.024 0 1.414.39.391 1.023.391 1.414 0z"/></g></svg>
+					<svg
+						clip-rule="evenodd"
+						fill="currentColor"
+						fill-rule="evenodd"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g fill-rule="nonzero">
+							<path
+								d="m14.828 12 1.415 1.414 2.828-2.828c1.562-1.562 1.562-4.095 0-5.657s-4.095-1.562-5.657 0l-2.828 2.828 1.414 1.415 2.828-2.829c.782-.781 2.048-.781 2.829 0s.781 2.047 0 2.829z"
+							/>
+							<path
+								d="m12 14.829 1.414 1.414-2.828 2.828c-1.562 1.562-4.095 1.562-5.657 0s-1.562-4.095 0-5.657l2.828-2.828 1.415 1.414-2.829 2.829c-.781.781-.781 2.047 0 2.828s2.048.781 2.829 0z"
+							/>
+							<path
+								d="m14.829 10.586c.39-.391.39-1.024 0-1.415-.391-.39-1.024-.39-1.415 0l-4.242 4.243c-.391.391-.391 1.024 0 1.414.39.391 1.023.391 1.414 0z"
+							/>
+						</g>
+					</svg>
 					<span class="trn">Add new quick link</span>
 				</button>
 			</div>
 
 			<div id="background-actions">
-				<hr>
+				<hr />
 				<a id="download-background"></a>
 
 				<div class="buttons">
@@ -254,12 +356,38 @@
 						class="idle"
 					>
 						<span id="idle-download">
-							<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero" fill="currentColor" transform="translate(-3.33333 -5.33333)"><path d="m9.167 6.167c0-.461.373-.834.833-.834s.833.373.833.834v5.964l2.703-2.702 1.178 1.179-4.714 4.714-4.714-4.714 1.179-1.179 2.702 2.702z"/><path d="m3.333 13.667h1.667v3.333h10v-3.333h1.667v3.333c0 .921-.746 1.667-1.667 1.667h-10c-.92 0-1.667-.746-1.667-1.667z"/></g></svg>
+							<svg
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 14 14"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<g fill-rule="nonzero" fill="currentColor" transform="translate(-3.33333 -5.33333)">
+									<path
+										d="m9.167 6.167c0-.461.373-.834.833-.834s.833.373.833.834v5.964l2.703-2.702 1.178 1.179-4.714 4.714-4.714-4.714 1.179-1.179 2.702 2.702z"
+									/>
+									<path
+										d="m3.333 13.667h1.667v3.333h10v-3.333h1.667v3.333c0 .921-.746 1.667-1.667 1.667h-10c-.92 0-1.667-.746-1.667-1.667z"
+									/>
+								</g>
+							</svg>
 						</span>
 						<span id="is-downloading">
-							<svg class="spin" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-								<path d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25"/>
-								<path d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"/>
+							<svg
+								class="spin"
+								fill="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
+									opacity=".25"
+								/>
+								<path
+									d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"
+								/>
 							</svg>
 						</span>
 					</button>
@@ -270,10 +398,33 @@
 						aria-label="Pause the current background"
 					>
 						<span id="interface-background-pause-icon">
-							<svg fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 8 10" xmlns="http://www.w3.org/2000/svg"><g fill-rule="nonzero"><path d="m0 0h3v10h-3z"/><path d="m5 0h3v10h-3z"/></g></svg>
+							<svg
+								fill="currentColor"
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 8 10"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<g fill-rule="nonzero">
+									<path d="m0 0h3v10h-3z" />
+									<path d="m5 0h3v10h-3z" />
+								</g>
+							</svg>
 						</span>
 						<span id="interface-background-play-icon">
-							<svg fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 6 9" xmlns="http://www.w3.org/2000/svg"><path d="m17 12.33-6 4.33v-8.66z" fill-rule="nonzero" transform="translate(-11 -8)"/></svg>
+							<svg
+								fill="currentColor"
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 6 9"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path d="m17 12.33-6 4.33v-8.66z" fill-rule="nonzero" transform="translate(-11 -8)" />
+							</svg>
 						</span>
 					</button>
 					<button
@@ -283,7 +434,21 @@
 						aria-label="Change to another background"
 					>
 						<span>
-							<svg clip-rule="evenodd" fill="currentColor" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg"><path d="m13.146 11.05-.174-1.992 2.374-.208c-.899-.867-2.122-1.4-3.469-1.4-2.762 0-5 2.239-5 5 0 2.762 2.238 5 5 5 1.821 0 3.414-.973 4.288-2.428l2.003.501c-1.138 2.326-3.527 3.927-6.291 3.927-3.866 0-7-3.134-7-7s3.134-7 7-7c1.946 0 3.707.795 4.976 2.077l-.245-2.803 1.992-.174.523 5.977z" fill-rule="nonzero" transform="translate(-4.87689 -4.5498)"/></svg>
+							<svg
+								clip-rule="evenodd"
+								fill="currentColor"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 15 15"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="m13.146 11.05-.174-1.992 2.374-.208c-.899-.867-2.122-1.4-3.469-1.4-2.762 0-5 2.239-5 5 0 2.762 2.238 5 5 5 1.821 0 3.414-.973 4.288-2.428l2.003.501c-1.138 2.326-3.527 3.927-6.291 3.927-3.866 0-7-3.134-7-7s3.134-7 7-7c1.946 0 3.707.795 4.976 2.077l-.245-2.803 1.992-.174.523 5.977z"
+									fill-rule="nonzero"
+									transform="translate(-4.87689 -4.5498)"
+								/>
+							</svg>
 						</span>
 					</button>
 				</div>
@@ -499,7 +664,6 @@
 				/>
 			</button>
 		</div>
-
 
 		<aside id="settings" class="init hidden" style="display: none">
 			<!-- settings -->
@@ -722,7 +886,7 @@
 					border: none;
 					border-radius: 1em;
 					white-space: nowrap;
-					background-color: rgba(var(--blue),.25);
+					background-color: rgba(var(--blue), 0.25);
 					display: inline-flex;
 					justify-content: center;
 					align-items: center;
@@ -730,7 +894,7 @@
 				}
 
 				.help-btn:hover {
-					background-color: rgba(var(--blue), .35);
+					background-color: rgba(var(--blue), 0.35);
 				}
 
 				.help-btn[disabled] {
