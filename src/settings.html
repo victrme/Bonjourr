@@ -232,14 +232,20 @@
 		<hr />
 
 		<div class="wrapper">
-			<span class="trn">My files</span>
+			<span class="trn">My files (images or videos)</span>
 
 			<label id="lbl_background-upload" title="Upload new background" aria-label="Upload new background">
 				<span class="param-btn">
 					<img src="src/assets/labels/add.svg" height="13" alt="" />
 					<span class="trn">Add new</span>
 				</span>
-				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+				<input
+					id="i_background-upload"
+					type="file"
+					name="background_file"
+					multiple
+					accept="image/*, video/mp4, video/webm"
+				/>
 			</label>
 		</div>
 
@@ -259,13 +265,13 @@
 			</div>
 			<div>
 				<button
-					id="b_thumbnail-position"
+					id="b_thumbnail-options"
 					class="param-btn"
-					title="Move selected background"
-					aria-label="Move selected background"
+					title="Show background options"
+					aria-label="Show background options"
 				>
 					<img src="src/assets/labels/move.svg" height="15" alt="" />
-					<span class="trn">Move</span>
+					<span class="trn">Options</span>
 				</button>
 
 				<button
@@ -282,47 +288,93 @@
 			</div>
 		</div>
 
-		<div id="background-position-options" class="dropdown">
-			<div class="wrapper">
-				<label for="i_background-vertical" class="trn">Vertical</label>
-				<input
-					id="i_background-vertical"
-					name="background-vertical"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
+		<div id="background-file-options" class="dropdown">
+			<div id="background-file-image">
+				<div class="wrapper">
+					<label for="i_background-vertical" class="trn">Vertical</label>
+					<input
+						id="i_background-vertical"
+						name="background-vertical"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-horizontal" class="trn">Horizontal</label>
+					<input
+						id="i_background-horizontal"
+						name="background-horizontal"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-size" class="trn">Size</label>
+					<input
+						id="i_background-size"
+						name="background-size"
+						type="range"
+						min="100"
+						max="200"
+						value="100"
+						step="3"
+						class="range"
+					/>
+				</div>
 			</div>
 
-			<div class="wrapper">
-				<label for="i_background-horizontal" class="trn">Horizontal</label>
-				<input
-					id="i_background-horizontal"
-					name="background-horizontal"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
-			</div>
+			<div id="background-file-video">
+				<div class="wrapper">
+					<label for="i_background-video-zoom" class="trn">Zoom</label>
+					<input
+						id="i_background-video-zoom"
+						name="background-video-zoom"
+						type="range"
+						min="1"
+						max="2"
+						value="1"
+						step=".1"
+						class="range"
+					/>
+				</div>
 
-			<div class="wrapper">
-				<label for="i_background-size" class="trn">Size</label>
-				<input
-					id="i_background-size"
-					name="background-size"
-					type="range"
-					min="100"
-					max="200"
-					value="100"
-					step="3"
-					class="range"
-				/>
+				<div class="wrapper">
+					<label for="i_background-playback-speed" class="trn">Playback speed</label>
+					<input
+						id="i_background-playback-speed"
+						name="background-playback-speed"
+						type="range"
+						min=".2"
+						max="3"
+						value="1"
+						step=".2"
+						class="range"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-loop-fade" class="trn">Loop fade</label>
+					<input
+						id="i_background-loop-fade"
+						name="background-loop-fade"
+						type="range"
+						min="0"
+						max="6000"
+						value="4000"
+						step="200"
+						class="range"
+					/>
+				</div>
 			</div>
 		</div>
 
@@ -795,8 +847,22 @@
 					<hr />
 
 					<div id="w_ampm-label" class="wrapper">
-						<label for="i_ampm-label" class="trn">Show am/pm</label>
+						<label for="i_ampm-label" class="trn">Show AM/PM</label>
 						<input id="i_ampm-label" class="switch" type="checkbox" />
+					</div>
+				</div>
+
+				<div id="ampm_position" class="dropdown">
+					<hr />
+					
+					<div class="wrapper">
+						<label for="i_ampm_position" class="trn">AM/PM position</label>
+						<select id="i_ampm_position">
+							<option value="top-left" class="trn">Top left</option>
+							<option value="top-right" class="trn">Top right</option>
+							<option value="bottom-left" class="trn">Bottom left</option>
+							<option value="bottom-right" class="trn">Bottom right</option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -1696,7 +1762,8 @@
 
 		<p class="tooltiptext dropdown ttsupporters">
 			<span class="trn"
-				>The supporters notification appears at the top of your settings to thank those who donate and support our work.</span
+				>The supporters notification appears at the top of your settings to thank those who donate and support
+				our work.</span
 			>
 			<a
 				class="trn"

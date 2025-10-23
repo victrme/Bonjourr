@@ -62,7 +62,9 @@
 	padding: 0;
 	overflow: hidden;
 	background-color: var(--color-input);
-	transition: transform 0.1s, opacity 0.1s;
+	transition:
+		transform 0.1s,
+		opacity 0.1s;
 	border-radius: 10px;
 }
 
@@ -113,11 +115,47 @@
 	opacity: 0;
 }
 
+.thumbnail-format-icon {
+	position: absolute;
+	bottom: 5%;
+	right: 5%;
+	width: 15%;
+	height: 15%;
+}
+
 .thumbnail img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 	transition: opacity 0.1s;
+}
+
+.thumbnail[data-format='video'] .thumbnail-format-icon {
+	bottom: 5%;
+	right: 5%;
+	border-radius: 4px;
+	background-color: #fff4;
+
+	/* https://css.gg/icon/play-button/css */
+	box-sizing: border-box;
+	display: block;
+	width: 22px;
+	height: 22px;
+}
+
+.thumbnail[data-format='video'] .thumbnail-format-icon::before {
+	/* https://css.gg/icon/play-button/css */
+	content: '';
+	display: block;
+	box-sizing: border-box;
+	position: absolute;
+	width: 0;
+	height: 10px;
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 6px solid;
+	top: 6px;
+	left: 9px;
 }
 
 #thumbnail-action-buttons {

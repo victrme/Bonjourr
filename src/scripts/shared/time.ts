@@ -1,3 +1,5 @@
+import { BROWSER } from '../defaults.ts'
+
 interface Suntime {
 	sunrise: number
 	sunset: number
@@ -11,14 +13,30 @@ let dusk = 60
 let userSetDate: Date
 
 export function userDate(timezone?: string): Date {
+	const hasSetDate = !timezone && userSetDate
+	const isAuto = !timezone || timezone === 'auto'
 	let date = new Date()
 
-	if (!timezone && userSetDate) {
+	if (hasSetDate) {
 		return userSetDate
 	}
 
-	if (!timezone || timezone === 'auto') {
+	if (isAuto) {
 		return date
+	}
+
+	/**
+	 * AST & CST timezones seems to only work on chrome
+	 * Do these timezones switch to daylight savings ?
+	 * If yes, this fix below is wrong
+	 */
+	if (BROWSER === 'firefox') {
+		if (timezone === 'CST') {
+			timezone = '-06:00'
+		}
+		if (timezone === 'AST') {
+			timezone = '-03:00'
+		}
 	}
 
 	try {

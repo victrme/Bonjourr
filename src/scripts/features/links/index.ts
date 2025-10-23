@@ -1,6 +1,7 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
+import { storeIconFile } from './fileicons.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
@@ -20,7 +21,8 @@ import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { Link, LinkElem, LinkIcon, LinkFolder } from '../../../types/shared.ts'
+import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
+import type { Local } from '../../../types/local.ts'
 import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
@@ -34,6 +36,7 @@ type UpdateLink = {
 	url?: string
 	title: string
 	icon?: LinkIcon
+	file?: File
 }
 
 type AddGroups = {
@@ -94,11 +97,16 @@ type LinkGroups = {
 	div: HTMLDivElement | null
 }[]
 
+type LinksInit = {
+	sync: Sync
+	local: Local
+}
+
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
-export async function quickLinks(init?: Sync, event?: LinksUpdate) {
+export async function quickLinks(init?: LinksInit, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
 		return
@@ -108,33 +116,35 @@ export async function quickLinks(init?: Sync, event?: LinksUpdate) {
 		return
 	}
 
-	// set class before appendBlock, cannot be moved
-	domlinkblocks.classList.add(init.linkstyle ?? 'large')
-	domlinkblocks.classList.toggle('titles', init.linktitles)
-	domlinkblocks.classList.toggle('backgrounds', init.linkbackgrounds)
-	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
+	const { sync, local } = init
 
-	if (init.linkgroups.synced.length > 0) {
-		await initBookmarkSync(init)
+	// set class before appendBlock, cannot be moved
+	domlinkblocks.classList.add(sync.linkstyle ?? 'large')
+	domlinkblocks.classList.toggle('titles', sync.linktitles)
+	domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
+	domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
+
+	if (sync.linkgroups.synced.length > 0) {
+		await initBookmarkSync(sync)
 	}
 
-	initGroups(init, !!init)
-	initRows(init.linksrow, init.linkstyle)
-	initblocks(init, true)
+	initGroups(sync, !!init)
+	initRows(sync.linksrow, sync.linkstyle)
+	initblocks(sync, local)
 }
 
 // Initialisation
 
-export function initblocks(data: Sync, isInit?: true): true {
-	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
-	const { pinned, synced, selected } = data.linkgroups
+export function initblocks(sync: Sync, local?: Local): true {
+	const allLinks = Object.values(sync).filter((val) => isLink(val)) as Link[]
+	const { pinned, synced, selected } = sync.linkgroups
 	const activeGroups: LinkGroups = []
 
 	for (const group of [...pinned, selected]) {
 		const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
 		const folder = div?.dataset.folder
 		const lis: HTMLLIElement[] = []
-		const links = folder ? getLinksInFolder(data, folder) : getLinksInGroup(data, group)
+		const links = folder ? getLinksInFolder(sync, folder) : getLinksInGroup(sync, group)
 
 		activeGroups.push({
 			lis,
@@ -190,8 +200,8 @@ export function initblocks(data: Sync, isInit?: true): true {
 			}
 
 			li = isElem(link)
-				? createElem(link, data.linknewtab, data.linkstyle)
-				: createFolder(link, linksInFolders, data.linkstyle)
+				? createElem(link, sync.linknewtab, sync.linkstyle)
+				: createFolder(link, linksInFolders, sync.linkstyle)
 
 			fragment.appendChild(li)
 
@@ -205,7 +215,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 		}
 
 		if (folderid) {
-			linktitle.textContent = (data[folderid] as LinkFolder).title
+			linktitle.textContent = (sync[folderid] as LinkFolder).title
 		} else {
 			linktitle.textContent = group.title
 		}
@@ -227,7 +237,14 @@ export function initblocks(data: Sync, isInit?: true): true {
 		}
 	}
 
-	createIcons(isInit)
+	if (local) {
+		createIcons(local)
+	} else {
+		storage.local.get().then((local) => {
+			createIcons(local)
+		})
+	}
+
 	displayInterface('links')
 
 	return true
@@ -289,16 +306,20 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	return li
 }
 
-function createIcons(isInit?: true) {
+function createIcons(local: Local) {
 	for (const [img, url] of initIconList) {
-		img.src = url
+		if (url.startsWith('link')) {
+			img.src = local[`x-icon-${url}`] ?? ''
+		} else {
+			img.src = url
+		}
 	}
 
 	setTimeout(() => {
 		// naturalWidth is needed here because complete doesn't tell the whole story
 		// it only says if it's finished loading or not, even an error code will say "complete"
 		const incomplete = initIconList.filter(
-			([img]) => !img.complete || img.naturalWidth === 0
+			([img]) => !img.complete || img.naturalWidth === 0,
 		)
 
 		// if images still haven't loaded after 400ms
@@ -318,10 +339,10 @@ function createIcons(isInit?: true) {
 
 			newimg.src = url
 
-			// If image still isn't responding after 5s, gives up 
+			// If image still isn't responding after 5s, gives up
 			setTimeout(() => {
 				if (!newimg.complete && newimg.naturalWidth === 0) {
-					console.error("Icon link took too long to load: " + url)
+					console.error('Icon link took too long to load: ' + url)
 					img.src = 'https://services.bonjourr.fr/favicon/blob/error'
 				}
 			}, 5000)
@@ -461,14 +482,14 @@ export async function linksUpdate(update: LinksUpdate) {
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 	const type = args.type
 	let newlinks: Link[] = []
-	
+
 	if (type === 'link') {
 		for (const link of args.links) {
 			newlinks.push(validateLink(
 				link.title,
 				link.url,
 				// if no group is specified, adds to the selected one
-				link.group || data.linkgroups.selected
+				link.group || data.linkgroups.selected,
 			))
 		}
 	}
@@ -502,11 +523,13 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 		data[link._id] = link
 	}
 
-	const correctdata = correctLinksOrder(data)
+	const newsync = correctLinksOrder(data)
 
-	initblocks(correctdata)
+	storage.local.get().then((local) => {
+		initblocks(newsync, local)
+	})
 
-	return correctdata
+	return newsync
 }
 
 function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolder[] {
@@ -539,10 +562,11 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
 	]
 }
 
-function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
+function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Sync {
 	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
 	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
 	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
+
 	const link = data[id] as Link
 
 	if (titledom && title !== undefined) {
@@ -550,31 +574,56 @@ function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 		titledom.textContent = link.title
 	}
 
-	if (!link.folder) {
-		if (icondom) {
+	if (isElem(link)) {
+		if (icondom && icon) {
 			const img = document.createElement('img')
-			let url = getDefaultIcon(link.url) as string
+			const currentSrc = icondom.src
+			let url = getDefaultIcon(link.url)
 
-			if (icon?.type === "auto") {
+			icondom.src = 'src/assets/interface/loading.svg'
+
+			img.onload = () => {
+				icondom.src = img.src
+			}
+
+			if (icon.type === 'auto') {
 				icon.value = undefined
-			} else if (icon?.type === "url") {
+				img.src = url
+			}
+
+			if (icon.type === 'url') {
 				if (icon.value && stringMaxSize(icon.value, 7500)) {
 					url = icon.value
+					img.src = url
 				} else {
 					console.error(`There was a problem with this icon URL: ${icon.value}`)
 				}
 			}
 
-			link.icon = icon
-			icondom.src = 'src/assets/interface/loading.svg'
+			if (icon.type === 'file') {
+				const currentIcon = link.icon
+				const noNewOrCurrentFile = !file && !currentIcon?.value
+				const noNewButHasCurrentFile = !file && (currentIcon?.type === 'file') && !!currentIcon?.value
 
-			img.onload = () => {
-				if (icondom) {
-					icondom.src = url
+				if (noNewOrCurrentFile) {
+					throw new Error('Chose file but no file uploaded')
+				}
+
+				if (noNewButHasCurrentFile) {
+					icon = currentIcon
+					img.src = currentSrc
+				}
+
+				if (file) {
+					url = id
+
+					storeIconFile(id, file).then((uri) => {
+						img.src = uri
+					})
 				}
 			}
 
-			img.src = url
+			link.icon = icon
 		}
 
 		if (titledom && urldom && url !== undefined) {
@@ -659,6 +708,12 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 			}
 		}
 
+		if (isElem(link)) {
+			if (link.icon?.type === 'file') {
+				storage.local.remove(`x-icon-${id}`)
+			}
+		}
+
 		delete data[id]
 	}
 
@@ -684,6 +739,7 @@ function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 	}
 
 	const correctdata = correctLinksOrder(data)
+
 	initblocks(correctdata)
 	return correctdata
 }
@@ -695,13 +751,13 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 		if (link._id) {
 			const unixDate = Date.now().toString()
 
-			if (!link.icon || link.icon.type === "auto") {
-				link.icon = link.icon ?? { type: "auto", value: "" } // when link was just added, it doesn't have the icon property, so creates it
+			if (!link.icon || link.icon.type === 'auto') {
+				link.icon = link.icon ?? { type: 'auto', value: '' } // when link was just added, it doesn't have the icon property, so creates it
 				link.icon.value = getDefaultIcon(link.url) + `?r=${unixDate}`
-			} else if (link.icon.type === "url") {
+			} else if (link.icon.type === 'url') {
 				link.icon.value = `${link.icon.value}?r=${unixDate}`
 			}
-			
+
 			data[id] = link
 		}
 	}
@@ -829,20 +885,17 @@ function correctLinksOrder(data: Sync): Sync {
 	return data
 }
 
-function isLinkStyle(s: string): s is Sync['linkstyle'] {
-	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
-}
-
 function getIconFromLinkElem(link: LinkElem): string {
-	let icon = getDefaultIcon(link.url)
-
-	if (link.icon) {
-		if (link.icon.type === "auto" && link.icon.value) {
-			icon = link.icon.value
-		} else if (link.icon.type === "url" && link.icon.value) {
-			icon = link.icon.value
-		}
+	if (!link.icon?.value) {
+		return getDefaultIcon(link.url)
+	}
+	if (link.icon.type === 'file') {
+		return link._id
 	}
 
-	return icon
+	return link.icon.value
+}
+
+function isLinkStyle(s: string): s is Sync['linkstyle'] {
+	return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }

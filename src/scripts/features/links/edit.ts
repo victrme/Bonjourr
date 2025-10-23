@@ -1,12 +1,13 @@
-import { getLink, getSelectedIds } from './helpers.ts'
+import { getLink, getSelectedIds, isLinkIconType } from './helpers.ts'
+import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
-import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 
 import { getComposedPath } from '../../shared/dom.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
-import { LinkIcon } from '../../../types/shared.ts'
+
+import type { LinkIconType } from '../../../types/shared.ts'
 
 interface EditStates {
 	group: string
@@ -33,9 +34,10 @@ let domeditlink: HTMLDialogElement
 const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
 
+const domiconfilelabel = document.getElementById('e-icon-file-label') as HTMLSpanElement
+const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
-const domiconstatic = document.getElementById('e-icon-svg') as HTMLInputElement
 
 let inputToFocus: HTMLInputElement
 let buttonToSubmit: HTMLButtonElement
@@ -46,9 +48,13 @@ let editStates: EditStates
 // Display
 //
 
-export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDialogElement, newLinkFromGlobal?: boolean) {
+export async function populateDialogWithEditLink(
+	event: Event,
+	domdialog: HTMLDialogElement,
+	newLinkFromGlobal?: boolean,
+) {
 	domeditlink = domdialog
-	
+
 	const path = getComposedPath(event.target)
 	const classNames = path.map((element) => element.className ?? '')
 	const linkelem = path.find((el) => el?.className?.includes('link') && el?.tagName === 'LI')
@@ -90,7 +96,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	const folderTitle = container.folder && target.title
 	const noSelection = selectall && editStates.selected.length === 0
 	const noInputs = inputs.length === 0
-	
+
 	if (noInputs || folderTitle || noSelection || dragging) {
 		closeContextMenu()
 		return
@@ -100,7 +106,7 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	event.preventDefault()
 
 	// removes buttons from the global context menu
-	domeditlink.querySelectorAll('#contextActions button, #background-actions').forEach(function(contextButton) {
+	domeditlink.querySelectorAll('#contextActions button, #background-actions').forEach(function (contextButton) {
 		contextButton.classList.remove('on')
 	})
 
@@ -133,24 +139,22 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 		domtitle.value = link?.title ?? ''
 
 		if (link && !link.folder) {
-			const icon = link.icon ?? ''
-			console.log(icon)
-			// let type = icon.startsWith('svg:') ? 'svg' : icon.startsWith('file:') ? 'file' : 'url'
-
-			// type = "svg"
-			// console.info(type)
-
 			domurl.value = link.url ?? ''
-			
-			if (link.icon && link.icon.value) {
-				domiconurl.value = link.icon.value
+
+			const iconType = link.icon?.type ?? 'auto'
+			const iconValue = link.icon?.value ?? ''
+
+			domiconurl.value = ''
+			domiconfilelabel.textContent = tradThis('No file chosen')
+
+			if (iconType === 'url' && iconValue) {
+				domiconurl.value = iconValue
 			}
-			
+			if (iconType === 'file') {
+				domiconfilelabel.textContent = iconValue
+			}
 
-			// if (icon.type ===)
-			// domiconurl.value = Number.isNaN(parseInt(icon)) ? icon : ''
-
-			toggleIconType(link.icon ? link.icon.type : "auto")
+			toggleIconType(link.icon ? link.icon.type : 'auto')
 		}
 	}
 
@@ -165,7 +169,9 @@ export async function populateDialogWithEditLink(event: Event, domdialog: HTMLDi
 	editStates.selected = getSelectedIds()
 
 	// Once dialog is populated, calculates its position
-	if (!newLinkFromGlobal) positionContextMenu(event)
+	if (!newLinkFromGlobal) {
+		positionContextMenu(event)
+	}
 
 	inputToFocus?.focus()
 }
@@ -244,8 +250,8 @@ function toggleEditInputs(): string[] {
 		}
 	}
 
-
-	const hasLabels = inputs.includes('title') || inputs.includes('title*') || inputs.includes('url*') || inputs.includes('icon')
+	const hasLabels = inputs.includes('title') || inputs.includes('title*') || inputs.includes('url*') ||
+		inputs.includes('icon')
 	domeditlink.querySelector('hr')?.classList.toggle('on', hasLabels)
 
 	if (deleteButtonTxt) {
@@ -281,13 +287,15 @@ queueMicrotask(() => {
 	domicontype?.addEventListener('change', toggleIconType)
 })
 
-// HTML has peculiar (and limiting) ways of figuring out which button to submit to on enter
-// this is needed to be sure hitting enter triggers the same reaction as clicking the right button
+/**
+ * HTML has peculiar (and limiting) ways of figuring out which button to submit to on enter
+ * this is needed to be sure hitting enter triggers the same reaction as clicking the right button
+ */
 function setSubmitOnEnter(theButton: string) {
 	if (!buttonToSubmit) {
 		buttonToSubmit = document.getElementById(theButton ?? 'edit-apply') as HTMLButtonElement
 
-		document.getElementById('editlink-form')?.addEventListener('keydown', function(e) {
+		document.getElementById('editlink-form')?.addEventListener('keydown', function (e) {
 			if (e.key === 'Enter') {
 				e.preventDefault() // prevent default submit
 				buttonToSubmit.click() // triggers demanded button
@@ -304,11 +312,10 @@ function toggleIconType(iconType: Event | string) {
 		iconType = target.value
 	}
 
-
 	const selectIconType = document.getElementById('e-icon-type') as HTMLSelectElement
-	if (selectIconType) { 
+	if (selectIconType) {
 		selectIconType.value = iconType
-	} 
+	}
 
 	const editIconUrl = document.getElementById('e-icon-url') as HTMLInputElement
 	if (editIconUrl) { // disables the input when it's hidden, otherwise HTML complains
@@ -331,8 +338,6 @@ function toggleIconType(iconType: Event | string) {
 function submitChanges(event: SubmitEvent) {
 	const change = event.submitter?.id
 	const { container, target, group, folder, selected, selectall } = editStates
-	
-	console.info(change)
 
 	if (change === 'edit-apply') {
 		applyLinkChanges('button')
@@ -345,12 +350,6 @@ function submitChanges(event: SubmitEvent) {
 	if (change === 'edit-refresh') {
 		quickLinks(undefined, { refreshIcons: selected })
 	}
-
-	// if (change === 'edit-inputs') {
-	// 	applyLinkChanges('inputs')
-	// 	event.preventDefault()
-	// 	return
-	// }
 
 	if (change === 'edit-delete') {
 		if (target.title) {
@@ -416,10 +415,10 @@ function submitChanges(event: SubmitEvent) {
 	setTimeout(closeContextMenu)
 }
 
-function applyLinkChanges(origin: 'inputs' | 'button') {
+function applyLinkChanges(_origin: 'inputs' | 'button') {
 	const id = editStates.selected[0]
 	const li = document.querySelector<HTMLLIElement>(`#${id}`)
-	const inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
+	const _inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')
 
 	if (editStates.target.addgroup) {
 		quickLinks(undefined, { addGroups: [{ title: domtitle.value }] })
@@ -462,15 +461,36 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 		return
 	}
 
-	if (!(id && li)) {
+	if (!id || !li) {
 		return
 	}
 
-	// if (origin === 'inputs') {
-	// 	for (const node of inputs) {
-	// 		node.blur()
-	// 	}
-	// }
+	// Step: Handle icon input data
+
+	let iconType: LinkIconType = 'auto'
+	let iconValue: string | undefined = undefined
+	const iconUrl = domiconurl.value
+	const iconFile = domiconfile.files?.[0]
+
+	if (isLinkIconType(domicontype.value)) {
+		iconType = domicontype.value
+		iconValue = undefined
+
+		if (iconType === 'url') {
+			iconValue = iconUrl
+		}
+
+		if (iconType === 'file' && iconFile) {
+			iconValue = iconFile.name
+		}
+
+		if (iconType === 'file' && !iconFile) {
+			iconType = 'file'
+			iconValue = undefined
+		}
+	}
+
+	// Step: Send data to link update
 
 	quickLinks(undefined, {
 		updateLink: {
@@ -478,14 +498,12 @@ function applyLinkChanges(origin: 'inputs' | 'button') {
 			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
 			icon: {
-				type: domicontype?.value as LinkIcon['type'],
-				value: domiconurl.value
-			}
-			// icon: domicontype?.value,
-			// icon_svg: domiconstatic?.value,
-			// icon_url: domiconurl.value,
+				type: iconType,
+				value: iconValue,
+			},
+			file: iconFile,
 		},
 	})
-	
+
 	closeContextMenu()
 }
