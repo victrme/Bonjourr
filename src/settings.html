@@ -1600,7 +1600,7 @@
 		<hr />
 
 		<div class="activate_pomodoro wrapper">
-			<label for="i_pmdr_sound" class="trn">Sound on alarm</label>
+			<label for="i_pmdr_sound" class="trn">Play sound on alarm</label>
 			<input id="i_pmdr_sound" class="switch" type="checkbox" />
 		</div>
 
@@ -1608,46 +1608,56 @@
 			<hr />
 
 			<div class="wrapper">
-				<label for="i_pmdr_pomodoro_time" class="trn">Default minutes</label>
-				<input
-					type="number"
-					name="i_pmdr_pomodoro_time"
-					id="i_pmdr_pomodoro"
-					autocomplete="off"
-					min="0"
-					max="59"
-					placeholder="Minutes"
-				/>
+				<label for="i_pmdr_pomodoro_time" class="trn">Default time</label>
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_pomodoro_time"
+						id="i_pmdr_pomodoro"
+						autocomplete="off"
+						min="0"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
 			</div>
 			
 			<hr />
 
 			<div class="wrapper">
 				<label for="i_pmdr_break_time" class="trn">Break time</label>
-				<input
-					type="number"
-					name="i_pmdr_break_time"
-					id="i_pmdr_break"
-					autocomplete="off"
-					min="0"
-					max="59"
-					placeholder="Minutes"
-				/>
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_break_time"
+						id="i_pmdr_break"
+						autocomplete="off"
+						min="0"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
 			</div>
 			
 			<hr />
 
 			<div class="wrapper">
 				<label for="i_pmdr_longbreak_time" class="trn">Long break time</label>
-				<input
-					type="number"
-					name="i_pmdr_longbreak_time"
-					id="i_pmdr_longbreak"
-					autocomplete="off"
-					min="0"
-					max="59"
-					placeholder="Minutes"
-				/>
+
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_longbreak_time"
+						id="i_pmdr_longbreak"
+						autocomplete="off"
+						min="0"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
 			</div>
 
 		</div>

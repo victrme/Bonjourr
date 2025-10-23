@@ -297,6 +297,18 @@ aside .color-button button {
 	cursor: pointer;
 }
 
+aside .inputWithSuffix {
+	width: 155px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+}
+
+aside .inputWithSuffix input {
+	flex: 1;
+}
+
 label.input-file {
 	position: relative;
 	display: block;
