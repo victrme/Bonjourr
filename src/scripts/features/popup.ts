@@ -27,7 +27,7 @@ const ANNOUNCEMENT_TRNS = {
 	'pt-BR':
 		'<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Saiba tudo sobre os novos recursos: planos de fundo em vídeo, sobreposições de textura, pesquisa de plano de fundo e muito mais.',
 	'pt-PT':
-	    '<b>Bonjourr acaba de receber uma grande atualização! ✨</b> Descobre as novas funcionalidades: fundos de vídeo, sobreposições de texturas, pesquisa de fundos e muito mais.',
+		'<b>Bonjourr acaba de receber uma grande atualização! ✨</b> Descobre as novas funcionalidades: fundos de vídeo, sobreposições de texturas, pesquisa de fundos e muito mais.',
 	nl: '<b>Bonjourr heeft zojuist een grote update gekregen! ✨</b> Leer alles over de nieuwe functies: video-achtergronden, textuur-overlays, achtergrond zoeken en meer.',
 	da: '<b>Bonjourr har lige fået en større opdatering! ✨</b> Lær alt om de nye funktioner: videobaggrunde, teksturoverlays, baggrundssøgning og meget mere.',
 	sv: '<b>Bonjourr har precis fått en stor uppdatering! ✨</b> Läs allt om de nya funktionerna: videobakgrunder, texturöverlägg, bakgrundssökning och mycket mer.',
