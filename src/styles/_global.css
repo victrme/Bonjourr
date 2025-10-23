@@ -139,19 +139,20 @@ body button {
 	box-sizing: border-box;
 }
 
-body.tabbing a:focus,
-body.tabbing input:focus,
-body.tabbing textarea:focus,
-body.tabbing .pce-focus,
-body.tabbing select:focus,
-body.tabbing button:focus,
-body.tabbing button:focus,
+body.tabbing a:focus-visible,
+body.tabbing input:focus-visible,
+body.tabbing textarea:focus-visible,
+body.tabbing .pce-focus-vi:focus-visible,
+body.tabbing select:focus-visible,
+body.tabbing button:focus-visible,
+body.tabbing button:focus-visible,
 body.tabbing #bookmarks li:focus-visible,
 body.tabbing #link-title div:focus-visible,
 body.tabbing #linkblocks .link a:focus-visible,
 body.tabbing #linkblocks .link.folder:focus-visible,
 body.tabbing #linkblocks.text a:focus-visible span,
 body.tabbing #notes_toolbar:focus-visible,
+body.tabbing #background-actions button:focus-visible,
 body.tabbing input:focus-visible + .slider {
 	outline-width: 2px;
 	outline-color: var(--color-blue);
