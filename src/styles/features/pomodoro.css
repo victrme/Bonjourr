@@ -84,11 +84,11 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 .glass {
 	position: relative;
-	background: rgba(255, 255, 255, 0.15);
+	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.7);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.3);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.225);
 }
 
 .glass::after {
@@ -101,13 +101,12 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 2rem;
 	backdrop-filter: blur(1px);
-	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
-				inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, .9),
+				inset 0px -9px 0px -8px rgba(255, 255, 255, .9);
 	opacity: 0.6;
 	z-index: -1;
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
-
 
 #pmdr_modes .pomodoro_mode {
 	border: 1px solid transparent;
@@ -149,37 +148,12 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	height: 3em;
 	width: 3em;
 	border-radius: 100%;
-	position: relative;
-	background: rgba(255, 255, 255, 0.15);
-	backdrop-filter: blur(2px) saturate(180%);
-	border: 1px solid rgba(255, 255, 255, 0.7);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.3);
 	color: white;
-}
-
-#bottomControls button:after {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(255, 255, 255, 0.1);
-	border-radius: 2rem;
-	backdrop-filter: blur(1px);
-	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
-				inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
-	opacity: 0.6;
-	z-index: -1;
-	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
 
 #bottomControls button svg {
 	width: 17px;
 }
-
-
 
 .focus-toggle {
 	display: flex;
@@ -202,10 +176,11 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 .focus-toggle:hover {
-	background: rgba(255, 255, 255, 0.15);
+	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.7);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), inset 0 4px 20px rgba(255, 255, 255, 0.3);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.225);
 }
 
 .focus-toggle:after {
@@ -218,8 +193,8 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 2rem;
 	backdrop-filter: blur(1px);
-	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
-				inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, .9),
+				inset 0px -9px 0px -8px rgba(255, 255, 255, .9);
 	z-index: -1;
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 	opacity: 0;
@@ -228,8 +203,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 .focus-toggle:hover:after {
 	opacity: 0.6;
 }
-
-
 
 .focus-toggle input {
 	display: none;
