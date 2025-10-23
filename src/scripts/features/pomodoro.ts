@@ -6,6 +6,7 @@ import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
 import { tabTitle } from './others.ts'
 import { TAB_ID } from '../defaults.ts'
+import { tradThis } from '../utils/translations.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -32,6 +33,7 @@ const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
 
 let countdown: number
+let timeModeTimeout: number, tabTitleTimeout: number
 const timeBeforeReset: number = 10000 // time before the timer resets after the end
 
 const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
@@ -126,7 +128,6 @@ function handleUserInput() {
 function listenToBroadcast() {
     // receiving data from other tabs
     broadcast.onmessage = ({ data = {} }) => {
-        console.log(data)
         if (data.type === "start-pomodoro") {
             startTimer(true, data.time)
         } else if (data.type === "switch-mode") {
@@ -143,6 +144,7 @@ function listenToBroadcast() {
 }
 
 async function switchMode(mode: PomodoroMode) {
+    resetTimeouts()
     setModeGlider(mode)
     stopTimer()
     insertTime(getTimeForMode(mode), false)
@@ -153,6 +155,12 @@ async function switchMode(mode: PomodoroMode) {
         end: 0,
         pause: 0
     })
+}
+
+function resetTimeouts() {
+    // if user interact with pomodoro before the end of the timeouts
+    clearTimeout(tabTitleTimeout)
+    clearTimeout(timeModeTimeout)
 }
 
 function setModeGlider(mode: string) {
@@ -180,6 +188,7 @@ async function initTimer(pomodoro: Pomodoro) {
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
 async function startTimer(fromButton: boolean = false, time?: number) {
     stopTimer()
+    resetTimeouts()
 
     const { pomodoro } = await storage.sync.get(['pomodoro'])
     const defaultTime = time ?? getTimeForMode(pomodoro.mode)
@@ -266,8 +275,8 @@ function calculateSecondsLeft(end: number) {
         stopTimer()
         ringTheAlarm()
 
-        setTimeout(() => {
-            switchMode(currentPomodoroData.mode as PomodoroMode) // resets to the original tab title
+        timeModeTimeout = timeout = setTimeout(() => {
+            switchMode(currentPomodoroData.mode as PomodoroMode) // resets the time mode to default
         }, timeBeforeReset)
 
         return 0
@@ -300,9 +309,10 @@ function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
     if (displayTime !== '0:00') {
         newTitle = timerIsStarted ? `${displayTime} | ${afterPipe}` : afterPipe
     } else {
-        newTitle = `Time's up! | ${afterPipe}`
+        const timesUpString = tradThis("Time's up!")
+        newTitle = `${timesUpString} | ${afterPipe}`
 
-        setTimeout(() => {
+        tabTitleTimeout = setTimeout(() => {
             tabTitle(afterPipe) // resets to the original tab title
         }, timeBeforeReset)
     }
@@ -370,6 +380,11 @@ function ringTheAlarm() {
 
     if (lastTab === TAB_ID) {
         alarmSound.play()
+    } else {
+        console.info("Alarm is ringing, but this isn't the active tab.", {
+            lastTab,
+            TAB_ID
+        })
     }
 }
 
