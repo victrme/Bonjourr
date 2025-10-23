@@ -212,6 +212,7 @@ function assets(platform: Platform) {
 	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
 	copyDir(`${source}/interface`, `${target}/interface`)
 	copyDir(`${source}/labels`, `${target}/labels`)
+	copyDir(`${source}/sounds`, `${target}/sounds`)
 }
 
 function manifests(platform: Platform) {

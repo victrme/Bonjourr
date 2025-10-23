@@ -5,6 +5,7 @@ import { storage } from '../storage.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
 import { tabTitle } from './others.ts'
+// import alarmSound from '../../assets/sounds/clock-alarm-classic.mp3'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -223,9 +224,12 @@ async function startTimer(fromButton: boolean = false, time?: number) {
 }
 
 function startCountdown(endtime: number) {
+    // inserted as soon as possible
+    insertTime(calculateSecondsLeft(endtime))
+
     countdown = setInterval(() => {
         insertTime(calculateSecondsLeft(endtime))
-    }, 10)
+    }, 250)
 
     toggleStartPause(true)
 }
@@ -255,10 +259,14 @@ function resetTimer() {
 
 function calculateSecondsLeft(end: number) {
     const secondsLeft = Math.round((end - Date.now()) / 1000)
-
+    
     // time's up!
     if (secondsLeft <= 0) {
         stopTimer()
+
+        // const audio = new Audio(alarmSound)
+        // audio.play()
+
         return 0
     }
 
