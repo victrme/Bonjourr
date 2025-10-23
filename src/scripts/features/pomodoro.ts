@@ -137,7 +137,9 @@ function listenToBroadcast() {
 }
 
 async function switchMode(mode: PomodoroMode) {
+    setModeGlider(mode)
     stopTimer()
+    insertTime(getTimeForMode(mode), false)
 
     // save
     updatePomodoro({
@@ -145,13 +147,13 @@ async function switchMode(mode: PomodoroMode) {
         end: 0,
         pause: 0
     })
+}
 
-    insertTime(getTimeForMode(mode), false)
-
+function setModeGlider(mode: string) {
     // select animation
     let radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
     let glider = document.querySelector('.glider') as HTMLSpanElement
-
+    
     if (glider && radioBtn?.parentElement) {
         let offsetLeft = radioBtn.parentElement.offsetLeft
         let offsetWidth = radioBtn.parentElement.offsetWidth
@@ -159,7 +161,6 @@ async function switchMode(mode: PomodoroMode) {
         glider.style.left = `${offsetLeft}px`
         glider.style.width = `${offsetWidth}px`
     }
-
 }
 
 async function initTimer(pomodoro: Pomodoro) {
@@ -187,8 +188,6 @@ async function startTimer(fromButton: boolean = false, time?: number) {
 
     if (fromButton) {
         if (wasPaused) {
-            console.info("From event: timer resumed")
-
             const newEnd = now + remaining
 
             startCountdown(newEnd)
@@ -198,8 +197,6 @@ async function startTimer(fromButton: boolean = false, time?: number) {
                 pause: 0
             })
         } else {
-            console.info("From event: new timer started")
-            
             // the time at which the time will be over
             let end = now + defaultTime * 1000
 
@@ -212,12 +209,11 @@ async function startTimer(fromButton: boolean = false, time?: number) {
         }
 
     } else { // from refresh/new tab
+        setModeGlider(pomodoro.mode as string)
+
         if (wasPaused) {
-            console.info("After refresh: timer paused")
-            
-            insertTime(calculateSecondsLeft(now + remaining))
+            insertTime(calculateSecondsLeft(now + remaining), false)
         } else {
-            console.info('After refresh: timer resumed')
             startCountdown(pomodoro.end)
         }
     }
@@ -235,7 +231,6 @@ function startCountdown(endtime: number) {
 }
 
 async function pauseTimer() {
-    console.info('pause!')
     stopTimer()
 
     updatePomodoro({
