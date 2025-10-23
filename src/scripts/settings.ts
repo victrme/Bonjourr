@@ -382,7 +382,6 @@ function initOptionsValues(data: Sync, local: Local) {
 			e.style.setProperty('--value', e.value)
 		})
 	}
-
 }
 
 function initOptionsEvents() {
