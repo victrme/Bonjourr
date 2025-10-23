@@ -374,9 +374,10 @@ function initOptionsEvents() {
 	onclickdown(paramId('b_accept-permissions'), async () => {
 		await getPermissions('topSites', 'bookmarks')
 
-		const data = await storage.sync.get()
-		quickLinks(data)
-		setTimeout(() => initGroups(data), 10)
+		const sync = await storage.sync.get()
+		const local = await storage.local.get()
+		quickLinks({ sync, local })
+		setTimeout(() => initGroups(sync), 10)
 
 		settingsNotifications({ 'accept-permissions': false })
 	})

@@ -34,6 +34,7 @@ let domeditlink: HTMLDialogElement
 const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
 
+const domiconfilelabel = document.getElementById('e-icon-file-label') as HTMLSpanElement
 const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
@@ -143,8 +144,14 @@ export async function populateDialogWithEditLink(
 			const iconType = link.icon?.type ?? 'auto'
 			const iconValue = link.icon?.value ?? ''
 
+			domiconurl.value = ''
+			domiconfilelabel.textContent = tradThis('No file chosen')
+
 			if (iconType === 'url' && iconValue) {
 				domiconurl.value = iconValue
+			}
+			if (iconType === 'file') {
+				domiconfilelabel.textContent = iconValue
 			}
 
 			toggleIconType(link.icon ? link.icon.type : 'auto')
@@ -478,7 +485,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 		}
 
 		if (iconType === 'file' && !iconFile) {
-			iconType = 'auto'
+			iconType = 'file'
 			iconValue = undefined
 		}
 	}

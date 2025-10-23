@@ -577,6 +577,7 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 	if (isElem(link)) {
 		if (icondom && icon) {
 			const img = document.createElement('img')
+			const currentSrc = icondom.src
 			let url = getDefaultIcon(link.url)
 
 			icondom.src = 'src/assets/interface/loading.svg'
@@ -600,15 +601,26 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 			}
 
 			if (icon.type === 'file') {
-				if (!file) {
+				const currentIcon = link.icon
+				const noNewOrCurrentFile = !file && !currentIcon?.value
+				const noNewButHasCurrentFile = !file && (currentIcon?.type === 'file') && !!currentIcon?.value
+
+				if (noNewOrCurrentFile) {
 					throw new Error('Chose file but no file uploaded')
 				}
 
-				url = id
+				if (noNewButHasCurrentFile) {
+					icon = currentIcon
+					img.src = currentSrc
+				}
 
-				storeIconFile(id, file).then((uri) => {
-					img.src = uri
-				})
+				if (file) {
+					url = id
+
+					storeIconFile(id, file).then((uri) => {
+						img.src = uri
+					})
+				}
 			}
 
 			link.icon = icon

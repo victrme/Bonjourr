@@ -92,6 +92,7 @@ dialog#contextmenu input[type='file'] + span {
 	width: calc(100% - 20px);
 	max-width: unset;
 	cursor: pointer;
+	text-align: left;
 }
 
 dialog#contextmenu button {

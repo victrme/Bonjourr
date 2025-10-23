@@ -10,7 +10,6 @@ import { SYNC_DEFAULT } from '../defaults.ts'
 import { storage } from '../storage.ts'
 
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
-import { retrieveGist } from './synchronization/gist.ts'
 
 type DateFormat = Sync['dateformat']
 
