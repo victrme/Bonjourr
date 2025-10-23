@@ -59,7 +59,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 #pmdr_modes {
 	display: flex;
 	position: relative;
-	border: unset;
+	/* border: unset; */
 	border-radius: 100px;
 	align-items: center;
 	gap: 1.25em;
@@ -82,13 +82,26 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     transition: left 0.2s ease, width 0.2s ease;
 }
 
+[data-theme='dark'] .glider {
+	background: rgba(255, 255, 255, 0.2);
+		/* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),  */
+	/* inset 0 4px 20px rgba(255, 255, 255, 0.3); */
+}
+
 .glass {
 	position: relative;
 	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
-	border: 1px solid rgba(255, 255, 255, 0.7);
+	border: 1px solid rgba(255, 255, 255, 0.6);
 	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
 	inset 0 4px 20px rgba(255, 255, 255, 0.225);
+}
+
+[data-theme='dark'] .glass {
+	background: rgba(0, 0, 0, 0.32);
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
 .glass::after {
@@ -106,6 +119,12 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	opacity: 0.6;
 	z-index: -1;
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+}
+
+[data-theme='dark'] .glass:after {
+	background: rgba(255, 255, 255, 0.05);
+	box-shadow: inset -10px -8px 0px -11px rgba(0, 0, 0, .9),
+				inset 0px -9px 0px -8px rgba(0, 0, 0, .9);
 }
 
 #pmdr_modes .pomodoro_mode {
@@ -167,7 +186,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 	backdrop-filter: blur(10px);
 	background: rgba(255, 255, 255, 0.1);
-	border: 1px solid transparent;
+	border: 1px solid #fff1;
 	transition: 
 		backdrop-filter .2s ease,
 		background .2s ease,
@@ -181,6 +200,13 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	border: 1px solid rgba(255, 255, 255, 0.7);
 	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
 	inset 0 4px 20px rgba(255, 255, 255, 0.225);
+}
+
+[data-theme='dark'] .focus-toggle:hover {
+	background: rgba(0, 0, 0, 0.32);
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
+	inset 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
 .focus-toggle:after {
@@ -198,6 +224,12 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	z-index: -1;
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 	opacity: 0;
+}
+
+[data-theme='dark'] .focus-toggle:after {
+	background: rgba(255, 255, 255, 0.05);
+	box-shadow: inset -10px -8px 0px -11px rgba(0, 0, 0, .9),
+				inset 0px -9px 0px -8px rgba(0, 0, 0, .9);
 }
 
 .focus-toggle:hover:after {
