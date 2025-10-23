@@ -1,3 +1,21 @@
+## 22.0.0
+
+- 	Context menu on the whole page, allows you to: 
+	-	Add quick links from anywhere
+	-	Access widget settings easily
+	-	Control your background
+- 	New quick link icon types:
+	-	Automatic
+	-	URL
+	-	Import your own
+- 	Import your own video files as backgrounds
+- 	Choose the AM/PM position when 12-Hour Time is enabled (thank you ShrekCoding21!!)
+- 	Fixes and improvements:
+	-	Restored centered default positioning for backgrounds
+	-	More reliable touch screen interactions 
+	-	Fix most languages not having a capital letter on date
+
+
 ## 21.2.1
 
 - Weather is not triggered when choosing manual location

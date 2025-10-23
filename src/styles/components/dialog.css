@@ -51,3 +51,7 @@ dialog button.btn-red:hover {
 	color: white;
 	background-color: var(--color-red);
 }
+
+dialog option {
+	padding-inline-start: 0;
+}

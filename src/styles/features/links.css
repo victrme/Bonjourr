@@ -361,6 +361,7 @@
 	border-radius: 5px;
 	padding: 2px;
 	width: 100%;
+	aspect-ratio: 1/1;
 	height: auto;
 	box-sizing: border-box;
 }

@@ -14,6 +14,7 @@ import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
+import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
@@ -47,6 +48,14 @@ export function settingsInit(sync: Sync, local: Local) {
 
 	document.body?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
+
+	const openSettingsButtonsFromContextMenu = document.body.querySelectorAll<HTMLButtonElement>(
+		`[data-action="openTheseSettings"]`,
+	)
+
+	openSettingsButtonsFromContextMenu.forEach((btn) => {
+		btn?.addEventListener('pointerdown', settingsInitEvent)
+	})
 }
 
 function settingsInitEvent(event: Event) {
@@ -72,7 +81,27 @@ function settingsInitEvent(event: Event) {
 	settings?.removeAttribute('style')
 	settings?.classList.remove('hidden')
 	document.dispatchEvent(new Event('settings'))
-	document.addEventListener('toggle-settings', settingsToggle)
+
+	document.addEventListener(
+		'toggle-settings',
+		((e: CustomEvent) => {
+			settingsToggle(e)
+		}) as EventListener,
+	)
+
+	// if init by touch, opens settings right away
+	if ((event as PointerEvent).pointerType === 'touch') {
+		// tricks the browser into thinking it's not the same event that inits and opens
+		setTimeout(() => {
+			// when requesting specific settings section
+			if ((event.target as HTMLElement).getAttribute('data-attribute')) {
+				openSettingsButtonEvent(event)
+			} else {
+				document.dispatchEvent(new CustomEvent('toggle-settings'))
+			}
+		}, 0)
+	}
+
 	document.body?.removeEventListener('keydown', settingsInitEvent)
 	showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 
@@ -100,19 +129,33 @@ function settingsInitEvent(event: Event) {
 	}, 500)
 }
 
-function settingsToggle() {
-	const dombackgroundactions = document.getElementById('background-actions')
+function settingsToggle(event?: CustomEvent) {
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domsettings = document.getElementById('settings')
 	const domedit = document.getElementById('editlink')
 	const isClosed = domsettings?.classList.contains('shown') === false
 
+	const scrollTo = event?.detail?.scrollTo ?? false
+	const target = domsettings?.querySelector(scrollTo)
+
+	// scrolls requested section into view
+	if (target && domsettings) {
+		// starts scrolling only once the settings have been rendered (otherwise starts full animation again even if unnecessary)
+		requestAnimationFrame(() => {
+			setTimeout(() => {
+				target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+			}, 0)
+		})
+	}
+
+	// prevents closing if a scrollTo has been requested
+	if (!isClosed && scrollTo) return
+
 	domsettings?.classList.toggle('shown', isClosed)
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
 	domshowsettings?.classList.toggle('shown', isClosed)
-	dombackgroundactions?.classList.toggle('pushed', isClosed)
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
@@ -196,6 +239,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
+	// setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
@@ -241,6 +285,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
+	paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
 	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
@@ -344,9 +389,10 @@ function initOptionsEvents() {
 	onclickdown(paramId('b_accept-permissions'), async () => {
 		await getPermissions('topSites', 'bookmarks')
 
-		const data = await storage.sync.get()
-		quickLinks(data)
-		setTimeout(() => initGroups(data), 10)
+		const sync = await storage.sync.get()
+		const local = await storage.local.get()
+		quickLinks({ sync, local })
+		setTimeout(() => initGroups(sync), 10)
 
 		settingsNotifications({ 'accept-permissions': false })
 	})
@@ -587,7 +633,14 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_ampm-label'), (_, target) => {
 		clock(undefined, { ampmlabel: target.checked })
+
+		// shows/hides ampm_position option
+		paramId('ampm_position')?.classList.toggle('shown', target.checked)
 	})
+
+	// paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement) {
+	// 	clock(undefined, { ampmposition: this.value })
+	// })
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
 		clock(undefined, { timezone: this.value })

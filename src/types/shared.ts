@@ -1,5 +1,5 @@
 import type { langList } from '../scripts/langs.ts'
-import type { Local } from './local.ts'
+import type { BackgroundFile, Local } from './local.ts'
 import type { Sync } from './sync.ts'
 
 export type Langs = keyof typeof langList
@@ -8,6 +8,7 @@ export type Background = BackgroundImage | BackgroundVideo
 export type QuoteUserInput = [string, string][]
 export type Widgets = 'time' | 'main' | 'quicklinks' | 'notes' | 'quotes' | 'searchbar'
 export type Frequency = 'tabs' | 'hour' | 'day' | 'period' | 'pause'
+export type LinkIconType = 'auto' | 'library' | 'file' | 'url'
 export type SearchEngines =
 	| 'default'
 	| 'google'
@@ -56,9 +57,7 @@ export interface BackgroundImage {
 		focal_length: string
 		iso: number
 	}
-	size?: string
-	x?: string
-	y?: string
+	file?: BackgroundFile
 }
 
 export interface BackgroundVideo {
@@ -73,16 +72,22 @@ export interface BackgroundVideo {
 		medium: string
 		small: string
 	}
+	file?: BackgroundFile
 }
 
 export interface LinkElem {
 	_id: string
-	parent?: string | number
+	parent?: string
 	folder?: false
 	order: number
 	title: string
 	url: string
-	icon?: string
+	icon?: LinkIcon
+}
+
+export interface LinkIcon {
+	type: LinkIconType
+	value?: string
 }
 
 export interface LinkFolder {

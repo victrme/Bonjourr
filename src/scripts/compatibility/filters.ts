@@ -1,14 +1,49 @@
 import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers.ts'
 import { countryCodeToLanguageCode } from '../utils/translations.ts'
-import { API_DOMAIN, SYNC_DEFAULT } from '../defaults.ts'
+import { SYNC_DEFAULT } from '../defaults.ts'
 import { oldJSONToCSV } from '../features/quotes.ts'
 import { randomString } from '../shared/generic.ts'
 import { bundleLinks } from '../utils/bundlelinks.ts'
+import { isElem } from '../features/links/helpers.ts'
 
-import type { LinkElem, OldSync, Widgets } from '../../types/shared.ts'
+import type { Link, LinkElem, OldSync, Widgets } from '../../types/shared.ts'
 import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
+
+/**
+ * converts old link data to new typing (Bonjourr 22 with icon options)
+ */
+export function newLinkIcons(data: Import): Import {
+	const links: Link[] = []
+
+	// gathers all links from previous data
+	Object.entries(data).map(([key, val]) => {
+		if (key.length === 11 && key.startsWith('links')) {
+			links.push(val as Link)
+		}
+	})
+
+	for (const link of links) {
+		if (!isElem(link)) {
+			continue
+		}
+
+		if (link.icon && typeof link.icon === 'string') {
+			const icon = link.icon as string
+			const faviconWasAutomatic = icon.startsWith('https://services.bonjourr.fr')
+
+			const type = faviconWasAutomatic ? 'auto' : 'url'
+			const value = faviconWasAutomatic ? undefined : link.icon // if URL was defined by user, stores its value
+
+			link.icon = { type, value }
+		}
+
+		data[link._id] = link
+	}
+
+	return data
+}
 
 export function fixNullBrightness(data: Import): Import {
 	if (data.backgrounds?.bright === null) {
@@ -286,9 +321,18 @@ export function linksDataMigration(data: Import): Import {
 	const list = (bundleLinks(data as Sync) as LinkElem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
 	for (const link of list) {
-		if (link.icon?.startsWith(notfoundicon)) {
-			link.icon = `${API_DOMAIN}/favicon/blob/`
-			data[link._id] = link
+		if (!isElem(link)) {
+			continue
+		}
+
+		if (typeof link.icon === 'string') {
+			const icon = link.icon as string
+			const isNotFound = icon.startsWith(notfoundicon)
+
+			if (isNotFound) {
+				link.icon = { type: 'auto' }
+				data[link._id] = link
+			}
 		}
 	}
 

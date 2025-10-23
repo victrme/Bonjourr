@@ -13,6 +13,7 @@ import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
+import './features/contextmenu.ts'
 
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
@@ -89,7 +90,7 @@ async function startup() {
 	customCss(sync.css)
 	hideElements(sync.hide)
 	backgroundsInit(sync, local, true)
-	quickLinks(sync)
+	quickLinks({ sync, local })
 	synchronization(local)
 	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
