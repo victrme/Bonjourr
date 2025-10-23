@@ -1,7 +1,7 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
-import { getIconCacheSync, removeIconFile, storeIconFile } from './fileicons.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
+import { storeIconFile } from './fileicons.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
@@ -22,6 +22,7 @@ import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
+import type { Local } from '../../../types/local.ts'
 import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
@@ -96,11 +97,16 @@ type LinkGroups = {
 	div: HTMLDivElement | null
 }[]
 
+type LinksInit = {
+	sync: Sync
+	local: Local
+}
+
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
-export async function quickLinks(init?: Sync, event?: LinksUpdate) {
+export async function quickLinks(init?: LinksInit, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
 		return
@@ -110,33 +116,35 @@ export async function quickLinks(init?: Sync, event?: LinksUpdate) {
 		return
 	}
 
-	// set class before appendBlock, cannot be moved
-	domlinkblocks.classList.add(init.linkstyle ?? 'large')
-	domlinkblocks.classList.toggle('titles', init.linktitles)
-	domlinkblocks.classList.toggle('backgrounds', init.linkbackgrounds)
-	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
+	const { sync, local } = init
 
-	if (init.linkgroups.synced.length > 0) {
-		await initBookmarkSync(init)
+	// set class before appendBlock, cannot be moved
+	domlinkblocks.classList.add(sync.linkstyle ?? 'large')
+	domlinkblocks.classList.toggle('titles', sync.linktitles)
+	domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
+	domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
+
+	if (sync.linkgroups.synced.length > 0) {
+		await initBookmarkSync(sync)
 	}
 
-	initGroups(init, !!init)
-	initRows(init.linksrow, init.linkstyle)
-	initblocks(init, true)
+	initGroups(sync, !!init)
+	initRows(sync.linksrow, sync.linkstyle)
+	initblocks(sync, local)
 }
 
 // Initialisation
 
-export function initblocks(data: Sync, isInit?: true): true {
-	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
-	const { pinned, synced, selected } = data.linkgroups
+export function initblocks(sync: Sync, local?: Local): true {
+	const allLinks = Object.values(sync).filter((val) => isLink(val)) as Link[]
+	const { pinned, synced, selected } = sync.linkgroups
 	const activeGroups: LinkGroups = []
 
 	for (const group of [...pinned, selected]) {
 		const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
 		const folder = div?.dataset.folder
 		const lis: HTMLLIElement[] = []
-		const links = folder ? getLinksInFolder(data, folder) : getLinksInGroup(data, group)
+		const links = folder ? getLinksInFolder(sync, folder) : getLinksInGroup(sync, group)
 
 		activeGroups.push({
 			lis,
@@ -192,8 +200,8 @@ export function initblocks(data: Sync, isInit?: true): true {
 			}
 
 			li = isElem(link)
-				? createElem(link, data.linknewtab, data.linkstyle)
-				: createFolder(link, linksInFolders, data.linkstyle)
+				? createElem(link, sync.linknewtab, sync.linkstyle)
+				: createFolder(link, linksInFolders, sync.linkstyle)
 
 			fragment.appendChild(li)
 
@@ -207,7 +215,7 @@ export function initblocks(data: Sync, isInit?: true): true {
 		}
 
 		if (folderid) {
-			linktitle.textContent = (data[folderid] as LinkFolder).title
+			linktitle.textContent = (sync[folderid] as LinkFolder).title
 		} else {
 			linktitle.textContent = group.title
 		}
@@ -229,7 +237,14 @@ export function initblocks(data: Sync, isInit?: true): true {
 		}
 	}
 
-	createIcons(isInit)
+	if (local) {
+		createIcons(local)
+	} else {
+		storage.local.get().then((local) => {
+			createIcons(local)
+		})
+	}
+
 	displayInterface('links')
 
 	return true
@@ -291,22 +306,14 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	return li
 }
 
-function createIcons(_isInit?: true) {
+function createIcons(local: Local) {
 	for (const [img, url] of initIconList) {
-		if (!url.startsWith('link')) {
+		if (url.startsWith('link')) {
+			img.src = local[`x-icon-${url}`] ?? ''
+		} else {
 			img.src = url
 		}
 	}
-
-	getIconCacheSync((cache) => {
-		for (const [img, url] of initIconList) {
-			cache.match(`http://127.0.0.1:8888/${url}/`).then((response) => {
-				response?.text().then((text) => {
-					img.src = text
-				})
-			})
-		}
-	})
 
 	setTimeout(() => {
 		// naturalWidth is needed here because complete doesn't tell the whole story
@@ -516,11 +523,13 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 		data[link._id] = link
 	}
 
-	const correctdata = correctLinksOrder(data)
+	const newsync = correctLinksOrder(data)
 
-	initblocks(correctdata)
+	storage.local.get().then((local) => {
+		initblocks(newsync, local)
+	})
 
-	return correctdata
+	return newsync
 }
 
 function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolder[] {
@@ -689,7 +698,7 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 
 		if (isElem(link)) {
 			if (link.icon?.type === 'file') {
-				removeIconFile(id)
+				storage.local.remove(`x-icon-${id}`)
 			}
 		}
 
@@ -718,6 +727,7 @@ function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 	}
 
 	const correctdata = correctLinksOrder(data)
+
 	initblocks(correctdata)
 	return correctdata
 }
