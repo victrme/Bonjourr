@@ -34,7 +34,8 @@ import {
 	PLATFORM,
 	SYNC_DEFAULT,
 	SYSTEM_OS,
-	TAB_ID
+	TAB_ID,
+	tabs_bc
 } from './defaults.ts'
 
 try {
@@ -292,10 +293,27 @@ function keepTrackOfTabs() {
 		localStorage.setItem('lastActiveTab', TAB_ID)
 	}
 
+	
+	if (!document.hidden) {
+		updateLastActiveTab()
+	}
+
 	window.addEventListener('focus', updateLastActiveTab)
 	window.addEventListener('visibilitychange', () => {
 		if (!document.hidden) {
 			updateLastActiveTab()
 		}
 	})
+
+	// sends event to other tabs when tab gets closed
+	window.addEventListener('beforeunload', () => {
+		tabs_bc.postMessage('tabClosed')
+	})
+
+	tabs_bc.onmessage = (event) => {
+		// when receiving tabClosed event, sets this tab as the last active one
+		if (event.data === 'tabClosed') {
+			updateLastActiveTab()
+		}
+	}
 }
