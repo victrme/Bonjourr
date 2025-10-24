@@ -1,5 +1,10 @@
 ## 22.0.0
 
+- 	New widget! Stay focused on your goals with the Pomodoro timer:
+	-	Three timer modes to configure depending on your workflow
+	-	Focus mode to avoid distractions
+	-	Alarm & timer in the tab titles    
+    -	Inspired by the looks of Apple's Liquid Glass
 - 	Context menu on the whole page, allows you to: 
 	-	Add quick links from anywhere
 	-	Access widget settings easily
@@ -9,12 +14,12 @@
 	-	URL
 	-	Import your own
 - 	Import your own video files as backgrounds
-- 	Choose the AM/PM position when 12-Hour Time is enabled (thank you ShrekCoding21!!)
+-	Refreshed look for the settings!
+- 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
 - 	Fixes and improvements:
 	-	Restored centered default positioning for backgrounds
 	-	More reliable touch screen interactions 
 	-	Fix most languages not having a capital letter on date
-
 
 ## 21.2.1
 
@@ -38,7 +43,6 @@
 	-	Russian update by Shlerspet
 
 ## 21.1.0
-
 
 -	Migrate local files from indexedDB to CacheStorage
 -	Added Help Mode to debug more easily, accessible with CTRL+Shift+?

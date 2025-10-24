@@ -831,7 +831,7 @@ function initOptionsEvents() {
 	onclickdown(paramId('i_pomodoro'), (_, target) => {
 		moveElements(undefined, { widget: ['pomodoro', target.checked] })
 
-		let glider = document.querySelector('#pomodoro_container .glider') as HTMLDivElement
+		const glider = document.querySelector('#pomodoro_container .glider') as HTMLDivElement
 		if (glider.style.width === '0px') {
 			// mode glider needs pomodoro to be rendered to know the button sizes, so delay is required
 			setTimeout(() => {
