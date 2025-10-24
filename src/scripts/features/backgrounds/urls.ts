@@ -1,15 +1,54 @@
+import { removeBackgrounds } from './index.ts'
 import { stringMaxSize } from '../../shared/generic.ts'
-import { userDate } from '../../shared/time.ts'
+import { needsChange, userDate } from '../../shared/time.ts'
 import { storage } from '../../storage.ts'
 
+import type { EditorOptions, PrismEditor } from 'prism-code-editor'
 import type { BackgroundUrlState, Local } from '../../../types/local.ts'
 import type { BackgroundImage } from '../../../types/shared.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
 
-import type { EditorOptions, PrismEditor } from 'prism-code-editor'
-
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
+
+export function urlsCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
+	const urls = lastUsedUrls(local.backgroundUrls)
+
+	if (urls.length === 0) {
+		removeBackgrounds()
+		return
+	}
+
+	// 1. Faire la meme chose que avec les fichiers locaux
+
+	const url = urls[0]
+	const freq = backgrounds.frequency
+	const metadata = local.backgroundUrls[url]
+	const lastUsed = new Date(metadata.lastUsed).getTime()
+
+	needNew ??= needsChange(freq, lastUsed)
+
+	if (urls.length > 1 && needNew) {
+		urls.shift()
+
+		const rand = Math.floor(Math.random() * urls.length)
+		const url = urls[rand]
+
+		// applyBackground(await mediaFromFiles(url, local))
+		local.backgroundUrls[url].lastUsed = new Date().toString()
+		storage.local.set(local)
+	} else {
+		// applyBackground(await mediaFromFiles(ids[0], local))
+	}
+}
+
+export function lastUsedUrls(metadatas: Local['backgroundUrls']): string[] {
+	const sortedMetadata = Object.entries(metadatas).toSorted((a, b) => {
+		return new Date(b[1].lastUsed).getTime() - new Date(a[1].lastUsed).getTime()
+	})
+
+	return sortedMetadata.map(([id, _]) => id)
+}
 
 export function getUrlsAsCollection(local: Local): [string[], BackgroundImage[]] {
 	const entries = Object.entries(local.backgroundUrls)
@@ -76,7 +115,7 @@ function highlightUrlsEditorLine(url: string, state: BackgroundUrlState) {
 	const lineState = noContent ? 'NONE' : state
 
 	line?.classList.toggle('loading', lineState === 'LOADING')
-	line?.classList.toggle('error', lineState === 'NOT_IMAGE')
+	line?.classList.toggle('error', lineState === 'NOT_MEDIA')
 	line?.classList.toggle('good', lineState === 'OK')
 	line?.classList.toggle('warn', lineState === 'CANT_REACH' || lineState === 'NOT_URL')
 }
@@ -123,7 +162,13 @@ async function checkUrlStates(backgroundUrls: Local['backgroundUrls']) {
 }
 
 async function getState(item: string): Promise<BackgroundUrlState> {
-	const isImage = (resp: Response) => resp.headers.get('content-type')?.includes('image/')
+	// const isImage = (resp: Response) => resp.headers.get('content-type')?.includes('image/')
+	// const isVideo = (resp: Response) => resp.headers.get('content-type')?.includes('video/')
+	const isMedia = (resp: Response) => {
+		const type = resp.headers.get('content-type') ?? ''
+		return type.startsWith('video/') || type.startsWith('image/')
+	}
+
 	const proxy = 'https://services.bonjourr.fr/backgrounds/proxy/'
 	let resp: Response
 	let url: URL
@@ -137,24 +182,24 @@ async function getState(item: string): Promise<BackgroundUrlState> {
 	try {
 		resp = await fetch(url)
 
-		if (isImage(resp) === false) {
-			return 'NOT_IMAGE'
+		if (isMedia(resp) === false) {
+			return 'NOT_MEDIA'
 		}
 	} catch (_) {
 		try {
 			resp = await fetch(proxy + url)
 
-			if (isImage(resp) === false) {
-				return 'NOT_IMAGE'
+			if (isMedia(resp) === false) {
+				return 'NOT_MEDIA'
 			}
 		} catch (_) {
 			return 'CANT_REACH'
 		}
 	}
 
-	if (resp.headers.get('content-type')?.includes('image/')) {
+	if (isMedia(resp)) {
 		return 'OK'
 	}
 
-	return 'NOT_IMAGE'
+	return 'NOT_MEDIA'
 }

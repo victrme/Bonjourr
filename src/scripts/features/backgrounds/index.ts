@@ -1,6 +1,6 @@
 import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
 import { handleBackgroundActions } from '../contextmenu.ts'
-import { applyUrls, getUrlsAsCollection, initUrlsEditor } from './urls.ts'
+import { applyUrls, getUrlsAsCollection, initUrlsEditor, urlsCacheControl } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 import {
@@ -85,6 +85,11 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 	switch (sync.backgrounds.type) {
 		case 'files': {
 			localFilesCacheControl(sync.backgrounds, local)
+			break
+		}
+
+		case 'urls': {
+			urlsCacheControl(sync.backgrounds, local)
 			break
 		}
 

@@ -168,10 +168,6 @@
 
 /* Background URLs */
 
-#background-urls-option {
-	display: none;
-}
-
 #background-urls-editor > div {
 	background-color: var(--color-input);
 	font-size: 13px;
