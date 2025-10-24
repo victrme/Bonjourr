@@ -1,4 +1,4 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, Widgets } from './shared.ts'
+import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
 
 export interface Sync {
 	showall: boolean
@@ -36,6 +36,7 @@ export interface Sync {
 	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes
+	pomodoro: Pomodoro
 	font: Font
 	move: Move
 	about: {
@@ -206,4 +207,14 @@ export interface Weather {
 	temperature: 'actual' | 'feelslike' | 'both'
 	moreinfo: 'none' | 'msnw' | 'yhw' | 'windy' | 'accu' | 'custom'
 	provider?: string
+}
+
+export interface Pomodoro {
+	on: boolean
+	end: number
+	pause: number
+	mode?: PomodoroMode
+	time_for: Record<PomodoroMode, number>
+	focus: boolean
+	sound: boolean
 }

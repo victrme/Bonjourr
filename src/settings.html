@@ -1454,7 +1454,7 @@
 <div class="settings-title" id="quotes_title">
 	<h2 id="lbl-quotes" class="trn">Quotes</h2>
 
-	<button class="tooltip ttquotes" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
+	<button class="tooltip ttquotes" title="Tips on quotes" aria-label="Tips on quotes">?</button>
 
 	<p class="tooltiptext dropdown ttquotes">
 		<span class="trn">Use the default quote collections or import your own.</span>
@@ -1573,6 +1573,93 @@
 					
 				</button>
 			</div>
+		</div>
+	</div>
+</div>
+
+<div class="settings-title" id="pomodoro_title">
+	<h2 id="lbl-quotes" class="trn">Pomodoro timer</h2>
+
+	<button class="tooltip ttpomodoro" title="Tips on Pomodoro" aria-label="Tips on Pomodoro">?</button>
+
+	<p class="tooltiptext dropdown ttpomodoro">
+		<span class="trn">Pomodoro is a productivity tool to help you stay focused on your goals and work efficiently.</span>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#pomodoro" rel="noreferrer noopener" target="_blank"
+			>Learn more</a
+		>
+	</p>
+</div>
+
+<div class="param">
+	<div class="activate_pomodoro wrapper">
+		<label for="i_pomodoro" class="trn">Enable</label>
+		<input id="i_pomodoro" class="switch" type="checkbox" />
+	</div>
+
+	<div id="pomodoro_options" class="dropdown">
+		<hr />
+
+		<div class="activate_pomodoro wrapper">
+			<label for="i_pmdr_sound" class="trn">Play sound on alarm</label>
+			<input id="i_pmdr_sound" class="switch" type="checkbox" />
+		</div>
+
+		<div class="as as_pomodoro dropdown">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_pomodoro_time" class="trn">Default time</label>
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_pomodoro_time"
+						id="i_pmdr_pomodoro"
+						autocomplete="off"
+						min="1"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
+			</div>
+			
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_break_time" class="trn">Break time</label>
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_break_time"
+						id="i_pmdr_break"
+						autocomplete="off"
+						min="1"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
+			</div>
+			
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_longbreak_time" class="trn">Long break time</label>
+
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_longbreak_time"
+						id="i_pmdr_longbreak"
+						autocomplete="off"
+						min="1"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
+			</div>
+
 		</div>
 	</div>
 </div>

@@ -12,6 +12,7 @@ interface EventLocation {
 		time: boolean
 		main: boolean
 		quotes: boolean
+		pomodoro: boolean
 	}
 	interface: boolean
 }
@@ -33,6 +34,10 @@ const sectionMatching: Record<string, Section> = {
 	quotes: {
 		section: '#quotes_container',
 		scrollto: 'quotes_title',
+	},
+	pomodoro: {
+		section: '#pomodoro_container',
+		scrollto: 'pomodoro_title',
 	},
 }
 
@@ -56,6 +61,7 @@ export function openContextMenu(event: Event) {
 			time: !!target.closest(sectionMatching.time.section),
 			main: !!target.closest(sectionMatching.main.section),
 			quotes: !!target.closest(sectionMatching.quotes.section),
+			pomodoro: !!target.closest(sectionMatching.pomodoro.section),
 		},
 		interface: target.matches('main#interface'),
 	}
@@ -206,6 +212,10 @@ function showTheseElements(query: string) {
 
 queueMicrotask(() => {
 	document.addEventListener('contextmenu', (event) => {
+		if (event.altKey) { // if alt + right click, then regular OS context menu
+			return
+		}
+
 		// if right click inside interface, custom context menu
 		if (mainInterface?.contains(event.target as Node)) {
 			openContextMenu(event)

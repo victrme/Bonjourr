@@ -11,6 +11,7 @@ import { searchbar } from './features/searchbar.ts'
 import { customCss } from './features/css.ts'
 import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
+import { pomodoro } from './features/pomodoro.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 import './features/contextmenu.ts'
@@ -33,6 +34,8 @@ import {
 	PLATFORM,
 	SYNC_DEFAULT,
 	SYSTEM_OS,
+	TAB_ID,
+	tabs_bc
 } from './defaults.ts'
 
 try {
@@ -85,6 +88,7 @@ async function startup() {
 	darkmode(sync.dark)
 	searchbar(sync.searchbar)
 	quotes({ sync, local })
+	pomodoro(sync.pomodoro)
 	notes(sync.notes)
 	moveElements(sync.move)
 	customCss(sync.css)
@@ -95,6 +99,7 @@ async function startup() {
 	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
+	keepTrackOfTabs()
 
 	document.documentElement.dataset.system = SYSTEM_OS as string
 	document.documentElement.dataset.browser = BROWSER as string
@@ -279,4 +284,36 @@ function operaExtensionExplainer(explained?: true) {
 		document.body.classList.remove('loading')
 		dialog.close()
 	})
+}
+
+// to keep track of which Bonjourr tab the user interacted with last
+function keepTrackOfTabs() {
+	// Whenever the tab becomes visible or focused, mark it as active
+	function updateLastActiveTab() {
+		localStorage.setItem('lastActiveTab', TAB_ID)
+	}
+
+	
+	if (!document.hidden) {
+		updateLastActiveTab()
+	}
+
+	window.addEventListener('focus', updateLastActiveTab)
+	window.addEventListener('visibilitychange', () => {
+		if (!document.hidden) {
+			updateLastActiveTab()
+		}
+	})
+
+	// sends event to other tabs when tab gets closed
+	window.addEventListener('beforeunload', () => {
+		tabs_bc.postMessage('tabClosed')
+	})
+
+	tabs_bc.onmessage = (event) => {
+		// when receiving tabClosed event, sets this tab as the last active one
+		if (event.data === 'tabClosed') {
+			updateLastActiveTab()
+		}
+	}
 }

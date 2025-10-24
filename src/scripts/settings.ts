@@ -14,6 +14,8 @@ import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
+import { pomodoro } from './features/pomodoro.ts'
+import { togglePomodoroFocus } from './features/pomodoro.ts'
 import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
@@ -217,6 +219,10 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
 
+	Object.entries(data.pomodoro.time_for).forEach(([key, value]) => {
+		setInput(`i_pmdr_${key}`, value / 60)
+	})
+
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
 	setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
@@ -237,6 +243,8 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_notes', data.notes?.on ?? false)
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
+	setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
+	setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
 	// setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
@@ -290,6 +298,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
 	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
+	paramId('pomodoro_options')?.classList.toggle('shown', data.pomodoro.on)
 	paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
 	paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
 	paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
@@ -817,6 +826,52 @@ function initOptionsEvents() {
 		quotes(undefined, { url: paramId('i_qturl').value })
 	})
 
+	// Pomodoro
+
+	onclickdown(paramId('i_pomodoro'), (_, target) => {
+		moveElements(undefined, { widget: ['pomodoro', target.checked] })
+	})
+
+	onclickdown(paramId('i_pmdr_sound'), (_, target) => {
+		pomodoro(undefined, { sound: target.checked })
+	})
+
+	paramId('i_pmdr_pomodoro').addEventListener('input', function () {
+		pomodoro(undefined, { 
+			time_for: { 
+				pomodoro: Number(this.value)
+			} 
+		})
+	})
+	
+	paramId('i_pmdr_pomodoro').addEventListener('change', () => {
+		paramId('i_pmdr_pomodoro').blur()
+	})
+
+	paramId('i_pmdr_break').addEventListener('input', function () {
+		pomodoro(undefined, { 
+			time_for: { 
+				break: Number(this.value)
+			} 
+		})
+	})
+	
+	paramId('i_pmdr_break').addEventListener('change', () => {
+		paramId('i_pmdr_break').blur()
+	})
+
+	paramId('i_pmdr_longbreak').addEventListener('input', function () {
+		pomodoro(undefined, { 
+			time_for: { 
+				longbreak: Number(this.value)
+			} 
+		})
+	})
+	
+	paramId('i_pmdr_longbreak').addEventListener('change', () => {
+		paramId('i_pmdr_longbreak').blur()
+	})
+
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('pointerenter', () => {
@@ -843,6 +898,8 @@ function initOptionsEvents() {
 	// Page layout
 
 	onclickdown(paramId('b_editmove'), () => {
+		togglePomodoroFocus(false)
+
 		moveElements(undefined, {
 			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
 		})
