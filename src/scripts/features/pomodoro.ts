@@ -163,7 +163,7 @@ function resetTimeouts() {
     clearTimeout(timeModeTimeout)
 }
 
-function setModeGlider(mode: string) {
+export function setModeGlider(mode: string = currentPomodoroData.mode as PomodoroMode) {
     // select animation
     let radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
     let glider = document.querySelector('.glider') as HTMLSpanElement
@@ -415,6 +415,7 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: 
         data.pomodoro.focus = focus
     }
 
+    // the time defined by the user for each mode (pomodoro, break...)
     if (time_for) {
         for (const mode of Object.keys(time_for) as PomodoroMode[]) {
             const value = time_for[mode]
