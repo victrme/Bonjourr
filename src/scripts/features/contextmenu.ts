@@ -211,6 +211,10 @@ function showTheseElements(query: string) {
 
 queueMicrotask(() => {
 	document.addEventListener('contextmenu', (event) => {
+		if (event.altKey) { // if alt + right click, then regular OS context menu
+			return
+		}
+
 		// if right click inside interface, custom context menu
 		if (mainInterface?.contains(event.target as Node)) {
 			openContextMenu(event)

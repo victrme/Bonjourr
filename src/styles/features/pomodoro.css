@@ -123,8 +123,8 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 [data-theme='dark'] .glass:after {
 	background: rgba(255, 255, 255, 0.05);
-	box-shadow: inset -10px -8px 0px -11px rgba(0, 0, 0, .9),
-				inset 0px -9px 0px -8px rgba(0, 0, 0, .9);
+	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, .4),
+				inset 0px -9px 0px -8px rgba(255, 255, 255, .4);
 }
 
 #pmdr_modes .pomodoro_mode {
