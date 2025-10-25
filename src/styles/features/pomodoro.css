@@ -268,3 +268,11 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 .focus-toggle input:checked + .slider::after {
 	transform: translateX(14px);
 }
+
+/* Mobile */
+
+@media screen and (max-width: 600px) {
+	#pmdr_modes {
+		gap: 0;
+	}
+}

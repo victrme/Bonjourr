@@ -7,6 +7,7 @@ import { turnRefreshButton } from '../shared/dom.ts'
 import { tabTitle } from './others.ts'
 import { TAB_ID } from '../defaults.ts'
 import { tradThis } from '../utils/translations.ts'
+import { debounce } from '../utils/debounce.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -123,6 +124,11 @@ function handleUserInput() {
             on: focusIsChecked
         })
     })
+
+    // if user stops resizing window for 20ms, fixes glider size/placement
+    window.addEventListener('resize', debounce(() => {
+        setModeGlider(currentPomodoroData.mode)
+    }, 20))
 }
 
 function listenToBroadcast() {
