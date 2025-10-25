@@ -21,7 +21,7 @@ type PomodoroUpdate = {
 
 let currentPomodoroData: Pomodoro
 
-const alarmSound = new Audio('src/assets/sounds/clock-alarm-classic.mp3');
+const alarmSound = new Audio('src/assets/sounds/clock-alarm-classic.mp3')
 
 const pomodoroContainer = document.getElementById('pomodoro_container') as HTMLDivElement
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
@@ -129,6 +129,21 @@ function handleUserInput() {
     window.addEventListener('resize', debounce(() => {
         setModeGlider(currentPomodoroData.mode)
     }, 20))
+
+    // makes mode buttons and focus button accessible to keyboard inputs
+    document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach(el => {
+        el.addEventListener('keydown', (e: KeyboardEvent) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                const input = el.querySelector<HTMLInputElement>('input[type="radio"], input[type="checkbox"]')
+                if (!input) return
+
+                input.checked = !input.checked
+                input.dispatchEvent(new Event('change', { bubbles: true }))
+
+                e.preventDefault() // prevent page scroll on Space
+            }
+        })
+    })
 }
 
 function listenToBroadcast() {

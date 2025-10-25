@@ -140,6 +140,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 #pmdr_modes .pomodoro_mode label {
 	cursor: pointer;
 	text-shadow: unset;
+	user-select: none;
 }
 
 #pmdr_modes .pomodoro_mode input {
@@ -174,7 +175,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	width: 17px;
 }
 
-.focus-toggle {
+#focus-toggle {
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -183,7 +184,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	padding: 6px 12px;
 	border-radius: 9999px;
 	cursor: pointer;
-
+	user-select: none;
 	backdrop-filter: blur(10px);
 	background: rgba(255, 255, 255, 0.1);
 	border: 1px solid #fff1;
@@ -194,7 +195,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 		border .2s ease;
 }
 
-.focus-toggle:hover {
+#focus-toggle:hover {
 	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.7);
@@ -202,14 +203,14 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	inset 0 4px 20px rgba(255, 255, 255, 0.225);
 }
 
-[data-theme='dark'] .focus-toggle:hover {
+[data-theme='dark'] #focus-toggle:hover {
 	background: rgba(0, 0, 0, 0.32);
 	border: 1px solid rgba(255, 255, 255, 0.35);
 	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
 	inset 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
-.focus-toggle:after {
+#focus-toggle:after {
 	content: '';
 	position: absolute;
 	top: 0;
@@ -226,21 +227,21 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	opacity: 0;
 }
 
-[data-theme='dark'] .focus-toggle:after {
+[data-theme='dark'] #focus-toggle:after {
 	background: rgba(255, 255, 255, 0.05);
 	box-shadow: inset -10px -8px 0px -11px rgba(0, 0, 0, .9),
 				inset 0px -9px 0px -8px rgba(0, 0, 0, .9);
 }
 
-.focus-toggle:hover:after {
+#focus-toggle:hover:after {
 	opacity: 0.6;
 }
 
-.focus-toggle input {
+#focus-toggle input {
 	display: none;
 }
 
-.focus-toggle .slider {
+#focus-toggle .slider {
 	width: 32px;
 	height: 18px;
 	background: rgba(255, 255, 255, 0.3);
@@ -249,7 +250,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	transition: background 0.3s;
 }
 
-.focus-toggle .slider::after {
+#focus-toggle .slider::after {
 	content: '';
 	position: absolute;
 	left: 2px;
@@ -261,11 +262,11 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	transition: transform 0.3s;
 }
 
-.focus-toggle input:checked + .slider {
+#focus-toggle input:checked + .slider {
 	background: var(--color-orange);
 }
 
-.focus-toggle input:checked + .slider::after {
+#focus-toggle input:checked + .slider::after {
 	transform: translateX(14px);
 }
 
