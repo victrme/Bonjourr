@@ -53,7 +53,9 @@ export interface LastWeather {
 
 export interface BackgroundUrl {
 	lastUsed: string
+	format: 'image' | 'video'
 	state: BackgroundUrlState
+	duration?: number
 }
 
 /**

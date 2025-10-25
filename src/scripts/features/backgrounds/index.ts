@@ -1,6 +1,6 @@
+import { applyUrls, getUrlsAsCollection, initUrlsEditor, urlsCacheControl } from './urls.ts'
 import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
 import { handleBackgroundActions } from '../contextmenu.ts'
-import { applyUrls, getUrlsAsCollection, initUrlsEditor, urlsCacheControl } from './urls.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 import {
@@ -87,17 +87,14 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 			localFilesCacheControl(sync.backgrounds, local)
 			break
 		}
-
 		case 'urls': {
 			urlsCacheControl(sync.backgrounds, local)
 			break
 		}
-
 		case 'color': {
 			applyBackground(sync.backgrounds.color)
 			break
 		}
-
 		default: {
 			backgroundCacheControl(sync.backgrounds, local)
 		}
@@ -168,10 +165,20 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 	}
 
 	if (update.refresh) {
-		if (data.backgrounds.type === 'files') {
-			localFilesCacheControl(data.backgrounds, local, true)
-		} else {
-			backgroundCacheControl(data.backgrounds, local, true)
+		switch (data.backgrounds.type) {
+			case 'files': {
+				localFilesCacheControl(data.backgrounds, local, true)
+				break
+			}
+			case 'urls': {
+				urlsCacheControl(data.backgrounds, local, true)
+				break
+			}
+			case 'images':
+			case 'videos': {
+				backgroundCacheControl(data.backgrounds, local, true)
+				break
+			}
 		}
 
 		turnRefreshButton(update.refresh, true)
