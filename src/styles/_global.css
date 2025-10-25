@@ -82,6 +82,7 @@
 [data-browser='chrome'] .safari-only,
 [data-browser='firefox'] .safari-only,
 [data-platform='safari'] .not-safari,
+[data-browser='edge'] .not-edge,
 [data-platform='online'] .not-online {
 	display: none;
 }
