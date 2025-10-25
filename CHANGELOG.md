@@ -20,6 +20,8 @@
 	-	Restored centered default positioning for backgrounds
 	-	More reliable touch screen interactions 
 	-	Fix most languages not having a capital letter on date
+	-	Removed the favicon as emoji input in Edge as Microsoft as broken the functionality (#700)
+	-	You can now force the native OS context menu by right clicking + alt key
 
 ## 21.2.1
 

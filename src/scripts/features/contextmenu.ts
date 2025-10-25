@@ -213,6 +213,7 @@ function showTheseElements(query: string) {
 queueMicrotask(() => {
 	document.addEventListener('contextmenu', (event) => {
 		if (event.altKey) { // if alt + right click, then regular OS context menu
+			closeContextMenu()
 			return
 		}
 
