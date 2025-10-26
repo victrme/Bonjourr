@@ -1,7 +1,7 @@
 import type { Background, Quote, SimpleWeather } from './shared.ts'
 import type { Sync } from './sync.ts'
 
-export type BackgroundUrlState = 'NONE' | 'LOADING' | 'OK' | 'NOT_URL' | 'CANT_REACH' | 'NOT_IMAGE'
+export type BackgroundUrlState = 'NONE' | 'LOADING' | 'OK' | 'NOT_URL' | 'CANT_REACH' | 'NOT_MEDIA'
 export type SyncType = 'browser' | 'gist' | 'url' | 'off'
 
 export interface Local {
@@ -53,7 +53,9 @@ export interface LastWeather {
 
 export interface BackgroundUrl {
 	lastUsed: string
+	format: 'image' | 'video'
 	state: BackgroundUrlState
+	duration?: number
 }
 
 /**
