@@ -9,7 +9,7 @@
 		"online": "deno run --allow-all ./tasks/build.ts online dev",
 		"docker": "deno run --allow-all ./tasks/build.ts online prod",
 		"translate": "deno run --allow-all ./tasks/translate.ts && deno fmt",
-		"test": "deno test --allow-read --reporter=dot",
+		"test": "deno test --allow-read --reporter=dot --unstable-broadcast-channel",
 		"types": "deno check",
 		"format": "deno fmt"
 	},

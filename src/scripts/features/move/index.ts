@@ -300,7 +300,7 @@ function layoutReset(data: Sync) {
 		notes: undefined,
 		searchbar: undefined,
 		quotes: undefined,
-		pomodoro: undefined
+		pomodoro: undefined,
 	})
 }
 

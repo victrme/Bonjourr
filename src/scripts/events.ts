@@ -75,11 +75,13 @@ function clickUserActions(event: MouseEvent) {
 		contextmenu: pathIds.includes('contextmenu'),
 		settings: path.some((el) => el.id === 'settings'),
 		showsettings: path.some((el) => el.id === 'show-settings'),
-		interactable: path.some((el) => 
+		interactable: path.some((el) =>
 			el instanceof HTMLElement && (
-				el.matches('a[href], button, input, select, textarea, label, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]')
+				el.matches(
+					'a[href], button, input, select, textarea, label, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]',
+				)
 			)
-		)
+		),
 	}
 
 	if (document.body.classList.contains('tabbing')) {

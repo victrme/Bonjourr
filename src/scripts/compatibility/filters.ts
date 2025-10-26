@@ -459,6 +459,7 @@ export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 			main: imported.main ?? current.main,
 			notes: imported.notes?.on ?? current.notes?.on,
 			quotes: imported.quotes?.on ?? current.quotes?.on,
+			pomodoro: imported.pomodoro?.on ?? current.pomodoro?.on,
 			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
 			quicklinks: imported.quicklinks ?? current.quicklinks,
 		}

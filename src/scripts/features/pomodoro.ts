@@ -11,12 +11,12 @@ import { debounce } from '../utils/debounce.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
-    end?: number
-    mode?: PomodoroMode
-    pause?: number
-    focus?: boolean
-    time_for?: Partial<Record<PomodoroMode, number>>
-    sound?: boolean
+	end?: number
+	mode?: PomodoroMode
+	pause?: number
+	focus?: boolean
+	time_for?: Partial<Record<PomodoroMode, number>>
+	sound?: boolean
 }
 
 let currentPomodoroData: Pomodoro
@@ -38,420 +38,420 @@ let timeModeTimeout: number, tabTitleTimeout: number
 const timeBeforeReset: number = 10000 // time before the timer resets after the end
 
 const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
-const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number =>
-    currentPomodoroData.time_for[mode]
+const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number => currentPomodoroData.time_for[mode]
 
 function handleToggle(state: boolean) {
 	pomodoroContainer?.classList.toggle('hidden', !state)
 }
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
-    if (update) {
-        updatePomodoro(update)
-        return
-    }
+	if (update) {
+		updatePomodoro(update)
+		return
+	}
 
-    if (init) {
-        init.on ? initPomodoro(init) : onSettingsLoad(() => initPomodoro(init))
-    }
+	if (init) {
+		init.on ? initPomodoro(init) : onSettingsLoad(() => initPomodoro(init))
+	}
 }
 
 function initPomodoro(init: Pomodoro) {
-    currentPomodoroData = init
+	currentPomodoroData = init
 
-    handleToggle(init.on)
-    displayInterface('pomodoro')
+	handleToggle(init.on)
+	displayInterface('pomodoro')
 
-    togglePomodoroFocus(init.focus && init.on)
+	togglePomodoroFocus(init.focus && init.on)
 
-    handleUserInput()
-    initTimer(init)
-    setModeButton(init.mode)
+	handleUserInput()
+	initTimer(init)
+	setModeButton(init.mode)
 
-    listenToBroadcast()
+	listenToBroadcast()
 }
 
-// events 
+// events
 function handleUserInput() {
-    // different modes
-    radioButtons.forEach(function(btn) {
-        btn.addEventListener('change', (e) => {
-            const newMode = (e.target as HTMLInputElement).value as PomodoroMode
-            
-            switchMode(newMode)
-            
-            broadcast.postMessage({
-                type: 'switch-mode',
-                mode: newMode
-            })
-        })
-    })
+	// different modes
+	radioButtons.forEach(function (btn) {
+		btn.addEventListener('change', (e) => {
+			const newMode = (e.target as HTMLInputElement).value as PomodoroMode
 
-    pomodoroStart?.addEventListener('click', () => {
-        startTimer(true)
+			switchMode(newMode)
 
-        broadcast.postMessage({
-            type: 'start-pomodoro',
-            time: getTimeForMode(currentPomodoroData.mode)
-        })
-    })
+			broadcast.postMessage({
+				type: 'switch-mode',
+				mode: newMode,
+			})
+		})
+	})
 
-    pomodoroPause?.addEventListener('click', () => {
-        pauseTimer()
+	pomodoroStart?.addEventListener('click', () => {
+		startTimer(true)
 
-        broadcast.postMessage({
-            type: 'pause-pomodoro',
-        })
-    })
+		broadcast.postMessage({
+			type: 'start-pomodoro',
+			time: getTimeForMode(currentPomodoroData.mode),
+		})
+	})
 
-    pomodoroReset?.addEventListener('pointerdown', (e) => {
-        resetTimer()
+	pomodoroPause?.addEventListener('click', () => {
+		pauseTimer()
 
-        broadcast.postMessage({
-            type: 'reset-pomodoro',
-        })
+		broadcast.postMessage({
+			type: 'pause-pomodoro',
+		})
+	})
 
-        turnRefreshButton(e, true)
-    })
+	pomodoroReset?.addEventListener('pointerdown', (e) => {
+		resetTimer()
 
-    focusButton?.addEventListener('change', (e) => {
-        const focusIsChecked = (e.target as HTMLInputElement).checked as boolean
+		broadcast.postMessage({
+			type: 'reset-pomodoro',
+		})
 
-        togglePomodoroFocus(focusIsChecked)
+		turnRefreshButton(e, true)
+	})
 
-        broadcast.postMessage({
-            type: 'toggle-focus',
-            on: focusIsChecked
-        })
-    })
+	focusButton?.addEventListener('change', (e) => {
+		const focusIsChecked = (e.target as HTMLInputElement).checked as boolean
 
-    // if user stops resizing window for 20ms, fixes glider size/placement
-    window.addEventListener('resize', debounce(() => {
-        setModeGlider(currentPomodoroData.mode)
-    }, 20))
+		togglePomodoroFocus(focusIsChecked)
 
-    // makes mode buttons and focus button accessible to keyboard inputs
-    document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach(el => {
-        el.addEventListener('keydown', (e: KeyboardEvent) => {
-            if (e.code === 'Space' || e.code === 'Enter') {
-                const input = el.querySelector<HTMLInputElement>('input[type="radio"], input[type="checkbox"]')
-                if (!input) return
+		broadcast.postMessage({
+			type: 'toggle-focus',
+			on: focusIsChecked,
+		})
+	})
 
-                input.checked = !input.checked
-                input.dispatchEvent(new Event('change', { bubbles: true }))
+	// if user stops resizing window for 20ms, fixes glider size/placement
+	window.addEventListener(
+		'resize',
+		debounce(() => {
+			setModeGlider(currentPomodoroData.mode)
+		}, 20),
+	)
 
-                e.preventDefault() // prevent page scroll on Space
-            }
-        })
-    })
+	// makes mode buttons and focus button accessible to keyboard inputs
+	document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach((el) => {
+		el.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.code === 'Space' || e.code === 'Enter') {
+				const input = el.querySelector<HTMLInputElement>('input[type="radio"], input[type="checkbox"]')
+				if (!input) return
+
+				input.checked = !input.checked
+				input.dispatchEvent(new Event('change', { bubbles: true }))
+
+				e.preventDefault() // prevent page scroll on Space
+			}
+		})
+	})
 }
 
 function listenToBroadcast() {
-    // receiving data from other tabs
-    broadcast.onmessage = ({ data = {} }) => {
-        if (data.type === "start-pomodoro") {
-            startTimer(true, data.time)
-        } else if (data.type === "switch-mode") {
-            setModeButton(data.mode)
-            switchMode(data.mode)
-        } else if (data.type === "pause-pomodoro") {
-            pauseTimer()
-        } else if (data.type === "toggle-focus") {
-            togglePomodoroFocus(data.on)
-        } else if (data.type === "reset-pomodoro") {
-            resetTimer()
-        }
-    }
+	// receiving data from other tabs
+	broadcast.onmessage = ({ data = {} }) => {
+		if (data.type === 'start-pomodoro') {
+			startTimer(true, data.time)
+		} else if (data.type === 'switch-mode') {
+			setModeButton(data.mode)
+			switchMode(data.mode)
+		} else if (data.type === 'pause-pomodoro') {
+			pauseTimer()
+		} else if (data.type === 'toggle-focus') {
+			togglePomodoroFocus(data.on)
+		} else if (data.type === 'reset-pomodoro') {
+			resetTimer()
+		}
+	}
 }
 
 async function switchMode(mode: PomodoroMode) {
-    resetTimeouts()
-    setModeGlider(mode)
-    stopTimer()
-    insertTime(getTimeForMode(mode), false)
+	resetTimeouts()
+	setModeGlider(mode)
+	stopTimer()
+	insertTime(getTimeForMode(mode), false)
 
-    // save
-    updatePomodoro({
-        mode: mode,
-        end: 0,
-        pause: 0
-    })
+	// save
+	updatePomodoro({
+		mode: mode,
+		end: 0,
+		pause: 0,
+	})
 }
 
 function resetTimeouts() {
-    // if user interact with pomodoro before the end of the timeouts
-    clearTimeout(tabTitleTimeout)
-    clearTimeout(timeModeTimeout)
+	// if user interact with pomodoro before the end of the timeouts
+	clearTimeout(tabTitleTimeout)
+	clearTimeout(timeModeTimeout)
 }
 
 export function setModeGlider(mode: string = currentPomodoroData.mode as PomodoroMode) {
-    // select animation
-    let radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
-    let glider = document.querySelector('.glider') as HTMLSpanElement
-    
-    if (glider && radioBtn?.parentElement) {
-        let offsetLeft = radioBtn.parentElement.offsetLeft
-        let offsetWidth = radioBtn.parentElement.offsetWidth
-    
-        glider.style.left = `${offsetLeft}px`
-        glider.style.width = `${offsetWidth}px`
-    }
+	// select animation
+	let radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
+	let glider = document.querySelector('.glider') as HTMLSpanElement
+
+	if (glider && radioBtn?.parentElement) {
+		let offsetLeft = radioBtn.parentElement.offsetLeft
+		let offsetWidth = radioBtn.parentElement.offsetWidth
+
+		glider.style.left = `${offsetLeft}px`
+		glider.style.width = `${offsetWidth}px`
+	}
 }
 
 async function initTimer(pomodoro: Pomodoro) {
-    if (pomodoro.end && Date.now() < pomodoro.end) { // running timer
-        startTimer()
-    } else if (!pomodoro.end || Date.now() > pomodoro.end) { // default unstarted timer
-        switchMode(pomodoro.mode as PomodoroMode)
-    }
+	if (pomodoro.end && Date.now() < pomodoro.end) { // running timer
+		startTimer()
+	} else if (!pomodoro.end || Date.now() > pomodoro.end) { // default unstarted timer
+		switchMode(pomodoro.mode as PomodoroMode)
+	}
 }
 
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
 async function startTimer(fromButton: boolean = false, time?: number) {
-    stopTimer()
-    resetTimeouts()
+	stopTimer()
+	resetTimeouts()
 
-    const { pomodoro } = await storage.sync.get(['pomodoro'])
-    const defaultTime = time ?? getTimeForMode(pomodoro.mode)
-    const wasPaused = pomodoro.pause !== 0
-    const now = Date.now()
+	const { pomodoro } = await storage.sync.get(['pomodoro'])
+	const defaultTime = time ?? getTimeForMode(pomodoro.mode)
+	const wasPaused = pomodoro.pause !== 0
+	const now = Date.now()
 
-    let remaining: number = 0
+	let remaining: number = 0
 
-    if (wasPaused) {
-        remaining = pomodoro.end - pomodoro.pause
-    }
+	if (wasPaused) {
+		remaining = pomodoro.end - pomodoro.pause
+	}
 
-    if (fromButton) {
-        if (wasPaused) {
-            const newEnd = now + remaining
+	if (fromButton) {
+		if (wasPaused) {
+			const newEnd = now + remaining
 
-            startCountdown(newEnd)
+			startCountdown(newEnd)
 
-            updatePomodoro({
-                end: newEnd,
-                pause: 0
-            })
-        } else {
-            // the time at which the time will be over
-            let end = now + defaultTime * 1000
+			updatePomodoro({
+				end: newEnd,
+				pause: 0,
+			})
+		} else {
+			// the time at which the time will be over
+			let end = now + defaultTime * 1000
 
-            updatePomodoro({
-                end: end,
-                pause: 0
-            })
+			updatePomodoro({
+				end: end,
+				pause: 0,
+			})
 
-            startCountdown(end)
-        }
+			startCountdown(end)
+		}
+	} else { // from refresh/new tab
+		setModeGlider(pomodoro.mode as string)
 
-    } else { // from refresh/new tab
-        setModeGlider(pomodoro.mode as string)
-
-        if (wasPaused) {
-            insertTime(calculateSecondsLeft(now + remaining), false)
-        } else {
-            startCountdown(pomodoro.end)
-        }
-    }
+		if (wasPaused) {
+			insertTime(calculateSecondsLeft(now + remaining), false)
+		} else {
+			startCountdown(pomodoro.end)
+		}
+	}
 }
 
 function startCountdown(endtime: number) {
-    // inserted as soon as possible
-    insertTime(calculateSecondsLeft(endtime))
+	// inserted as soon as possible
+	insertTime(calculateSecondsLeft(endtime))
 
-    countdown = setInterval(() => {
-        insertTime(calculateSecondsLeft(endtime))
-    }, 100)
+	countdown = setInterval(() => {
+		insertTime(calculateSecondsLeft(endtime))
+	}, 100)
 
-    toggleStartPause(true)
+	toggleStartPause(true)
 }
 
 async function pauseTimer() {
-    stopTimer()
+	stopTimer()
 
-    updatePomodoro({
-        pause: Date.now()
-    })
+	updatePomodoro({
+		pause: Date.now(),
+	})
 }
 
 function toggleStartPause(started: boolean) {
-    if (!pomodoroContainer) return
-    pomodoroContainer.classList.toggle('started', started)
+	if (!pomodoroContainer) return
+	pomodoroContainer.classList.toggle('started', started)
 }
 
 function stopTimer() {
-    clearInterval(countdown)
-    toggleStartPause(false)
+	clearInterval(countdown)
+	toggleStartPause(false)
 }
 
 function resetTimer() {
-    switchMode(currentPomodoroData.mode as PomodoroMode)
+	switchMode(currentPomodoroData.mode as PomodoroMode)
 }
 
 function calculateSecondsLeft(end: number) {
-    const secondsLeft = Math.round((end - Date.now()) / 1000)
+	const secondsLeft = Math.round((end - Date.now()) / 1000)
 
-    // time's up!
-    if (secondsLeft <= 0) {
-        stopTimer()
-        ringTheAlarm()
+	// time's up!
+	if (secondsLeft <= 0) {
+		stopTimer()
+		ringTheAlarm()
 
-        timeModeTimeout = timeout = setTimeout(() => {
-            switchMode(currentPomodoroData.mode as PomodoroMode) // resets the time mode to default
-        }, timeBeforeReset)
+		timeModeTimeout = timeout = setTimeout(() => {
+			switchMode(currentPomodoroData.mode as PomodoroMode) // resets the time mode to default
+		}, timeBeforeReset)
 
-        return 0
-    }
+		return 0
+	}
 
-    return secondsLeft
+	return secondsLeft
 }
 
-
 function insertTime(seconds: number, timerIsStarted: boolean = true) {
-    if (!timer_dom) return
+	if (!timer_dom) return
 
-    const minutes = Math.floor(seconds / 60)
-    const secondsRemaining = seconds % 60
-    const displayTime = `${minutes}:${secondsRemaining < 10 ? "0" : ""}${secondsRemaining}`
+	const minutes = Math.floor(seconds / 60)
+	const secondsRemaining = seconds % 60
+	const displayTime = `${minutes}:${secondsRemaining < 10 ? '0' : ''}${secondsRemaining}`
 
-    // inserts to dom
-    timer_dom.textContent = displayTime
+	// inserts to dom
+	timer_dom.textContent = displayTime
 
-    handleTabTitle(displayTime, timerIsStarted)
+	handleTabTitle(displayTime, timerIsStarted)
 }
 
 function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
-    const originalTitle = document.title
-    const match = originalTitle.match(/\| (.*)/)
-    const afterPipe = match?.[1] ?? originalTitle
+	const originalTitle = document.title
+	const match = originalTitle.match(/\| (.*)/)
+	const afterPipe = match?.[1] ?? originalTitle
 
-    let newTitle: string
+	let newTitle: string
 
-    if (displayTime !== '0:00') {
-        newTitle = timerIsStarted ? `${displayTime} | ${afterPipe}` : afterPipe
-    } else {
-        const timesUpString = tradThis("Time's up!")
-        newTitle = `${timesUpString} | ${afterPipe}`
+	if (displayTime !== '0:00') {
+		newTitle = timerIsStarted ? `${displayTime} | ${afterPipe}` : afterPipe
+	} else {
+		const timesUpString = tradThis("Time's up!")
+		newTitle = `${timesUpString} | ${afterPipe}`
 
-        tabTitleTimeout = setTimeout(() => {
-            tabTitle(afterPipe) // resets to the original tab title
-        }, timeBeforeReset)
-    }
+		tabTitleTimeout = setTimeout(() => {
+			tabTitle(afterPipe) // resets to the original tab title
+		}, timeBeforeReset)
+	}
 
-    tabTitle(newTitle)
+	tabTitle(newTitle)
 }
 
 export async function togglePomodoroFocus(focus: boolean) {
-    focusButton.checked = focus
+	focusButton.checked = focus
 
-    // needed for sliding animation 
-    const enablingFocus = focus && !currentPomodoroData.focus
-    const disablingFocus = !focus && currentPomodoroData.focus
-    const switching = disablingFocus || enablingFocus
+	// needed for sliding animation
+	const enablingFocus = focus && !currentPomodoroData.focus
+	const disablingFocus = !focus && currentPomodoroData.focus
+	const switching = disablingFocus || enablingFocus
 
-    await updatePomodoro({ focus })
+	await updatePomodoro({ focus })
 
-    // if not switching, no animation (for when toggling from page refresh or smt)
-    // also animation won't play if the tab isn't open 
-    if (switching && document.visibilityState === 'visible') {
-        const originalRect = pomodoroContainer.getBoundingClientRect()
+	// if not switching, no animation (for when toggling from page refresh or smt)
+	// also animation won't play if the tab isn't open
+	if (switching && document.visibilityState === 'visible') {
+		const originalRect = pomodoroContainer.getBoundingClientRect()
 
-        // Clone the element
-        const clone = pomodoroContainer.cloneNode(true) as HTMLDivElement
-            clone.style.position = 'absolute'
-            clone.style.top = originalRect.top + 'px'
-            clone.style.left = originalRect.left + 'px'
+		// Clone the element
+		const clone = pomodoroContainer.cloneNode(true) as HTMLDivElement
+		clone.style.position = 'absolute'
+		clone.style.top = originalRect.top + 'px'
+		clone.style.left = originalRect.left + 'px'
 
-        document.body.appendChild(clone)
-        
-        // Apply focus mode to the DOM so we can measure the target position
-        pomodoroContainer.style.visibility = 'hidden'
-        document.body.classList.toggle('pomodoro-focus', enablingFocus)
+		document.body.appendChild(clone)
 
-        // once the original pomodoro is moved to its final location, stores and figures out its position 
-        const targetRect = pomodoroContainer.getBoundingClientRect()
-        const deltaX = targetRect.left - originalRect.left
-        const deltaY = targetRect.top - originalRect.top
+		// Apply focus mode to the DOM so we can measure the target position
+		pomodoroContainer.style.visibility = 'hidden'
+		document.body.classList.toggle('pomodoro-focus', enablingFocus)
 
-        // Start the animation
-        requestAnimationFrame(() => {
-            clone.style.transform = `translate(${deltaX}px, ${deltaY}px)`
-        })
+		// once the original pomodoro is moved to its final location, stores and figures out its position
+		const targetRect = pomodoroContainer.getBoundingClientRect()
+		const deltaX = targetRect.left - originalRect.left
+		const deltaY = targetRect.top - originalRect.top
 
-        // Cleanup after animation
-        clone.addEventListener('transitionend', (e) => {
-            if (e.propertyName !== 'transform') return
+		// Start the animation
+		requestAnimationFrame(() => {
+			clone.style.transform = `translate(${deltaX}px, ${deltaY}px)`
+		})
 
-            // sets visibility back to real pomodoro
-            pomodoroContainer.style.visibility = 'visible'
+		// Cleanup after animation
+		clone.addEventListener('transitionend', (e) => {
+			if (e.propertyName !== 'transform') return
 
-            // yeets the clone
-            clone.remove()
-        })
-    } else {
-        document.body.classList.toggle('pomodoro-focus', focus)
-    }
+			// sets visibility back to real pomodoro
+			pomodoroContainer.style.visibility = 'visible'
+
+			// yeets the clone
+			clone.remove()
+		})
+	} else {
+		document.body.classList.toggle('pomodoro-focus', focus)
+	}
 }
 
 function ringTheAlarm() {
-    if (!currentPomodoroData.sound) return
+	if (!currentPomodoroData.sound) return
 
-    // only rings on the last active tab
-    const lastTab = localStorage.getItem('lastActiveTab')
+	// only rings on the last active tab
+	const lastTab = localStorage.getItem('lastActiveTab')
 
-    if (lastTab === TAB_ID) {
-        alarmSound.play()
-    } else {
-        console.info("Alarm is ringing, but this isn't the active tab.", {
-            lastTab,
-            TAB_ID
-        })
-    }
+	if (lastTab === TAB_ID) {
+		alarmSound.play()
+	} else {
+		console.info("Alarm is ringing, but this isn't the active tab.", {
+			lastTab,
+			TAB_ID,
+		})
+	}
 }
 
 async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: PomodoroUpdate) {
-    const data = await storage.sync.get(['pomodoro'])
+	const data = await storage.sync.get(['pomodoro'])
 
-    if (on !== undefined) {
-        data.pomodoro.on = on
-    }
+	if (on !== undefined) {
+		data.pomodoro.on = on
+	}
 
-    if (sound !== undefined) {
-        data.pomodoro.sound = sound
-    }
+	if (sound !== undefined) {
+		data.pomodoro.sound = sound
+	}
 
-    if (end !== undefined) {
-        data.pomodoro.end = end
-    }
+	if (end !== undefined) {
+		data.pomodoro.end = end
+	}
 
-    if (mode) {
-        data.pomodoro.mode = mode
-    }
+	if (mode) {
+		data.pomodoro.mode = mode
+	}
 
-    if (pause !== undefined) {
-        data.pomodoro.pause = pause
-    }
+	if (pause !== undefined) {
+		data.pomodoro.pause = pause
+	}
 
-    if (focus !== undefined) {
-        data.pomodoro.focus = focus
-    }
+	if (focus !== undefined) {
+		data.pomodoro.focus = focus
+	}
 
-    // the time defined by the user for each mode (pomodoro, break...)
-    if (time_for) {
-        for (const mode of Object.keys(time_for) as PomodoroMode[]) {
-            const value = time_for[mode]
+	// the time defined by the user for each mode (pomodoro, break...)
+	if (time_for) {
+		for (const mode of Object.keys(time_for) as PomodoroMode[]) {
+			const value = time_for[mode]
 
-            if (value !== undefined) {
-                data.pomodoro.time_for[mode] = value * 60
-            }
-        }
-    }
-    
-    await storage.sync.set({ pomodoro: data.pomodoro })
+			if (value !== undefined) {
+				data.pomodoro.time_for[mode] = value * 60
+			}
+		}
+	}
 
-    currentPomodoroData = data.pomodoro
+	await storage.sync.set({ pomodoro: data.pomodoro })
 
-    if (time_for) {
-        resetTimer()
-    }
+	currentPomodoroData = data.pomodoro
+
+	if (time_for) {
+		resetTimer()
+	}
 }

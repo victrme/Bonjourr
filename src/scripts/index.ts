@@ -35,7 +35,7 @@ import {
 	SYNC_DEFAULT,
 	SYSTEM_OS,
 	TAB_ID,
-	tabs_bc
+	tabs_bc,
 } from './defaults.ts'
 
 try {
@@ -293,7 +293,6 @@ function keepTrackOfTabs() {
 		localStorage.setItem('lastActiveTab', TAB_ID)
 	}
 
-	
 	if (!document.hidden) {
 		updateLastActiveTab()
 	}

@@ -35,7 +35,6 @@ export type WeatherConditions =
 	| 'snow'
 	| 'mist'
 
-
 export interface BackgroundImage {
 	format: 'image'
 	mimetype?: string
