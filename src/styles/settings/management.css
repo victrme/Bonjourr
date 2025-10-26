@@ -43,7 +43,7 @@
 	overflow-y: auto;
 	opacity: unset;
 	cursor: inherit;
-	white-space: nowrap;
+	display: inline-block;
 	min-height: 300px;
 }
 

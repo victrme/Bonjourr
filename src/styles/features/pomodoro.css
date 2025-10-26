@@ -27,9 +27,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	gap: 1em;
 	max-width: 45em;
 	min-width: 20em;
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	user-select: text;
 	cursor: initial;
 	font-size: 14px; /* important for focus animation */ 
 
@@ -141,6 +138,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	cursor: pointer;
 	text-shadow: unset;
 	user-select: none;
+	-webkit-user-select: none;
 }
 
 #pmdr_modes .pomodoro_mode input {
@@ -185,6 +183,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	border-radius: 9999px;
 	cursor: pointer;
 	user-select: none;
+	-webkit-user-select: none;
 	backdrop-filter: blur(10px);
 	background: rgba(255, 255, 255, 0.1);
 	border: 1px solid #fff1;
