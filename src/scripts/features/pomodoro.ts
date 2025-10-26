@@ -1,13 +1,14 @@
-import type { Pomodoro } from '../../types/sync.ts'
-import type { PomodoroMode } from '../../types/shared.ts'
-import { displayInterface } from '../shared/display.ts'
-import { storage } from '../storage.ts'
-import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
-import { tabTitle } from './others.ts'
-import { TAB_ID } from '../defaults.ts'
+import { displayInterface } from '../shared/display.ts'
+import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { tradThis } from '../utils/translations.ts'
 import { debounce } from '../utils/debounce.ts'
+import { tabTitle } from './others.ts'
+import { storage } from '../storage.ts'
+import { TAB_ID } from '../defaults.ts'
+
+import type { PomodoroMode } from '../../types/shared.ts'
+import type { Pomodoro } from '../../types/sync.ts'
 
 type PomodoroUpdate = {
 	on?: boolean
@@ -31,11 +32,13 @@ const timer_dom = document.getElementById('pmdr_timer') as HTMLSpanElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 
-const broadcast = new BroadcastChannel('pomodoro') as BroadcastChannel // to communicate with other tabs
+// to communicate with other tabs
+const broadcast = new BroadcastChannel('bonjourr_pomodoro') as BroadcastChannel
 
 let countdown: number
-let timeModeTimeout: number, tabTitleTimeout: number
-const timeBeforeReset: number = 10000 // time before the timer resets after the end
+let timeModeTimeout: number
+let tabTitleTimeout: number
+const timeBeforeReset = 10000 // time before the timer resets after the end
 
 const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
 const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number => currentPomodoroData.time_for[mode]
@@ -125,7 +128,7 @@ function handleUserInput() {
 	})
 
 	// if user stops resizing window for 20ms, fixes glider size/placement
-	window.addEventListener(
+	globalThis.window.addEventListener(
 		'resize',
 		debounce(() => {
 			setModeGlider(currentPomodoroData.mode)
@@ -166,7 +169,7 @@ function listenToBroadcast() {
 	}
 }
 
-async function switchMode(mode: PomodoroMode) {
+function switchMode(mode: PomodoroMode) {
 	resetTimeouts()
 	setModeGlider(mode)
 	stopTimer()
@@ -188,19 +191,19 @@ function resetTimeouts() {
 
 export function setModeGlider(mode: string = currentPomodoroData.mode as PomodoroMode) {
 	// select animation
-	let radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
-	let glider = document.querySelector('.glider') as HTMLSpanElement
+	const radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
+	const glider = document.querySelector('.glider') as HTMLSpanElement
 
 	if (glider && radioBtn?.parentElement) {
-		let offsetLeft = radioBtn.parentElement.offsetLeft
-		let offsetWidth = radioBtn.parentElement.offsetWidth
+		const offsetLeft = radioBtn.parentElement.offsetLeft
+		const offsetWidth = radioBtn.parentElement.offsetWidth
 
 		glider.style.left = `${offsetLeft}px`
 		glider.style.width = `${offsetWidth}px`
 	}
 }
 
-async function initTimer(pomodoro: Pomodoro) {
+function initTimer(pomodoro: Pomodoro) {
 	if (pomodoro.end && Date.now() < pomodoro.end) { // running timer
 		startTimer()
 	} else if (!pomodoro.end || Date.now() > pomodoro.end) { // default unstarted timer
@@ -209,7 +212,9 @@ async function initTimer(pomodoro: Pomodoro) {
 }
 
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
-async function startTimer(fromButton: boolean = false, time?: number) {
+async function startTimer(fromButton?: boolean, time?: number) {
+	fromButton ??= false
+
 	stopTimer()
 	resetTimeouts()
 
@@ -218,7 +223,7 @@ async function startTimer(fromButton: boolean = false, time?: number) {
 	const wasPaused = pomodoro.pause !== 0
 	const now = Date.now()
 
-	let remaining: number = 0
+	let remaining = 0
 
 	if (wasPaused) {
 		remaining = pomodoro.end - pomodoro.pause
@@ -236,7 +241,7 @@ async function startTimer(fromButton: boolean = false, time?: number) {
 			})
 		} else {
 			// the time at which the time will be over
-			let end = now + defaultTime * 1000
+			const end = now + defaultTime * 1000
 
 			updatePomodoro({
 				end: end,
@@ -267,7 +272,7 @@ function startCountdown(endtime: number) {
 	toggleStartPause(true)
 }
 
-async function pauseTimer() {
+function pauseTimer() {
 	stopTimer()
 
 	updatePomodoro({
@@ -297,8 +302,9 @@ function calculateSecondsLeft(end: number) {
 		stopTimer()
 		ringTheAlarm()
 
-		timeModeTimeout = timeout = setTimeout(() => {
-			switchMode(currentPomodoroData.mode as PomodoroMode) // resets the time mode to default
+		timeModeTimeout = setTimeout(() => {
+			// resets the time mode to default
+			switchMode(currentPomodoroData.mode as PomodoroMode)
 		}, timeBeforeReset)
 
 		return 0
@@ -307,8 +313,10 @@ function calculateSecondsLeft(end: number) {
 	return secondsLeft
 }
 
-function insertTime(seconds: number, timerIsStarted: boolean = true) {
-	if (!timer_dom) return
+function insertTime(seconds: number, timerIsStarted = true) {
+	if (!timer_dom) {
+		return
+	}
 
 	const minutes = Math.floor(seconds / 60)
 	const secondsRemaining = seconds % 60
