@@ -442,7 +442,7 @@ aside form.valid.remove span::after {
 .param {
 	margin-top: 12px;
 	padding: 10px 16px;
-	border-radius: 25px;
+	border-radius: var(--border-radius);
 	background-color: rgb(var(--color-param));
 }
 

@@ -96,7 +96,11 @@ export function initSupportersSettingsNotif(sync: Sync) {
 	onclickdown(settingsNotifContent, (e) => {
 		if (e instanceof PointerEvent && e.button !== 0) return // only left click
 		toggleSupportersModal(true)
-		loadModalData()
+
+		onSettingsLoad(() => {
+			loadModalData()
+		})
+		
 	})
 
 	onclickdown(notifClose, () => {
