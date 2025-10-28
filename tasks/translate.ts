@@ -46,16 +46,24 @@ async function translateFile(lang: string): Promise<void> {
 	// 2. Add keys & translate new stuff
 
 	const englishKeys = Object.keys(englishDict)
-	const missingKeys = englishKeys.filter((k) => newDict[k] === undefined)
+	const missingKeys: Record<string, string> = {}
+	let hasMissingKeys = false
 
-	if (missingKeys.length > 0) {
-		const message = `${lang}\n${missingKeys.join('\n')}`
-		const translations = await claudeTranslation(message)
+	for (const key of englishKeys) {
+		if (newDict[key] === undefined) {
+			missingKeys[key] = key
+			hasMissingKeys = true
+		}
+	}
+
+	if (hasMissingKeys) {
+		const message = `translate in ${lang}\n\n${JSON.stringify(missingKeys)}`
+		const translations = await llmTranslation(message)
 
 		if (translations) {
-			for (const index in missingKeys) {
-				const en = missingKeys[index]
-				const trn = translations[index]
+			for (const key in missingKeys) {
+				const en = missingKeys[key]
+				const trn = translations[key]
 
 				newDict[en] = trn
 				added++
@@ -82,12 +90,25 @@ async function translateFile(lang: string): Promise<void> {
 	console.info(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
 }
 
-async function claudeTranslation(body: string): Promise<string[] | undefined> {
-	const path = 'https://translate.bonjourr.workers.dev/'
+async function llmTranslation(body: string): Promise<Record<string, string> | undefined> {
+	const path = 'https://services.bonjourr.fr/translate'
 	const response = await fetch(path, { body, method: 'POST' })
 
 	if (response.status === 200) {
-		const text = await response.text()
-		return text.split('\n')
+		const json = await response.json() as TranslateApiResponse
+		const dict: Record<string, string> = {}
+
+		for (const row of json.data) {
+			dict[row.in] = row.out
+		}
+
+		return dict
 	}
+}
+
+interface TranslateApiResponse {
+	data: {
+		in: string
+		out: string
+	}[]
 }
