@@ -1,4 +1,4 @@
-//
+import { langList } from '../src/scripts/langs.ts'
 
 const langs = Array.from(Deno.readDirSync('./_locales/'))
 	.filter((entry) => entry.isDirectory)
@@ -46,29 +46,19 @@ async function translateFile(lang: string): Promise<void> {
 	// 2. Add keys & translate new stuff
 
 	const englishKeys = Object.keys(englishDict)
-	const missingKeys: Record<string, string> = {}
-	let hasMissingKeys = false
-
-	for (const key of englishKeys) {
-		if (newDict[key] === undefined) {
-			missingKeys[key] = key
-			hasMissingKeys = true
-		}
-	}
+	const missingKeys: string[] = englishKeys.filter((key) => newDict[key] === undefined)
+	const hasMissingKeys = missingKeys.length > 0
 
 	if (hasMissingKeys) {
-		const message =
-			`Translate in the following ISO language: "${lang}". It's important that the translation sounds natural, like the user interface or settings of a smartphone.\n\n${
-				JSON.stringify(missingKeys)
-			}`
+		const language = langList[lang as keyof typeof langList]
+		const message = `Translate in ${language}.\n\n${JSON.stringify(missingKeys)}`
 		const translations = await llmTranslation(message)
 
 		if (translations) {
 			for (const key in missingKeys) {
-				const en = missingKeys[key]
 				const trn = translations[key]
 
-				newDict[en] = trn
+				newDict[key] = trn
 				added++
 			}
 		}
@@ -106,6 +96,10 @@ async function llmTranslation(body: string): Promise<Record<string, string> | un
 		}
 
 		return dict
+	}
+
+	if (response.status === 429) {
+		console.warn('429 rate limited')
 	}
 }
 
