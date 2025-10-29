@@ -57,7 +57,10 @@ async function translateFile(lang: string): Promise<void> {
 	}
 
 	if (hasMissingKeys) {
-		const message = `translate in ${lang}\n\n${JSON.stringify(missingKeys)}`
+		const message =
+			`Translate in the following ISO language: "${lang}". It's important that the translation sounds natural, like the user interface or settings of a smartphone.\n\n${
+				JSON.stringify(missingKeys)
+			}`
 		const translations = await llmTranslation(message)
 
 		if (translations) {
