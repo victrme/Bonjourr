@@ -100,6 +100,7 @@ export function initSupportersSettingsNotif(sync: Sync) {
 		onSettingsLoad(() => {
 			loadModalData()
 		})
+		
 	})
 
 	onclickdown(notifClose, () => {
@@ -126,7 +127,7 @@ async function updateSupportersOption(update: SupportersUpdate) {
 }
 
 function setNotifStrings() {
-	const currentMonth = new Date().toLocaleString('en-US', { month: 'long' })
+	const currentMonth = new Date().toLocaleString('en-US', { month: 'long' });
 	const introString = `This ${currentMonth}, Bonjourr is brought to you by our lovely supporters.`
 	const notifTitle = document.getElementById('supporters-notif-title')
 	const notifButton = document.getElementById('supporters-notif-button')
