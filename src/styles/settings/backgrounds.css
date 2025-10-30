@@ -65,7 +65,7 @@
 	transition:
 		transform 0.1s,
 		opacity 0.1s;
-	border-radius: 10px;
+	border-radius: 12px;
 }
 
 .thumbnail.hiding {
@@ -85,7 +85,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	border-radius: 15px;
+	border-radius: 12px;
 	box-sizing: border-box;
 }
 

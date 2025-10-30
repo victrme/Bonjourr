@@ -18,7 +18,7 @@ import { pomodoro, setModeGlider } from './features/pomodoro.ts'
 import { togglePomodoroFocus } from './features/pomodoro.ts'
 import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
-import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
+import { colorInput, fadeOut, inputThrottle, turnRefreshButton, webkitRangeTrackColor } from './shared/dom.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
 import { settingsNotifications } from './utils/notifications.ts'
@@ -379,15 +379,11 @@ function initOptionsValues(data: Sync, local: Local) {
 
 	// required for the range input's track color separation to work in webkit browsers
 	// yes, it blows.
-	for (const el of document.querySelectorAll('input[type="range"]')) {
-		const e = el as HTMLInputElement
+	for (const input of document.querySelectorAll<HTMLInputElement>('input[type="range"]')) {
+		webkitRangeTrackColor(input)
 
-		e.style.setProperty('--value', e.value)
-		e.style.setProperty('--min', e.min === '' ? '0' : e.min)
-		e.style.setProperty('--max', e.max === '' ? '100' : e.max)
-
-		e.addEventListener('input', () => {
-			e.style.setProperty('--value', e.value)
+		input.addEventListener('input', () => {
+			input.style.setProperty('--value', input.value)
 		})
 	}
 }

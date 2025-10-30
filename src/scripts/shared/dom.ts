@@ -1,5 +1,13 @@
 import { getReadableTextColor, hexToHSL, hexToRGB } from './generic.ts'
 
+export function webkitRangeTrackColor(input: HTMLInputElement) {
+	const { min, max, value } = input
+
+	input.style.setProperty('--value', value)
+	input.style.setProperty('--min', min || '0')
+	input.style.setProperty('--max', max || '100')
+}
+
 export function toggleDisabled(element: Element | null, force?: boolean) {
 	if (element) {
 		const toggle = force !== undefined ? force : typeof element.getAttribute('disabled') === 'string'

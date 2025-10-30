@@ -13,7 +13,7 @@ import {
 } from './local.ts'
 
 import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
-import { colorInput, turnRefreshButton } from '../../shared/dom.ts'
+import { colorInput, turnRefreshButton, webkitRangeTrackColor } from '../../shared/dom.ts'
 import { networkForm } from '../../shared/form.ts'
 import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
@@ -837,6 +837,7 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 			iOpacity.max = ranges.opacity.max
 			iOpacity.step = ranges.opacity.step
 			iOpacity.value = opacity === undefined ? ranges.opacity.value : opacity.toString()
+			webkitRangeTrackColor(iOpacity)
 		}
 
 		if (iSize) {
@@ -844,6 +845,7 @@ function handleTextureOptions(backgrounds: Backgrounds) {
 			iSize.max = ranges.size.max
 			iSize.step = ranges.size.step
 			iSize.value = size === undefined ? ranges.size.value : size.toString()
+			webkitRangeTrackColor(iSize)
 		}
 	}
 }
@@ -930,13 +932,9 @@ async function blurResolutionControl(sync: Sync, local: Local) {
 
 	preloadBackground(current, 'small')
 
-	preloadBackground(current, 'medium')?.then(() => {
-		applyBackground(current, 'medium', 'fast')
-		preloadBackground(next)
-	})
-
 	preloadBackground(current, 'full')?.then(() => {
 		applyBackground(current, 'full', 'fast')
+		preloadBackground(next, 'full')
 	})
 }
 

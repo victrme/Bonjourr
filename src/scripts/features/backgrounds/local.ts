@@ -11,6 +11,7 @@ import { storage } from '../../storage.ts'
 import type { Background, BackgroundImage, BackgroundVideo } from '../../../types/shared.ts'
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
+import { webkitRangeTrackColor } from '../../shared/dom.ts'
 
 type LocalFileData = {
 	raw: File
@@ -170,15 +171,13 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 			if (file.type.includes('image/gif')) {
 				small = await compressAsBlob(file, { size: 360, q: 0.4 })
-			}
-
-			if (file.type.includes('image/')) {
+			} //
+			else if (file.type.includes('image/')) {
 				full = await compressAsBlob(file, { size: averagePixelHeight, q: 0.8 })
-				medium = await compressAsBlob(full, { size: averagePixelHeight / 3, q: 0.6 })
 				small = await compressAsBlob(medium, { size: 360, q: 0.3 })
-			}
-
-			if (file.type.includes('video/')) {
+				medium = small
+			} //
+			else if (file.type.includes('video/')) {
 				const thumb = await generateImageFromVideo(file)
 
 				if (thumb) {
@@ -449,9 +448,14 @@ function handleFileOptions(file: BackgroundFile) {
 
 	if (videoRangesExist && isVideo) {
 		const video = file.video ?? videoDefaults
+
 		domLoopFade.value = video.fade.toString()
 		domVideoZoom.value = video.zoom.toString()
 		domPlaybackRate.value = video.playbackRate.toString()
+
+		webkitRangeTrackColor(domLoopFade)
+		webkitRangeTrackColor(domVideoZoom)
+		webkitRangeTrackColor(domPlaybackRate)
 	}
 }
 
@@ -676,7 +680,6 @@ export async function mediaFromFiles(id: string, local: Local, data?: LocalFileD
 		const urls = {
 			raw: URL.createObjectURL(data.raw),
 			full: URL.createObjectURL(data.full),
-			medium: URL.createObjectURL(data.medium),
 			small: URL.createObjectURL(data.small),
 		}
 
@@ -686,7 +689,7 @@ export async function mediaFromFiles(id: string, local: Local, data?: LocalFileD
 			file: metadata,
 			urls: {
 				full: isRaw ? urls.raw : urls.full,
-				medium: urls.medium,
+				medium: urls.small,
 				small: urls.small,
 			},
 		}
@@ -733,18 +736,17 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
 
 	const raw = (await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob()) as File | undefined
 	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
-	const medium = await (await cache?.match(`http://127.0.0.1:8888/${id}/medium`))?.blob()
 	const small = await (await cache?.match(`http://127.0.0.1:8888/${id}/small`))?.blob()
 
-	if (!full || !medium || !small || !raw) {
+	if (!full || !small || !raw) {
 		throw new Error(`${id} is undefined`)
 	}
 
 	return {
 		raw,
 		full,
-		medium,
 		small,
+		medium: small,
 	}
 }
 
