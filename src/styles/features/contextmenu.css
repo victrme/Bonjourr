@@ -109,8 +109,17 @@ dialog#contextmenu button * {
 	pointer-events: none;
 }
 
-dialog#contextmenu button svg {
+dialog#contextmenu button > svg, dialog#contextmenu button .iconContainer {
 	height: 18px;
+	width: 18px;
+}
+
+dialog#contextmenu button .iconContainer {
+	padding: 2px; /* other icons have natural padding in the svg file */ 
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 /* Active buttons and inputs */
@@ -148,7 +157,7 @@ dialog#contextmenu #background-actions button {
 
 #background-actions .buttons {
 	display: flex;
-	justify-content: center;
+	flex-direction: column;
 }
 
 dialog#contextmenu #background-actions button {
@@ -156,33 +165,27 @@ dialog#contextmenu #background-actions button {
 	width: unset;
 }
 
-#background-actions button span {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 13px;
-}
-
-#background-actions button span svg {
-	height: 13px;
-}
 
 #download-background {
 	display: none;
 }
 
-#b_interface-background-download.idle span:last-child,
-#b_interface-background-download.loading span:first-child {
+#b_interface-background-download.idle #is-downloading,
+#b_interface-background-download.loading #idle-download {
 	display: none;
 }
 
 #b_interface-background-pause #interface-background-pause-icon,
-#b_interface-background-pause.paused #interface-background-play-icon {
+#b_interface-background-pause.paused #interface-background-play-icon,
+#b_interface-background-pause #interface-background-pause-string,
+#b_interface-background-pause.paused #interface-background-play-string {
 	display: flex;
 }
 
 #b_interface-background-pause #interface-background-play-icon,
-#b_interface-background-pause.paused #interface-background-pause-icon {
+#b_interface-background-pause.paused #interface-background-pause-icon,
+#b_interface-background-pause #interface-background-play-string,
+#b_interface-background-pause.paused #interface-background-pause-string {
 	display: none;
 }
 

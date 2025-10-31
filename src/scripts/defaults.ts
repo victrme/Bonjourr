@@ -190,7 +190,7 @@ export const SYNC_DEFAULT: Sync = {
 		time_for: {
 			pomodoro: 1500,
 			break: 300,
-			longbreak: 600,
+			longbreak: 1200,
 		},
 		focus: false,
 		sound: true,

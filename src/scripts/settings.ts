@@ -1180,6 +1180,7 @@ async function switchLangs(nextLang: Langs) {
 	translatePlaceholders()
 	translateAriaLabels()
 	supportersNotifications(undefined, { translate: true })
+	setModeGlider()
 }
 
 function showall(val: boolean, event: boolean) {

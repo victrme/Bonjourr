@@ -23,6 +23,7 @@
 	-	Fix most languages not having a capital letter on date
 	-	Removed the favicon as emoji input in Edge as Microsoft as broken the functionality (#700)
 	-	Fixed an issue in Safari where the JSON settings textarea in "settings management" would be broken when focused on
+	-	Background frequency "Pause" was renamed "Locked" for better clarity
 
 ## 21.2.1
 

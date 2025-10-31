@@ -369,13 +369,12 @@
 				<a id="download-background"></a>
 
 				<div class="buttons">
-					<button
-						id="b_interface-background-download"
+					<button id="b_interface-background-download"
 						title="Download the current background"
 						aria-label="Download the current background"
-						class="idle"
-					>
-						<span id="idle-download">
+						class="idle">
+						
+						<span id="idle-download" class="iconContainer">
 							<svg
 								clip-rule="evenodd"
 								fill-rule="evenodd"
@@ -394,7 +393,8 @@
 								</g>
 							</svg>
 						</span>
-						<span id="is-downloading">
+						
+						<span id="is-downloading" class="iconContainer">
 							<svg
 								class="spin"
 								fill="currentColor"
@@ -410,45 +410,32 @@
 								/>
 							</svg>
 						</span>
+						<span class="trn">Download background</span>
 					</button>
 
-					<button
-						id="b_interface-background-pause"
-						title="Pause the current background"
-						aria-label="Pause the current background"
-					>
-						<span id="interface-background-pause-icon">
-							<svg
-								class="w-64 h-64"
-								fill="currentColor"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 320 512"
-							>
-								<path
-									d="M48 64C21.5 64 0 85.5 0 112L0 400c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48L48 64zm192 0c-26.5 0-48 21.5-48 48l0 288c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48l-32 0z"
-								></path>
-							</svg>
+					<button id="b_interface-background-pause"
+						title="Lock the current background"
+						aria-label="Lock the current background">
+						
+						<span id="interface-background-pause-icon" class="iconContainer">
+							<svg fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 18 21" xmlns="http://www.w3.org/2000/svg"><path d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6s6 2.686 6 6zm-6-7c2.209 0 4 1.791 4 4v3h-8v-3c0-2.209 1.791-4 4-4zm6 9h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" transform="translate(-3 -1.5)"/></svg>
 						</span>
-						<span id="interface-background-play-icon">
-							<svg
-								class="w-64 h-64"
-								fill="currentColor"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 384 512"
-							>
-								<path
-									d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
-								></path>
-							</svg>
+
+						<span class="trn" id="interface-background-pause-string">Lock current background</span>
+
+						<span id="interface-background-play-icon" class="iconContainer">
+							<svg fill="currentColor" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 18 21" xmlns="http://www.w3.org/2000/svg"><path d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6 3.145 0 5.725 2.42 5.979 5.5h-2.01c-.246-1.973-1.929-3.5-3.969-3.5-2.209 0-4 1.791-4 4v3zm0 2h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z" transform="translate(-3 -1.5)"/></svg>
 						</span>
+					
+						<span class="trn" id="interface-background-play-string">Unlock current background</span>
 					</button>
-					<button
-						id="b_interface-background-refresh"
+
+					<button id="b_interface-background-refresh"
 						class="refresh-btn"
 						title="Change to another background"
 						aria-label="Change to another background"
 					>
-						<span>
+						<span class="iconContainer">
 							<svg
 								fill="currentColor"
 								clip-rule="evenodd"
@@ -465,7 +452,9 @@
 								/>
 							</svg>
 						</span>
+						<span class="trn">Refresh background</span>
 					</button>
+
 				</div>
 			</div>
 		</dialog>
@@ -658,7 +647,7 @@
 				<fieldset id="pmdr_modes" class="glass">
 					<div class="pomodoro_mode" tabindex="0">
 						<input type="radio" id="pmdr-pomodoro" name="pomodoro_modes" value="pomodoro" checked />
-						<label for="pmdr-pomodoro">Pomodoro</label>
+						<label for="pmdr-pomodoro" class="trn">Pomodoro</label>
 					</div>
 
 					<div class="pomodoro_mode" tabindex="0">
