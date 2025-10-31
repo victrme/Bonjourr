@@ -28,7 +28,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	max-width: 45em;
 	min-width: 20em;
 	cursor: initial;
-	font-size: 14px; /* important for focus animation */ 
+	font-size: var(--pomodoro-font-size); /* important to be in px for focus animation */ 
 
 	will-change: transform;
 	transition: transform .2s ease;
@@ -60,14 +60,13 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	border-radius: 100px;
 	align-items: center;
 	gap: 1.25em;
-	padding: 7px;
-	padding-inline: 10px;
+	padding: .5em .7em;
 }
 
 .glider {
 	position: absolute;
     display: flex;
-    height: 31px;
+    height: 2.25em;
     z-index: 1;
     border-radius: 99px;
 	z-index: 0;
@@ -229,8 +228,8 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 [data-theme='dark'] #focus-toggle:after {
 	background: rgba(255, 255, 255, 0.05);
-	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, .4),
-				inset 0px -9px 0px -8px rgba(255, 255, 255, .4);
+	box-shadow: inset -10px -8px 0px -11px rgba(0, 0, 0, .9),
+				inset 0px -9px 0px -8px rgba(0, 0, 0, .9);
 }
 
 #focus-toggle:hover:after {
