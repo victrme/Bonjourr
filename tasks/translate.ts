@@ -55,7 +55,7 @@ async function translateFile(lang: string): Promise<void> {
 		const translations = await llmTranslation(message)
 
 		if (translations) {
-			for (const key in missingKeys) {
+			for (const key of missingKeys) {
 				const trn = translations[key]
 
 				newDict[key] = trn
