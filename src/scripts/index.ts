@@ -297,15 +297,15 @@ function keepTrackOfTabs() {
 		updateLastActiveTab()
 	}
 
-	window.addEventListener('focus', updateLastActiveTab)
-	window.addEventListener('visibilitychange', () => {
+	globalThis.window.addEventListener('focus', updateLastActiveTab)
+	globalThis.window.addEventListener('visibilitychange', () => {
 		if (!document.hidden) {
 			updateLastActiveTab()
 		}
 	})
 
 	// sends event to other tabs when tab gets closed
-	window.addEventListener('beforeunload', () => {
+	globalThis.window.addEventListener('beforeunload', () => {
 		tabs_bc.postMessage('tabClosed')
 	})
 

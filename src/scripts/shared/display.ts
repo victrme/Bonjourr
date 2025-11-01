@@ -18,6 +18,9 @@ export function displayInterface(ready?: 'clock' | 'links' | 'fonts' | 'quotes' 
 		if (data?.quotes?.on) {
 			features.push('quotes')
 		}
+		if (data?.pomodoro?.on) {
+			features.push('pomodoro')
+		}
 
 		return
 	}
