@@ -1,7 +1,7 @@
 /* vignette */
 body #background-wrapper:after {
-	content: "";
-	transition: opacity .5s ease;
+	content: '';
+	transition: opacity 0.5s ease;
 	position: absolute;
 	inset: 0;
 	will-change: opacity;
@@ -18,7 +18,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface > *:not(#po
 }
 
 body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
-	grid-template-areas: "pomodoro";
+	grid-template-areas: 'pomodoro';
 }
 
 #pomodoro_container {
@@ -28,14 +28,14 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	max-width: 45em;
 	min-width: 20em;
 	cursor: initial;
-	font-size: var(--pomodoro-font-size); /* important to be in px for focus animation */ 
+	font-size: var(--pomodoro-font-size); /* important to be in px for focus animation */
 
 	will-change: transform;
-	transition: transform .2s ease;
+	transition: transform 0.2s ease;
 }
 
 #pomodoro_container.hidden {
-    display: none;
+	display: none;
 }
 
 #pomodoro_container #pmdr_pause,
@@ -48,8 +48,8 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	display: flex;
 }
 
-#pomodoro_options input[type="number"]:after {
-	content: "mn";
+#pomodoro_options input[type='number']:after {
+	content: 'mn';
 	display: none;
 }
 
@@ -60,27 +60,30 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	border-radius: 100px;
 	align-items: center;
 	gap: 1.25em;
-	padding: .5em .7em;
+	padding: 0.5em 0.7em;
 }
 
 .glider {
 	position: absolute;
-    display: flex;
-    height: 2.25em;
-    z-index: 1;
-    border-radius: 99px;
+	display: flex;
+	height: 2.25em;
+	z-index: 1;
+	border-radius: 99px;
 	z-index: 0;
 	background: rgba(255, 255, 255, 0.15);
 	backdrop-filter: blur(2px) saturate(180%);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.3);
+	box-shadow:
+		0 8px 32px rgba(31, 38, 135, 0.2),
+		inset 0 4px 20px rgba(255, 255, 255, 0.3);
 	will-change: left, width;
-    transition: left 0.2s ease, width 0.2s ease;
+	transition:
+		left 0.2s ease,
+		width 0.2s ease;
 }
 
 [data-theme='dark'] .glider {
 	background: rgba(255, 255, 255, 0.2);
-		/* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),  */
+	/* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),  */
 	/* inset 0 4px 20px rgba(255, 255, 255, 0.3); */
 }
 
@@ -89,15 +92,17 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.6);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.225);
+	box-shadow:
+		0 8px 32px rgba(31, 38, 135, 0.17),
+		inset 0 4px 20px rgba(255, 255, 255, 0.225);
 }
 
 [data-theme='dark'] .glass {
 	background: rgba(0, 0, 0, 0.32);
 	border: 1px solid rgba(255, 255, 255, 0.35);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.2);
+	box-shadow:
+		0 8px 32px rgba(31, 38, 135, 0.17),
+		inset 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
 .glass::after {
@@ -110,8 +115,9 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 2rem;
 	backdrop-filter: blur(1px);
-	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, .9),
-				inset 0px -9px 0px -8px rgba(255, 255, 255, .9);
+	box-shadow:
+		inset -10px -8px 0px -11px rgba(255, 255, 255, 0.9),
+		inset 0px -9px 0px -8px rgba(255, 255, 255, 0.9);
 	opacity: 0.6;
 	z-index: -1;
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
@@ -119,8 +125,9 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 [data-theme='dark'] .glass:after {
 	background: rgba(255, 255, 255, 0.05);
-	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, .4),
-				inset 0px -9px 0px -8px rgba(255, 255, 255, .4);
+	box-shadow:
+		inset -10px -8px 0px -11px rgba(255, 255, 255, 0.4),
+		inset 0px -9px 0px -8px rgba(255, 255, 255, 0.4);
 }
 
 #pmdr_modes .pomodoro_mode {
@@ -187,26 +194,28 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	backdrop-filter: blur(10px);
 	background: rgba(255, 255, 255, 0.1);
 	border: 1px solid #fff1;
-	transition: 
-		backdrop-filter .2s ease,
-		background .2s ease,
-		box-shadow .2s ease,
-		border .2s ease;
+	transition:
+		backdrop-filter 0.2s ease,
+		background 0.2s ease,
+		box-shadow 0.2s ease,
+		border 0.2s ease;
 }
 
 #focus-toggle:hover {
 	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.7);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.225);
+	box-shadow:
+		0 8px 32px rgba(31, 38, 135, 0.17),
+		inset 0 4px 20px rgba(255, 255, 255, 0.225);
 }
 
 [data-theme='dark'] #focus-toggle:hover {
 	background: rgba(0, 0, 0, 0.32);
 	border: 1px solid rgba(255, 255, 255, 0.35);
-	box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), 
-	inset 0 4px 20px rgba(255, 255, 255, 0.2);
+	box-shadow:
+		0 8px 32px rgba(31, 38, 135, 0.17),
+		inset 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
 #focus-toggle:after {
@@ -219,8 +228,9 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 2rem;
 	backdrop-filter: blur(1px);
-	box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, .9),
-				inset 0px -9px 0px -8px rgba(255, 255, 255, .9);
+	box-shadow:
+		inset -10px -8px 0px -11px rgba(255, 255, 255, 0.9),
+		inset 0px -9px 0px -8px rgba(255, 255, 255, 0.9);
 	z-index: -1;
 	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 	opacity: 0;
@@ -228,8 +238,9 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 [data-theme='dark'] #focus-toggle:after {
 	background: rgba(255, 255, 255, 0.05);
-	box-shadow: inset -10px -8px 0px -11px rgba(0, 0, 0, .9),
-				inset 0px -9px 0px -8px rgba(0, 0, 0, .9);
+	box-shadow:
+		inset -10px -8px 0px -11px rgba(0, 0, 0, 0.9),
+		inset 0px -9px 0px -8px rgba(0, 0, 0, 0.9);
 }
 
 #focus-toggle:hover:after {
