@@ -14,6 +14,7 @@
 	-	URL
 	-	Import your own
 - 	Import your own video files as backgrounds
+- 	Import background images from a distant server with the new background URLs option
 -	Refreshed look for the settings!
 - 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
 - 	Fixes and improvements:

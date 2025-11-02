@@ -128,6 +128,7 @@ export const SYNC_DEFAULT: Sync = {
 		urls: '',
 		images: 'bonjourr-images-daylight',
 		videos: 'bonjourr-videos-daylight',
+		video_sound: true,
 		queries: {},
 		texture: {
 			type: 'none',

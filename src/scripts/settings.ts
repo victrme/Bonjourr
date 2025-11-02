@@ -230,6 +230,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_background-local-compress', local.backgroundCompressFiles ?? true)
+	setCheckbox('i_background-mute-videos', data.backgrounds.video_sound ?? true)
 	setCheckbox('i_quicklinks', data.quicklinks)
 	setCheckbox('i_linkgroups', data?.linkgroups?.on)
 	setCheckbox('i_linknewtab', data.linknewtab)
@@ -538,6 +539,8 @@ function initOptionsEvents() {
 		backgroundUpdate({ compress: target.checked })
 	})
 
+	onclickdown(paramId('i_background-mute-videos'), (_, target) => {
+		backgroundUpdate({ video_sound: target.checked })
 	// Background filters
 
 	paramId('i_texture').addEventListener('change', function (this: HTMLInputElement) {

@@ -44,6 +44,7 @@ interface BackgroundUpdate {
 	texturecolor?: string
 	texturesize?: string
 	textureopacity?: string
+	video_sound?: boolean
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
@@ -206,6 +207,11 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		const image = await mediaFromFiles(ids[0], local, undefined)
 
 		applyBackground(image)
+	}
+
+	if (update.video_sound !== undefined) {
+		data.backgrounds.video_sound = update.video_sound
+		storage.sync.set({ backgrounds: data.backgrounds })
 	}
 
 	// Textures
@@ -810,6 +816,7 @@ function handleBackgroundOptions(backgrounds: Backgrounds) {
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
+	document.getElementById('background-video-sound-options')?.classList.toggle('shown', type === 'videos' || type === "files")
 
 	handleTextureOptions(backgrounds)
 	handleProviderOptions(backgrounds)
