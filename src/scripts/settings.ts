@@ -540,7 +540,18 @@ function initOptionsEvents() {
 	})
 
 	onclickdown(paramId('i_background-mute-videos'), (_, target) => {
-		backgroundUpdate({ video_sound: target.checked })
+		const videos = document.querySelectorAll<HTMLVideoElement>('#background-media video')
+		videos.forEach(function(video) {
+			video.dispatchEvent(new CustomEvent("muteStatusChange", {
+				detail: {
+					status: target.checked,
+				},
+			}))
+		})
+
+		backgroundUpdate({ video_sound: target.checked }) 
+	})
+
 	// Background filters
 
 	paramId('i_texture').addEventListener('change', function (this: HTMLInputElement) {

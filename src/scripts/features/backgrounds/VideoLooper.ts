@@ -1,3 +1,5 @@
+import { storage } from "../../storage"
+
 export class VideoLooper {
 	private video1: HTMLVideoElement
 	private video2: HTMLVideoElement
@@ -118,6 +120,17 @@ export class VideoLooper {
 	// Private
 	//
 
+	private async applyMuteStatus(video: HTMLVideoElement) {
+		try {
+			const result = await storage.sync.get(['backgrounds'])
+			const isMuted = result.backgrounds?.video_sound ?? true
+			video.muted = !isMuted
+		} catch (err) {
+			console.error('Failed to fetch mute status', err);
+			video.muted = true
+		}
+	}
+
 	private createVideo(src: string, autoplay = false): HTMLVideoElement {
 		const elem = document.createElement('video')
 
@@ -125,6 +138,8 @@ export class VideoLooper {
 		elem.src = src
 		elem.autoplay = autoplay
 		elem.playbackRate = this.playbackRate
+
+		this.applyMuteStatus(elem)
 
 		elem.addEventListener('loadedmetadata', () => {
 			this.setFadeTime(this.fadetime)
@@ -139,6 +154,12 @@ export class VideoLooper {
 			elem.classList.remove('hiding')
 			this.container.prepend(elem)
 		})
+
+		elem.addEventListener("muteStatusChange",
+			function (event: CustomEvent<{ status: boolean }>) {
+				elem.muted = !event.detail.status
+			} as EventListener
+		)
 
 		return elem
 	}
