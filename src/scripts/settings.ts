@@ -1,7 +1,7 @@
 import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
-import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
+import { backgroundUpdate, initBackgroundOptions, toggleMuteStatus } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
@@ -540,15 +540,7 @@ function initOptionsEvents() {
 	})
 
 	onclickdown(paramId('i_background-mute-videos'), (_, target) => {
-		const videos = document.querySelectorAll<HTMLVideoElement>('#background-media video')
-		videos.forEach(function(video) {
-			video.dispatchEvent(new CustomEvent("muteStatusChange", {
-				detail: {
-					status: target.checked,
-				},
-			}))
-		})
-
+		toggleMuteStatus(target.checked)
 		backgroundUpdate({ video_sound: target.checked }) 
 	})
 

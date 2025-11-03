@@ -1,4 +1,4 @@
-import { backgroundUpdate } from './index.ts'
+import { backgroundUpdate, toggleMuteStatus } from './index.ts'
 import { onclickdown } from 'clickdown/mod'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
@@ -17,6 +17,10 @@ export function initCreditEvents() {
 
 	onclickdown(document.getElementById('b_interface-background-download'), () => {
 		downloadImage()
+	})
+
+	onclickdown(document.getElementById('b_interface-background-mute'), () => {
+		toggleMuteVideo()
 	})
 }
 
@@ -136,6 +140,22 @@ export function updateCredits(image?: Background) {
 	if (image.download && domsave) {
 		domsave.dataset.downloadUrl = image.download
 	}
+}
+
+async function toggleMuteVideo() {
+	const muteInput = document.querySelector<HTMLInputElement>('#i_background-mute-videos')
+	const muteContextButton = document.getElementById('b_interface-background-mute')
+	const sync = await storage.sync.get('backgrounds')
+	const lastMuteStatus = sync.backgrounds.video_sound
+
+	if (muteInput) { // if settings are initialized, sets input 
+		muteInput.checked = !lastMuteStatus
+	}
+	
+	muteContextButton?.classList.toggle('muted', !lastMuteStatus)
+
+	toggleMuteStatus(!lastMuteStatus)
+	backgroundUpdate({ video_sound: !lastMuteStatus })
 }
 
 async function toggleBackgroundPause() {

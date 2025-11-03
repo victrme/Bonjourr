@@ -1049,6 +1049,18 @@ function getAverageColor(img: HTMLImageElement) {
 	}
 }
 
+export function toggleMuteStatus(muted: boolean = true) {
+	const videos = document.querySelectorAll<HTMLVideoElement>('#background-media video')
+	
+	videos.forEach(function(video) {
+		video.dispatchEvent(new CustomEvent("muteStatusChange", {
+			detail: {
+				status: muted,
+			},
+		}))
+	})
+}
+
 function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
 	return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
 }

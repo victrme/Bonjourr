@@ -287,10 +287,18 @@ export function closeContextMenu() {
 }
 
 export function handleBackgroundActions(backgrounds: Backgrounds) {
+	const muteButton = document.getElementById('b_interface-background-mute')
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
-
+	
 	document.getElementById('background-actions')?.setAttribute('data-type', type)
 	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
 	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
+	
+	const shouldShowMute = type === 'files' || type === 'videos'
+	muteButton?.toggleAttribute('disabled', !shouldShowMute)
+
+	if (shouldShowMute) {
+		muteButton?.classList.toggle('muted', backgrounds.video_sound)
+	}
 }
