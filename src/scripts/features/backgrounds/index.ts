@@ -947,6 +947,16 @@ async function getCurrentBackgrounds(sync: Sync, local: Local) {
 		const next = await mediaFromFiles(ids[1], local)
 		return [current, next]
 	}
+	if (sync.backgrounds.frequency === 'pause' && sync.backgrounds.pausedImage) {
+		const lists = getCollection(sync.backgrounds, local)
+		const images = lists.images()
+		return [sync.backgrounds.pausedImage, images[0]]
+	}
+	if (sync.backgrounds.frequency === 'pause' && sync.backgrounds.pausedVideo) {
+		const lists = getCollection(sync.backgrounds, local)
+		const videos = lists.videos()
+		return [sync.backgrounds.pausedVideo, videos[0]]
+	}
 	if (sync.backgrounds.type === 'images') {
 		const lists = getCollection(sync.backgrounds, local)
 		const images = lists.images()
