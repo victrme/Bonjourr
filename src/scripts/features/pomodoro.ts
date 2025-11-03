@@ -2,7 +2,6 @@ import { turnRefreshButton } from '../shared/dom.ts'
 import { displayInterface } from '../shared/display.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { tradThis } from '../utils/translations.ts'
-import { debounce } from '../utils/debounce.ts'
 import { tabTitle } from './others.ts'
 import { storage } from '../storage.ts'
 import { TAB_ID } from '../defaults.ts'
@@ -43,34 +42,34 @@ const timeBeforeReset = 10000 // time before the timer resets after the end
 const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
 const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number => currentPomodoroData.time_for[mode]
 
-function handleToggle(state: boolean) {
-	pomodoroContainer?.classList.toggle('hidden', !state)
-}
-
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
 	if (update) {
 		updatePomodoro(update)
 		return
 	}
 
+	if (init?.on) {
+		initPomodoro(init)
+		return
+	}
 	if (init) {
-		init.on ? initPomodoro(init) : onSettingsLoad(() => initPomodoro(init))
+		onSettingsLoad(() => {
+			initPomodoro(init)
+		})
 	}
 }
 
 function initPomodoro(init: Pomodoro) {
 	currentPomodoroData = init
 
-	handleToggle(init.on)
-	displayInterface('pomodoro')
-
 	togglePomodoroFocus(init.focus && init.on)
-
-	handleUserInput()
-	initTimer(init)
 	setModeButton(init.mode)
+	handleToggle(init.on)
+	initTimer(init)
 
+	displayInterface('pomodoro')
 	listenToBroadcast()
+	handleUserInput()
 }
 
 // events
@@ -80,7 +79,7 @@ function handleUserInput() {
 		btn.addEventListener('change', (e) => {
 			const newMode = (e.target as HTMLInputElement).value as PomodoroMode
 
-			switchMode(newMode)
+			switchMode(newMode, true)
 
 			broadcast.postMessage({
 				type: 'switch-mode',
@@ -90,7 +89,9 @@ function handleUserInput() {
 	})
 
 	pomodoroStart?.addEventListener('click', () => {
-		startTimer(true)
+		storage.sync.get().then((sync) => {
+			startTimer(sync.pomodoro, true)
+		})
 
 		broadcast.postMessage({
 			type: 'start-pomodoro',
@@ -120,20 +121,13 @@ function handleUserInput() {
 		const focusIsChecked = (e.target as HTMLInputElement).checked as boolean
 
 		togglePomodoroFocus(focusIsChecked)
+		updatePomodoro({ focus: focusIsChecked })
 
 		broadcast.postMessage({
 			type: 'toggle-focus',
 			on: focusIsChecked,
 		})
 	})
-
-	// if user stops resizing window for 20ms, fixes glider size/placement
-	globalThis.window.addEventListener(
-		'resize',
-		debounce(() => {
-			setModeGlider(currentPomodoroData.mode)
-		}, 20),
-	)
 
 	// makes mode buttons and focus button accessible to keyboard inputs
 	document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach((el) => {
@@ -153,25 +147,32 @@ function handleUserInput() {
 
 function listenToBroadcast() {
 	// receiving data from other tabs
-	broadcast.onmessage = ({ data = {} }) => {
+
+	broadcast.addEventListener('message', ({ data = {} }) => {
 		if (data.type === 'start-pomodoro') {
-			startTimer(true, data.time)
-		} else if (data.type === 'switch-mode') {
+			storage.sync.get().then((sync) => {
+				startTimer(sync.pomodoro, true, data.time)
+			})
+		}
+		if (data.type === 'switch-mode') {
 			setModeButton(data.mode)
 			switchMode(data.mode)
-		} else if (data.type === 'pause-pomodoro') {
+		}
+		if (data.type === 'pause-pomodoro') {
 			pauseTimer()
-		} else if (data.type === 'toggle-focus') {
-			togglePomodoroFocus(data.on)
-		} else if (data.type === 'reset-pomodoro') {
+		}
+		if (data.type === 'reset-pomodoro') {
 			resetTimer()
 		}
-	}
+		if (data.type === 'toggle-focus') {
+			togglePomodoroFocus(data.on)
+		}
+	})
 }
 
-function switchMode(mode: PomodoroMode) {
+function switchMode(mode: PomodoroMode, animate?: boolean) {
 	resetTimeouts()
-	setModeGlider(mode)
+	setModeGlider(mode, animate)
 	stopTimer()
 	insertTime(getTimeForMode(mode), false)
 
@@ -189,36 +190,67 @@ function resetTimeouts() {
 	clearTimeout(timeModeTimeout)
 }
 
-export function setModeGlider(mode: string = currentPomodoroData.mode as PomodoroMode) {
-	// select animation
-	const radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
-	const glider = document.querySelector('.glider') as HTMLSpanElement
+export function setModeGlider(mode?: PomodoroMode, animate?: boolean) {
+	const pomodoroModes = document.querySelector<HTMLElement>('#pmdr_modes')
+	const allModes = pomodoroModes?.querySelectorAll<HTMLElement>('.pomodoro_mode')
+	const activeMode = pomodoroModes?.querySelector<HTMLElement>('.pomodoro_mode.active')
+	const nextMode = pomodoroModes?.querySelector<HTMLElement>(`#pmdr-${mode}`)?.parentElement
+	const glider = pomodoroModes?.querySelector<HTMLSpanElement>('span.glider')
 
-	if (glider && radioBtn?.parentElement) {
-		const offsetLeft = radioBtn.parentElement.offsetLeft
-		const offsetWidth = radioBtn.parentElement.offsetWidth
+	allModes?.forEach((div) => {
+		div.classList.remove('active')
+	})
 
-		glider.style.left = `${offsetLeft}px`
-		glider.style.width = `${offsetWidth}px`
+	if (!animate) {
+		nextMode?.classList.add('active')
+		return
+	}
+
+	if (nextMode && glider) {
+		const fromLeft = activeMode?.offsetLeft ?? 0
+		const fromWidth = activeMode?.offsetWidth ?? 100
+		const toLeft = nextMode.offsetLeft
+		const toWidth = nextMode.offsetWidth
+
+		glider.style.opacity = '1'
+		glider.style.left = `${fromLeft}px`
+		glider.style.width = `${fromWidth}px`
+
+		setTimeout(() => {
+			glider.style.left = `${toLeft}px`
+			glider.style.width = `${toWidth}px`
+			glider.classList.add('gliding')
+		}, 16)
+
+		setTimeout(() => {
+			glider.removeAttribute('style')
+			glider.classList.remove('gliding')
+			nextMode.classList.add('active')
+		}, 200)
 	}
 }
 
 function initTimer(pomodoro: Pomodoro) {
-	if (pomodoro.end && Date.now() < pomodoro.end) { // running timer
-		startTimer()
-	} else if (!pomodoro.end || Date.now() > pomodoro.end) { // default unstarted timer
-		switchMode(pomodoro.mode as PomodoroMode)
+	const isTimerRunning = pomodoro.end && Date.now() < pomodoro.end
+	const isTimerDefaultStopped = !pomodoro.end || Date.now() > pomodoro.end
+
+	if (isTimerRunning) {
+		startTimer(pomodoro)
+		return
+	}
+
+	if (isTimerDefaultStopped && pomodoro.mode) {
+		switchMode(pomodoro.mode)
 	}
 }
 
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
-async function startTimer(fromButton?: boolean, time?: number) {
+function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number) {
 	fromButton ??= false
 
 	stopTimer()
 	resetTimeouts()
 
-	const { pomodoro } = await storage.sync.get(['pomodoro'])
 	const defaultTime = time ?? getTimeForMode(pomodoro.mode)
 	const wasPaused = pomodoro.pause !== 0
 	const now = Date.now()
@@ -251,7 +283,7 @@ async function startTimer(fromButton?: boolean, time?: number) {
 			startCountdown(end)
 		}
 	} else { // from refresh/new tab
-		setModeGlider(pomodoro.mode as string)
+		setModeGlider(pomodoro.mode)
 
 		if (wasPaused) {
 			insertTime(calculateSecondsLeft(now + remaining), false)
@@ -349,15 +381,17 @@ function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
 	tabTitle(newTitle)
 }
 
-export async function togglePomodoroFocus(focus: boolean) {
+function handleToggle(state: boolean) {
+	pomodoroContainer?.classList.toggle('hidden', !state)
+}
+
+export function togglePomodoroFocus(focus: boolean) {
 	focusButton.checked = focus
 
 	// needed for sliding animation
 	const enablingFocus = focus && !currentPomodoroData.focus
 	const disablingFocus = !focus && currentPomodoroData.focus
 	const switching = disablingFocus || enablingFocus
-
-	await updatePomodoro({ focus })
 
 	// if not switching, no animation (for when toggling from page refresh or smt)
 	// also animation won't play if the tab isn't open
@@ -369,7 +403,7 @@ export async function togglePomodoroFocus(focus: boolean) {
 		clone.style.position = 'absolute'
 		clone.style.top = originalRect.top + 'px'
 		clone.style.left = originalRect.left + 'px'
-
+		clone.style.fontFamily = document.documentElement.style.getPropertyValue('--font-family')
 		document.body.appendChild(clone)
 
 		// Apply focus mode to the DOM so we can measure the target position
