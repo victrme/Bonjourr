@@ -48,6 +48,10 @@ export function settingsInit(sync: Sync, local: Local) {
 	settingsInitSync = sync
 	settingsInitLocal = local
 
+	document.addEventListener('updateSettingsBeforeInit', (e) => {
+		settingsInitSync = (e as CustomEvent).detail
+	})
+
 	document.body?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
 

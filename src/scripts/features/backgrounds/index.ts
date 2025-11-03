@@ -211,7 +211,6 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
 	if (update.mute !== undefined) {
 		data.backgrounds.mute = update.mute
-		console.log(data.backgrounds.mute)
 		storage.sync.set({ backgrounds: data.backgrounds })
 	}
 
@@ -242,6 +241,11 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		handleBackgroundOptions(data.backgrounds)
 		applyTexture(data.backgrounds.texture)
 	}
+
+
+	document.dispatchEvent(new CustomEvent('updateSettingsBeforeInit', {
+		detail: data
+	}))
 
 	// Images & Videos only
 
