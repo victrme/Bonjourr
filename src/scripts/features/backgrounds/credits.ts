@@ -146,7 +146,7 @@ async function toggleMuteVideo() {
 	const muteInput = document.querySelector<HTMLInputElement>('#i_background-mute-videos')
 	const muteContextButton = document.getElementById('b_interface-background-mute')
 	const sync = await storage.sync.get('backgrounds')
-	const lastMuteStatus = sync.backgrounds.video_sound
+	const lastMuteStatus = sync.backgrounds.mute
 
 	if (muteInput) { // if settings are initialized, sets input 
 		muteInput.checked = !lastMuteStatus
@@ -155,7 +155,7 @@ async function toggleMuteVideo() {
 	muteContextButton?.classList.toggle('muted', !lastMuteStatus)
 
 	toggleMuteStatus(!lastMuteStatus)
-	backgroundUpdate({ video_sound: !lastMuteStatus })
+	backgroundUpdate({ mute: !lastMuteStatus })
 }
 
 async function toggleBackgroundPause() {

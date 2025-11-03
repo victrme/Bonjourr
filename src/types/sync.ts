@@ -73,7 +73,7 @@ export interface Backgrounds {
 	urls: string
 	images: string
 	videos: string
-	video_sound: boolean
+	mute: boolean
 	pausedUrl?: string
 	pausedImage?: BackgroundImage
 	pausedVideo?: BackgroundVideo

@@ -125,8 +125,8 @@ export class VideoLooper {
 	private async applyMuteStatus(video: HTMLVideoElement) {
 		try {
 			const result = await storage.sync.get(['backgrounds'])
-			const isMuted = result.backgrounds?.video_sound ?? true
-			video.muted = !isMuted
+			const isMuted = result.backgrounds?.mute ?? true
+			video.muted = isMuted
 		} catch (err) {
 			console.error('Failed to fetch mute status', err);
 			video.muted = true
@@ -159,7 +159,7 @@ export class VideoLooper {
 
 		elem.addEventListener("muteStatusChange",
 			function (event: CustomEvent<{ status: boolean }>) {
-				elem.muted = !event.detail.status
+				elem.muted = event.detail.status
 			} as EventListener
 		)
 

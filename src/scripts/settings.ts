@@ -230,7 +230,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_background-local-compress', local.backgroundCompressFiles ?? true)
-	setCheckbox('i_background-mute-videos', data.backgrounds.video_sound ?? true)
+	setCheckbox('i_background-mute-videos', data.backgrounds.mute ?? true)
 	setCheckbox('i_quicklinks', data.quicklinks)
 	setCheckbox('i_linkgroups', data?.linkgroups?.on)
 	setCheckbox('i_linknewtab', data.linknewtab)
@@ -541,7 +541,7 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_background-mute-videos'), (_, target) => {
 		toggleMuteStatus(target.checked)
-		backgroundUpdate({ video_sound: target.checked }) 
+		backgroundUpdate({ mute: target.checked }) 
 	})
 
 	// Background filters

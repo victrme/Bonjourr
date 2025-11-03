@@ -44,7 +44,7 @@ interface BackgroundUpdate {
 	texturecolor?: string
 	texturesize?: string
 	textureopacity?: string
-	video_sound?: boolean
+	mute?: boolean
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
@@ -209,8 +209,9 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		applyBackground(image)
 	}
 
-	if (update.video_sound !== undefined) {
-		data.backgrounds.video_sound = update.video_sound
+	if (update.mute !== undefined) {
+		data.backgrounds.mute = update.mute
+		console.log(data.backgrounds.mute)
 		storage.sync.set({ backgrounds: data.backgrounds })
 	}
 
@@ -1050,9 +1051,7 @@ function getAverageColor(img: HTMLImageElement) {
 }
 
 export function toggleMuteStatus(muted: boolean = true) {
-	const videos = document.querySelectorAll<HTMLVideoElement>('#background-media video')
-	
-	videos.forEach(function(video) {
+	document.querySelectorAll<HTMLVideoElement>('#background-media video').forEach(function(video) {
 		video.dispatchEvent(new CustomEvent("muteStatusChange", {
 			detail: {
 				status: muted,

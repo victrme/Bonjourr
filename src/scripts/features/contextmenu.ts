@@ -299,6 +299,6 @@ export function handleBackgroundActions(backgrounds: Backgrounds) {
 	muteButton?.toggleAttribute('disabled', !shouldShowMute)
 
 	if (shouldShowMute) {
-		muteButton?.classList.toggle('muted', backgrounds.video_sound)
+		muteButton?.classList.toggle('muted', backgrounds.mute)
 	}
 }
