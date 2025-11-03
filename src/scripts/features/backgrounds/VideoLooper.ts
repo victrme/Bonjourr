@@ -29,6 +29,8 @@ export class VideoLooper {
 		// the document eventListener
 
 		this.listener = () => {
+			// only acts on videos that are in the dom (otherwise it would play previously removed videos from JS memory)
+			if (!this.video2?.isConnected) return
 			this.stop()
 
 			if (!document.hidden) {
