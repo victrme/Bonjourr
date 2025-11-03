@@ -2,7 +2,6 @@ import { turnRefreshButton } from '../shared/dom.ts'
 import { displayInterface } from '../shared/display.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { tradThis } from '../utils/translations.ts'
-import { debounce } from '../utils/debounce.ts'
 import { tabTitle } from './others.ts'
 import { storage } from '../storage.ts'
 import { TAB_ID } from '../defaults.ts'
@@ -80,7 +79,7 @@ function handleUserInput() {
 		btn.addEventListener('change', (e) => {
 			const newMode = (e.target as HTMLInputElement).value as PomodoroMode
 
-			switchMode(newMode)
+			switchMode(newMode, true)
 
 			broadcast.postMessage({
 				type: 'switch-mode',
@@ -130,14 +129,6 @@ function handleUserInput() {
 		})
 	})
 
-	// if user stops resizing window for 20ms, fixes glider size/placement
-	globalThis.window.addEventListener(
-		'resize',
-		debounce(() => {
-			setModeGlider(currentPomodoroData.mode)
-		}, 20),
-	)
-
 	// makes mode buttons and focus button accessible to keyboard inputs
 	document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach((el) => {
 		el.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -179,9 +170,9 @@ function listenToBroadcast() {
 	})
 }
 
-function switchMode(mode: PomodoroMode) {
+function switchMode(mode: PomodoroMode, animate?: boolean) {
 	resetTimeouts()
-	setModeGlider(mode)
+	setModeGlider(mode, animate)
 	stopTimer()
 	insertTime(getTimeForMode(mode), false)
 
@@ -199,17 +190,43 @@ function resetTimeouts() {
 	clearTimeout(timeModeTimeout)
 }
 
-export function setModeGlider(mode: string = currentPomodoroData.mode as PomodoroMode) {
-	// select animation
-	const radioBtn = document.querySelector<HTMLInputElement>(`#pmdr_modes input#pmdr-${mode}`)
-	const glider = document.querySelector('.glider') as HTMLSpanElement
+export function setModeGlider(mode?: PomodoroMode, animate?: boolean) {
+	const pomodoroModes = document.querySelector<HTMLElement>('#pmdr_modes')
+	const allModes = pomodoroModes?.querySelectorAll<HTMLElement>('.pomodoro_mode')
+	const activeMode = pomodoroModes?.querySelector<HTMLElement>('.pomodoro_mode.active')
+	const nextMode = pomodoroModes?.querySelector<HTMLElement>(`#pmdr-${mode}`)?.parentElement
+	const glider = pomodoroModes?.querySelector<HTMLSpanElement>('span.glider')
 
-	if (glider && radioBtn?.parentElement) {
-		const offsetLeft = radioBtn.parentElement.offsetLeft
-		const offsetWidth = radioBtn.parentElement.offsetWidth
+	allModes?.forEach((div) => {
+		div.classList.remove('active')
+	})
 
-		glider.style.left = `${offsetLeft}px`
-		glider.style.width = `${offsetWidth}px`
+	if (!animate) {
+		nextMode?.classList.add('active')
+		return
+	}
+
+	if (nextMode && glider) {
+		const fromLeft = activeMode?.offsetLeft ?? 0
+		const fromWidth = activeMode?.offsetWidth ?? 100
+		const toLeft = nextMode.offsetLeft
+		const toWidth = nextMode.offsetWidth
+
+		glider.style.opacity = '1'
+		glider.style.left = `${fromLeft}px`
+		glider.style.width = `${fromWidth}px`
+
+		setTimeout(() => {
+			glider.style.left = `${toLeft}px`
+			glider.style.width = `${toWidth}px`
+			glider.classList.add('gliding')
+		}, 16)
+
+		setTimeout(() => {
+			glider.removeAttribute('style')
+			glider.classList.remove('gliding')
+			nextMode.classList.add('active')
+		}, 200)
 	}
 }
 
@@ -266,7 +283,7 @@ function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number) {
 			startCountdown(end)
 		}
 	} else { // from refresh/new tab
-		setModeGlider(pomodoro.mode as string)
+		setModeGlider(pomodoro.mode)
 
 		if (wasPaused) {
 			insertTime(calculateSecondsLeft(now + remaining), false)

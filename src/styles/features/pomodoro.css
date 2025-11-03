@@ -56,32 +56,39 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 #pmdr_modes {
 	display: flex;
 	position: relative;
-	/* border: unset; */
-	border-radius: 100px;
+	border-radius: 10em;
 	align-items: center;
-	gap: 1.25em;
+	gap: 1.2em;
 	padding: 0.5em 0.7em;
 }
 
 .glider {
 	position: absolute;
 	display: flex;
-	height: 2.25em;
-	z-index: 1;
-	border-radius: 99px;
-	z-index: 0;
+	top: 0.5em;
+	bottom: 0.5em;
+	border-radius: 10em;
+	will-change: left, width;
+	opacity: 0;
+
+	&.gliding {
+		transition:
+			left 0.2s ease,
+			width 0.2s ease;
+	}
+}
+
+.glider,
+#pmdr_modes .pomodoro_mode.active {
 	background: rgba(255, 255, 255, 0.15);
 	backdrop-filter: blur(2px) saturate(180%);
 	box-shadow:
 		0 8px 32px rgba(31, 38, 135, 0.2),
 		inset 0 4px 20px rgba(255, 255, 255, 0.3);
-	will-change: left, width;
-	transition:
-		left 0.2s ease,
-		width 0.2s ease;
 }
 
-[data-theme='dark'] .glider {
+[data-theme='dark'] .glider,
+[data-theme='dark'] #pmdr_modes .pomodoro_mode.active {
 	background: rgba(255, 255, 255, 0.2);
 	/* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),  */
 	/* inset 0 4px 20px rgba(255, 255, 255, 0.3); */
@@ -131,10 +138,10 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #pmdr_modes .pomodoro_mode {
-	border: 1px solid transparent;
-	border-radius: 100px;
-	padding-block: 5px;
-	padding-inline: 13px;
+	background: transparent;
+	border-radius: 10em;
+	padding-block: 0.4em;
+	padding-inline: 1em;
 	font-weight: 600;
 	font-size: 1.1em;
 	z-index: 1;
