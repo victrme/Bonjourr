@@ -2,9 +2,11 @@ import { populateDialogWithEditLink } from './links/edit.ts'
 import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
 import { transitioner } from '../utils/transitioner.ts'
 import { debounce } from '../utils/debounce.ts'
+import { onclickdown } from 'clickdown/mod'
+import { backgroundUpdate, toggleMuteStatus } from './backgrounds/index.ts'
+import { storage } from '../storage.ts'
 
 import type { Backgrounds } from '../../types/sync.ts'
-import { tradThis } from '../utils/translations.ts'
 
 interface EventLocation {
 	widgets: {
@@ -287,10 +289,109 @@ export function closeContextMenu() {
 }
 
 export function handleBackgroundActions(backgrounds: Backgrounds) {
+	const muteButton = document.getElementById('b_interface-background-mute')
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
-
+	
 	document.getElementById('background-actions')?.setAttribute('data-type', type)
 	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
 	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
+	
+	const shouldShowMute = type === 'files' || type === 'videos'
+	muteButton?.toggleAttribute('disabled', !shouldShowMute)
+
+	if (shouldShowMute) {
+		muteButton?.classList.toggle('muted', backgrounds.mute)
+	}
+}
+
+export function initBackgroundActionsEvents() {
+	onclickdown(document.getElementById('b_interface-background-pause'), () => {
+		toggleBackgroundPause()
+	})
+
+	onclickdown(document.getElementById('b_interface-background-refresh'), (event) => {
+		backgroundUpdate({ refresh: event })
+	})
+
+	onclickdown(document.getElementById('b_interface-background-download'), () => {
+		downloadImage()
+	})
+
+	onclickdown(document.getElementById('b_interface-background-mute'), () => {
+		toggleMuteVideo()
+	})
+}
+
+async function toggleMuteVideo() {
+	const muteInput = document.querySelector<HTMLInputElement>('#i_background-mute-videos')
+	const muteContextButton = document.getElementById('b_interface-background-mute')
+	const sync = await storage.sync.get('backgrounds')
+	const lastMuteStatus = sync.backgrounds.mute
+
+	if (muteInput) { // if settings are initialized, sets input 
+		muteInput.checked = !lastMuteStatus
+	}
+	
+	muteContextButton?.classList.toggle('muted', !lastMuteStatus)
+
+	toggleMuteStatus(!lastMuteStatus)
+	backgroundUpdate({ mute: !lastMuteStatus })
+}
+
+async function toggleBackgroundPause() {
+	const freqInput = document.querySelector<HTMLSelectElement>('#i_freq')
+	const button = document.getElementById('b_interface-background-pause')
+	const paused = button?.classList.contains('paused')
+	const sync = await storage.sync.get('backgrounds')
+	const last = localStorage.lastBackgroundFreq || 'hour'
+
+	if (freqInput) {
+		freqInput.value = paused ? last : 'pause'
+	}
+
+	if (paused) {
+		backgroundUpdate({ freq: last })
+	} else {
+		localStorage.lastBackgroundFreq = sync.backgrounds.frequency
+		backgroundUpdate({ freq: 'pause' })
+	}
+}
+
+async function downloadImage() {
+	const dombutton = document.querySelector<HTMLButtonElement>('#b_interface-background-download')
+	const domsave = document.querySelector<HTMLAnchorElement>('#download-background')
+
+	if (!domsave) {
+		console.warn('?')
+		return
+	}
+
+	dombutton?.classList.replace('idle', 'loading')
+
+	try {
+		const baseUrl = 'https://services.bonjourr.fr/unsplash'
+		const downloadUrl = new URL(domsave.dataset.downloadUrl ?? '')
+		const apiDownloadUrl = baseUrl + downloadUrl.pathname + downloadUrl.search
+		const downloadResponse = await fetch(apiDownloadUrl)
+
+		if (!downloadResponse) {
+			return
+		}
+
+		const data: { url: string } = await downloadResponse.json()
+		const imageResponse = await fetch(data.url)
+
+		if (!imageResponse.ok) {
+			return
+		}
+
+		const blob = await imageResponse.blob()
+
+		domsave.href = URL.createObjectURL(blob)
+		domsave.download = downloadUrl.pathname.split('/')[2]
+		domsave.click()
+	} finally {
+		dombutton?.classList.replace('loading', 'idle')
+	}
 }

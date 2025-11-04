@@ -165,6 +165,9 @@ dialog#contextmenu #background-actions button {
 	width: unset;
 }
 
+dialog#contextmenu #background-actions button:disabled {
+	display: none;
+}
 
 #download-background {
 	display: none;
@@ -186,6 +189,21 @@ dialog#contextmenu #background-actions button {
 #b_interface-background-pause.paused #interface-background-pause-icon,
 #b_interface-background-pause #interface-background-play-string,
 #b_interface-background-pause.paused #interface-background-pause-string {
+	display: none;
+}
+
+
+#b_interface-background-mute #interface-background-mute-icon,
+#b_interface-background-mute.muted #interface-background-unmute-icon,
+#b_interface-background-mute #interface-background-mute-string,
+#b_interface-background-mute.muted #interface-background-unmute-string {
+	display: flex;
+}
+
+#b_interface-background-mute #interface-background-unmute-icon,
+#b_interface-background-mute.muted #interface-background-mute-icon,
+#b_interface-background-mute #interface-background-unmute-string,
+#b_interface-background-mute.muted #interface-background-mute-string {
 	display: none;
 }
 

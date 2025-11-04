@@ -14,6 +14,7 @@
 	-	URL
 	-	Import your own
 - 	Import your own video files as backgrounds
+- 	Import background images from a distant server with the new background URLs option
 -	Refreshed look for the settings!
 - 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
 - 	Fixes and improvements:
@@ -24,6 +25,7 @@
 	-	Removed the favicon as emoji input in Edge as Microsoft as broken the functionality (#700)
 	-	Fixed an issue in Safari where the JSON settings textarea in "settings management" would be broken when focused on
 	-	Background frequency "Pause" was renamed "Locked" for better clarity
+	-	Fixed a bug where the settings panel wouldn't be up to date if you used background controls before having opened it 
 
 ## 21.2.1
 

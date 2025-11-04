@@ -6,6 +6,10 @@
 
 /* Dropdowns: Background Options */
 
+#background-video-sound-options.shown {
+	max-height: 70px;
+}
+
 #solid_options.shown {
 	max-height: 400px;
 }

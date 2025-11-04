@@ -1,7 +1,7 @@
 import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
-import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
+import { backgroundUpdate, initBackgroundOptions, toggleMuteStatus } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
@@ -47,6 +47,10 @@ export function settingsInit(sync: Sync, local: Local) {
 
 	settingsInitSync = sync
 	settingsInitLocal = local
+
+	document.addEventListener('updateSettingsBeforeInit', (e) => {
+		settingsInitSync = (e as CustomEvent).detail
+	})
 
 	document.body?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
@@ -230,6 +234,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
 	setCheckbox('i_background-local-compress', local.backgroundCompressFiles ?? true)
+	setCheckbox('i_background-mute-videos', data.backgrounds.mute ?? true)
 	setCheckbox('i_quicklinks', data.quicklinks)
 	setCheckbox('i_linkgroups', data?.linkgroups?.on)
 	setCheckbox('i_linknewtab', data.linknewtab)
@@ -536,6 +541,11 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_background-local-compress'), (_event, target) => {
 		backgroundUpdate({ compress: target.checked })
+	})
+
+	onclickdown(paramId('i_background-mute-videos'), (_, target) => {
+		toggleMuteStatus(target.checked)
+		backgroundUpdate({ mute: target.checked }) 
 	})
 
 	// Background filters

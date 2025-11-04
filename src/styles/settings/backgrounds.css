@@ -131,9 +131,9 @@
 }
 
 .thumbnail[data-format='video'] .thumbnail-format-icon {
-	bottom: 5%;
-	right: 5%;
-	border-radius: 4px;
+	bottom: .75em;
+	right: .75em;
+	border-radius: 7px;
 	background-color: #fff4;
 
 	/* https://css.gg/icon/play-button/css */

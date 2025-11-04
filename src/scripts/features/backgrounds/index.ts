@@ -1,6 +1,6 @@
 import { applyUrls, getUrlsAsCollection, initUrlsEditor, urlsCacheControl } from './urls.ts'
-import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
-import { handleBackgroundActions } from '../contextmenu.ts'
+import { toggleCredits, updateCredits } from './credits.ts'
+import { handleBackgroundActions, initBackgroundActionsEvents } from '../contextmenu.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 import {
@@ -44,6 +44,7 @@ interface BackgroundUpdate {
 	texturecolor?: string
 	texturesize?: string
 	textureopacity?: string
+	mute?: boolean
 }
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
@@ -71,7 +72,7 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 		const isPaused = sync.backgrounds.frequency === 'pause'
 		pauseButton?.classList.toggle('paused', isPaused)
 
-		initCreditEvents()
+		initBackgroundActionsEvents()
 
 		document.addEventListener('visibilitychange', pauseVideoOnVisibilityChange)
 	}
@@ -208,6 +209,11 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		applyBackground(image)
 	}
 
+	if (update.mute !== undefined) {
+		data.backgrounds.mute = update.mute
+		storage.sync.set({ backgrounds: data.backgrounds })
+	}
+
 	// Textures
 
 	if (update.texturecolor !== undefined) {
@@ -235,6 +241,11 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		handleBackgroundOptions(data.backgrounds)
 		applyTexture(data.backgrounds.texture)
 	}
+
+
+	document.dispatchEvent(new CustomEvent('updateSettingsBeforeInit', {
+		detail: data
+	}))
 
 	// Images & Videos only
 
@@ -814,6 +825,7 @@ function handleBackgroundOptions(backgrounds: Backgrounds) {
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
+	document.getElementById('background-video-sound-options')?.classList.toggle('shown', type === 'videos' || type === "files")
 
 	handleTextureOptions(backgrounds)
 	handleProviderOptions(backgrounds)
@@ -1054,6 +1066,16 @@ function getAverageColor(img: HTMLImageElement) {
 	} catch (_error) {
 		//...
 	}
+}
+
+export function toggleMuteStatus(muted: boolean = true) {
+	document.querySelectorAll<HTMLVideoElement>('#background-media video').forEach(function(video) {
+		video.dispatchEvent(new CustomEvent("muteStatusChange", {
+			detail: {
+				status: muted,
+			},
+		}))
+	})
 }
 
 function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
