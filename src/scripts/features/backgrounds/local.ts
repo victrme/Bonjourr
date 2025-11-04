@@ -164,24 +164,33 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const ratio = Math.min(1.8, long / short)
 			const averagePixelHeight = short * ratio * density
 
+			const isSmallEnough = file.size < 80000 // 80kb
+			const isGif = file.type.includes('image/gif')
+			const isImage = file.type.includes('image/')
+			const isVideo = file.type.includes('video/')
+
 			const raw: File = file
 			let full: Blob = file
 			let medium: Blob = file
 			let small: Blob = file
 
-			if (file.type.includes('image/gif')) {
-				small = await compressAsBlob(file, { size: 360, q: 0.4 })
-			} //
-			else if (file.type.includes('image/')) {
-				full = await compressAsBlob(file, { size: averagePixelHeight, q: 0.8 })
-				small = await compressAsBlob(medium, { size: 360, q: 0.3 })
-				medium = small
-			} //
-			else if (file.type.includes('video/')) {
-				const thumb = await generateImageFromVideo(file)
+			if (!isSmallEnough) {
+				if (isGif) {
+					small = await compressAsBlob(file, { size: 360, q: 0.4 })
+				}
 
-				if (thumb) {
-					small = await compressAsBlob(thumb, { size: 360, q: 0.3 })
+				if (isImage && !isGif) {
+					full = await compressAsBlob(file, { size: averagePixelHeight, q: 0.8 })
+					small = await compressAsBlob(medium, { size: 360, q: 0.3 })
+					medium = small
+				}
+
+				if (isVideo) {
+					const thumb = await generateImageFromVideo(file)
+
+					if (thumb) {
+						small = await compressAsBlob(thumb, { size: 360, q: 0.3 })
+					}
 				}
 			}
 
