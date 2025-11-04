@@ -1,3 +1,7 @@
+:root {
+	--pmdr-focus-transition: 0.25s;
+}
+
 /* vignette */
 body #background-wrapper:after {
 	content: '';
@@ -24,14 +28,25 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 #pomodoro_container {
 	display: flex;
 	flex-direction: column;
-	gap: 1em;
 	max-width: 45em;
 	min-width: 20em;
 	cursor: initial;
 	font-size: var(--pomodoro-font-size); /* important to be in px for focus animation */
+}
 
-	will-change: transform;
-	transition: transform 0.2s ease;
+@media screen and (prefers-reduced-motion: no-preference) {
+	#pomodoro_container.clone {
+		will-change: transform, gap;
+		transition: transform var(--pmdr-focus-transition) ease, gap var(--pmdr-focus-transition) ease;
+	}
+}
+
+#pomodoro_container.outOfFocus {
+	gap: .75em;
+}
+
+#pomodoro_container.onFocus {
+	gap: 1em;
 }
 
 #pomodoro_container.hidden {
@@ -160,19 +175,20 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 #pmdr_timer {
 	display: block;
-	font-weight: 600;
 }
 
 #pomodoro_container.clone #pmdr_timer {
-	transition: font-size 0.2s ease;
+	transition: font-weight var(--pmdr-focus-transition) ease, font-size var(--pmdr-focus-transition) ease;
 }
 
 #pomodoro_container.onFocus #pmdr_timer {
 	font-size: 6em;
+	font-weight: 600;
 }
 
 #pomodoro_container.outOfFocus #pmdr_timer {
 	font-size: 4em;
+	font-weight: 400;
 }
 
 #bottomControls {

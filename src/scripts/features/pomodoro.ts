@@ -386,13 +386,12 @@ function handleToggle(state: boolean) {
 }
 
 export function togglePomodoroFocus(focus: boolean) {
-	focusButton.checked = focus
-
 	// needed for sliding animation
 	const enablingFocus = focus && !currentPomodoroData.focus
 	const disablingFocus = !focus && currentPomodoroData.focus
 	const switching = disablingFocus || enablingFocus
-
+	
+	focusButton.checked = focus
 	currentPomodoroData.focus = focus
 
 	if (!switching) {
