@@ -8,21 +8,25 @@
 - 	Context menu on the whole page, allows you to: 
 	-	Add quick links from anywhere
 	-	Access widget settings easily
-	-	Control your background
+	-	Control your backgrounds
 - 	New quick link icon types:
 	-	Automatic
 	-	URL
 	-	Import your own
-- 	Import your own video files as backgrounds
-- 	Import background images from a distant server with the new background URLs option
+- 	Backgrounds:
+	-	Local files: you can now import videos!
+	-	URLs option: import background images from a distant server
+	-	Videos can now have sound (muted by default)
 -	Refreshed look for the settings!
 - 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
 - 	Fixes and improvements:
+	-	When using local files, only images over 80Kb will be compressed
+    -	PNGs under 256px wide/high now use pixelated image rendering (useful for pixel art backgrounds)
 	-	You can now force the native OS context menu by right clicking + alt key
 	-	Restored centered default positioning for backgrounds
 	-	More reliable touch screen interactions 
 	-	Fix most languages not having a capital letter on date
-	-	Removed the favicon as emoji input in Edge as Microsoft as broken the functionality (#700)
+	-	Removed the favicon as emoji input in Edge as Microsoft has broken the functionality (#700)
 	-	Fixed an issue in Safari where the JSON settings textarea in "settings management" would be broken when focused on
 	-	Background frequency "Pause" was renamed "Locked" for better clarity
 	-	Fixed a bug where the settings panel wouldn't be up to date if you used background controls before having opened it 
