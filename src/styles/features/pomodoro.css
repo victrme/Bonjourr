@@ -160,8 +160,19 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 #pmdr_timer {
 	display: block;
-	font-size: 6em;
 	font-weight: 600;
+}
+
+#pomodoro_container.clone {
+	transition: font-size 0.2s ease;
+}
+
+#pomodoro_container.onFocus #pmdr_timer {
+	font-size: 6em;
+}
+
+#pomodoro_container.outOfFocus #pmdr_timer {
+	font-size: 4em;
 }
 
 #bottomControls {

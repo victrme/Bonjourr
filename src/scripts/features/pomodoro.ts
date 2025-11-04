@@ -387,6 +387,8 @@ function handleToggle(state: boolean) {
 
 export function togglePomodoroFocus(focus: boolean) {
 	focusButton.checked = focus
+	pomodoroContainer.classList.toggle('onFocus', focus)
+	pomodoroContainer.classList.toggle('outOfFocus', !focus)
 
 	// needed for sliding animation
 	const enablingFocus = focus && !currentPomodoroData.focus
@@ -404,10 +406,16 @@ export function togglePomodoroFocus(focus: boolean) {
 		clone.style.top = originalRect.top + 'px'
 		clone.style.left = originalRect.left + 'px'
 		clone.style.fontFamily = document.documentElement.style.getPropertyValue('--font-family')
-		document.body.appendChild(clone)
 
+		document.body.appendChild(clone)
+		
+		// clone.classList.remove('onFocus', 'outOfFocus')
+		// clone.classList.toggle('onFocus', !enablingFocus)
+		// clone.classList.toggle('outOfFocus', enablingFocus)
+		
 		// Apply focus mode to the DOM so we can measure the target position
 		pomodoroContainer.style.visibility = 'hidden'
+		
 		document.body.classList.toggle('pomodoro-focus', enablingFocus)
 
 		// once the original pomodoro is moved to its final location, stores and figures out its position
@@ -417,6 +425,8 @@ export function togglePomodoroFocus(focus: boolean) {
 
 		// Start the animation
 		requestAnimationFrame(() => {
+			// clone.classList.remove('onFocus', 'outOfFocus')
+			// clone.classList.add(enablingFocus ? 'onFocus' : 'outOfFocus')
 			clone.style.transform = `translate(${deltaX}px, ${deltaY}px)`
 		})
 
@@ -428,7 +438,7 @@ export function togglePomodoroFocus(focus: boolean) {
 			pomodoroContainer.style.visibility = 'visible'
 
 			// yeets the clone
-			clone.remove()
+			// clone.remove()
 		})
 	} else {
 		document.body.classList.toggle('pomodoro-focus', focus)
