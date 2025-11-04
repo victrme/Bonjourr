@@ -387,13 +387,18 @@ function handleToggle(state: boolean) {
 
 export function togglePomodoroFocus(focus: boolean) {
 	focusButton.checked = focus
-	pomodoroContainer.classList.toggle('onFocus', focus)
-	pomodoroContainer.classList.toggle('outOfFocus', !focus)
 
 	// needed for sliding animation
 	const enablingFocus = focus && !currentPomodoroData.focus
 	const disablingFocus = !focus && currentPomodoroData.focus
 	const switching = disablingFocus || enablingFocus
+
+	currentPomodoroData.focus = focus
+
+	if (!switching) {
+		pomodoroContainer.classList.toggle('onFocus', focus)
+		pomodoroContainer.classList.toggle('outOfFocus', !focus)
+	}
 
 	// if not switching, no animation (for when toggling from page refresh or smt)
 	// also animation won't play if the tab isn't open
@@ -417,6 +422,9 @@ export function togglePomodoroFocus(focus: boolean) {
 		// Apply focus mode to the DOM so we can measure the target position
 		pomodoroContainer.style.visibility = 'hidden'
 		document.body.classList.toggle('pomodoro-focus', enablingFocus)
+
+		pomodoroContainer.classList.toggle('onFocus', focus)
+		pomodoroContainer.classList.toggle('outOfFocus', !focus)
 
 		// once the original pomodoro is moved to its final location, stores and figures out its position
 		const targetRect = pomodoroContainer.getBoundingClientRect()
