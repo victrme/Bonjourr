@@ -1,6 +1,6 @@
 import { applyUrls, getUrlsAsCollection, initUrlsEditor, urlsCacheControl } from './urls.ts'
-import { initCreditEvents, toggleCredits, updateCredits } from './credits.ts'
-import { handleBackgroundActions } from '../contextmenu.ts'
+import { toggleCredits, updateCredits } from './credits.ts'
+import { handleBackgroundActions, initBackgroundActionsEvents } from '../contextmenu.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 import {
@@ -72,7 +72,7 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
 		const isPaused = sync.backgrounds.frequency === 'pause'
 		pauseButton?.classList.toggle('paused', isPaused)
 
-		initCreditEvents()
+		initBackgroundActionsEvents()
 
 		document.addEventListener('visibilitychange', pauseVideoOnVisibilityChange)
 	}
