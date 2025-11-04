@@ -665,6 +665,10 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
 	const img = new Image()
 
 	img.addEventListener('load', () => {
+		const isSmall = img.width <= 256 && img.height <= 256
+		const isPng = media.mimetype?.includes('png')
+
+		backgroundsWrapper?.classList.toggle('pixelated', isPng && isSmall)
 		backgroundsWrapper?.classList.remove('hidden')
 		applySafariThemeColor(media, img)
 		updateCredits(media)

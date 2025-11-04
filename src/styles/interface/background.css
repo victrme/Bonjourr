@@ -24,11 +24,12 @@
 	min-height: var(--app-height);
 	min-height: 100lvh;
 	overflow: hidden;
-}
-
-#background-wrapper {
 	z-index: -1;
 	transition: opacity var(--fade-in);
+}
+
+#background-wrapper.pixelated {
+	image-rendering: pixelated;
 }
 
 #background-media > div,
