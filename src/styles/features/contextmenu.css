@@ -114,6 +114,10 @@ dialog#contextmenu button > svg, dialog#contextmenu button .iconContainer {
 	width: 18px;
 }
 
+dialog#contextmenu button .iconContainer svg {
+	width: 100%;
+}
+
 dialog#contextmenu button .iconContainer {
 	padding: 2px; /* other icons have natural padding in the svg file */ 
 	box-sizing: border-box;

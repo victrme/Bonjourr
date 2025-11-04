@@ -34,11 +34,13 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	font-size: var(--pomodoro-font-size); /* important to be in px for focus animation */
 }
 
-@media screen and (prefers-reduced-motion: no-preference) {
-	#pomodoro_container.clone {
-		will-change: transform, gap;
-		transition: transform var(--pmdr-focus-transition) ease, gap var(--pmdr-focus-transition) ease;
-	}
+#pomodoro_container.clone {
+	will-change: transform, gap;
+	transition: transform var(--pmdr-focus-transition) ease, gap var(--pmdr-focus-transition) ease;
+}
+
+#pomodoro_container.clone #pmdr_timer {
+	transition: font-weight var(--pmdr-focus-transition) ease, font-size var(--pmdr-focus-transition) ease;
 }
 
 #pomodoro_container.outOfFocus {
@@ -97,6 +99,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 #pmdr_modes .pomodoro_mode.active {
 	background: rgba(255, 255, 255, 0.15);
 	backdrop-filter: blur(2px) saturate(180%);
+	-webkit-backdrop-filter: blur(2px) saturate(180%);
 	box-shadow:
 		0 8px 32px rgba(31, 38, 135, 0.2),
 		inset 0 4px 20px rgba(255, 255, 255, 0.3);
@@ -113,6 +116,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	position: relative;
 	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
+	-webkit-backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.6);
 	box-shadow:
 		0 8px 32px rgba(31, 38, 135, 0.17),
@@ -137,6 +141,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 2rem;
 	backdrop-filter: blur(1px);
+	-webkit-backdrop-filter: blur(1px);
 	box-shadow:
 		inset -10px -8px 0px -11px rgba(255, 255, 255, 0.9),
 		inset 0px -9px 0px -8px rgba(255, 255, 255, 0.9);
@@ -177,10 +182,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	display: block;
 }
 
-#pomodoro_container.clone #pmdr_timer {
-	transition: font-weight var(--pmdr-focus-transition) ease, font-size var(--pmdr-focus-transition) ease;
-}
-
 #pomodoro_container.onFocus #pmdr_timer {
 	font-size: 6em;
 	font-weight: 600;
@@ -215,6 +216,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #focus-toggle {
+	position: relative;
 	display: flex;
 	align-items: center;
 	gap: 8px;
@@ -226,6 +228,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	user-select: none;
 	-webkit-user-select: none;
 	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 	background: rgba(255, 255, 255, 0.1);
 	border: 1px solid #fff1;
 	transition:
@@ -238,6 +241,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 #focus-toggle:hover {
 	background: rgba(255, 255, 255, 0.12);
 	backdrop-filter: blur(2px) saturate(180%);
+	-webkit-backdrop-filter: blur(2px) saturate(180%);
 	border: 1px solid rgba(255, 255, 255, 0.7);
 	box-shadow:
 		0 8px 32px rgba(31, 38, 135, 0.17),
@@ -262,6 +266,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	background: rgba(255, 255, 255, 0.1);
 	border-radius: 2rem;
 	backdrop-filter: blur(1px);
+	-webkit-backdrop-filter: blur(1px);
 	box-shadow:
 		inset -10px -8px 0px -11px rgba(255, 255, 255, 0.9),
 		inset 0px -9px 0px -8px rgba(255, 255, 255, 0.9);
