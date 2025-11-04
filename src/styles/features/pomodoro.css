@@ -163,7 +163,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	font-weight: 600;
 }
 
-#pomodoro_container.clone {
+#pomodoro_container.clone #pmdr_timer {
 	transition: font-size 0.2s ease;
 }
 
