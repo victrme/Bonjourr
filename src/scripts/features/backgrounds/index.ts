@@ -34,7 +34,6 @@ interface BackgroundUpdate {
 	color?: string
 	query?: SubmitEvent
 	files?: FileList | null
-	compress?: boolean
 	bright?: string
 	fadein?: string
 	refresh?: Event
@@ -199,16 +198,6 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		addLocalBackgrounds(update.files, local)
 	}
 
-	if (update.compress !== undefined) {
-		local.backgroundCompressFiles = update.compress
-		storage.local.set({ backgroundCompressFiles: update.compress })
-
-		const ids = lastUsedBackgroundFiles(local.backgroundFiles)
-		const image = await mediaFromFiles(ids[0], local, undefined)
-
-		applyBackground(image)
-	}
-
 	if (update.mute !== undefined) {
 		data.backgrounds.mute = update.mute
 		storage.sync.set({ backgrounds: data.backgrounds })
@@ -242,10 +231,11 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 		applyTexture(data.backgrounds.texture)
 	}
 
-
-	document.dispatchEvent(new CustomEvent('updateSettingsBeforeInit', {
-		detail: data
-	}))
+	document.dispatchEvent(
+		new CustomEvent('updateSettingsBeforeInit', {
+			detail: data,
+		}),
+	)
 
 	// Images & Videos only
 
@@ -818,6 +808,7 @@ export function initBackgroundOptions(sync: Sync, local: Local) {
 
 function handleBackgroundOptions(backgrounds: Backgrounds) {
 	const type = backgrounds.type
+	const withVideos = type === 'videos' || type === 'files' || type === 'urls'
 
 	document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
 	document.getElementById('solid_options')?.classList.toggle('shown', type === 'color')
@@ -825,7 +816,7 @@ function handleBackgroundOptions(backgrounds: Backgrounds) {
 	document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
 	document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
 	document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
-	document.getElementById('background-video-sound-options')?.classList.toggle('shown', type === 'videos' || type === "files")
+	document.getElementById('background-video-sound-options')?.classList.toggle('shown', withVideos)
 
 	handleTextureOptions(backgrounds)
 	handleProviderOptions(backgrounds)
@@ -1068,13 +1059,15 @@ function getAverageColor(img: HTMLImageElement) {
 	}
 }
 
-export function toggleMuteStatus(muted: boolean = true) {
-	document.querySelectorAll<HTMLVideoElement>('#background-media video').forEach(function(video) {
-		video.dispatchEvent(new CustomEvent("muteStatusChange", {
-			detail: {
-				status: muted,
-			},
-		}))
+export function toggleMuteStatus(muted = true) {
+	document.querySelectorAll<HTMLVideoElement>('#background-media video').forEach(function (video) {
+		video.dispatchEvent(
+			new CustomEvent('muteStatusChange', {
+				detail: {
+					status: muted,
+				},
+			}),
+		)
 	})
 }
 

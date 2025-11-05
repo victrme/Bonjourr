@@ -70,7 +70,6 @@ function clickUserActions(event: MouseEvent) {
 		folder: path.some((el) => el.className.includes('in-folder')),
 		button: path.some((el) => el.className.includes('param-btn')),
 		localfiles: path.some((el) => el.id === 'local_options'),
-		localthumbnail: path.some((el) => el.className.includes('thumbnail')),
 		interface: pathIds.includes('interface'),
 		contextmenu: pathIds.includes('contextmenu'),
 		settings: path.some((el) => el.id === 'settings'),
@@ -88,7 +87,7 @@ function clickUserActions(event: MouseEvent) {
 		document.body?.classList.toggle('tabbing', false)
 	}
 
-	if (document.querySelectorAll('.thumbnail.selected') && !on.localthumbnail && !on.button) {
+	if (document.querySelectorAll('.thumbnail.selected') && !on.localfiles && !on.button) {
 		for (const node of document.querySelectorAll('.thumbnail.selected')) {
 			node.classList.remove('selected')
 		}

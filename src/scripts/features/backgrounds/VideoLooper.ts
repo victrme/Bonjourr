@@ -1,4 +1,4 @@
-import { storage } from "../../storage"
+import { storage } from '../../storage.ts'
 
 export class VideoLooper {
 	private video1: HTMLVideoElement
@@ -128,7 +128,7 @@ export class VideoLooper {
 			const isMuted = result.backgrounds?.mute ?? true
 			video.muted = isMuted
 		} catch (err) {
-			console.error('Failed to fetch mute status', err);
+			console.error('Failed to fetch mute status', err)
 			video.muted = true
 		}
 	}
@@ -157,11 +157,9 @@ export class VideoLooper {
 			this.container.prepend(elem)
 		})
 
-		elem.addEventListener("muteStatusChange",
-			function (event: CustomEvent<{ status: boolean }>) {
-				elem.muted = event.detail.status
-			} as EventListener
-		)
+		elem.addEventListener('muteStatusChange', function (event: CustomEvent<{ status: boolean }>) {
+			elem.muted = event.detail.status
+		} as EventListener)
 
 		return elem
 	}

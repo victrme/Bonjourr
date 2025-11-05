@@ -20,99 +20,18 @@ type LocalFileData = {
 	small: Blob
 }
 
-type LocalFileOption = 'size' | 'vertical' | 'horizontal' | 'video-zoom' | 'playback-speed' | 'loop-fade'
+type LocalFileOption =
+	| 'size'
+	| 'vertical'
+	| 'horizontal'
+	| 'video-zoom'
+	| 'playback-speed'
+	| 'loop-fade'
+	| 'use-compressed'
 
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 let currentVideoLooper: VideoLooper
-
-export function setCurrentVideo(src: string, fade: number, playback: number): VideoLooper {
-	currentVideoLooper = new VideoLooper(src, fade, playback)
-	return currentVideoLooper
-}
-
-export function getCurrentVideo(): VideoLooper | undefined {
-	return currentVideoLooper
-}
-
-async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
-	const video = document.createElement('video')
-
-	const url = URL.createObjectURL(file)
-	video.src = url
-
-	await new Promise((r) => {
-		video.addEventListener('loadeddata', () => r(true))
-		video.load()
-	})
-
-	URL.revokeObjectURL(url)
-
-	return video
-}
-
-async function generateImageFromVideo(file: File): Promise<Blob | null> {
-	const video = await getLoadedVideo(file)
-	const canvas = document.createElement('canvas')
-	const ctx = canvas.getContext('2d')
-
-	if (!ctx) {
-		throw new Error('Canvas context failed for ' + file.name)
-	}
-
-	ctx.canvas.width = video.videoWidth
-	ctx.canvas.height = video.videoHeight
-
-	document.body.append(video)
-	video.style.display = 'none'
-	video.play()
-	video.pause()
-
-	const blob = await new Promise<Blob>((resolve, reject) => {
-		const toBlobCallback: BlobCallback = (blob) => blob ? resolve(blob) : reject(true)
-
-		// <!> 300ms is completely arbitrary,
-		// <!> videos taking more than that to load will show a black thumbnail
-		setTimeout(() => {
-			ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
-			ctx.canvas.toBlob(toBlobCallback, 'image/jpeg', 0.8)
-		}, 300)
-	})
-
-	video.remove()
-
-	return blob
-}
-
-export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
-	local = await sanitizeMetadatas(local)
-
-	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
-
-	if (ids.length === 0) {
-		removeBackgrounds()
-		return
-	}
-
-	const freq = backgrounds.frequency
-	const metadata = local.backgroundFiles[ids[0]]
-	const lastUsed = new Date(metadata.lastUsed).getTime()
-
-	needNew ??= needsChange(freq, lastUsed)
-
-	if (ids.length > 1 && needNew) {
-		ids.shift()
-
-		const rand = Math.floor(Math.random() * ids.length)
-		const id = ids[rand]
-
-		applyBackground(await mediaFromFiles(id, local))
-		local.backgroundFiles[id].lastUsed = new Date().toString()
-		storage.local.set(local)
-	} else {
-		applyBackground(await mediaFromFiles(ids[0], local))
-	}
-}
 
 // Update
 
@@ -209,6 +128,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 					zoom: 1,
 				}
 			} else {
+				local.backgroundFiles[id].useCompressed = true
 				local.backgroundFiles[id].format = 'image'
 				local.backgroundFiles[id].position = {
 					size: 'cover',
@@ -301,12 +221,8 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 		console.error('Cannot find file')
 		return
 	}
-	if (!backgroundImage || !videoContainer) {
-		console.error('Cannot find backgrounds in dom')
-		return
-	}
 
-	if (isImage) {
+	if (isImage && backgroundImage) {
 		if (!file.position) {
 			file.position = {
 				size: 'cover',
@@ -327,9 +243,13 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 			file.position.x = `${value}%`
 			backgroundImage.style.backgroundPositionX = file.position.x
 		}
+		if (option === 'use-compressed') {
+			file.useCompressed = value === 'true'
+			applyBackground(await mediaFromFiles(selection, local, undefined, file))
+		}
 	}
 
-	if (isVideo) {
+	if (isVideo && videoContainer) {
 		const video = getCurrentVideo()
 
 		if (!video) {
@@ -385,6 +305,7 @@ export function initFilesSettingsOptions(local: Local) {
 	document.getElementById('i_background-size')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-vertical')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-horizontal')?.addEventListener('input', fileOptionsEvent)
+	document.getElementById('i_background-compress')?.addEventListener('change', fileOptionsEvent)
 	document.getElementById('i_background-loop-fade')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-video-zoom')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-playback-speed')?.addEventListener('input', fileOptionsEvent)
@@ -423,11 +344,12 @@ function handleFilesSettingsOptions(local: Local) {
 function handleFileOptions(file: BackgroundFile) {
 	const domSize = document.querySelector<HTMLInputElement>('#i_background-size')
 	const domVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
+	const domCompress = document.querySelector<HTMLInputElement>('#i_background-compress')
 	const domHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
 	const domLoopFade = document.querySelector<HTMLInputElement>('#i_background-loop-fade')
 	const domVideoZoom = document.querySelector<HTMLInputElement>('#i_background-video-zoom')
 	const domPlaybackRate = document.querySelector<HTMLInputElement>('#i_background-playback-speed')
-	const imageRangesExist = domSize && domVertical && domHorizontal
+	const imageRangesExist = domSize && domVertical && domHorizontal && domCompress
 	const videoRangesExist = domLoopFade && domVideoZoom && domPlaybackRate
 
 	const domFileImage = document.getElementById('background-file-image')
@@ -450,9 +372,15 @@ function handleFileOptions(file: BackgroundFile) {
 
 	if (imageRangesExist && isImage) {
 		const pos = file.position ?? imageDefaults
+
 		domSize.value = (pos.size === 'cover' ? '100' : pos.size).replace('%', '')
 		domVertical.value = pos.y.replace('%', '')
 		domHorizontal.value = pos.x.replace('%', '')
+		domCompress.checked = file.useCompressed ?? true
+
+		webkitRangeTrackColor(domSize)
+		webkitRangeTrackColor(domVertical)
+		webkitRangeTrackColor(domHorizontal)
 	}
 
 	if (videoRangesExist && isVideo) {
@@ -487,7 +415,7 @@ function toggleFileOptions(force?: boolean) {
 }
 
 function fileOptionsEvent(this: HTMLInputElement) {
-	const { id, value } = this
+	const { id, value, checked } = this
 
 	if (id === 'i_background-size') {
 		updateFileOptions('size', value)
@@ -497,6 +425,9 @@ function fileOptionsEvent(this: HTMLInputElement) {
 	}
 	if (id === 'i_background-horizontal') {
 		updateFileOptions('horizontal', value)
+	}
+	if (id === 'i_background-compress') {
+		updateFileOptions('use-compressed', checked.toString())
 	}
 	if (id === 'i_background-video-zoom') {
 		updateFileOptions('video-zoom', value)
@@ -655,9 +586,13 @@ export function lastUsedBackgroundFiles(metadatas: Local['backgroundFiles']): st
 	return sortedMetadata.map(([id, _]) => id)
 }
 
-export async function mediaFromFiles(id: string, local: Local, data?: LocalFileData): Promise<Background> {
-	const isRaw = local.backgroundCompressFiles === false
-	const metadata = local.backgroundFiles[id]
+export async function mediaFromFiles(
+	id: string,
+	local: Local,
+	data?: LocalFileData,
+	metadata?: BackgroundFile,
+): Promise<Background> {
+	metadata ??= local.backgroundFiles[id]
 
 	data = data ?? (await getFileFromCache(id))
 
@@ -697,7 +632,7 @@ export async function mediaFromFiles(id: string, local: Local, data?: LocalFileD
 			mimetype: data.raw.type,
 			file: metadata,
 			urls: {
-				full: isRaw ? urls.raw : urls.full,
+				full: metadata.useCompressed === false ? urls.raw : urls.full,
 				medium: urls.small,
 				small: urls.small,
 			},
@@ -719,6 +654,96 @@ function getSelection(): string[] {
 	const thmbs = document.querySelectorAll<HTMLElement>('.thumbnail.selected')
 	const ids = Object.values(thmbs).map((thmb) => thmb?.id ?? '')
 	return ids
+}
+
+// Video
+
+export function setCurrentVideo(src: string, fade: number, playback: number): VideoLooper {
+	currentVideoLooper = new VideoLooper(src, fade, playback)
+	return currentVideoLooper
+}
+
+export function getCurrentVideo(): VideoLooper | undefined {
+	return currentVideoLooper
+}
+
+async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
+	const video = document.createElement('video')
+
+	const url = URL.createObjectURL(file)
+	video.src = url
+
+	await new Promise((r) => {
+		video.addEventListener('loadeddata', () => r(true))
+		video.load()
+	})
+
+	URL.revokeObjectURL(url)
+
+	return video
+}
+
+async function generateImageFromVideo(file: File): Promise<Blob | null> {
+	const video = await getLoadedVideo(file)
+	const canvas = document.createElement('canvas')
+	const ctx = canvas.getContext('2d')
+
+	if (!ctx) {
+		throw new Error('Canvas context failed for ' + file.name)
+	}
+
+	ctx.canvas.width = video.videoWidth
+	ctx.canvas.height = video.videoHeight
+
+	document.body.append(video)
+	video.style.display = 'none'
+	video.play()
+	video.pause()
+
+	const blob = await new Promise<Blob>((resolve, reject) => {
+		const toBlobCallback: BlobCallback = (blob) => blob ? resolve(blob) : reject(true)
+
+		// <!> 300ms is completely arbitrary,
+		// <!> videos taking more than that to load will show a black thumbnail
+		setTimeout(() => {
+			ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+			ctx.canvas.toBlob(toBlobCallback, 'image/jpeg', 0.8)
+		}, 300)
+	})
+
+	video.remove()
+
+	return blob
+}
+
+export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
+	local = await sanitizeMetadatas(local)
+
+	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
+
+	if (ids.length === 0) {
+		removeBackgrounds()
+		return
+	}
+
+	const freq = backgrounds.frequency
+	const metadata = local.backgroundFiles[ids[0]]
+	const lastUsed = new Date(metadata.lastUsed).getTime()
+
+	needNew ??= needsChange(freq, lastUsed)
+
+	if (ids.length > 1 && needNew) {
+		ids.shift()
+
+		const rand = Math.floor(Math.random() * ids.length)
+		const id = ids[rand]
+
+		applyBackground(await mediaFromFiles(id, local))
+		local.backgroundFiles[id].lastUsed = new Date().toString()
+		storage.local.set(local)
+	} else {
+		applyBackground(await mediaFromFiles(ids[0], local))
+	}
 }
 
 //  Storage
