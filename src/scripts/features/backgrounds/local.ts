@@ -33,94 +33,6 @@ let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 let currentVideoLooper: VideoLooper
 
-export function setCurrentVideo(src: string, fade: number, playback: number): VideoLooper {
-	currentVideoLooper = new VideoLooper(src, fade, playback)
-	return currentVideoLooper
-}
-
-export function getCurrentVideo(): VideoLooper | undefined {
-	return currentVideoLooper
-}
-
-async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
-	const video = document.createElement('video')
-
-	const url = URL.createObjectURL(file)
-	video.src = url
-
-	await new Promise((r) => {
-		video.addEventListener('loadeddata', () => r(true))
-		video.load()
-	})
-
-	URL.revokeObjectURL(url)
-
-	return video
-}
-
-async function generateImageFromVideo(file: File): Promise<Blob | null> {
-	const video = await getLoadedVideo(file)
-	const canvas = document.createElement('canvas')
-	const ctx = canvas.getContext('2d')
-
-	if (!ctx) {
-		throw new Error('Canvas context failed for ' + file.name)
-	}
-
-	ctx.canvas.width = video.videoWidth
-	ctx.canvas.height = video.videoHeight
-
-	document.body.append(video)
-	video.style.display = 'none'
-	video.play()
-	video.pause()
-
-	const blob = await new Promise<Blob>((resolve, reject) => {
-		const toBlobCallback: BlobCallback = (blob) => blob ? resolve(blob) : reject(true)
-
-		// <!> 300ms is completely arbitrary,
-		// <!> videos taking more than that to load will show a black thumbnail
-		setTimeout(() => {
-			ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
-			ctx.canvas.toBlob(toBlobCallback, 'image/jpeg', 0.8)
-		}, 300)
-	})
-
-	video.remove()
-
-	return blob
-}
-
-export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
-	local = await sanitizeMetadatas(local)
-
-	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
-
-	if (ids.length === 0) {
-		removeBackgrounds()
-		return
-	}
-
-	const freq = backgrounds.frequency
-	const metadata = local.backgroundFiles[ids[0]]
-	const lastUsed = new Date(metadata.lastUsed).getTime()
-
-	needNew ??= needsChange(freq, lastUsed)
-
-	if (ids.length > 1 && needNew) {
-		ids.shift()
-
-		const rand = Math.floor(Math.random() * ids.length)
-		const id = ids[rand]
-
-		applyBackground(await mediaFromFiles(id, local))
-		local.backgroundFiles[id].lastUsed = new Date().toString()
-		storage.local.set(local)
-	} else {
-		applyBackground(await mediaFromFiles(ids[0], local))
-	}
-}
-
 // Update
 
 export async function addLocalBackgrounds(filelist: FileList | File[], local: Local) {
@@ -742,6 +654,96 @@ function getSelection(): string[] {
 	const thmbs = document.querySelectorAll<HTMLElement>('.thumbnail.selected')
 	const ids = Object.values(thmbs).map((thmb) => thmb?.id ?? '')
 	return ids
+}
+
+// Video
+
+export function setCurrentVideo(src: string, fade: number, playback: number): VideoLooper {
+	currentVideoLooper = new VideoLooper(src, fade, playback)
+	return currentVideoLooper
+}
+
+export function getCurrentVideo(): VideoLooper | undefined {
+	return currentVideoLooper
+}
+
+async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
+	const video = document.createElement('video')
+
+	const url = URL.createObjectURL(file)
+	video.src = url
+
+	await new Promise((r) => {
+		video.addEventListener('loadeddata', () => r(true))
+		video.load()
+	})
+
+	URL.revokeObjectURL(url)
+
+	return video
+}
+
+async function generateImageFromVideo(file: File): Promise<Blob | null> {
+	const video = await getLoadedVideo(file)
+	const canvas = document.createElement('canvas')
+	const ctx = canvas.getContext('2d')
+
+	if (!ctx) {
+		throw new Error('Canvas context failed for ' + file.name)
+	}
+
+	ctx.canvas.width = video.videoWidth
+	ctx.canvas.height = video.videoHeight
+
+	document.body.append(video)
+	video.style.display = 'none'
+	video.play()
+	video.pause()
+
+	const blob = await new Promise<Blob>((resolve, reject) => {
+		const toBlobCallback: BlobCallback = (blob) => blob ? resolve(blob) : reject(true)
+
+		// <!> 300ms is completely arbitrary,
+		// <!> videos taking more than that to load will show a black thumbnail
+		setTimeout(() => {
+			ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+			ctx.canvas.toBlob(toBlobCallback, 'image/jpeg', 0.8)
+		}, 300)
+	})
+
+	video.remove()
+
+	return blob
+}
+
+export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
+	local = await sanitizeMetadatas(local)
+
+	const ids = lastUsedBackgroundFiles(local.backgroundFiles)
+
+	if (ids.length === 0) {
+		removeBackgrounds()
+		return
+	}
+
+	const freq = backgrounds.frequency
+	const metadata = local.backgroundFiles[ids[0]]
+	const lastUsed = new Date(metadata.lastUsed).getTime()
+
+	needNew ??= needsChange(freq, lastUsed)
+
+	if (ids.length > 1 && needNew) {
+		ids.shift()
+
+		const rand = Math.floor(Math.random() * ids.length)
+		const id = ids[rand]
+
+		applyBackground(await mediaFromFiles(id, local))
+		local.backgroundFiles[id].lastUsed = new Date().toString()
+		storage.local.set(local)
+	} else {
+		applyBackground(await mediaFromFiles(ids[0], local))
+	}
 }
 
 //  Storage
