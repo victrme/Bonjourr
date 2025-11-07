@@ -833,7 +833,7 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 }
 
 function setRadius(radius: string | number) {
-	document.documentElement.style.setProperty('--link-inner-radius', `${radius}em`)
+	document.documentElement.style.setProperty('--link-outer-radius', `${radius}em`)
 }
 
 function setRows(row: string) {
