@@ -175,6 +175,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_bright', data.backgrounds.bright ?? 0.8)
 	setInput('i_fadein', data.backgrounds.fadein ?? 400)
 	setInput('i_row', data.linksrow || 8)
+	setInput('i_icon_radius', data.linkiconradius || 0.6)
 	setInput('i_linkstyle', data.linkstyle || 'default')
 	setInput('i_type', data.backgrounds.type || 'images')
 	setInput('i_freq', data.backgrounds?.frequency || 'hour')
@@ -487,6 +488,10 @@ function initOptionsEvents() {
 
 	paramId('i_row').addEventListener('input', function (this) {
 		quickLinks(undefined, { row: this.value })
+	})
+
+	paramId('i_icon_radius').addEventListener('input', function (this) {
+		quickLinks(undefined, { iconradius: this.value })
 	})
 
 	onclickdown(paramId('b_importbookmarks'), async () => {

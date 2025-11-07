@@ -4,6 +4,8 @@
 	--page-width: 1600px;
 	--page-gap: 1em;
 	--links-width: auto;
+	--link-padding: 0.3em;
+	--link-outer-radius: 0.6em;
 
 	--fade-in: 400ms;
 	--blur: 15px;
