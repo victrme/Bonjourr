@@ -13,6 +13,7 @@
 	-	Automatic
 	-	URL
 	-	Import your own
+- 	Choose how round you want your quick link icons
 - 	Backgrounds:
 	-	Local files: you can now import videos!
 	-	URLs option: import background images from a distant server
@@ -20,6 +21,7 @@
 -	Refreshed look for the settings!
 - 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
 - 	Fixes and improvements:
+	-	On quick link icons, the perfect ratio between border radius and padding is now respected 
 	-	When using local files, only images over 80Kb will be compressed
     -	PNGs under 256px wide/high now use pixelated image rendering (useful for pixel art backgrounds)
 	-	You can now force the native OS context menu by right clicking + alt key
