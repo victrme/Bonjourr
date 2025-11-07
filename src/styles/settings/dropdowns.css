@@ -117,8 +117,7 @@
 /* Dropdowns: Quicklinks, Notes, Searchbar, and Quotes Options */
 
 #quicklinks_options.shown {
-	max-height: 460px;
-	max-height: 360px;
+	max-height: 423px;
 }
 
 #notes_options.shown {

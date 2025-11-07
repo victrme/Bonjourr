@@ -111,6 +111,7 @@ export const SYNC_DEFAULT: Sync = {
 	linkbackgrounds: true,
 	linknewtab: false,
 	linksrow: 6,
+	linkiconradius: 0.6,
 	linkgroups: {
 		on: false,
 		selected: 'default',

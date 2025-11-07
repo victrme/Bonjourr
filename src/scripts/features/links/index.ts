@@ -68,6 +68,7 @@ type SubmitFolder = {
 }
 
 type LinksUpdate = {
+	iconradius?: string
 	row?: string
 	newtab?: boolean
 	groups?: boolean
@@ -245,6 +246,7 @@ export function initblocks(sync: Sync, local?: Local): true {
 		})
 	}
 
+	setRadius(sync.linkiconradius);
 	displayInterface('links')
 
 	return true
@@ -470,6 +472,10 @@ export async function linksUpdate(update: LinksUpdate) {
 	}
 	if (update.row) {
 		setRows(update.row)
+	}
+	if (update.iconradius) {
+		eventDebounce({ linkiconradius: update.iconradius })// saving 
+		setRadius(update.iconradius)
 	}
 
 	if (update.styles || update.row) {
@@ -824,6 +830,10 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 		document.getElementById('b_showbackgrounds')?.classList?.toggle('on', backgrounds)
 		domlinkblocks.classList.toggle('backgrounds', backgrounds)
 	}
+}
+
+function setRadius(radius: string | number) {
+	document.documentElement.style.setProperty('--link-inner-radius', `${radius}em`)
 }
 
 function setRows(row: string) {

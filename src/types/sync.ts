@@ -8,6 +8,7 @@ export interface Sync {
 	pagegap: number
 	pagewidth: number
 	linksrow: number
+	linkiconradius: number
 	linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 	linknewtab: boolean
 	linktitles: boolean
