@@ -24,7 +24,7 @@ import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '..
 import type { Backgrounds, Sync } from '../../../types/sync.ts'
 import type { Local } from '../../../types/local.ts'
 
-type BackgroundSize = 'full' | 'medium' | 'small'
+type BackgroundSize = 'full' | 'small'
 
 interface BackgroundUpdate {
 	freq?: string

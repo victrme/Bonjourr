@@ -68,7 +68,6 @@ export interface BackgroundFile {
 	format: 'image' | 'video'
 	lastUsed: string
 	selected?: boolean
-	useCompressed?: boolean
 	video?: {
 		playbackRate: number
 		fade: number

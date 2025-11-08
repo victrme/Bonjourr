@@ -1,5 +1,5 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
-import { compressAsBlob } from '../../shared/compress.ts'
+import { compressAsBlob, imageDimensions } from '../../shared/compress.ts'
 import { needsChange } from '../../shared/time.ts'
 import { onclickdown } from 'clickdown/mod'
 import { VideoLooper } from './VideoLooper.ts'
@@ -14,9 +14,7 @@ import type { Backgrounds } from '../../../types/sync.ts'
 import { webkitRangeTrackColor } from '../../shared/dom.ts'
 
 type LocalFileData = {
-	raw: File
 	full: Blob
-	medium: Blob
 	small: Blob
 }
 
@@ -85,37 +83,36 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const ratio = Math.min(1.8, long / short)
 			const averagePixelHeight = short * ratio * density
 
-			const isSmallEnough = file.size < 80000 // 80kb
 			const isGif = file.type.includes('image/gif')
 			const isImage = file.type.includes('image/')
 			const isVideo = file.type.includes('video/')
+			const isThumbnailSize = file.size < 80000 // 80 kb
+			const isResonablySized = file.size < 300000 // 300 kb
 
-			const raw: File = file
 			let full: Blob = file
-			let medium: Blob = file
 			let small: Blob = file
 
-			if (!isSmallEnough) {
-				if (isGif) {
-					small = await compressAsBlob(file, { size: 360, q: 0.4 })
-				}
+			if (isImage) {
+				if (!isThumbnailSize) {
+					const objectUrl = URL.createObjectURL(file)
+					const dimensions = await imageDimensions(objectUrl)
+					const width = dimensions.width
+					const height = dimensions.height
+					const isHighRes = averagePixelHeight * 2 < width + height
+					const isCompressible = !isGif && !isResonablySized && isHighRes
 
-				if (isImage && !isGif) {
-					full = await compressAsBlob(file, { size: averagePixelHeight, q: 0.8 })
-					small = await compressAsBlob(medium, { size: 360, q: 0.3 })
-					medium = small
-				}
-
-				if (isVideo) {
-					const thumb = await generateImageFromVideo(file)
-
-					if (thumb) {
-						small = await compressAsBlob(thumb, { size: 360, q: 0.3 })
+					if (isCompressible) {
+						full = await compressAsBlob(objectUrl, { size: averagePixelHeight, q: 0.8 })
 					}
+
+					small = await compressAsBlob(objectUrl, { size: 360, q: 0.4 })
 				}
 			}
 
-			// const exif = await getExif(file)
+			if (isVideo) {
+				const thumb = await generateImageFromVideo(file)
+				if (thumb) small = await compressAsBlob(thumb, { size: 360, q: 0.3 })
+			}
 
 			local.backgroundFiles[id] = {
 				format: 'image',
@@ -130,7 +127,6 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 					zoom: 1,
 				}
 			} else {
-				local.backgroundFiles[id].useCompressed = true
 				local.backgroundFiles[id].format = 'image'
 				local.backgroundFiles[id].position = {
 					size: 'cover',
@@ -139,7 +135,10 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 				}
 			}
 
-			filesData[id] = { raw, full, medium, small }
+			filesData[id] = {
+				full,
+				small,
+			}
 
 			saveFileToCache(id, filesData[id])
 			addThumbnailImage(id, local, filesData[id])
@@ -248,7 +247,6 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 			backgroundImage.style.backgroundPositionX = file.position.x
 		}
 		if (option === 'use-compressed') {
-			file.useCompressed = value === 'true'
 			applyBackground(await mediaFromFiles(selection, local, undefined, file))
 		}
 	}
@@ -402,12 +400,11 @@ function handleFilesSettingsOptions(local: Local) {
 
 	const domSize = document.querySelector<HTMLInputElement>('#i_background-size')
 	const domVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
-	const domCompress = document.querySelector<HTMLInputElement>('#i_background-compress')
 	const domHorizontal = document.querySelector<HTMLInputElement>('#i_background-horizontal')
 	const domLoopFade = document.querySelector<HTMLInputElement>('#i_background-loop-fade')
 	const domVideoZoom = document.querySelector<HTMLInputElement>('#i_background-video-zoom')
 	const domPlaybackRate = document.querySelector<HTMLInputElement>('#i_background-playback-speed')
-	const imageRangesExist = domSize && domVertical && domHorizontal && domCompress
+	const imageRangesExist = domSize && domVertical && domHorizontal
 	const videoRangesExist = domLoopFade && domVideoZoom && domPlaybackRate
 
 	const domFileImage = document.getElementById('background-file-image')
@@ -434,7 +431,6 @@ function handleFilesSettingsOptions(local: Local) {
 		domSize.value = (pos.size === 'cover' ? '100' : pos.size).replace('%', '')
 		domVertical.value = pos.y.replace('%', '')
 		domHorizontal.value = pos.x.replace('%', '')
-		domCompress.checked = file.useCompressed ?? true
 
 		webkitRangeTrackColor(domSize)
 		webkitRangeTrackColor(domVertical)
@@ -594,24 +590,23 @@ export async function mediaFromFiles(
 
 	data = data ?? (await getFileFromCache(id))
 
-	if (data.raw.type.includes('video/')) {
-		const htmlvideo = await getLoadedVideo(data.raw)
+	if (data.full.type.includes('video/')) {
+		const htmlvideo = await getLoadedVideo(data.full)
 		const duration = htmlvideo.duration
 
 		htmlvideo.remove()
 
-		const videoUrl = URL.createObjectURL(data.raw)
+		const videoUrl = URL.createObjectURL(data.full)
 		const thumbnailUrl = URL.createObjectURL(data.small)
 
 		const video: BackgroundVideo = {
 			format: 'video',
 			duration: duration,
-			mimetype: data.raw.type,
+			mimetype: data.full.type,
 			thumbnail: thumbnailUrl,
 			file: metadata,
 			urls: {
 				full: videoUrl,
-				medium: videoUrl,
 				small: videoUrl,
 			},
 		}
@@ -620,18 +615,16 @@ export async function mediaFromFiles(
 	} //
 	else {
 		const urls = {
-			raw: URL.createObjectURL(data.raw),
 			full: URL.createObjectURL(data.full),
 			small: URL.createObjectURL(data.small),
 		}
 
 		const image: BackgroundImage = {
 			format: 'image',
-			mimetype: data.raw.type,
+			mimetype: data.full.type,
 			file: metadata,
 			urls: {
-				full: metadata.useCompressed === false ? urls.raw : urls.full,
-				medium: urls.small,
+				full: urls.full,
 				small: urls.small,
 			},
 		}
@@ -665,10 +658,10 @@ export function getCurrentVideo(): VideoLooper | undefined {
 	return currentVideoLooper
 }
 
-async function getLoadedVideo(file: File): Promise<HTMLVideoElement> {
+async function getLoadedVideo(blob: Blob): Promise<HTMLVideoElement> {
 	const video = document.createElement('video')
 
-	const url = URL.createObjectURL(file)
+	const url = URL.createObjectURL(blob)
 	video.src = url
 
 	await new Promise((r) => {
@@ -766,20 +759,14 @@ async function saveFileToCache(id: string, filedata: LocalFileData) {
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
 	const cache = await getCache('local-files')
 
-	const raw = (await (await cache?.match(`http://127.0.0.1:8888/${id}/raw`))?.blob()) as File | undefined
 	const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
 	const small = await (await cache?.match(`http://127.0.0.1:8888/${id}/small`))?.blob()
 
-	if (!full || !small || !raw) {
+	if (!full || !small) {
 		throw new Error(`${id} is undefined`)
 	}
 
-	return {
-		raw,
-		full,
-		small,
-		medium: small,
-	}
+	return { full, small }
 }
 
 async function removeFilesFromCache(ids: string[]) {
@@ -787,9 +774,7 @@ async function removeFilesFromCache(ids: string[]) {
 
 	for (const id of ids) {
 		sessionStorage.removeItem(id)
-		cache.delete(`http://127.0.0.1:8888/${id}/raw`)
 		cache.delete(`http://127.0.0.1:8888/${id}/full`)
-		cache.delete(`http://127.0.0.1:8888/${id}/medium`)
 		cache.delete(`http://127.0.0.1:8888/${id}/small`)
 	}
 

@@ -1,5 +1,5 @@
-import type { langList } from '../scripts/langs.ts'
 import type { BackgroundFile, Local } from './local.ts'
+import type { langList } from '../scripts/langs.ts'
 import type { Sync } from './sync.ts'
 
 export type Langs = keyof typeof langList
@@ -40,7 +40,6 @@ export interface BackgroundImage {
 	mimetype?: string
 	urls: {
 		full: string
-		medium: string
 		small: string
 	}
 	page?: string
@@ -70,7 +69,6 @@ export interface BackgroundVideo {
 	thumbnail?: string
 	urls: {
 		full: string
-		medium: string
 		small: string
 	}
 	file?: BackgroundFile

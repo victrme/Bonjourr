@@ -6,12 +6,10 @@ interface CompressOptions {
 	square?: boolean
 }
 
-async function loadOnCanvas(blob: Blob, options: CompressOptions): Promise<HTMLCanvasElement> {
-	const blobUrl = globalThis.URL.createObjectURL(blob)
+async function loadOnCanvas(url: string, options: CompressOptions): Promise<HTMLCanvasElement> {
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
 	const img = new Image()
-	img.src = blobUrl
 
 	if (!ctx) {
 		throw new Error('Cannot get canvas context')
@@ -25,6 +23,8 @@ async function loadOnCanvas(blob: Blob, options: CompressOptions): Promise<HTMLC
 				canvas.width = img.width
 				canvas.height = img.height
 				ctx?.drawImage(img, 0, 0)
+
+				img.remove()
 				resolve(true)
 				return
 			}
@@ -59,18 +59,46 @@ async function loadOnCanvas(blob: Blob, options: CompressOptions): Promise<HTMLC
 			canvas.height = dHeight
 
 			ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, dWidth, dHeight)
+
+			img.remove()
 			resolve(true)
 		}
+
+		img.src = url
 	})
 
 	return canvas
 }
 
-export async function compressAsBlob(blob: Blob, options: CompressOptions): Promise<Blob> {
+export async function imageDimensions(src: string): Promise<{ width: number; height: number }> {
+	const img = new Image()
+	let width = 4000
+	let height = 3000
+
+	await new Promise((resolve) => {
+		img.addEventListener('load', function () {
+			width = img.width
+			height = img.height
+
+			img.remove()
+			resolve(true)
+		})
+
+		img.src = src
+	})
+
+	return { width, height }
+}
+
+export async function compressAsBlob(elem: Blob | string, options: CompressOptions): Promise<Blob> {
 	const type = options.type ?? 'jpeg'
 	const q = options.q ?? 0.9
 
-	const canvas = await loadOnCanvas(blob, options)
+	if (typeof elem === 'object') {
+		elem = URL.createObjectURL(elem)
+	}
+
+	const canvas = await loadOnCanvas(elem, options)
 	const ctx = canvas.getContext('2d')
 	const newBlob = await new Promise((resolve) => {
 		ctx?.canvas.toBlob(resolve, `image/${type}`, q)
@@ -79,11 +107,15 @@ export async function compressAsBlob(blob: Blob, options: CompressOptions): Prom
 	return newBlob as Blob
 }
 
-export async function compressAsDataUri(blob: Blob, options: CompressOptions): Promise<string> {
+export async function compressAsDataUri(elem: Blob | string, options: CompressOptions): Promise<string> {
 	const type = options.type ?? 'jpeg'
 	const q = options.q ?? 1.0
 
-	const canvas = await loadOnCanvas(blob, options)
+	if (typeof elem === 'object') {
+		elem = URL.createObjectURL(elem)
+	}
+
+	const canvas = await loadOnCanvas(elem, options)
 	const uri = canvas.toDataURL(`image/${type}`, q)
 
 	return uri

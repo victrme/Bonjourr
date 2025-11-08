@@ -70,7 +70,6 @@ function urlAsBackgroundMedia(url: string, metadata: BackgroundUrl): Background 
 			username: '',
 			urls: {
 				full: url,
-				medium: url,
 				small: url,
 			},
 		}
@@ -82,7 +81,6 @@ function urlAsBackgroundMedia(url: string, metadata: BackgroundUrl): Background 
 		username: '',
 		urls: {
 			full: url,
-			medium: url,
 			small: url,
 		},
 	}
