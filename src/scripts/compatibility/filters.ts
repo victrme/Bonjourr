@@ -4,7 +4,7 @@ import { SYNC_DEFAULT } from '../defaults.ts'
 import { oldJSONToCSV } from '../features/quotes.ts'
 import { randomString } from '../shared/generic.ts'
 import { bundleLinks } from '../utils/bundlelinks.ts'
-import { isElem } from '../features/links/helpers.ts'
+import { isElem, isNumber } from '../features/links/helpers.ts'
 
 import type { Link, LinkElem, OldSync, Widgets } from '../../types/shared.ts'
 import type { Sync } from '../../types/sync.ts'
@@ -31,12 +31,17 @@ export function newLinkIcons(data: Import): Import {
 
 		if (link.icon && typeof link.icon === 'string') {
 			const icon = link.icon as string
-			const faviconWasAutomatic = icon.startsWith('https://services.bonjourr.fr')
+			const faviconWasAutomatic = icon.startsWith('https://services.bonjourr.fr') || isNumber(icon)
 
-			const type = faviconWasAutomatic ? 'auto' : 'url'
-			const value = faviconWasAutomatic ? undefined : link.icon // if URL was defined by user, stores its value
+			// only used if automatic. When link icons had been refreshed, they stored the unix timestamp from when they were refreshed, so takes care of it
+			const autoValue = faviconWasAutomatic && isNumber(icon)
+				? `https://services.bonjourr.fr/favicon/blob/${link.url}?r=${icon}`
+				: undefined
 
-			link.icon = { type, value }
+			link.icon = {
+				type: faviconWasAutomatic ? 'auto' : 'url',
+				value: faviconWasAutomatic ? autoValue : icon,
+			}
 		}
 
 		data[link._id] = link

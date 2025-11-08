@@ -109,3 +109,8 @@ export function isElem(link: unknown): link is LinkElem {
 export function isLinkIconType(type: string): type is LinkIconType {
 	return ['auto', 'library', 'file', 'url'].includes(type)
 }
+
+// to figure out if a string is a valid number
+export function isNumber(value: string) {
+  return !isNaN(parseFloat(value))
+}
