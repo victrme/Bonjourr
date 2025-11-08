@@ -40,6 +40,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 		const thumbnailsContainer = document.getElementById('thumbnails-container')
 		const filesData: Record<string, LocalFileData> = {}
 		const newids: string[] = []
+		let thumbnail: HTMLElement | undefined
 
 		if (filelist.length === 0) {
 			return
@@ -57,8 +58,9 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 			newids.push(hashString)
 
-			const thumbnail = createThumbnail(hashString)
+			thumbnail = createThumbnail(hashString)
 			thumbnailsContainer?.appendChild(thumbnail)
+			thumbnailSelectionObserver?.observe(thumbnail, { attributes: true })
 		}
 
 		if (thumbnailsContainer) {
@@ -141,6 +143,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 
 			saveFileToCache(id, filesData[id])
 			addThumbnailImage(id, local, filesData[id])
+
 			storage.local.set({ backgroundFiles: local.backgroundFiles })
 		}
 
@@ -150,9 +153,10 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 			const id = newids[0]
 			const media = await mediaFromFiles(id, local, filesData[id])
 
-			unselectAll()
 			applyBackground(media)
-			handleFilesSettingsOptions(local)
+			unselectAll()
+
+			thumbnail?.classList.add('selected')
 		}
 
 		// 4. Allow same file to be uploaded
@@ -287,9 +291,6 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 //	Settings options
 
 export function initFilesSettingsOptions(local: Local) {
-	thumbnailSelectionObserver = new MutationObserver(toggleFileButtons)
-	thumbnailVisibilityObserver = new IntersectionObserver(intersectionEvent)
-
 	if (IS_MOBILE) {
 		const container = document.getElementById('thumbnails-container')
 		container?.style.setProperty('--thumbnails-columns', '2')
@@ -300,7 +301,7 @@ export function initFilesSettingsOptions(local: Local) {
 	})
 
 	onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
-	onclickdown(document.getElementById('b_thumbnail-options'), () => toggleFileOptions())
+	onclickdown(document.getElementById('b_thumbnail-options'), toggleFileOptions)
 	document.getElementById('b_thumbnail-zoom')?.addEventListener('click', handleGridView)
 	document.getElementById('i_background-size')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-vertical')?.addEventListener('input', fileOptionsEvent)
@@ -309,6 +310,66 @@ export function initFilesSettingsOptions(local: Local) {
 	document.getElementById('i_background-loop-fade')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-video-zoom')?.addEventListener('input', fileOptionsEvent)
 	document.getElementById('i_background-playback-speed')?.addEventListener('input', fileOptionsEvent)
+
+	thumbnailSelectionObserver = new MutationObserver(toggleFileButtons)
+	thumbnailVisibilityObserver = new IntersectionObserver(renderThumbnailOnIntersection)
+
+	// option functions
+
+	function fileOptionsEvent(this: HTMLInputElement) {
+		const { id, value, checked } = this
+
+		if (id === 'i_background-size') {
+			updateFileOptions('size', value)
+		}
+		if (id === 'i_background-vertical') {
+			updateFileOptions('vertical', value)
+		}
+		if (id === 'i_background-horizontal') {
+			updateFileOptions('horizontal', value)
+		}
+		if (id === 'i_background-compress') {
+			updateFileOptions('use-compressed', checked.toString())
+		}
+		if (id === 'i_background-video-zoom') {
+			updateFileOptions('video-zoom', value)
+		}
+		if (id === 'i_background-playback-speed') {
+			updateFileOptions('playback-speed', value)
+		}
+		if (id === 'i_background-loop-fade') {
+			updateFileOptions('loop-fade', value)
+		}
+	}
+
+	function renderThumbnailOnIntersection(entries: IntersectionObserverEntry[]) {
+		for (const { target, isIntersecting } of entries) {
+			const isLoading = target.classList.contains('loading')
+			const id = target.id ?? ''
+
+			if (isIntersecting && isLoading) {
+				getFileFromCache(id).then((data) => {
+					storage.local.get('backgroundFiles').then((local) => {
+						if (data) {
+							addThumbnailImage(id, local, data)
+							thumbnailVisibilityObserver.unobserve(target)
+						}
+					})
+				})
+			}
+		}
+	}
+
+	function handleGridView() {
+		const container = document.getElementById('thumbnails-container') as HTMLElement
+		const currentZoom = globalThis.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
+		const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
+		container.style.setProperty('--thumbnails-columns', newZoom.toString())
+	}
+
+	function toggleFileOptions() {
+		document.getElementById('background-file-options')?.classList.toggle('shown')
+	}
 }
 
 function handleFilesSettingsOptions(local: Local) {
@@ -319,7 +380,7 @@ function handleFilesSettingsOptions(local: Local) {
 	const fileIds = Object.keys(backgroundFiles) ?? []
 	const lastUsedIds = lastUsedBackgroundFiles(local.backgroundFiles)
 	const missingThumbnails = fileIds.filter((id) => !thumbIds.includes(id))
-	const lastUsed = local.backgroundFiles[lastUsedIds[0]]
+	const file = local.backgroundFiles[lastUsedIds[0]]
 
 	if (missingThumbnails.length > 0) {
 		for (const id of missingThumbnails) {
@@ -334,14 +395,11 @@ function handleFilesSettingsOptions(local: Local) {
 		}
 	}
 
-	if (lastUsed) {
-		handleFileOptions(lastUsed)
+	if (!file) {
+		toggleFileButtons()
+		return
 	}
 
-	toggleFileButtons()
-}
-
-function handleFileOptions(file: BackgroundFile) {
 	const domSize = document.querySelector<HTMLInputElement>('#i_background-size')
 	const domVertical = document.querySelector<HTMLInputElement>('#i_background-vertical')
 	const domCompress = document.querySelector<HTMLInputElement>('#i_background-compress')
@@ -394,84 +452,24 @@ function handleFileOptions(file: BackgroundFile) {
 		webkitRangeTrackColor(domVideoZoom)
 		webkitRangeTrackColor(domPlaybackRate)
 	}
+
+	toggleFileButtons()
 }
 
-function handleGridView() {
-	const container = document.getElementById('thumbnails-container')
-
-	if (container) {
-		const currentZoom = globalThis.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
-		const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
-		container.style.setProperty('--thumbnails-columns', newZoom.toString())
-	}
-}
-
-function toggleFileOptions(force?: boolean) {
-	const domoptions = document.getElementById('background-file-options')
-
-	if (domoptions) {
-		domoptions.classList.toggle('shown', force)
-	}
-}
-
-function fileOptionsEvent(this: HTMLInputElement) {
-	const { id, value, checked } = this
-
-	if (id === 'i_background-size') {
-		updateFileOptions('size', value)
-	}
-	if (id === 'i_background-vertical') {
-		updateFileOptions('vertical', value)
-	}
-	if (id === 'i_background-horizontal') {
-		updateFileOptions('horizontal', value)
-	}
-	if (id === 'i_background-compress') {
-		updateFileOptions('use-compressed', checked.toString())
-	}
-	if (id === 'i_background-video-zoom') {
-		updateFileOptions('video-zoom', value)
-	}
-	if (id === 'i_background-playback-speed') {
-		updateFileOptions('playback-speed', value)
-	}
-	if (id === 'i_background-loop-fade') {
-		updateFileOptions('loop-fade', value)
-	}
-}
-
-function intersectionEvent(entries: IntersectionObserverEntry[]) {
-	for (const { target, isIntersecting } of entries) {
-		const id = target.id ?? ''
-
-		if (isIntersecting && target.classList.contains('loading')) {
-			getFileFromCache(id).then((data) => {
-				storage.local.get('backgroundFiles').then((local) => {
-					if (data) {
-						addThumbnailImage(id, local, data)
-						thumbnailVisibilityObserver.unobserve(target)
-					}
-				})
-			})
-		}
-	}
-}
-
-function toggleFileButtons(_?: MutationRecord[]) {
+function toggleFileButtons() {
 	const thmbRemove = document.getElementById('b_thumbnail-remove')
 	const thmbOptions = document.getElementById('b_thumbnail-options')
 	const selected = document.querySelectorAll('.thumbnail.selected').length
 	const domoptions = document.getElementById('background-options-options')
+	const areOptionsShown = domoptions?.classList.contains('shown')
 
 	selected === 0 ? thmbRemove?.setAttribute('disabled', '') : thmbRemove?.removeAttribute('disabled')
 	selected !== 1 ? thmbOptions?.setAttribute('disabled', '') : thmbOptions?.removeAttribute('disabled')
 
-	// hides move options when no selection or more than one
-	if (selected === 0 || selected > 1) {
-		toggleFileOptions(false)
+	if (selected !== 1) {
+		document.getElementById('background-file-options')?.classList.remove('shown')
 	}
-
-	if (selected === 1 && domoptions?.classList.contains('shown')) {
+	if (selected === 1 && areOptionsShown) {
 		domoptions?.classList.remove('shown')
 	}
 }
