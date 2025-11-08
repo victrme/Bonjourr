@@ -742,6 +742,7 @@ function initOptionsEvents() {
 		clock(undefined, { greetingsmode: this.value })
 	})
 
+	// for searching: i_greetmorning, i_greetafternoon, i_greetevening, i_greetnight
 	const customGreetTimes = ['morning', 'afternoon', 'evening', 'night']
 	customGreetTimes.forEach(time => {
 		paramId(`i_greet${time}`).addEventListener('input', function () {

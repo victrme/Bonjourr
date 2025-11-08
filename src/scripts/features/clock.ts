@@ -103,16 +103,28 @@ async function clockUpdate(update: ClockUpdate) {
 		greetingSize(update.greetingsize)
 		storage.sync.set({ greetingsize: update.greetingsize })
 	}
+	
+	if (update.greetingsmode !== undefined) {
+		const newMode = update.greetingsmode as 'auto' | 'custom'
 
-	if (update.greetings_custom_strings !== undefined) {
-		storage.sync.set({ greetings_custom_strings: { 
-			...data.greetings_custom_strings, ...update.greetings_custom_strings 
-		}})
+		// saves data for current page
+		data.greetingsmode = newMode
+
+		// saves data to storage
+		storage.sync.set({ greetingsmode: newMode })
+
+		// visual updates
+		greetings(data.greeting, newMode, data.greetings_custom_strings)
 	}
 
-	if (update.greetingsmode !== undefined) {
-		// greetingSize(update.greetingsize)
-		storage.sync.set({ greetingsmode: update.greetingsmode as 'auto' | 'custom' })
+	if (update.greetings_custom_strings !== undefined) {
+		const newStrings = { // combines new strings to the ones already in storage
+			...data.greetings_custom_strings, ...update.greetings_custom_strings 
+		}
+		
+		data.greetings_custom_strings = newStrings 
+		storage.sync.set({ greetings_custom_strings: newStrings})
+		greetings(data.greeting, data.greetingsmode, newStrings)
 	}
 
 	if (isHands(update.hands)) {
@@ -184,7 +196,7 @@ async function clockUpdate(update: ClockUpdate) {
 		dateformat: data.dateformat,
 	})
 
-	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat)
+	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat, data.greetingsmode, data.greetings_custom_strings)
 	analogStyle(data.analogstyle)
 	clockSize(data.clock.size)
 }
@@ -456,7 +468,7 @@ function greetings(name?: string, greetmode: string = 'auto', customgreetstrings
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
 
-	customgreetstrings = customgreetstrings ?? {} as CustomGreetingStrings;
+	// customgreetstrings = customgreetstrings ?? {} as CustomGreetingStrings;
 
 	const rare = oneInFive
 	const hour = date.getHours()
@@ -490,6 +502,7 @@ function greetings(name?: string, greetmode: string = 'auto', customgreetstrings
 	} else if (greetmode === 'custom') {
 		const greet = name ? customgreetstrings[period].replace('$name', name) : customgreetstrings[period]
 		domgreeting.textContent = greet
+		domname.textContent = ''
 	}
 }
 
