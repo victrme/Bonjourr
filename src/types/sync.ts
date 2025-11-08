@@ -27,6 +27,12 @@ export interface Sync {
 	greeting: string
 	greetingsize: string
 	greetingsmode: 'auto' | 'custom'
+	greetings_custom_strings: {
+		morning: string
+		afternoon: string
+		evening: string
+		night: string
+	}
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'

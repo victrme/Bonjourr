@@ -191,6 +191,10 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
 	setInput('i_greeting', data.greeting ?? '')
+	setInput('i_greetmorning', data.greetings_custom_strings.morning ?? '')
+	setInput('i_greetafternoon', data.greetings_custom_strings.afternoon ?? '')
+	setInput('i_greetevening', data.greetings_custom_strings.evening ?? '')
+	setInput('i_greetnight', data.greetings_custom_strings.night ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
 	setInput('i_noteswidth', data.notes?.width || 50)
 	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
@@ -738,6 +742,17 @@ function initOptionsEvents() {
 		clock(undefined, { greetingsmode: this.value })
 	})
 
+	const customGreetTimes = ['morning', 'afternoon', 'evening', 'night']
+	customGreetTimes.forEach(time => {
+		paramId(`i_greet${time}`).addEventListener('input', function () {
+			clock(undefined, { greetings_custom_strings: { [time]: this.value } })
+		})
+
+		paramId(`i_greet${time}`).addEventListener('change', () => {
+			paramId(`i_greet${time}`).blur()
+		})
+	})
+
 	// Notes
 
 	onclickdown(paramId('i_notes'), (_, target) => {
@@ -1145,6 +1160,10 @@ function translatePlaceholders() {
 	const cases = [
 		['i_title', 'Name'],
 		['i_greeting', 'Name'],
+		['i_greetmorning', 'Hello, $name!'],
+		['i_greetafternoon', 'Good afternoon'],
+		['i_greetevening', 'Good evening'],
+		['i_greetnight', 'Good night'],
 		['i_tabtitle', 'New tab'],
 		['i_sbrequest', 'Search query: %s'],
 		['i_sbplaceholder', 'Search'],

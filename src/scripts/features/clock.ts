@@ -23,6 +23,12 @@ type ClockUpdate = {
 	greeting?: string
 	greetingsize?: string
 	greetingsmode?: string
+	greetings_custom_strings?: {
+		morning?: string;
+		afternoon?: string;
+		evening?: string;
+		night?: string;
+	}
 	timezone?: string
 	shape?: string
 	face?: string
@@ -95,6 +101,12 @@ async function clockUpdate(update: ClockUpdate) {
 	if (update.greetingsize !== undefined) {
 		greetingSize(update.greetingsize)
 		storage.sync.set({ greetingsize: update.greetingsize })
+	}
+
+	if (update.greetings_custom_strings !== undefined) {
+		storage.sync.set({ greetings_custom_strings: { 
+			...data.greetings_custom_strings, ...update.greetings_custom_strings 
+		}})
 	}
 
 	if (update.greetingsmode !== undefined) {
