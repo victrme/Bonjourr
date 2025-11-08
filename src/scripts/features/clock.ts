@@ -502,6 +502,8 @@ function greetings(name?: string, greetmode: string = 'auto', customgreetstrings
 	} else if (greetmode === 'custom') {
 		const greet = name ? customgreetstrings[period].replace('$name', name) : customgreetstrings[period]
 		domgreeting.textContent = greet
+
+		domgreetings.style.textTransform = 'none'
 		domname.textContent = ''
 	}
 }

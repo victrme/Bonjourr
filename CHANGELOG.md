@@ -19,8 +19,13 @@
 	-	URLs option: import background images from a distant server
 	-	Videos can now have sound (muted by default)
 -	Refreshed look for the settings!
+- 	Custom greetings! Define how Bonjourr greets you from the morning to the night
 - 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
-- 	Fixes and improvements:
+- 	Things have been moved around or renamed for clarity:
+	-	Background controls were moved to context menu
+	-	Greeting size was moved to advanced options
+	-	Background frequency "Pause" was renamed "Locked"
+- 	Fixes and other improvements:
 	-	On quick link icons, the perfect ratio between border radius and padding is now respected 
 	-	When using local files, only images over 80Kb will be compressed
     -	PNGs under 256px wide/high now use pixelated image rendering (useful for pixel art backgrounds)
@@ -30,7 +35,6 @@
 	-	Fix most languages not having a capital letter on date
 	-	Removed the favicon as emoji input in Edge as Microsoft has broken the functionality (#700)
 	-	Fixed an issue in Safari where the JSON settings textarea in "settings management" would be broken when focused on
-	-	Background frequency "Pause" was renamed "Locked" for better clarity
 	-	Fixed a bug where the settings panel wouldn't be up to date if you used background controls before having opened it 
 
 ## 21.2.1
