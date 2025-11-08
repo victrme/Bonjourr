@@ -12,6 +12,7 @@ import { storage } from '../storage.ts'
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
 
 type DateFormat = Sync['dateformat']
+type CustomGreetingStrings = Sync['greetings_custom_strings']
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -65,7 +66,7 @@ export function clock(init?: Sync, event?: ClockUpdate) {
 	const world = init?.worldclocks ?? { ...SYNC_DEFAULT.worldclocks }
 
 	try {
-		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu')
+		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu', init?.greetingsmode, init?.greetings_custom_strings)
 		greetingSize(init?.greetingsize)
 		analogStyle(init?.analogstyle)
 		clockSize(clock.size)
@@ -94,7 +95,7 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.greeting !== undefined) {
 		data.greeting = stringMaxSize(update.greeting, 64)
-		greetings(data.greeting)
+		greetings(data.greeting, data.greetingsmode, data.greetings_custom_strings)
 		storage.sync.set({ greeting: data.greeting })
 	}
 
@@ -244,7 +245,7 @@ function greetingSize(size = '3') {
 
 //	Clock
 
-function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat) {
+function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat, greetmode: string, customgreetstrings: CustomGreetingStrings) {
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
@@ -297,7 +298,7 @@ function startClock(clock: Clock, world: WorldClock[], greeting: string, datefor
 			}
 		}
 
-		greetings(greeting)
+		greetings(greeting, greetmode, customgreetstrings)
 	}
 }
 
@@ -449,11 +450,13 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, tim
 
 //	Greetings
 
-function greetings(name?: string) {
+function greetings(name?: string, greetmode: string = 'auto', customgreetstrings?: CustomGreetingStrings) {
 	const date = userDate()
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
+
+	customgreetstrings = customgreetstrings ?? {} as CustomGreetingStrings;
 
 	const rare = oneInFive
 	const hour = date.getHours()
@@ -471,18 +474,23 @@ function greetings(name?: string) {
 		period = 'evening'
 	}
 
-	const greetings = {
-		morning: 'Good morning',
-		afternoon: 'Good afternoon',
-		evening: 'Good evening',
-		night: ['Good night', 'Sweet dreams'][rare],
+	if (greetmode === 'auto' || (greetmode === 'custom' && !customgreetstrings[period])) {
+		const greetings = {
+			morning: 'Good morning',
+			afternoon: 'Good afternoon',
+			evening: 'Good evening',
+			night: ['Good night', 'Sweet dreams'][rare],
+		}
+
+		const greet = greetings[period]
+
+		domgreetings.style.textTransform = name || (rare && period === 'night') ? 'none' : 'capitalize'
+		domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
+		domname.textContent = name ?? ''
+	} else if (greetmode === 'custom') {
+		const greet = name ? customgreetstrings[period].replace('$name', name) : customgreetstrings[period]
+		domgreeting.textContent = greet
 	}
-
-	const greet = greetings[period]
-
-	domgreetings.style.textTransform = name || (rare && period === 'night') ? 'none' : 'capitalize'
-	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
-	domname.textContent = name ?? ''
 }
 
 // World clocks
