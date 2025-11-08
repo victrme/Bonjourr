@@ -73,8 +73,13 @@
 }
 
 #greetings_options.shown {
-	max-height: 130px;
+	max-height: 250px;
 }
+
+#greetings_custom_options.shown {
+	max-height: 200px;
+}
+
 
 #ampm_label.shown {
 	max-height: 60px;
@@ -235,4 +240,8 @@
 
 .all .as_pomodoro {
 	max-height: 190px;
+}
+
+.all .as_greetings {
+	max-height: 200px;
 }

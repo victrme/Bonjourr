@@ -95,6 +95,7 @@ export const SYNC_DEFAULT: Sync = {
 	tabtitle: '',
 	greeting: '',
 	greetingsize: '3',
+	greetingsmode: 'auto',
 	pagegap: 1,
 	pagewidth: 1600,
 	time: true,

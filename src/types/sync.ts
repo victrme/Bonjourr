@@ -26,6 +26,7 @@ export interface Sync {
 	tabtitle: string
 	greeting: string
 	greetingsize: string
+	greetingsmode: 'auto' | 'custom'
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'

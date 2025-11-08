@@ -1190,13 +1190,6 @@
 			<input id="i_greethide" class="switch" type="checkbox" />
 		</div>
 
-		<!-- <hr />
-
-		<div class="wrapper">
-			<label for="i_detach" class="trn">Detach from weather</label>
-			<input id="i_detach" class="switch" type="checkbox" />
-		</div> -->
-
 		<div id="greetings_options" class="dropdown">
 			<hr />
 
@@ -1212,20 +1205,37 @@
 				/>
 			</div>
 
-			<hr />
+			<div class="as as_greetings dropdown">
+				<hr />
 
-			<div class="wrapper">
-				<label for="i_greetsize" class="trn">Greeting size</label>
-				<input
-					id="i_greetsize"
-					type="range"
-					name="greetsize"
-					min="1.5"
-					max="5"
-					value="3"
-					step=".2"
-					class="range"
-				/>
+				<div class="wrapper">
+					<label for="i_greetmode" class="trn">Greeting mode</label>
+					<select id="i_greetmode">
+						<option value="auto" class="trn">Auto</option>
+						<option value="custom" class="trn">Custom</option>
+					</select>
+				</div>
+
+				<hr />
+
+				<div id="greetings_custom_options" class="dropdown shown">
+					bjr
+					<hr />
+				</div>
+
+				<div class="wrapper">
+					<label for="i_greetsize" class="trn">Greeting size</label>
+					<input
+						id="i_greetsize"
+						type="range"
+						name="greetsize"
+						min="1.5"
+						max="5"
+						value="3"
+						step=".2"
+						class="range"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>

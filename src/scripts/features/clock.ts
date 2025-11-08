@@ -22,6 +22,7 @@ type ClockUpdate = {
 	dateformat?: string
 	greeting?: string
 	greetingsize?: string
+	greetingsmode?: string
 	timezone?: string
 	shape?: string
 	face?: string
@@ -94,6 +95,11 @@ async function clockUpdate(update: ClockUpdate) {
 	if (update.greetingsize !== undefined) {
 		greetingSize(update.greetingsize)
 		storage.sync.set({ greetingsize: update.greetingsize })
+	}
+
+	if (update.greetingsmode !== undefined) {
+		// greetingSize(update.greetingsize)
+		storage.sync.set({ greetingsmode: update.greetingsmode as 'auto' | 'custom' })
 	}
 
 	if (isHands(update.hands)) {

@@ -211,6 +211,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_greetsize', data.greetingsize ?? 3)
+	setInput('i_greetmode', data.greetingsmode ?? 'auto')
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_geol', data.weather?.geolocation || 'approximate')
 	setInput('i_units', data.weather?.unit ?? 'metric')
@@ -295,6 +296,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
+	paramId('greetings_custom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
 	paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
@@ -729,6 +731,11 @@ function initOptionsEvents() {
 
 	paramId('i_greetsize').addEventListener('input', function (this: HTMLInputElement) {
 		clock(undefined, { greetingsize: this.value })
+	})
+
+	paramId('i_greetmode').addEventListener('change', function (this: HTMLInputElement) {
+		document.getElementById('greetings_custom_options')?.classList.toggle('shown', this.value === "custom")
+		clock(undefined, { greetingsmode: this.value })
 	})
 
 	// Notes
