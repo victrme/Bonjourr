@@ -112,5 +112,5 @@ export function isLinkIconType(type: string): type is LinkIconType {
 
 // to figure out if a string is a valid number
 export function isNumber(value: string) {
-  return !isNaN(parseFloat(value))
+	return !isNaN(parseFloat(value))
 }

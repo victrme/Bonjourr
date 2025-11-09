@@ -390,7 +390,7 @@ export function togglePomodoroFocus(focus: boolean) {
 	const enablingFocus = focus && !currentPomodoroData.focus
 	const disablingFocus = !focus && currentPomodoroData.focus
 	const switching = disablingFocus || enablingFocus
-	
+
 	focusButton.checked = focus
 	currentPomodoroData.focus = focus
 
@@ -413,11 +413,11 @@ export function togglePomodoroFocus(focus: boolean) {
 		clone.classList.add('clone')
 
 		document.body.appendChild(clone)
-		
+
 		clone.classList.remove('onFocus', 'outOfFocus')
 		clone.classList.toggle('onFocus', !enablingFocus)
 		clone.classList.toggle('outOfFocus', enablingFocus)
-		
+
 		// Apply focus mode to the DOM so we can measure the target position
 		pomodoroContainer.style.visibility = 'hidden'
 		document.body.classList.toggle('pomodoro-focus', enablingFocus)

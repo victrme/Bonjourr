@@ -292,11 +292,11 @@ export function handleBackgroundActions(backgrounds: Backgrounds) {
 	const muteButton = document.getElementById('b_interface-background-mute')
 	const type = backgrounds.type
 	const freq = backgrounds.frequency
-	
+
 	document.getElementById('background-actions')?.setAttribute('data-type', type)
 	document.getElementById('b_interface-background-pause')?.classList.toggle('paused', freq === 'pause')
 	document.getElementById('b_interface-background-download')?.toggleAttribute('disabled', type !== 'images')
-	
+
 	const shouldShowMute = type === 'files' || type === 'videos'
 	muteButton?.toggleAttribute('disabled', !shouldShowMute)
 
@@ -329,10 +329,10 @@ async function toggleMuteVideo() {
 	const sync = await storage.sync.get('backgrounds')
 	const lastMuteStatus = sync.backgrounds.mute
 
-	if (muteInput) { // if settings are initialized, sets input 
+	if (muteInput) { // if settings are initialized, sets input
 		muteInput.checked = !lastMuteStatus
 	}
-	
+
 	muteContextButton?.classList.toggle('muted', !lastMuteStatus)
 
 	toggleMuteStatus(!lastMuteStatus)

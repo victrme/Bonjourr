@@ -246,7 +246,7 @@ export function initblocks(sync: Sync, local?: Local): true {
 		})
 	}
 
-	setRadius(sync.linkiconradius);
+	setRadius(sync.linkiconradius)
 	displayInterface('links')
 
 	return true
@@ -474,7 +474,7 @@ export async function linksUpdate(update: LinksUpdate) {
 		setRows(update.row)
 	}
 	if (update.iconradius) {
-		eventDebounce({ linkiconradius: update.iconradius })// saving 
+		eventDebounce({ linkiconradius: update.iconradius }) // saving
 		setRadius(update.iconradius)
 	}
 
