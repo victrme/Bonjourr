@@ -73,7 +73,7 @@
 }
 
 #greetings_options.shown {
-	max-height: 450px;
+	max-height: 430px;
 }
 
 #greetings_custom_options.shown {
@@ -108,7 +108,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-	max-height: 870px;
+	max-height: 885px;
 }
 
 #weather_provider.shown {
@@ -243,5 +243,5 @@
 }
 
 .all .as_greetings {
-	max-height: 450px;
+	max-height: 365px;
 }
