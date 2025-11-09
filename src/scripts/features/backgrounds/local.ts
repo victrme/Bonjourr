@@ -526,8 +526,49 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
 
 async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEvent) {
 	const hasCtrl = mouseEvent.ctrlKey || mouseEvent.metaKey
+	const shiftKey = mouseEvent.shiftKey
 	const isLeftClick = mouseEvent.button === 0
 	const id = this?.id ?? ''
+
+	if (isLeftClick && shiftKey) {
+		const thumbnails = document.querySelectorAll('.thumbnail')
+
+		let firstSelectionPos: number | undefined
+		let lastSelectionPos: number | undefined
+		let selectedPos: number | undefined
+
+		// Find current selection range
+
+		thumbnails.forEach((thumbnail, index) => {
+			const isSelected = thumbnail.className.includes('selected')
+			const isSelection = thumbnail === this
+
+			if (isSelected) {
+				lastSelectionPos = index
+			}
+			if (isSelected && !firstSelectionPos) {
+				firstSelectionPos = index
+			}
+			if (isSelection && !selectedPos) {
+				selectedPos = index
+			}
+		})
+
+		// Increase range to maximum selected
+
+		if (firstSelectionPos !== undefined && lastSelectionPos !== undefined && selectedPos !== undefined) {
+			const positions = [firstSelectionPos, lastSelectionPos, selectedPos]
+			const first = Math.min(...positions)
+			const last = Math.max(...positions)
+
+			thumbnails.forEach((thumbnail, index) => {
+				const inSelectionRange = index >= first && index <= last
+				thumbnail.classList.toggle('selected', inSelectionRange)
+			})
+
+			return
+		}
+	}
 
 	if (isLeftClick && hasCtrl) {
 		if (!this.classList.contains('selected')) {
