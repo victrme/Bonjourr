@@ -75,7 +75,6 @@ aside .inline-btn:hover {
 }
 
 aside .input-btn {
-	border-radius: 8px;
 	text-decoration: none;
 	color: var(--color-text);
 	background-color: var(--color-input);
@@ -174,7 +173,9 @@ aside .switch:after {
 	/* box-shadow: 0px 1px 3px 2px rgba(20, 20, 20, 0.12); */
 	background-color: white;
 	transform: translateX(0px);
-	transition: background-color 0.15s, transform 0.15s;
+	transition:
+		background-color 0.15s,
+		transform 0.15s;
 }
 
 aside .switch:checked {
@@ -196,7 +197,7 @@ aside input::-webkit-calendar-picker-indicator {
 	display: none !important;
 }
 
-aside input[type=range] {
+aside input[type='range'] {
 	height: 2.2em;
 	-webkit-appearance: none;
 	appearance: none;
@@ -205,22 +206,22 @@ aside input[type=range] {
 	overflow: visible;
 	padding-inline: unset;
 	padding-left: 3px;
-	
+
 	/* progress support for webkit */
 	--range: calc(var(--max) - var(--min));
 	--ratio: calc((var(--value) - var(--min)) / var(--range));
 	--sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
 }
 
-aside input[type=range]:active {
-    cursor: grabbing;
+aside input[type='range']:active {
+	cursor: grabbing;
 }
 
-aside input[type=range]:focus {
-  outline: none;
+aside input[type='range']:focus {
+	outline: none;
 }
 
-aside input[type=range]::-webkit-slider-thumb {
+aside input[type='range']::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	background: #fff;
 	height: 20px;
@@ -231,20 +232,24 @@ aside input[type=range]::-webkit-slider-thumb {
 	margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
-aside input[type=range]::-webkit-slider-runnable-track {
+aside input[type='range']::-webkit-slider-runnable-track {
 	height: 4px;
 	border: none;
 	border-radius: 0.5em;
 	box-shadow: none;
-	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #efefef;
+	background:
+		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+		#efefef;
 }
 
-[data-theme='dark'] aside input[type=range]::-webkit-slider-runnable-track {
-	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #3d3c41;
+[data-theme='dark'] aside input[type='range']::-webkit-slider-runnable-track {
+	background:
+		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+		#3d3c41;
 }
 
 /* firefox */
-aside input[type=range]::-moz-range-thumb {
+aside input[type='range']::-moz-range-thumb {
 	background: #fff;
 	height: 20px;
 	width: 30px;
@@ -254,30 +259,34 @@ aside input[type=range]::-moz-range-thumb {
 	margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
-aside input[type=range]::-moz-range-track {
+aside input[type='range']::-moz-range-track {
 	height: 4px;
 	border: none;
 	border-radius: 0.5em;
 	box-shadow: none;
-	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #efefef;
+	background:
+		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+		#efefef;
 }
 
-[data-theme='dark'] aside input[type=range]::-moz-range-track {
-	background: linear-gradient(var(--color-blue),var(--color-blue)) 0/var(--sx) 100% no-repeat, #3d3c41;
+[data-theme='dark'] aside input[type='range']::-moz-range-track {
+	background:
+		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+		#3d3c41;
 }
 
 /* old edge */
-aside input[type=range]::-ms-fill-upper {
+aside input[type='range']::-ms-fill-upper {
 	background: transparent;
 	border-color: transparent;
 }
 
-aside input[type=range]::-ms-fill-lower {
+aside input[type='range']::-ms-fill-lower {
 	background: transparent;
 	border-color: transparent;
 }
 
-aside input[type=range]::-ms-thumb {
+aside input[type='range']::-ms-thumb {
 	width: 2em;
 	height: 2em;
 	border-radius: 1em;
@@ -288,7 +297,7 @@ aside input[type=range]::-ms-thumb {
 	box-sizing: border-box;
 }
 
-aside input[type=range]::-ms-track {
+aside input[type='range']::-ms-track {
 	height: 1em;
 	border-radius: 0.5em;
 	background: #efefef;
@@ -297,7 +306,7 @@ aside input[type=range]::-ms-track {
 	box-sizing: border-box;
 }
 
-aside input[type=range]::-ms-fill-lower {
+aside input[type='range']::-ms-fill-lower {
 	height: 1em;
 	border-radius: 0.5em 0 0 0.5em;
 	margin: 0;
@@ -402,7 +411,9 @@ aside form button {
 	max-width: 0;
 	visibility: hidden;
 	background-color: var(--color-input);
-	transition: opacity 0.1s, max-width 0.2s;
+	transition:
+		opacity 0.1s,
+		max-width 0.2s;
 }
 
 aside form button:disabled {

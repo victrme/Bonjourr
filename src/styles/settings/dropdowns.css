@@ -172,6 +172,10 @@
 	max-height: 120px;
 }
 
+.all .as_video_sound {
+	max-height: 60px;
+}
+
 .all .as_texture {
 	max-height: 245px;
 }

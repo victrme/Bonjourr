@@ -1,6 +1,6 @@
 import { applyUrls, getUrlsAsCollection, initUrlsEditor, urlsCacheControl } from './urls.ts'
-import { toggleCredits, updateCredits } from './credits.ts'
 import { handleBackgroundActions, initBackgroundActionsEvents } from '../contextmenu.ts'
+import { toggleCredits, updateCredits } from './credits.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 import {
@@ -12,8 +12,8 @@ import {
 	setCurrentVideo,
 } from './local.ts'
 
-import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
 import { colorInput, turnRefreshButton, webkitRangeTrackColor } from '../../shared/dom.ts'
+import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
 import { networkForm } from '../../shared/form.ts'
 import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
@@ -614,7 +614,12 @@ function setCollection(backgrounds: Backgrounds, local: Local) {
 // 	Apply to DOM
 
 export function applyBackground(media?: string | Background, res?: BackgroundSize, fast?: 'fast'): void {
+	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
+	let resolution = res ? res : detectBackgroundSize()
+	let item: HTMLElement
+
 	if (typeof media === 'string') {
+		mediaWrapper?.childNodes.forEach((node) => node.remove())
 		document.documentElement.style.setProperty('--solid-background', media)
 		return
 	}
@@ -626,10 +631,6 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 	if (!media) {
 		return
 	}
-
-	const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-	let resolution = res ? res : detectBackgroundSize()
-	let item: HTMLElement
 
 	if (media.format === 'image') {
 		// disables blur compression for animated gifs (flawed since some gifs aren't animated)
