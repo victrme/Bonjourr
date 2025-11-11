@@ -58,8 +58,7 @@
 .pce-line {
 	position: relative;
 }
-.pce-overlays,
-div.pce-overlays > * {
+.pce-overlays {
 	position: absolute;
 	top: 0;
 	right: 0;

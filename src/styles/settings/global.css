@@ -18,7 +18,9 @@ aside {
 	overflow-x: hidden;
 	touch-action: pan-y;
 	box-sizing: border-box;
-	transition: transform 0.33s, background-color 0.33s;
+	transition:
+		transform 0.33s,
+		background-color 0.33s;
 }
 
 aside.hidden {
@@ -43,11 +45,47 @@ aside.init .dropdown {
 	max-height: 0;
 	overflow: hidden;
 	visibility: hidden;
-	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0.3s;
+	transition:
+		max-height 0.3s,
+		padding 0.2s,
+		margin 0.2s,
+		visibility 0s 0.3s;
 }
 
 .all .as,
 .dropdown.shown {
 	visibility: visible;
-	transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
+	transition:
+		max-height 0.3s,
+		padding 0.2s,
+		margin 0.2s,
+		visibility 0s 0s;
+}
+
+aside.change-theme .tooltip,
+aside.change-theme .param,
+aside.change-theme select,
+aside.change-theme button,
+aside.change-theme input,
+aside.change-theme hr,
+aside.change-theme {
+	transition-duration: 0.33s;
+	transition-property: background-color, border-color, color;
+}
+
+/*
+ * Devices might have stuttering issues when switching theme.
+ * This optimizes performance by reducing the amount
+ * of DOM elements to recalculate during the transition.
+ */
+aside.change-theme .as_fonts,
+aside.change-theme #cssEditor,
+aside.change-theme #time_options,
+aside.change-theme #main_options,
+aside.change-theme #notes_options,
+aside.change-theme #quotes_options,
+aside.change-theme #pomodoro_options,
+aside.change-theme #searchbar_options,
+aside.change-theme #settings-managment {
+	display: none;
 }

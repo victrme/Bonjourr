@@ -91,9 +91,11 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 
 	if (isEvent) {
 		storage.sync.set({ dark: value })
-
 		settings?.classList.add('change-theme')
-		setTimeout(() => settings?.classList.remove('change-theme'), 333)
+
+		setTimeout(() => {
+			settings?.classList.remove('change-theme')
+		}, 333)
 
 		return
 	}

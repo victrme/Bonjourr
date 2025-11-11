@@ -131,8 +131,8 @@
 }
 
 .thumbnail[data-format='video'] .thumbnail-format-icon {
-	bottom: .75em;
-	right: .75em;
+	bottom: 0.75em;
+	right: 0.75em;
 	border-radius: 7px;
 	background-color: #fff4;
 
@@ -189,18 +189,6 @@
 	border: 1px solid;
 	color: #fff4;
 }
-
-/* #background-urls-editor .pce-line.warn > span {
-	background-color: rgba(255, 255, 0, 0.1);
-}
-
-#background-urls-editor .pce-line.error > span {
-	background-color: rgba(255, 0, 0, 0.1);
-}
-
-#background-urls-editor .pce-line.good > span {
-	background-color: rgba(0, 255, 0, 0.1);
-} */
 
 #background-urls-editor .pce-line::before {
 	opacity: 0.4;

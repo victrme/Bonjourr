@@ -19,7 +19,8 @@
 }
 
 #background-urls-option.shown {
-	max-height: 450px;
+	/* 80vh is prism-code-editor size */
+	max-height: calc(80vh + 80px);
 }
 
 .all #background-provider-option.shown {

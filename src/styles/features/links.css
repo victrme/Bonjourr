@@ -148,7 +148,7 @@
 	opacity: 1;
 }
 
-/* 	
+/*
  * Annoying class naming overlap between edits and link groups "selected"
  * Edit: selected
  * Group: selected-group
@@ -180,7 +180,10 @@
 /* Link */
 
 .link {
-	transition: transform 0.2s var(--in-out-bounce), opacity 0.1s var(--in-out-bounce), filter 0.06s;
+	transition:
+		transform 0.2s var(--in-out-bounce),
+		opacity 0.1s var(--in-out-bounce),
+		filter 0.06s;
 }
 
 .link {
@@ -252,7 +255,10 @@
 	width: 0 !important;
 	opacity: 0;
 	overflow: hidden;
-	transition: width 0.3s 0.3s var(--out-cubic), margin 0.3s 0.3s var(--out-cubic), opacity 0.3s var(--out-cubic);
+	transition:
+		width 0.3s 0.3s var(--out-cubic),
+		margin 0.3s 0.3s var(--out-cubic),
+		opacity 0.3s var(--out-cubic);
 }
 
 .link.removed span {
@@ -378,9 +384,9 @@
 }
 
 .medium .link div {
-	/* .77 because they're about 77% the size of large links */ 
-  padding: calc(var(--link-padding) * 0.77);
-  border-radius: calc(var(--link-outer-radius) * 0.77);
+	/* .77 because they're about 77% the size of large links */
+	padding: calc(var(--link-padding) * 0.77);
+	border-radius: calc(var(--link-outer-radius) * 0.77);
 }
 
 .medium .link img {
@@ -415,13 +421,13 @@
 	width: var(--block-size);
 	height: var(--block-size);
 
-	/* .77 because they're about 77% the size of large links */ 
+	/* .77 because they're about 77% the size of large links */
 	padding: calc(var(--link-padding) * 0.57);
 	border-radius: calc(var(--link-outer-radius) * 0.57);
 }
 
 .small .link img {
-	border-radius: calc((var(--link-outer-radius) - var(--link-padding))  * 0.57);
+	border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.57);
 }
 
 .small .link span {
@@ -511,7 +517,7 @@
 }
 
 .inline .link div {
-	/* it's 43% the size of a big ass link icon */ 
+	/* it's 43% the size of a big ass link icon */
 	padding: calc(var(--link-padding) * 0.43);
 	border-radius: calc(var(--link-outer-radius) * 0.43);
 }
@@ -581,7 +587,7 @@
 }
 
 .medium .link-folder img {
-	/* because they're about 42% the size of large icons */ 
+	/* because they're about 42% the size of large icons */
 	padding: calc(var(--link-padding) * 0.42);
 	border-radius: calc(var(--link-outer-radius) * 0.42);
 }

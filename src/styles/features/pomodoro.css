@@ -36,15 +36,19 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 #pomodoro_container.clone {
 	will-change: transform, gap;
-	transition: transform var(--pmdr-focus-transition) ease, gap var(--pmdr-focus-transition) ease;
+	transition:
+		transform var(--pmdr-focus-transition) ease,
+		gap var(--pmdr-focus-transition) ease;
 }
 
 #pomodoro_container.clone #pmdr_timer {
-	transition: font-weight var(--pmdr-focus-transition) ease, font-size var(--pmdr-focus-transition) ease;
+	transition:
+		font-weight var(--pmdr-focus-transition) ease,
+		font-size var(--pmdr-focus-transition) ease;
 }
 
 #pomodoro_container.outOfFocus {
-	gap: .75em;
+	gap: 0.75em;
 }
 
 #pomodoro_container.onFocus {

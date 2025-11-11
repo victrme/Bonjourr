@@ -1,13 +1,3 @@
-aside.change-theme .tooltip,
-aside.change-theme .param,
-aside.change-theme select,
-aside.change-theme button,
-aside.change-theme input,
-aside.change-theme hr {
-	transition-duration: 0.33s;
-	transition-property: background-color, border-color, color;
-}
-
 aside hr {
 	width: 100%;
 	margin: 10px 0;
