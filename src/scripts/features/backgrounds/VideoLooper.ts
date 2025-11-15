@@ -54,14 +54,14 @@ export class VideoLooper {
 		this.video2.play()
 
 		this.video1.addEventListener('timeupdate', () => {
-			if (this.isEnding(this.video1)) {
+			if (this.isEnding(this.video1) && this.fadetime !== 0) {
 				this.video1.classList.add('hiding')
 				this.video2.play()
 			}
 		})
 
 		this.video2.addEventListener('timeupdate', () => {
-			if (this.isEnding(this.video2)) {
+			if (this.isEnding(this.video2) && this.fadetime !== 0) {
 				this.video2.classList.add('hiding')
 				this.video1.play()
 			}
@@ -107,6 +107,14 @@ export class VideoLooper {
 			this.fadetime = halfDurationInMs
 		} else {
 			this.fadetime = fadetime
+		}
+
+		if (this.fadetime === 0) {
+			this.video2.loop = true
+			this.video1.style = 'display: none'
+		} else {
+			this.video2.loop = false
+			this.video1.style.removeProperty('display')
 		}
 
 		this.addTransitionDuration(this.fadetime)
