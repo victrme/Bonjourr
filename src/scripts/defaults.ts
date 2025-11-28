@@ -95,6 +95,13 @@ export const SYNC_DEFAULT: Sync = {
 	tabtitle: '',
 	greeting: '',
 	greetingsize: '3',
+	greetingsmode: 'auto',
+	greetings_custom_strings: {
+		morning: '',
+		afternoon: '',
+		evening: '',
+		night: ''
+	},
 	pagegap: 1,
 	pagewidth: 1600,
 	time: true,

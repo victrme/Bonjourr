@@ -193,7 +193,7 @@
 				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
 				<a
 					class="trn"
-					href="https://bonjourr.fr/docs/overview/#unsplash-collection"
+					href="https://bonjourr.fr/docs/overview/#collection"
 					rel="noreferrer noopener"
 					target="_blank"
 					>Learn more</a
@@ -1194,13 +1194,6 @@
 			<input id="i_greethide" class="switch" type="checkbox" />
 		</div>
 
-		<!-- <hr />
-
-		<div class="wrapper">
-			<label for="i_detach" class="trn">Detach from weather</label>
-			<input id="i_detach" class="switch" type="checkbox" />
-		</div> -->
-
 		<div id="greetings_options" class="dropdown">
 			<hr />
 
@@ -1216,20 +1209,86 @@
 				/>
 			</div>
 
-			<hr />
+			<div class="as as_greetings dropdown">
+				<hr />
 
-			<div class="wrapper">
-				<label for="i_greetsize" class="trn">Greeting size</label>
-				<input
-					id="i_greetsize"
-					type="range"
-					name="greetsize"
-					min="1.5"
-					max="5"
-					value="3"
-					step=".2"
-					class="range"
-				/>
+				<div class="wrapper">
+					<label for="i_greetmode" class="trn">Greeting mode</label>
+					<select id="i_greetmode">
+						<option value="auto" class="trn">Auto</option>
+						<option value="custom" class="trn">Custom</option>
+					</select>
+				</div>
+
+				<hr />
+
+				<div id="greetings_custom_options" class="dropdown shown">
+					<div class="wrapper">
+						<label for="i_greetmorning" class="trn">In the morning</label>
+						<input
+							type="text"
+							name="i_greetmorning"
+							id="i_greetmorning"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+
+					<div class="wrapper">
+						<label for="i_greetafternoon" class="trn">In the afternoon</label>
+						<input
+							type="text"
+							name="i_greetafternoon"
+							id="i_greetafternoon"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+
+					<div class="wrapper">
+						<label for="i_greetevening" class="trn">In the evening</label>
+						<input
+							type="text"
+							name="i_greetevening"
+							id="i_greetevening"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+
+					<div class="wrapper">
+						<label for="i_greetnight" class="trn">At night</label>
+						<input
+							type="text"
+							name="i_greetnight"
+							id="i_greetnight"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+				</div>
+
+				<div class="wrapper">
+					<label for="i_greetsize" class="trn">Greeting size</label>
+					<input
+						id="i_greetsize"
+						type="range"
+						name="greetsize"
+						min="1.5"
+						max="5"
+						value="3"
+						step=".2"
+						class="range"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -74,8 +74,13 @@
 }
 
 #greetings_options.shown {
-	max-height: 130px;
+	max-height: 430px;
 }
+
+#greetings_custom_options.shown {
+	max-height: 300px;
+}
+
 
 #ampm_label.shown {
 	max-height: 60px;
@@ -104,7 +109,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-	max-height: 670px;
+	max-height: 885px;
 }
 
 #weather_provider.shown {
@@ -240,4 +245,8 @@
 
 .all .as_pomodoro {
 	max-height: 190px;
+}
+
+.all .as_greetings {
+	max-height: 365px;
 }

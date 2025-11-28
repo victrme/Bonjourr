@@ -191,6 +191,10 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
 	setInput('i_greeting', data.greeting ?? '')
+	setInput('i_greetmorning', data.greetings_custom_strings.morning ?? '')
+	setInput('i_greetafternoon', data.greetings_custom_strings.afternoon ?? '')
+	setInput('i_greetevening', data.greetings_custom_strings.evening ?? '')
+	setInput('i_greetnight', data.greetings_custom_strings.night ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
 	setInput('i_noteswidth', data.notes?.width || 50)
 	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
@@ -211,6 +215,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_greetsize', data.greetingsize ?? 3)
+	setInput('i_greetmode', data.greetingsmode ?? 'auto')
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_geol', data.weather?.geolocation || 'approximate')
 	setInput('i_units', data.weather?.unit ?? 'metric')
@@ -295,6 +300,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
+	paramId('greetings_custom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
 	paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
@@ -731,6 +737,23 @@ function initOptionsEvents() {
 		clock(undefined, { greetingsize: this.value })
 	})
 
+	paramId('i_greetmode').addEventListener('change', function (this: HTMLInputElement) {
+		document.getElementById('greetings_custom_options')?.classList.toggle('shown', this.value === "custom")
+		clock(undefined, { greetingsmode: this.value })
+	})
+
+	// for searching: i_greetmorning, i_greetafternoon, i_greetevening, i_greetnight
+	const customGreetTimes = ['morning', 'afternoon', 'evening', 'night']
+	customGreetTimes.forEach(time => {
+		paramId(`i_greet${time}`).addEventListener('input', function () {
+			clock(undefined, { greetings_custom_strings: { [time]: this.value } })
+		})
+
+		paramId(`i_greet${time}`).addEventListener('change', () => {
+			paramId(`i_greet${time}`).blur()
+		})
+	})
+
 	// Notes
 
 	onclickdown(paramId('i_notes'), (_, target) => {
@@ -1138,6 +1161,10 @@ function translatePlaceholders() {
 	const cases = [
 		['i_title', 'Name'],
 		['i_greeting', 'Name'],
+		['i_greetmorning', 'Hello, $name!'],
+		['i_greetafternoon', 'Good afternoon'],
+		['i_greetevening', 'Good evening'],
+		['i_greetnight', 'Good night'],
 		['i_tabtitle', 'New tab'],
 		['i_sbrequest', 'Search query: %s'],
 		['i_sbplaceholder', 'Search'],
