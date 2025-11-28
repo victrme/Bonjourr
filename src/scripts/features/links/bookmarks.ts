@@ -163,7 +163,7 @@ function createBookmarksDialog() {
 	}
 
 	document.getElementById('bmk_apply')?.setAttribute('disabled', '')
-	document.dispatchEvent(new CustomEvent('toggle-settings'))
+	document.dispatchEvent(new Event('toggle-settings'))
 	traduction(bookmarksdom, getLang())
 
 	bookmarksdom.showModal()

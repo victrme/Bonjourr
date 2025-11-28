@@ -1,7 +1,6 @@
 import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
-import { openContextMenu } from '../contextmenu.ts'
-import { storeIconFile } from './fileicons.ts'
+import { openEditDialog } from './edit.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
@@ -21,8 +20,7 @@ import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
-import type { Local } from '../../../types/local.ts'
+import type { Link, LinkElem, LinkFolder } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
@@ -34,9 +32,8 @@ type AddLinks = {
 type UpdateLink = {
 	id: string
 	url?: string
+	icon?: string
 	title: string
-	icon?: LinkIcon
-	file?: File
 }
 
 type AddGroups = {
@@ -68,7 +65,6 @@ type SubmitFolder = {
 }
 
 type LinksUpdate = {
-	iconradius?: string
 	row?: string
 	newtab?: boolean
 	groups?: boolean
@@ -98,16 +94,11 @@ type LinkGroups = {
 	div: HTMLDivElement | null
 }[]
 
-type LinksInit = {
-	sync: Sync
-	local: Local
-}
-
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
-export async function quickLinks(init?: LinksInit, event?: LinksUpdate) {
+export async function quickLinks(init?: Sync, event?: LinksUpdate) {
 	if (event) {
 		linksUpdate(event)
 		return
@@ -117,35 +108,33 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate) {
 		return
 	}
 
-	const { sync, local } = init
-
 	// set class before appendBlock, cannot be moved
-	domlinkblocks.classList.add(sync.linkstyle ?? 'large')
-	domlinkblocks.classList.toggle('titles', sync.linktitles)
-	domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
-	domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
+	domlinkblocks.classList.add(init.linkstyle ?? 'large')
+	domlinkblocks.classList.toggle('titles', init.linktitles)
+	domlinkblocks.classList.toggle('backgrounds', init.linkbackgrounds)
+	domlinkblocks.classList.toggle('hidden', !init.quicklinks)
 
-	if (sync.linkgroups.synced.length > 0) {
-		await initBookmarkSync(sync)
+	if (init.linkgroups.synced.length > 0) {
+		await initBookmarkSync(init)
 	}
 
-	initGroups(sync, !!init)
-	initRows(sync.linksrow, sync.linkstyle)
-	initblocks(sync, local)
+	initGroups(init, !!init)
+	initRows(init.linksrow, init.linkstyle)
+	initblocks(init, true)
 }
 
 // Initialisation
 
-export function initblocks(sync: Sync, local?: Local): true {
-	const allLinks = Object.values(sync).filter((val) => isLink(val)) as Link[]
-	const { pinned, synced, selected } = sync.linkgroups
+export function initblocks(data: Sync, isInit?: true): true {
+	const allLinks = Object.values(data).filter((val) => isLink(val)) as Link[]
+	const { pinned, synced, selected } = data.linkgroups
 	const activeGroups: LinkGroups = []
 
 	for (const group of [...pinned, selected]) {
 		const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
 		const folder = div?.dataset.folder
 		const lis: HTMLLIElement[] = []
-		const links = folder ? getLinksInFolder(sync, folder) : getLinksInGroup(sync, group)
+		const links = folder ? getLinksInFolder(data, folder) : getLinksInGroup(data, group)
 
 		activeGroups.push({
 			lis,
@@ -201,12 +190,11 @@ export function initblocks(sync: Sync, local?: Local): true {
 			}
 
 			li = isElem(link)
-				? createElem(link, sync.linknewtab, sync.linkstyle)
-				: createFolder(link, linksInFolders, sync.linkstyle)
+				? createElem(link, data.linknewtab, data.linkstyle)
+				: createFolder(link, linksInFolders, data.linkstyle)
 
 			fragment.appendChild(li)
-
-			li.addEventListener('keyup', openContextMenu)
+			li.addEventListener('keyup', openEditDialog)
 
 			if (!group.synced) {
 				li.addEventListener('click', selectAll)
@@ -216,7 +204,7 @@ export function initblocks(sync: Sync, local?: Local): true {
 		}
 
 		if (folderid) {
-			linktitle.textContent = (sync[folderid] as LinkFolder).title
+			linktitle.textContent = (data[folderid] as LinkFolder).title
 		} else {
 			linktitle.textContent = group.title
 		}
@@ -238,15 +226,7 @@ export function initblocks(sync: Sync, local?: Local): true {
 		}
 	}
 
-	if (local) {
-		createIcons(local)
-	} else {
-		storage.local.get().then((local) => {
-			createIcons(local)
-		})
-	}
-
-	setRadius(sync.linkiconradius);
+	createIcons(isInit)
 	displayInterface('links')
 
 	return true
@@ -268,7 +248,6 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 	li.id = link._id
 	span.textContent = createTitle(link)
 	li.addEventListener('mouseup', folderClick)
-	li.addEventListener('keydown', folderClick)
 
 	for (let i = 0; i < linksInThisFolder.length; i++) {
 		const img = imgs[i]
@@ -276,7 +255,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 		const isIconShown = img && isElem(elem) && style !== 'text'
 
 		if (isIconShown) {
-			initIconList.push([img, getIconFromLinkElem(elem)])
+			initIconList.push([img, elem.icon ?? getDefaultIcon(elem.url)])
 		}
 	}
 
@@ -298,7 +277,12 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	span.textContent = createTitle(link)
 
 	if (style !== 'text') {
-		initIconList.push([img, getIconFromLinkElem(link)])
+		const iconurl = link.icon ?? ''
+		const refresh = new Date(Number.parseInt(iconurl))?.getTime()
+		const isDefaultRefreshed = Number.isInteger(refresh)
+		const icon = !isDefaultRefreshed && link.icon ? link.icon : getDefaultIcon(link.url, refresh)
+
+		initIconList.push([img, icon])
 	}
 
 	if (openInNewtab) {
@@ -308,23 +292,16 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 	return li
 }
 
-function createIcons(local: Local) {
+function createIcons(isInit?: true) {
+	const loadingTimeout = isInit ? 400 : 0
+
 	for (const [img, url] of initIconList) {
-		if (url.startsWith('link')) {
-			img.src = local[`x-icon-${url}`] ?? ''
-		} else {
-			img.src = url
-		}
+		img.src = url
 	}
 
 	setTimeout(() => {
-		// naturalWidth is needed here because complete doesn't tell the whole story
-		// it only says if it's finished loading or not, even an error code will say "complete"
-		const incomplete = initIconList.filter(
-			([img]) => !img.complete || img.naturalWidth === 0,
-		)
+		const incomplete = initIconList.filter(([img]) => !img.complete)
 
-		// if images still haven't loaded after 400ms
 		for (const [img, url] of incomplete) {
 			img.src = 'src/assets/interface/loading.svg'
 
@@ -334,24 +311,11 @@ function createIcons(local: Local) {
 				img.src = url
 			})
 
-			// if obvious error (dead link...), shows fallback
-			newimg.addEventListener('error', () => {
-				img.src = 'https://services.bonjourr.fr/favicon/blob/error'
-			})
-
 			newimg.src = url
-
-			// If image still isn't responding after 5s, gives up
-			setTimeout(() => {
-				if (!newimg.complete && newimg.naturalWidth === 0) {
-					console.error('Icon link took too long to load: ' + url)
-					img.src = 'https://services.bonjourr.fr/favicon/blob/error'
-				}
-			}, 5000)
 		}
 
 		initIconList = []
-	}, 400)
+	}, loadingTimeout)
 }
 
 function initRows(row: number, style: string) {
@@ -473,10 +437,6 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.row) {
 		setRows(update.row)
 	}
-	if (update.iconradius) {
-		eventDebounce({ linkiconradius: update.iconradius })// saving 
-		setRadius(update.iconradius)
-	}
 
 	if (update.styles || update.row) {
 		return
@@ -491,12 +451,7 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 
 	if (type === 'link') {
 		for (const link of args.links) {
-			newlinks.push(validateLink(
-				link.title,
-				link.url,
-				// if no group is specified, adds to the selected one
-				link.group || data.linkgroups.selected,
-			))
+			newlinks.push(validateLink(link.title, link.url, link.group))
 		}
 	}
 
@@ -529,13 +484,11 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 		data[link._id] = link
 	}
 
-	const newsync = correctLinksOrder(data)
+	const correctdata = correctLinksOrder(data)
 
-	storage.local.get().then((local) => {
-		initblocks(newsync, local)
-	})
+	initblocks(correctdata)
 
-	return newsync
+	return correctdata
 }
 
 function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolder[] {
@@ -568,11 +521,10 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
 	]
 }
 
-function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Sync {
+function updateLink({ id, title, icon, url }: UpdateLink, data: Sync): Sync {
 	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
 	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
 	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
-
 	const link = data[id] as Link
 
 	if (titledom && title !== undefined) {
@@ -580,56 +532,22 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 		titledom.textContent = link.title
 	}
 
-	if (isElem(link)) {
-		if (icondom && icon) {
+	if (!link.folder) {
+		if (icondom) {
+			const url = (icon ? stringMaxSize(icon, 7500) : undefined) ?? getDefaultIcon(link.url)
 			const img = document.createElement('img')
-			const currentSrc = icondom.src
-			let url = getDefaultIcon(link.url)
+
+			link.icon = url ? url : undefined
 
 			icondom.src = 'src/assets/interface/loading.svg'
 
 			img.onload = () => {
-				icondom.src = img.src
-			}
-
-			if (icon.type === 'auto') {
-				icon.value = undefined
-				img.src = url
-			}
-
-			if (icon.type === 'url') {
-				if (icon.value && stringMaxSize(icon.value, 7500)) {
-					url = icon.value
-					img.src = url
-				} else {
-					console.error(`There was a problem with this icon URL: ${icon.value}`)
+				if (icondom) {
+					icondom.src = url
 				}
 			}
 
-			if (icon.type === 'file') {
-				const currentIcon = link.icon
-				const noNewOrCurrentFile = !file && !currentIcon?.value
-				const noNewButHasCurrentFile = !file && (currentIcon?.type === 'file') && !!currentIcon?.value
-
-				if (noNewOrCurrentFile) {
-					throw new Error('Chose file but no file uploaded')
-				}
-
-				if (noNewButHasCurrentFile) {
-					icon = currentIcon
-					img.src = currentSrc
-				}
-
-				if (file) {
-					url = id
-
-					storeIconFile(id, file).then((uri) => {
-						img.src = uri
-					})
-				}
-			}
-
-			link.icon = icon
+			img.src = url
 		}
 
 		if (titledom && urldom && url !== undefined) {
@@ -640,7 +558,6 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 	}
 
 	data[id] = link
-
 	return data
 }
 
@@ -714,12 +631,6 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 			}
 		}
 
-		if (isElem(link)) {
-			if (link.icon?.type === 'file') {
-				storage.local.remove(`x-icon-${id}`)
-			}
-		}
-
 		delete data[id]
 	}
 
@@ -745,7 +656,6 @@ function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 	}
 
 	const correctdata = correctLinksOrder(data)
-
 	initblocks(correctdata)
 	return correctdata
 }
@@ -755,15 +665,7 @@ function refreshIcons(ids: string[], data: Sync): Sync {
 		const link = data[id] as LinkElem
 
 		if (link._id) {
-			const unixDate = Date.now().toString()
-
-			if (!link.icon || link.icon.type === 'auto') {
-				link.icon = link.icon ?? { type: 'auto', value: '' } // when link was just added, it doesn't have the icon property, so creates it
-				link.icon.value = getDefaultIcon(link.url) + `?r=${unixDate}`
-			} else if (link.icon.type === 'url') {
-				link.icon.value = `${link.icon.value}?r=${unixDate}`
-			}
-
+			link.icon = Date.now().toString()
 			data[id] = link
 		}
 	}
@@ -832,10 +734,6 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
 	}
 }
 
-function setRadius(radius: string | number) {
-	document.documentElement.style.setProperty('--link-outer-radius', `${radius}em`)
-}
-
 function setRows(row: string) {
 	const style = [...domlinkblocks.classList].filter(isLinkStyle)[0] ?? 'large'
 	const val = Number.parseInt(row ?? '6')
@@ -893,17 +791,6 @@ function correctLinksOrder(data: Sync): Sync {
 	}
 
 	return data
-}
-
-function getIconFromLinkElem(link: LinkElem): string {
-	if (!link.icon?.value) {
-		return getDefaultIcon(link.url)
-	}
-	if (link.icon.type === 'file') {
-		return link._id
-	}
-
-	return link.icon.value
 }
 
 function isLinkStyle(s: string): s is Sync['linkstyle'] {

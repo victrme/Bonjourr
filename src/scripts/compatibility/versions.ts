@@ -5,10 +5,6 @@ import type { SemVer } from '../utils/semver.ts'
 export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<Sync> {
 	const { major, minor } = version
 
-	if (major < 22) {
-		data = filter.newLinkIcons(data)
-	}
-
 	if (major <= 21) {
 		if (minor < 3) {
 			data = filter.fixNullBrightness(data)

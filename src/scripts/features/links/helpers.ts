@@ -2,7 +2,7 @@ import { stringMaxSize } from '../../shared/generic.ts'
 import { API_DOMAIN } from '../../defaults.ts'
 import { tradThis } from '../../utils/translations.ts'
 
-import type { Link, LinkElem, LinkIconType } from '../../../types/shared.ts'
+import type { Link, LinkElem } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
 export function getDefaultIcon(url: string, refresh?: number) {
@@ -104,13 +104,4 @@ export function isLink(link: unknown): link is Link {
 
 export function isElem(link: unknown): link is LinkElem {
 	return (link as Link)?.folder !== true
-}
-
-export function isLinkIconType(type: string): type is LinkIconType {
-	return ['auto', 'library', 'file', 'url'].includes(type)
-}
-
-// to figure out if a string is a valid number
-export function isNumber(value: string) {
-  return !isNaN(parseFloat(value))
 }
