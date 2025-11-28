@@ -8,11 +8,15 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '21.2.1'
+export const CURRENT_VERSION = '22.0.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
+
+// attributes an ID to this tab to keep track of them
+export const TAB_ID = crypto.randomUUID()
+export const tabs_bc = new BroadcastChannel('bonjourr_tabs')
 
 export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
 		(navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
@@ -91,6 +95,13 @@ export const SYNC_DEFAULT: Sync = {
 	tabtitle: '',
 	greeting: '',
 	greetingsize: '3',
+	greetingsmode: 'auto',
+	greetings_custom_strings: {
+		morning: '',
+		afternoon: '',
+		evening: '',
+		night: ''
+	},
 	pagegap: 1,
 	pagewidth: 1600,
 	time: true,
@@ -107,6 +118,7 @@ export const SYNC_DEFAULT: Sync = {
 	linkbackgrounds: true,
 	linknewtab: false,
 	linksrow: 6,
+	linkiconradius: 1.1,
 	linkgroups: {
 		on: false,
 		selected: 'default',
@@ -124,6 +136,7 @@ export const SYNC_DEFAULT: Sync = {
 		urls: '',
 		images: 'bonjourr-images-daylight',
 		videos: 'bonjourr-videos-daylight',
+		mute: true,
 		queries: {},
 		texture: {
 			type: 'none',
@@ -135,6 +148,7 @@ export const SYNC_DEFAULT: Sync = {
 		analog: false,
 		seconds: false,
 		ampmlabel: false,
+		ampmposition: 'top-left',
 		worldclocks: false,
 		timezone: 'auto',
 	},
@@ -176,6 +190,19 @@ export const SYNC_DEFAULT: Sync = {
 		type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
 		frequency: 'day',
 		last: undefined,
+	},
+	pomodoro: {
+		on: false,
+		mode: 'pomodoro',
+		pause: 0,
+		end: 0,
+		time_for: {
+			pomodoro: 1500,
+			break: 300,
+			longbreak: 1200,
+		},
+		focus: false,
+		sound: true,
 	},
 	font: {
 		family: '',

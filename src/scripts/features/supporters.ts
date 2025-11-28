@@ -1,4 +1,4 @@
-import { getLang, tradThis } from '../utils/translations.ts'
+import { tradThis } from '../utils/translations.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { onclickdown } from 'clickdown/mod'
 import { debounce } from '../utils/debounce.ts'
@@ -41,7 +41,7 @@ let modalDataLoaded = false
 
 export function supportersNotifications(init?: Sync, update?: SupportersUpdate) {
 	if (update?.translate) {
-		translateNotif()
+		setNotifStrings()
 		return
 	}
 
@@ -91,11 +91,15 @@ export function initSupportersSettingsNotif(sync: Sync) {
 	settingsNotifs?.classList.add('shown')
 	settingsNotifs?.style.setProperty('--background', `url(${image})`)
 
-	translateNotif()
+	setNotifStrings()
 
-	onclickdown(settingsNotifContent, () => {
+	onclickdown(settingsNotifContent, (e) => {
+		if (e instanceof PointerEvent && e.button !== 0) return // only left click
 		toggleSupportersModal(true)
-		loadModalData()
+
+		onSettingsLoad(() => {
+			loadModalData()
+		})
 	})
 
 	onclickdown(notifClose, () => {
@@ -121,14 +125,14 @@ async function updateSupportersOption(update: SupportersUpdate) {
 	storage.sync.set({ supporters: data.supporters })
 }
 
-function translateNotif() {
-	const currentMonthLocale = new Date().toLocaleDateString(getLang(), { month: 'long' })
-	const introString = 'This <currentMonth>, Bonjourr is brought to you by our lovely supporters.'
+function setNotifStrings() {
+	const currentMonth = new Date().toLocaleString('en-US', { month: 'long' })
+	const introString = `This ${currentMonth}, Bonjourr is brought to you by our lovely supporters.`
 	const notifTitle = document.getElementById('supporters-notif-title')
 	const notifButton = document.getElementById('supporters-notif-button')
 
 	if (notifTitle && notifButton) {
-		notifTitle.textContent = tradThis(introString).replace('<currentMonth>', currentMonthLocale)
+		notifTitle.textContent = tradThis(introString)
 		notifButton.textContent = tradThis('Find out who they are')
 	}
 }
@@ -178,7 +182,7 @@ function initSupportersModal() {
 }
 
 function toggleSupportersModal(toggle: boolean) {
-	document.dispatchEvent(new Event('toggle-settings'))
+	document.dispatchEvent(new CustomEvent('toggle-settings'))
 
 	if (toggle) {
 		document.documentElement.dataset.supportersModal = ''

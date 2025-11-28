@@ -201,7 +201,6 @@
 	flex-shrink: 0;
 	width: var(--icon-size);
 	height: var(--icon-size);
-	border: 1px solid transparent;
 	box-sizing: border-box;
 }
 
@@ -314,8 +313,8 @@
 
 .link-folder img {
 	display: none;
-	border-radius: 4px;
-	padding: 2px;
+	/* border-radius: 4px; */
+	/* padding: 2px; */
 	user-select: none;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -345,12 +344,12 @@
 }
 
 .large .link div {
-	padding: 0.3em;
-	border-radius: 1em;
+	padding: var(--link-padding);
+	border-radius: var(--link-outer-radius);
 }
 
 .large .link img {
-	border-radius: 0.6em;
+	border-radius: calc(var(--link-outer-radius) - var(--link-padding));
 }
 
 .large .link-folder div {
@@ -358,9 +357,11 @@
 }
 
 .large .link-folder img {
-	border-radius: 5px;
-	padding: 2px;
+	/* 0.45 cause they're about 45% smaller than the large links themselves */
+	border-radius: calc(var(--link-outer-radius) * 0.45);
+	padding: calc(var(--link-padding) * 0.45);
 	width: 100%;
+	aspect-ratio: 1/1;
 	height: auto;
 	box-sizing: border-box;
 }
@@ -377,12 +378,13 @@
 }
 
 .medium .link div {
-	padding: 0.2em;
-	border-radius: 0.8em;
+	/* .77 because they're about 77% the size of large links */ 
+  padding: calc(var(--link-padding) * 0.77);
+  border-radius: calc(var(--link-outer-radius) * 0.77);
 }
 
 .medium .link img {
-	border-radius: 0.5em;
+	border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.77);
 }
 
 /* Small */
@@ -412,13 +414,14 @@
 .small .link div {
 	width: var(--block-size);
 	height: var(--block-size);
-	padding: 0.1em;
-	border-radius: 0.4em;
+
+	/* .77 because they're about 77% the size of large links */ 
+	padding: calc(var(--link-padding) * 0.57);
+	border-radius: calc(var(--link-outer-radius) * 0.57);
 }
 
-.small .link div,
 .small .link img {
-	border-radius: 0.4em;
+	border-radius: calc((var(--link-outer-radius) - var(--link-padding))  * 0.57);
 }
 
 .small .link span {
@@ -508,12 +511,13 @@
 }
 
 .inline .link div {
-	padding: 1px;
+	/* it's 43% the size of a big ass link icon */ 
+	padding: calc(var(--link-padding) * 0.43);
+	border-radius: calc(var(--link-outer-radius) * 0.43);
 }
 
-.inline .link div,
 .inline .link img {
-	border-radius: 0.4em;
+	border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.43);
 }
 
 .inline .link span {
@@ -571,9 +575,20 @@
 .medium .link-folder img,
 .small .link-folder img {
 	position: absolute;
-	padding: 1px;
 	width: 50%;
 	height: 50%;
+	box-sizing: border-box;
+}
+
+.medium .link-folder img {
+	/* because they're about 42% the size of large icons */ 
+	padding: calc(var(--link-padding) * 0.42);
+	border-radius: calc(var(--link-outer-radius) * 0.42);
+}
+
+.small .link-folder img {
+	padding: calc(var(--link-padding) * 0.27);
+	border-radius: calc(var(--link-outer-radius) * 0.27);
 }
 
 .medium .link-folder img:nth-child(1),

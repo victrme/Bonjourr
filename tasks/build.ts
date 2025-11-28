@@ -100,12 +100,16 @@ function html(platform: Platform) {
 	const settingsdata = Deno.readTextFileSync('src/settings.html')
 	const helpModeData = Deno.readTextFileSync('src/help-mode.html')
 
+	const favicon = '<link rel="icon" href="/src/assets/favicon.ico" type="image/x-icon" id="favicon" />'
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
 	const storage = '<script src="src/scripts/webext-storage.js"></script>'
 
 	let html = indexdata
 
+	if (platform !== 'edge') {
+		html = html.replace('<!-- default icon -->', favicon)
+	}
 	if (platform === 'online') {
 		html = html.replace('<!-- icon -->', icon)
 	}
@@ -114,9 +118,6 @@ function html(platform: Platform) {
 	}
 	if (platform !== 'online') {
 		html = html.replace('<!-- webext-storage -->', storage)
-	}
-	if (platform === 'edge') {
-		html = html.replace('favicon.ico', 'monochrome.png')
 	}
 
 	html = html.replace('<!-- settings -->', settingsdata)
@@ -135,6 +136,7 @@ function styles(platform: Platform, env: Env) {
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
+				'.mp3': 'file',
 			},
 		})
 	} catch (err) {
@@ -197,21 +199,13 @@ function assets(platform: Platform) {
 		copyDir(`${source}/screenshots`, `${target}/screenshots`)
 	}
 
-	// Obligatory monochrome icons on microsoft edge
-
-	if (platform === 'edge') {
-		Deno.copyFileSync(
-			`${source}/favicons/favicon-128x128-monochrome.png`,
-			`${target}/favicons/favicon-128x128-monochrome.png`,
-		)
-	}
-
 	// All other assets
 
 	Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
 	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
 	copyDir(`${source}/interface`, `${target}/interface`)
 	copyDir(`${source}/labels`, `${target}/labels`)
+	copyDir(`${source}/sounds`, `${target}/sounds`)
 }
 
 function manifests(platform: Platform) {

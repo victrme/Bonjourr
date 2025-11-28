@@ -12,15 +12,24 @@ import { storage } from '../storage.ts'
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
 
 type DateFormat = Sync['dateformat']
+type CustomGreetingStrings = Sync['greetings_custom_strings']
 
 type ClockUpdate = {
 	ampm?: boolean
 	ampmlabel?: boolean
+	ampmposition?: string
 	analog?: boolean
 	seconds?: boolean
 	dateformat?: string
 	greeting?: string
 	greetingsize?: string
+	greetingsmode?: string
+	greetings_custom_strings?: {
+		morning?: string;
+		afternoon?: string;
+		evening?: string;
+		night?: string;
+	}
 	timezone?: string
 	shape?: string
 	face?: string
@@ -57,7 +66,7 @@ export function clock(init?: Sync, event?: ClockUpdate) {
 	const world = init?.worldclocks ?? { ...SYNC_DEFAULT.worldclocks }
 
 	try {
-		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu')
+		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu', init?.greetingsmode, init?.greetings_custom_strings)
 		greetingSize(init?.greetingsize)
 		analogStyle(init?.analogstyle)
 		clockSize(clock.size)
@@ -86,13 +95,36 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.greeting !== undefined) {
 		data.greeting = stringMaxSize(update.greeting, 64)
-		greetings(data.greeting)
+		greetings(data.greeting, data.greetingsmode, data.greetings_custom_strings)
 		storage.sync.set({ greeting: data.greeting })
 	}
 
 	if (update.greetingsize !== undefined) {
 		greetingSize(update.greetingsize)
 		storage.sync.set({ greetingsize: update.greetingsize })
+	}
+	
+	if (update.greetingsmode !== undefined) {
+		const newMode = update.greetingsmode as 'auto' | 'custom'
+
+		// saves data for current page
+		data.greetingsmode = newMode
+
+		// saves data to storage
+		storage.sync.set({ greetingsmode: newMode })
+
+		// visual updates
+		greetings(data.greeting, newMode, data.greetings_custom_strings)
+	}
+
+	if (update.greetings_custom_strings !== undefined) {
+		const newStrings = { // combines new strings to the ones already in storage
+			...data.greetings_custom_strings, ...update.greetings_custom_strings 
+		}
+		
+		data.greetings_custom_strings = newStrings 
+		storage.sync.set({ greetings_custom_strings: newStrings})
+		greetings(data.greeting, data.greetingsmode, newStrings)
 	}
 
 	if (isHands(update.hands)) {
@@ -153,6 +185,7 @@ async function clockUpdate(update: ClockUpdate) {
 		seconds: update.seconds ?? data.clock.seconds,
 		timezone: update.timezone ?? data.clock.timezone,
 		ampmlabel: update.ampmlabel ?? data.clock.ampmlabel,
+		ampmposition: isAmpmPosition(update.ampmposition) ? update.ampmposition : data.clock.ampmposition,
 		worldclocks: update.worldclocks ?? data.clock.worldclocks,
 	}
 
@@ -163,7 +196,7 @@ async function clockUpdate(update: ClockUpdate) {
 		dateformat: data.dateformat,
 	})
 
-	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat)
+	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat, data.greetingsmode, data.greetings_custom_strings)
 	analogStyle(data.analogstyle)
 	clockSize(data.clock.size)
 }
@@ -224,7 +257,7 @@ function greetingSize(size = '3') {
 
 //	Clock
 
-function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat) {
+function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat, greetmode: string, customgreetstrings: CustomGreetingStrings) {
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
@@ -236,9 +269,7 @@ function startClock(clock: Clock, world: WorldClock[], greeting: string, datefor
 
 	const clocks: WorldClock[] = []
 
-	if (clock.seconds && !clock.analog) {
-		setSecondsWidthInCh()
-	}
+	setSecondsWidthInCh()
 
 	if (clock.worldclocks) {
 		clocks.push(...world.filter(({ region }) => region))
@@ -279,7 +310,7 @@ function startClock(clock: Clock, world: WorldClock[], greeting: string, datefor
 			}
 		}
 
-		greetings(greeting)
+		greetings(greeting, greetmode, customgreetstrings)
 	}
 }
 
@@ -307,6 +338,7 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 	const hh = wrapper.querySelector('.digital-hh') as HTMLElement
 	const mm = wrapper.querySelector('.digital-mm') as HTMLElement
 	const ss = wrapper.querySelector('.digital-ss') as HTMLElement
+	const ampm = wrapper.querySelector('.digital-ampm') as HTMLElement
 
 	const m = fixunits(date.getMinutes())
 	const s = fixunits(date.getSeconds())
@@ -332,18 +364,34 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 		h = 12
 	}
 
-	if (clock.seconds) {
-		// Avoid layout shifts by rounding width
-		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
-		const width = getSecondsWidthInCh(second).toFixed(1)
-		domclock.style.setProperty('--seconds-width', `${width}ch`)
-	}
+	// Avoid layout shifts by rounding width
+	const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
+	const width = getSecondsWidthInCh(second).toFixed(1)
+	domclock.style.setProperty('--seconds-width', `${width}ch`)
 
 	domclock.classList.toggle('zero', !clock.ampm && h < 10)
 
 	hh.textContent = h.toString()
 	mm.textContent = m.toString()
 	ss.textContent = s.toString()
+
+	if (clock.ampm) {
+		if (clock.ampmposition) {
+			domclock.dataset.ampmposition = clock.ampmposition
+		} else {
+			domclock.dataset.ampmposition = 'top-left'
+		}
+
+		if (clock.ampmposition === 'top-right' || clock.ampmposition === 'bottom-right') {
+			if (ampm && domclock.lastElementChild !== ampm) {
+				domclock.insertBefore(ampm, domclock.lastElementChild)
+			}
+		} else if (clock.ampmposition === 'top-left' || clock.ampmposition === 'bottom-left') {
+			if (ampm && domclock.firstElementChild !== ampm) {
+				domclock.insertBefore(ampm, domclock.firstElementChild)
+			}
+		}
+	}
 }
 
 function analog(wrapper: HTMLElement, clock: Clock, timezone: string) {
@@ -414,11 +462,13 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, tim
 
 //	Greetings
 
-function greetings(name?: string) {
+function greetings(name?: string, greetmode: string = 'auto', customgreetstrings?: CustomGreetingStrings) {
 	const date = userDate()
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
+
+	// customgreetstrings = customgreetstrings ?? {} as CustomGreetingStrings;
 
 	const rare = oneInFive
 	const hour = date.getHours()
@@ -436,18 +486,26 @@ function greetings(name?: string) {
 		period = 'evening'
 	}
 
-	const greetings = {
-		morning: 'Good morning',
-		afternoon: 'Good afternoon',
-		evening: 'Good evening',
-		night: ['Good night', 'Sweet dreams'][rare],
+	if (greetmode === 'auto' || (greetmode === 'custom' && !customgreetstrings[period])) {
+		const greetings = {
+			morning: 'Good morning',
+			afternoon: 'Good afternoon',
+			evening: 'Good evening',
+			night: ['Good night', 'Sweet dreams'][rare],
+		}
+
+		const greet = greetings[period]
+
+		domgreetings.style.textTransform = name || (rare && period === 'night') ? 'none' : 'capitalize'
+		domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
+		domname.textContent = name ?? ''
+	} else if (greetmode === 'custom') {
+		const greet = name ? customgreetstrings[period].replace('$name', name) : customgreetstrings[period]
+		domgreeting.textContent = greet
+
+		domgreetings.style.textTransform = 'none'
+		domname.textContent = ''
 	}
-
-	const greet = greetings[period]
-
-	domgreetings.style.textTransform = name || (rare && period === 'night') ? 'none' : 'capitalize'
-	domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
-	domname.textContent = name ?? ''
 }
 
 // World clocks
@@ -515,4 +573,8 @@ function isShape(str?: string): str is AnalogStyle['shape'] {
 
 function isDateFormat(str = ''): str is DateFormat {
 	return ['auto', 'eu', 'us', 'cn'].includes(str)
+}
+
+function isAmpmPosition(str?: string): str is 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' {
+	return ['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(str ?? '')
 }

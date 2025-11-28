@@ -1,3 +1,42 @@
+## 22.0.0
+
+- 	New widget! Stay focused on your goals with the Pomodoro timer:
+	-	Three timer modes to configure depending on your workflow
+	-	Focus mode to avoid distractions
+	-	Alarm & timer in the tab titles    
+    -	Inspired by the looks of Apple's Liquid Glass
+- 	Context menu on the whole page, allows you to: 
+	-	Add quick links from anywhere
+	-	Access widget settings easily
+	-	Control your backgrounds
+- 	New quick link icon types:
+	-	Automatic
+	-	URL
+	-	Import your own
+- 	Choose how round you want your quick link icons
+- 	Backgrounds:
+	-	Local files: you can now import videos!
+	-	URLs option: import background images from a distant server
+	-	Videos can now have sound (muted by default)
+-	Refreshed look for the settings!
+- 	Custom greetings! Define how Bonjourr greets you from the morning to the night
+- 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
+- 	Things have been moved around or renamed for clarity:
+	-	Background controls were moved to context menu
+	-	Greeting size was moved to advanced options
+	-	Background frequency "Pause" was renamed "Locked"
+- 	Fixes and other improvements:
+	-	On quick link icons, the perfect ratio between border radius and padding is now respected 
+	-	When using local files, only images over 80Kb will be compressed
+    -	PNGs under 256px wide/high now use pixelated image rendering (useful for pixel art backgrounds)
+	-	You can now force the native OS context menu by right clicking + alt key
+	-	Restored centered default positioning for backgrounds
+	-	More reliable touch screen interactions 
+	-	Fix most languages not having a capital letter on date
+	-	Removed the favicon as emoji input in Edge as Microsoft has broken the functionality (#700)
+	-	Fixed an issue in Safari where the JSON settings textarea in "settings management" would be broken when focused on
+	-	Fixed a bug where the settings panel wouldn't be up to date if you used background controls before having opened it 
+
 ## 21.2.1
 
 - Weather is not triggered when choosing manual location
@@ -20,7 +59,6 @@
 	-	Russian update by Shlerspet
 
 ## 21.1.0
-
 
 -	Migrate local files from indexedDB to CacheStorage
 -	Added Help Mode to debug more easily, accessible with CTRL+Shift+?

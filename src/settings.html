@@ -30,7 +30,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="general_title">
 	<h2 class="trn">General</h2>
 </div>
 
@@ -78,7 +78,7 @@
 					maxlength="2"
 					placeholder="🌤"
 					aria-label="Tab favicon"
-					class="not-safari"
+					class="not-safari not-edge"
 					autocomplete="off"
 					autocorrect="off"
 					spellcheck="false"
@@ -132,7 +132,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="background_title">
 	<h2 class="trn">Background</h2>
 </div>
 
@@ -143,7 +143,7 @@
 			<option value="images" class="trn">Images</option>
 			<option value="videos" class="trn">Videos</option>
 			<option value="files" class="trn">Local files</option>
-			<!-- <option value="urls" class="trn">URLs</option> -->
+			<option value="urls" class="trn">URLs</option>
 			<option value="color" class="trn">Solid color</option>
 		</select>
 	</div>
@@ -193,7 +193,7 @@
 				<span class="trn">Type the collection ID from its URL, add more by separating them with a comma.</span>
 				<a
 					class="trn"
-					href="https://bonjourr.fr/docs/overview/#unsplash-collection"
+					href="https://bonjourr.fr/docs/overview/#collection"
 					rel="noreferrer noopener"
 					target="_blank"
 					>Learn more</a
@@ -232,14 +232,20 @@
 		<hr />
 
 		<div class="wrapper">
-			<span class="trn">My files</span>
+			<span class="trn">My files (images or videos)</span>
 
 			<label id="lbl_background-upload" title="Upload new background" aria-label="Upload new background">
 				<span class="param-btn">
 					<img src="src/assets/labels/add.svg" height="13" alt="" />
 					<span class="trn">Add new</span>
 				</span>
-				<input id="i_background-upload" type="file" name="background_file" multiple accept="image/*" />
+				<input
+					id="i_background-upload"
+					type="file"
+					name="background_file"
+					multiple
+					accept="image/*, video/mp4, video/webm"
+				/>
 			</label>
 		</div>
 
@@ -259,13 +265,13 @@
 			</div>
 			<div>
 				<button
-					id="b_thumbnail-position"
+					id="b_thumbnail-options"
 					class="param-btn"
-					title="Move selected background"
-					aria-label="Move selected background"
+					title="Show background options"
+					aria-label="Show background options"
 				>
-					<img src="src/assets/labels/move.svg" height="15" alt="" />
-					<span class="trn">Move</span>
+					<img src="src/assets/labels/options.svg" height="15" alt="" />
+					<span class="trn">Options</span>
 				</button>
 
 				<button
@@ -282,60 +288,106 @@
 			</div>
 		</div>
 
-		<div id="background-position-options" class="dropdown">
-			<div class="wrapper">
-				<label for="i_background-vertical" class="trn">Vertical</label>
-				<input
-					id="i_background-vertical"
-					name="background-vertical"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
+		<div id="background-file-options" class="dropdown">
+			<div id="background-file-image">
+				<div class="wrapper">
+					<label for="i_background-vertical" class="trn">Vertical</label>
+					<input
+						id="i_background-vertical"
+						name="background-vertical"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-horizontal" class="trn">Horizontal</label>
+					<input
+						id="i_background-horizontal"
+						name="background-horizontal"
+						type="range"
+						class="range"
+						min="0"
+						max="100"
+						step="3"
+						value="50"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-size" class="trn">Size</label>
+					<input
+						id="i_background-size"
+						name="background-size"
+						type="range"
+						min="100"
+						max="200"
+						value="100"
+						step="3"
+						class="range"
+					/>
+				</div>
+
+				<hr />
+
+				<div class="wrapper">
+					<label for="i_background-compress" class="trn">Optimize image</label>
+					<input id="i_background-compress" class="switch" type="checkbox" />
+				</div>
 			</div>
 
-			<div class="wrapper">
-				<label for="i_background-horizontal" class="trn">Horizontal</label>
-				<input
-					id="i_background-horizontal"
-					name="background-horizontal"
-					type="range"
-					class="range"
-					min="0"
-					max="100"
-					step="3"
-					value="50"
-				/>
-			</div>
+			<div id="background-file-video">
+				<div class="wrapper">
+					<label for="i_background-video-zoom" class="trn">Zoom</label>
+					<input
+						id="i_background-video-zoom"
+						name="background-video-zoom"
+						type="range"
+						min="1"
+						max="2"
+						value="1"
+						step=".1"
+						class="range"
+					/>
+				</div>
 
-			<div class="wrapper">
-				<label for="i_background-size" class="trn">Size</label>
-				<input
-					id="i_background-size"
-					name="background-size"
-					type="range"
-					min="100"
-					max="200"
-					value="100"
-					step="3"
-					class="range"
-				/>
+				<div class="wrapper">
+					<label for="i_background-playback-speed" class="trn">Playback speed</label>
+					<input
+						id="i_background-playback-speed"
+						name="background-playback-speed"
+						type="range"
+						min=".2"
+						max="3"
+						value="1"
+						step=".2"
+						class="range"
+					/>
+				</div>
+
+				<div class="wrapper">
+					<label for="i_background-loop-fade" class="trn">Loop fade</label>
+					<input
+						id="i_background-loop-fade"
+						name="background-loop-fade"
+						type="range"
+						min="0"
+						max="6000"
+						value="4000"
+						step="200"
+						class="range"
+					/>
+				</div>
 			</div>
 		</div>
 
 		<p class="tooltiptext trn" id="background-local-tooltip"
 			>Use the button above to import files from your device and set them as backgrounds in Bonjourr.</p
 		>
-
-		<hr />
-
-		<div class="wrapper">
-			<label for="i_background-local-compress" class="trn">Use compressed files</label>
-			<input id="i_background-local-compress" class="switch" type="checkbox" />
-		</div>
 	</div>
 
 	<div id="background-freq-option" class="dropdown">
@@ -350,20 +402,22 @@
 					<option value="hour" class="trn">Every hour</option>
 					<option value="period" class="trn">Daylight</option>
 					<option value="day" class="trn">Every day</option>
-					<option value="pause" class="trn">Pause</option>
+					<option value="pause" class="trn">Locked</option>
 				</select>
 				<button
 					id="i_refresh"
-					class="input-btn refresh-btn"
+					class="input-btn refresh-btn icon-only"
 					title="Next background"
 					aria-label="Next background"
 				>
-					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path
-							d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
-							fill="currentColor"
-						/>
-					</svg>
+					<span>
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
+								fill="currentColor"
+							/>
+						</svg>
+					</span>
 				</button>
 			</div>
 		</div>
@@ -390,6 +444,15 @@
 				<input type="color" id="i_solid-background" name="solid-background" tabindex="-1" />
 				<button id="b_solid-background" class="trn">Pick a Color</button>
 			</div>
+		</div>
+	</div>
+
+	<div id="background-video-sound-options" class="dropdown not-safari">
+		<hr />
+
+		<div class="wrapper">
+			<label for="i_background-mute-videos" class="trn">Mute videos</label>
+			<input id="i_background-mute-videos" class="switch" type="checkbox" />
 		</div>
 	</div>
 
@@ -498,7 +561,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="links_title">
 	<h2 class="trn">Quick Links</h2>
 
 	<button class="tooltip ttlinks" title="Tips on Quick Links" aria-label="Tips on Quick Links">?</button>
@@ -597,6 +660,13 @@
 			<hr />
 
 			<div class="wrapper">
+				<label for="i_icon_radius" class="trn">Icon corner radius</label>
+				<input id="i_icon_radius" type="range" name="i_icon_radius" min="0" max="2.4" step="0.1" value="1.1" class="range" />
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
 				<label for="i_row" class="trn">Links per row</label>
 				<input id="i_row" type="range" name="i_row" min="1" max="16" step="1" value="8" class="range" />
 			</div>
@@ -638,7 +708,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="time_title">
 	<h2 class="trn">Time & Date</h2>
 </div>
 
@@ -794,8 +864,22 @@
 					<hr />
 
 					<div id="w_ampm-label" class="wrapper">
-						<label for="i_ampm-label" class="trn">Show am/pm</label>
+						<label for="i_ampm-label" class="trn">Show AM/PM</label>
 						<input id="i_ampm-label" class="switch" type="checkbox" />
+					</div>
+				</div>
+
+				<div id="ampm_position" class="dropdown">
+					<hr />
+
+					<div class="wrapper">
+						<label for="i_ampm_position" class="trn">AM/PM position</label>
+						<select id="i_ampm_position">
+							<option value="top-left" class="trn">Top left</option>
+							<option value="top-right" class="trn">Top right</option>
+							<option value="bottom-left" class="trn">Bottom left</option>
+							<option value="bottom-right" class="trn">Bottom right</option>
+						</select>
 					</div>
 				</div>
 			</div>
@@ -930,7 +1014,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="main_title">
 	<h2 class="trn">Weather & Greetings</h2>
 </div>
 
@@ -1106,13 +1190,6 @@
 			<input id="i_greethide" class="switch" type="checkbox" />
 		</div>
 
-		<!-- <hr />
-
-		<div class="wrapper">
-			<label for="i_detach" class="trn">Detach from weather</label>
-			<input id="i_detach" class="switch" type="checkbox" />
-		</div> -->
-
 		<div id="greetings_options" class="dropdown">
 			<hr />
 
@@ -1128,26 +1205,92 @@
 				/>
 			</div>
 
-			<hr />
+			<div class="as as_greetings dropdown">
+				<hr />
 
-			<div class="wrapper">
-				<label for="i_greetsize" class="trn">Greeting size</label>
-				<input
-					id="i_greetsize"
-					type="range"
-					name="greetsize"
-					min="1.5"
-					max="5"
-					value="3"
-					step=".2"
-					class="range"
-				/>
+				<div class="wrapper">
+					<label for="i_greetmode" class="trn">Greeting mode</label>
+					<select id="i_greetmode">
+						<option value="auto" class="trn">Auto</option>
+						<option value="custom" class="trn">Custom</option>
+					</select>
+				</div>
+
+				<hr />
+
+				<div id="greetings_custom_options" class="dropdown shown">
+					<div class="wrapper">
+						<label for="i_greetmorning" class="trn">In the morning</label>
+						<input
+							type="text"
+							name="i_greetmorning"
+							id="i_greetmorning"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+
+					<div class="wrapper">
+						<label for="i_greetafternoon" class="trn">In the afternoon</label>
+						<input
+							type="text"
+							name="i_greetafternoon"
+							id="i_greetafternoon"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+
+					<div class="wrapper">
+						<label for="i_greetevening" class="trn">In the evening</label>
+						<input
+							type="text"
+							name="i_greetevening"
+							id="i_greetevening"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+
+					<div class="wrapper">
+						<label for="i_greetnight" class="trn">At night</label>
+						<input
+							type="text"
+							name="i_greetnight"
+							id="i_greetnight"
+							autocomplete="off"
+							maxlength="64"
+						/>
+					</div>
+
+					<hr />
+				</div>
+
+				<div class="wrapper">
+					<label for="i_greetsize" class="trn">Greeting size</label>
+					<input
+						id="i_greetsize"
+						type="range"
+						name="greetsize"
+						min="1.5"
+						max="5"
+						value="3"
+						step=".2"
+						class="range"
+					/>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="notes_title">
 	<h2 id="lbl-notes" class="trn">Notes</h2>
 
 	<button class="tooltip ttnotes" title="Tips on Notes" aria-label="Tips Notes">?</button>
@@ -1160,7 +1303,7 @@
 	</p>
 </div>
 
-<div class="param">
+<div class="param" id="notes_title">
 	<div class="activate_notes wrapper">
 		<label for="i_notes" class="trn">Enable</label>
 		<input id="i_notes" class="switch" type="checkbox" />
@@ -1236,7 +1379,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="searchbar_title">
 	<h2 class="trn">Search bar</h2>
 </div>
 
@@ -1384,10 +1527,10 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="quotes_title">
 	<h2 id="lbl-quotes" class="trn">Quotes</h2>
 
-	<button class="tooltip ttquotes" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
+	<button class="tooltip ttquotes" title="Tips on quotes" aria-label="Tips on quotes">?</button>
 
 	<p class="tooltiptext dropdown ttquotes">
 		<span class="trn">Use the default quote collections or import your own.</span>
@@ -1494,21 +1637,116 @@
 					<option value="day" class="trn">Every day</option>
 					<option value="pause" class="trn">Pause</option>
 				</select>
-				<button id="i_qtrefresh" class="input-btn refresh-btn" aria-label="Next quote" title="Next quote">
-					<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path
-							d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
-							fill="currentColor"
-						/>
-					</svg>
+				<button
+					id="i_qtrefresh"
+					class="input-btn refresh-btn icon-only"
+					aria-label="Next quote"
+					title="Next quote"
+				>
+					<span>
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M13.1459 11.0499L12.9716 9.05752L15.3462 8.84977C14.4471 7.98322 13.2242 7.4503 11.8769 7.4503C9.11547 7.4503 6.87689 9.68888 6.87689 12.4503C6.87689 15.2117 9.11547 17.4503 11.8769 17.4503C13.6977 17.4503 15.2911 16.4771 16.1654 15.0224L18.1682 15.5231C17.0301 17.8487 14.6405 19.4503 11.8769 19.4503C8.0109 19.4503 4.87689 16.3163 4.87689 12.4503C4.87689 8.58431 8.0109 5.4503 11.8769 5.4503C13.8233 5.4503 15.5842 6.24474 16.853 7.52706L16.6078 4.72412L18.6002 4.5498L19.1231 10.527L13.1459 11.0499Z"
+								fill="currentColor"
+							/>
+						</svg>
+					</span>
 				</button>
 			</div>
 		</div>
 	</div>
 </div>
 
+<div class="settings-title" id="pomodoro_title">
+	<h2 id="lbl-quotes" class="trn">Pomodoro timer</h2>
+
+	<button class="tooltip ttpomodoro" title="Tips on Pomodoro" aria-label="Tips on Pomodoro">?</button>
+
+	<p class="tooltiptext dropdown ttpomodoro">
+		<span class="trn"
+			>Pomodoro is a productivity tool to help you stay focused on your goals and work efficiently.</span
+		>
+		<a class="trn" href="https://bonjourr.fr/docs/overview/#pomodoro" rel="noreferrer noopener" target="_blank"
+			>Learn more</a
+		>
+	</p>
+</div>
+
+<div class="param">
+	<div class="activate_pomodoro wrapper">
+		<label for="i_pomodoro" class="trn">Enable</label>
+		<input id="i_pomodoro" class="switch" type="checkbox" />
+	</div>
+
+	<div id="pomodoro_options" class="dropdown">
+		<hr />
+
+		<div class="activate_pomodoro wrapper">
+			<label for="i_pmdr_sound" class="trn">Play sound on alarm</label>
+			<input id="i_pmdr_sound" class="switch" type="checkbox" />
+		</div>
+
+		<div class="as as_pomodoro dropdown">
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_pomodoro_time" class="trn">Default time</label>
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_pomodoro_time"
+						id="i_pmdr_pomodoro"
+						autocomplete="off"
+						min="1"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_break_time" class="trn">Break time</label>
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_break_time"
+						id="i_pmdr_break"
+						autocomplete="off"
+						min="1"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_longbreak_time" class="trn">Long break time</label>
+
+				<div class="inputWithSuffix">
+					<input
+						type="number"
+						name="i_pmdr_longbreak_time"
+						id="i_pmdr_longbreak"
+						autocomplete="off"
+						min="1"
+						max="59"
+						placeholder="Minutes"
+					/>
+					<span class="trn">mins</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class="as as_fonts dropdown">
-	<div class="settings-title">
+	<div class="settings-title" id="fonts_title">
 		<h2 class="trn">Fonts</h2>
 	</div>
 
@@ -1577,7 +1815,7 @@
 </div>
 
 <div class="as as_page dropdown">
-	<div class="settings-title">
+	<div class="settings-title" id="layout_title">
 		<h2 class="trn">Page layout</h2>
 
 		<button class="tooltip ttgrid" title="Tips on page grid layout" aria-label="Tips on page grid layout">?</button>
@@ -1640,7 +1878,7 @@
 </div>
 
 <div class="as as_css dropdown cssEditor">
-	<div class="settings-title">
+	<div class="settings-title" id="css_title">
 		<h2 id="lbl-css" class="trn">Custom Style</h2>
 
 		<button class="tooltip ttcss" title="Tips on Custom styles" aria-label="Tips on Custom styles">?</button>
@@ -1657,7 +1895,7 @@
 	<div class="param" id="css-editor"></div>
 </div>
 
-<div class="as as_updates dropdown">
+<div class="as as_updates dropdown" id="notifications_title">
 	<div class="settings-title">
 		<h2 class="trn">Notifications</h2>
 	</div>
@@ -1706,7 +1944,7 @@
 	</div>
 </div>
 
-<div class="settings-title">
+<div class="settings-title" id="settings-management_title">
 	<h2 class="trn">Settings management</h2>
 
 	<button class="tooltip ttexport" title="Tips on imports & exports" aria-label="Tips on imports & exports">?</button>

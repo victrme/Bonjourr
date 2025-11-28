@@ -4,6 +4,8 @@
 	--page-width: 1600px;
 	--page-gap: 1em;
 	--links-width: auto;
+	--link-padding: 0.3em;
+	--link-outer-radius: 0.6em;
 
 	--fade-in: 400ms;
 	--blur: 15px;
@@ -20,6 +22,7 @@
 	--font-weight-clock: 200;
 	--font-weight: 400;
 	--font-size: 1em;
+	--pomodoro-font-size: 14px;
 	--clock-size: 6em;
 	--greeting-size: 3em;
 	--supporters-notif-height: -171px;
@@ -29,6 +32,8 @@
 	--color-red: #e64b43;
 	--color-green: #2ed058;
 	--color-blue: #2990ff;
+	--color-orange: #fe9030;
+	--border-radius: 25px; /* global border-radius value */ 
 	--out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
@@ -81,6 +86,7 @@
 [data-browser='chrome'] .safari-only,
 [data-browser='firefox'] .safari-only,
 [data-platform='safari'] .not-safari,
+[data-browser='edge'] .not-edge,
 [data-platform='online'] .not-online {
 	display: none;
 }
@@ -139,7 +145,7 @@ body button {
 	box-sizing: border-box;
 }
 
-body.tabbing a:focus,
+body.tabbing #settings a:focus,
 body.tabbing input:focus,
 body.tabbing textarea:focus,
 body.tabbing .pce-focus,
@@ -148,19 +154,20 @@ body.tabbing button:focus,
 body.tabbing button:focus,
 body.tabbing #bookmarks li:focus-visible,
 body.tabbing #link-title div:focus-visible,
-body.tabbing #linkblocks .link a:focus-visible,
-body.tabbing #linkblocks .link.folder:focus-visible,
-body.tabbing #linkblocks.text a:focus-visible span,
+body.tabbing #linkblocks .link:has(a:focus-visible),
+body.tabbing #linkblocks .link-folder:focus-visible,
 body.tabbing #notes_toolbar:focus-visible,
-body.tabbing input:focus-visible + .slider {
+body.tabbing input:focus-visible + .slider,
+body.tabbing #focus-toggle:focus,
+body.tabbing .pomodoro_mode:focus {
 	outline-width: 2px;
 	outline-color: var(--color-blue);
 	outline-style: dashed;
 }
 
-/* Outline is invisible on Chrome without this. Why. */
-body.tabbing #linkblocks .link a:focus-visible {
-	outline-style: auto;
+body.tabbing #linkblocks .link {
+	border-radius: 10px;
+	outline-offset: 3px;
 }
 
 body.tabbing button.btn-red:focus-visible {
