@@ -6,10 +6,6 @@
 
 /* Dropdowns: Background Options */
 
-#background-video-sound-options.shown {
-	max-height: 70px;
-}
-
 #solid_options.shown {
 	max-height: 400px;
 }
@@ -34,8 +30,8 @@
 	max-height: 60px;
 }
 
-#background-file-options.shown {
-	max-height: 180px;
+#background-position-options.shown {
+	max-height: 120px;
 }
 
 #thumbnail-action-buttons.shown {
@@ -65,7 +61,7 @@
 }
 
 #digital_options.shown {
-	max-height: 180px;
+	max-height: 120px;
 }
 
 #analog_options.shown {
@@ -73,19 +69,10 @@
 }
 
 #greetings_options.shown {
-	max-height: 430px;
+	max-height: 130px;
 }
-
-#greetings_custom_options.shown {
-	max-height: 300px;
-}
-
 
 #ampm_label.shown {
-	max-height: 60px;
-}
-
-#ampm_position.shown {
 	max-height: 60px;
 }
 
@@ -108,7 +95,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-	max-height: 885px;
+	max-height: 670px;
 }
 
 #weather_provider.shown {
@@ -122,7 +109,7 @@
 /* Dropdowns: Quicklinks, Notes, Searchbar, and Quotes Options */
 
 #quicklinks_options.shown {
-	max-height: 423px;
+	max-height: 460px;
 }
 
 #notes_options.shown {
@@ -149,14 +136,10 @@
 	max-height: 450px;
 }
 
-#pomodoro_options.shown {
-	max-height: 240px;
-}
-
 /* Dropdowns: Settings management Options */
 
 #disabled-sync.shown {
-	max-height: 105px;
+	max-height: 100px;
 }
 
 #url-sync.shown {
@@ -236,12 +219,4 @@
 
 .all .as_sync {
 	max-height: 280px;
-}
-
-.all .as_pomodoro {
-	max-height: 190px;
-}
-
-.all .as_greetings {
-	max-height: 365px;
 }

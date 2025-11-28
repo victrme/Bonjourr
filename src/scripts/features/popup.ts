@@ -16,10 +16,10 @@ type PopupUpdate = {
 }
 
 const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-21-the-background-update-R6R61FLG0Z'
-const ANNOUNCEMENT_VERSION = '22.0.0'
+const ANNOUNCEMENT_VERSION = '21.1.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: '<b>Bonjourr just got a major update! ✨</b> Learn all about the new features: pomodoro widget, global context menu, link icon types and more.',
+	en: '<b>Bonjourr just got a major update! ✨</b> Learn all about the new features: video backgrounds, texture overlays, background search and more.',
 	fr: "<b>Bonjourr vient d'avoir une mise à jour majeure ! ✨</b> Découvrez les nouvelles fonctionnalités: arrière-plans vidéo, superpositions de textures, recherche d'arrière-plan et bien plus encore.",
 	de: '<b>Bonjourr hat gerade ein großes Update erhalten! ✨</b> Erfahren Sie alles über die neuen Funktionen: Videohintergründe, Textur-Overlays, Hintergrundsuche und vieles mehr.',
 	it: '<b>Bonjourr ha appena ricevuto un aggiornamento importante! ✨</b> Scopri tutte le nuove funzionalità: sfondi video, sovrapposizioni di texture, ricerca di sfondi e altro ancora.',

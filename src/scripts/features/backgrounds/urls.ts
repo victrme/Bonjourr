@@ -1,92 +1,15 @@
-import { applyBackground, removeBackgrounds } from './index.ts'
 import { stringMaxSize } from '../../shared/generic.ts'
-import { needsChange } from '../../shared/time.ts'
+import { userDate } from '../../shared/time.ts'
 import { storage } from '../../storage.ts'
 
-import type { Background, BackgroundImage } from '../../../types/shared.ts'
-import type { EditorOptions, PrismEditor } from 'prism-code-editor'
-import type { BackgroundUrl, BackgroundUrlState, Local } from '../../../types/local.ts'
+import type { BackgroundUrlState, Local } from '../../../types/local.ts'
+import type { BackgroundImage } from '../../../types/shared.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
 
-type UrlInfos = {
-	state: BackgroundUrlState
-	format: 'image' | 'video'
-	duration?: number
-	needsProxy: boolean
-}
+import type { EditorOptions, PrismEditor } from 'prism-code-editor'
 
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
-
-export function urlsCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
-	const urls = lastUsedValidUrls(local.backgroundUrls)
-
-	if (urls.length === 0) {
-		removeBackgrounds()
-		return
-	}
-
-	const url = urls[0]
-	const freq = backgrounds.frequency
-	const metadata = local.backgroundUrls[url]
-	const lastUsed = new Date(metadata.lastUsed).getTime()
-
-	needNew ??= needsChange(freq, lastUsed)
-
-	if (urls.length > 1 && needNew) {
-		urls.shift()
-
-		const rand = Math.floor(Math.random() * urls.length)
-		const url = urls[rand]
-		const now = new Date().toString()
-		const metadata = local.backgroundUrls[url]
-
-		applyBackground(urlAsBackgroundMedia(url, metadata))
-		local.backgroundUrls[url].lastUsed = now
-		storage.local.set(local)
-		return
-	}
-
-	applyBackground(urlAsBackgroundMedia(url, metadata))
-}
-
-export function lastUsedValidUrls(metadatas: Local['backgroundUrls']): string[] {
-	const getTime = (item: BackgroundUrl) => new Date(item.lastUsed).getTime()
-	const entries = Object.entries(metadatas)
-
-	const sortedUrls = entries.toSorted((a, b) => getTime(b[1]) - getTime(a[1]))
-	const validOnly = sortedUrls.filter(([_, metadata]) => metadata.state === 'OK')
-	const urls = validOnly.map(([url, _]) => url)
-
-	return urls
-}
-
-function urlAsBackgroundMedia(url: string, metadata: BackgroundUrl): Background {
-	if (metadata.format === 'video') {
-		return {
-			format: 'video',
-			duration: metadata.duration ?? 8,
-			page: '',
-			username: '',
-			urls: {
-				full: url,
-				medium: url,
-				small: url,
-			},
-		}
-	}
-
-	return {
-		format: 'image',
-		page: '',
-		username: '',
-		urls: {
-			full: url,
-			medium: url,
-			small: url,
-		},
-	}
-}
 
 export function getUrlsAsCollection(local: Local): [string[], BackgroundImage[]] {
 	const entries = Object.entries(local.backgroundUrls)
@@ -153,7 +76,7 @@ function highlightUrlsEditorLine(url: string, state: BackgroundUrlState) {
 	const lineState = noContent ? 'NONE' : state
 
 	line?.classList.toggle('loading', lineState === 'LOADING')
-	line?.classList.toggle('error', lineState === 'NOT_MEDIA')
+	line?.classList.toggle('error', lineState === 'NOT_IMAGE')
 	line?.classList.toggle('good', lineState === 'OK')
 	line?.classList.toggle('warn', lineState === 'CANT_REACH' || lineState === 'NOT_URL')
 }
@@ -173,13 +96,7 @@ export function applyUrls(backgrounds: Backgrounds) {
 	const backgroundUrls: Local['backgroundUrls'] = {}
 
 	for (const url of editorValue.split('\n')) {
-		if (url.startsWith('http')) {
-			backgroundUrls[url] = {
-				lastUsed: new Date().toString(),
-				format: formatFromFileExt(url),
-				state: 'NONE',
-			}
-		}
+		backgroundUrls[url] = { lastUsed: userDate().toString(), state: 'NONE' }
 	}
 
 	globalUrlValue = backgrounds.urls = editorValue
@@ -187,10 +104,10 @@ export function applyUrls(backgrounds: Backgrounds) {
 	storage.sync.set({ backgrounds })
 
 	toggleUrlsButton('osef', 'osef')
-	checkUrlInfos(backgroundUrls)
+	checkUrlStates(backgroundUrls)
 }
 
-async function checkUrlInfos(backgroundUrls: Local['backgroundUrls']) {
+async function checkUrlStates(backgroundUrls: Local['backgroundUrls']) {
 	const entries = Object.entries(backgroundUrls)
 
 	for (const [url] of entries) {
@@ -198,109 +115,46 @@ async function checkUrlInfos(backgroundUrls: Local['backgroundUrls']) {
 	}
 
 	for (const [url, item] of entries) {
-		const infos = await getUrlInfos(url)
-
-		item.state = infos.state
-		item.format = infos.format
-		item.duration = infos.duration
+		item.state = await getState(url)
 		backgroundUrls[url] = item
-
 		highlightUrlsEditorLine(url, item.state)
 		storage.local.set({ backgroundUrls: backgroundUrls })
 	}
 }
 
-async function getUrlInfos(item: string): Promise<UrlInfos> {
-	const isVideo = () => type.includes('video/')
-	const isMedia = () => type.startsWith('video/') || type.startsWith('image/')
-
-	const infos: UrlInfos = {
-		'format': formatFromFileExt(item),
-		'state': 'NONE',
-		'needsProxy': false,
-	}
-
-	let type = ''
+async function getState(item: string): Promise<BackgroundUrlState> {
+	const isImage = (resp: Response) => resp.headers.get('content-type')?.includes('image/')
+	const proxy = 'https://services.bonjourr.fr/backgrounds/proxy/'
 	let resp: Response
 	let url: URL
-
-	// 1. Check URL validity first
 
 	try {
 		url = new URL(item)
 	} catch (_) {
-		infos.state = 'NOT_URL'
-		return infos
+		return 'NOT_URL'
 	}
-
-	// 2a. Try to load content as is
 
 	try {
 		resp = await fetch(url)
-		type = resp.headers.get('content-type') ?? ''
 
-		if (isMedia()) {
-			infos.state = 'OK'
-		} else {
-			infos.state = 'NOT_MEDIA'
-			return infos
+		if (isImage(resp) === false) {
+			return 'NOT_IMAGE'
 		}
 	} catch (_) {
-		// 2b. Load content using Bonjourr proxy (removes CORS)
-
 		try {
-			infos.needsProxy = true
-			resp = await fetch(`https://services.bonjourr.fr/backgrounds/proxy/${url}`)
-			type = resp.headers.get('content-type') ?? ''
+			resp = await fetch(proxy + url)
 
-			if (isMedia()) {
-				infos.state = 'OK'
-			} else {
-				infos.state = 'NOT_MEDIA'
-				return infos
+			if (isImage(resp) === false) {
+				return 'NOT_IMAGE'
 			}
 		} catch (_) {
-			infos.state = 'CANT_REACH'
-			return infos
+			return 'CANT_REACH'
 		}
 	}
 
-	// 3. Find correct media format
-
-	if (isVideo()) {
-		infos.format = 'video'
-	} else {
-		infos.format = 'image'
+	if (resp.headers.get('content-type')?.includes('image/')) {
+		return 'OK'
 	}
 
-	// 4. If video detected, retrieve duration
-
-	if (infos.format === 'video') {
-		const video = document.createElement('video')
-
-		infos.duration = await new Promise((resolve, reject) => {
-			setTimeout(() => reject(), 5000)
-			video.onloadedmetadata = () => resolve(Math.floor(video.duration))
-			video.src = item
-		})
-
-		if (!infos.duration) {
-			infos.state = 'LOADING'
-			return infos
-		}
-	}
-
-	// 4. Return infos
-
-	return infos
-}
-
-function formatFromFileExt(url: string): 'image' | 'video' {
-	url = url.trimEnd()
-
-	if (url.endsWith('mp4') || url.endsWith('webm')) {
-		return 'video'
-	} else {
-		return 'image'
-	}
+	return 'NOT_IMAGE'
 }

@@ -14,24 +14,9 @@ queueMicrotask(() => {
 	document.addEventListener('close-folder', closeFolder)
 })
 
-export async function folderClick(event: MouseEvent | KeyboardEvent) {
+export async function folderClick(event: MouseEvent) {
 	const li = getLiFromEvent(event)
-
-	let rightClick = false,
-		ctrlClick = false,
-		middleClick = false
-
-	if (event instanceof MouseEvent) {
-		rightClick = event.button === 2
-		ctrlClick = event.button === 0 && (event.ctrlKey || event.metaKey)
-		middleClick = event.button === 1
-	} else if (event instanceof KeyboardEvent) {
-		if (event.key === 'Enter' || event.key === ' ') {
-			event.preventDefault() // prevent scrolling when pressing Space
-			folderClick(event)
-		} else return
-	}
-
+	const rightClick = event.button === 2
 	const inFolder = li?.classList.contains('link-folder')
 	const isSelectAll = domlinkblocks.className.includes('select-all')
 
@@ -42,6 +27,8 @@ export async function folderClick(event: MouseEvent | KeyboardEvent) {
 	document.dispatchEvent(new Event('stop-select-all'))
 
 	const data = await storage.sync.get()
+	const ctrlClick = event.button === 0 && (event.ctrlKey || event.metaKey)
+	const middleClick = event.button === 1
 
 	if (ctrlClick || middleClick) {
 		openAllLinks(data, li)

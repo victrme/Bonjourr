@@ -29,7 +29,7 @@
 	resize: vertical;
 	cursor: pointer;
 	box-sizing: border-box;
-	border-radius: 11px;
+	border-radius: 10px;
 	color: var(--color-text);
 	background-color: var(--color-areas);
 	transition: min-height 0.1s ease;
@@ -43,7 +43,7 @@
 	overflow-y: auto;
 	opacity: unset;
 	cursor: inherit;
-	display: inline-block;
+	white-space: nowrap;
 	min-height: 300px;
 }
 

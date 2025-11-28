@@ -9,7 +9,7 @@ type Defaults = {
 	triple: MoveLayout
 }
 
-const MOVE_WIDGETS = ['time', 'main', 'quicklinks', 'notes', 'quotes', 'searchbar', 'pomodoro']
+const MOVE_WIDGETS = ['time', 'main', 'quicklinks', 'notes', 'quotes', 'searchbar']
 
 export const elements = {
 	time: globalThis.document.getElementById('time'),
@@ -18,7 +18,6 @@ export const elements = {
 	searchbar: globalThis.document.getElementById('sb_container'),
 	notes: globalThis.document.getElementById('notes_container'),
 	quotes: globalThis.document.getElementById('quotes_container'),
-	pomodoro: globalThis.document.getElementById('pomodoro_container'),
 } as const
 
 export const defaultLayouts: Defaults = {
@@ -252,7 +251,6 @@ export function getWidgetsStorage(data: Sync): Widgets[] {
 		main: data.main,
 		notes: !!data.notes?.on,
 		searchbar: !!data.searchbar?.on,
-		pomodoro: !!data.pomodoro?.on,
 		quicklinks: data.quicklinks,
 		quotes: !!data.quotes?.on,
 	}
@@ -277,9 +275,6 @@ export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync): 
 		}
 		if (id === 'quotes') {
 			data.quotes = { ...data.quotes, on: on }
-		}
-		if (id === 'pomodoro') {
-			data.pomodoro = { ...data.pomodoro, on: on }
 		}
 		if (id === 'searchbar') {
 			data.searchbar = { ...data.searchbar, on: on }
@@ -320,9 +315,6 @@ export function addGridWidget(grid: string, id: Widgets, selection: Move['select
 		position = rows.length === 1 ? 1 : 2
 	}
 	if (id === 'searchbar') {
-		position = rows.length === 1 ? 1 : 2
-	}
-	if (id === 'pomodoro') {
 		position = rows.length === 1 ? 1 : 2
 	}
 	if (id === 'quicklinks') {

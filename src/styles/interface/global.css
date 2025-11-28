@@ -24,7 +24,8 @@
 	}
 }
 
-#interface.pushed {
+#interface.pushed,
+#background-actions.pushed {
 	transform: translateX(-100px);
 }
 
@@ -33,8 +34,7 @@
 .move-edit #linkblocks,
 .move-edit #sb_container,
 .move-edit #notes_container,
-.move-edit #quotes_container,
-.move-edit #pomodoro_container {
+.move-edit #quotes_container {
 	z-index: 3;
 	cursor: pointer;
 	pointer-events: none;
@@ -45,8 +45,7 @@
 .move-edit #linkblocks > *,
 .move-edit #sb_container > *,
 .move-edit #notes_container > *,
-.move-edit #quotes_container > *,
-.move-edit #pomodoro_container > * {
+.move-edit #quotes_container > * {
 	user-select: none;
 }
 
@@ -55,7 +54,6 @@
 #linkblocks,
 #sb_container,
 #notes_container,
-#quotes_container,
-#pomodoro_container {
+#quotes_container {
 	place-self: center;
 }

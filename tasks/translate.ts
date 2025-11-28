@@ -1,4 +1,4 @@
-import { langList } from '../src/scripts/langs.ts'
+//
 
 const langs = Array.from(Deno.readDirSync('./_locales/'))
 	.filter((entry) => entry.isDirectory)
@@ -46,19 +46,18 @@ async function translateFile(lang: string): Promise<void> {
 	// 2. Add keys & translate new stuff
 
 	const englishKeys = Object.keys(englishDict)
-	const missingKeys: string[] = englishKeys.filter((key) => newDict[key] === undefined)
-	const hasMissingKeys = missingKeys.length > 0
+	const missingKeys = englishKeys.filter((k) => newDict[k] === undefined)
 
-	if (hasMissingKeys) {
-		const language = langList[lang as keyof typeof langList]
-		const message = `Translate in ${language}.\n\n${JSON.stringify(missingKeys)}`
-		const translations = await llmTranslation(message)
+	if (missingKeys.length > 0) {
+		const message = `${lang}\n${missingKeys.join('\n')}`
+		const translations = await claudeTranslation(message)
 
 		if (translations) {
-			for (const key of missingKeys) {
-				const trn = translations[key]
+			for (const index in missingKeys) {
+				const en = missingKeys[index]
+				const trn = translations[index]
 
-				newDict[key] = trn
+				newDict[en] = trn
 				added++
 			}
 		}
@@ -83,29 +82,12 @@ async function translateFile(lang: string): Promise<void> {
 	console.info(`${lang.slice(0, 2)}: [removed: ${removed}, added: ${added}]`)
 }
 
-async function llmTranslation(body: string): Promise<Record<string, string> | undefined> {
-	const path = 'https://services.bonjourr.fr/translate'
+async function claudeTranslation(body: string): Promise<string[] | undefined> {
+	const path = 'https://translate.bonjourr.workers.dev/'
 	const response = await fetch(path, { body, method: 'POST' })
 
 	if (response.status === 200) {
-		const json = await response.json() as TranslateApiResponse
-		const dict: Record<string, string> = {}
-
-		for (const row of json.data) {
-			dict[row.in] = row.out
-		}
-
-		return dict
+		const text = await response.text()
+		return text.split('\n')
 	}
-
-	if (response.status === 429) {
-		console.warn('429 rate limited')
-	}
-}
-
-interface TranslateApiResponse {
-	data: {
-		in: string
-		out: string
-	}[]
 }

@@ -6,7 +6,7 @@
 	position: relative;
 	padding: 1.5em 1.8em;
 	margin-top: 18px;
-	border-radius: var(--border-radius);
+	border-radius: 1em;
 	background-color: rgb(var(--color-param));
 	color: var(--color-text);
 	border: 1px solid #e3e3e3;
@@ -184,7 +184,7 @@ html[data-supporters] #show-settings.shown:after {
 	border: 1px solid #fff1;
 	background-color: rgba(243, 243, 243, 0.8);
 	color: #131313;
-	border-radius: var(--border-radius);
+	border-radius: 15px;
 	margin: 1em;
 	overflow: hidden;
 }
