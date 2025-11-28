@@ -251,7 +251,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
-	// setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
+	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
@@ -648,12 +648,12 @@ function initOptionsEvents() {
 		clock(undefined, { ampmlabel: target.checked })
 
 		// shows/hides ampm_position option
-		paramId('ampm_position')?.classList.toggle('shown', target.checked)
+		paramId('i_ampm_position')?.classList.toggle('shown', target.checked)
 	})
 
-	// paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement) {
-	// 	clock(undefined, { ampmposition: this.value })
-	// })
+	paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { ampmposition: this.value })
+	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
 		clock(undefined, { timezone: this.value })
