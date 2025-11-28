@@ -80,7 +80,7 @@ export function openContextMenu(event: Event) {
 	}
 
 	// hides/resets content from previous context menu
-	for (const node of domdialog.querySelectorAll('label, button, hr, #background-actions, input')) {
+	for (const node of domdialog.querySelectorAll('label, button, hr, #background-actions, input, #pomodoro-info')) {
 		node.classList.remove('on')
 
 		if (node instanceof HTMLInputElement) {
@@ -104,6 +104,10 @@ export function openContextMenu(event: Event) {
 		return
 	}
 
+	if (eventLocation.widgets.pomodoro) {
+		showTheseElements('#pomodoro-info')
+	}
+	
 	if (clickedOnWidgets) {
 		const allWidgets = Object.entries(eventLocation.widgets)
 		const clickedOnWidgets = allWidgets.filter(([_, clicked]) => clicked)

@@ -17,7 +17,14 @@ type PomodoroUpdate = {
 	focus?: boolean
 	time_for?: Partial<Record<PomodoroMode, number>>
 	sound?: boolean
+	history?: string
 }
+
+type PomodoroHistoryEntry = {
+  endedAt: string;
+  duration: number;
+};
+
 
 let currentPomodoroData: Pomodoro
 
@@ -70,6 +77,8 @@ function initPomodoro(init: Pomodoro) {
 	displayInterface('pomodoro')
 	listenToBroadcast()
 	handleUserInput()
+
+	setPomodoroInfo(init.pomodoro_history)
 }
 
 // events
@@ -453,13 +462,16 @@ export function togglePomodoroFocus(focus: boolean) {
 }
 
 function ringTheAlarm() {
-	if (!currentPomodoroData.sound) return
-
-	// only rings on the last active tab
+	// only triggers on the last active tab
 	const lastTab = localStorage.getItem('lastActiveTab')
+	const willRingAndSave = lastTab === TAB_ID
 
-	if (lastTab === TAB_ID) {
-		alarmSound.play()
+	if (willRingAndSave) {
+		if (currentPomodoroData.sound) {
+			alarmSound.play()
+		} 
+
+		saveInPomodoroHistory()
 	} else {
 		console.info("Alarm is ringing, but this isn't the active tab.", {
 			lastTab,
@@ -467,6 +479,27 @@ function ringTheAlarm() {
 		})
 	}
 }
+
+async function saveInPomodoroHistory() {
+	const finishedPomodoro: PomodoroHistoryEntry = {
+		endedAt: Date.now().toString(),
+		duration: 11
+	}
+
+	// Get current history or initialize empty array
+	const currentHistory = ((await storage.sync.get("pomodoro_history")).pomodoro_history || []) as PomodoroHistoryEntry[]
+
+	// Append new entry
+	currentHistory.push(finishedPomodoro)
+
+	// Save back
+	await storage.sync.set({ pomodoro_history: currentHistory })
+}
+
+function setPomodoroInfo(history) {
+	const 
+}
+
 
 async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: PomodoroUpdate) {
 	const data = await storage.sync.get(['pomodoro'])
