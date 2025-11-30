@@ -27,7 +27,7 @@ export interface Sync {
 	greeting: string
 	greetingsize: string
 	greetingsmode: 'auto' | 'custom'
-	greetings_custom_strings: {
+	greetingscustom: {
 		morning: string
 		afternoon: string
 		evening: string

@@ -12,7 +12,7 @@ import { storage } from '../storage.ts'
 import type { AnalogStyle, Clock, Sync, WorldClock } from '../../types/sync.ts'
 
 type DateFormat = Sync['dateformat']
-type CustomGreetingStrings = Sync['greetings_custom_strings']
+type CustomGreetings = ['greetingscustom']
 
 type ClockUpdate = {
 	ampm?: boolean
@@ -24,11 +24,11 @@ type ClockUpdate = {
 	greeting?: string
 	greetingsize?: string
 	greetingsmode?: string
-	greetings_custom_strings?: {
-		morning?: string;
-		afternoon?: string;
-		evening?: string;
-		night?: string;
+	greetingscustom?: {
+		morning?: string
+		afternoon?: string
+		evening?: string
+		night?: string
 	}
 	timezone?: string
 	shape?: string
@@ -38,7 +38,11 @@ type ClockUpdate = {
 	border?: 'opacity' | 'shade'
 	background?: 'opacity' | 'shade'
 	worldclocks?: boolean
-	world?: { index: number; region?: string; timezone?: string }
+	world?: {
+		index: number
+		region?: string
+		timezone?: string
+	}
 }
 
 const defaultAnalogStyle: AnalogStyle = {
@@ -66,7 +70,14 @@ export function clock(init?: Sync, event?: ClockUpdate) {
 	const world = init?.worldclocks ?? { ...SYNC_DEFAULT.worldclocks }
 
 	try {
-		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu', init?.greetingsmode, init?.greetings_custom_strings)
+		startClock(
+			clock,
+			world,
+			init?.greeting || '',
+			init?.dateformat || 'eu',
+			init?.greetingsmode || 'auto',
+			init?.greetingscustom,
+		)
 		greetingSize(init?.greetingsize)
 		analogStyle(init?.analogstyle)
 		clockSize(clock.size)
@@ -95,7 +106,7 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.greeting !== undefined) {
 		data.greeting = stringMaxSize(update.greeting, 64)
-		greetings(data.greeting, data.greetingsmode, data.greetings_custom_strings)
+		greetings(data.greetingsmode, data.greeting, data.greetingscustom)
 		storage.sync.set({ greeting: data.greeting })
 	}
 
@@ -103,28 +114,27 @@ async function clockUpdate(update: ClockUpdate) {
 		greetingSize(update.greetingsize)
 		storage.sync.set({ greetingsize: update.greetingsize })
 	}
-	
+
 	if (update.greetingsmode !== undefined) {
-		const newMode = update.greetingsmode as 'auto' | 'custom'
+		const domoptions = document.getElementById('greetingscustom_options')
+		const mode = update.greetingsmode as 'auto' | 'custom'
 
-		// saves data for current page
-		data.greetingsmode = newMode
+		data.greetingsmode = mode
+		storage.sync.set({ greetingsmode: mode })
 
-		// saves data to storage
-		storage.sync.set({ greetingsmode: newMode })
-
-		// visual updates
-		greetings(data.greeting, newMode, data.greetings_custom_strings)
+		domoptions?.classList.toggle('shown', mode === 'custom')
+		greetings(mode, data.greeting, data.greetingscustom)
 	}
 
-	if (update.greetings_custom_strings !== undefined) {
+	if (update.greetingscustom !== undefined) {
 		const newStrings = { // combines new strings to the ones already in storage
-			...data.greetings_custom_strings, ...update.greetings_custom_strings 
+			...data.greetingscustom,
+			...update.greetingscustom,
 		}
-		
-		data.greetings_custom_strings = newStrings 
-		storage.sync.set({ greetings_custom_strings: newStrings})
-		greetings(data.greeting, data.greetingsmode, newStrings)
+
+		data.greetingscustom = newStrings
+		storage.sync.set({ greetingscustom: newStrings })
+		greetings(data.greetingsmode, data.greeting, newStrings)
 	}
 
 	if (isHands(update.hands)) {
@@ -196,7 +206,15 @@ async function clockUpdate(update: ClockUpdate) {
 		dateformat: data.dateformat,
 	})
 
-	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat, data.greetingsmode, data.greetings_custom_strings)
+	startClock(
+		data.clock,
+		data.worldclocks,
+		data.greeting,
+		data.dateformat,
+		data.greetingsmode,
+		data.greetingscustom,
+	)
+
 	analogStyle(data.analogstyle)
 	clockSize(data.clock.size)
 }
@@ -257,7 +275,14 @@ function greetingSize(size = '3') {
 
 //	Clock
 
-function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat, greetmode: string, customgreetstrings: CustomGreetingStrings) {
+function startClock(
+	clock: Clock,
+	world: WorldClock[],
+	greetname: string,
+	dateformat: DateFormat,
+	greetmode: string,
+	customGreetings: CustomGreetings,
+) {
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
@@ -310,7 +335,7 @@ function startClock(clock: Clock, world: WorldClock[], greeting: string, datefor
 			}
 		}
 
-		greetings(greeting, greetmode, customgreetstrings)
+		greetings(greetmode, greetname, customGreetings)
 	}
 }
 
@@ -363,7 +388,6 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 	if (clock.ampm && h === 0) {
 		h = 12
 	}
-
 
 	// Avoid layout shifts every second by rounding width
 	if (clock.seconds) {
@@ -465,13 +489,13 @@ function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, tim
 
 //	Greetings
 
-function greetings(name?: string, greetmode: string = 'auto', customgreetstrings?: CustomGreetingStrings) {
+function greetings(greetmode: Sync['greetingsmode'], name?: string, customGreetings?: CustomGreetings) {
 	const date = userDate()
 	const domgreetings = document.getElementById('greetings') as HTMLTitleElement
 	const domgreeting = document.getElementById('greeting') as HTMLSpanElement
 	const domname = document.getElementById('greeting-name') as HTMLSpanElement
 
-	// customgreetstrings = customgreetstrings ?? {} as CustomGreetingStrings;
+	// customGreetings = customGreetings ?? {} as CustomGreetings;
 
 	const rare = oneInFive
 	const hour = date.getHours()
@@ -489,7 +513,7 @@ function greetings(name?: string, greetmode: string = 'auto', customgreetstrings
 		period = 'evening'
 	}
 
-	if (greetmode === 'auto' || (greetmode === 'custom' && !customgreetstrings[period])) {
+	if (greetmode === 'auto' || (greetmode === 'custom' && !customGreetings[period])) {
 		const greetings = {
 			morning: 'Good morning',
 			afternoon: 'Good afternoon',
@@ -503,7 +527,7 @@ function greetings(name?: string, greetmode: string = 'auto', customgreetstrings
 		domgreeting.textContent = tradThis(greet) + (name ? ', ' : '')
 		domname.textContent = name ?? ''
 	} else if (greetmode === 'custom') {
-		const greet = name ? customgreetstrings[period].replace('$name', name) : customgreetstrings[period]
+		const greet = name ? customGreetings[period].replace('$name', name) : customGreetings[period]
 		domgreeting.textContent = greet
 
 		domgreetings.style.textTransform = 'none'
