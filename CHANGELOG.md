@@ -31,6 +31,7 @@
     -	PNGs under 256px wide/high now use pixelated image rendering (useful for pixel art backgrounds)
 	-	You can now force the native OS context menu by right clicking + alt key
 	-	Restored centered default positioning for backgrounds
+	-	More reliable supporters notification
 	-	More reliable touch screen interactions 
 	-	Fix most languages not having a capital letter on date
 	-	Removed the favicon as emoji input in Edge as Microsoft has broken the functionality (#700)

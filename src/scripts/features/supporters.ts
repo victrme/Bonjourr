@@ -65,17 +65,18 @@ export function supportersNotifications(init?: Sync, update?: SupportersUpdate) 
 }
 
 function canShowSupporters(sync?: Sync): boolean {
-	if (!sync?.supporters || !sync.supporters.enabled) {
+	// last one is to avoid showing it to people who haven't closed the review notif yet (2 bloaty otherwise)
+	if (!sync?.supporters || !sync.supporters.enabled || sync?.review !== -1) {
 		return false
 	}
 
-	const closed = sync?.supporters.closed
-	const month = sync?.supporters.month
-	const hasClosedReview = sync?.review === -1
+	const monthFromSync = sync?.supporters.month
 	const currentMonth = new Date().getMonth() + 1
-	const closedThisMonth = currentMonth === month && closed
 
-	return hasClosedReview && !closed && !closedThisMonth
+	const wasClosed = sync?.supporters.closed
+	const monthHasChanged = currentMonth !== monthFromSync
+
+	return monthHasChanged || !wasClosed
 }
 
 export function initSupportersSettingsNotif(sync: Sync) {
@@ -86,7 +87,7 @@ export function initSupportersSettingsNotif(sync: Sync) {
 	const settingsNotifs = document.getElementById('supporters-notif-container')
 	const settingsNotifContent = document.getElementById('supporters-notif-content')
 	const notifClose = document.getElementById('supporters-notif-close')
-	const image = monthBackgrounds[sync.supporters.month - 1]
+	const image = monthBackgrounds[new Date().getMonth()]
 
 	settingsNotifs?.classList.add('shown')
 	settingsNotifs?.style.setProperty('--background', `url(${image})`)
