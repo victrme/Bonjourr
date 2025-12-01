@@ -26,7 +26,7 @@ export interface Sync {
 	tabtitle: string
 	greeting: string
 	greetingsize: string
-	greetingsmode: 'auto' | 'custom'
+	greetingsmode?: 'auto' | 'custom'
 	greetingscustom: {
 		morning: string
 		afternoon: string
