@@ -257,8 +257,8 @@ export function validateLinkGroups(current: Import): Import {
 		}
 	}
 
-	// Force enable if multiple groups are hidden
-	if (current.linkgroups.groups.length > 1) {
+	// Default to enabled if multiple groups exist and `on` wasn't explicitly set
+	if (current.linkgroups.groups.length > 1 && current.linkgroups.on === undefined) {
 		current.linkgroups.on = true
 	}
 
