@@ -106,17 +106,35 @@ export function suntime(rise?: number, set?: number): Suntime {
 export function needsChange(every: string, last: number): boolean {
 	const nowDate = userDate()
 	const lastDate = last !== undefined ? new Date(last) : nowDate
+	const elapsedMs = nowDate.getTime() - lastDate.getTime()
+	const elapsedMinutes = Math.floor(elapsedMs / 60000)
 	const changed = {
+		minute: elapsedMinutes >= 1,
+		tenminutes: elapsedMinutes >= 10,
 		date: nowDate.getDate() !== lastDate.getDate(),
 		hour: nowDate.getHours() !== lastDate.getHours(),
+		week: getWeekNumber(nowDate) !== getWeekNumber(lastDate),
+		month: nowDate.getMonth() !== lastDate.getMonth() || nowDate.getFullYear() !== lastDate.getFullYear(),
 	}
 
 	switch (every) {
+		case 'minute':
+			return changed.minute
+
+		case 'tenminutes':
+			return changed.tenminutes
+
 		case 'day':
 			return changed.date
 
 		case 'hour':
 			return changed.date || changed.hour
+
+		case 'week':
+			return changed.week
+
+		case 'month':
+			return changed.month
 
 		case 'tabs':
 			return true
@@ -131,6 +149,12 @@ export function needsChange(every: string, last: number): boolean {
 		default:
 			return false
 	}
+}
+
+function getWeekNumber(date: Date): number {
+	const firstDayOfYear = new Date(date.getFullYear(), 0, 1)
+	const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000
+	return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7)
 }
 
 export function minutator(date: Date) {

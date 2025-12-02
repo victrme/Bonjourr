@@ -7,7 +7,7 @@ export type Link = LinkFolder | LinkElem
 export type Background = BackgroundImage | BackgroundVideo
 export type QuoteUserInput = [string, string][]
 export type Widgets = 'time' | 'main' | 'quicklinks' | 'notes' | 'quotes' | 'searchbar'
-export type Frequency = 'tabs' | 'hour' | 'day' | 'period' | 'pause'
+export type Frequency = 'tabs' | 'minute' | 'tenminutes' | 'hour' | 'day' | 'week' | 'month' | 'period' | 'pause'
 export type SearchEngines =
 	| 'default'
 	| 'google'
