@@ -37,7 +37,7 @@ async function updateNotes(event: NotesEvent) {
 	}
 
 	if (event?.text !== undefined) {
-		notes.text = event.text
+		notes.text = sanitizeNotesText(event.text)
 	}
 
 	if (event?.align !== undefined) {
@@ -97,6 +97,19 @@ function handleBackground(hex = '#fff2') {
 		container?.classList.toggle('opaque', hex.includes('#fff') && opacityFromHex(hex) > 7)
 		document.documentElement.style.setProperty('--notes-background', hex)
 	}
+}
+
+function sanitizeNotesText(text: string): string {
+	return text
+		.split('\n')
+		.filter((line) => {
+			const trimmed = line.trim()
+			const isEmptyTodo = trimmed === '[ ]' || trimmed === '[x]'
+			const isEmptyList = trimmed === '-'
+			return !isEmptyTodo && !isEmptyList
+		})
+		.join('\n')
+		.replace(/\n{3,}/g, '\n\n')
 }
 
 function translateNotesText() {
