@@ -24,6 +24,7 @@
 	max-height: 9em;
 	margin-bottom: 0.75em;
 	overflow-y: clip;
+	white-space: pre-line;
 }
 
 #author {

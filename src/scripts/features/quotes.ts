@@ -282,7 +282,8 @@ function insertToDom(quote?: Quote) {
 		return
 	}
 
-	quoteDom.textContent = quote.content
+	// Convert escaped newlines (\n) to actual newlines for multi-line quotes (e.g., poems)
+	quoteDom.textContent = quote.content.replace(/\\n/g, '\n')
 	authorDom.textContent = quote.author
 }
 
