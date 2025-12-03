@@ -194,7 +194,7 @@ function toggleEditInputs(): string[] {
 		} else if (target.folder) {
 			inputs = ['title', 'delete', 'apply']
 		} else if (target.link) {
-			inputs = ['title', 'url', 'icon', 'delete', 'refresh', 'apply']
+			inputs = ['title', 'url', 'icon', 'delete', 'duplicate', 'refresh', 'apply']
 		} else {
 			inputs = ['title', 'url', 'add']
 		}
@@ -326,6 +326,10 @@ function submitChanges(event: SubmitEvent) {
 
 	if (change === 'edit-refresh') {
 		quickLinks(undefined, { refreshIcons: selected })
+	}
+
+	if (change === 'edit-duplicate') {
+		quickLinks(undefined, { duplicateLink: selected[0] })
 	}
 
 	if (change === 'edit-inputs') {

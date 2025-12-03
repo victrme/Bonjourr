@@ -80,6 +80,7 @@ type LinksUpdate = {
 	moveOutFolder?: { ids: string[]; group: string }
 	deleteGroup?: string
 	deleteLinks?: string[]
+	duplicateLink?: string
 	refreshIcons?: string[]
 	groupTitle?: { old: string; new: string }
 	styles?: { style?: string; titles?: boolean; backgrounds?: boolean }
@@ -428,6 +429,9 @@ export async function linksUpdate(update: LinksUpdate) {
 	if (update.newtab !== undefined) {
 		data = setOpenInNewTab(update.newtab, data)
 	}
+	if (update.duplicateLink) {
+		data = duplicateLink(update.duplicateLink, data)
+	}
 	if (update.refreshIcons) {
 		data = refreshIcons(update.refreshIcons, data)
 	}
@@ -657,6 +661,31 @@ function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
 
 	const correctdata = correctLinksOrder(data)
 	initblocks(correctdata)
+	return correctdata
+}
+
+function duplicateLink(id: string, data: Sync): Sync {
+	const sourceLink = data[id] as Link
+
+	if (!sourceLink || sourceLink.folder) {
+		return data
+	}
+
+	const newId = `links${randomString(6)}`
+	const newLink: LinkElem = {
+		_id: newId,
+		title: sourceLink.title,
+		url: (sourceLink as LinkElem).url,
+		icon: (sourceLink as LinkElem).icon,
+		parent: sourceLink.parent,
+		order: sourceLink.order + 0.5,
+	}
+
+	data[newId] = newLink
+
+	const correctdata = correctLinksOrder(data)
+	initblocks(correctdata)
+
 	return correctdata
 }
 
