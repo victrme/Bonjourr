@@ -17,14 +17,13 @@ type PomodoroUpdate = {
 	focus?: boolean
 	time_for?: Partial<Record<PomodoroMode, number>>
 	sound?: boolean
-	history?: string
+	history?: { endedAt: string; duration?: number }
 }
 
 type PomodoroHistoryEntry = {
   endedAt: string;
-  duration: number;
+  duration?: number;
 };
-
 
 let currentPomodoroData: Pomodoro
 
@@ -78,7 +77,7 @@ function initPomodoro(init: Pomodoro) {
 	listenToBroadcast()
 	handleUserInput()
 
-	setPomodoroInfo(init.pomodoro_history)
+	setPomodoroInfo(init.history)
 }
 
 // events
@@ -470,8 +469,13 @@ function ringTheAlarm() {
 		if (currentPomodoroData.sound) {
 			alarmSound.play()
 		} 
-
-		saveInPomodoroHistory()
+		
+		// if pomodoro ends, registers new session
+		if (currentPomodoroData.mode === 'pomodoro') {
+			updatePomodoro({ history: {
+				endedAt: Date.now().toString()
+			}})
+		}
 	} else {
 		console.info("Alarm is ringing, but this isn't the active tab.", {
 			lastTab,
@@ -480,28 +484,36 @@ function ringTheAlarm() {
 	}
 }
 
-async function saveInPomodoroHistory() {
-	const finishedPomodoro: PomodoroHistoryEntry = {
-		endedAt: Date.now().toString(),
-		duration: 11
+function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
+	const now = new Date()
+
+	let pomsToday = 0
+	let pomsWeek = 0
+	let pomsMonth = 0
+
+	// Get start of today, week, and month
+	const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+	const startOfWeek = new Date(now)
+		startOfWeek.setDate(now.getDate() - now.getDay()) // Sunday as start
+		startOfWeek.setHours(0, 0, 0, 0)
+	const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+	for (const entry of history) {
+		const endedAt = new Date(Number(entry.endedAt))
+
+		if (endedAt >= startOfToday) pomsToday++
+		if (endedAt >= startOfWeek) pomsWeek++
+		if (endedAt >= startOfMonth) pomsMonth++
 	}
 
-	// Get current history or initialize empty array
-	const currentHistory = ((await storage.sync.get("pomodoro_history")).pomodoro_history || []) as PomodoroHistoryEntry[]
-
-	// Append new entry
-	currentHistory.push(finishedPomodoro)
-
-	// Save back
-	await storage.sync.set({ pomodoro_history: currentHistory })
-}
-
-function setPomodoroInfo(history) {
-	const 
+	// Update the DOM
+	(document.getElementById("poms-today") as HTMLSpanElement).textContent = pomsToday.toString();
+	(document.getElementById("poms-week") as HTMLSpanElement).textContent = pomsWeek.toString();
+	(document.getElementById("poms-month") as HTMLSpanElement).textContent = pomsMonth.toString();
 }
 
 
-async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: PomodoroUpdate) {
+async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for, history }: PomodoroUpdate) {
 	const data = await storage.sync.get(['pomodoro'])
 
 	if (on !== undefined) {
@@ -528,6 +540,13 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: 
 		data.pomodoro.focus = focus
 	}
 
+	if (history !== undefined) {
+		data.pomodoro.history.push({
+			endedAt: history.endedAt,
+			duration: data.pomodoro.time_for.pomodoro
+		})
+	}
+
 	// the time defined by the user for each mode (pomodoro, break...)
 	if (time_for) {
 		for (const mode of Object.keys(time_for) as PomodoroMode[]) {
@@ -542,6 +561,9 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: 
 	await storage.sync.set({ pomodoro: data.pomodoro })
 
 	currentPomodoroData = data.pomodoro
+
+	// known flaw: sessions are only up to date on the ringing tab
+	setPomodoroInfo(data.pomodoro.history)
 
 	if (time_for) {
 		resetTimer()

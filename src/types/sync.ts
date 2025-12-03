@@ -226,4 +226,5 @@ export interface Pomodoro {
 	time_for: Record<PomodoroMode, number>
 	focus: boolean
 	sound: boolean
+	history: { endedAt: string; duration: number }[] 
 }
