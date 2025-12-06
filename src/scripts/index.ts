@@ -111,10 +111,9 @@ async function startup() {
 	onInterfaceDisplay(() => {
 		document.body.classList.remove('init')
 
+		supportersNotifications(sync)
 		setPotatoComputerMode()
 		userActions()
-
-		supportersNotifications(sync)
 
 		interfacePopup({
 			announce: sync.announcements,

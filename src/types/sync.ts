@@ -203,8 +203,7 @@ export interface MoveAlign {
 
 export interface Supporters {
 	enabled: boolean
-	closed: boolean
-	month: number
+	closedMonth: number
 }
 
 export interface Weather {

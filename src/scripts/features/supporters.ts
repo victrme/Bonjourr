@@ -51,32 +51,22 @@ export function supportersNotifications(init?: Sync, update?: SupportersUpdate) 
 	}
 
 	if (canShowSupporters(init)) {
-		updateSupportersOption({
-			closed: false,
-			month: true,
-		})
-
-		onSettingsLoad(() => {
-			initSupportersModal()
-		})
-
+		onSettingsLoad(initSupportersModal)
 		document.documentElement.dataset.supporters = ''
 	}
 }
 
 function canShowSupporters(sync?: Sync): boolean {
-	// last one is to avoid showing it to people who haven't closed the review notif yet (2 bloaty otherwise)
-	if (!sync?.supporters || !sync.supporters.enabled || sync?.review !== -1) {
-		return false
-	}
-
-	const monthFromSync = sync?.supporters.month
+	const hasSupportersDisabled = !sync?.supporters || !sync.supporters.enabled
+	const canGetReviewPopup = sync?.review !== -1
+	const closedMonth = sync?.supporters.closedMonth
 	const currentMonth = new Date().getMonth() + 1
 
-	const wasClosed = sync?.supporters.closed
-	const monthHasChanged = currentMonth !== monthFromSync
-
-	return monthHasChanged || !wasClosed
+	if (hasSupportersDisabled || canGetReviewPopup) {
+		return false
+	} else {
+		return currentMonth !== closedMonth
+	}
 }
 
 export function initSupportersSettingsNotif(sync: Sync) {
@@ -95,12 +85,12 @@ export function initSupportersSettingsNotif(sync: Sync) {
 	setNotifStrings()
 
 	onclickdown(settingsNotifContent, (e) => {
-		if (e instanceof PointerEvent && e.button !== 0) return // only left click
-		toggleSupportersModal(true)
+		const isLeftClick = e instanceof PointerEvent && e.button === 0
 
-		onSettingsLoad(() => {
+		if (isLeftClick) {
+			toggleSupportersModal(true)
 			loadModalData()
-		})
+		}
 	})
 
 	onclickdown(notifClose, () => {
@@ -117,10 +107,7 @@ async function updateSupportersOption(update: SupportersUpdate) {
 		data.supporters.enabled = update.enabled
 	}
 	if (update.closed !== undefined) {
-		data.supporters.closed = update.closed
-	}
-	if (update.month !== undefined) {
-		data.supporters.month = new Date().getMonth() + 1
+		data.supporters.closedMonth = new Date().getMonth() + 1
 	}
 
 	storage.sync.set({ supporters: data.supporters })

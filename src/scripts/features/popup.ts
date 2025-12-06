@@ -82,7 +82,7 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (init.old && (init.review === -1 || init.review > 30)) {
+	if (init.old && init.review === -1) {
 		const major = (s: string) => Number.parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
 		const isNewVersion = init.new !== init.old && init.new === ANNOUNCEMENT_VERSION
@@ -104,11 +104,14 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (init.review > 30) {
+	const reviewCounter = parseInt(localStorage.reviewCounter ?? '0')
+
+	if (reviewCounter > 30) {
 		displayPopup('review')
-	} else {
-		storage.sync.set({ review: init.review + 1 })
+		return
 	}
+
+	localStorage.reviewCounter = reviewCounter + 1
 }
 
 function displayPopup(type: 'review' | 'announce', showIcon = false) {
@@ -159,6 +162,7 @@ function createPopupButton(href: string, text: string): HTMLAnchorElement {
 
 function removePopupTrigger() {
 	storage.sync.set({ review: -1 })
+	localStorage.removeItem('reviewCounter')
 	localStorage.removeItem('hasUpdated')
 }
 
