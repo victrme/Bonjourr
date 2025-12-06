@@ -1,59 +1,22 @@
 import { langList } from './langs.ts'
 
-import type { Navigator } from '../types/shared.ts'
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
 
-const navigator = globalThis.navigator as Navigator
-const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
-const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
-
 export const CURRENT_VERSION = '1.0.0'
-
-// Removed bonjourr API domain - using public APIs instead
 
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
-export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
-		(navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
-	? 'ios'
+// Simplified: Chrome desktop only
+export const SYSTEM_OS = navigator.appVersion?.includes('Windows')
+	? 'windows'
 	: navigator.appVersion?.includes('Macintosh')
 	? 'mac'
-	: navigator.appVersion?.includes('Windows')
-	? 'windows'
-	: navigator.userAgent?.toLowerCase()?.includes('android')
-	? 'android'
-	: 'unknown'
+	: 'linux'
 
-export const PLATFORM = globalThis.location?.protocol === 'moz-extension:'
-	? 'firefox'
-	: globalThis.location?.protocol === 'chrome-extension:'
-	? 'chrome'
-	: globalThis.location?.protocol === 'safari-web-extension:'
-	? 'safari'
-	: 'online'
-
-export const BROWSER = navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
-	? 'edge'
-	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
-	? 'opera'
-	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
-	? 'chrome'
-	: navigator.userAgent?.toLowerCase()?.indexOf('firefox') > -1
-	? 'firefox'
-	: navigator.userAgent?.toLowerCase()?.indexOf('safari') > -1
-	? 'safari'
-	: 'other'
-
-export const EXTENSION: typeof chrome | typeof browser | undefined = PLATFORM === 'online'
-	? undefined
-	: PLATFORM === 'firefox'
-	? browser
-	: chrome
-
-export const IS_MOBILE = navigator.userAgentData
-	? navigator.userAgentData.mobile
-	: mobileUA.some((ua) => navigator.userAgent.includes(ua))
+export const PLATFORM = 'chrome' as const
+export const BROWSER = 'chrome' as const
+export const EXTENSION = chrome
 
 // Simplified to only support Chinese and English
 const DEFAULT_LANG = (() => {
@@ -186,7 +149,7 @@ export const SYNC_DEFAULT: Sync = {
 }
 
 export const LOCAL_DEFAULT: Local = {
-	syncType: PLATFORM === 'online' ? 'off' : 'browser',
+	syncType: 'browser',
 	userQuoteSelection: 0,
 	translations: undefined,
 	quotesCache: [],

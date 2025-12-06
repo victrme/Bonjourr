@@ -10,9 +10,8 @@ export interface Local {
 	userQuoteSelection: number
 	quotesCache: Quote[]
 	translations?: Translations
-	operaExplained?: true
 
-	// Sync
+	// Sync (Chrome storage)
 	syncStorage?: Sync
 	syncType?: SyncType
 

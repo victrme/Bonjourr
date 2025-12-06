@@ -13,8 +13,7 @@ import { clock } from './features/clock.ts'
 
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
-import { needsChange, userDate } from './shared/time.ts'
-import { onSettingsLoad } from './utils/onsettingsload.ts'
+import { userDate } from './shared/time.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
 import { filterData } from './compatibility/apply.ts'
@@ -23,20 +22,14 @@ import { storage } from './storage.ts'
 import {
 	BROWSER,
 	CURRENT_VERSION,
-	ENVIRONNEMENT,
-	IS_MOBILE,
 	LOCAL_DEFAULT,
 	PLATFORM,
 	SYNC_DEFAULT,
 	SYSTEM_OS,
 } from './defaults.ts'
 
-// Removed: weather, notes, supporters, synchronization (gist)
-
 try {
 	startup()
-	serviceWorker()
-	onlineAndMobile()
 } catch (_) {
 	console.warn('Startup failed')
 }
@@ -46,13 +39,13 @@ async function startup() {
 	const oldVersion = sync?.about?.version
 
 	if (!sync || !local) {
-		console.warn('Storage failed, loading Bonjourr with default settings')
+		console.warn('Storage failed, loading with default settings')
 		sync = structuredClone(SYNC_DEFAULT)
 		local = structuredClone(LOCAL_DEFAULT)
 	}
 
 	if (oldVersion !== CURRENT_VERSION) {
-		console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
+		console.info(`Updated extension, ${oldVersion} => ${CURRENT_VERSION}`)
 
 		localStorage.setItem('update-archive', JSON.stringify(sync))
 
@@ -62,8 +55,6 @@ async function startup() {
 		storage.local.remove('translations')
 		local = { ...LOCAL_DEFAULT, ...local }
 
-		// <!> do not move
-		// <!> must delete old keys before upgrading storage
 		await storage.sync.clear()
 		await storage.sync.set(sync)
 	}
@@ -89,11 +80,10 @@ async function startup() {
 	initDragPosition(sync)
 	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
-	operaExtensionExplainer(local.operaExplained)
 
-	document.documentElement.dataset.system = SYSTEM_OS as string
-	document.documentElement.dataset.browser = BROWSER as string
-	document.documentElement.dataset.platform = PLATFORM as string
+	document.documentElement.dataset.system = SYSTEM_OS
+	document.documentElement.dataset.browser = BROWSER
+	document.documentElement.dataset.platform = PLATFORM
 
 	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
 	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
@@ -113,117 +103,7 @@ async function startup() {
 	})
 }
 
-function onlineAndMobile() {
-	const dominterface = document.getElementById('interface') as HTMLDivElement
-	const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
-	const onlineSafariIos = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
-	let visibilityHasChanged = false
-	let firefoxRafTimeout: number
-
-	if (IS_MOBILE) {
-		document.addEventListener('visibilitychange', updateOnVisibilityChange)
-	}
-
-	if (onlineFirefoxMobile) {
-		// Firefox cannot -moz-fill-available with height
-		// On desktop, uses fallback 100vh
-		// On mobile, sets height dynamically because vh is bad on mobile
-
-		updateAppHeight()
-
-		// Fix for opening tabs Firefox iOS
-		if (SYSTEM_OS === 'ios') {
-			globalThis.requestAnimationFrame(triggerAnimationFrame)
-			setTimeout(() => cancelAnimationFrame(firefoxRafTimeout), 500)
-		}
-	}
-
-	if (onlineSafariIos) {
-		onSettingsLoad(() => {
-			const inputs = document.querySelectorAll('input[type="text"], input[type="url"], textarea')
-
-			for (const input of inputs) {
-				input.addEventListener('focus', disableTouchAction)
-				input.addEventListener('blur', enableTouchAction)
-			}
-		})
-	}
-
-	async function updateOnVisibilityChange() {
-		if (visibilityHasChanged === false) {
-			visibilityHasChanged = true
-			return
-		}
-
-		visibilityHasChanged = false
-
-		const sync = await storage.sync.get()
-		const local = await storage.local.get()
-		const { backgroundLastChange } = local
-
-		if (!sync.clock) {
-			return
-		}
-
-		const time = (backgroundLastChange ? new Date(backgroundLastChange) : new Date()).getTime()
-		const needNew = needsChange(sync.backgrounds.frequency, time)
-		const notColor = sync.backgrounds.type !== 'color'
-
-		clock(sync)
-
-		if (notColor && needNew) {
-			backgroundsInit(sync, local)
-		}
-	}
-
-	function triggerAnimationFrame() {
-		updateAppHeight()
-		firefoxRafTimeout = requestAnimationFrame(triggerAnimationFrame)
-	}
-
-	function updateAppHeight() {
-		document.documentElement.style.setProperty('--app-height', `${globalThis.innerHeight}px`)
-	}
-
-	function disableTouchAction() {
-		const settingsDom = document.getElementById('settings') as HTMLElement
-		if (dominterface && settingsDom) {
-			dominterface.style.touchAction = 'none'
-			settingsDom.style.touchAction = 'none'
-		}
-	}
-
-	function enableTouchAction() {
-		const settingsDom = document.getElementById('settings') as HTMLElement
-		if (dominterface && settingsDom) {
-			dominterface.style.removeProperty('touch-action')
-			settingsDom.style.removeProperty('touch-action')
-		}
-	}
-}
-
-function serviceWorker() {
-	if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
-		return
-	}
-
-	navigator.serviceWorker.register('service-worker.js')
-
-	let promptEvent: Event // PWA install trigger (30s interaction default)
-
-	globalThis.addEventListener('beforeinstallprompt', (e) => {
-		promptEvent = e
-		return promptEvent
-	})
-}
-
 function setPotatoComputerMode() {
-	if (BROWSER === 'firefox' || BROWSER === 'safari') {
-		// firefox fingerprinting protection disables webgl info, smh
-		// safari always have hardware acceleration, no need for potato
-		return
-	}
-
 	const fourHours = 1000 * 60 * 60 * 4
 	const isPotato = localStorage.potato === 'yes'
 	const expirationTime = Date.now() - Number.parseInt(localStorage.lastPotatoCheck ?? '0')
@@ -237,7 +117,7 @@ function setPotatoComputerMode() {
 	const gl = canvas?.getContext('webgl')
 	const debugInfo = gl?.getExtension('WEBGL_debug_renderer_info')
 
-	if (BROWSER === 'chrome' && !gl) {
+	if (!gl) {
 		document.body.classList.add('potato')
 		return
 	}
@@ -247,28 +127,6 @@ function setPotatoComputerMode() {
 	const detectedPotato = vendor.includes('Google') && renderer.includes('SwiftShader')
 
 	localStorage.potato = detectedPotato ? 'yes' : 'no'
-	localStorage.lastPotatoCheck = Date.now()
+	localStorage.lastPotatoCheck = Date.now().toString()
 	document.body.classList.toggle('potato', detectedPotato)
-}
-
-function operaExtensionExplainer(explained?: true) {
-	if (explained || BROWSER !== 'opera' || PLATFORM !== 'chrome') {
-		return
-	}
-
-	const template = document.getElementById('opera-explainer-template') as HTMLTemplateElement
-	const doc = template.content.cloneNode(true) as Document
-	const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement
-	const button = doc.getElementById('b_opera-explained')
-
-	document.body.classList.add('loading')
-	document.body.appendChild(dialog)
-	dialog.showModal()
-	setTimeout(() => dialog.classList.add('shown'))
-
-	button?.addEventListener('click', () => {
-		storage.local.set({ operaExplained: true })
-		document.body.classList.remove('loading')
-		dialog.close()
-	})
 }
