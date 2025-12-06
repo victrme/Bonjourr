@@ -1,7 +1,6 @@
 import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
-import { supportersNotifications } from './features/supporters.ts'
-import { synchronization } from './features/synchronization/index.ts'
 import { backgroundsInit } from './features/backgrounds/index.ts'
+import { initDragPosition } from './features/dragPosition.ts'
 import { interfacePopup } from './features/popup.ts'
 import { moveElements } from './features/move/index.ts'
 import { hideElements } from './features/hide.ts'
@@ -9,14 +8,12 @@ import { customFont } from './features/fonts.ts'
 import { quickLinks } from './features/links/index.ts'
 import { searchbar } from './features/searchbar.ts'
 import { customCss } from './features/css.ts'
-import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
-import { notes } from './features/notes.ts'
 import { clock } from './features/clock.ts'
 
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
-import { needsChange, suntime, userDate } from './shared/time.ts'
+import { needsChange, userDate } from './shared/time.ts'
 import { onSettingsLoad } from './utils/onsettingsload.ts'
 import { settingsInit } from './settings.ts'
 import { userActions } from './events.ts'
@@ -33,6 +30,8 @@ import {
 	SYNC_DEFAULT,
 	SYSTEM_OS,
 } from './defaults.ts'
+
+// Removed: weather, notes, supporters, synchronization (gist)
 
 try {
 	startup()
@@ -74,8 +73,6 @@ async function startup() {
 	displayInterface(undefined, sync)
 	traduction(null, sync.lang)
 	userDate(sync.clock.timezone)
-	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
-	weather({ sync: sync, lastWeather: local.lastWeather })
 	customFont(sync.font)
 	textShadow(sync.textShadow)
 	favicon(sync.favicon)
@@ -84,13 +81,12 @@ async function startup() {
 	darkmode(sync.dark)
 	searchbar(sync.searchbar)
 	quotes({ sync, local })
-	notes(sync.notes)
 	moveElements(sync.move)
 	customCss(sync.css)
 	hideElements(sync.hide)
 	backgroundsInit(sync, local, true)
 	quickLinks(sync)
-	synchronization(local)
+	initDragPosition(sync)
 	settingsInit(sync, local)
 	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
 	operaExtensionExplainer(local.operaExplained)
@@ -107,8 +103,6 @@ async function startup() {
 
 		setPotatoComputerMode()
 		userActions()
-
-		supportersNotifications(sync)
 
 		interfacePopup({
 			announce: sync.announcements,
@@ -165,9 +159,9 @@ function onlineAndMobile() {
 
 		const sync = await storage.sync.get()
 		const local = await storage.local.get()
-		const { backgroundLastChange, lastWeather } = local
+		const { backgroundLastChange } = local
 
-		if (!sync.clock || !sync.weather) {
+		if (!sync.clock) {
 			return
 		}
 
@@ -176,7 +170,6 @@ function onlineAndMobile() {
 		const notColor = sync.backgrounds.type !== 'color'
 
 		clock(sync)
-		weather({ sync, lastWeather })
 
 		if (notColor && needNew) {
 			backgroundsInit(sync, local)

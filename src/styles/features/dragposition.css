@@ -1,0 +1,110 @@
+/* Drag Position Feature Styles */
+
+/* Edit mode indicator */
+body.drag-editing::before {
+	content: '';
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 4px;
+	background: linear-gradient(90deg, #4CAF50, #2196F3, #9C27B0, #4CAF50);
+	background-size: 300% 100%;
+	animation: editModeIndicator 3s linear infinite;
+	z-index: 9999;
+}
+
+@keyframes editModeIndicator {
+	0% { background-position: 0% 0%; }
+	100% { background-position: 100% 0%; }
+}
+
+/* Draggable elements */
+.draggable {
+	cursor: grab;
+	user-select: none;
+	transition: box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.draggable:hover {
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.draggable.dragging {
+	cursor: grabbing;
+	z-index: 1000;
+	transform: translate(-50%, -50%) scale(1.02);
+	box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.8), 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Snap guide lines (visual feedback) */
+body.drag-editing #interface::before,
+body.drag-editing #interface::after {
+	content: '';
+	position: fixed;
+	background: rgba(76, 175, 80, 0.3);
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+/* Vertical center line */
+body.drag-editing #interface::before {
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	transform: translateX(-50%);
+}
+
+/* Horizontal center line */
+body.drag-editing #interface::after {
+	top: 50%;
+	left: 0;
+	right: 0;
+	height: 2px;
+	transform: translateY(-50%);
+}
+
+/* Show guide lines when dragging near center */
+body.drag-editing.show-vcenter #interface::before,
+body.drag-editing.show-hcenter #interface::after {
+	opacity: 1;
+}
+
+/* Edit mode message */
+body.drag-editing::after {
+	content: 'Edit Mode - Drag elements to reposition';
+	position: fixed;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: rgba(0, 0, 0, 0.8);
+	color: white;
+	padding: 10px 20px;
+	border-radius: 8px;
+	font-size: 14px;
+	z-index: 9998;
+	pointer-events: none;
+}
+
+/* Chinese language override */
+html[lang="zh_CN"] body.drag-editing::after {
+	content: '\7F16\8F91\6A21\5F0F - \62D6\62FD\5143\7D20\8C03\6574\4F4D\7F6E';
+}
+
+/* Settings panel drag position options */
+#drag_options {
+	margin-top: 16px;
+}
+
+#drag_options .param {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+#drag_options button {
+	flex: 1;
+	min-width: 120px;
+}

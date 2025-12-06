@@ -17,7 +17,6 @@ export interface Sync {
 	cssHeight?: number
 	review: number
 	announcements: 'all' | 'major' | 'off'
-	supporters: Supporters
 	reviewPopup?: number | string
 	css: string
 	lang: string
@@ -25,7 +24,6 @@ export interface Sync {
 	tabtitle: string
 	greeting: string
 	greetingsize: string
-	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'
 	dateformat: 'auto' | 'eu' | 'us' | 'cn'
@@ -33,11 +31,11 @@ export interface Sync {
 	clock: Clock
 	analogstyle?: AnalogStyle
 	worldclocks: WorldClock[]
-	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes
 	font: Font
 	move: Move
+	dragPosition: DragPosition
 	about: {
 		browser: string
 		version: string
@@ -57,8 +55,6 @@ export interface Hide {
 	clock?: boolean
 	date?: boolean
 	greetings?: boolean
-	weatherdesc?: boolean
-	weathericon?: boolean
 	settingsicon?: boolean
 }
 
@@ -152,20 +148,11 @@ export interface Font {
 	availWeights?: string[]
 }
 
-export interface Notes {
-	on: boolean
-	align: string
-	text?: string
-	width?: number
-	background?: string
-	opacity?: number
-}
-
 export interface Quotes {
 	on: boolean
 	author: boolean
 	last?: number
-	type: 'classic' | 'kaamelott' | 'inspirobot' | 'stoic' | 'hitokoto' | 'office' | 'user' | 'url'
+	type: 'hitokoto' | 'user' | 'url'
 	frequency: Frequency
 	userlist?: string
 	url?: string
@@ -190,19 +177,14 @@ export interface MoveAlign {
 	text: string
 }
 
-export interface Supporters {
-	enabled: boolean
-	closed: boolean
-	month: number
+// Free drag positioning
+export interface DragPosition {
+	editing: boolean
+	positions: Record<Widgets, ElementPosition>
 }
 
-export interface Weather {
-	ccode?: string
-	city?: string
-	unit: 'metric' | 'imperial'
-	geolocation: 'precise' | 'approximate' | 'off'
-	forecast: 'auto' | 'always' | 'never'
-	temperature: 'actual' | 'feelslike' | 'both'
-	moreinfo: 'none' | 'msnw' | 'yhw' | 'windy' | 'accu' | 'custom'
-	provider?: string
+export interface ElementPosition {
+	x: number
+	y: number
+	enabled: boolean
 }

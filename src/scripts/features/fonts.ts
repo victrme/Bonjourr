@@ -4,7 +4,6 @@ import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { networkForm } from '../shared/form.ts'
 import { SYSTEM_OS } from '../defaults.ts'
-import { apiFetch } from '../shared/api.ts'
 import { subsets } from '../langs.ts'
 import { storage } from '../storage.ts'
 import { clock } from './clock.ts'
@@ -17,6 +16,30 @@ interface Fontsource {
 	weights: number[]
 	variable: boolean
 }
+
+// Predefined list of popular Google Fonts
+const FONT_LIST: Fontsource[] = [
+	{ family: 'Noto Sans SC', subsets: ['latin', 'chinese-simplified'], weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'Noto Serif SC', subsets: ['latin', 'chinese-simplified'], weights: [200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'LXGW WenKai', subsets: ['latin', 'chinese-simplified'], weights: [300, 400, 700], variable: false },
+	{ family: 'Source Han Sans SC', subsets: ['latin', 'chinese-simplified'], weights: [200, 300, 400, 500, 700, 900], variable: false },
+	{ family: 'Inter', subsets: ['latin', 'cyrillic', 'greek', 'vietnamese'], weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'Roboto', subsets: ['latin', 'cyrillic', 'greek', 'vietnamese'], weights: [100, 300, 400, 500, 700, 900], variable: false },
+	{ family: 'Open Sans', subsets: ['latin', 'cyrillic', 'greek', 'vietnamese'], weights: [300, 400, 500, 600, 700, 800], variable: true },
+	{ family: 'Lato', subsets: ['latin'], weights: [100, 300, 400, 700, 900], variable: false },
+	{ family: 'Montserrat', subsets: ['latin', 'cyrillic', 'vietnamese'], weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'Poppins', subsets: ['latin'], weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], variable: false },
+	{ family: 'Playfair Display', subsets: ['latin', 'cyrillic', 'vietnamese'], weights: [400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'Merriweather', subsets: ['latin', 'cyrillic'], weights: [300, 400, 700, 900], variable: false },
+	{ family: 'Source Code Pro', subsets: ['latin', 'cyrillic', 'greek', 'vietnamese'], weights: [200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'JetBrains Mono', subsets: ['latin', 'cyrillic', 'greek', 'vietnamese'], weights: [100, 200, 300, 400, 500, 600, 700, 800], variable: true },
+	{ family: 'Fira Code', subsets: ['latin', 'cyrillic', 'greek'], weights: [300, 400, 500, 600, 700], variable: true },
+	{ family: 'Nunito', subsets: ['latin', 'cyrillic', 'vietnamese'], weights: [200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'Raleway', subsets: ['latin', 'cyrillic', 'vietnamese'], weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'Work Sans', subsets: ['latin', 'vietnamese'], weights: [100, 200, 300, 400, 500, 600, 700, 800, 900], variable: true },
+	{ family: 'Quicksand', subsets: ['latin', 'vietnamese'], weights: [300, 400, 500, 600, 700], variable: true },
+	{ family: 'Oswald', subsets: ['latin', 'cyrillic', 'vietnamese'], weights: [200, 300, 400, 500, 600, 700], variable: true },
+]
 
 type CustomFontUpdate = {
 	autocomplete?: true
@@ -127,7 +150,7 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
 		case 'fontsource': {
 			familyForm.load()
 
-			const newfont = await getNewFont(font, family)
+			const newfont = getNewFont(font, family)
 
 			if (newfont && navigator.onLine) {
 				font = { ...font, ...newfont }
@@ -164,14 +187,14 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
 	return font
 }
 
-async function handleLangSwitch(font: Font) {
+function handleLangSwitch(font: Font) {
 	const noCustomOrSystemFont = !font.family || font?.system
 
 	if (noCustomOrSystemFont) {
 		return
 	}
 
-	const newfont = await getNewFont(font, font.family)
+	const newfont = getNewFont(font, font.family)
 
 	// remove font if not available with subset
 	if (newfont === undefined) {
@@ -187,11 +210,10 @@ async function handleLangSwitch(font: Font) {
 	setAutocompleteSettings(true)
 }
 
-async function getNewFont(font: Font, newfamily: string): Promise<Font | undefined> {
-	const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
+function getNewFont(font: Font, newfamily: string): Font | undefined {
 	let newfont: Fontsource | undefined
 
-	for (const item of fontlist as Fontsource[]) {
+	for (const item of FONT_LIST) {
 		const hasCorrectSubset = item.subsets.includes(getRequiredSubset())
 		const isFamily = item.family.toLowerCase() === newfamily.toLowerCase()
 
@@ -258,7 +280,7 @@ function initFontSettings(font?: Font) {
 	setWeightSettings(weights)
 }
 
-async function setAutocompleteSettings(isLangSwitch?: boolean) {
+function setAutocompleteSettings(isLangSwitch?: boolean) {
 	const dlFontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
 
 	if (isLangSwitch && dlFontfamily?.childNodes) {
@@ -268,11 +290,10 @@ async function setAutocompleteSettings(isLangSwitch?: boolean) {
 	}
 
 	if (dlFontfamily?.childElementCount === 0) {
-		const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
 		const fragment = new DocumentFragment()
 		const requiredSubset = getRequiredSubset()
 
-		for (const item of fontlist as Fontsource[]) {
+		for (const item of FONT_LIST) {
 			if (item.subsets.includes(requiredSubset)) {
 				const option = document.createElement('option')
 				option.textContent = item.family
@@ -297,9 +318,8 @@ function setWeightSettings(weights: string[]) {
 //	Helpers
 //
 
-export async function fontIsAvailableInSubset(lang?: string, family?: string) {
-	const fontlist = (await (await apiFetch('/fonts'))?.json()) as Fontsource[]
-	const font = fontlist?.find((item) => item.family === family)
+export function fontIsAvailableInSubset(lang?: string, family?: string) {
+	const font = FONT_LIST.find((item) => item.family === family)
 	const subset = getRequiredSubset(lang)
 
 	return font?.subsets.includes(subset)

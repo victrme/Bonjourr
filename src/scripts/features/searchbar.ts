@@ -1,11 +1,10 @@
 import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults.ts'
 import { opacityFromHex, stringMaxSize } from '../shared/generic.ts'
 import { hexColorFromSplitRange } from '../shared/dom.ts'
-import { getLang, tradThis } from '../utils/translations.ts'
+import { tradThis } from '../utils/translations.ts'
 import { eventDebounce } from '../utils/debounce.ts'
-import { apiWebSocket } from '../shared/api.ts'
+import { fetchGoogleSuggestions } from '../shared/api.ts'
 import { storage } from '../storage.ts'
-import { parse } from '../utils/parse.ts'
 
 import type { SearchEngines } from '../../types/shared.ts'
 import type { Searchbar } from '../../types/sync.ts'
@@ -30,8 +29,6 @@ type Suggestions = {
 type UndefinedElement = Element | undefined | null
 
 const customEngineForm = networkForm('f_sbrequest')
-
-let socket: WebSocket | undefined
 const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
@@ -216,10 +213,6 @@ function submitSearch(e: Event) {
 		return
 	}
 
-	if (socket) {
-		socket.close()
-	}
-
 	if (canUseDefault && engine === 'default') {
 		;(EXTENSION as typeof chrome)?.search.query({
 			disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
@@ -346,26 +339,10 @@ function initSuggestions() {
 		domsuggestions?.classList.remove('shown')
 	}
 
-	async function createSuggestionSocket() {
-		socket = await apiWebSocket('suggestions')
-
-		socket?.addEventListener('message', (event: MessageEvent) => {
-			const data = parse<Suggestions | { error: string }>(event.data)
-
-			if (Array.isArray(data)) {
-				suggestions(data as Suggestions)
-			} else if (data?.error) {
-				createSuggestionSocket()
-			}
-		})
-	}
-
 	domcontainer?.addEventListener('keydown', navigateSuggestions)
 	domsearchbar?.addEventListener('focus', toggleSuggestions)
 	domsearchbar?.addEventListener('blur', toggleSuggestions)
 	emptyButton?.addEventListener('click', hideResultsAndSuggestions)
-
-	createSuggestionSocket()
 }
 
 function suggestions(results: Suggestions) {
@@ -462,11 +439,12 @@ function handleUserInput(e: Event) {
 		initSuggestions()
 	}
 
-	// request suggestions
-	if (domcontainer?.dataset.suggestions === 'true' && socket && socket.readyState === socket.OPEN) {
-		const engine = (domcontainer?.dataset.engine ?? 'ddg').replace('custom', 'ddg').replace('default', 'google')
-		const query = encodeURIComponent(value ?? '')
-		socket.send(JSON.stringify({ q: query, with: engine, lang: getLang() }))
+	// request suggestions using Google Complete API
+	if (domcontainer?.dataset.suggestions === 'true') {
+		fetchGoogleSuggestions(value).then((results) => {
+			const suggestionList: Suggestions = results.map((text) => ({ text }))
+			suggestions(suggestionList)
+		})
 	}
 }
 

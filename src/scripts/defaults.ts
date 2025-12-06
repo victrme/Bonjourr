@@ -8,9 +8,9 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '21.2.1'
+export const CURRENT_VERSION = '1.0.0'
 
-export const API_DOMAIN = 'https://services.bonjourr.fr'
+// Removed bonjourr API domain - using public APIs instead
 
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
@@ -55,13 +55,13 @@ export const IS_MOBILE = navigator.userAgentData
 	? navigator.userAgentData.mobile
 	: mobileUA.some((ua) => navigator.userAgent.includes(ua))
 
+// Simplified to only support Chinese and English
 const DEFAULT_LANG = (() => {
-	for (const code of Object.keys(langList)) {
-		if (navigator.language.replace('-', '_').includes(code)) {
-			return code as keyof typeof langList
-		}
+	const lang = navigator.language.toLowerCase()
+	if (lang.includes('zh')) {
+		return 'zh_CN' as keyof typeof langList
 	}
-	return 'en'
+	return 'en' as keyof typeof langList
 })()
 
 export const SEARCHBAR_ENGINES = [
@@ -119,11 +119,11 @@ export const SYNC_DEFAULT: Sync = {
 		fadein: 600,
 		blur: 15,
 		bright: 0.8,
-		frequency: 'hour',
+		frequency: 'day',
 		color: '#185A63',
 		urls: '',
-		images: 'bonjourr-images-daylight',
-		videos: 'bonjourr-videos-daylight',
+		images: 'bing',
+		videos: '',
 		queries: {},
 		texture: {
 			type: 'none',
@@ -146,21 +146,6 @@ export const SYNC_DEFAULT: Sync = {
 		background: '#fff2',
 	},
 	worldclocks: [],
-	weather: {
-		city: undefined,
-		unit: 'metric',
-		provider: '',
-		moreinfo: 'none',
-		forecast: 'auto',
-		temperature: 'actual',
-		geolocation: 'approximate',
-	},
-	notes: {
-		on: false,
-		width: 40,
-		opacity: 0.1,
-		align: 'left',
-	},
 	searchbar: {
 		on: false,
 		opacity: 0.1,
@@ -173,7 +158,7 @@ export const SYNC_DEFAULT: Sync = {
 	quotes: {
 		on: false,
 		author: false,
-		type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
+		type: 'hitokoto',
 		frequency: 'day',
 		last: undefined,
 	},
@@ -184,20 +169,24 @@ export const SYNC_DEFAULT: Sync = {
 		weightlist: [],
 		weight: SYSTEM_OS === 'windows' ? '400' : '300',
 	},
-	supporters: {
-		enabled: true,
-		closed: false,
-		month: new Date().getMonth() + 1,
-	},
 	move: {
 		selection: 'single',
 		layouts: {},
+	},
+	dragPosition: {
+		editing: false,
+		positions: {
+			time: { x: 50, y: 30, enabled: false },
+			main: { x: 50, y: 45, enabled: false },
+			quicklinks: { x: 50, y: 85, enabled: false },
+			quotes: { x: 50, y: 90, enabled: false },
+			searchbar: { x: 50, y: 60, enabled: false },
+		},
 	},
 }
 
 export const LOCAL_DEFAULT: Local = {
 	syncType: PLATFORM === 'online' ? 'off' : 'browser',
-	gistToken: '',
 	userQuoteSelection: 0,
 	translations: undefined,
 	quotesCache: [],
@@ -206,5 +195,4 @@ export const LOCAL_DEFAULT: Local = {
 	backgroundCollections: {},
 	backgroundCompressFiles: true,
 	backgroundLastChange: '',
-	lastWeather: undefined,
 }

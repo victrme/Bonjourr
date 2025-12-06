@@ -1,7 +1,6 @@
 import { addOverlay, interfaceFade, removeOverlay, removeSelection, setAllAligns, setGridAreas } from './dom.ts'
 import { transitioner } from '../../utils/transitioner.ts'
 import { storage } from '../../storage.ts'
-import { weather } from '../weather/index.ts'
 import {
 	addGridWidget,
 	getLayout,
@@ -47,13 +46,6 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
 		if (isEditing()) {
 			on ? addOverlay(id) : removeOverlay(id)
 		}
-
-		// Apply weather if re-enabled
-		if (id === 'main' && on === true) {
-			storage.local.get('lastWeather').then((local) => {
-				weather({ sync: newdata, lastWeather: local.lastWeather })
-			})
-		}
 	})
 
 	interfaceTransition.finally(() => {
@@ -68,7 +60,6 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 		time: 'i_time',
 		main: 'i_main',
 		quicklinks: 'i_quicklinks',
-		notes: 'i_notes',
 		quotes: 'i_quotes',
 		searchbar: 'i_sb',
 	}
@@ -78,7 +69,7 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 		const option = document.getElementById(`${widget}_options`)
 
 		option?.classList.toggle('shown', on)
-		input.checked = on
+		if (input) input.checked = on
 	}
 }
 
@@ -87,7 +78,6 @@ export function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
 		time: 'time',
 		main: 'main',
 		quicklinks: 'linkblocks',
-		notes: 'notes_container',
 		quotes: 'quotes_container',
 		searchbar: 'sb_container',
 	}

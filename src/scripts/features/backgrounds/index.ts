@@ -10,7 +10,7 @@ import {
 	localFilesCacheControl,
 } from './local.ts'
 
-import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
+import { needsChange, userDate } from '../../shared/time.ts'
 import { colorInput, turnRefreshButton } from '../../shared/dom.ts'
 import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
@@ -450,39 +450,71 @@ async function fetchNewBackgrounds(backgrounds: Backgrounds): Promise<Record<str
 	}
 
 	const collectionName = backgrounds[backgrounds.type]
-	const [provider, type, category] = collectionName.split('-')
 
-	const base = 'https://services.bonjourr.fr/backgrounds'
-	const path = `/${provider}/${type}/${category}`
-
-	const density = Math.max(2, globalThis.devicePixelRatio)
-	const ratio = globalThis.screen.width / globalThis.screen.height
-	let height = globalThis.screen.height * density
-	let width = globalThis.screen.width * density
-
-	if (ratio >= 2) {
-		width = height * 2
-	}
-	if (ratio <= 0.5) {
-		height = width * 2
+	// Bing Daily Wallpaper
+	if (collectionName === 'bing') {
+		return await fetchBingBackgrounds()
 	}
 
-	const screen = `?h=${height}&w=${width}`
-	const query = backgrounds.queries[collectionName] ?? ''
-	const search = query ? `&query=${query}` : ''
-
-	const url = base + path + screen + search
-	const resp = await fetch(url)
-	const json = await resp.json()
-
-	const areImages = type === 'images' && Object.keys(json)?.every((key) => key.includes('images'))
-	const areVideos = type === 'videos' && Object.keys(json)?.every((key) => key.includes('videos'))
-
-	if (areImages || areVideos) {
-		return json
+	// Picsum Random
+	if (collectionName === 'picsum') {
+		return await fetchPicsumBackgrounds()
 	}
 
-	throw new Error('Received JSON is bad')
+	throw new Error('Unknown provider')
+}
+
+async function fetchBingBackgrounds(): Promise<Record<string, Background[]>> {
+	try {
+		const url = 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=zh-CN'
+		const resp = await fetch(url)
+		const data = await resp.json()
+
+		const images: BackgroundImage[] = data.images.map((img: {
+			urlbase: string
+			copyright: string
+			title: string
+		}) => ({
+			format: 'image' as const,
+			urls: {
+				full: `https://www.bing.com${img.urlbase}_UHD.jpg`,
+				medium: `https://www.bing.com${img.urlbase}_1920x1080.jpg`,
+				small: `https://www.bing.com${img.urlbase}_1366x768.jpg`,
+			},
+			name: img.title,
+			city: img.copyright,
+		}))
+
+		return { 'bing': images }
+	} catch (error) {
+		console.error('Failed to fetch Bing backgrounds:', error)
+		return { 'bing': [] }
+	}
+}
+
+async function fetchPicsumBackgrounds(): Promise<Record<string, Background[]>> {
+	try {
+		// Generate multiple random Picsum images
+		const images: BackgroundImage[] = []
+		const timestamp = Date.now()
+
+		for (let i = 0; i < 8; i++) {
+			images.push({
+				format: 'image' as const,
+				urls: {
+					full: `https://picsum.photos/3840/2160?random=${timestamp + i}`,
+					medium: `https://picsum.photos/1920/1080?random=${timestamp + i}`,
+					small: `https://picsum.photos/1366/768?random=${timestamp + i}`,
+				},
+				name: 'Picsum Photo',
+			})
+		}
+
+		return { 'picsum': images }
+	} catch (error) {
+		console.error('Failed to fetch Picsum backgrounds:', error)
+		return { 'picsum': [] }
+	}
 }
 
 function findCollectionName(backgrounds: Backgrounds, local: Local): string {
@@ -507,15 +539,8 @@ function findCollectionName(backgrounds: Backgrounds, local: Local): string {
 		return getCollectionNameFromMedia(pausedVideo, local)
 	}
 
-	const collectionName = backgrounds[type]
-	const isDaylight = collectionName.includes('daylight')
-
-	if (isDaylight) {
-		const period = daylightPeriod(userDate().getTime())
-		return `${collectionName}-${period}`
-	}
-
-	return collectionName
+	// Simplified: just return the collection name directly (bing or picsum)
+	return backgrounds[type]
 }
 
 function getCollectionNameFromMedia(media: Background, local: Local): string {

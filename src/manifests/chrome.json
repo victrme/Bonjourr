@@ -1,10 +1,10 @@
 {
 	"manifest_version": 3,
 	"name": "__MSG_extensionName__",
-	"short_name": "Bonjourr",
-	"version": "21.2.1",
+	"short_name": "SimpleTab",
+	"version": "1.0.0",
 	"description": "__MSG_extensionDesc__",
-	"author": "Victor Azevedo and Tahoe Beetschen",
+	"author": "SimpleTab",
 	"default_locale": "en",
 	"icons": {
 		"128": "src/assets/favicons/favicon-128x128.png"
@@ -21,6 +21,13 @@
 	},
 	"permissions": [
 		"storage"
+	],
+	"host_permissions": [
+		"https://www.google.com/*",
+		"https://www.bing.com/*",
+		"https://picsum.photos/*",
+		"https://v1.hitokoto.cn/*",
+		"https://fonts.googleapis.com/*"
 	],
 	"optional_permissions": [
 		"bookmarks",

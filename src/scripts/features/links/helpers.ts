@@ -1,16 +1,17 @@
 import { stringMaxSize } from '../../shared/generic.ts'
-import { API_DOMAIN } from '../../defaults.ts'
+import { getGoogleFavicon } from '../../shared/api.ts'
 import { tradThis } from '../../utils/translations.ts'
 
 import type { Link, LinkElem } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-export function getDefaultIcon(url: string, refresh?: number) {
-	if (refresh) {
-		return `${API_DOMAIN}/favicon/blob/${url}?r=${refresh}`
+export function getDefaultIcon(url: string, _refresh?: number) {
+	try {
+		const domain = new URL(url).hostname
+		return getGoogleFavicon(domain, 64)
+	} catch {
+		return getGoogleFavicon(url, 64)
 	}
-
-	return `${API_DOMAIN}/favicon/blob/${url}`
 }
 
 export function getSelectedIds(): string[] {

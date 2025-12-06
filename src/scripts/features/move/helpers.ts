@@ -9,14 +9,13 @@ type Defaults = {
 	triple: MoveLayout
 }
 
-const MOVE_WIDGETS = ['time', 'main', 'quicklinks', 'notes', 'quotes', 'searchbar']
+const MOVE_WIDGETS = ['time', 'main', 'quicklinks', 'quotes', 'searchbar']
 
 export const elements = {
 	time: globalThis.document.getElementById('time'),
 	main: globalThis.document.getElementById('main'),
 	quicklinks: globalThis.document.getElementById('linkblocks'),
 	searchbar: globalThis.document.getElementById('sb_container'),
-	notes: globalThis.document.getElementById('notes_container'),
 	quotes: globalThis.document.getElementById('quotes_container'),
 } as const
 
@@ -249,7 +248,6 @@ export function getWidgetsStorage(data: Sync): Widgets[] {
 	const displayed = {
 		time: data.time,
 		main: data.main,
-		notes: !!data.notes?.on,
 		searchbar: !!data.searchbar?.on,
 		quicklinks: data.quicklinks,
 		quotes: !!data.quotes?.on,
@@ -261,8 +259,6 @@ export function getWidgetsStorage(data: Sync): Widgets[] {
 }
 
 export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync): Sync {
-	//
-
 	for (const [id, on] of states) {
 		if (id === 'time') {
 			data.time = on
@@ -278,9 +274,6 @@ export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync): 
 		}
 		if (id === 'searchbar') {
 			data.searchbar = { ...data.searchbar, on: on }
-		}
-		if (id === 'notes' && data.notes) {
-			data.notes = { ...data.notes, on: on }
 		}
 	}
 
@@ -310,9 +303,6 @@ export function addGridWidget(grid: string, id: Widgets, selection: Move['select
 	}
 	if (id === 'main') {
 		position = isFirstWidgetTime ? 1 : 0
-	}
-	if (id === 'notes') {
-		position = rows.length === 1 ? 1 : 2
 	}
 	if (id === 'searchbar') {
 		position = rows.length === 1 ? 1 : 2

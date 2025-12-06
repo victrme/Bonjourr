@@ -3,7 +3,7 @@ import { needsChange, userDate } from '../shared/time.ts'
 import { displayInterface } from '../shared/display.ts'
 import { networkForm } from '../shared/form.ts'
 import { tradThis } from '../utils/translations.ts'
-import { apiFetch } from '../shared/api.ts'
+import { fetchHitokoto } from '../shared/api.ts'
 import { isEvery } from '../shared/assert.ts'
 import { storage } from '../storage.ts'
 import { parse } from '../utils/parse.ts'
@@ -189,19 +189,17 @@ function refreshQuotes(sync: Sync, quoteslist: Local['quotesCache'] = []) {
 
 // ─── API & STORAGE
 
-async function fetchQuotes(lang: string, type: Quotes['type'], url: string | undefined): Promise<Quote[]> {
+async function fetchQuotes(_lang: string, type: Quotes['type'], url: string | undefined): Promise<Quote[]> {
 	if (!navigator.onLine || type === 'user') {
 		return []
 	}
-
-	let response: Response | undefined
 
 	if (type === 'url') {
 		if (!url) {
 			return []
 		}
 
-		response = await fetch(url)
+		const response = await fetch(url)
 		validateResponse(response)
 
 		const responseType = determineUrlApiResponseType(response)
@@ -217,13 +215,18 @@ async function fetchQuotes(lang: string, type: Quotes['type'], url: string | und
 		return []
 	}
 
-	const endpoint = type === 'classic' ? `${lang}` : ''
-	const query = `/quotes/${type}/${endpoint}`
-
-	response = await apiFetch(query)
-	validateResponse(response)
-
-	return await response.json()
+	// Default: use Hitokoto API (一言)
+	const quotes: Quote[] = []
+	for (let i = 0; i < 10; i++) {
+		const data = await fetchHitokoto()
+		if (data) {
+			quotes.push({
+				content: data.hitokoto,
+				author: data.from_who || data.from || '佚名',
+			})
+		}
+	}
+	return quotes
 }
 
 function validateResponse(response: Response | undefined): asserts response is Response {
@@ -319,7 +322,7 @@ function csvToQuotes(csv: string): Quote[] {
 }
 
 function isQuotesType(type = ''): type is Quotes['type'] {
-	const types: Quotes['type'][] = ['classic', 'kaamelott', 'inspirobot', 'stoic', 'hitokoto', 'office', 'user', 'url']
+	const types: Quotes['type'][] = ['hitokoto', 'user', 'url']
 	return types.includes(type as Quotes['type'])
 }
 
