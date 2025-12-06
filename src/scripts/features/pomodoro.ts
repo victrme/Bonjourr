@@ -170,18 +170,15 @@ function listenToBroadcast() {
 	})
 }
 
-function switchMode(mode: PomodoroMode, animate?: boolean) {
+function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean) {
 	resetTimeouts()
 	setModeGlider(mode, animate)
 	stopTimer()
 	insertTime(getTimeForMode(mode), false)
 
-	// save
-	updatePomodoro({
-		mode: mode,
-		end: 0,
-		pause: 0,
-	})
+	if (!init) {
+		updatePomodoro({ mode: mode, end: 0, pause: 0 })
+	}
 }
 
 function resetTimeouts() {
@@ -240,7 +237,7 @@ function initTimer(pomodoro: Pomodoro) {
 	}
 
 	if (isTimerDefaultStopped && pomodoro.mode) {
-		switchMode(pomodoro.mode)
+		switchMode(pomodoro.mode, false, true)
 	}
 }
 
