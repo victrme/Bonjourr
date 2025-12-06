@@ -1,4 +1,4 @@
-import { EXTENSION, IS_MOBILE, PLATFORM, SEARCHBAR_ENGINES } from '../defaults.ts'
+import { EXTENSION, SEARCHBAR_ENGINES } from '../defaults.ts'
 import { opacityFromHex, stringMaxSize } from '../shared/generic.ts'
 import { hexColorFromSplitRange } from '../shared/dom.ts'
 import { tradThis } from '../utils/translations.ts'
@@ -204,7 +204,6 @@ function createSearchUrl(val: string, engine: string): string {
 function submitSearch(e: Event) {
 	e.preventDefault()
 
-	const canUseDefault = !IS_MOBILE && (PLATFORM === 'chrome' || PLATFORM === 'firefox')
 	const newtab = domcontainer?.dataset.newtab === 'true'
 	const val = domsearchbar?.value
 	let engine = domcontainer?.dataset.engine ?? 'default'
@@ -213,8 +212,9 @@ function submitSearch(e: Event) {
 		return
 	}
 
-	if (canUseDefault && engine === 'default') {
-		;(EXTENSION as typeof chrome)?.search.query({
+	// Use Chrome Search API when engine is "default" (uses browser's default search engine)
+	if (engine === 'default') {
+		EXTENSION?.search.query({
 			disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
 			text: val,
 		})
