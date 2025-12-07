@@ -1,5 +1,3 @@
-import { extname } from '@std/path'
-
 const port = Deno.args[0]
 
 if (port) {
@@ -37,7 +35,7 @@ export function httpServer(port = 8000, baseUrl = 'release/online') {
 		// Find content type
 
 		const headers: HeadersInit = { 'cache-control': 'no-cache' }
-		const fileExt = extname(filePath)
+		const fileExt = filePath.split('.').at(-1) ?? ''
 		const contentType = contentTypeList[fileExt]
 
 		if (contentType) {
