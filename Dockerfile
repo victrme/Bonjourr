@@ -7,7 +7,7 @@ RUN deno task build
 
 FROM denoland/deno:alpine
 
-EXPOSE 8080
+EXPOSE 8000
 WORKDIR /app
 COPY --from=builder /app .
 
