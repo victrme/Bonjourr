@@ -107,7 +107,7 @@ export function openContextMenu(event: Event) {
 	if (eventLocation.widgets.pomodoro) {
 		showTheseElements('#pomodoro-info')
 	}
-	
+
 	if (clickedOnWidgets) {
 		const allWidgets = Object.entries(eventLocation.widgets)
 		const clickedOnWidgets = allWidgets.filter(([_, clicked]) => clicked)

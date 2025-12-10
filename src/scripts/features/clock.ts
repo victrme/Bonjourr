@@ -25,10 +25,10 @@ type ClockUpdate = {
 	greetingsize?: string
 	greetingsmode?: string
 	greetings_custom_strings?: {
-		morning?: string;
-		afternoon?: string;
-		evening?: string;
-		night?: string;
+		morning?: string
+		afternoon?: string
+		evening?: string
+		night?: string
 	}
 	timezone?: string
 	shape?: string
@@ -66,7 +66,14 @@ export function clock(init?: Sync, event?: ClockUpdate) {
 	const world = init?.worldclocks ?? { ...SYNC_DEFAULT.worldclocks }
 
 	try {
-		startClock(clock, world, init?.greeting || '', init?.dateformat || 'eu', init?.greetingsmode, init?.greetings_custom_strings)
+		startClock(
+			clock,
+			world,
+			init?.greeting || '',
+			init?.dateformat || 'eu',
+			init?.greetingsmode,
+			init?.greetings_custom_strings,
+		)
 		greetingSize(init?.greetingsize)
 		analogStyle(init?.analogstyle)
 		clockSize(clock.size)
@@ -103,7 +110,7 @@ async function clockUpdate(update: ClockUpdate) {
 		greetingSize(update.greetingsize)
 		storage.sync.set({ greetingsize: update.greetingsize })
 	}
-	
+
 	if (update.greetingsmode !== undefined) {
 		const newMode = update.greetingsmode as 'auto' | 'custom'
 
@@ -119,11 +126,12 @@ async function clockUpdate(update: ClockUpdate) {
 
 	if (update.greetings_custom_strings !== undefined) {
 		const newStrings = { // combines new strings to the ones already in storage
-			...data.greetings_custom_strings, ...update.greetings_custom_strings 
+			...data.greetings_custom_strings,
+			...update.greetings_custom_strings,
 		}
-		
-		data.greetings_custom_strings = newStrings 
-		storage.sync.set({ greetings_custom_strings: newStrings})
+
+		data.greetings_custom_strings = newStrings
+		storage.sync.set({ greetings_custom_strings: newStrings })
 		greetings(data.greeting, data.greetingsmode, newStrings)
 	}
 
@@ -196,7 +204,14 @@ async function clockUpdate(update: ClockUpdate) {
 		dateformat: data.dateformat,
 	})
 
-	startClock(data.clock, data.worldclocks, data.greeting, data.dateformat, data.greetingsmode, data.greetings_custom_strings)
+	startClock(
+		data.clock,
+		data.worldclocks,
+		data.greeting,
+		data.dateformat,
+		data.greetingsmode,
+		data.greetings_custom_strings,
+	)
 	analogStyle(data.analogstyle)
 	clockSize(data.clock.size)
 }
@@ -257,7 +272,14 @@ function greetingSize(size = '3') {
 
 //	Clock
 
-function startClock(clock: Clock, world: WorldClock[], greeting: string, dateformat: DateFormat, greetmode: string, customgreetstrings: CustomGreetingStrings) {
+function startClock(
+	clock: Clock,
+	world: WorldClock[],
+	greeting: string,
+	dateformat: DateFormat,
+	greetmode: string,
+	customgreetstrings: CustomGreetingStrings,
+) {
 	document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
 	document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
 
@@ -363,7 +385,6 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 	if (clock.ampm && h === 0) {
 		h = 12
 	}
-
 
 	// Avoid layout shifts every second by rounding width
 	if (clock.seconds) {

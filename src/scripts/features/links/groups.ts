@@ -75,11 +75,11 @@ function changeGroup(event: Event) {
 	if (event.type === 'wheel') {
 		// all the selectable group buttons
 		const buttons = Array.from(
-			document.querySelectorAll<HTMLButtonElement>('.link-title:not(.add-group)[data-group]')
+			document.querySelectorAll<HTMLButtonElement>('.link-title:not(.add-group)[data-group]'),
 		)
 
 		// gets the index of the currently selected group
-		const index = buttons.findIndex(btn => btn.classList.contains('selected-group'))
+		const index = buttons.findIndex((btn) => btn.classList.contains('selected-group'))
 
 		button = buttons[
 			// unsmooth brain thing to get the index for the previous/next button

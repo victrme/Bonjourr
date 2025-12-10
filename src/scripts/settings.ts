@@ -738,13 +738,13 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_greetmode').addEventListener('change', function (this: HTMLInputElement) {
-		document.getElementById('greetings_custom_options')?.classList.toggle('shown', this.value === "custom")
+		document.getElementById('greetings_custom_options')?.classList.toggle('shown', this.value === 'custom')
 		clock(undefined, { greetingsmode: this.value })
 	})
 
 	// for searching: i_greetmorning, i_greetafternoon, i_greetevening, i_greetnight
 	const customGreetTimes = ['morning', 'afternoon', 'evening', 'night']
-	customGreetTimes.forEach(time => {
+	customGreetTimes.forEach((time) => {
 		paramId(`i_greet${time}`).addEventListener('input', function () {
 			clock(undefined, { greetings_custom_strings: { [time]: this.value } })
 		})

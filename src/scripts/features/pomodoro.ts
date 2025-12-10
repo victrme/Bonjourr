@@ -21,9 +21,9 @@ type PomodoroUpdate = {
 }
 
 type PomodoroHistoryEntry = {
-  endedAt: string;
-  duration?: number;
-};
+	endedAt: string
+	duration?: number
+}
 
 let currentPomodoroData: Pomodoro
 
@@ -465,13 +465,15 @@ function ringTheAlarm() {
 	if (willRingAndSave) {
 		if (currentPomodoroData.sound) {
 			alarmSound.play()
-		} 
-		
+		}
+
 		// if pomodoro ends, registers new session
 		if (currentPomodoroData.mode === 'pomodoro') {
-			updatePomodoro({ history: {
-				endedAt: Date.now().toString()
-			}})
+			updatePomodoro({
+				history: {
+					endedAt: Date.now().toString(),
+				},
+			})
 		}
 	} else {
 		console.info("Alarm is ringing, but this isn't the active tab.", {
@@ -490,7 +492,7 @@ function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
 
 	// Get start of today, week, and month
 	const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-	
+
 	// Monday as first day of week
 	const startOfWeek = new Date(now)
 	const day = (now.getDay() + 6) % 7
@@ -505,14 +507,12 @@ function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
 		if (endedAt >= startOfToday) pomsToday++
 		if (endedAt >= startOfWeek) pomsWeek++
 		if (endedAt >= startOfMonth) pomsMonth++
-	}
+	} // Update the DOM
 
-	// Update the DOM
-	(document.getElementById("poms-today") as HTMLSpanElement).textContent = pomsToday.toString();
-	(document.getElementById("poms-week") as HTMLSpanElement).textContent = pomsWeek.toString();
-	(document.getElementById("poms-month") as HTMLSpanElement).textContent = pomsMonth.toString();
+	;(document.getElementById('poms-today') as HTMLSpanElement).textContent = pomsToday.toString()
+	;(document.getElementById('poms-week') as HTMLSpanElement).textContent = pomsWeek.toString()
+	;(document.getElementById('poms-month') as HTMLSpanElement).textContent = pomsMonth.toString()
 }
-
 
 async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for, history }: PomodoroUpdate) {
 	const data = await storage.sync.get(['pomodoro'])
@@ -544,7 +544,7 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for, hi
 	if (history !== undefined) {
 		data.pomodoro.history.push({
 			endedAt: history.endedAt,
-			duration: data.pomodoro.time_for.pomodoro
+			duration: data.pomodoro.time_for.pomodoro,
 		})
 	}
 
