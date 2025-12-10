@@ -203,6 +203,7 @@ export const SYNC_DEFAULT: Sync = {
 		},
 		focus: false,
 		sound: true,
+		history: []
 	},
 	font: {
 		family: '',
