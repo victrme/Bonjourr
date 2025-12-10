@@ -493,9 +493,13 @@ function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
 
 	// Get start of today, week, and month
 	const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+	
+	// Monday as first day of week
 	const startOfWeek = new Date(now)
-		startOfWeek.setDate(now.getDate() - now.getDay()) // Sunday as start
-		startOfWeek.setHours(0, 0, 0, 0)
+	const day = (now.getDay() + 6) % 7
+	startOfWeek.setDate(now.getDate() - day)
+	startOfWeek.setHours(0, 0, 0, 0)
+
 	const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
 
 	for (const entry of history) {
