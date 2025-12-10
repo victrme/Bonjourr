@@ -15,7 +15,7 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-21-the-background-update-R6R61FLG0Z'
+const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-22-pomodoro-timer-new-look-right-click-F1F11P47J8'
 const ANNOUNCEMENT_VERSION = '22.0.0'
 
 const ANNOUNCEMENT_TRNS = {
@@ -71,6 +71,10 @@ const REVIEW_URLS = {
 }
 
 export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
+	// force popup for debugging
+	// displayPopup('announce', true)
+	// displayPopup('review', true)
+
 	if (isAnnouncement(event?.announcements)) {
 		storage.sync.set({ announcements: event?.announcements })
 		return
