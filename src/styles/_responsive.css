@@ -240,6 +240,10 @@
 		border-radius: 50px;
 	}
 
+	aside .settings-title {
+		margin: 32px 16px 0px 16px; 
+	}
+
 	aside .wrapper {
 		padding: unset;
 		min-height: 38px;
