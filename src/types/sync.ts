@@ -222,8 +222,11 @@ export interface Pomodoro {
 	end: number
 	pause: number
 	mode?: PomodoroMode
-	time_for: Record<PomodoroMode, number>
+	timeFor: Record<PomodoroMode, number>
 	focus: boolean
 	sound: boolean
-	history: { endedAt: string; duration: number }[]
+	history: {
+		endedAt: string
+		duration: number
+	}[]
 }

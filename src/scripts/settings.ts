@@ -213,6 +213,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_clockshape', data.analogstyle?.shape || 'round')
 	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
 	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
+	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_greetsize', data.greetingsize ?? 3)
 	setInput('i_greetmode', data.greetingsmode ?? 'auto')
@@ -227,10 +228,9 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
-
-	Object.entries(data.pomodoro.time_for).forEach(([key, value]) => {
-		setInput(`i_pmdr_${key}`, value / 60)
-	})
+	setInput('i_pmdr_break', data.pomodoro.timeFor.break / 60)
+	setInput('i_pmdr_pomodoro', data.pomodoro.timeFor.pomodoro / 60)
+	setInput('i_pmdr_longbreak', data.pomodoro.timeFor.longbreak / 60)
 
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
@@ -256,7 +256,6 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
-	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
 	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
 	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
@@ -265,13 +264,13 @@ function initOptionsValues(data: Sync, local: Local) {
 	colorInput('solid-background', data.backgrounds.color)
 	colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
 
+	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
+	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
 		'on',
 		(data.analogstyle?.background ?? '#fff').includes('#000'),
 	)
-	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
-	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 
 	// Change edit tips on mobile
 	if (IS_MOBILE) {

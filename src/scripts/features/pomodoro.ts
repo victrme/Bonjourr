@@ -45,8 +45,13 @@ let timeModeTimeout: number
 let tabTitleTimeout: number
 const timeBeforeReset = 10000 // time before the timer resets after the end
 
-const setModeButton = (value = '') => (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
-const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number => currentPomodoroData.time_for[mode]
+const setModeButton = (value = '') => {
+	return (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
+}
+
+const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number => {
+	return currentPomodoroData.timeFor[mode]
+}
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
 	if (update) {
@@ -544,7 +549,7 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for, hi
 	if (history !== undefined) {
 		data.pomodoro.history.push({
 			endedAt: history.endedAt,
-			duration: data.pomodoro.time_for.pomodoro,
+			duration: data.pomodoro.timeFor['pomodoro'],
 		})
 	}
 
@@ -554,7 +559,7 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for, hi
 			const value = time_for[mode]
 
 			if (value !== undefined) {
-				data.pomodoro.time_for[mode] = value * 60
+				data.pomodoro.timeFor[mode] = value * 60
 			}
 		}
 	}
