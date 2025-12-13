@@ -1,6 +1,9 @@
-const port = parseInt(Deno.args[0] ?? '8000')
-
-httpServer(port)
+try {
+	const port = parseInt(Deno.args[0])
+	httpServer(port)
+} catch (_) {
+	// ...
+}
 
 export function httpServer(port = 8000, baseUrl = 'release/online') {
 	const contentTypeList: Record<string, string> = {

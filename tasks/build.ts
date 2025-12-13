@@ -18,7 +18,7 @@ const _isEnv = (s: string): s is Env => ENVS.includes(s)
 // Main
 
 if ((env === 'dev') && platform === 'online') {
-	httpServer(8000)
+	httpServer()
 }
 
 if (env === 'dev' && isPlatform(platform)) {
