@@ -100,7 +100,7 @@ export const SYNC_DEFAULT: Sync = {
 		morning: '',
 		afternoon: '',
 		evening: '',
-		night: ''
+		night: '',
 	},
 	pagegap: 1,
 	pagewidth: 1600,
@@ -203,6 +203,7 @@ export const SYNC_DEFAULT: Sync = {
 		},
 		focus: false,
 		sound: true,
+		history: [],
 	},
 	font: {
 		family: '',

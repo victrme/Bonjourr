@@ -17,6 +17,12 @@ type PomodoroUpdate = {
 	focus?: boolean
 	time_for?: Partial<Record<PomodoroMode, number>>
 	sound?: boolean
+	history?: { endedAt: string; duration?: number }
+}
+
+type PomodoroHistoryEntry = {
+	endedAt: string
+	duration?: number
 }
 
 let currentPomodoroData: Pomodoro
@@ -70,6 +76,8 @@ function initPomodoro(init: Pomodoro) {
 	displayInterface('pomodoro')
 	listenToBroadcast()
 	handleUserInput()
+
+	setPomodoroInfo(init.history)
 }
 
 // events
@@ -170,18 +178,15 @@ function listenToBroadcast() {
 	})
 }
 
-function switchMode(mode: PomodoroMode, animate?: boolean) {
+function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean) {
 	resetTimeouts()
 	setModeGlider(mode, animate)
 	stopTimer()
 	insertTime(getTimeForMode(mode), false)
 
-	// save
-	updatePomodoro({
-		mode: mode,
-		end: 0,
-		pause: 0,
-	})
+	if (!init) {
+		updatePomodoro({ mode: mode, end: 0, pause: 0 })
+	}
 }
 
 function resetTimeouts() {
@@ -240,7 +245,7 @@ function initTimer(pomodoro: Pomodoro) {
 	}
 
 	if (isTimerDefaultStopped && pomodoro.mode) {
-		switchMode(pomodoro.mode)
+		switchMode(pomodoro.mode, false, true)
 	}
 }
 
@@ -453,13 +458,23 @@ export function togglePomodoroFocus(focus: boolean) {
 }
 
 function ringTheAlarm() {
-	if (!currentPomodoroData.sound) return
-
-	// only rings on the last active tab
+	// only triggers on the last active tab
 	const lastTab = localStorage.getItem('lastActiveTab')
+	const willRingAndSave = lastTab === TAB_ID
 
-	if (lastTab === TAB_ID) {
-		alarmSound.play()
+	if (willRingAndSave) {
+		if (currentPomodoroData.sound) {
+			alarmSound.play()
+		}
+
+		// if pomodoro ends, registers new session
+		if (currentPomodoroData.mode === 'pomodoro') {
+			updatePomodoro({
+				history: {
+					endedAt: Date.now().toString(),
+				},
+			})
+		}
 	} else {
 		console.info("Alarm is ringing, but this isn't the active tab.", {
 			lastTab,
@@ -468,7 +483,38 @@ function ringTheAlarm() {
 	}
 }
 
-async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: PomodoroUpdate) {
+function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
+	const now = new Date()
+
+	let pomsToday = 0
+	let pomsWeek = 0
+	let pomsMonth = 0
+
+	// Get start of today, week, and month
+	const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+
+	// Monday as first day of week
+	const startOfWeek = new Date(now)
+	const day = (now.getDay() + 6) % 7
+	startOfWeek.setDate(now.getDate() - day)
+	startOfWeek.setHours(0, 0, 0, 0)
+
+	const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+
+	for (const entry of history) {
+		const endedAt = new Date(Number(entry.endedAt))
+
+		if (endedAt >= startOfToday) pomsToday++
+		if (endedAt >= startOfWeek) pomsWeek++
+		if (endedAt >= startOfMonth) pomsMonth++
+	} // Update the DOM
+
+	;(document.getElementById('poms-today') as HTMLSpanElement).textContent = pomsToday.toString()
+	;(document.getElementById('poms-week') as HTMLSpanElement).textContent = pomsWeek.toString()
+	;(document.getElementById('poms-month') as HTMLSpanElement).textContent = pomsMonth.toString()
+}
+
+async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for, history }: PomodoroUpdate) {
 	const data = await storage.sync.get(['pomodoro'])
 
 	if (on !== undefined) {
@@ -495,6 +541,13 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: 
 		data.pomodoro.focus = focus
 	}
 
+	if (history !== undefined) {
+		data.pomodoro.history.push({
+			endedAt: history.endedAt,
+			duration: data.pomodoro.time_for.pomodoro,
+		})
+	}
+
 	// the time defined by the user for each mode (pomodoro, break...)
 	if (time_for) {
 		for (const mode of Object.keys(time_for) as PomodoroMode[]) {
@@ -509,6 +562,9 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, time_for }: 
 	await storage.sync.set({ pomodoro: data.pomodoro })
 
 	currentPomodoroData = data.pomodoro
+
+	// known flaw: sessions are only up to date on the ringing tab
+	setPomodoroInfo(data.pomodoro.history)
 
 	if (time_for) {
 		resetTimer()

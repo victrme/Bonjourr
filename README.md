@@ -203,6 +203,12 @@ docker run --rm -p "8000:80/tcp" -it bonjourr/bonjourr
 
 # Go to http://0.0.0.0:8000/
 ```
+```bash
+# Build using docker compose
+docker compose up -d
+
+# Go to http://0.0.0.0:8000/
+```
 
 #### Docker Desktop
 

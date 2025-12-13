@@ -222,3 +222,21 @@ dialog#contextmenu #background-actions button:disabled {
 		transform: rotate(360deg);
 	}
 }
+
+#pomodoro-info {
+	display: none;
+	flex-direction: column;
+	opacity: .8;
+	font-style: italic;
+	font-size: .8em;
+	text-align: left;
+}
+
+#pomodoro-info > div {
+	padding: 4px 12px;
+}
+
+dialog#contextmenu #pomodoro-info hr,
+#pomodoro-info.on {
+	display: flex;
+}

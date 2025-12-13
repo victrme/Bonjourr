@@ -15,7 +15,7 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-21-the-background-update-R6R61FLG0Z'
+const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-22-pomodoro-timer-new-look-right-click-F1F11P47J8'
 const ANNOUNCEMENT_VERSION = '22.0.0'
 
 const ANNOUNCEMENT_TRNS = {
@@ -71,6 +71,10 @@ const REVIEW_URLS = {
 }
 
 export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
+	// force popup for debugging
+	// displayPopup('announce', true)
+	// displayPopup('review', true)
+
 	if (isAnnouncement(event?.announcements)) {
 		storage.sync.set({ announcements: event?.announcements })
 		return
@@ -82,7 +86,7 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (init.old && (init.review === -1 || init.review > 30)) {
+	if (init.old && init.review === -1) {
 		const major = (s: string) => Number.parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
 		const isNewVersion = init.new !== init.old && init.new === ANNOUNCEMENT_VERSION
@@ -104,11 +108,14 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (init.review > 30) {
+	const reviewCounter = parseInt(localStorage.reviewCounter ?? '0')
+
+	if (reviewCounter > 30) {
 		displayPopup('review')
-	} else {
-		storage.sync.set({ review: init.review + 1 })
+		return
 	}
+
+	localStorage.reviewCounter = reviewCounter + 1
 }
 
 function displayPopup(type: 'review' | 'announce', showIcon = false) {
@@ -159,6 +166,7 @@ function createPopupButton(href: string, text: string): HTMLAnchorElement {
 
 function removePopupTrigger() {
 	storage.sync.set({ review: -1 })
+	localStorage.removeItem('reviewCounter')
 	localStorage.removeItem('hasUpdated')
 }
 

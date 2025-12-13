@@ -203,8 +203,7 @@ export interface MoveAlign {
 
 export interface Supporters {
 	enabled: boolean
-	closed: boolean
-	month: number
+	closedMonth?: number
 }
 
 export interface Weather {
@@ -226,4 +225,5 @@ export interface Pomodoro {
 	time_for: Record<PomodoroMode, number>
 	focus: boolean
 	sound: boolean
+	history: { endedAt: string; duration: number }[]
 }

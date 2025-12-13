@@ -1,6 +1,6 @@
 import { ensureDirSync, existsSync } from '@std/fs'
 import { buildSync } from 'esbuild'
-import { extname } from '@std/path'
+import { httpServer } from './serve.ts'
 
 type Platform = 'chrome' | 'firefox' | 'safari' | 'edge' | 'online'
 type Env = 'dev' | 'prod' | 'test'
@@ -18,7 +18,7 @@ const _isEnv = (s: string): s is Env => ENVS.includes(s)
 // Main
 
 if ((env === 'dev') && platform === 'online') {
-	liveServer()
+	httpServer()
 }
 
 if (env === 'dev' && isPlatform(platform)) {
@@ -267,48 +267,6 @@ async function watchTasks(path: string, callback: (filename: string) => void) {
 			console.timeEnd('Built in')
 		}, 20)
 	}
-}
-
-function liveServer() {
-	const contentTypeList: Record<string, string> = {
-		'.html': 'text/html',
-		'.css': 'text/css',
-		'.js': 'text/javascript',
-		'.ico': 'image/x-icon',
-		'.svg': 'image/svg+xml',
-		'.png': 'image/png',
-	}
-
-	Deno.serve(async (req) => {
-		const url = new URL(req.url)
-		const path = `./release/online${url.pathname === '/' ? '/index.html' : url.pathname}`
-
-		try {
-			// Check if file exists
-			const fileInfo = await Deno.stat(path)
-
-			if (!fileInfo.isFile) {
-				return new Response('Not Found', { status: 404 })
-			}
-
-			const data = await Deno.readFile(path)
-			const contentType = contentTypeList[extname(path)] || 'application/octet-stream'
-
-			return new Response(data, {
-				status: 200,
-				headers: {
-					'Content-Type': contentType,
-					'cache-control': 'no-cache',
-				},
-			})
-		} catch (err) {
-			if (err instanceof Deno.errors.NotFound) {
-				return new Response('Not Found', { status: 404 })
-			}
-
-			return new Response('Internal Server Error', { status: 500 })
-		}
-	})
 }
 
 function copyDir(source: string, destination: string) {

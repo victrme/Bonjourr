@@ -654,7 +654,7 @@ function initOptionsEvents() {
 		clock(undefined, { ampmlabel: target.checked })
 
 		// shows/hides ampm_position option
-		paramId('i_ampm_position')?.classList.toggle('shown', target.checked)
+		paramId('ampm_position')?.classList.toggle('shown', target.checked)
 	})
 
 	paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement) {
