@@ -196,7 +196,7 @@ export const SYNC_DEFAULT: Sync = {
 		mode: 'pomodoro',
 		pause: 0,
 		end: 0,
-		time_for: {
+		timeFor: {
 			pomodoro: 1500,
 			break: 300,
 			longbreak: 1200,
