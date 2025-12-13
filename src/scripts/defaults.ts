@@ -96,7 +96,7 @@ export const SYNC_DEFAULT: Sync = {
 	greeting: '',
 	greetingsize: '3',
 	greetingsmode: 'auto',
-	greetings_custom_strings: {
+	greetingscustom: {
 		morning: '',
 		afternoon: '',
 		evening: '',
@@ -214,8 +214,6 @@ export const SYNC_DEFAULT: Sync = {
 	},
 	supporters: {
 		enabled: true,
-		closed: false,
-		month: new Date().getMonth() + 1,
 	},
 	move: {
 		selection: 'single',
