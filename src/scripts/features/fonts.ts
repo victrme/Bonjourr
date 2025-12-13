@@ -7,7 +7,7 @@ import { SYSTEM_OS } from '../defaults.ts'
 import { apiFetch } from '../shared/api.ts'
 import { subsets } from '../langs.ts'
 import { storage } from '../storage.ts'
-import { clock } from './clock.ts'
+import { clock } from './clock/index.ts'
 
 import type { Font, Sync } from '../../types/sync.ts'
 

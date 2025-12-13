@@ -13,7 +13,7 @@ import { searchbar } from './features/searchbar.ts'
 import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
-import { clock } from './features/clock.ts'
+import { clock } from './features/clock/index.ts'
 import { pomodoro, setModeGlider } from './features/pomodoro.ts'
 import { togglePomodoroFocus } from './features/pomodoro.ts'
 import { openSettingsButtonEvent } from './features/contextmenu.ts'
@@ -191,10 +191,10 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_pagegap', data.pagegap ?? 1)
 	setInput('i_dateformat', data.dateformat || 'eu')
 	setInput('i_greeting', data.greeting ?? '')
-	setInput('i_greetmorning', data.greetings_custom_strings.morning ?? '')
-	setInput('i_greetafternoon', data.greetings_custom_strings.afternoon ?? '')
-	setInput('i_greetevening', data.greetings_custom_strings.evening ?? '')
-	setInput('i_greetnight', data.greetings_custom_strings.night ?? '')
+	setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
+	setInput('i_greetafternoon', data.greetingscustom?.afternoon ?? '')
+	setInput('i_greetevening', data.greetingscustom?.evening ?? '')
+	setInput('i_greetnight', data.greetingscustom?.night ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
 	setInput('i_noteswidth', data.notes?.width || 50)
 	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
@@ -300,7 +300,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
-	paramId('greetings_custom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
+	paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
 	paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
@@ -725,6 +725,8 @@ function initOptionsEvents() {
 		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 
+	// Greetings
+
 	paramId('i_greeting').addEventListener('input', function () {
 		clock(undefined, { greeting: this.value })
 	})
@@ -738,20 +740,33 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_greetmode').addEventListener('change', function (this: HTMLInputElement) {
-		document.getElementById('greetings_custom_options')?.classList.toggle('shown', this.value === 'custom')
 		clock(undefined, { greetingsmode: this.value })
 	})
 
-	// for searching: i_greetmorning, i_greetafternoon, i_greetevening, i_greetnight
-	const customGreetTimes = ['morning', 'afternoon', 'evening', 'night']
-	customGreetTimes.forEach((time) => {
-		paramId(`i_greet${time}`).addEventListener('input', function () {
-			clock(undefined, { greetings_custom_strings: { [time]: this.value } })
-		})
+	paramId(`i_greetmorning`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { morning: this.value } })
+	})
+	paramId(`i_greetafternoon`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { afternoon: this.value } })
+	})
+	paramId(`i_greetevening`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { evening: this.value } })
+	})
+	paramId(`i_greetnight`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { night: this.value } })
+	})
 
-		paramId(`i_greet${time}`).addEventListener('change', () => {
-			paramId(`i_greet${time}`).blur()
-		})
+	paramId(`i_greetmorning`).addEventListener('change', () => {
+		paramId(`i_greetmorning`).blur()
+	})
+	paramId(`i_greetafternoon`).addEventListener('change', () => {
+		paramId(`i_greetafternoon`).blur()
+	})
+	paramId(`i_greetevening`).addEventListener('change', () => {
+		paramId(`i_greetevening`).blur()
+	})
+	paramId(`i_greetnight`).addEventListener('change', () => {
+		paramId(`i_greetnight`).blur()
 	})
 
 	// Notes

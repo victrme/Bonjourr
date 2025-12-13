@@ -62,8 +62,6 @@ export function addSupporters(data: Import): Import {
 	if (data.supporters === undefined) {
 		data.supporters = {
 			enabled: true,
-			closed: false,
-			month: -1,
 		}
 	}
 

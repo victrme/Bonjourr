@@ -26,8 +26,8 @@ export interface Sync {
 	tabtitle: string
 	greeting: string
 	greetingsize: string
-	greetingsmode: 'auto' | 'custom'
-	greetings_custom_strings: {
+	greetingsmode?: 'auto' | 'custom'
+	greetingscustom: {
 		morning: string
 		afternoon: string
 		evening: string
@@ -203,7 +203,7 @@ export interface MoveAlign {
 
 export interface Supporters {
 	enabled: boolean
-	closedMonth: number
+	closedMonth?: number
 }
 
 export interface Weather {
