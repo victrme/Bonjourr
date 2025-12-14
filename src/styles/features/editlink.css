@@ -1,3 +1,4 @@
+/* file to be deleted, replaced by contextmenu */
 #editlink {
 	position: fixed;
 	left: 0;
@@ -39,6 +40,7 @@
 	opacity: 1;
 }
 
+#editlink select,
 #editlink input {
 	color: var(--color-text);
 	width: 100%;
@@ -48,6 +50,10 @@
 	border-radius: 8px;
 	box-sizing: border-box;
 	background-color: transparent;
+}
+
+#editlink input[type='file'] {
+	line-height: 30px;
 }
 
 #editlink input::placeholder {

@@ -1,6 +1,6 @@
 import { ensureDirSync, existsSync } from '@std/fs'
 import { buildSync } from 'esbuild'
-import { extname } from '@std/path'
+import { httpServer } from './serve.ts'
 
 type Platform = 'chrome' | 'firefox' | 'safari' | 'edge' | 'online'
 type Env = 'dev' | 'prod' | 'test'
@@ -18,7 +18,7 @@ const _isEnv = (s: string): s is Env => ENVS.includes(s)
 // Main
 
 if ((env === 'dev') && platform === 'online') {
-	liveServer()
+	httpServer()
 }
 
 if (env === 'dev' && isPlatform(platform)) {
@@ -100,12 +100,16 @@ function html(platform: Platform) {
 	const settingsdata = Deno.readTextFileSync('src/settings.html')
 	const helpModeData = Deno.readTextFileSync('src/help-mode.html')
 
+	const favicon = '<link rel="icon" href="/src/assets/favicon.ico" type="image/x-icon" id="favicon" />'
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
 	const storage = '<script src="src/scripts/webext-storage.js"></script>'
 
 	let html = indexdata
 
+	if (platform !== 'edge') {
+		html = html.replace('<!-- default icon -->', favicon)
+	}
 	if (platform === 'online') {
 		html = html.replace('<!-- icon -->', icon)
 	}
@@ -114,9 +118,6 @@ function html(platform: Platform) {
 	}
 	if (platform !== 'online') {
 		html = html.replace('<!-- webext-storage -->', storage)
-	}
-	if (platform === 'edge') {
-		html = html.replace('favicon.ico', 'monochrome.png')
 	}
 
 	html = html.replace('<!-- settings -->', settingsdata)
@@ -135,6 +136,7 @@ function styles(platform: Platform, env: Env) {
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
+				'.mp3': 'file',
 			},
 		})
 	} catch (err) {
@@ -197,21 +199,13 @@ function assets(platform: Platform) {
 		copyDir(`${source}/screenshots`, `${target}/screenshots`)
 	}
 
-	// Obligatory monochrome icons on microsoft edge
-
-	if (platform === 'edge') {
-		Deno.copyFileSync(
-			`${source}/favicons/favicon-128x128-monochrome.png`,
-			`${target}/favicons/favicon-128x128-monochrome.png`,
-		)
-	}
-
 	// All other assets
 
 	Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
 	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
 	copyDir(`${source}/interface`, `${target}/interface`)
 	copyDir(`${source}/labels`, `${target}/labels`)
+	copyDir(`${source}/sounds`, `${target}/sounds`)
 }
 
 function manifests(platform: Platform) {
@@ -273,48 +267,6 @@ async function watchTasks(path: string, callback: (filename: string) => void) {
 			console.timeEnd('Built in')
 		}, 20)
 	}
-}
-
-function liveServer() {
-	const contentTypeList: Record<string, string> = {
-		'.html': 'text/html',
-		'.css': 'text/css',
-		'.js': 'text/javascript',
-		'.ico': 'image/x-icon',
-		'.svg': 'image/svg+xml',
-		'.png': 'image/png',
-	}
-
-	Deno.serve(async (req) => {
-		const url = new URL(req.url)
-		const path = `./release/online${url.pathname === '/' ? '/index.html' : url.pathname}`
-
-		try {
-			// Check if file exists
-			const fileInfo = await Deno.stat(path)
-
-			if (!fileInfo.isFile) {
-				return new Response('Not Found', { status: 404 })
-			}
-
-			const data = await Deno.readFile(path)
-			const contentType = contentTypeList[extname(path)] || 'application/octet-stream'
-
-			return new Response(data, {
-				status: 200,
-				headers: {
-					'Content-Type': contentType,
-					'cache-control': 'no-cache',
-				},
-			})
-		} catch (err) {
-			if (err instanceof Deno.errors.NotFound) {
-				return new Response('Not Found', { status: 404 })
-			}
-
-			return new Response('Internal Server Error', { status: 500 })
-		}
-	})
 }
 
 function copyDir(source: string, destination: string) {

@@ -42,8 +42,10 @@
 @import './features/notes';
 @import './features/links';
 @import './features/quotes';
+@import './features/pomodoro';
 @import './features/grid';
 @import './features/editlink';
+@import './features/contextmenu';
 @import './features/bookmarks';
 @import './features/csseditor';
 @import './features/supporters';

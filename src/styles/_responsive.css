@@ -103,6 +103,10 @@
 		margin-top: 0;
 	}
 
+	.settings-title {
+		margin: 32px 16px 0px 16px;
+	}
+
 	@supports not (min-height: 100dvh) {
 		aside {
 			top: 100vh;
@@ -234,6 +238,10 @@
 		height: 25px;
 		width: 25px;
 		border-radius: 50px;
+	}
+
+	aside .settings-title {
+		margin: 32px 16px 0px 16px; 
 	}
 
 	aside .wrapper {

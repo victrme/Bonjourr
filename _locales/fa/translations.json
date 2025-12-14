@@ -2,7 +2,7 @@
   "lang": "fa",
   "New tab": "صفحه‌ی جدید",
   "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "از بُنژور لذت می‌برید؟ می‌توانید به ما نظر بدهید و یا کمک مالی کنید, این به ما کمک بزرگی می‌کند! 😇",
-  "Read the release notes": "یادداشت های انتشار را بخوانید",
+  "Read the blog post": "خواندن پست وبلاگ",
   "Review": "نظر دادن",
   "Donate": "کمک مالی",
   "Good morning": "صبح بخیر",
@@ -43,6 +43,30 @@
   "Pin group": "این گروه را پین کنید",
   "Unpin group": "پین گروه را بردارید",
   "Apply changes": "اعمال تغییرات",
+  "Edit quotes settings": "تنظیمات نقل قول‌ها را ویرایش کنید",
+  "Edit weather & greetings": "ویرایش آب و هوا و احوالپرسی",
+  "Edit background settings": "تنظیمات پس‌زمینه را ویرایش کنید",
+  "Edit time settings": "تنظیمات زمان را ویرایش کنید",
+  "Add new quick link": "افزودن پیوند سریع جدید",
+  "Unlock current background": "باز کردن پس‌زمینه فعلی",
+  "Lock current background": "قفل کردن پس‌زمینه فعلی",
+  "Download background": "دانلود پس‌زمینه",
+  "Edit pomodoro settings": "ویرایش تنظیمات پومودورو",
+  "Sessions today": "جلسات امروز",
+  "This week": "این هفته",
+  "This month": "این ماه",
+  "Pomodoro timer": "تایمر پومودورو",
+  "Pomodoro is a productivity tool to help you stay focused on your goals and work efficiently.": "پومودورو ابزاری برای بهره‌وری است که به شما کمک می‌کند روی اهداف خود متمرکز بمانید و کارآمد عمل کنید.",
+  "Play sound on alarm": "پخش صدا در زمان هشدار",
+  "Default time": "زمان پیش‌فرض",
+  "Break time": "زمان استراحت",
+  "Long break time": "زمان استراحت طولانی",
+  "Pomodoro": "پومودورو",
+  "Break": "استراحت",
+  "Long break": "استراحت طولانی",
+  "Focus": "تمرکز",
+  "mins": "دقیقه",
+  "Time's up!": "زمان تمام شد!",
   "Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "گروه های همگام شده به طور خودکار به روز می شوند تا با نشانک های مرورگر شما مطابقت داشته باشند. بیشتر بدانید",
   "our documentation": "مستندات ما",
   "Select group": "Select group",
@@ -50,7 +74,18 @@
   "Most visited": "Most visited",
   "Import selection": "Import selection",
   "(synced)": "(همگام‌سازی شده)",
-  "This <currentMonth>, Bonjourr is brought to you by our lovely supporters.": "این <currentMonth>، بونژور توسط حامیان دوست‌داشتنی ما ارائه می‌شود.",
+  "This January, Bonjourr is brought to you by our lovely supporters.": "در این ژانویه، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This February, Bonjourr is brought to you by our lovely supporters.": "در این فوریه، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This March, Bonjourr is brought to you by our lovely supporters.": "در این مارس، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This April, Bonjourr is brought to you by our lovely supporters.": "در این آوریل، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This May, Bonjourr is brought to you by our lovely supporters.": "در این می، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This June, Bonjourr is brought to you by our lovely supporters.": "در این ژوئن، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This July, Bonjourr is brought to you by our lovely supporters.": "در این ژوئیه، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This August, Bonjourr is brought to you by our lovely supporters.": "در این اوت، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This September, Bonjourr is brought to you by our lovely supporters.": "در این سپتامبر، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This October, Bonjourr is brought to you by our lovely supporters.": "در این اکتبر، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This November, Bonjourr is brought to you by our lovely supporters.": "در این نوامبر، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
+  "This December, Bonjourr is brought to you by our lovely supporters.": "در این دسامبر، بونژور توسط حامیان دوست‌داشتنی ما به شما ارائه می‌شود.",
   "Find out who they are": "بفهمید آنها چه کسانی هستند",
   "Supporters like you make Bonjourr possible": "حامیان مانند شما باعث امکان پذیر شدن بونژور می‌شوند",
   "Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.": "در اینجا افراد شگفت‌انگیزی هستند که ماه گذشته از ما حمایت کردند. با تشکر از آنها، می‌توانیم بونژور را رایگان، متن‌باز و در حال پیشرفت مداوم نگه داریم.",
@@ -98,14 +133,18 @@
   "Move": "جابجایی",
   "View": "مشاهده",
   "Add new": "افزودن جدید",
-  "My files": "فایل‌های من",
+  "My files (images or videos)": "فایل‌های من (عکس یا ویدیو)",
+  "Playback speed": "سرعت پخش",
+  "Loop fade": "محو شدن حلقه",
+  "Mute videos": "بی‌صدا کردن ویدیوها",
+  "Options": "گزینه‌ها",
   "Use the button above to import files from your device and set them as backgrounds in Bonjourr.": "از دکمه بالا برای وارد کردن فایل‌ها از دستگاه خود و تنظیم آنها به عنوان پس‌زمینه در Bonjourr استفاده کنید.",
   "Frequency": "زمان‌بندی",
   "Daylight": "روز روشن",
   "Every tab": "هر صفحه",
   "Every hour": "هر ساعت",
   "Every day": "هر روز",
-  "Pause": "توقف",
+  "Locked": "قفل شده",
   "Texture overlay": "روکش بافت",
   "Texture density": "چگالی بافت",
   "Texture color": "رنگ بافت",
@@ -178,7 +217,8 @@
   "Clock border": "Clock border",
   "Clock border shade": "سایه حاشیه ساعت",
   "12-Hour Time": "زمان ۱۲ ساعتی",
-  "Show am/pm": "نمایش صبح/ظهر",
+  "Show AM/PM": "نمایش صبح/ظهر",
+  "AM/PM position": "موقعیت AM/PM",
   "Show seconds": "نمایش ثانیه‌شمار",
   "Date format": "فرمت تاریخ",
   "Day date month": "روز تاریخ ماه",
@@ -198,6 +238,13 @@
   "Greetings": "خوش‌آمدگویی",
   "Greeting name": "نام خوش‌آمد",
   "Greeting size": "اندازه سلام",
+  "Greeting mode": "حالت خوش آمدگویی",
+  "In the morning": "صبح",
+  "In the afternoon": "بعد از ظهر",
+  "In the evening": "عصر",
+  "Hello, $name!": "سلام، $name!",
+  "Unmute video background": "پخش صدای پس‌زمینه ویدیو",
+  "Mute video background": "بی‌صدا کردن صدای پس‌زمینه ویدیو",
   "Name": "نام",
   "Weather": "آب و هوا",
   "Geolocation": "موقعیت مکانی",
@@ -250,6 +297,8 @@
   "yahoo": "yahoo",
   "bing": "bing",
   "URL request": "آدرس جستجو",
+  "URL seems wrong": "به نظر می‌رسد URL اشتباه است",
+  "No %s present in URL": "هیچ %s در URL وجود ندارد",
   "%s Not found": "%s پیدا نشد",
   "Search query: %s": "متن جستجو: %s",
   "Placeholder text": "متن جایگزین",

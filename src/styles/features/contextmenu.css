@@ -1,0 +1,242 @@
+dialog#contextmenu {
+	position: fixed;
+	left: 0;
+	top: 0;
+	opacity: 0;
+	width: 240px;
+	padding: 6px;
+	margin: 0;
+	z-index: 4;
+	transition: opacity 0.05s;
+}
+
+dialog#contextmenu:focus-visible {
+	outline: none;
+}
+
+dialog#contextmenu.shown {
+	opacity: 1;
+}
+
+dialog#contextmenu label {
+	width: 100%;
+	opacity: 0.7;
+	column-gap: 4px;
+	margin-top: 6px;
+	padding-inline: 12px 4px;
+	place-items: center;
+	grid-template-columns: 42px 1fr;
+	box-sizing: border-box;
+}
+
+dialog#contextmenu label span {
+	font-size: 12px;
+	justify-self: start;
+	max-width: 45px;
+	overflow: hidden;
+	display: inline-block;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+dialog#contextmenu label:focus-within {
+	opacity: 1;
+}
+
+dialog#contextmenu input,
+dialog#contextmenu select {
+	width: 100%;
+	height: 2.3em;
+	padding: 0 10px;
+	border: none;
+	border-radius: 8px;
+	box-sizing: border-box;
+	color: var(--color-text);
+}
+
+dialog#contextmenu input {
+	background-color: transparent;
+}
+
+dialog#contextmenu select {
+	background-color: transparent;
+}
+
+dialog#contextmenu input::placeholder {
+	color: var(--color-dialog-input-text);
+}
+
+dialog#contextmenu select:focus,
+dialog#contextmenu input:focus {
+	opacity: 1;
+	color: var(--color-text);
+	background-color: var(--color-dialog-input-bg);
+	outline: 3px solid rgba(var(--blue), 0.5);
+	outline-offset: -2px;
+	transition: background-color 0.1s;
+}
+
+dialog#contextmenu input[type='file'] {
+	color: transparent;
+}
+
+dialog#contextmenu input[type='file'],
+dialog#contextmenu input[type='file'] + span {
+	grid-area: 1 / 2;
+}
+
+dialog#contextmenu input[type='file'] + span {
+	display: inline-block;
+	font-size: 13px;
+	padding-inline: 10px;
+	width: calc(100% - 20px);
+	max-width: unset;
+	cursor: pointer;
+	text-align: left;
+}
+
+dialog#contextmenu button {
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	padding: 4px 12px;
+	font-weight: 400;
+	gap: 0.5em;
+}
+
+/* so that it doesn't break JS events when clicking on elements inside the buttons */
+dialog#contextmenu button * {
+	pointer-events: none;
+}
+
+dialog#contextmenu button > svg, dialog#contextmenu button .iconContainer {
+	height: 18px;
+	width: 18px;
+}
+
+dialog#contextmenu button .iconContainer svg {
+	width: 100%;
+}
+
+dialog#contextmenu button .iconContainer {
+	padding: 2px; /* other icons have natural padding in the svg file */ 
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Active buttons and inputs */
+
+dialog#contextmenu hr,
+dialog#contextmenu label,
+dialog#contextmenu button {
+	display: none;
+}
+
+dialog#contextmenu hr.on,
+dialog#contextmenu button.on {
+	display: flex;
+}
+
+dialog#contextmenu label.on {
+	display: grid;
+}
+
+/* background actions */
+
+#background-actions {
+	display: none;
+}
+
+#background-actions.on:not([data-type='color']) {
+	display: block;
+}
+
+dialog#contextmenu #background-actions hr,
+dialog#contextmenu #background-actions label,
+dialog#contextmenu #background-actions button {
+	display: flex;
+}
+
+#background-actions .buttons {
+	display: flex;
+	flex-direction: column;
+}
+
+dialog#contextmenu #background-actions button {
+	display: flex;
+	width: unset;
+}
+
+dialog#contextmenu #background-actions button:disabled {
+	display: none;
+}
+
+#download-background {
+	display: none;
+}
+
+#b_interface-background-download.idle #is-downloading,
+#b_interface-background-download.loading #idle-download {
+	display: none;
+}
+
+#b_interface-background-pause #interface-background-pause-icon,
+#b_interface-background-pause.paused #interface-background-play-icon,
+#b_interface-background-pause #interface-background-pause-string,
+#b_interface-background-pause.paused #interface-background-play-string {
+	display: flex;
+}
+
+#b_interface-background-pause #interface-background-play-icon,
+#b_interface-background-pause.paused #interface-background-pause-icon,
+#b_interface-background-pause #interface-background-play-string,
+#b_interface-background-pause.paused #interface-background-pause-string {
+	display: none;
+}
+
+
+#b_interface-background-mute #interface-background-mute-icon,
+#b_interface-background-mute.muted #interface-background-unmute-icon,
+#b_interface-background-mute #interface-background-mute-string,
+#b_interface-background-mute.muted #interface-background-unmute-string {
+	display: flex;
+}
+
+#b_interface-background-mute #interface-background-unmute-icon,
+#b_interface-background-mute.muted #interface-background-mute-icon,
+#b_interface-background-mute #interface-background-unmute-string,
+#b_interface-background-mute.muted #interface-background-mute-string {
+	display: none;
+}
+
+/* animation for the background downloading icon */
+.spin path:last-child {
+	transform-origin: 12px 12px;
+	animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+#pomodoro-info {
+	display: none;
+	flex-direction: column;
+	opacity: .8;
+	font-style: italic;
+	font-size: .8em;
+	text-align: left;
+}
+
+#pomodoro-info > div {
+	padding: 4px 12px;
+}
+
+dialog#contextmenu #pomodoro-info hr,
+#pomodoro-info.on {
+	display: flex;
+}

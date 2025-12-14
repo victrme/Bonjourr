@@ -14,12 +14,13 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 -   🕰 Analog clock with multiple clock faces
 -   🌤 Weather
 -   🔗 Quick Links
+-   ⏱️ Pomodoro
 -   👋 Greets you by your name
 -   🌘 Dark mode
 -   🥖 Emoji as favicon
 -   🧑‍💻 Custom CSS styling
 -   📝 Custom fonts
--   🔒 Privacy focused
+-   🔒 Privacy focused & no generative AI
 -   🌎 Multilanguage
 
 <br>
@@ -199,6 +200,12 @@ docker build -t bonjourr/bonjourr .
 
 # Run the container on local port 8000
 docker run --rm -p "8000:80/tcp" -it bonjourr/bonjourr
+
+# Go to http://0.0.0.0:8000/
+```
+```bash
+# Build using docker compose
+docker compose up -d
 
 # Go to http://0.0.0.0:8000/
 ```

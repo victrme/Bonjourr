@@ -1,10 +1,14 @@
-FROM denoland/deno:latest AS build
+FROM denoland/deno:alpine AS builder
 
 WORKDIR /app
-
 COPY . .
 RUN deno install
-RUN deno task docker
+RUN deno task build
 
-FROM nginx:stable-alpine
-COPY --from=build /app/release/online /usr/share/nginx/html
+FROM denoland/deno:alpine
+
+EXPOSE 8000
+WORKDIR /app
+COPY --from=builder /app .
+
+CMD ["deno", "task", "serve"]

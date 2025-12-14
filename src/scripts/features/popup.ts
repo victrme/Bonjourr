@@ -15,47 +15,48 @@ type PopupUpdate = {
 	announcements?: string
 }
 
-const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-21-the-background-update-R6R61FLG0Z'
-const ANNOUNCEMENT_VERSION = '21.1.0'
+const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-22-pomodoro-timer-new-look-right-click-F1F11P47J8'
+const ANNOUNCEMENT_VERSION = '22.0.0'
 
 const ANNOUNCEMENT_TRNS = {
-	en: '<b>Bonjourr just got a major update! ✨</b> Learn all about the new features: video backgrounds, texture overlays, background search and more.',
-	fr: "<b>Bonjourr vient d'avoir une mise à jour majeure ! ✨</b> Découvrez les nouvelles fonctionnalités: arrière-plans vidéo, superpositions de textures, recherche d'arrière-plan et bien plus encore.",
-	de: '<b>Bonjourr hat gerade ein großes Update erhalten! ✨</b> Erfahren Sie alles über die neuen Funktionen: Videohintergründe, Textur-Overlays, Hintergrundsuche und vieles mehr.',
-	it: '<b>Bonjourr ha appena ricevuto un aggiornamento importante! ✨</b> Scopri tutte le nuove funzionalità: sfondi video, sovrapposizioni di texture, ricerca di sfondi e altro ancora.',
-	es: '<b>¡Bonjourr acaba de recibir una actualización importante! ✨</b> Mira todas las nuevas características: fondos de video, superposición de texturas, búsqueda de fondos y mucho más.',
+	en: '<b>Bonjourr just got a major update! ✨</b> Discover what’s new: Pomodoro timer, universal right-click menu, improved links, refreshed design, and more.',
+	fr: "<b>Bonjourr vient d'avoir une mise à jour majeure ! ✨</b> Découvrez les nouveautés : minuteur Pomodoro, menu clic droit universel, liens améliorés, nouveau design, et bien plus encore.",
+	de: '<b>Bonjourr hat ein großes Update erhalten! ✨</b> Entdecke die Neuerungen: Pomodoro-Timer, universelles Rechtsklick-Menü, verbesserte Links, neues Design und mehr.',
+	it: '<b>Bonjourr ha ricevuto un aggiornamento importante! ✨</b> Scopri le novità: timer Pomodoro, menu clic destro universale, link migliorati, design rinnovato e molto altro.',
+	es: '<b>¡Bonjourr acaba de recibir una gran actualización! ✨</b> Descubre las novedades: temporizador Pomodoro, menú de clic derecho universal, enlaces mejorados, diseño renovado y mucho más.',
 	'pt-BR':
-		'<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Saiba tudo sobre os novos recursos: planos de fundo em vídeo, sobreposições de textura, pesquisa de plano de fundo e muito mais.',
+		'<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Descubra as novidades: timer Pomodoro, menu de clique direito universal, links aprimorados, design renovado e muito mais.',
 	'pt-PT':
-		'<b>Bonjourr acaba de receber uma grande atualização! ✨</b> Descobre as novas funcionalidades: fundos de vídeo, sobreposições de texturas, pesquisa de fundos e muito mais.',
-	nl: '<b>Bonjourr heeft zojuist een grote update gekregen! ✨</b> Leer alles over de nieuwe functies: video-achtergronden, textuur-overlays, achtergrond zoeken en meer.',
-	da: '<b>Bonjourr har lige fået en større opdatering! ✨</b> Lær alt om de nye funktioner: videobaggrunde, teksturoverlays, baggrundssøgning og meget mere.',
-	sv: '<b>Bonjourr har precis fått en stor uppdatering! ✨</b> Läs allt om de nya funktionerna: videobakgrunder, texturöverlägg, bakgrundssökning och mycket mer.',
-	nb: '<b>Bonjourr har nettopp fått en stor oppdatering! ✨</b> Lær alt om de nye funksjonene: videobakgrunner, teksturoverlegg, bakgrunnssøk og mer.',
-	fi: '<b>Bonjourr sai juuri suuren päivityksen! ✨</b> Lue kaikki uusista ominaisuuksista: videotaustat, tekstuuripeittokuvat, taustahaku ja paljon muuta.',
-	pl: '<b>Bonjourr właśnie otrzymał dużą aktualizację! ✨</b> Dowiedz się wszystkiego o nowych funkcjach: teł wideo, nakładkach tekstur, wyszukiwaniu tła i wielu innych.',
-	cs: '<b>Bonjourr právě obdržel velkou aktualizaci! ✨</b> Zjistěte vše o nových funkcích: video pozadí, texturové překryvy, vyhledávání pozadí a další.',
-	hr: '<b>Bonjourr je upravo dobio veliko ažuriranje! ✨</b> Saznajte sve o novim značajkama: video pozadinama, prekrivanjima tekstura, pretraživanju pozadine i još mnogo toga.',
-	sk: '<b>Bonjourr práve dostal veľkú aktualizáciu! ✨</b> Zistite všetko o nových funkciách: video pozadia, prekrytia textúr, vyhľadávanie pozadia a oveľa viac.',
-	hu: '<b>A Bonjourr most kapott egy nagy frissítést! ✨</b> Tudjon meg mindent az új funkciókról: videó hátterek, textúra fedvények, háttérkeresés és még sok más.',
-	ro: '<b>Bonjourr tocmai a primit o actualizare majoră! ✨</b> Aflați totul despre noile funcții: fundaluri video, suprapuneri de texturi, căutare de fundal și multe altele.',
-	el: '<b>Το Bonjourr μόλις έλαβε μια μεγάλη ενημέρωση! ✨</b> Μάθετε τα πάντα για τις νέες λειτουργίες: φόντα βίντεο, επικαλύψεις υφών, αναζήτηση φόντου και πολλά άλλα.',
-	hy: '<b>Bonjourr-ը հենց նոր ստացավ մեծ թարմացում: ✨</b> Իմացեք ամեն ինչ նոր հնարավորությունների մասին՝ տեսանյութերի ֆոներ, տեքստուրային ծածկույթներ, ֆոնի որոնում և այլն։',
-	sr: '<b>Bonjourr је управо добио велико ажурирање! ✨</b> Сазнајте све о новим функцијама: видео позадинама, текстурним преклапањима, претрази позадине и још много тога.',
+		'<b>O Bonjourr recebeu uma grande atualização! ✨</b> Descubra as novidades: temporizador Pomodoro, menu de clique direito universal, ligações melhoradas, design renovado e muito mais.',
+	nl: '<b>Bonjourr heeft een grote update gekregen! ✨</b> Ontdek wat er nieuw is: Pomodoro-timer, universeel rechtermuisknopmenu, verbeterde links, vernieuwd design en meer.',
+	da: '<b>Bonjourr har fået en stor opdatering! ✨</b> Se nyhederne: Pomodoro-timer, universel højreklikmenu, forbedrede links, opdateret design og meget mere.',
+	sv: '<b>Bonjourr har fått en stor uppdatering! ✨</b> Upptäck nyheterna: Pomodoro-timer, universell högerklicksmeny, förbättrade länkar, uppdaterad design och mer.',
+	nb: '<b>Bonjourr har fått en stor oppdatering! ✨</b> Oppdag nyhetene: Pomodoro-timer, universell høyreklikkmeny, forbedrede lenker, oppdatert design og mer.',
+	fi: '<b>Bonjourr on saanut suuren päivityksen! ✨</b> Tutustu uutuuksiin: Pomodoro-ajastin, yleinen hiiren oikean painikkeen valikko, parannetut linkit, uudistettu ulkoasu ja paljon muuta.',
+	pl: '<b>Bonjourr otrzymał dużą aktualizację! ✨</b> Sprawdź nowości: timer Pomodoro, uniwersalne menu prawego przycisku myszy, ulepszone linki, odświeżony wygląd i więcej.',
+	cs: '<b>Bonjourr dostal velkou aktualizaci! ✨</b> Objevte novinky: Pomodoro časovač, univerzální nabídka pravého kliknutí, vylepšené odkazy, obnovený design a další.',
+	hr: '<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro mjerač vremena, univerzalni izbornik desnog klika, poboljšane poveznice, osvježen dizajn i još mnogo toga.',
+	sk: '<b>Bonjourr dostal veľkú aktualizáciu! ✨</b> Objavte novinky: Pomodoro časovač, univerzálne menu pravého kliknutia, vylepšené odkazy, obnovený dizajn a viac.',
+	hu: '<b>A Bonjourr jelentős frissítést kapott! ✨</b> Fedezd fel az újdonságokat: Pomodoro időzítő, univerzális jobbklikk menü, továbbfejlesztett hivatkozások, megújult dizájn és még sok más.',
+	ro: '<b>Bonjourr a primit o actualizare majoră! ✨</b> Descoperă noutățile: cronometru Pomodoro, meniu universal de clic dreapta, linkuri îmbunătățite, design reîmprospătat și multe altele.',
+	el: '<b>Το Bonjourr μόλις απέκτησε μια μεγάλη ενημέρωση! ✨</b> Ανακαλύψτε τι νέο υπάρχει: χρονοδιακόπτης Pomodoro, καθολικό μενού δεξιού κλικ, βελτιωμένοι σύνδεσμοι, ανανεωμένος σχεδιασμός και πολλά ακόμη.',
+	hy: '<b>Bonjourr-ը ստացել է մեծ թարմացում։ ✨</b> Բացահայտեք նորությունները․ Pomodoro ժամանակաչափ, ունիվերսալ աջ սեղմման ընտրացանկ, բարելավված հղումներ, թարմացված դիզայն և ավելին։',
+	sr: '<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro tajmer, univerzalni meni desnog klika, unapređene veze, osvežen dizajn i još mnogo toga.',
 	'sr-YU':
-		'<b>Bonjourr je upravo dobio veliko ažuriranje! ✨</b> Saznajte sve o novim funkcijama: video pozadinama, teksturnim preklapanjima, pretrazi pozadine i još mnogo toga.',
-	uk: '<b>Bonjourr щойно отримав велике оновлення! ✨</b> Дізнайтеся все про нові функції: відеофони, накладання текстур, пошук фону та багато іншого.',
-	ru: '<b>Bonjourr только что получил крупное обновление! ✨</b> Узнайте все о новых функциях: видеофоны, наложения текстур, поиск фона и многое другое.',
-	tr: '<b>Bonjourr büyük bir güncelleme aldı! ✨</b> Yeni özellikler hakkında her şeyi öğrenin: video arka planları, doku kaplamaları, arka plan araması ve daha fazlasını.',
-	ar: '<b>تلقى Bonjourr للتو تحديثًا كبيرًا! ✨</b> تعرف على جميع الميزات الجديدة: خلفيات الفيديو، وتراكبات النسيج، والبحث عن الخلفيات والمزيد.',
-	fa: '<b>Bonjourr به تازگی یک بروزرسانی بزرگ دریافت کرده است! ✨</b> همه چیز را در مورد ویژگی‌های جدید بیاموزید: پس‌زمینه‌های ویدیویی، پوشش‌های بافت، جستجوی پس‌زمینه و موارد دیگر.',
-	'zh-CN': '<b>Bonjourr 刚刚获得了重大更新！✨</b> 了解所有新功能：视频背景、纹理叠加、背景搜索等等。',
-	'zh-HK': '<b>Bonjourr 剛剛獲得了重大更新！✨</b> 了解所有新功能：影片背景、紋理疊加、背景搜尋等等。',
-	'zh-TW': '<b>Bonjourr 剛剛獲得了重大更新！✨</b> 瞭解所有新功能：影片背景、紋理疊加、背景搜尋等等。',
-	ja: '<b>Bonjourr が大幅なアップデートを行いました！✨</b> 新機能についてすべて学びましょう：動画背景、テクスチャオーバーレイ、背景検索など。',
-	id: '<b>Bonjourr baru saja mendapatkan pembaruan besar! ✨</b> Pelajari semua tentang fitur baru: latar belakang video, overlay tekstur, pencarian latar belakang, dan lainnya.',
-	ca: '<b>Bonjourr acaba de rebre una actualització important! ✨</b> Descobreix totes les noves funcionalitats: fons de vídeo, superposicions de textures, cerca de fons i molt més.',
-	vi: '<b>Bonjourr vừa nhận được một bản cập nhật lớn! ✨</b> Tìm hiểu tất cả về các tính năng mới: hình nền video, lớp phủ họa tiết, tìm kiếm hình nền và nhiều hơn nữa.',
+		'<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro tajmer, univerzalni meni desnog klika, unapređene veze, osvežen dizajn i još mnogo toga.',
+	uk: '<b>Bonjourr отримав велике оновлення! ✨</b> Дізнайтеся, що нового: таймер Pomodoro, універсальне меню правої кнопки миші, покращені посилання, оновлений дизайн та інше.',
+	ru: '<b>Bonjourr получил крупное обновление! ✨</b> Узнайте, что нового: таймер Pomodoro, универсальное контекстное меню, улучшенные ссылки, обновлённый дизайн и многое другое.',
+	tr: '<b>Bonjourr büyük bir güncelleme aldı! ✨</b> Yenilikleri keşfedin: Pomodoro zamanlayıcı, evrensel sağ tık menüsü, geliştirilmiş bağlantılar, yenilenmiş tasarım ve daha fazlası.',
+	ar: '<b>حصل Bonjourr على تحديث كبير! ✨</b> اكتشف الميزات الجديدة: مؤقّت بومودورو، قائمة نقر بزر الفأرة الأيمن شاملة، روابط محسّنة، تصميم مُحدّث والمزيد.',
+	fa: '<b>Bonjourr یک به‌روزرسانی بزرگ دریافت کرد! ✨</b> ویژگی‌های جدید را کشف کنید: تایمر پومودورو، منوی کلیک راست سراسری، لینک‌های بهبودیافته، طراحی تازه و موارد بیشتر.',
+	'zh-CN':
+		'<b>Bonjourr 刚刚迎来一次重大更新！✨</b> 探索新功能：番茄钟、通用右键菜单、改进的链接、焕然一新的设计等。',
+	'zh-HK': '<b>Bonjourr 剛剛推出重大更新！✨</b> 探索新功能：番茄鐘、通用右鍵選單、改進的連結、煥然一新的設計等。',
+	'zh-TW': '<b>Bonjourr 剛推出重大更新！✨</b> 探索新功能：番茄鐘、通用右鍵選單、改進的連結、全新設計等。',
+	ja: '<b>Bonjourr に大規模アップデートが登場！✨</b> 新機能をご紹介：ポモドーロタイマー、ユニバーサル右クリックメニュー、リンクの改善、刷新されたデザインなど。',
+	id: '<b>Bonjourr baru saja mendapatkan pembaruan besar! ✨</b> Temukan fitur baru: timer Pomodoro, menu klik kanan universal, tautan yang ditingkatkan, desain baru, dan banyak lagi.',
+	ca: '<b>Bonjourr ha rebut una actualització important! ✨</b> Descobreix les novetats: temporitzador Pomodoro, menú de clic dret universal, enllaços millorats, disseny renovat i molt més.',
+	vi: '<b>Bonjourr vừa nhận được bản cập nhật lớn! ✨</b> Khám phá các tính năng mới: bộ hẹn giờ Pomodoro, menu chuột phải toàn cục, liên kết được cải thiện, giao diện làm mới và nhiều hơn nữa.',
 }
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
@@ -71,6 +72,10 @@ const REVIEW_URLS = {
 }
 
 export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
+	// force popup for debugging
+	// displayPopup('announce', true)
+	// displayPopup('review', true)
+
 	if (isAnnouncement(event?.announcements)) {
 		storage.sync.set({ announcements: event?.announcements })
 		return
@@ -82,7 +87,7 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (init.old && (init.review === -1 || init.review > 30)) {
+	if (init.old && init.review === -1) {
 		const major = (s: string) => Number.parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
 		const isNewVersion = init.new !== init.old && init.new === ANNOUNCEMENT_VERSION
@@ -104,11 +109,14 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 		return
 	}
 
-	if (init.review > 30) {
+	const reviewCounter = parseInt(localStorage.reviewCounter ?? '0')
+
+	if (reviewCounter > 30) {
 		displayPopup('review')
-	} else {
-		storage.sync.set({ review: init.review + 1 })
+		return
 	}
+
+	localStorage.reviewCounter = reviewCounter + 1
 }
 
 function displayPopup(type: 'review' | 'announce', showIcon = false) {
@@ -159,6 +167,7 @@ function createPopupButton(href: string, text: string): HTMLAnchorElement {
 
 function removePopupTrigger() {
 	storage.sync.set({ review: -1 })
+	localStorage.removeItem('reviewCounter')
 	localStorage.removeItem('hasUpdated')
 }
 
