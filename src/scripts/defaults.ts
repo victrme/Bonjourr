@@ -96,12 +96,6 @@ export const SYNC_DEFAULT: Sync = {
 	greeting: '',
 	greetingsize: '3',
 	greetingsmode: 'auto',
-	greetingscustom: {
-		morning: '',
-		afternoon: '',
-		evening: '',
-		night: '',
-	},
 	pagegap: 1,
 	pagewidth: 1600,
 	time: true,
@@ -168,6 +162,12 @@ export const SYNC_DEFAULT: Sync = {
 		forecast: 'auto',
 		temperature: 'actual',
 		geolocation: 'approximate',
+	},
+	greetingscustom: {
+		morning: '',
+		afternoon: '',
+		evening: '',
+		night: '',
 	},
 	notes: {
 		on: false,
