@@ -13,7 +13,7 @@
 	-	Automatic
 	-	URL
 	-	Import your own
-- 	Choose how round you want your quick link icons
+- 	Choose how round you want your quick link icons to be
 - 	Backgrounds:
 	-	Local files: you can now import videos!
 	-	URLs option: import background images from a distant server
@@ -21,6 +21,7 @@
 -	Refreshed look for the settings!
 - 	Custom greetings! Define how Bonjourr greets you from the morning to the night
 - 	Choose the AM/PM position when 12-Hour Time is enabled (thank you @ShrekCoding21!!)
+- 	Toggle between link groups with your mouse wheel
 - 	Things have been moved around or renamed for clarity:
 	-	Background controls were moved to context menu
 	-	Greeting size was moved to advanced options

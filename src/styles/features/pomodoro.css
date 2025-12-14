@@ -166,7 +166,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	border-radius: 10em;
 	padding-block: 0.4em;
 	padding-inline: 1em;
-	font-weight: 600;
+	font-weight: 500;
 	font-size: 1.1em;
 	z-index: 1;
 }
@@ -224,7 +224,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	display: flex;
 	align-items: center;
 	gap: 8px;
-	font-weight: 500;
+	font-weight: 400;
 	color: white;
 	padding: 6px 12px;
 	border-radius: 9999px;
