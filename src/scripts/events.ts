@@ -27,7 +27,7 @@ function keyboardUserActions(event: KeyboardEvent) {
 			document.dispatchEvent(new Event('close-edit'))
 		} //
 		else if (open.settings && keyup) {
-			document.dispatchEvent(new CustomEvent('toggle-settings'))
+			document.dispatchEvent(new Event('toggle-settings'))
 		} //
 		else if (open.selectall) {
 			document.dispatchEvent(new Event('remove-select-all'))
@@ -39,7 +39,7 @@ function keyboardUserActions(event: KeyboardEvent) {
 			// condition to avoid conflicts with esc key on supporters modal
 			// likely to be improved
 			if (document.documentElement.dataset.supportersModal === undefined) {
-				document.dispatchEvent(new CustomEvent('toggle-settings'))
+				document.dispatchEvent(new Event('toggle-settings'))
 			}
 		}
 
@@ -70,36 +70,29 @@ function clickUserActions(event: MouseEvent) {
 		folder: path.some((el) => el.className.includes('in-folder')),
 		button: path.some((el) => el.className.includes('param-btn')),
 		localfiles: path.some((el) => el.id === 'local_options'),
+		localthumbnail: path.some((el) => el.className.includes('thumbnail')),
 		interface: pathIds.includes('interface'),
-		contextmenu: pathIds.includes('contextmenu'),
+		editlink: pathIds.includes('editlink'),
 		settings: path.some((el) => el.id === 'settings'),
 		showsettings: path.some((el) => el.id === 'show-settings'),
-		interactable: path.some((el) =>
-			el instanceof HTMLElement && (
-				el.matches(
-					'a[href], button, input, select, textarea, label, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]',
-				)
-			)
-		),
 	}
 
 	if (document.body.classList.contains('tabbing')) {
 		document.body?.classList.toggle('tabbing', false)
 	}
 
-	if (document.querySelectorAll('.thumbnail.selected') && !on.localfiles && !on.button) {
+	if (document.querySelectorAll('.thumbnail.selected') && !on.localthumbnail && !on.button) {
 		for (const node of document.querySelectorAll('.thumbnail.selected')) {
 			node.classList.remove('selected')
 		}
 	}
 
 	if (on.showsettings) {
-		document.dispatchEvent(new CustomEvent('toggle-settings'))
+		document.dispatchEvent(new Event('toggle-settings'))
 	}
 
-	if (open.contextmenu && !on.contextmenu) {
-		// if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
-		if (on.addgroup) {
+	if (open.contextmenu && !on.editlink) {
+		if (on.addgroup && document.querySelector('.link-title.add-group.selected')) {
 			return
 		}
 
@@ -111,8 +104,8 @@ function clickUserActions(event: MouseEvent) {
 		return
 	}
 
-	if (open.settings && !on.interactable) {
-		document.dispatchEvent(new CustomEvent('toggle-settings'))
+	if (open.settings) {
+		document.dispatchEvent(new Event('toggle-settings'))
 	} //
 	else if (open.selectall && !on.link) {
 		document.dispatchEvent(new Event('remove-select-all'))
@@ -129,7 +122,7 @@ function isOpen() {
 		settings: !!document.getElementById('settings')?.classList.contains('shown'),
 		folder: !!document.querySelector('.in-folder'),
 		selectall: document.getElementById('linkblocks')?.classList.contains('select-all'),
-		contextmenu: document.querySelector<HTMLDialogElement>('#contextmenu')?.open,
+		contextmenu: document.querySelector<HTMLDialogElement>('#editlink')?.open,
 	}
 }
 
@@ -145,7 +138,7 @@ function closeSettingsOnMoveOpen() {
 		const moverHasOpened = elementmover?.classList.contains('hidden') === false
 
 		if (moverHasOpened) {
-			document.dispatchEvent(new CustomEvent('toggle-settings'))
+			document.dispatchEvent(new Event('toggle-settings'))
 		}
 	}, 20)
 }

@@ -1,5 +1,5 @@
 import { getLinksInGroup } from './helpers.ts'
-import { openContextMenu } from '../contextmenu.ts'
+import { openEditDialog } from './edit.ts'
 import { initblocks } from './index.ts'
 import { startDrag } from './drag.ts'
 
@@ -57,7 +57,7 @@ function createGroups(linkgroups: LinkGroups) {
 
 		if (isAddMore) {
 			button.classList.add('add-group')
-			button.addEventListener('click', openContextMenu)
+			button.addEventListener('click', openEditDialog)
 		} else {
 			button.addEventListener('click', changeGroup)
 			button.addEventListener('pointerdown', startDrag)

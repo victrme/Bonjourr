@@ -70,7 +70,6 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 		quicklinks: 'i_quicklinks',
 		notes: 'i_notes',
 		quotes: 'i_quotes',
-		pomodoro: 'i_pomodoro',
 		searchbar: 'i_sb',
 	}
 
@@ -90,7 +89,6 @@ export function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
 		quicklinks: 'linkblocks',
 		notes: 'notes_container',
 		quotes: 'quotes_container',
-		pomodoro: 'pomodoro_container',
 		searchbar: 'sb_container',
 	}
 

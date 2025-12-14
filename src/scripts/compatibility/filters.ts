@@ -1,54 +1,14 @@
 import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers.ts'
 import { countryCodeToLanguageCode } from '../utils/translations.ts'
-import { SYNC_DEFAULT } from '../defaults.ts'
+import { API_DOMAIN, SYNC_DEFAULT } from '../defaults.ts'
 import { oldJSONToCSV } from '../features/quotes.ts'
 import { randomString } from '../shared/generic.ts'
 import { bundleLinks } from '../utils/bundlelinks.ts'
-import { isElem, isNumber } from '../features/links/helpers.ts'
 
-import type { Link, LinkElem, OldSync, Widgets } from '../../types/shared.ts'
+import type { LinkElem, OldSync, Widgets } from '../../types/shared.ts'
 import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
-
-/**
- * converts old link data to new typing (Bonjourr 22 with icon options)
- */
-export function newLinkIcons(data: Import): Import {
-	const links: Link[] = []
-
-	// gathers all links from previous data
-	Object.entries(data).map(([key, val]) => {
-		if (key.length === 11 && key.startsWith('links')) {
-			links.push(val as Link)
-		}
-	})
-
-	for (const link of links) {
-		if (!isElem(link)) {
-			continue
-		}
-
-		if (link.icon && typeof link.icon === 'string') {
-			const icon = link.icon as string
-			const faviconWasAutomatic = icon.startsWith('https://services.bonjourr.fr') || isNumber(icon)
-
-			// only used if automatic. When link icons had been refreshed, they stored the unix timestamp from when they were refreshed, so takes care of it
-			const autoValue = faviconWasAutomatic && isNumber(icon)
-				? `https://services.bonjourr.fr/favicon/blob/${link.url}?r=${icon}`
-				: undefined
-
-			link.icon = {
-				type: faviconWasAutomatic ? 'auto' : 'url',
-				value: faviconWasAutomatic ? autoValue : icon,
-			}
-		}
-
-		data[link._id] = link
-	}
-
-	return data
-}
 
 export function fixNullBrightness(data: Import): Import {
 	if (data.backgrounds?.bright === null) {
@@ -324,18 +284,9 @@ export function linksDataMigration(data: Import): Import {
 	const list = (bundleLinks(data as Sync) as LinkElem[]).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
 
 	for (const link of list) {
-		if (!isElem(link)) {
-			continue
-		}
-
-		if (typeof link.icon === 'string') {
-			const icon = link.icon as string
-			const isNotFound = icon.startsWith(notfoundicon)
-
-			if (isNotFound) {
-				link.icon = { type: 'auto' }
-				data[link._id] = link
-			}
+		if (link.icon?.startsWith(notfoundicon)) {
+			link.icon = `${API_DOMAIN}/favicon/blob/`
+			data[link._id] = link
 		}
 	}
 
@@ -462,7 +413,6 @@ export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 			main: imported.main ?? current.main,
 			notes: imported.notes?.on ?? current.notes?.on,
 			quotes: imported.quotes?.on ?? current.quotes?.on,
-			pomodoro: imported.pomodoro?.on ?? current.pomodoro?.on,
 			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
 			quicklinks: imported.quicklinks ?? current.quicklinks,
 		}

@@ -14,13 +14,12 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 -   🕰 Analog clock with multiple clock faces
 -   🌤 Weather
 -   🔗 Quick Links
--   ⏱️ Pomodoro
 -   👋 Greets you by your name
 -   🌘 Dark mode
 -   🥖 Emoji as favicon
 -   🧑‍💻 Custom CSS styling
 -   📝 Custom fonts
--   🔒 Privacy focused & no generative AI
+-   🔒 Privacy focused
 -   🌎 Multilanguage
 
 <br>
