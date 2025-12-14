@@ -24,8 +24,10 @@ const ANNOUNCEMENT_TRNS = {
 	de: '<b>Bonjourr hat ein großes Update erhalten! ✨</b> Entdecke die Neuerungen: Pomodoro-Timer, universelles Rechtsklick-Menü, verbesserte Links, neues Design und mehr.',
 	it: '<b>Bonjourr ha ricevuto un aggiornamento importante! ✨</b> Scopri le novità: timer Pomodoro, menu clic destro universale, link migliorati, design rinnovato e molto altro.',
 	es: '<b>¡Bonjourr acaba de recibir una gran actualización! ✨</b> Descubre las novedades: temporizador Pomodoro, menú de clic derecho universal, enlaces mejorados, diseño renovado y mucho más.',
-	'pt-BR': '<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Descubra as novidades: timer Pomodoro, menu de clique direito universal, links aprimorados, design renovado e muito mais.',
-	'pt-PT': '<b>O Bonjourr recebeu uma grande atualização! ✨</b> Descubra as novidades: temporizador Pomodoro, menu de clique direito universal, ligações melhoradas, design renovado e muito mais.',
+	'pt-BR':
+		'<b>Bonjourr acabou de receber uma grande atualização! ✨</b> Descubra as novidades: timer Pomodoro, menu de clique direito universal, links aprimorados, design renovado e muito mais.',
+	'pt-PT':
+		'<b>O Bonjourr recebeu uma grande atualização! ✨</b> Descubra as novidades: temporizador Pomodoro, menu de clique direito universal, ligações melhoradas, design renovado e muito mais.',
 	nl: '<b>Bonjourr heeft een grote update gekregen! ✨</b> Ontdek wat er nieuw is: Pomodoro-timer, universeel rechtermuisknopmenu, verbeterde links, vernieuwd design en meer.',
 	da: '<b>Bonjourr har fået en stor opdatering! ✨</b> Se nyhederne: Pomodoro-timer, universel højreklikmenu, forbedrede links, opdateret design og meget mere.',
 	sv: '<b>Bonjourr har fått en stor uppdatering! ✨</b> Upptäck nyheterna: Pomodoro-timer, universell högerklicksmeny, förbättrade länkar, uppdaterad design och mer.',
@@ -40,13 +42,15 @@ const ANNOUNCEMENT_TRNS = {
 	el: '<b>Το Bonjourr μόλις απέκτησε μια μεγάλη ενημέρωση! ✨</b> Ανακαλύψτε τι νέο υπάρχει: χρονοδιακόπτης Pomodoro, καθολικό μενού δεξιού κλικ, βελτιωμένοι σύνδεσμοι, ανανεωμένος σχεδιασμός και πολλά ακόμη.',
 	hy: '<b>Bonjourr-ը ստացել է մեծ թարմացում։ ✨</b> Բացահայտեք նորությունները․ Pomodoro ժամանակաչափ, ունիվերսալ աջ սեղմման ընտրացանկ, բարելավված հղումներ, թարմացված դիզայն և ավելին։',
 	sr: '<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro tajmer, univerzalni meni desnog klika, unapređene veze, osvežen dizajn i još mnogo toga.',
-	'sr-YU': '<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro tajmer, univerzalni meni desnog klika, unapređene veze, osvežen dizajn i još mnogo toga.',
+	'sr-YU':
+		'<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro tajmer, univerzalni meni desnog klika, unapređene veze, osvežen dizajn i još mnogo toga.',
 	uk: '<b>Bonjourr отримав велике оновлення! ✨</b> Дізнайтеся, що нового: таймер Pomodoro, універсальне меню правої кнопки миші, покращені посилання, оновлений дизайн та інше.',
 	ru: '<b>Bonjourr получил крупное обновление! ✨</b> Узнайте, что нового: таймер Pomodoro, универсальное контекстное меню, улучшенные ссылки, обновлённый дизайн и многое другое.',
 	tr: '<b>Bonjourr büyük bir güncelleme aldı! ✨</b> Yenilikleri keşfedin: Pomodoro zamanlayıcı, evrensel sağ tık menüsü, geliştirilmiş bağlantılar, yenilenmiş tasarım ve daha fazlası.',
 	ar: '<b>حصل Bonjourr على تحديث كبير! ✨</b> اكتشف الميزات الجديدة: مؤقّت بومودورو، قائمة نقر بزر الفأرة الأيمن شاملة، روابط محسّنة، تصميم مُحدّث والمزيد.',
 	fa: '<b>Bonjourr یک به‌روزرسانی بزرگ دریافت کرد! ✨</b> ویژگی‌های جدید را کشف کنید: تایمر پومودورو، منوی کلیک راست سراسری، لینک‌های بهبودیافته، طراحی تازه و موارد بیشتر.',
-	'zh-CN': '<b>Bonjourr 刚刚迎来一次重大更新！✨</b> 探索新功能：番茄钟、通用右键菜单、改进的链接、焕然一新的设计等。',
+	'zh-CN':
+		'<b>Bonjourr 刚刚迎来一次重大更新！✨</b> 探索新功能：番茄钟、通用右键菜单、改进的链接、焕然一新的设计等。',
 	'zh-HK': '<b>Bonjourr 剛剛推出重大更新！✨</b> 探索新功能：番茄鐘、通用右鍵選單、改進的連結、煥然一新的設計等。',
 	'zh-TW': '<b>Bonjourr 剛推出重大更新！✨</b> 探索新功能：番茄鐘、通用右鍵選單、改進的連結、全新設計等。',
 	ja: '<b>Bonjourr に大規模アップデートが登場！✨</b> 新機能をご紹介：ポモドーロタイマー、ユニバーサル右クリックメニュー、リンクの改善、刷新されたデザインなど。',
@@ -54,7 +58,6 @@ const ANNOUNCEMENT_TRNS = {
 	ca: '<b>Bonjourr ha rebut una actualització important! ✨</b> Descobreix les novetats: temporitzador Pomodoro, menú de clic dret universal, enllaços millorats, disseny renovat i molt més.',
 	vi: '<b>Bonjourr vừa nhận được bản cập nhật lớn! ✨</b> Khám phá các tính năng mới: bộ hẹn giờ Pomodoro, menu chuột phải toàn cục, liên kết được cải thiện, giao diện làm mới và nhiều hơn nữa.',
 }
-
 
 const REVIEW_TEXT = 'Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇'
 const REVIEW_URLS = {
