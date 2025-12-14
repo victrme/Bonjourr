@@ -72,7 +72,7 @@ const REVIEW_URLS = {
 
 export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 	// force popup for debugging
-	// displayPopup('announce', true)
+	displayPopup('announce', true)
 	// displayPopup('review', true)
 
 	if (isAnnouncement(event?.announcements)) {
