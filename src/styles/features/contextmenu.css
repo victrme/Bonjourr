@@ -62,6 +62,10 @@ dialog#contextmenu select {
 	background-color: transparent;
 }
 
+dialog#contextmenu select option {
+	color: black;
+}
+
 dialog#contextmenu input::placeholder {
 	color: var(--color-dialog-input-text);
 }
