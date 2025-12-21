@@ -140,7 +140,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
 				small,
 			}
 
-			saveFileToCache(id, filesData[id])
+			await saveFileToCache(id, filesData[id])
 			addThumbnailImage(id, local, filesData[id])
 
 			storage.local.set({ backgroundFiles: local.backgroundFiles })
@@ -782,19 +782,21 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 
 async function saveFileToCache(id: string, filedata: LocalFileData) {
 	const cache = await getCache('local-files')
+	const { full, small } = filedata
 
-	for (const [size, blob] of Object.entries(filedata)) {
-		const request = new Request(`http://127.0.0.1:8888/${id}/${size}`)
+	// Dumb down code from loop to force small/full
 
-		const response = new Response(blob, {
-			headers: {
-				'content-type': blob.type,
-				'Cache-Control': 'max-age=604800',
-			},
-		})
+	const requestFull = new Request(`http://127.0.0.1:8888/${id}/full`)
+	const requestSmall = new Request(`http://127.0.0.1:8888/${id}/small`)
+	const headersFull = { 'content-type': full.type, 'Cache-Control': 'max-age=604800' }
+	const headersSmall = { 'content-type': small.type, 'Cache-Control': 'max-age=604800' }
+	const responseFull = new Response(full, { headers: headersFull })
+	const responseSmall = new Response(small, { headers: headersSmall })
 
-		cache.put(request, response)
-	}
+	await Promise.all([
+		cache.put(requestFull, responseFull),
+		cache.put(requestSmall, responseSmall),
+	])
 }
 
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
