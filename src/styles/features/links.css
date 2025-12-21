@@ -110,7 +110,7 @@
 	max-width: var(--links-width);
 	background-color: transparent;
 	border: 1px solid transparent;
-	border-radius: 1em;
+	border-radius: var(--border-radius);
 	z-index: 2;
 	transition: opacity 0.05s var(--out-cubic);
 }
@@ -346,7 +346,7 @@
 	--row-gap: 1em;
 	--icon-size: 4.8em;
 	--block-size: 6.5em;
-	--folder-padding: 2em 5em;
+	--folder-padding: 2em;
 }
 
 .large .link div {
@@ -380,7 +380,7 @@
 	--row-gap: 1em;
 	--icon-size: 3.5em;
 	--block-size: 4.7em;
-	--folder-padding: 1.6em 4em;
+	--folder-padding: 1.6em;
 }
 
 .medium .link div {
@@ -400,7 +400,7 @@
 	--block-size: 2.5em;
 	--column-gap: 1.5em;
 	--row-gap: 1.5em;
-	--folder-padding: 1.2em 3em;
+	--folder-padding: 1.2em;
 }
 
 .small #link-list {
@@ -473,7 +473,7 @@
 	--column-gap: 1em;
 	--row-gap: 1em;
 	--icon-size: 2em;
-	--folder-padding: 1.2em 3em;
+	--folder-padding: 1.2em;
 	justify-content: flex-start;
 }
 
@@ -542,7 +542,7 @@
 	--min-height: 2em;
 	--column-gap: 1.8em;
 	--row-gap: 1em;
-	--folder-padding: 1em 2em;
+	--folder-padding: 1em;
 	justify-content: flex-start;
 }
 
