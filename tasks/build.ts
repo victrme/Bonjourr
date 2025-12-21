@@ -32,7 +32,9 @@ if (env === 'prod' && isPlatform(platform)) {
 
 if (env === 'prod' && platform === undefined) {
 	if (existsSync('./release')) {
-		Deno.removeSync('./release/', { recursive: true })
+		for (const entry of Deno.readDirSync('./release/')) {
+			Deno.removeSync(`./release/${entry.name}`, { recursive: true })
+		}
 	}
 
 	for (const platform of PLATFORMS as Platform[]) {
@@ -43,7 +45,8 @@ if (env === 'prod' && platform === undefined) {
 // Build or Watch
 
 function builder(platform: Platform, env: Env) {
-	console.time('Built in')
+	console.time(`${platform} built in`)
+
 	addDirectories(platform)
 	html(platform)
 	assets(platform)
@@ -51,7 +54,8 @@ function builder(platform: Platform, env: Env) {
 	manifests(platform)
 	styles(platform, env)
 	scripts(platform, env)
-	console.timeEnd('Built in')
+
+	console.timeEnd(`${platform} built in`)
 }
 
 function watcher(platform: Platform) {
@@ -131,8 +135,8 @@ function styles(platform: Platform, env: Env) {
 		buildSync({
 			entryPoints: ['src/styles/style.css'],
 			outfile: `release/${platform}/src/styles/style.css`,
+			format: 'iife',
 			bundle: true,
-			minify: env === 'prod',
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
@@ -153,11 +157,9 @@ function scripts(platform: Platform, env: Env) {
 		buildSync({
 			entryPoints: ['src/scripts/index.ts'],
 			outfile: `release/${platform}/src/scripts/main.js`,
-			format: 'iife',
 			bundle: true,
+			target: 'es2023',
 			sourcemap: env === 'dev',
-			minifySyntax: env === 'prod',
-			minifyWhitespace: env === 'prod',
 			define: {
 				ENV: `"${env.toUpperCase()}"`,
 			},
