@@ -127,7 +127,7 @@ export async function initUrlsEditor(backgrounds: Backgrounds, local: Local) {
 	backgroundUrlsEditor.textarea.maxLength = 8080
 	backgroundUrlsEditor.textarea.placeholder = 'https://picsum.photos/200\n'
 
-	backgroundUrlsEditor.addListener('update', (value) => {
+	backgroundUrlsEditor.on('update', (value) => {
 		toggleUrlsButton(globalUrlValue, stringMaxSize(value, 8080))
 	})
 
