@@ -49,7 +49,7 @@ const setModeButton = (value = '') => {
 	return (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
 }
 
-const getTimeForMode = (mode: PomodoroMode = currentPomodoroData.mode!): number => {
+const getTimeForMode = (mode: PomodoroMode): number => {
 	return currentPomodoroData.timeFor[mode]
 }
 
@@ -102,14 +102,16 @@ function handleUserInput() {
 	})
 
 	pomodoroStart?.addEventListener('click', () => {
-		storage.sync.get().then((sync) => {
-			startTimer(sync.pomodoro, true)
-		})
+		if (currentPomodoroData.mode) {
+			storage.sync.get().then((sync) => {
+				startTimer(sync.pomodoro, true)
+			})
 
-		broadcast.postMessage({
-			type: 'start-pomodoro',
-			time: getTimeForMode(currentPomodoroData.mode),
-		})
+			broadcast.postMessage({
+				type: 'start-pomodoro',
+				time: getTimeForMode(currentPomodoroData.mode),
+			})
+		}
 	})
 
 	pomodoroPause?.addEventListener('click', () => {
@@ -261,7 +263,8 @@ function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number) {
 	stopTimer()
 	resetTimeouts()
 
-	const defaultTime = time ?? getTimeForMode(pomodoro.mode)
+	const mode = pomodoro.mode ?? 'pomodoro'
+	const defaultTime = time ?? getTimeForMode(mode)
 	const wasPaused = pomodoro.pause !== 0
 	const now = Date.now()
 
