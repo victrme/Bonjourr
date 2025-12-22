@@ -157,6 +157,7 @@ function scripts(platform: Platform, env: Env) {
 			outfile: `release/${platform}/src/scripts/main.js`,
 			bundle: true,
 			target: 'es2023',
+			minify: platform === 'online',
 			sourcemap: env === 'dev',
 			define: {
 				ENV: `"${env.toUpperCase()}"`,
@@ -170,11 +171,20 @@ function scripts(platform: Platform, env: Env) {
 		}
 	}
 
-	Deno.copyFileSync('src/scripts/services/help-mode.js', `release/${platform}/src/scripts/help-mode.js`)
-	Deno.copyFileSync('src/scripts/services/service-worker.js', `release/${platform}/src/scripts/service-worker.js`)
+	Deno.copyFileSync(
+		'src/scripts/services/help-mode.js',
+		`release/${platform}/src/scripts/help-mode.js`,
+	)
+	Deno.copyFileSync(
+		'src/scripts/services/service-worker.js',
+		`release/${platform}/src/scripts/service-worker.js`,
+	)
 
 	if (platform !== 'online') {
-		Deno.copyFileSync('src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`)
+		Deno.copyFileSync(
+			'src/scripts/services/webext-storage.js',
+			`release/${platform}/src/scripts/webext-storage.js`,
+		)
 	}
 }
 
@@ -185,14 +195,23 @@ function assets(platform: Platform) {
 	// Huge icons on web application
 
 	if (platform === 'online') {
-		Deno.copyFileSync(`${source}/favicons/apple-touch-icon.png`, `${target}/favicons/apple-touch-icon.png`)
-		Deno.copyFileSync(`${source}/favicons/favicon-512x512.png`, `${target}/favicons/favicon-512x512.png`)
+		Deno.copyFileSync(
+			`${source}/favicons/apple-touch-icon.png`,
+			`${target}/favicons/apple-touch-icon.png`,
+		)
+		Deno.copyFileSync(
+			`${source}/favicons/favicon-512x512.png`,
+			`${target}/favicons/favicon-512x512.png`,
+		)
 		copyDir(`${source}/screenshots`, `${target}/screenshots`)
 	}
 
 	// All other assets
 
-	Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
+	Deno.copyFileSync(
+		`${source}/favicons/favicon-128x128.png`,
+		`${target}/favicons/favicon-128x128.png`,
+	)
 	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
 	copyDir(`${source}/interface`, `${target}/interface`)
 	copyDir(`${source}/labels`, `${target}/labels`)
@@ -201,7 +220,10 @@ function assets(platform: Platform) {
 
 function manifests(platform: Platform) {
 	if (platform === 'online') {
-		Deno.copyFileSync('src/manifests/manifest.webmanifest', 'release/online/manifest.webmanifest')
+		Deno.copyFileSync(
+			'src/manifests/manifest.webmanifest',
+			'release/online/manifest.webmanifest',
+		)
 	} else {
 		Deno.copyFileSync(`src/manifests/${platform}.json`, `release/${platform}/manifest.json`)
 	}

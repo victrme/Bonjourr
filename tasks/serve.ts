@@ -5,16 +5,16 @@ try {
 	// console.log(_e)
 }
 
-export function httpServer(port: number, baseUrl = "release/online") {
+export function httpServer(port: number, baseUrl = 'release/online') {
 	const contentTypeList: Record<string, string> = {
-		".webmanifest": "application/manifest+json",
-		".js": "text/javascript",
-		".svg": "image/svg+xml",
-		".ico": "image/x-icon",
-		".mp3": "audio/mpeg",
-		".html": "text/html",
-		".png": "image/png",
-		".css": "text/css",
+		'.webmanifest': 'application/manifest+json',
+		'.js': 'text/javascript',
+		'.svg': 'image/svg+xml',
+		'.ico': 'image/x-icon',
+		'.mp3': 'audio/mpeg',
+		'.html': 'text/html',
+		'.png': 'image/png',
+		'.css': 'text/css',
 	}
 
 	// Request handler
@@ -24,19 +24,19 @@ export function httpServer(port: number, baseUrl = "release/online") {
 		// Find resource
 
 		const url = new URL(request.url)
-		const filePath = baseUrl + (url.pathname === "/" ? "/index.html" : url.pathname)
+		const filePath = baseUrl + (url.pathname === '/' ? '/index.html' : url.pathname)
 		const fileExists = await Deno.stat(filePath)
 
 		if (!fileExists) {
-			return new Response("Not Found", {
+			return new Response('Not Found', {
 				status: 404,
 			})
 		}
 
 		// Find content type
 
-		const headers: HeadersInit = { "cache-control": "no-cache" }
-		const fileExt = filePath.split(".").at(-1) ?? ""
+		const headers: HeadersInit = { 'cache-control': 'no-cache' }
+		const fileExt = filePath.split('.').at(-1) ?? ''
 		const contentType = contentTypeList[fileExt]
 
 		if (contentType) {
@@ -61,9 +61,9 @@ export function httpServer(port: number, baseUrl = "release/online") {
 			return await serverHandler(request, info)
 		} catch (err) {
 			if (err instanceof Deno.errors.NotFound) {
-				return new Response("Not Found", { status: 404 })
+				return new Response('Not Found', { status: 404 })
 			} else {
-				return new Response("Internal Server Error", { status: 500 })
+				return new Response('Internal Server Error', { status: 500 })
 			}
 		}
 	})
