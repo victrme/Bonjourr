@@ -1,5 +1,0 @@
-services:
-    app:
-        build: docker/
-        ports:
-            - 8080:8080

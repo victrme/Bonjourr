@@ -17,8 +17,8 @@ const _isEnv = (s: string): s is Env => ENVS.includes(s)
 
 // Main
 
-if ((env === 'dev') && platform === 'online') {
-	httpServer()
+if (env === 'dev' && platform === 'online') {
+	httpServer(8000)
 }
 
 if (env === 'dev' && isPlatform(platform)) {
@@ -32,9 +32,7 @@ if (env === 'prod' && isPlatform(platform)) {
 
 if (env === 'prod' && platform === undefined) {
 	if (existsSync('./release')) {
-		for (const entry of Deno.readDirSync('./release/')) {
-			Deno.removeSync(`./release/${entry.name}`, { recursive: true })
-		}
+		Deno.removeSync(`./release/`, { recursive: true })
 	}
 
 	for (const platform of PLATFORMS as Platform[]) {
@@ -172,20 +170,11 @@ function scripts(platform: Platform, env: Env) {
 		}
 	}
 
-	Deno.copyFileSync(
-		'src/scripts/services/help-mode.js',
-		`release/${platform}/src/scripts/help-mode.js`,
-	)
-	Deno.copyFileSync(
-		'src/scripts/services/service-worker.js',
-		`release/${platform}/src/scripts/service-worker.js`,
-	)
+	Deno.copyFileSync('src/scripts/services/help-mode.js', `release/${platform}/src/scripts/help-mode.js`)
+	Deno.copyFileSync('src/scripts/services/service-worker.js', `release/${platform}/src/scripts/service-worker.js`)
 
 	if (platform !== 'online') {
-		Deno.copyFileSync(
-			'src/scripts/services/webext-storage.js',
-			`release/${platform}/src/scripts/webext-storage.js`,
-		)
+		Deno.copyFileSync('src/scripts/services/webext-storage.js', `release/${platform}/src/scripts/webext-storage.js`)
 	}
 }
 
@@ -212,15 +201,9 @@ function assets(platform: Platform) {
 
 function manifests(platform: Platform) {
 	if (platform === 'online') {
-		Deno.copyFileSync(
-			'src/manifests/manifest.webmanifest',
-			'release/online/manifest.webmanifest',
-		)
+		Deno.copyFileSync('src/manifests/manifest.webmanifest', 'release/online/manifest.webmanifest')
 	} else {
-		Deno.copyFileSync(
-			`src/manifests/${platform}.json`,
-			`release/${platform}/manifest.json`,
-		)
+		Deno.copyFileSync(`src/manifests/${platform}.json`, `release/${platform}/manifest.json`)
 	}
 }
 
@@ -234,16 +217,10 @@ function locales(platform: Platform) {
 
 		ensureDirSync(output)
 
-		Deno.copyFileSync(
-			`_locales/${lang}/translations.json`,
-			`${output}/translations.json`,
-		)
+		Deno.copyFileSync(`_locales/${lang}/translations.json`, `${output}/translations.json`)
 
 		if (platform !== 'online') {
-			Deno.copyFileSync(
-				`_locales/${lang}/messages.json`,
-				`${output}/messages.json`,
-			)
+			Deno.copyFileSync(`_locales/${lang}/messages.json`, `${output}/messages.json`)
 		}
 	}
 }
