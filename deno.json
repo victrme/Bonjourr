@@ -13,7 +13,7 @@
 		"types": "deno check",
 		"format": "deno fmt",
 		"app": "docker compose -f docker/compose.app.yaml up",
-		"archive": "docker compose -f docker/compose.archive.yaml up --build"
+		"archive": "docker compose -f docker/compose.archive.yaml up"
 	},
 	"imports": {
 		"@happy-dom/global-registrator": "npm:@happy-dom/global-registrator@^20.0.11",
