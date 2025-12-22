@@ -1,11 +1,11 @@
 try {
 	const port = parseInt(Deno.args[0])
 	httpServer(port)
-} catch (_) {
-	// ...
+} catch (_e) {
+	// console.log(_e)
 }
 
-export function httpServer(port = 8000, baseUrl = 'release/online') {
+export function httpServer(port: number, baseUrl = 'release/online') {
 	const contentTypeList: Record<string, string> = {
 		'.webmanifest': 'application/manifest+json',
 		'.js': 'text/javascript',

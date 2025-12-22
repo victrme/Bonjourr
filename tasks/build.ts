@@ -17,8 +17,8 @@ const _isEnv = (s: string): s is Env => ENVS.includes(s)
 
 // Main
 
-if ((env === 'dev') && platform === 'online') {
-	httpServer()
+if (env === 'dev' && platform === 'online') {
+	httpServer(8000)
 }
 
 if (env === 'dev' && isPlatform(platform)) {
@@ -32,7 +32,7 @@ if (env === 'prod' && isPlatform(platform)) {
 
 if (env === 'prod' && platform === undefined) {
 	if (existsSync('./release')) {
-		Deno.removeSync('./release/', { recursive: true })
+		Deno.removeSync(`./release/`, { recursive: true })
 	}
 
 	for (const platform of PLATFORMS as Platform[]) {
@@ -43,7 +43,8 @@ if (env === 'prod' && platform === undefined) {
 // Build or Watch
 
 function builder(platform: Platform, env: Env) {
-	console.time('Built in')
+	console.time(`${platform} built in`)
+
 	addDirectories(platform)
 	html(platform)
 	assets(platform)
@@ -51,7 +52,8 @@ function builder(platform: Platform, env: Env) {
 	manifests(platform)
 	styles(platform, env)
 	scripts(platform, env)
-	console.timeEnd('Built in')
+
+	console.timeEnd(`${platform} built in`)
 }
 
 function watcher(platform: Platform) {
@@ -131,8 +133,9 @@ function styles(platform: Platform, env: Env) {
 		buildSync({
 			entryPoints: ['src/styles/style.css'],
 			outfile: `release/${platform}/src/styles/style.css`,
+			format: 'iife',
 			bundle: true,
-			minify: env === 'prod',
+			minify: platform === 'online',
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
@@ -153,11 +156,10 @@ function scripts(platform: Platform, env: Env) {
 		buildSync({
 			entryPoints: ['src/scripts/index.ts'],
 			outfile: `release/${platform}/src/scripts/main.js`,
-			format: 'iife',
 			bundle: true,
+			target: 'es2023',
+			minify: platform === 'online',
 			sourcemap: env === 'dev',
-			minifySyntax: env === 'prod',
-			minifyWhitespace: env === 'prod',
 			define: {
 				ENV: `"${env.toUpperCase()}"`,
 			},
@@ -194,14 +196,23 @@ function assets(platform: Platform) {
 	// Huge icons on web application
 
 	if (platform === 'online') {
-		Deno.copyFileSync(`${source}/favicons/apple-touch-icon.png`, `${target}/favicons/apple-touch-icon.png`)
-		Deno.copyFileSync(`${source}/favicons/favicon-512x512.png`, `${target}/favicons/favicon-512x512.png`)
+		Deno.copyFileSync(
+			`${source}/favicons/apple-touch-icon.png`,
+			`${target}/favicons/apple-touch-icon.png`,
+		)
+		Deno.copyFileSync(
+			`${source}/favicons/favicon-512x512.png`,
+			`${target}/favicons/favicon-512x512.png`,
+		)
 		copyDir(`${source}/screenshots`, `${target}/screenshots`)
 	}
 
 	// All other assets
 
-	Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
+	Deno.copyFileSync(
+		`${source}/favicons/favicon-128x128.png`,
+		`${target}/favicons/favicon-128x128.png`,
+	)
 	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
 	copyDir(`${source}/interface`, `${target}/interface`)
 	copyDir(`${source}/labels`, `${target}/labels`)
@@ -215,10 +226,7 @@ function manifests(platform: Platform) {
 			'release/online/manifest.webmanifest',
 		)
 	} else {
-		Deno.copyFileSync(
-			`src/manifests/${platform}.json`,
-			`release/${platform}/manifest.json`,
-		)
+		Deno.copyFileSync(`src/manifests/${platform}.json`, `release/${platform}/manifest.json`)
 	}
 }
 
@@ -232,16 +240,10 @@ function locales(platform: Platform) {
 
 		ensureDirSync(output)
 
-		Deno.copyFileSync(
-			`_locales/${lang}/translations.json`,
-			`${output}/translations.json`,
-		)
+		Deno.copyFileSync(`_locales/${lang}/translations.json`, `${output}/translations.json`)
 
 		if (platform !== 'online') {
-			Deno.copyFileSync(
-				`_locales/${lang}/messages.json`,
-				`${output}/messages.json`,
-			)
+			Deno.copyFileSync(`_locales/${lang}/messages.json`, `${output}/messages.json`)
 		}
 	}
 }
@@ -262,9 +264,9 @@ async function watchTasks(path: string, callback: (filename: string) => void) {
 		}
 
 		debounce = setTimeout(() => {
-			console.time('Built in')
+			console.time(`${platform} built in`)
 			callback(event.paths[0].replaceAll('\\', '/')) // windows back slashes :(
-			console.timeEnd('Built in')
+			console.timeEnd(`${platform} built in`)
 		}, 20)
 	}
 }

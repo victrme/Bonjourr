@@ -1,5 +1,6 @@
 import { applyBackground, removeBackgrounds } from './index.ts'
 import { compressAsBlob, imageDimensions } from '../../shared/compress.ts'
+import { webkitRangeTrackColor } from '../../shared/dom.ts'
 import { needsChange } from '../../shared/time.ts'
 import { onclickdown } from 'clickdown/mod'
 import { VideoLooper } from './VideoLooper.ts'
@@ -11,7 +12,6 @@ import { storage } from '../../storage.ts'
 import type { Background, BackgroundImage, BackgroundVideo } from '../../../types/shared.ts'
 import type { BackgroundFile, Local } from '../../../types/local.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
-import { webkitRangeTrackColor } from '../../shared/dom.ts'
 
 type LocalFileData = {
 	full: Blob

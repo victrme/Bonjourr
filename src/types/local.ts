@@ -18,7 +18,6 @@ export interface Local {
 	gistToken?: string
 	distantUrl?: string
 	pastebinToken?: string
-	syncStorage?: Sync
 	syncType?: SyncType
 
 	// Backgrounds
@@ -27,6 +26,9 @@ export interface Local {
 	backgroundFiles: Record<string, BackgroundFile>
 	backgroundLastChange?: string
 	backgroundCompressFiles?: boolean
+
+	// Online
+	syncStorage?: Sync
 
 	// Links
 	[key: `x-icon-${string}`]: string
