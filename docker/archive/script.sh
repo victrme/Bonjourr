@@ -13,5 +13,6 @@ for folder in /release/*/; do
     archive_name="bonjourr-${name}-${version}.tar.gz"
     
     echo "Archiving $name..."
-    tar -czf "/release/$archive_name" -C "$folder" .
+
+    (cd "$folder" && tar -czf "/archives/$archive_name" *)
 done

@@ -4,4 +4,4 @@ services:
             dockerfile: ./docker/archive/Dockerfile
             context: ../
         volumes:
-            - ../release:/release
+            - ../archives:/archives
