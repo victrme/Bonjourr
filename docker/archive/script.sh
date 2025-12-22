@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version="0.0.0"
+version="22.0.0"
 
 deno task build
 
