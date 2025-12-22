@@ -135,6 +135,7 @@ function styles(platform: Platform, env: Env) {
 			outfile: `release/${platform}/src/styles/style.css`,
 			format: 'iife',
 			bundle: true,
+			minify: platform === 'online',
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
@@ -263,9 +264,9 @@ async function watchTasks(path: string, callback: (filename: string) => void) {
 		}
 
 		debounce = setTimeout(() => {
-			console.time('Built in')
+			console.time(`${platform} built in`)
 			callback(event.paths[0].replaceAll('\\', '/')) // windows back slashes :(
-			console.timeEnd('Built in')
+			console.timeEnd(`${platform} built in`)
 		}, 20)
 	}
 }
