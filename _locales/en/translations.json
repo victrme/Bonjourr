@@ -35,6 +35,10 @@
 	"Title": "Title",
 	"Link": "Link",
 	"Icon": "Icon",
+	"Website favicon": "Website favicon",
+	"Local file": "Local file",
+	"URL": "URL",
+
 	"Add new link": "Add new link",
 	"Add new group": "Add new group",
 	"Create new folder": "Create new folder",
