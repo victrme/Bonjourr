@@ -5,15 +5,15 @@ import { httpServer } from './serve.ts'
 type Platform = 'chrome' | 'firefox' | 'safari' | 'edge' | 'online'
 type Env = 'dev' | 'prod' | 'test'
 
-const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
-const ENVS = ['dev', 'prod', 'test']
+const PLATFORMS: Platform[] = ['chrome', 'firefox', 'safari', 'edge', 'online']
+const ENVS: Env[] = ['dev', 'prod', 'test']
 
 const args = Deno.args
 const platform = args[0]
 const env = args[1] ?? 'prod'
 
-const isPlatform = (s: string): s is Platform => PLATFORMS.includes(s)
-const _isEnv = (s: string): s is Env => ENVS.includes(s)
+const isPlatform = (s: string): s is Platform => PLATFORMS.includes(s as Platform)
+const _isEnv = (s: string): s is Env => ENVS.includes(s as Env)
 
 // Main
 
@@ -31,11 +31,17 @@ if (env === 'prod' && isPlatform(platform)) {
 }
 
 if (env === 'prod' && platform === undefined) {
-	if (existsSync('./release')) {
-		Deno.removeSync(`./release/`, { recursive: true })
-	}
+	for (const platform of PLATFORMS) {
+		const releasePath = `./release/${platform}`
 
-	for (const platform of PLATFORMS as Platform[]) {
+		if (existsSync(releasePath)) {
+			for (const entry of Deno.readDirSync(releasePath)) {
+				Deno.removeSync(`${releasePath}/${entry.name}`, {
+					recursive: true,
+				})
+			}
+		}
+
 		builder(platform, env)
 	}
 }
@@ -82,7 +88,7 @@ function watcher(platform: Platform) {
 
 function addDirectories(platform: Platform) {
 	try {
-		if (existsSync(`release/${platform}`)) {
+		if (existsSync(`release/${platform}/src`)) {
 			return
 		}
 	} catch (_) {

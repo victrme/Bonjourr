@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version="22.0.0"
+version="22.0.1"
 
 deno task build
 
@@ -8,11 +8,11 @@ deno task build
 
 for folder in /release/*/; do
     [ -d "$folder" ] || continue
-    
+
     name=$(basename "$folder")
-    archive_name="bonjourr-${name}-${version}.tar.gz"
-    
+    archive_name="bonjourr-${name}-${version}.zip"
+
     echo "Archiving $name..."
 
-    (cd "$folder" && tar -czf "/archives/$archive_name" *)
+    (cd "$folder" && zip -r "/release/$name/$archive_name" *)
 done

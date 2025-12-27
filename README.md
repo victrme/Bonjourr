@@ -146,9 +146,6 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 # In root directory
 deno install
 
-# Production build for all platforms in /release/
-deno task build
-
 # These commands watch changes for each platforms
 deno task chrome
 deno task edge
@@ -215,23 +212,20 @@ Go to http://0.0.0.0:8000/
 - Run a new container with `8000` as host port
 - Go to http://0.0.0.0:8000/
 
-### Create publishing builds
+## 🌍 Publish Bonjourr
 
-To upload a build to firefox addons, chrome web store, edge addons, you need to create an archive.
-To do that, run `deno task archive` or `docker compose up -f docker/compose.archive.yaml`
+To upload a build to Firefox addons, chrome web store, edge addons, you need to create an archive. Docker is needed to ensure Bonjourr is always built the same way across different devices.
+
+- Start Docker
+- Run docker compose `docker compose up -f docker/compose.archive.yaml --build` or `deno task archive`
+- Archives are located in "release/<platform>"
 
 ```bash
-docker compose -f docker/compose.archive.yaml up
+# Or "deno task archive"
+docker compose -f docker/compose.archive.yaml up --build
 
 # archive-1  | Task build deno run --allow-all ./tasks/build.ts
 # archive-1  | chrome built in: 129ms
-# archive-1  | firefox built in: 39.0ms
-# archive-1  | safari built in: 40.2ms
-# archive-1  | edge built in: 37.4ms
-# archive-1  | online built in: 42.1ms
 # archive-1  | Archiving chrome...
-# archive-1  | Archiving edge...
-# archive-1  | Archiving firefox...
-# archive-1  | Archiving online...
-# archive-1  | Archiving safari...
+# ...
 ```
