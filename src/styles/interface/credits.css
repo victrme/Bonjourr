@@ -1,4 +1,3 @@
-#background-actions,
 #credit-container,
 #show-settings {
 	position: fixed;
@@ -31,7 +30,6 @@
 	opacity: 1;
 }
 
-#a_interface-background-download.hidden,
 #credit.hidden {
 	display: none;
 }
@@ -56,94 +54,3 @@
 	opacity: 0;
 	transition: opacity 0.4s;
 }
-
-#background-actions {
-	position: fixed;
-	display: none;
-	align-items: center;
-	justify-content: center;
-	column-gap: 4px;
-	opacity: 0;
-	bottom: 0;
-	left: calc(50% - 60px - 20px);
-	width: 120px;
-	padding: 0 20px 26px;
-	color: #fff9;
-}
-
-#background-actions.shown {
-	display: flex;
-}
-
-#background-actions:focus-within,
-#background-actions:hover {
-	opacity: 1;
-}
-
-#download-background {
-	display: none;
-}
-
-#background-actions button {
-	all: unset;
-	display: inline-block;
-	width: 28px;
-	height: 26px;
-	margin: 0 2px;
-	padding-top: 2px;
-	border-radius: 4px;
-	cursor: pointer;
-}
-
-#background-actions button:hover {
-	color: #fffe;
-	background-color: #fff2;
-	backdrop-filter: blur(20px);
-}
-
-#background-actions #b_interface-background-download {
-	display: none;
-}
-
-#background-actions #b_interface-background-download.shown {
-	display: unset;
-}
-
-#b_interface-background-download.idle span:last-child,
-#b_interface-background-download.loading span:first-child {
-	display: none;
-}
-
-#b_interface-background-pause:active svg {
-	transform: scale(0.9);
-}
-
-#b_interface-background-pause #interface-background-pause-icon,
-#b_interface-background-pause.paused #interface-background-play-icon {
-	display: initial;
-}
-
-#b_interface-background-pause #interface-background-play-icon,
-#b_interface-background-pause.paused #interface-background-pause-icon {
-	display: none;
-}
-
-/* .save {
-	display: inline-block;
-	cursor: pointer;
-	margin-left: 10px;
-	width: 16px;
-	height: 15px;
-	background-color: #fff9;
-	-webkit-mask-image: url('../../assets/interface/download.svg');
-	mask-image: url('../../assets/interface/download.svg');
-}
-
-.save:hover {
-	background-color: #fffe;
-}
-
-.save.loading {
-	pointer-events: none;
-	--icon: url('../../assets/interface/loading.svg');
-} */

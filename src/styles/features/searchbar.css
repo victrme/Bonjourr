@@ -43,7 +43,7 @@
 	display: flex;
 	align-items: center;
 	width: 100%;
-	border-radius: 10px;
+	border-radius: 1em;
 	background-color: var(--searchbar-background);
 	border: 1px solid #fff1;
 	backdrop-filter: blur(2em);
@@ -60,7 +60,6 @@
 	font-weight: inherit;
 	text-overflow: ellipsis;
 	border: none;
-	border-radius: 0.5em;
 	background-color: transparent;
 }
 
@@ -108,7 +107,7 @@
 	padding: 0.6em;
 	font-size: 1.3em;
 	text-shadow: none;
-	border-radius: 10px;
+	border-radius: 1em;
 	box-sizing: border-box;
 	backdrop-filter: blur(2em);
 	-webkit-backdrop-filter: blur(2em);

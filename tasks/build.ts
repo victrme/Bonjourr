@@ -1,24 +1,24 @@
 import { ensureDirSync, existsSync } from '@std/fs'
 import { buildSync } from 'esbuild'
-import { extname } from '@std/path'
+import { httpServer } from './serve.ts'
 
 type Platform = 'chrome' | 'firefox' | 'safari' | 'edge' | 'online'
 type Env = 'dev' | 'prod' | 'test'
 
-const PLATFORMS = ['chrome', 'firefox', 'safari', 'edge', 'online']
-const ENVS = ['dev', 'prod', 'test']
+const PLATFORMS: Platform[] = ['chrome', 'firefox', 'safari', 'edge', 'online']
+const ENVS: Env[] = ['dev', 'prod', 'test']
 
 const args = Deno.args
 const platform = args[0]
 const env = args[1] ?? 'prod'
 
-const isPlatform = (s: string): s is Platform => PLATFORMS.includes(s)
-const _isEnv = (s: string): s is Env => ENVS.includes(s)
+const isPlatform = (s: string): s is Platform => PLATFORMS.includes(s as Platform)
+const _isEnv = (s: string): s is Env => ENVS.includes(s as Env)
 
 // Main
 
-if ((env === 'dev') && platform === 'online') {
-	liveServer()
+if (env === 'dev' && platform === 'online') {
+	httpServer(8000)
 }
 
 if (env === 'dev' && isPlatform(platform)) {
@@ -31,11 +31,17 @@ if (env === 'prod' && isPlatform(platform)) {
 }
 
 if (env === 'prod' && platform === undefined) {
-	if (existsSync('./release')) {
-		Deno.removeSync('./release/', { recursive: true })
-	}
+	for (const platform of PLATFORMS) {
+		const releasePath = `./release/${platform}`
 
-	for (const platform of PLATFORMS as Platform[]) {
+		if (existsSync(releasePath)) {
+			for (const entry of Deno.readDirSync(releasePath)) {
+				Deno.removeSync(`${releasePath}/${entry.name}`, {
+					recursive: true,
+				})
+			}
+		}
+
 		builder(platform, env)
 	}
 }
@@ -43,7 +49,8 @@ if (env === 'prod' && platform === undefined) {
 // Build or Watch
 
 function builder(platform: Platform, env: Env) {
-	console.time('Built in')
+	console.time(`${platform} built in`)
+
 	addDirectories(platform)
 	html(platform)
 	assets(platform)
@@ -51,7 +58,8 @@ function builder(platform: Platform, env: Env) {
 	manifests(platform)
 	styles(platform, env)
 	scripts(platform, env)
-	console.timeEnd('Built in')
+
+	console.timeEnd(`${platform} built in`)
 }
 
 function watcher(platform: Platform) {
@@ -80,7 +88,7 @@ function watcher(platform: Platform) {
 
 function addDirectories(platform: Platform) {
 	try {
-		if (existsSync(`release/${platform}`)) {
+		if (existsSync(`release/${platform}/src`)) {
 			return
 		}
 	} catch (_) {
@@ -100,12 +108,16 @@ function html(platform: Platform) {
 	const settingsdata = Deno.readTextFileSync('src/settings.html')
 	const helpModeData = Deno.readTextFileSync('src/help-mode.html')
 
+	const favicon = '<link rel="icon" href="/src/assets/favicon.ico" type="image/x-icon" id="favicon" />'
 	const icon = '<link rel="apple-touch-icon" href="src/assets/apple-touch-icon.png" />'
 	const manifest = '<link rel="manifest" href="manifest.webmanifest">'
 	const storage = '<script src="src/scripts/webext-storage.js"></script>'
 
 	let html = indexdata
 
+	if (platform !== 'edge') {
+		html = html.replace('<!-- default icon -->', favicon)
+	}
 	if (platform === 'online') {
 		html = html.replace('<!-- icon -->', icon)
 	}
@@ -114,9 +126,6 @@ function html(platform: Platform) {
 	}
 	if (platform !== 'online') {
 		html = html.replace('<!-- webext-storage -->', storage)
-	}
-	if (platform === 'edge') {
-		html = html.replace('favicon.ico', 'monochrome.png')
 	}
 
 	html = html.replace('<!-- settings -->', settingsdata)
@@ -130,11 +139,13 @@ function styles(platform: Platform, env: Env) {
 		buildSync({
 			entryPoints: ['src/styles/style.css'],
 			outfile: `release/${platform}/src/styles/style.css`,
+			format: 'iife',
 			bundle: true,
-			minify: env === 'prod',
+			minify: platform === 'online',
 			loader: {
 				'.svg': 'dataurl',
 				'.png': 'file',
+				'.mp3': 'file',
 			},
 		})
 	} catch (err) {
@@ -151,11 +162,10 @@ function scripts(platform: Platform, env: Env) {
 		buildSync({
 			entryPoints: ['src/scripts/index.ts'],
 			outfile: `release/${platform}/src/scripts/main.js`,
-			format: 'iife',
 			bundle: true,
+			target: 'es2023',
+			minify: platform === 'online',
 			sourcemap: env === 'dev',
-			minifySyntax: env === 'prod',
-			minifyWhitespace: env === 'prod',
 			define: {
 				ENV: `"${env.toUpperCase()}"`,
 			},
@@ -192,27 +202,28 @@ function assets(platform: Platform) {
 	// Huge icons on web application
 
 	if (platform === 'online') {
-		Deno.copyFileSync(`${source}/favicons/apple-touch-icon.png`, `${target}/favicons/apple-touch-icon.png`)
-		Deno.copyFileSync(`${source}/favicons/favicon-512x512.png`, `${target}/favicons/favicon-512x512.png`)
-		copyDir(`${source}/screenshots`, `${target}/screenshots`)
-	}
-
-	// Obligatory monochrome icons on microsoft edge
-
-	if (platform === 'edge') {
 		Deno.copyFileSync(
-			`${source}/favicons/favicon-128x128-monochrome.png`,
-			`${target}/favicons/favicon-128x128-monochrome.png`,
+			`${source}/favicons/apple-touch-icon.png`,
+			`${target}/favicons/apple-touch-icon.png`,
 		)
+		Deno.copyFileSync(
+			`${source}/favicons/favicon-512x512.png`,
+			`${target}/favicons/favicon-512x512.png`,
+		)
+		copyDir(`${source}/screenshots`, `${target}/screenshots`)
 	}
 
 	// All other assets
 
-	Deno.copyFileSync(`${source}/favicons/favicon-128x128.png`, `${target}/favicons/favicon-128x128.png`)
+	Deno.copyFileSync(
+		`${source}/favicons/favicon-128x128.png`,
+		`${target}/favicons/favicon-128x128.png`,
+	)
 	Deno.copyFileSync(`${source}/favicons/favicon.ico`, `${target}/favicons/favicon.ico`)
 	copyDir(`${source}/interface`, `${target}/interface`)
 	copyDir(`${source}/labels`, `${target}/labels`)
 	copyDir(`${source}/move`, `${target}/move`)
+	copyDir(`${source}/sounds`, `${target}/sounds`)
 }
 
 function manifests(platform: Platform) {
@@ -222,10 +233,7 @@ function manifests(platform: Platform) {
 			'release/online/manifest.webmanifest',
 		)
 	} else {
-		Deno.copyFileSync(
-			`src/manifests/${platform}.json`,
-			`release/${platform}/manifest.json`,
-		)
+		Deno.copyFileSync(`src/manifests/${platform}.json`, `release/${platform}/manifest.json`)
 	}
 }
 
@@ -239,16 +247,10 @@ function locales(platform: Platform) {
 
 		ensureDirSync(output)
 
-		Deno.copyFileSync(
-			`_locales/${lang}/translations.json`,
-			`${output}/translations.json`,
-		)
+		Deno.copyFileSync(`_locales/${lang}/translations.json`, `${output}/translations.json`)
 
 		if (platform !== 'online') {
-			Deno.copyFileSync(
-				`_locales/${lang}/messages.json`,
-				`${output}/messages.json`,
-			)
+			Deno.copyFileSync(`_locales/${lang}/messages.json`, `${output}/messages.json`)
 		}
 	}
 }
@@ -269,53 +271,11 @@ async function watchTasks(path: string, callback: (filename: string) => void) {
 		}
 
 		debounce = setTimeout(() => {
-			console.time('Built in')
+			console.time(`${platform} built in`)
 			callback(event.paths[0].replaceAll('\\', '/')) // windows back slashes :(
-			console.timeEnd('Built in')
+			console.timeEnd(`${platform} built in`)
 		}, 20)
 	}
-}
-
-function liveServer() {
-	const contentTypeList: Record<string, string> = {
-		'.html': 'text/html',
-		'.css': 'text/css',
-		'.js': 'text/javascript',
-		'.ico': 'image/x-icon',
-		'.svg': 'image/svg+xml',
-		'.png': 'image/png',
-	}
-
-	Deno.serve(async (req) => {
-		const url = new URL(req.url)
-		const path = `./release/online${url.pathname === '/' ? '/index.html' : url.pathname}`
-
-		try {
-			// Check if file exists
-			const fileInfo = await Deno.stat(path)
-
-			if (!fileInfo.isFile) {
-				return new Response('Not Found', { status: 404 })
-			}
-
-			const data = await Deno.readFile(path)
-			const contentType = contentTypeList[extname(path)] || 'application/octet-stream'
-
-			return new Response(data, {
-				status: 200,
-				headers: {
-					'Content-Type': contentType,
-					'cache-control': 'no-cache',
-				},
-			})
-		} catch (err) {
-			if (err instanceof Deno.errors.NotFound) {
-				return new Response('Not Found', { status: 404 })
-			}
-
-			return new Response('Internal Server Error', { status: 500 })
-		}
-	})
 }
 
 function copyDir(source: string, destination: string) {

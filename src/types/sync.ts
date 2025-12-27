@@ -1,4 +1,4 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, Widgets } from './shared.ts'
+import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
 
 export interface Sync {
 	showall: boolean
@@ -8,6 +8,7 @@ export interface Sync {
 	pagegap: number
 	pagewidth: number
 	linksrow: number
+	linkiconradius: number
 	linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
 	linknewtab: boolean
 	linktitles: boolean
@@ -25,6 +26,13 @@ export interface Sync {
 	tabtitle: string
 	greeting: string
 	greetingsize: string
+	greetingsmode?: 'auto' | 'custom'
+	greetingscustom: {
+		morning: string
+		afternoon: string
+		evening: string
+		night: string
+	}
 	notes?: Notes
 	hide?: Hide
 	dark: 'auto' | 'system' | 'enable' | 'disable'
@@ -36,6 +44,7 @@ export interface Sync {
 	weather: Weather
 	searchbar: Searchbar
 	quotes: Quotes
+	pomodoro: Pomodoro
 	font: Font
 	move: Move
 	about: {
@@ -72,6 +81,7 @@ export interface Backgrounds {
 	urls: string
 	images: string
 	videos: string
+	mute: boolean
 	pausedUrl?: string
 	pausedImage?: BackgroundImage
 	pausedVideo?: BackgroundVideo
@@ -112,6 +122,7 @@ export interface Clock {
 	timezone: string
 	size: number
 	ampmlabel: boolean
+	ampmposition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
 	worldclocks: boolean
 	face?: 'none' | 'number' | 'roman' | 'marks'
 	style?: 'round' | 'square' | 'transparent'
@@ -169,6 +180,30 @@ export interface Quotes {
 	frequency: Frequency
 	userlist?: string
 	url?: string
+}
+
+export interface Move {
+	selection: 'single' | 'double' | 'triple'
+	layouts: {
+		single?: MoveLayout
+		double?: MoveLayout
+		triple?: MoveLayout
+	}
+}
+
+export interface MoveLayout {
+	grid: string[][]
+	items: Record<Widgets, MoveAlign | undefined>
+}
+
+export interface MoveAlign {
+	box: string
+	text: string
+}
+
+export interface Supporters {
+	enabled: boolean
+	closedMonth?: number
 }
 
 export interface Weather {
@@ -262,4 +297,16 @@ export type Supporters = {
 	enabled: boolean
 	closed: boolean
 	month: number
+export interface Pomodoro {
+	on: boolean
+	end: number
+	pause: number
+	mode?: PomodoroMode
+	timeFor: Record<PomodoroMode, number>
+	focus: boolean
+	sound: boolean
+	history: {
+		endedAt: string
+		duration: number
+	}[]
 }

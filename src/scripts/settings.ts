@@ -1,7 +1,7 @@
 import { darkmode, favicon, tabTitle, textShadow } from './features/others.ts'
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
-import { backgroundUpdate, initBackgroundOptions } from './features/backgrounds/index.ts'
+import { backgroundUpdate, initBackgroundOptions, toggleMuteStatus } from './features/backgrounds/index.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
@@ -13,9 +13,12 @@ import { searchbar } from './features/searchbar.ts'
 import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
-import { clock } from './features/clock.ts'
+import { clock } from './features/clock/index.ts'
+import { pomodoro, setModeGlider } from './features/pomodoro.ts'
+import { togglePomodoroFocus } from './features/pomodoro.ts'
+import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
-import { colorInput, fadeOut, inputThrottle, turnRefreshButton } from './shared/dom.ts'
+import { colorInput, fadeOut, inputThrottle, turnRefreshButton, webkitRangeTrackColor } from './shared/dom.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
 import { settingsNotifications } from './utils/notifications.ts'
@@ -45,9 +48,21 @@ export function settingsInit(sync: Sync, local: Local) {
 	settingsInitSync = sync
 	settingsInitLocal = local
 
+	document.addEventListener('updateSettingsBeforeInit', (e) => {
+		settingsInitSync = (e as CustomEvent).detail
+	})
+
 	document.body?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('keydown', settingsInitEvent)
 	showsettings?.addEventListener('pointerdown', settingsInitEvent)
+
+	const openSettingsButtonsFromContextMenu = document.body.querySelectorAll<HTMLButtonElement>(
+		`[data-action="openTheseSettings"]`,
+	)
+
+	openSettingsButtonsFromContextMenu.forEach((btn) => {
+		btn?.addEventListener('pointerdown', settingsInitEvent)
+	})
 }
 
 function settingsInitEvent(event: Event) {
@@ -75,7 +90,27 @@ function settingsInitEvent(event: Event) {
 	settings?.removeAttribute('style')
 	settings?.classList.remove('hidden')
 	document.dispatchEvent(new Event('settings'))
-	document.addEventListener('toggle-settings', settingsToggle)
+
+	document.addEventListener(
+		'toggle-settings',
+		((e: CustomEvent) => {
+			settingsToggle(e)
+		}) as EventListener,
+	)
+
+	// if init by touch, opens settings right away
+	if ((event as PointerEvent).pointerType === 'touch') {
+		// tricks the browser into thinking it's not the same event that inits and opens
+		setTimeout(() => {
+			// when requesting specific settings section
+			if ((event.target as HTMLElement).getAttribute('data-attribute')) {
+				openSettingsButtonEvent(event)
+			} else {
+				document.dispatchEvent(new CustomEvent('toggle-settings'))
+			}
+		}, 0)
+	}
+
 	document.body?.removeEventListener('keydown', settingsInitEvent)
 	showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 
@@ -91,7 +126,6 @@ function settingsInitEvent(event: Event) {
 	// 3. Can be deferred
 
 	setTimeout(() => {
-		// console.log(structuredClone(sync))
 		initWorldClocksAndTimezone(sync)
 		updateSettingsJson(sync)
 		updateSettingsEvent()
@@ -103,19 +137,33 @@ function settingsInitEvent(event: Event) {
 	}, 500)
 }
 
-function settingsToggle() {
-	const dombackgroundactions = document.getElementById('background-actions')
+function settingsToggle(event?: CustomEvent) {
 	const domshowsettings = document.getElementById('show-settings')
 	const dominterface = document.getElementById('interface')
 	const domsettings = document.getElementById('settings')
 	const domedit = document.getElementById('editlink')
 	const isClosed = domsettings?.classList.contains('shown') === false
 
+	const scrollTo = event?.detail?.scrollTo ?? false
+	const target = domsettings?.querySelector(scrollTo)
+
+	// scrolls requested section into view
+	if (target && domsettings) {
+		// starts scrolling only once the settings have been rendered (otherwise starts full animation again even if unnecessary)
+		requestAnimationFrame(() => {
+			setTimeout(() => {
+				target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+			}, 0)
+		})
+	}
+
+	// prevents closing if a scrollTo has been requested
+	if (!isClosed && scrollTo) return
+
 	domsettings?.classList.toggle('shown', isClosed)
 	domedit?.classList.toggle('pushed', isClosed)
 	dominterface?.classList.toggle('pushed', isClosed)
 	domshowsettings?.classList.toggle('shown', isClosed)
-	dombackgroundactions?.classList.toggle('pushed', isClosed)
 
 	domsettings?.style.removeProperty('transform')
 	domsettings?.style.removeProperty('transition')
@@ -130,6 +178,7 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_bright', data.backgrounds.bright ?? 0.8)
 	setInput('i_fadein', data.backgrounds.fadein ?? 400)
 	setInput('i_row', data.linksrow || 8)
+	setInput('i_icon_radius', data.linkiconradius || 1.1)
 	setInput('i_linkstyle', data.linkstyle || 'default')
 	setInput('i_type', data.backgrounds.type || 'images')
 	setInput('i_freq', data.backgrounds?.frequency || 'hour')
@@ -143,6 +192,10 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_texture-color', data.backgrounds.texture.color ?? '#ffffff')
 	setInput('i_dateformat', data.dateformat || 'eu')
 	setInput('i_greeting', data.greeting ?? '')
+	setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
+	setInput('i_greetafternoon', data.greetingscustom?.afternoon ?? '')
+	setInput('i_greetevening', data.greetingscustom?.evening ?? '')
+	setInput('i_greetnight', data.greetingscustom?.night ?? '')
 	setInput('i_textshadow', data.textShadow ?? 0.2)
 	setInput('i_noteswidth', data.notes?.width || 50)
 	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
@@ -161,8 +214,10 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_clockshape', data.analogstyle?.shape || 'round')
 	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
 	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
+	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
 	setInput('i_clocksize', data.clock?.size ?? 5)
 	setInput('i_greetsize', data.greetingsize ?? 3)
+	setInput('i_greetmode', data.greetingsmode ?? 'auto')
 	setInput('i_timezone', data.clock?.timezone || 'auto')
 	setInput('i_geol', data.weather?.geolocation || 'approximate')
 	setInput('i_units', data.weather?.unit ?? 'metric')
@@ -174,6 +229,9 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
+	setInput('i_pmdr_break', data.pomodoro.timeFor.break / 60)
+	setInput('i_pmdr_pomodoro', data.pomodoro.timeFor.pomodoro / 60)
+	setInput('i_pmdr_longbreak', data.pomodoro.timeFor.longbreak / 60)
 
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
@@ -182,7 +240,7 @@ function initOptionsValues(data: Sync, local: Local) {
 
 	setCheckbox('i_showall', data.showall)
 	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
-	setCheckbox('i_background-local-compress', local.backgroundCompressFiles ?? true)
+	setCheckbox('i_background-mute-videos', data.backgrounds.mute ?? true)
 	setCheckbox('i_quicklinks', data.quicklinks)
 	setCheckbox('i_linkgroups', data?.linkgroups?.on)
 	setCheckbox('i_linknewtab', data.linknewtab)
@@ -195,6 +253,8 @@ function initOptionsValues(data: Sync, local: Local) {
 	setCheckbox('i_notes', data.notes?.on ?? false)
 	setCheckbox('i_sb', data.searchbar?.on ?? false)
 	setCheckbox('i_quotes', data.quotes?.on ?? false)
+	setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
+	setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
 	setCheckbox('i_ampm', data.clock?.ampm ?? false)
 	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
 	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
@@ -205,13 +265,13 @@ function initOptionsValues(data: Sync, local: Local) {
 	colorInput('solid-background', data.backgrounds.color)
 	colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
 
+	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
+	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
 	paramId('i_analog-background-shade')?.classList.toggle(
 		'on',
 		(data.analogstyle?.background ?? '#fff').includes('#000'),
 	)
-	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
-	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
 
 	// Change edit tips on mobile
 	if (IS_MOBILE) {
@@ -240,12 +300,15 @@ function initOptionsValues(data: Sync, local: Local) {
 	paramId('time_options')?.classList.toggle('shown', data.time)
 	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
 	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
+	paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
 	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
 	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
+	paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
 	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
 	paramId('main_options')?.classList.toggle('shown', data.main)
 	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
 	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
+	paramId('pomodoro_options')?.classList.toggle('shown', data.pomodoro.on)
 	paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
 	paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
 	paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
@@ -324,15 +387,26 @@ function initOptionsValues(data: Sync, local: Local) {
 	}
 
 	// supportersNotifications(data?.supporters);
+
+	// required for the range input's track color separation to work in webkit browsers
+	// yes, it blows.
+	for (const input of document.querySelectorAll<HTMLInputElement>('input[type="range"]')) {
+		webkitRangeTrackColor(input)
+
+		input.addEventListener('input', () => {
+			input.style.setProperty('--value', input.value)
+		})
+	}
 }
 
 function initOptionsEvents() {
 	onclickdown(paramId('b_accept-permissions'), async () => {
 		await getPermissions('topSites', 'bookmarks')
 
-		const data = await storage.sync.get()
-		quickLinks(data)
-		setTimeout(() => initGroups(data), 10)
+		const sync = await storage.sync.get()
+		const local = await storage.local.get()
+		quickLinks({ sync, local })
+		setTimeout(() => initGroups(sync), 10)
 
 		settingsNotifications({ 'accept-permissions': false })
 	})
@@ -422,6 +496,10 @@ function initOptionsEvents() {
 		quickLinks(undefined, { row: this.value })
 	})
 
+	paramId('i_icon_radius').addEventListener('input', function (this) {
+		quickLinks(undefined, { iconradius: this.value })
+	})
+
 	onclickdown(paramId('b_importbookmarks'), async () => {
 		await getPermissions('topSites', 'bookmarks')
 		linksImport()
@@ -471,8 +549,9 @@ function initOptionsEvents() {
 		backgroundUpdate({ urlsapply: true })
 	})
 
-	onclickdown(paramId('i_background-local-compress'), (_event, target) => {
-		backgroundUpdate({ compress: target.checked })
+	onclickdown(paramId('i_background-mute-videos'), (_, target) => {
+		toggleMuteStatus(target.checked)
+		backgroundUpdate({ mute: target.checked })
 	})
 
 	// Background filters
@@ -573,6 +652,13 @@ function initOptionsEvents() {
 
 	onclickdown(paramId('i_ampm-label'), (_, target) => {
 		clock(undefined, { ampmlabel: target.checked })
+
+		// shows/hides ampm_position option
+		paramId('ampm_position')?.classList.toggle('shown', target.checked)
+	})
+
+	paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { ampmposition: this.value })
 	})
 
 	paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
@@ -639,6 +725,8 @@ function initOptionsEvents() {
 		hideElements({ greetings: !target.checked }, { isEvent: true })
 	})
 
+	// Greetings
+
 	paramId('i_greeting').addEventListener('input', function () {
 		clock(undefined, { greeting: this.value })
 	})
@@ -649,6 +737,36 @@ function initOptionsEvents() {
 
 	paramId('i_greetsize').addEventListener('input', function (this: HTMLInputElement) {
 		clock(undefined, { greetingsize: this.value })
+	})
+
+	paramId('i_greetmode').addEventListener('change', function (this: HTMLInputElement) {
+		clock(undefined, { greetingsmode: this.value })
+	})
+
+	paramId(`i_greetmorning`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { morning: this.value } })
+	})
+	paramId(`i_greetafternoon`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { afternoon: this.value } })
+	})
+	paramId(`i_greetevening`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { evening: this.value } })
+	})
+	paramId(`i_greetnight`).addEventListener('input', function () {
+		clock(undefined, { greetingscustom: { night: this.value } })
+	})
+
+	paramId(`i_greetmorning`).addEventListener('change', () => {
+		paramId(`i_greetmorning`).blur()
+	})
+	paramId(`i_greetafternoon`).addEventListener('change', () => {
+		paramId(`i_greetafternoon`).blur()
+	})
+	paramId(`i_greetevening`).addEventListener('change', () => {
+		paramId(`i_greetevening`).blur()
+	})
+	paramId(`i_greetnight`).addEventListener('change', () => {
+		paramId(`i_greetnight`).blur()
 	})
 
 	// Notes
@@ -751,6 +869,60 @@ function initOptionsEvents() {
 		quotes(undefined, { url: paramId('i_qturl').value })
 	})
 
+	// Pomodoro
+
+	onclickdown(paramId('i_pomodoro'), (_, target) => {
+		moveElements(undefined, { widget: ['pomodoro', target.checked] })
+
+		const glider = document.querySelector('#pomodoro_container .glider') as HTMLDivElement
+		if (glider.style.width === '0px') {
+			// mode glider needs pomodoro to be rendered to know the button sizes, so delay is required
+			setTimeout(() => {
+				setModeGlider()
+			}, 333)
+		}
+	})
+
+	onclickdown(paramId('i_pmdr_sound'), (_, target) => {
+		pomodoro(undefined, { sound: target.checked })
+	})
+
+	paramId('i_pmdr_pomodoro').addEventListener('input', function () {
+		pomodoro(undefined, {
+			time_for: {
+				pomodoro: Number(this.value),
+			},
+		})
+	})
+
+	paramId('i_pmdr_pomodoro').addEventListener('change', () => {
+		paramId('i_pmdr_pomodoro').blur()
+	})
+
+	paramId('i_pmdr_break').addEventListener('input', function () {
+		pomodoro(undefined, {
+			time_for: {
+				break: Number(this.value),
+			},
+		})
+	})
+
+	paramId('i_pmdr_break').addEventListener('change', () => {
+		paramId('i_pmdr_break').blur()
+	})
+
+	paramId('i_pmdr_longbreak').addEventListener('input', function () {
+		pomodoro(undefined, {
+			time_for: {
+				longbreak: Number(this.value),
+			},
+		})
+	})
+
+	paramId('i_pmdr_longbreak').addEventListener('change', () => {
+		paramId('i_pmdr_longbreak').blur()
+	})
+
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('pointerenter', () => {
@@ -777,6 +949,8 @@ function initOptionsEvents() {
 	// Page layout
 
 	onclickdown(paramId('b_editmove'), () => {
+		togglePomodoroFocus(false)
+
 		moveElements(undefined, {
 			toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
 		})
@@ -1000,6 +1174,10 @@ function translatePlaceholders() {
 	const cases = [
 		['i_title', 'Name'],
 		['i_greeting', 'Name'],
+		['i_greetmorning', 'Hello, $name!'],
+		['i_greetafternoon', 'Good afternoon'],
+		['i_greetevening', 'Good evening'],
+		['i_greetnight', 'Good night'],
 		['i_tabtitle', 'New tab'],
 		['i_sbrequest', 'Search query: %s'],
 		['i_sbplaceholder', 'Search'],
@@ -1052,6 +1230,7 @@ async function switchLangs(nextLang: Langs) {
 	translatePlaceholders()
 	translateAriaLabels()
 	supportersNotifications(undefined, { translate: true })
+	setModeGlider()
 }
 
 function showall(val: boolean, event: boolean) {

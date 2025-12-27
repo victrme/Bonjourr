@@ -1,5 +1,5 @@
 import { getLinksInGroup } from './helpers.ts'
-import { openEditDialog } from './edit.ts'
+import { openContextMenu } from '../contextmenu.ts'
 import { initblocks } from './index.ts'
 import { startDrag } from './drag.ts'
 
@@ -19,6 +19,12 @@ export function initGroups(data: Sync, init?: true) {
 	}
 
 	createGroups(data.linkgroups)
+
+	// navigating through groups with scroll wheel
+	document.querySelector('#link-mini')?.addEventListener('wheel', (event) => {
+		changeGroup(event)
+		event.preventDefault()
+	}, { passive: false })
 }
 
 function createGroups(linkgroups: LinkGroups) {
@@ -51,7 +57,7 @@ function createGroups(linkgroups: LinkGroups) {
 
 		if (isAddMore) {
 			button.classList.add('add-group')
-			button.addEventListener('click', openEditDialog)
+			button.addEventListener('click', openContextMenu)
 		} else {
 			button.addEventListener('click', changeGroup)
 			button.addEventListener('pointerdown', startDrag)
@@ -64,7 +70,25 @@ function createGroups(linkgroups: LinkGroups) {
 }
 
 function changeGroup(event: Event) {
-	const button = event.currentTarget as HTMLButtonElement
+	let button: HTMLButtonElement
+
+	if (event.type === 'wheel') {
+		// all the selectable group buttons
+		const buttons = Array.from(
+			document.querySelectorAll<HTMLButtonElement>('.link-title:not(.add-group)[data-group]'),
+		)
+
+		// gets the index of the currently selected group
+		const index = buttons.findIndex((btn) => btn.classList.contains('selected-group'))
+
+		button = buttons[
+			// unsmooth brain thing to get the index for the previous/next button
+			(index + ((event as WheelEvent).deltaY > 0 ? 1 : -1) + buttons.length) % buttons.length
+		]
+	} else { // click event (probably)
+		button = event.currentTarget as HTMLButtonElement
+	}
+
 	const transition = transitioner()
 
 	if (!!domlinkblocks.dataset.folderid || button.classList.contains('selected-group')) {

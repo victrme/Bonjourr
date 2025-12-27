@@ -1,0 +1,7 @@
+services:
+    archive:
+        build:
+            dockerfile: ./docker/archive/Dockerfile
+            context: ../
+        volumes:
+            - ../release:/release

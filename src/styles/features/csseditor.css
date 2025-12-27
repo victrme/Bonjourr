@@ -17,7 +17,7 @@
 	--_ns: var(--number-spacing, 0.75em);
 	padding: 16px 20px;
 	outline-offset: -2px;
-	border-radius: 10px;
+	border-radius: var(--border-radius);
 	box-sizing: border-box;
 	background: rgb(var(--color-param));
 	-webkit-user-select: none;
@@ -58,8 +58,7 @@
 .pce-line {
 	position: relative;
 }
-.pce-overlays,
-div.pce-overlays > * {
+.pce-overlays {
 	position: absolute;
 	top: 0;
 	right: 0;

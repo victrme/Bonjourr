@@ -24,7 +24,7 @@
 
 #popup_text,
 #popup_buttons a {
-	border-radius: 8px;
+	border-radius: 14px;
 	opacity: 0;
 	cursor: pointer;
 	backdrop-filter: blur(2em);
@@ -159,7 +159,7 @@
 	display: none;
 	width: 4em;
 	height: 4em;
-	border-radius: 0.5em;
+	border-radius: 1em;
 }
 
 /* Responsive */

@@ -1,3 +1,5 @@
+import { storage } from '../../storage.ts'
+
 export class VideoLooper {
 	private video1: HTMLVideoElement
 	private video2: HTMLVideoElement
@@ -27,6 +29,8 @@ export class VideoLooper {
 		// the document eventListener
 
 		this.listener = () => {
+			// only acts on videos that are in the dom (otherwise it would play previously removed videos from JS memory)
+			if (!this.video2?.isConnected) return
 			this.stop()
 
 			if (!document.hidden) {
@@ -50,14 +54,14 @@ export class VideoLooper {
 		this.video2.play()
 
 		this.video1.addEventListener('timeupdate', () => {
-			if (this.isEnding(this.video1)) {
+			if (this.isEnding(this.video1) && this.fadetime !== 0) {
 				this.video1.classList.add('hiding')
 				this.video2.play()
 			}
 		})
 
 		this.video2.addEventListener('timeupdate', () => {
-			if (this.isEnding(this.video2)) {
+			if (this.isEnding(this.video2) && this.fadetime !== 0) {
 				this.video2.classList.add('hiding')
 				this.video1.play()
 			}
@@ -105,6 +109,14 @@ export class VideoLooper {
 			this.fadetime = fadetime
 		}
 
+		if (this.fadetime === 0) {
+			this.video2.loop = true
+			this.video1.style = 'display: none'
+		} else {
+			this.video2.loop = false
+			this.video1.style.removeProperty('display')
+		}
+
 		this.addTransitionDuration(this.fadetime)
 	}
 
@@ -118,6 +130,17 @@ export class VideoLooper {
 	// Private
 	//
 
+	private async applyMuteStatus(video: HTMLVideoElement) {
+		try {
+			const result = await storage.sync.get(['backgrounds'])
+			const isMuted = result.backgrounds?.mute ?? true
+			video.muted = isMuted
+		} catch (err) {
+			console.error('Failed to fetch mute status', err)
+			video.muted = true
+		}
+	}
+
 	private createVideo(src: string, autoplay = false): HTMLVideoElement {
 		const elem = document.createElement('video')
 
@@ -125,6 +148,8 @@ export class VideoLooper {
 		elem.src = src
 		elem.autoplay = autoplay
 		elem.playbackRate = this.playbackRate
+
+		this.applyMuteStatus(elem)
 
 		elem.addEventListener('loadedmetadata', () => {
 			this.setFadeTime(this.fadetime)
@@ -139,6 +164,10 @@ export class VideoLooper {
 			elem.classList.remove('hiding')
 			this.container.prepend(elem)
 		})
+
+		elem.addEventListener('muteStatusChange', function (event: CustomEvent<{ status: boolean }>) {
+			elem.muted = event.detail.status
+		} as EventListener)
 
 		return elem
 	}

@@ -1,9 +1,8 @@
-.video-looper {
-	position: relative;
+#background-media .video-looper {
 	transition: opacity var(--video-fadetime);
 }
 
-.video-looper video {
+#background-media .video-looper video {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -24,15 +23,16 @@
 	min-height: var(--app-height);
 	min-height: 100lvh;
 	overflow: hidden;
-}
-
-#background-wrapper {
 	z-index: -1;
 	transition: opacity var(--fade-in);
 }
 
-#background-media > div,
-#background-media > div video,
+#background-wrapper .background-image.pixelated {
+	image-rendering: pixelated;
+}
+
+#background-media .video-looper,
+#background-media .background-image,
 #background-color,
 #background-texture {
 	position: fixed;
@@ -56,10 +56,11 @@
 	display: none;
 }
 
-#background-media > div video,
-#background-media > div {
+#background-media .video-looper,
+#background-media .background-image {
 	object-fit: cover;
 	background-size: cover;
+	background-position: center;
 	transform: scale(1.1);
 	filter: blur(var(--blur)) brightness(var(--brightness));
 }
@@ -68,25 +69,23 @@
 	image-rendering: pixelated;
 }
 
-#background-media > div {
+#background-media .video-looper,
+#background-media .background-image {
 	transition: opacity 1.2s;
 }
 
-#background-media > div video {
-	transition: opacity 4s;
-}
-
-#background-media > div video.hiding,
-#background-media > div.hiding {
+#background-media .video-looper.hiding,
+#background-media .background-image.hiding {
 	opacity: 0;
 }
 
-[data-browser='safari'] #background-media > div {
+[data-browser='safari'] #background-media .video-looper,
+[data-browser='safari'] #background-media .background-image {
 	transform: scale(1.1) translateX(0px) translate3d(0, 0, 0);
 }
 
-body.init #background-media > div,
-body.init #background-media > div video {
+body.init #background-media .video-looper,
+body.init #background-media .background-image {
 	transition: none;
 }
 

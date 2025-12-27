@@ -2,46 +2,135 @@ interface CompressOptions {
 	type?: 'jpeg' | 'png' | 'webp'
 	size?: number
 	q?: number
+	raw?: boolean
+	square?: boolean
 }
 
-export async function compressMedia(blob: Blob, options: CompressOptions) {
-	const blobUrl = globalThis.URL.createObjectURL(blob)
+async function loadOnCanvas(url: string, options: CompressOptions): Promise<HTMLCanvasElement> {
 	const canvas = document.createElement('canvas')
 	const ctx = canvas.getContext('2d')
 	const img = new Image()
-	img.src = blobUrl
 
-	const type = options.type ?? 'jpeg'
-	const size = options.size ?? 300
-	const q = options.q ?? 0.9
+	if (!ctx) {
+		throw new Error('Cannot get canvas context')
+	}
 
 	await new Promise((resolve) => {
 		img.onload = () => {
-			const orientation = img.height > img.width ? 'portrait' : 'landscape'
-			let ratio = 0
-			let x = 0
-			let y = 0
+			const { size, square, raw } = options
 
-			if (orientation === 'landscape') {
-				ratio = size / img.height
-				canvas.height = y = size
-				canvas.width = x = img.width * ratio
+			if (raw || !size) {
+				canvas.width = img.width
+				canvas.height = img.height
+				ctx?.drawImage(img, 0, 0)
+
+				img.remove()
+				resolve(true)
+				return
 			}
 
-			if (orientation === 'portrait') {
-				ratio = size / img.width
-				canvas.height = y = img.height * ratio
-				canvas.width = x = size
+			const isLandscape = img.width > img.height
+			let sx = 0
+			let sy = 0
+			let sWidth = img.width
+			let sHeight = img.height
+			let dWidth = size
+			let dHeight = size
+
+			if (!square) {
+				if (isLandscape) {
+					dHeight = size
+					dWidth = (img.width / img.height) * size
+				} else {
+					dWidth = size
+					dHeight = (img.height / img.width) * size
+				}
+			} else {
+				if (isLandscape) {
+					sx = (img.width - img.height) / 2
+					sWidth = sHeight = img.height
+				} else {
+					sy = (img.height - img.width) / 2
+					sWidth = sHeight = img.width
+				}
 			}
 
-			ctx?.drawImage(img, 0, 0, x, y)
+			canvas.width = dWidth
+			canvas.height = dHeight
+
+			ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, dWidth, dHeight)
+
+			img.remove()
 			resolve(true)
 		}
+
+		img.src = url
 	})
 
+	return canvas
+}
+
+export async function imageDimensions(src: string): Promise<{ width: number; height: number }> {
+	const img = new Image()
+	let width = 4000
+	let height = 3000
+
+	await new Promise((resolve) => {
+		img.addEventListener('load', function () {
+			width = img.width
+			height = img.height
+
+			img.remove()
+			resolve(true)
+		})
+
+		img.src = src
+	})
+
+	return { width, height }
+}
+
+export async function compressAsBlob(elem: Blob | string, options: CompressOptions): Promise<Blob> {
+	const type = options.type ?? 'jpeg'
+	const q = options.q ?? 0.9
+
+	if (typeof elem === 'object') {
+		elem = URL.createObjectURL(elem)
+	}
+
+	const canvas = await loadOnCanvas(elem, options)
+	const ctx = canvas.getContext('2d')
 	const newBlob = await new Promise((resolve) => {
 		ctx?.canvas.toBlob(resolve, `image/${type}`, q)
 	})
 
 	return newBlob as Blob
+}
+
+export async function compressAsDataUri(elem: Blob | string, options: CompressOptions): Promise<string> {
+	const type = options.type ?? 'jpeg'
+	const q = options.q ?? 1.0
+
+	if (typeof elem === 'object') {
+		elem = URL.createObjectURL(elem)
+	}
+
+	const canvas = await loadOnCanvas(elem, options)
+	const uri = canvas.toDataURL(`image/${type}`, q)
+
+	return uri
+}
+
+export async function svgToText(file: File): Promise<string> {
+	const reader = new FileReader()
+
+	const data: string = await new Promise((resolve) => {
+		reader.onload = () => {
+			resolve(reader.result?.toString() ?? '')
+		}
+
+		reader.readAsText(file)
+	})
+
+	return data
 }

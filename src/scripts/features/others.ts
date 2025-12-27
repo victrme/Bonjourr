@@ -10,11 +10,16 @@ export function favicon(val?: string, isEvent?: true) {
 		const svgtext = `<text y=".9em" font-size="85">${emoji}</text>`
 		const svgtag = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${svgtext}</svg>`
 		const svgdata = `data:image/svg+xml,${svgtag}`
-		const filename = BROWSER === 'edge' ? 'favicon-128x128-monochrome.png' : 'favicon.ico'
-		const defaulticon = `/src/assets/favicons/${filename}`
-		const domfavicon = document.getElementById('favicon') as HTMLLinkElement
+		const defaulticon = `/src/assets/favicons/favicon.ico`
+		const domfavicon = document.querySelector<HTMLLinkElement>('#favicon')
 
-		domfavicon.href = emoji ? svgdata : defaulticon
+		if (domfavicon) {
+			domfavicon.href = emoji ? svgdata : defaulticon
+		}
+	}
+
+	if (BROWSER === 'edge') {
+		return
 	}
 
 	if (isEvent) {
@@ -88,9 +93,11 @@ export function darkmode(value: 'auto' | 'system' | 'enable' | 'disable', isEven
 
 	if (isEvent) {
 		storage.sync.set({ dark: value })
-
 		settings?.classList.add('change-theme')
-		setTimeout(() => settings?.classList.remove('change-theme'), 333)
+
+		setTimeout(() => {
+			settings?.classList.remove('change-theme')
+		}, 333)
 
 		return
 	}

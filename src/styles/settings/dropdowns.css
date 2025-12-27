@@ -6,6 +6,10 @@
 
 /* Dropdowns: Background Options */
 
+#background-video-sound-options.shown {
+	max-height: 70px;
+}
+
 #solid_options.shown {
 	max-height: 400px;
 }
@@ -15,7 +19,8 @@
 }
 
 #background-urls-option.shown {
-	max-height: 450px;
+	/* 80vh is prism-code-editor size */
+	max-height: calc(80vh + 80px);
 }
 
 .all #background-provider-option.shown {
@@ -31,7 +36,7 @@
 }
 
 #background-file-options.shown {
-	max-height: 120px;
+	max-height: 180px;
 }
 
 #thumbnail-action-buttons.shown {
@@ -61,7 +66,7 @@
 }
 
 #digital_options.shown {
-	max-height: 120px;
+	max-height: 180px;
 }
 
 #analog_options.shown {
@@ -69,10 +74,18 @@
 }
 
 #greetings_options.shown {
-	max-height: 130px;
+	max-height: 430px;
+}
+
+#greetingscustom_options.shown {
+	max-height: 300px;
 }
 
 #ampm_label.shown {
+	max-height: 60px;
+}
+
+#ampm_position.shown {
 	max-height: 60px;
 }
 
@@ -95,7 +108,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-	max-height: 670px;
+	max-height: 885px;
 }
 
 #weather_provider.shown {
@@ -109,7 +122,7 @@
 /* Dropdowns: Quicklinks, Notes, Searchbar, and Quotes Options */
 
 #quicklinks_options.shown {
-	max-height: 460px;
+	max-height: 423px;
 }
 
 #notes_options.shown {
@@ -136,10 +149,14 @@
 	max-height: 450px;
 }
 
+#pomodoro_options.shown {
+	max-height: 250px;
+}
+
 /* Dropdowns: Settings management Options */
 
 #disabled-sync.shown {
-	max-height: 100px;
+	max-height: 105px;
 }
 
 #url-sync.shown {
@@ -158,6 +175,10 @@
 
 .all .as_provider.shown {
 	max-height: 120px;
+}
+
+.all .as_video_sound {
+	max-height: 60px;
 }
 
 .all .as_texture {
@@ -219,4 +240,12 @@
 
 .all .as_sync {
 	max-height: 280px;
+}
+
+.all .as_pomodoro {
+	max-height: 190px;
+}
+
+.all .as_greetings {
+	max-height: 365px;
 }

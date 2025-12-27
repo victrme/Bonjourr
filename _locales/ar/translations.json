@@ -2,7 +2,7 @@
   "lang": "ar",
   "New tab": "صفحة جديدة",
   "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "هل أحببتم بونجور؟ إذاً عليكم بالمساندة سواء عبر طرح رأيك في التقييم أو الدعم المادي فسيساعدنا ذلك كثيراً! 😇",
-  "Read the release notes": "ما الجديد في الإصدار الجديد",
+  "Read the blog post": "اقرأ تدوينة المدونة",
   "Review": "مراجعة",
   "Donate": "تبرع",
   "Good morning": "صباح الخير",
@@ -31,6 +31,9 @@
   "Title": "العنوان",
   "Link": "الرابط",
   "Icon": "الأيقونة",
+  "Website favicon": "أيقونة موقع الويب",
+  "Local file": "ملف محلي",
+  "URL": "عنوان URL",
   "Add new link": "إضافة رابط جديد",
   "Add new group": "أضف مجموعة جديدة",
   "Create new folder": "إنشاء مجلد جديد",
@@ -43,6 +46,30 @@
   "Pin group": "قم بتثبيت هذه المجموعة",
   "Unpin group": "إلغاء تثبيت المجموعة",
   "Apply changes": "تطبيق التغييرات",
+  "Edit quotes settings": "تحرير إعدادات الاقتباسات",
+  "Edit weather & greetings": "تعديل الطقس والتحيات",
+  "Edit background settings": "تحرير إعدادات الخلفية",
+  "Edit time settings": "تحرير إعدادات الوقت",
+  "Add new quick link": "إضافة رابط سريع جديد",
+  "Unlock current background": "إلغاء قفل الخلفية الحالية",
+  "Lock current background": "قفل الخلفية الحالية",
+  "Download background": "تنزيل الخلفية",
+  "Edit pomodoro settings": "تعديل إعدادات البومودورو",
+  "Sessions today": "جلسات اليوم",
+  "This week": "هذا الأسبوع",
+  "This month": "هذا الشهر",
+  "Pomodoro timer": "مؤقت بومودورو",
+  "Pomodoro is a productivity tool to help you stay focused on your goals and work efficiently.": "بومودورو هي أداة إنتاجية لمساعدتك على التركيز على أهدافك والعمل بكفاءة.",
+  "Play sound on alarm": "تشغيل الصوت عند التنبيه",
+  "Default time": "الوقت الافتراضي",
+  "Break time": "وقت الاستراحة",
+  "Long break time": "وقت الاستراحة الطويلة",
+  "Pomodoro": "بومودورو",
+  "Break": "استراحة",
+  "Long break": "استراحة طويلة",
+  "Focus": "تركيز",
+  "mins": "دقيقة",
+  "Time's up!": "انتهى الوقت!",
   "Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "يتم تحديث المجموعات المتزامنة تلقائيًا لتتوافق مع إشاراتك المرجعية في المتصفح. تعرف على المزيد على",
   "our documentation": "وثائقنا",
   "Select group": "إختر مجموعة",
@@ -50,7 +77,18 @@
   "Most visited": "الأكثر زيارة",
   "Import selection": "إستيراد المختار",
   "(synced)": "(متزامن)",
-  "This <currentMonth>, Bonjourr is brought to you by our lovely supporters.": "هذا <currentMonth>، بونجور مقدم لكم من قبل داعمينا الرائعين.",
+  "This January, Bonjourr is brought to you by our lovely supporters.": "في شهر يناير هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This February, Bonjourr is brought to you by our lovely supporters.": "في شهر فبراير هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This March, Bonjourr is brought to you by our lovely supporters.": "في شهر مارس هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This April, Bonjourr is brought to you by our lovely supporters.": "في شهر أبريل هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This May, Bonjourr is brought to you by our lovely supporters.": "في شهر مايو هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This June, Bonjourr is brought to you by our lovely supporters.": "في شهر يونيو هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This July, Bonjourr is brought to you by our lovely supporters.": "في شهر يوليو هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This August, Bonjourr is brought to you by our lovely supporters.": "في شهر أغسطس هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This September, Bonjourr is brought to you by our lovely supporters.": "في شهر سبتمبر هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This October, Bonjourr is brought to you by our lovely supporters.": "في شهر أكتوبر هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This November, Bonjourr is brought to you by our lovely supporters.": "في شهر نوفمبر هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
+  "This December, Bonjourr is brought to you by our lovely supporters.": "في شهر ديسمبر هذا، تقدم لكم Bonjourr بفضل داعمينا الرائعين.",
   "Find out who they are": "اعرف من هم",
   "Supporters like you make Bonjourr possible": "الداعمون مثلك يجعلون Bonjourr ممكنًا",
   "Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.": "هؤلاء هم الأشخاص الرائعون الذين دعمونا الشهر الماضي. بفضلهم، يمكننا الحفاظ على Bonjourr مجانيًا ومفتوح المصدر ومتطورًا باستمرار.",
@@ -98,14 +136,18 @@
   "Move": "نقل",
   "View": "عرض",
   "Add new": "إضافة جديد",
-  "My files": "ملفاتي",
+  "My files (images or videos)": "ملفاتي (الصور أو مقاطع الفيديو)",
+  "Playback speed": "سرعة التشغيل",
+  "Loop fade": "تلاشي الحلقة",
+  "Mute videos": "كتم الفيديوهات",
+  "Options": "خيارات",
   "Use the button above to import files from your device and set them as backgrounds in Bonjourr.": "استخدم الزر أعلاه لاستيراد الملفات من جهازك وتعيينها كخلفيات في Bonjourr.",
   "Frequency": "التكرار",
   "Daylight": "النهار",
   "Every tab": "كل علامة تبويب",
   "Every hour": "كل ساعة",
   "Every day": "كل يوم",
-  "Pause": "إيقاف مؤقت",
+  "Locked": "مقفل",
   "Texture overlay": "تراكب الملمس",
   "Texture density": "كثافة الملمس",
   "Texture color": "لون الملمس",
@@ -149,6 +191,7 @@
   "Show groups": "عرض المجموعة",
   "Organize your links even more with pages. Right click next to a page to add another.": "قم بتنظيم روابطك بشكل أفضل مع الصفحات. انقر بزر الماوس الأيمن بجوار صفحة لإضافة أخرى.",
   "Open in new tab": "فتح في علامة تبويب جديدة",
+  "Icon corner radius": "نصف قطر زاوية الأيقونة",
   "Links per row": "الروابط في الصف الواحد",
   "Style": "النمط",
   "Large": "كبير",
@@ -178,7 +221,12 @@
   "Clock border": "حدود الساعة",
   "Clock border shade": "ظلة حدود الساعة",
   "12-Hour Time": "نظام الساعة بالأرقام",
-  "Show am/pm": "عرض صباحا/مساءا",
+  "Show AM/PM": "عرض صباحا/مساءا",
+  "AM/PM position": "موضع صباحًا/مساءً",
+  "Top left": "أعلى يسار",
+  "Top right": "أعلى يمين",
+  "Bottom left": "أسفل يسار",
+  "Bottom right": "أسفل يمين",
   "Show seconds": "عرض الثواني",
   "Date format": "تنسيق التاريخ",
   "Day date month": "يوم التاريخ شهر",
@@ -198,6 +246,13 @@
   "Greetings": "التحيات",
   "Greeting name": "اسم التحية",
   "Greeting size": "حجم التحية",
+  "Greeting mode": "وضع الترحيب",
+  "In the morning": "في الصباح",
+  "In the afternoon": "في فترة ما بعد الظهر",
+  "In the evening": "في المساء",
+  "Hello, $name!": "مرحباً يا $name!",
+  "Unmute video background": "إلغاء كتم صوت خلفية الفيديو",
+  "Mute video background": "كتم صوت خلفية الفيديو",
   "Name": "الاسم",
   "Weather": "الطقس",
   "Geolocation": "الموقع الجغرافي",
@@ -250,6 +305,8 @@
   "yahoo": "ياهو",
   "bing": "بينغ",
   "URL request": "طلب URL",
+  "URL seems wrong": "يبدو أن عنوان URL خاطئ",
+  "No %s present in URL": "لا يوجد %s في عنوان URL",
   "%s Not found": "%s غير موجود",
   "Search query: %s": "استعلام البحث: %s",
   "Placeholder text": "نص العنصر النائب",
@@ -270,6 +327,14 @@
   "Font family": "عائلة الخط",
   "Cannot load this font": "لا يمكن تحميل هذا الخط",
   "Weight": "الوزن",
+  "Light": "خفيف",
+  "Extra Light": "خفيف جدًا",
+  "Thin": "رفيع",
+  "Normal": "عادي",
+  "Semi Bold": "شبه غامق",
+  "Bold": "غامق",
+  "Extra Bold": "غامق جدًا",
+  "Black": "أسود",
   "Size": "الحجم",
   "Shadow": "الظل",
   "These fonts come from Fontsource.": "هذه الخطوط مصدرها Fontsource",

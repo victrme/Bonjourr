@@ -104,8 +104,8 @@ async function syncGet(key?: string | string[]): Promise<Sync> {
 		}
 
 		case 'webext-local': {
-			const data = (await chrome.storage.local.get('syncStorage')).syncStorage
-			return verifyDataAsSync(data)
+			const { syncStorage } = await chrome.storage.local.get() as Local
+			return verifyDataAsSync(syncStorage)
 		}
 
 		default: {
@@ -124,8 +124,9 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
 		}
 
 		case 'webext-local': {
+			const local = await chrome.storage.local.get('syncStorage') as Local
 			const data = {
-				...(await chrome.storage.local.get('syncStorage')).syncStorage,
+				...local.syncStorage,
 				...keyval,
 			}
 
@@ -161,10 +162,14 @@ async function syncRemove(key: string) {
 		}
 
 		case 'webext-local': {
-			const data = (await chrome.storage.local.get('syncStorage')).syncStorage
-			await chrome.storage.local.remove('syncStorage')
-			delete data[key]
-			chrome.storage.local.set({ syncStorage: data })
+			const { syncStorage } = await chrome.storage.local.get('syncStorage') as Local
+
+			if (syncStorage) {
+				delete syncStorage[key]
+				await chrome.storage.local.remove('syncStorage')
+				chrome.storage.local.set({ syncStorage })
+			}
+
 			return
 		}
 
@@ -227,8 +232,8 @@ async function localGet(keys?: string | string[]): Promise<Local> {
 	switch (storage.type.get()) {
 		case 'webext-sync':
 		case 'webext-local': {
-			const data = await chrome.storage.local.get(keys)
-			return data as Local
+			const data = await chrome.storage.local.get(keys) as unknown as Local
+			return data
 		}
 
 		default: {
@@ -452,6 +457,7 @@ function verifyDataAsSync(data: Partial<Sync> = {}): Sync {
 }
 
 function verifyDataAsLocal(data: Partial<Local> = {}): Local {
+	//@ts-ignore -> `x-icon-${string}` index signatures are incompatible.
 	return {
 		...LOCAL_DEFAULT,
 		...data,

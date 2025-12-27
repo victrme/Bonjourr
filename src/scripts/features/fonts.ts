@@ -7,7 +7,7 @@ import { SYSTEM_OS } from '../defaults.ts'
 import { apiFetch } from '../shared/api.ts'
 import { subsets } from '../langs.ts'
 import { storage } from '../storage.ts'
-import { clock } from './clock.ts'
+import { clock } from './clock/index.ts'
 
 import type { Font, Sync } from '../../types/sync.ts'
 
@@ -246,6 +246,9 @@ function displayFont({ family, size, weight, system }: Font) {
 
 function setFontSize(size: string) {
 	document.documentElement.style.setProperty('--font-size', `${Number.parseInt(size) / 16}em`)
+
+	// Pomodoro container's font needs to be in pixels for focus animation to work properly
+	document.documentElement.style.setProperty('--pomodoro-font-size', `${Number.parseInt(size)}px`)
 }
 
 //

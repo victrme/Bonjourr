@@ -45,6 +45,11 @@
 	grid-area: quotes;
 }
 
+#move-overlay-pomodoro,
+#pomodoro_container {
+	grid-area: pomodoro;
+}
+
 :root[data-theme='light'] #text-alignment-mover button,
 :root[data-theme='light'] #box-alignment-mover button,
 :root[data-theme='light'] #grid-mover button {
