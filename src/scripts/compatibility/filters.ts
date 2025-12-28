@@ -1,4 +1,3 @@
-import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers.ts'
 import { countryCodeToLanguageCode } from '../utils/translations.ts'
 import { SYNC_DEFAULT } from '../defaults.ts'
 import { oldJSONToCSV } from '../features/quotes.ts'
@@ -6,7 +5,7 @@ import { randomString } from '../shared/generic.ts'
 import { bundleLinks } from '../utils/bundlelinks.ts'
 import { isElem, isNumber } from '../features/links/helpers.ts'
 
-import type { Link, LinkElem, OldSync, Widgets } from '../../types/shared.ts'
+import type { Link, LinkElem, OldSync } from '../../types/shared.ts'
 import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
@@ -423,83 +422,6 @@ export function removeLinkgroupDuplicates(current: Sync): Sync {
 		current.linkgroups.groups = current.linkgroups.groups.filter((item) => item !== 'default')
 		current.linkgroups.pinned = current.linkgroups.pinned.filter((item) => item !== 'default')
 		current.linkgroups.synced = current.linkgroups.synced.filter((item) => item !== 'default')
-	}
-
-	return current
-}
-
-export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
-	// When import doesn't have move, other widgets can still be different
-	// This updates current grid with the widgets states from import
-
-	if (imported.move) {
-		current.move = imported.move
-
-		const layout = current.move.layouts[current.move.selection]
-		const grid = layout?.grid ?? defaultLayouts[current.move.selection].grid
-		const area = grid.flat().join(' ')
-
-		current.time = area.includes('time')
-		current.main = area.includes('main')
-		current.quicklinks = area.includes('quicklinks')
-
-		if (current.notes) {
-			current.notes.on = area.includes('notes')
-		}
-		if (current.quotes) {
-			current.quotes.on = area.includes('quotes')
-		}
-		if (current.searchbar) {
-			current.searchbar.on = area.includes('searchbar')
-		}
-
-		return current
-	}
-
-	if (!imported.move) {
-		const importStates = {
-			time: imported.time ?? current.time,
-			main: imported.main ?? current.main,
-			notes: imported.notes?.on ?? current.notes?.on,
-			quotes: imported.quotes?.on ?? current.quotes?.on,
-			pomodoro: imported.pomodoro?.on ?? current.pomodoro?.on,
-			searchbar: imported.searchbar?.on ?? current.searchbar?.on,
-			quicklinks: imported.quicklinks ?? current.quicklinks,
-		}
-
-		const diffWidgets = {
-			time: current.time !== importStates.time,
-			main: current.main !== importStates.main,
-			notes: current.notes?.on !== importStates.notes,
-			quotes: current.quotes?.on !== importStates.quotes,
-			searchbar: current.searchbar?.on !== importStates.searchbar,
-			quicklinks: current.quicklinks !== importStates.quicklinks,
-		}
-
-		// Force single layout with old imports
-		// Partial imports, for example links list only, will not force single
-		if (Object.keys(imported).some((key) => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
-			current.move.selection = 'single'
-		}
-
-		const selection = current.move.selection
-		const layout = structuredClone(current.move.layouts[selection])
-		const diffEntries = Object.entries(diffWidgets).filter(([_, diff]) => diff === true)
-
-		if (!layout) {
-			return current
-		}
-
-		// mutate grid: add or remove widgets that are different from current data
-		for (const [key] of diffEntries) {
-			const id = key as Widgets
-			const state = importStates[id]
-			const gridToggle = state ? addGridWidget : removeGridWidget
-
-			layout.grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
-		}
-
-		current.move.layouts[selection] = layout
 	}
 
 	return current

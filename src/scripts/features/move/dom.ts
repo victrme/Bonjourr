@@ -1,24 +1,28 @@
 import { elements, gridStringify } from './helpers.ts'
-import { moveElements } from './index.ts'
+import { getHTMLTemplate } from '../../shared/dom.ts'
 import { onclickdown } from 'clickdown/mod'
 
-import type { MoveAlign, MoveLayout } from '../../../types/sync.ts'
-import type { Widgets } from '../../../types/shared.ts'
-import { getHTMLTemplate } from '../../shared/dom.ts'
+import type { MoveLayout, SimpleMoveWidget } from '../../../types/sync.ts'
+import type { WidgetName } from '../../../types/shared.ts'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
 export function setGridAreas(grid: MoveLayout['grid'] | string) {
-	const property = typeof grid === 'string' ? grid : gridStringify(grid)
-	document.documentElement.style.setProperty('--grid', property)
+	if (typeof grid === 'string') {
+		document.documentElement.style.setProperty('--grid', grid)
+	} else {
+		document.documentElement.style.setProperty('--grid', gridStringify(grid))
+	}
 }
 
-export function setAlign(id: Widgets, align?: MoveAlign) {
-	const { box, text } = align ?? { box: '', text: '' }
+export function setAlign(id: WidgetName, align: SimpleMoveWidget) {
+	const horizontal = align.horizontal ?? 'center'
+	const vertical = align.vertical ?? 'center'
+	const text = align.text
 	const elem = elements[id]
 
 	if (elem) {
-		elem.style.placeSelf = box
+		elem.style.placeSelf = `${horizontal} ${vertical}`
 
 		if (id === 'quicklinks') {
 			document.getElementById('linkblocks')?.classList.remove('text-left', 'text-right')
@@ -35,20 +39,79 @@ export function setAlign(id: Widgets, align?: MoveAlign) {
 	}
 }
 
-export function setAllAligns(items: MoveLayout['items']) {
-	for (const [widget, align] of Object.entries(items)) {
-		setAlign(widget as Widgets, align)
+export function setAllAligns(widgets: Record<WidgetName, SimpleMoveWidget>) {
+	for (const [widget, align] of Object.entries(widgets)) {
+		setAlign(widget as WidgetName, align)
 	}
 }
 
-export function addOverlay(id: Widgets) {
-	const overlay = getHTMLTemplate<HTMLDivElement>('move-overlay-template', '.move-overlay')
-	overlay.id = `move-overlay-${id}`
-	dominterface?.appendChild(overlay)
-	onclickdown(overlay, () => moveElements(undefined, { select: id }))
+export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): void {
+	// Grid move
+
+	const moveGridBottom = overlay.querySelector<HTMLButtonElement>('#move-grid-bottom')
+	const moveGridRight = overlay.querySelector<HTMLButtonElement>('#move-grid-right')
+	const moveGridLeft = overlay.querySelector<HTMLButtonElement>('#move-grid-left')
+	const moveGridTop = overlay.querySelector<HTMLButtonElement>('#move-grid-top')
+
+	onclickdown(moveGridBottom, () => {
+		console.log(id, 'move bottom')
+	})
+	onclickdown(moveGridRight, () => {
+		console.log(id, 'move right')
+	})
+	onclickdown(moveGridLeft, () => {
+		console.log(id, 'move left')
+	})
+	onclickdown(moveGridTop, () => {
+		console.log(id, 'move top')
+	})
+
+	// Grid align
+
+	const moveAlignHorizontal = overlay.querySelector<HTMLInputElement>('#i_move-align-horizontal')
+	const moveAlignVertical = overlay.querySelector<HTMLInputElement>('#i_move-align-vertical')
+	const moveAlignText = overlay.querySelector<HTMLInputElement>('#i_move-align-text')
+
+	moveAlignHorizontal?.addEventListener('input', () => {
+		console.log(id, 'align horizontally')
+	})
+	moveAlignVertical?.addEventListener('input', () => {
+		console.log(id, 'align vertically')
+	})
+	moveAlignText?.addEventListener('input', () => {
+		console.log(id, 'align text')
+	})
+
+	// Grid spans
+
+	const moveSpanBottom = overlay.querySelector<HTMLElement>('#move-span-bottom')
+	const moveSpanRight = overlay.querySelector<HTMLElement>('#move-span-right')
+	const moveSpanLeft = overlay.querySelector<HTMLElement>('#move-span-left')
+	const moveSpanTop = overlay.querySelector<HTMLElement>('#move-span-top')
+
+	moveSpanBottom?.addEventListener('mousedown', () => {
+		console.log(id, 'start spanning bottom')
+	})
+	moveSpanRight?.addEventListener('mousedown', () => {
+		console.log(id, 'start spanning right')
+	})
+	moveSpanLeft?.addEventListener('mousedown', () => {
+		console.log(id, 'start spanning left')
+	})
+	moveSpanTop?.addEventListener('mousedown', () => {
+		console.log(id, 'start spanning top')
+	})
 }
 
-export function removeOverlay(id?: Widgets) {
+export function addOverlay(id: WidgetName) {
+	const overlay = getHTMLTemplate<HTMLDivElement>('move-overlay-template', '.move-overlay')
+	overlay.id = `move-overlay-${id}`
+
+	dominterface?.appendChild(overlay)
+	initOverlayActions(overlay, id)
+}
+
+export function removeOverlay(id?: WidgetName) {
 	if (id) {
 		document.querySelector(`#move-overlay-${id}`)?.remove()
 	} else {

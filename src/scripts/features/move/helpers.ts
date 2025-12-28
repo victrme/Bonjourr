@@ -1,15 +1,23 @@
-import type { Move, MoveLayout, Sync } from '../../../types/sync.ts'
-import type { Widgets } from '../../../types/shared.ts'
+import type { Move, Sync } from '../../../types/sync.ts'
+import type { WidgetName } from '../../../types/shared.ts'
 
 type Grid = string[][]
 
-type Defaults = {
-	single: MoveLayout
-	double: MoveLayout
-	triple: MoveLayout
-}
+const MOVE_WIDGETS: WidgetName[] = [
+	'time',
+	'main',
+	'quicklinks',
+	'notes',
+	'quotes',
+	'searchbar',
+	'pomodoro',
+]
 
-const MOVE_WIDGETS = ['time', 'main', 'quicklinks', 'notes', 'quotes', 'searchbar', 'pomodoro']
+export const MOVE_DEFAULT: string[][] = [
+	['time'],
+	['main'],
+	['quicklinks'],
+]
 
 export const elements = {
 	time: globalThis.document.getElementById('time'),
@@ -21,29 +29,6 @@ export const elements = {
 	pomodoro: globalThis.document.getElementById('pomodoro_container'),
 } as const
 
-export const defaultLayouts: Defaults = {
-	single: {
-		grid: [['time'], ['main'], ['quicklinks']],
-		items: {} as MoveLayout['items'],
-	},
-	double: {
-		grid: [
-			['time', '.'],
-			['main', '.'],
-			['quicklinks', '.'],
-		],
-		items: {} as MoveLayout['items'],
-	},
-	triple: {
-		grid: [
-			['time', '.', '.'],
-			['main', '.', '.'],
-			['quicklinks', '.', '.'],
-		],
-		items: {} as MoveLayout['items'],
-	},
-}
-
 export function isEditing(): boolean {
 	return document.getElementById('interface')?.classList.contains('move-edit') ?? false
 }
@@ -52,23 +37,15 @@ export function hasDuplicateInArray(arr: string[], id?: string): boolean {
 	return arr.filter((a) => a === id).length > 1
 }
 
-export function getLayout(data: Move | Sync, selection?: Move['selection']): MoveLayout {
-	if ('move' in data) {
-		const layouts = data.move.layouts
-		const selec = selection ?? data.move.selection
-		return layouts[selec] ?? defaultLayouts[selec]
-	}
-
-	const layouts = data.layouts
-	const selec = selection ?? data.selection
-	return layouts?.[selec] ?? defaultLayouts[selec]
-}
-
 //	Grid
+
+export function columnsAmount(grid: Grid): number {
+	return grid[0]?.length || 1
+}
 
 function gridValidate(grid: Grid): boolean {
 	const cells = grid.flat()
-	const cellsAreWidgets = cells.every((val) => val === '.' || MOVE_WIDGETS.includes(val))
+	const cellsAreWidgets = cells.every((val) => val === '.' || MOVE_WIDGETS.includes(val as WidgetName))
 	return cellsAreWidgets
 }
 
@@ -89,13 +66,12 @@ export function gridParse(area = ''): Grid {
 }
 
 export function gridStringify(grid: Grid) {
-	let areas = ''
+	const rows = grid.map((items) => {
+		const columns = items.reduce((a, b) => `${a} ${b}`)
+		return `'${columns}'`
+	})
 
-	// 2
-	const itemListToString = (row: string[]) => row.reduce((a, b) => `${a} ${b}`)
-
-	// 1
-	areas = grid.map((row) => `'${itemListToString(row)}'`).join(' ')
+	const areas = rows.join(' ')
 
 	return areas.trimEnd()
 }
@@ -163,7 +139,7 @@ export function isRowEmpty(grid: Grid, index: number) {
 
 export function spansInGridArea(
 	grid: Grid,
-	id: Widgets,
+	id: WidgetName,
 	{ toggle, remove }: { toggle?: 'row' | 'col'; remove?: true },
 ) {
 	function addSpans(row: string[]) {
@@ -244,7 +220,7 @@ export function spansInGridArea(
 
 //	Widgets
 
-export function getWidgetsStorage(data: Sync): Widgets[] {
+export function getWidgetsStorage(data: Sync): WidgetName[] {
 	// BAD: DO NOT CHANGE THIS OBJECT ORDER AS IT WILL BREAK LAYOUT RESET
 	// Time & main in first place ensures grid size is enough to add quotes & links
 	const displayed = {
@@ -259,10 +235,10 @@ export function getWidgetsStorage(data: Sync): Widgets[] {
 
 	return Object.entries(displayed)
 		.filter(([_, val]) => val)
-		.map(([key, _]) => key as Widgets)
+		.map(([key, _]) => key as WidgetName)
 }
 
-export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync): Sync {
+export function updateWidgetsStorage(states: [WidgetName, boolean][], data: Sync): Sync {
 	//
 
 	for (const [id, on] of states) {
@@ -292,14 +268,14 @@ export function updateWidgetsStorage(states: [Widgets, boolean][], data: Sync): 
 	return data
 }
 
-export function getGridWidgets(area: string): Widgets[] {
+export function getGridWidgets(area: string): WidgetName[] {
 	const list = area.replaceAll("'", '').replaceAll('.', '').split(' ')
 	const widgets = list.filter((str, i) => str && list.indexOf(str) === i) // remove duplicates
-	return widgets as Widgets[]
+	return widgets as WidgetName[]
 }
 
-export function addGridWidget(grid: string, id: Widgets, selection: Move['selection']): string {
-	const newrow = addGridRow(selection, id)
+export function addGridWidget(grid: string, id: WidgetName): string {
+	const newrow = addGridRow(id)
 	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
 	let position = 0
 
@@ -338,7 +314,7 @@ export function addGridWidget(grid: string, id: Widgets, selection: Move['select
 	return rows.join(' ')
 }
 
-export function removeGridWidget(grid: string, id: Widgets, _: Move['selection']): string {
+export function removeGridWidget(grid: string, id: WidgetName, _: Move['selection']): string {
 	let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
 
 	rows = rows.filter((row) => !row.includes(id))
@@ -347,7 +323,7 @@ export function removeGridWidget(grid: string, id: Widgets, _: Move['selection']
 	return rows.join(' ')
 }
 
-function addGridRow(selection: Move['selection'], id: Widgets): string {
+function addGridRow(id: WidgetName): string {
 	const firstcolumn = selection === 'triple' ? '. ' : ''
 	const lastcolumn = selection === 'triple' || selection === 'double' ? ' .' : ''
 

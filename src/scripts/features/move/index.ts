@@ -1,16 +1,5 @@
-import {
-	addOverlay,
-	interfaceFade,
-	removeOverlay,
-	removeSelection,
-	setAlign,
-	setAllAligns,
-	setGridAreas,
-} from './dom.ts'
-import { toggleWidget, toggleWidgetInSettings, toggleWidgetOnInterface } from './widgets.ts'
-
-import { onSettingsLoad } from '../../utils/onsettingsload.ts'
-import { transitioner } from '../../utils/transitioner.ts'
+import { addOverlay, removeOverlay, removeSelection, setAlign, setAllAligns, setGridAreas } from './dom.ts'
+import { toggleWidget } from './widgets.ts'
 import { SYNC_DEFAULT } from '../../defaults.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
@@ -18,28 +7,33 @@ import { storage } from '../../storage.ts'
 import {
 	addGridWidget,
 	getGridWidgets,
-	getLayout,
 	getWidgetsStorage,
 	gridFind,
 	gridParse,
 	gridStringify,
 	isRowEmpty,
 	spansInGridArea,
-	updateWidgetsStorage,
 } from './helpers.ts'
 
-import type { Move, MoveLayout, Sync } from '../../../types/sync.ts'
-import type { Widgets } from '../../../types/shared.ts'
+import type {
+	Move,
+	SimpleMove,
+	SimpleMoveHorizontal,
+	SimpleMoveText,
+	SimpleMoveVertical,
+	SimpleMoveWidget,
+	Sync,
+} from '../../../types/sync.ts'
+import type { WidgetName } from '../../../types/shared.ts'
 
-type UpdateMove = {
-	widget?: [Widgets, boolean]
+interface UpdateMove {
+	widget?: [WidgetName, boolean]
 	span?: 'col' | 'row'
 	reset?: true
 	toggle?: boolean
-	box?: string
 	text?: string
-	layout?: string
-	select?: string
+	vertical?: string
+	horizontal?: string
 	overlay?: boolean
 	grid?: {
 		x?: string
@@ -47,10 +41,16 @@ type UpdateMove = {
 	}
 }
 
-const dominterface = document.querySelector<HTMLElement>('#interface')
-let widget: Widgets | undefined
+interface AlignChangeOptions {
+	horizontal?: string
+	vertical?: string
+	text?: string
+}
 
-export function moveElements(init?: Move, events?: UpdateMove) {
+const dominterface = document.querySelector<HTMLElement>('#interface')
+let widget: WidgetName | undefined
+
+export function moveElements(init?: SimpleMove, events?: UpdateMove) {
 	if (!(init || events)) {
 		updateMoveElement({ reset: true })
 		return
@@ -62,10 +62,8 @@ export function moveElements(init?: Move, events?: UpdateMove) {
 	}
 
 	if (init) {
-		const { grid, items } = getLayout(init)
-
-		setAllAligns(items)
-		setGridAreas(gridStringify(grid))
+		setAllAligns(init.widgets)
+		setGridAreas(init.grid)
 	}
 }
 
@@ -82,20 +80,20 @@ export async function updateMoveElement(event: UpdateMove) {
 	if (event.span) {
 		toggleGridSpans(data.move, event.span)
 	}
-	if (event.layout) {
-		layoutChange(data, event.layout)
-	}
 	if (event.reset) {
 		layoutReset(data)
 	}
 	if (event.widget) {
 		toggleWidget(data, event.widget)
 	}
-	if (event.box !== undefined) {
-		alignChange(data.move, event.box, 'box')
+	if (event.horizontal !== undefined) {
+		alignChange(data.move, { horizontal: event.horizontal })
+	}
+	if (event.vertical !== undefined) {
+		alignChange(data.move, { vertical: event.vertical })
 	}
 	if (event.text !== undefined) {
-		alignChange(data.move, event.text, 'text')
+		alignChange(data.move, { text: event.text })
 	}
 	if (event.toggle !== undefined) {
 		toggleMoveStatus(data, event.toggle)
@@ -105,7 +103,7 @@ export async function updateMoveElement(event: UpdateMove) {
 	}
 }
 
-function gridChange(move: Move, gridpos: { x?: string; y?: string }) {
+function gridChange(move: SimpleMove, gridpos: { x?: string; y?: string }) {
 	if (!widget) {
 		return
 	}
@@ -114,136 +112,76 @@ function gridChange(move: Move, gridpos: { x?: string; y?: string }) {
 	const y = Number.parseInt(gridpos?.y || '0')
 	const x = Number.parseInt(gridpos?.x || '0')
 
-	const layout = getLayout(move)
-	const positions = gridFind(layout.grid, widget)
-	const affectedIds: Widgets[] = []
-	let grid = layout.grid
+	const positions = gridFind(move.grid, widget)
+	const affectedIds: WidgetName[] = []
 
 	// step 0: Adds new line
-	const isGridOverflowing = positions.some(([col]) => grid[col + y] === undefined)
+	const isGridOverflowing = positions.some(([col]) => move.grid[col + y] === undefined)
 
 	if (isGridOverflowing) {
-		if (move.selection === 'single') {
-			grid.push(['.'])
-		}
-		if (move.selection === 'double') {
-			grid.push(['.', '.'])
-		}
-		if (move.selection === 'triple') {
-			grid.push(['.', '.', '.'])
-		}
+		const columAmount = move.grid[0].length
+		const newRow = (new Array(columAmount)).fill('.')
+
+		move.grid.push(newRow)
 	}
 
 	// step 1: Find elements affected by grid change
 	for (const [col, row] of positions) {
-		const newposition = grid[row + y][col + x]
+		const newposition = move.grid[row + y][col + x]
 
 		if (newposition !== '.') {
-			affectedIds.push(newposition as Widgets)
+			affectedIds.push(newposition as WidgetName)
 		}
 	}
 
 	// step 2: remove conflicting fillings on affected elements
 	for (const id of affectedIds) {
-		if (gridFind(grid, id).length > 1) {
-			grid = spansInGridArea(grid, id, { remove: true })
+		if (gridFind(move.grid, id).length > 1) {
+			move.grid = spansInGridArea(move.grid, id, { remove: true })
 		}
 	}
 
 	// step 3: replace all active position with affected
 	for (const [col, row] of positions) {
-		const newRow = Math.min(Math.max(row + y, 0), grid.length - 1)
-		const newCol = Math.min(Math.max(col + x, 0), grid[0].length - 1)
+		const newRow = Math.min(Math.max(row + y, 0), move.grid.length - 1)
+		const newCol = Math.min(Math.max(col + x, 0), move.grid[0].length - 1)
 
-		const tempItem = grid[row][col]
-		grid[row][col] = grid[newRow][newCol]
-		grid[newRow][newCol] = tempItem
+		const tempItem = move.grid[row][col]
+		move.grid[row][col] = move.grid[newRow][newCol]
+		move.grid[newRow][newCol] = tempItem
 	}
 
 	// step 4: remove empty lines
-	for (let i = 0; i < grid.length; i++) {
-		if (isRowEmpty(grid, i)) {
-			grid.splice(i, 1)
+	for (let i = 0; i < move.grid.length; i++) {
+		if (isRowEmpty(move.grid, i)) {
+			move.grid.splice(i, 1)
 		}
 	}
 
 	// step 5: profit ??????????????
-	layout.grid = grid
-	move.layouts[move.selection] = layout
 	storage.sync.set({ move: move })
 
-	setGridAreas(grid)
+	setGridAreas(move.grid)
 }
 
-function alignChange(move: Move, value: string, type: 'box' | 'text') {
+function alignChange(move: SimpleMove, options: AlignChangeOptions) {
 	if (!widget) {
 		return
 	}
 
-	const layout = getLayout(move)
-	const align = layout.items[widget] ?? { box: '', text: '' }
-
-	if (type === 'box') {
-		align.box = value
+	if (isHorizontalAlign(options.horizontal)) {
+		move.widgets[widget].horizontal = options.horizontal
 	}
-	if (type === 'text') {
-		align.text = value
+	if (isVerticalAlign(options.vertical)) {
+		move.widgets[widget].vertical = options.vertical
+	}
+	if (isTextAlign(options.text)) {
+		move.widgets[widget].text = options.text
 	}
 
-	layout.items[widget] = align
-	move.layouts[move.selection] = layout
 	storage.sync.set({ move: move })
 
-	setAlign(widget, align)
-}
-
-function layoutChange(data: Sync, column: string) {
-	if (column === data.move.selection) {
-		return
-	}
-
-	// Only update selection if coming from user
-	if (column === 'single' || column === 'double' || column === 'triple') {
-		data.move.selection = column
-	}
-
-	const layout = getLayout(data)
-	const widgetsInGrid = getGridWidgets(gridStringify(layout.grid))
-
-	const list: [Widgets, boolean][] = [
-		['time', widgetsInGrid.includes('time')],
-		['main', widgetsInGrid.includes('main')],
-		['notes', widgetsInGrid.includes('notes')],
-		['quotes', widgetsInGrid.includes('quotes')],
-		['pomodoro', widgetsInGrid.includes('pomodoro')],
-		['searchbar', widgetsInGrid.includes('searchbar')],
-		['quicklinks', widgetsInGrid.includes('quicklinks')],
-	]
-
-	const newdata = updateWidgetsStorage(list, data)
-	storage.sync.set(newdata)
-
-	const interfaceTransition = transitioner()
-
-	interfaceTransition.first(() => {
-		interfaceFade('out')
-	})
-
-	interfaceTransition.after(() => {
-		const layout = getLayout(newdata)
-		setAllAligns(layout.items)
-		setGridAreas(layout.grid)
-		removeSelection()
-
-		toggleWidgetInSettings(list)
-		toggleWidgetOnInterface(list)
-	})
-
-	interfaceTransition.finally(() => {
-		interfaceFade('in')
-	})
-
-	interfaceTransition.transition(200)
+	setAlign(widget, move.widgets[widget])
 }
 
 function layoutReset(data: Sync) {
@@ -251,12 +189,12 @@ function layoutReset(data: Sync) {
 	let grid = ''
 
 	for (const id of enabledWidgets) {
-		grid = addGridWidget(grid, id, data.move.selection)
+		grid = addGridWidget(grid, id)
 	}
 
-	data.move.layouts[data.move.selection] = {
+	data.move = {
 		grid: gridParse(grid),
-		items: {} as MoveLayout['items'],
+		widgets: structuredClone(SYNC_DEFAULT.move.widgets),
 	}
 
 	storage.sync.set(data)
@@ -264,13 +202,13 @@ function layoutReset(data: Sync) {
 	removeSelection()
 	setGridAreas(grid)
 	setAllAligns({
-		quicklinks: undefined,
-		main: undefined,
-		time: undefined,
-		notes: undefined,
-		searchbar: undefined,
-		quotes: undefined,
-		pomodoro: undefined,
+		time: {},
+		main: {},
+		notes: {},
+		quotes: {},
+		pomodoro: {},
+		searchbar: {},
+		quicklinks: {},
 	})
 }
 
@@ -330,7 +268,17 @@ function pageWidthOverlay(move: Move, overlay?: boolean) {
 		const ids = getGridWidgets(grid)
 
 		for (const id of ids) {
-			addOverlay(id as Widgets)
+			addOverlay(id as WidgetName)
 		}
 	}
+}
+
+function isHorizontalAlign(str = ''): str is SimpleMoveHorizontal {
+	return ['center', 'left', 'right'].includes(str)
+}
+function isVerticalAlign(str = ''): str is SimpleMoveVertical {
+	return ['top', 'middle', 'bottom'].includes(str)
+}
+function isTextAlign(str = ''): str is SimpleMoveText {
+	return ['center', 'left', 'right'].includes(str)
 }

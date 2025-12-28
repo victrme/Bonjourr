@@ -1,4 +1,4 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
+import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, WidgetName } from './shared.ts'
 
 export interface Sync {
 	showall: boolean
@@ -46,7 +46,7 @@ export interface Sync {
 	quotes: Quotes
 	pomodoro: Pomodoro
 	font: Font
-	move: Move
+	move: SimpleMove
 	about: {
 		browser: string
 		version: string
@@ -191,16 +191,6 @@ export interface Move {
 	}
 }
 
-export interface MoveLayout {
-	grid: string[][]
-	items: Record<Widgets, MoveAlign | undefined>
-}
-
-export interface MoveAlign {
-	box: string
-	text: string
-}
-
 export interface Supporters {
 	enabled: boolean
 	closedMonth?: number
@@ -217,60 +207,11 @@ export interface Weather {
 	provider?: string
 }
 
-export interface LinkGroups {
-	on: boolean
-	selected: string
-	groups: string[]
-	pinned: string[]
-	synced: string[]
-}
-
-export interface Hide {
-	clock?: boolean
-	date?: boolean
-	greetings?: boolean
-	weatherdesc?: boolean
-	weathericon?: boolean
-	settingsicon?: boolean
-}
-
-export interface Backgrounds {
-	type: 'files' | 'urls' | 'images' | 'videos' | 'color'
-	frequency: Frequency
-	fadein: number
-	bright: number
-	blur: number
-	color: string
-	urls: string
-	images: string
-	videos: string
-	pausedUrl?: string
-	pausedImage?: BackgroundImage
-	pausedVideo?: BackgroundVideo
-	queries: Record<string, string>
-	texture: {
-		type: 'none' | 'grain' | 'dots' | 'topographic'
-		size?: number
-		opacity?: number
-	}
-}
-
-export type Move = {
-	selection: MoveSelection
-	layouts: {
-		single?: MoveLayout
-		double?: MoveLayout
-		triple?: MoveLayout
-	}
-}
-
 export type MoveSelection = 'single' | 'double' | 'triple'
 
 export interface MoveLayout {
 	grid: string[][]
-	items: {
-		[key in Widgets]?: MoveAlign
-	}
+	items: Record<WidgetName, MoveAlign | undefined>
 }
 
 export interface MoveAlign {
@@ -282,21 +223,21 @@ export interface MoveAlign {
 
 export type SimpleMove = {
 	grid: string[][]
-	items: Record<Widgets, SimpleMoveWidget>
+	widgets: Record<WidgetName, SimpleMoveWidget>
 }
+
+export type SimpleMoveHorizontal = 'left' | 'center' | 'right'
+export type SimpleMoveVertical = 'top' | 'middle' | 'bottom'
+export type SimpleMoveText = 'left' | 'center' | 'right'
 
 export type SimpleMoveWidget = {
-	box_v?: 'top' | 'middle' | 'bottom'
-	box_h?: 'left' | 'center' | 'right'
-	text?: 'left' | 'center' | 'right'
-	gap?: number
+	horizontal?: SimpleMoveHorizontal
+	vertical?: SimpleMoveVertical
+	text?: SimpleMoveText
 	minwidth?: 'auto' | number
+	gap?: number
 }
 
-export type Supporters = {
-	enabled: boolean
-	closed: boolean
-	month: number
 export interface Pomodoro {
 	on: boolean
 	end: number

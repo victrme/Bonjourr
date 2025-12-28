@@ -216,8 +216,20 @@ export const SYNC_DEFAULT: Sync = {
 		enabled: true,
 	},
 	move: {
-		selection: 'single',
-		layouts: {},
+		grid: [
+			['time'],
+			['main'],
+			['quicklinks'],
+		],
+		widgets: {
+			time: {},
+			main: {},
+			notes: {},
+			quotes: {},
+			pomodoro: {},
+			searchbar: {},
+			quicklinks: {},
+		},
 	},
 }
 

@@ -4,7 +4,6 @@ import { storage } from '../../storage.ts'
 import { weather } from '../weather/index.ts'
 import {
 	addGridWidget,
-	getLayout,
 	gridParse,
 	gridStringify,
 	isEditing,
@@ -12,10 +11,10 @@ import {
 	updateWidgetsStorage,
 } from './helpers.ts'
 
-import type { Widgets } from '../../../types/shared.ts'
+import type { WidgetName } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
+export function toggleWidget(data: Sync, widget: [WidgetName, boolean]) {
 	if (!widget) {
 		return
 	}
@@ -23,11 +22,9 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
 	const [id, on] = widget
 	const gridToggle = on ? addGridWidget : removeGridWidget
 	const interfaceTransition = transitioner()
-	const selection = data.move.selection
-	const layout = getLayout(data)
-	const grid = gridParse(gridToggle(gridStringify(layout.grid), id, selection))
+	const selection = sessionStorage.selectedWidget
+	const grid = gridParse(gridToggle(gridStringify(data.move.grid), id, selection))
 
-	data.move.layouts[selection] = { items: layout.items, grid: grid }
 	const newdata = updateWidgetsStorage([widget], data)
 	storage.sync.set(newdata)
 
@@ -37,9 +34,8 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
 	})
 
 	interfaceTransition.after(() => {
-		const layout = getLayout(newdata)
-		setGridAreas(layout.grid)
-		setAllAligns(layout.items)
+		setGridAreas(data.move.grid)
+		setAllAligns(data.move.widgets)
 		toggleWidgetOnInterface([[id, on]])
 		removeSelection()
 
@@ -63,8 +59,8 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
 	interfaceTransition.transition(200)
 }
 
-export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
-	const inputids: { [key in Widgets]: string } = {
+export function toggleWidgetInSettings(states: [WidgetName, boolean][]) {
+	const inputids: Record<WidgetName, string> = {
 		time: 'i_time',
 		main: 'i_main',
 		quicklinks: 'i_quicklinks',
@@ -83,8 +79,8 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
 	}
 }
 
-export function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
-	const domids: { [key in Widgets]: string } = {
+export function toggleWidgetOnInterface(states: [WidgetName, boolean][]) {
+	const domids: Record<WidgetName, string> = {
 		time: 'time',
 		main: 'main',
 		quicklinks: 'linkblocks',
