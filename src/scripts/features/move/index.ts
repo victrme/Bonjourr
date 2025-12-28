@@ -21,12 +21,12 @@ import type {
 	SimpleMoveHorizontal,
 	SimpleMoveText,
 	SimpleMoveVertical,
-	SimpleMoveWidget,
 	Sync,
 } from '../../../types/sync.ts'
 import type { WidgetName } from '../../../types/shared.ts'
 
 interface UpdateMove {
+	id?: string
 	widget?: [WidgetName, boolean]
 	span?: 'col' | 'row'
 	reset?: true
@@ -74,32 +74,35 @@ export async function updateMoveElement(event: UpdateMove) {
 		data.move = structuredClone(SYNC_DEFAULT.move)
 	}
 
-	if (event.grid) {
-		gridChange(data.move, event.grid)
-	}
-	if (event.span) {
-		toggleGridSpans(data.move, event.span)
-	}
 	if (event.reset) {
 		layoutReset(data)
-	}
-	if (event.widget) {
-		toggleWidget(data, event.widget)
-	}
-	if (event.horizontal !== undefined) {
-		alignChange(data.move, { horizontal: event.horizontal })
-	}
-	if (event.vertical !== undefined) {
-		alignChange(data.move, { vertical: event.vertical })
-	}
-	if (event.text !== undefined) {
-		alignChange(data.move, { text: event.text })
 	}
 	if (event.toggle !== undefined) {
 		toggleMoveStatus(data, event.toggle)
 	}
 	if (event.overlay !== undefined) {
 		pageWidthOverlay(data.move, event.overlay)
+	}
+
+	if (isWidget(event.id)) {
+		if (event.widget) {
+			toggleWidget(data, event.widget)
+		}
+		if (event.grid) {
+			gridChange(data.move, event.grid)
+		}
+		if (event.span) {
+			toggleGridSpans(data.move, event.span)
+		}
+		if (event.horizontal !== undefined) {
+			alignChange(data.move, event.id, { horizontal: event.horizontal })
+		}
+		if (event.vertical !== undefined) {
+			alignChange(data.move, event.id, { vertical: event.vertical })
+		}
+		if (event.text !== undefined) {
+			alignChange(data.move, event.id, { text: event.text })
+		}
 	}
 }
 
@@ -164,24 +167,20 @@ function gridChange(move: SimpleMove, gridpos: { x?: string; y?: string }) {
 	setGridAreas(move.grid)
 }
 
-function alignChange(move: SimpleMove, options: AlignChangeOptions) {
-	if (!widget) {
-		return
-	}
-
+function alignChange(move: SimpleMove, id: WidgetName, options: AlignChangeOptions) {
 	if (isHorizontalAlign(options.horizontal)) {
-		move.widgets[widget].horizontal = options.horizontal
+		move.widgets[id].horizontal = options.horizontal
 	}
 	if (isVerticalAlign(options.vertical)) {
-		move.widgets[widget].vertical = options.vertical
+		move.widgets[id].vertical = options.vertical
 	}
 	if (isTextAlign(options.text)) {
-		move.widgets[widget].text = options.text
+		move.widgets[id].text = options.text
 	}
 
 	storage.sync.set({ move: move })
 
-	setAlign(widget, move.widgets[widget])
+	setAlign(id, move.widgets[id])
 }
 
 function layoutReset(data: Sync) {
@@ -273,11 +272,14 @@ function pageWidthOverlay(move: Move, overlay?: boolean) {
 	}
 }
 
+function isWidget(str = ''): str is WidgetName {
+	return ['time', 'main', 'quicklinks', 'notes', 'quotes', 'searchbar', 'pomodoro'].includes(str)
+}
 function isHorizontalAlign(str = ''): str is SimpleMoveHorizontal {
 	return ['center', 'left', 'right'].includes(str)
 }
 function isVerticalAlign(str = ''): str is SimpleMoveVertical {
-	return ['top', 'middle', 'bottom'].includes(str)
+	return ['baseline', 'center', 'end'].includes(str)
 }
 function isTextAlign(str = ''): str is SimpleMoveText {
 	return ['center', 'left', 'right'].includes(str)

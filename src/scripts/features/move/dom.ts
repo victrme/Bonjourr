@@ -1,4 +1,5 @@
 import { elements, gridStringify } from './helpers.ts'
+import { updateMoveElement } from './index.ts'
 import { getHTMLTemplate } from '../../shared/dom.ts'
 import { onclickdown } from 'clickdown/mod'
 
@@ -16,25 +17,28 @@ export function setGridAreas(grid: MoveLayout['grid'] | string) {
 }
 
 export function setAlign(id: WidgetName, align: SimpleMoveWidget) {
-	const horizontal = align.horizontal ?? 'center'
-	const vertical = align.vertical ?? 'center'
-	const text = align.text
 	const elem = elements[id]
 
 	if (elem) {
-		elem.style.placeSelf = `${horizontal} ${vertical}`
+		if (align.horizontal) {
+			elem.style.justifySelf = align.horizontal
+		}
+
+		if (align.vertical) {
+			elem.style.alignSelf = align.vertical
+		}
 
 		if (id === 'quicklinks') {
 			document.getElementById('linkblocks')?.classList.remove('text-left', 'text-right')
 
-			if (text === 'left') {
+			if (align.text === 'left') {
 				document.getElementById('linkblocks')?.classList.add('text-left')
 			}
-			if (text === 'right') {
+			if (align.text === 'right') {
 				document.getElementById('linkblocks')?.classList.add('text-right')
 			}
 		} else {
-			elem.style.textAlign = text || ''
+			elem.style.textAlign = align.text || ''
 		}
 	}
 }
@@ -72,14 +76,18 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
 	const moveAlignVertical = overlay.querySelector<HTMLInputElement>('#i_move-align-vertical')
 	const moveAlignText = overlay.querySelector<HTMLInputElement>('#i_move-align-text')
 
-	moveAlignHorizontal?.addEventListener('input', () => {
-		console.log(id, 'align horizontally')
+	const horizontals = ['left', 'center', 'right']
+	const verticals = ['baseline', 'center', 'end']
+	const texts = ['left', 'center', 'right']
+
+	moveAlignHorizontal?.addEventListener('input', function () {
+		updateMoveElement({ id, horizontal: horizontals[parseInt(this.value)] })
 	})
-	moveAlignVertical?.addEventListener('input', () => {
-		console.log(id, 'align vertically')
+	moveAlignVertical?.addEventListener('input', function () {
+		updateMoveElement({ id, vertical: verticals[parseInt(this.value)] })
 	})
-	moveAlignText?.addEventListener('input', () => {
-		console.log(id, 'align text')
+	moveAlignText?.addEventListener('input', function () {
+		updateMoveElement({ id, text: texts[parseInt(this.value)] })
 	})
 
 	// Grid spans
