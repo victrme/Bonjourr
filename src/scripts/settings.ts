@@ -887,40 +887,26 @@ function initOptionsEvents() {
 	})
 
 	paramId('i_pmdr_pomodoro').addEventListener('input', function () {
-		pomodoro(undefined, {
-			time_for: {
-				pomodoro: Number(this.value),
-			},
-		})
-	})
-
-	paramId('i_pmdr_pomodoro').addEventListener('change', () => {
-		paramId('i_pmdr_pomodoro').blur()
+		pomodoro(undefined, { timeFor: { pomodoro: Number(this.value) } })
 	})
 
 	paramId('i_pmdr_break').addEventListener('input', function () {
-		pomodoro(undefined, {
-			time_for: {
-				break: Number(this.value),
-			},
-		})
-	})
-
-	paramId('i_pmdr_break').addEventListener('change', () => {
-		paramId('i_pmdr_break').blur()
+		pomodoro(undefined, { timeFor: { break: Number(this.value) } })
 	})
 
 	paramId('i_pmdr_longbreak').addEventListener('input', function () {
-		pomodoro(undefined, {
-			time_for: {
-				longbreak: Number(this.value),
-			},
-		})
+		pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
 	})
 
-	paramId('i_pmdr_longbreak').addEventListener('change', () => {
-		paramId('i_pmdr_longbreak').blur()
-	})
+	// paramId('i_pmdr_pomodoro').addEventListener('change', () => {
+	// 	paramId('i_pmdr_pomodoro').blur()
+	// })
+	// paramId('i_pmdr_break').addEventListener('change', () => {
+	// 	paramId('i_pmdr_break').blur()
+	// })
+	// paramId('i_pmdr_longbreak').addEventListener('change', () => {
+	// 	paramId('i_pmdr_longbreak').blur()
+	// })
 
 	// Custom fonts
 
