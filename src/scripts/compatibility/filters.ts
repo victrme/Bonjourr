@@ -50,6 +50,18 @@ export function newLinkIcons(data: Import): Import {
 	return data
 }
 
+export function addAlarmsToPomodoro(data: Import): Import {
+	if (!data.pomodoro) {
+		data.pomodoro = SYNC_DEFAULT.pomodoro
+	}
+
+	data.pomodoro.alarm = data.pomodoro.alarm ?? SYNC_DEFAULT.pomodoro.alarm
+	data.pomodoro.volume = data.pomodoro.volume ?? SYNC_DEFAULT.pomodoro.alarm
+
+	return data
+}
+
+
 export function fixNullBrightness(data: Import): Import {
 	if (data.backgrounds?.bright === null) {
 		data.backgrounds.bright = SYNC_DEFAULT.backgrounds.bright
@@ -57,6 +69,7 @@ export function fixNullBrightness(data: Import): Import {
 
 	return data
 }
+
 
 export function addSupporters(data: Import): Import {
 	if (data.supporters === undefined) {

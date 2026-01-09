@@ -7,6 +7,10 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
 
 	if (major < 22) {
 		data = filter.newLinkIcons(data)
+
+		if (minor < 1) {
+			data = filter.addAlarmsToPomodoro(data)
+		}
 	}
 
 	if (major <= 21) {
