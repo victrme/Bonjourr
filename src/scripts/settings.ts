@@ -906,7 +906,6 @@ function initOptionsEvents() {
 		pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
 	})
 
-
 	// paramId('i_pmdr_pomodoro').addEventListener('change', () => {
 	// 	paramId('i_pmdr_pomodoro').blur()
 	// })

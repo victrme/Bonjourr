@@ -569,7 +569,7 @@ async function updatePomodoro(update: PomodoroUpdate) {
 
 	// the time defined by the user for each mode (pomodoro, break...)
 	if (update.timeFor) {
-		const {timeFor} = update
+		const { timeFor } = update
 
 		for (const mode of Object.keys(timeFor) as PomodoroMode[]) {
 			const value = timeFor[mode]
