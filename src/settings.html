@@ -1682,6 +1682,35 @@
 			<hr />
 
 			<div class="wrapper">
+				<label for="i_pmdr_alarms" class="trn">Alarm tune</label>
+				<select id="i_pmdr_alarms">
+					<option value="default" class="trn">Default</option>
+					<option value="marimbas">Marimbas</option>
+					<option value="thunderstorm">Thunderstorm</option>
+					<option value="birds">Birds</option>
+					<option value="clock">Clock</option>
+				</select>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
+				<label for="i_pmdr_volume" class="trn">Alarm volume</label>
+				<input
+					id="i_pmdr_volume"
+					name="i_pmdr_volume"
+					type="range"
+					class="range"
+					min=".1"
+					max="1"
+					step="0.1"
+					value=".6"
+				/>
+			</div>
+
+			<hr />
+
+			<div class="wrapper">
 				<label for="i_pmdr_pomodoro_time" class="trn">Default time</label>
 				<div class="inputWithSuffix">
 					<input

@@ -15,8 +15,10 @@ type PomodoroUpdate = {
 	mode?: PomodoroMode
 	pause?: number
 	focus?: boolean
-	timeFor?: Partial<Record<PomodoroMode, number>>
 	sound?: boolean
+	volume?: number
+	alarm?: string
+	timeFor?: Partial<Record<PomodoroMode, number>>
 	history?: { endedAt: string; duration?: number }
 }
 
@@ -26,8 +28,6 @@ type PomodoroHistoryEntry = {
 }
 
 let currentPomodoroData: Pomodoro
-
-const alarmSound = new Audio('src/assets/sounds/clock-alarm-classic.mp3')
 
 const pomodoroContainer = document.getElementById('pomodoro_container') as HTMLDivElement
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
@@ -466,12 +466,15 @@ export function togglePomodoroFocus(focus: boolean) {
 }
 
 function ringTheAlarm() {
+	const alarmSound = new Audio('src/assets/sounds/clock-alarm-classic.mp3')
+
 	// only triggers on the last active tab
 	const lastTab = localStorage.getItem('lastActiveTab')
 	const willRingAndSave = lastTab === TAB_ID
 
 	if (willRingAndSave) {
 		if (currentPomodoroData.sound) {
+			alarmSound.volume = 0.6
 			alarmSound.play()
 		}
 
@@ -522,42 +525,52 @@ function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
 	;(document.getElementById('poms-month') as HTMLSpanElement).textContent = pomsMonth.toString()
 }
 
-async function updatePomodoro({ on, sound, end, mode, pause, focus, timeFor, history }: PomodoroUpdate) {
+async function updatePomodoro(update: PomodoroUpdate) {
 	const data = await storage.sync.get(['pomodoro'])
 
-	if (on !== undefined) {
-		data.pomodoro.on = on
+	if (update.on !== undefined) {
+		data.pomodoro.on = update.on
 	}
 
-	if (sound !== undefined) {
-		data.pomodoro.sound = sound
+	if (update.sound !== undefined) {
+		data.pomodoro.sound = update.sound
 	}
 
-	if (end !== undefined) {
-		data.pomodoro.end = end
+	if (update.alarm) {
+		console.log(update.alarm)
 	}
 
-	if (mode) {
-		data.pomodoro.mode = mode
+	if (update.volume) {
+		console.log(update.volume)
 	}
 
-	if (pause !== undefined) {
-		data.pomodoro.pause = pause
+	if (update.end !== undefined) {
+		data.pomodoro.end = update.end
 	}
 
-	if (focus !== undefined) {
-		data.pomodoro.focus = focus
+	if (update.mode) {
+		data.pomodoro.mode = update.mode
 	}
 
-	if (history !== undefined) {
+	if (update.pause !== undefined) {
+		data.pomodoro.pause = update.pause
+	}
+
+	if (update.focus !== undefined) {
+		data.pomodoro.focus = update.focus
+	}
+
+	if (update.history !== undefined) {
 		data.pomodoro.history.push({
-			endedAt: history.endedAt,
+			endedAt: update.history.endedAt,
 			duration: data.pomodoro.timeFor['pomodoro'],
 		})
 	}
 
 	// the time defined by the user for each mode (pomodoro, break...)
-	if (timeFor) {
+	if (update.timeFor) {
+		const {timeFor} = update
+
 		for (const mode of Object.keys(timeFor) as PomodoroMode[]) {
 			const value = timeFor[mode]
 
@@ -574,7 +587,7 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, timeFor, his
 	// known flaw: sessions are only up to date on the ringing tab
 	setPomodoroInfo(data.pomodoro.history)
 
-	if (timeFor) {
+	if (update.timeFor) {
 		resetTimer()
 	}
 }

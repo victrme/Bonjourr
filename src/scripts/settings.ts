@@ -886,6 +886,14 @@ function initOptionsEvents() {
 		pomodoro(undefined, { sound: target.checked })
 	})
 
+	paramId('i_pmdr_alarms').addEventListener('change', function () {
+		pomodoro(undefined, { alarm: this.value })
+	})
+
+	paramId('i_pmdr_volume').addEventListener('input', function () {
+		pomodoro(undefined, { volume: Number(this.value) })
+	})
+
 	paramId('i_pmdr_pomodoro').addEventListener('input', function () {
 		pomodoro(undefined, { timeFor: { pomodoro: Number(this.value) } })
 	})
@@ -897,6 +905,7 @@ function initOptionsEvents() {
 	paramId('i_pmdr_longbreak').addEventListener('input', function () {
 		pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
 	})
+
 
 	// paramId('i_pmdr_pomodoro').addEventListener('change', () => {
 	// 	paramId('i_pmdr_pomodoro').blur()
