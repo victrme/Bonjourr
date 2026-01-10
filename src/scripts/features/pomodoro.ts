@@ -41,11 +41,11 @@ const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 // to communicate with other tabs
 const broadcast = new BroadcastChannel('bonjourr_pomodoro') as BroadcastChannel
 
-let alarmAudio: HTMLAudioElement = new Audio()
 let countdown: number
 let timeModeTimeout: number
 let tabTitleTimeout: number
 const timeBeforeReset = 10000 // time before the timer resets after the end
+const alarmAudio: HTMLAudioElement = new Audio()
 
 const setModeButton = (value = '') => {
 	return (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
@@ -495,8 +495,11 @@ function ringTheAlarm() {
 }
 
 function playSound() {
-	alarmAudio.src = ('src/assets/sounds/clock-alarm-classic.mp3')
-	alarmAudio.volume = currentPomodoroData.volume ?? .7
+	const filename = currentPomodoroData.alarm || "marimba"
+	const volume = currentPomodoroData.volume ?? .7
+
+	alarmAudio.src = `src/assets/sounds/${filename}.mp3`
+	alarmAudio.volume = volume
 	alarmAudio.play()
 }
 
@@ -548,11 +551,11 @@ async function updatePomodoro(update: PomodoroUpdate) {
 	}
 
 	if (update.alarm) {
-		console.log(update.alarm)
+		data.pomodoro.alarm = update.alarm
 	}
 
 	if (update.volume) {
-		console.log(update.volume)
+		data.pomodoro.volume = update.volume
 	}
 
 	if (update.end !== undefined) {
