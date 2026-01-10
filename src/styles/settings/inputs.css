@@ -70,6 +70,14 @@ aside .input-btn {
 	background-color: var(--color-input);
 }
 
+aside .input-btn:hover {
+	filter: brightness(.9);
+}
+
+aside .input-btn:active {
+	filter: brightness(.8);
+}
+
 aside .input-btn.icon-only span {
 	display: flex;
 	justify-content: center;

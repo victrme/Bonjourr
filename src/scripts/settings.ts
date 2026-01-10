@@ -886,6 +886,10 @@ function initOptionsEvents() {
 		pomodoro(undefined, { sound: target.checked })
 	})
 
+	onclickdown(paramId('i_pmdr_listen'), () => {
+		pomodoro(undefined, { listen: true })
+	})
+
 	paramId('i_pmdr_alarms').addEventListener('change', function () {
 		pomodoro(undefined, { alarm: this.value })
 	})
@@ -905,16 +909,6 @@ function initOptionsEvents() {
 	paramId('i_pmdr_longbreak').addEventListener('input', function () {
 		pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
 	})
-
-	// paramId('i_pmdr_pomodoro').addEventListener('change', () => {
-	// 	paramId('i_pmdr_pomodoro').blur()
-	// })
-	// paramId('i_pmdr_break').addEventListener('change', () => {
-	// 	paramId('i_pmdr_break').blur()
-	// })
-	// paramId('i_pmdr_longbreak').addEventListener('change', () => {
-	// 	paramId('i_pmdr_longbreak').blur()
-	// })
 
 	// Custom fonts
 

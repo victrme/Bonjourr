@@ -18,6 +18,7 @@ type PomodoroUpdate = {
 	sound?: boolean
 	volume?: number
 	alarm?: string
+	listen?: true
 	timeFor?: Partial<Record<PomodoroMode, number>>
 	history?: { endedAt: string; duration?: number }
 }
@@ -40,6 +41,7 @@ const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 // to communicate with other tabs
 const broadcast = new BroadcastChannel('bonjourr_pomodoro') as BroadcastChannel
 
+let alarmAudio: HTMLAudioElement = new Audio()
 let countdown: number
 let timeModeTimeout: number
 let tabTitleTimeout: number
@@ -467,16 +469,13 @@ export function togglePomodoroFocus(focus: boolean) {
 }
 
 function ringTheAlarm() {
-	const alarmSound = new Audio('src/assets/sounds/clock-alarm-classic.mp3')
-
 	// only triggers on the last active tab
 	const lastTab = localStorage.getItem('lastActiveTab')
 	const willRingAndSave = lastTab === TAB_ID
 
 	if (willRingAndSave) {
 		if (currentPomodoroData.sound) {
-			alarmSound.volume = 0.6
-			alarmSound.play()
+			playSound()
 		}
 
 		// if pomodoro ends, registers new session
@@ -493,6 +492,12 @@ function ringTheAlarm() {
 			TAB_ID,
 		})
 	}
+}
+
+function playSound() {
+	alarmAudio.src = ('src/assets/sounds/clock-alarm-classic.mp3')
+	alarmAudio.volume = currentPomodoroData.volume ?? .7
+	alarmAudio.play()
 }
 
 function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
@@ -528,6 +533,11 @@ function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
 
 async function updatePomodoro(update: PomodoroUpdate) {
 	const data = await storage.sync.get(['pomodoro'])
+
+	if (update.listen) {
+		playSound()
+		return
+	}
 
 	if (update.on !== undefined) {
 		data.pomodoro.on = update.on
