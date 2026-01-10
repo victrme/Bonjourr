@@ -100,27 +100,25 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 .glider,
 #pmdr_modes .pomodoro_mode.active {
-	background: rgba(255, 255, 255, 0.15);
-	backdrop-filter: blur(2px) saturate(180%);
-	-webkit-backdrop-filter: blur(2px) saturate(180%);
+	backdrop-filter: saturate(2);
+	-webkit-backdrop-filter: saturate(2);
+	background-color: rgba(255, 255, 255, 0.1);
 	box-shadow:
-		0 8px 32px rgba(31, 38, 135, 0.2),
-		inset 0 4px 20px rgba(255, 255, 255, 0.3);
+		0 8px 32px rgba(31, 38, 135, 0.1),
+		inset 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
 [data-theme='dark'] .glider,
 [data-theme='dark'] #pmdr_modes .pomodoro_mode.active {
 	background: rgba(255, 255, 255, 0.2);
-	/* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),  */
-	/* inset 0 4px 20px rgba(255, 255, 255, 0.3); */
 }
 
 .glass {
 	position: relative;
-	background: rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.06);
 	backdrop-filter: blur(2px) saturate(180%);
 	-webkit-backdrop-filter: blur(2px) saturate(180%);
-	border: 1px solid rgba(255, 255, 255, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.4);
 	box-shadow:
 		0 8px 32px rgba(31, 38, 135, 0.17),
 		inset 0 4px 20px rgba(255, 255, 255, 0.225);
@@ -150,7 +148,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 		inset 0px -9px 0px -8px rgba(255, 255, 255, 0.9);
 	opacity: 0.6;
 	z-index: -1;
-	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(120%);
 }
 
 [data-theme='dark'] .glass:after {
@@ -172,9 +170,9 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 #pmdr_modes .pomodoro_mode label {
 	cursor: pointer;
-	text-shadow: unset;
 	user-select: none;
 	-webkit-user-select: none;
+	text-shadow: 1px 2px 6px rgba(0,0,0,.2);
 }
 
 #pmdr_modes .pomodoro_mode input {
