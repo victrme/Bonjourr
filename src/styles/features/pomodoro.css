@@ -31,7 +31,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	max-width: 45em;
 	min-width: 20em;
 	cursor: initial;
-	font-size: var(--pomodoro-font-size); /* important to be in px for focus animation */
 }
 
 #pomodoro_container.clone {
@@ -204,19 +203,20 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #bottomControls button {
-	padding: 3px;
-	box-sizing: border-box;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	height: 3em;
 	width: 3em;
+	padding: .2em;
 	border-radius: 100%;
+	box-sizing: border-box;
 	color: white;
+	font-size: inherit;
 }
 
 #bottomControls button svg {
-	width: 17px;
+	width: 1.2em;
 }
 
 #focus-toggle {
@@ -226,8 +226,8 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	gap: 8px;
 	font-weight: 400;
 	color: white;
-	padding: 6px 12px;
-	border-radius: 9999px;
+	padding: .4em .8em;
+	border-radius: 10em;
 	cursor: pointer;
 	user-select: none;
 	-webkit-user-select: none;
@@ -294,21 +294,21 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #focus-toggle .slider {
-	width: 32px;
-	height: 18px;
-	background: rgba(255, 255, 255, 0.3);
-	border-radius: 9999px;
 	position: relative;
+	width: 2.2em;
+	height: 1.2em;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 10em;
 	transition: background 0.3s;
 }
 
 #focus-toggle .slider::after {
 	content: '';
 	position: absolute;
-	left: 2px;
-	top: 2px;
-	width: 14px;
-	height: 14px;
+	left: .15em;
+	top: .15em;
+	width: .9em;
+	height: .9em;
 	background: white;
 	border-radius: 50%;
 	transition: transform 0.3s;
@@ -319,7 +319,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #focus-toggle input:checked + .slider::after {
-	transform: translateX(14px);
+	transform: translateX(1em);
 }
 
 /* Mobile */

@@ -422,6 +422,7 @@ export function togglePomodoroFocus(focus: boolean) {
 		clone.style.position = 'absolute'
 		clone.style.top = originalRect.top + 'px'
 		clone.style.left = originalRect.left + 'px'
+		clone.style.fontSize = document.documentElement.style.getPropertyValue('--font-size')
 		clone.style.fontFamily = document.documentElement.style.getPropertyValue('--font-family')
 		clone.classList.add('clone')
 
