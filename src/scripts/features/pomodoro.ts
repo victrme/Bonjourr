@@ -495,7 +495,7 @@ function ringTheAlarm() {
 }
 
 function playSound() {
-	const filename = currentPomodoroData.alarm || "marimba"
+	const filename = currentPomodoroData.alarm || 'marimba'
 	const volume = currentPomodoroData.volume ?? .7
 
 	alarmAudio.src = `src/assets/sounds/${filename}.mp3`
