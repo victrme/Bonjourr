@@ -897,8 +897,14 @@ function correctLinksOrder(data: Sync): Sync {
 
 function getIconFromLinkElem(link: LinkElem): string {
 	if (!link.icon?.value) {
-		return getDefaultIcon(link.url)
+		try {
+			const { origin, pathname } = new URL(link.url)
+			return getDefaultIcon(origin + pathname)
+		} catch (_) {
+			return getDefaultIcon(link.url)
+		}
 	}
+
 	if (link.icon.type === 'file') {
 		return link._id
 	}
