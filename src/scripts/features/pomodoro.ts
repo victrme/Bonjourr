@@ -15,8 +15,11 @@ type PomodoroUpdate = {
 	mode?: PomodoroMode
 	pause?: number
 	focus?: boolean
-	timeFor?: Partial<Record<PomodoroMode, number>>
 	sound?: boolean
+	volume?: number
+	alarm?: string
+	listen?: true
+	timeFor?: Partial<Record<PomodoroMode, number>>
 	history?: { endedAt: string; duration?: number }
 }
 
@@ -26,8 +29,6 @@ type PomodoroHistoryEntry = {
 }
 
 let currentPomodoroData: Pomodoro
-
-const alarmSound = new Audio('src/assets/sounds/clock-alarm-classic.mp3')
 
 const pomodoroContainer = document.getElementById('pomodoro_container') as HTMLDivElement
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
@@ -44,6 +45,7 @@ let countdown: number
 let timeModeTimeout: number
 let tabTitleTimeout: number
 const timeBeforeReset = 10000 // time before the timer resets after the end
+const alarmAudio: HTMLAudioElement = new Audio()
 
 const setModeButton = (value = '') => {
 	return (document.getElementById(`pmdr-${value}`) as HTMLInputElement).checked = true
@@ -422,6 +424,7 @@ export function togglePomodoroFocus(focus: boolean) {
 		clone.style.position = 'absolute'
 		clone.style.top = originalRect.top + 'px'
 		clone.style.left = originalRect.left + 'px'
+		clone.style.fontSize = document.documentElement.style.getPropertyValue('--font-size')
 		clone.style.fontFamily = document.documentElement.style.getPropertyValue('--font-family')
 		clone.classList.add('clone')
 
@@ -472,7 +475,7 @@ function ringTheAlarm() {
 
 	if (willRingAndSave) {
 		if (currentPomodoroData.sound) {
-			alarmSound.play()
+			playSound()
 		}
 
 		// if pomodoro ends, registers new session
@@ -489,6 +492,15 @@ function ringTheAlarm() {
 			TAB_ID,
 		})
 	}
+}
+
+function playSound() {
+	const filename = currentPomodoroData.alarm || 'marimba'
+	const volume = currentPomodoroData.volume ?? .7
+
+	alarmAudio.src = `src/assets/sounds/${filename}.mp3`
+	alarmAudio.volume = volume
+	alarmAudio.play()
 }
 
 function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
@@ -522,42 +534,57 @@ function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
 	;(document.getElementById('poms-month') as HTMLSpanElement).textContent = pomsMonth.toString()
 }
 
-async function updatePomodoro({ on, sound, end, mode, pause, focus, timeFor, history }: PomodoroUpdate) {
+async function updatePomodoro(update: PomodoroUpdate) {
 	const data = await storage.sync.get(['pomodoro'])
 
-	if (on !== undefined) {
-		data.pomodoro.on = on
+	if (update.listen) {
+		playSound()
+		return
 	}
 
-	if (sound !== undefined) {
-		data.pomodoro.sound = sound
+	if (update.on !== undefined) {
+		data.pomodoro.on = update.on
 	}
 
-	if (end !== undefined) {
-		data.pomodoro.end = end
+	if (update.sound !== undefined) {
+		data.pomodoro.sound = update.sound
 	}
 
-	if (mode) {
-		data.pomodoro.mode = mode
+	if (update.alarm) {
+		data.pomodoro.alarm = update.alarm
 	}
 
-	if (pause !== undefined) {
-		data.pomodoro.pause = pause
+	if (update.volume) {
+		data.pomodoro.volume = update.volume
 	}
 
-	if (focus !== undefined) {
-		data.pomodoro.focus = focus
+	if (update.end !== undefined) {
+		data.pomodoro.end = update.end
 	}
 
-	if (history !== undefined) {
+	if (update.mode) {
+		data.pomodoro.mode = update.mode
+	}
+
+	if (update.pause !== undefined) {
+		data.pomodoro.pause = update.pause
+	}
+
+	if (update.focus !== undefined) {
+		data.pomodoro.focus = update.focus
+	}
+
+	if (update.history !== undefined) {
 		data.pomodoro.history.push({
-			endedAt: history.endedAt,
+			endedAt: update.history.endedAt,
 			duration: data.pomodoro.timeFor['pomodoro'],
 		})
 	}
 
 	// the time defined by the user for each mode (pomodoro, break...)
-	if (timeFor) {
+	if (update.timeFor) {
+		const { timeFor } = update
+
 		for (const mode of Object.keys(timeFor) as PomodoroMode[]) {
 			const value = timeFor[mode]
 
@@ -574,7 +601,7 @@ async function updatePomodoro({ on, sound, end, mode, pause, focus, timeFor, his
 	// known flaw: sessions are only up to date on the ringing tab
 	setPomodoroInfo(data.pomodoro.history)
 
-	if (timeFor) {
+	if (update.timeFor) {
 		resetTimer()
 	}
 }

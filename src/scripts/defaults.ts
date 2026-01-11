@@ -203,6 +203,8 @@ export const SYNC_DEFAULT: Sync = {
 		},
 		focus: false,
 		sound: true,
+		volume: 0.7,
+		alarm: 'marimba',
 		history: [],
 	},
 	font: {

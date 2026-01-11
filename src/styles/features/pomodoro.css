@@ -31,7 +31,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	max-width: 45em;
 	min-width: 20em;
 	cursor: initial;
-	font-size: var(--pomodoro-font-size); /* important to be in px for focus animation */
 }
 
 #pomodoro_container.clone {
@@ -101,35 +100,33 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 .glider,
 #pmdr_modes .pomodoro_mode.active {
-	background: rgba(255, 255, 255, 0.15);
-	backdrop-filter: blur(2px) saturate(180%);
-	-webkit-backdrop-filter: blur(2px) saturate(180%);
+	backdrop-filter: saturate(2);
+	-webkit-backdrop-filter: saturate(2);
+	background-color: rgba(255, 255, 255, 0.1);
 	box-shadow:
-		0 8px 32px rgba(31, 38, 135, 0.2),
-		inset 0 4px 20px rgba(255, 255, 255, 0.3);
+		0 8px 32px rgba(31, 38, 135, 0.1),
+		inset 0 4px 20px rgba(255, 255, 255, 0.2);
 }
 
 [data-theme='dark'] .glider,
 [data-theme='dark'] #pmdr_modes .pomodoro_mode.active {
 	background: rgba(255, 255, 255, 0.2);
-	/* box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2),  */
-	/* inset 0 4px 20px rgba(255, 255, 255, 0.3); */
 }
 
 .glass {
 	position: relative;
-	background: rgba(255, 255, 255, 0.12);
+	background: rgba(255, 255, 255, 0.06);
 	backdrop-filter: blur(2px) saturate(180%);
 	-webkit-backdrop-filter: blur(2px) saturate(180%);
-	border: 1px solid rgba(255, 255, 255, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.4);
 	box-shadow:
 		0 8px 32px rgba(31, 38, 135, 0.17),
 		inset 0 4px 20px rgba(255, 255, 255, 0.225);
 }
 
 [data-theme='dark'] .glass {
-	background: rgba(0, 0, 0, 0.32);
-	border: 1px solid rgba(255, 255, 255, 0.35);
+	background: rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.2);
 	box-shadow:
 		0 8px 32px rgba(31, 38, 135, 0.17),
 		inset 0 4px 20px rgba(255, 255, 255, 0.2);
@@ -151,7 +148,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 		inset 0px -9px 0px -8px rgba(255, 255, 255, 0.9);
 	opacity: 0.6;
 	z-index: -1;
-	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
+	filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(120%);
 }
 
 [data-theme='dark'] .glass:after {
@@ -173,9 +170,9 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 
 #pmdr_modes .pomodoro_mode label {
 	cursor: pointer;
-	text-shadow: unset;
 	user-select: none;
 	-webkit-user-select: none;
+	text-shadow: 1px 2px 6px rgba(0,0,0,.2);
 }
 
 #pmdr_modes .pomodoro_mode input {
@@ -204,19 +201,20 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #bottomControls button {
-	padding: 3px;
-	box-sizing: border-box;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	height: 3em;
 	width: 3em;
+	padding: .2em;
 	border-radius: 100%;
+	box-sizing: border-box;
 	color: white;
+	font-size: inherit;
 }
 
 #bottomControls button svg {
-	width: 17px;
+	width: 1.2em;
 }
 
 #focus-toggle {
@@ -226,8 +224,8 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 	gap: 8px;
 	font-weight: 400;
 	color: white;
-	padding: 6px 12px;
-	border-radius: 9999px;
+	padding: .4em .8em;
+	border-radius: 10em;
 	cursor: pointer;
 	user-select: none;
 	-webkit-user-select: none;
@@ -294,21 +292,21 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #focus-toggle .slider {
-	width: 32px;
-	height: 18px;
-	background: rgba(255, 255, 255, 0.3);
-	border-radius: 9999px;
 	position: relative;
+	width: 2.2em;
+	height: 1.2em;
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 10em;
 	transition: background 0.3s;
 }
 
 #focus-toggle .slider::after {
 	content: '';
 	position: absolute;
-	left: 2px;
-	top: 2px;
-	width: 14px;
-	height: 14px;
+	left: .15em;
+	top: .15em;
+	width: .9em;
+	height: .9em;
 	background: white;
 	border-radius: 50%;
 	transition: transform 0.3s;
@@ -319,7 +317,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #focus-toggle input:checked + .slider::after {
-	transform: translateX(14px);
+	transform: translateX(1em);
 }
 
 /* Mobile */

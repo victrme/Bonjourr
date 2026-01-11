@@ -228,9 +228,12 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
 	setInput('i_announce', data.announcements ?? 'major')
 	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
-	setInput('i_pmdr_break', data.pomodoro.timeFor.break / 60)
-	setInput('i_pmdr_pomodoro', data.pomodoro.timeFor.pomodoro / 60)
-	setInput('i_pmdr_longbreak', data.pomodoro.timeFor.longbreak / 60)
+	setInput('i_pmdr_volume', data.pomodoro?.volume ?? 0.7)
+	setInput('i_pmdr_alarms', data.pomodoro?.alarm ?? 'marimba')
+	setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
+	setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
+	setInput('i_pmdr_pomodoro', data.pomodoro?.timeFor.pomodoro / 60)
+	setInput('i_pmdr_longbreak', data.pomodoro?.timeFor.longbreak / 60)
 
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
@@ -886,6 +889,18 @@ function initOptionsEvents() {
 		pomodoro(undefined, { sound: target.checked })
 	})
 
+	onclickdown(paramId('i_pmdr_listen'), () => {
+		pomodoro(undefined, { listen: true })
+	})
+
+	paramId('i_pmdr_alarms').addEventListener('change', function () {
+		pomodoro(undefined, { alarm: this.value })
+	})
+
+	paramId('i_pmdr_volume').addEventListener('input', function () {
+		pomodoro(undefined, { volume: Number(this.value) })
+	})
+
 	paramId('i_pmdr_pomodoro').addEventListener('input', function () {
 		pomodoro(undefined, { timeFor: { pomodoro: Number(this.value) } })
 	})
@@ -897,16 +912,6 @@ function initOptionsEvents() {
 	paramId('i_pmdr_longbreak').addEventListener('input', function () {
 		pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
 	})
-
-	// paramId('i_pmdr_pomodoro').addEventListener('change', () => {
-	// 	paramId('i_pmdr_pomodoro').blur()
-	// })
-	// paramId('i_pmdr_break').addEventListener('change', () => {
-	// 	paramId('i_pmdr_break').blur()
-	// })
-	// paramId('i_pmdr_longbreak').addEventListener('change', () => {
-	// 	paramId('i_pmdr_longbreak').blur()
-	// })
 
 	// Custom fonts
 
