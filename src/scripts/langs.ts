@@ -7,6 +7,7 @@ export const langList = {
 	de: 'Deutsch',
 	it: 'Italiano',
 	es: 'Español',
+	hi: 'Hindi',
 	ca: 'Català',
 	'pt-BR': 'Português (Brasil)',
 	'pt-PT': 'Português (Portugal)',
