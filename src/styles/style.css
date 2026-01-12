@@ -1,17 +1,18 @@
 /* <!> Global must be imported first */
-@import './_global';
+@import "./_global";
 
 /*
  * "Global" is the interface itself and its classes
  *  Other files are blocks and dialogs that appears on the interface
  */
-@import './interface/global.css';
-@import './interface/background.css';
-@import './interface/showsettings.css';
-@import './interface/credits.css';
-@import './interface/error.css';
-@import './interface/opera.css';
-@import './interface/popup';
+@import "./interface/global.css";
+@import "./interface/background.css";
+@import "./interface/showsettings.css";
+@import "./interface/credits.css";
+@import "./interface/error.css";
+@import "./interface/opera.css";
+@import "./interface/popup.css";
+@import "./interface/glass.css";
 
 /*
  * "Global" is the settings menu itself and its classes
@@ -20,35 +21,35 @@
  * "Reusables" are inputs, hr, titles, etc
  * "Dedicated" dropdowns folder for easy update
  */
-@import './settings/global.css';
-@import './settings/other.css';
-@import './settings/dropdowns.css';
-@import './settings/dragzone.css';
-@import './settings/notifications.css';
-@import './settings/backgrounds.css';
-@import './settings/management.css';
-@import './settings/footer.css';
-@import './settings/inputs.css';
-@import './settings/tooltips.css';
+@import "./settings/global.css";
+@import "./settings/other.css";
+@import "./settings/dropdowns.css";
+@import "./settings/dragzone.css";
+@import "./settings/notifications.css";
+@import "./settings/backgrounds.css";
+@import "./settings/management.css";
+@import "./settings/footer.css";
+@import "./settings/inputs.css";
+@import "./settings/tooltips.css";
 
 /* Components that can be used anywhere (interface or settings) */
-@import './components/dialog';
-@import './components/networkform';
+@import "./components/dialog";
+@import "./components/networkform";
 
 /* Baked-in features and dialogs */
-@import './features/time';
-@import './features/main';
-@import './features/searchbar';
-@import './features/notes';
-@import './features/links';
-@import './features/quotes';
-@import './features/pomodoro';
-@import './features/grid';
-@import './features/editlink';
-@import './features/contextmenu';
-@import './features/bookmarks';
-@import './features/csseditor';
-@import './features/supporters';
+@import "./features/time";
+@import "./features/main";
+@import "./features/searchbar";
+@import "./features/notes";
+@import "./features/links";
+@import "./features/quotes";
+@import "./features/pomodoro";
+@import "./features/grid";
+@import "./features/editlink";
+@import "./features/contextmenu";
+@import "./features/bookmarks";
+@import "./features/csseditor";
+@import "./features/supporters";
 
 /* <!> Responsive must be imported last */
-@import './_responsive';
+@import "./_responsive";
