@@ -1,55 +1,95 @@
 .glass {
 	/*
 	 * Keep all sizes & positions variable, never use px in interface.
-	 * These em sizes were calculated from a 15px font size: 6px / 15px = 0.4em
+	 * These em sizes were calculated from a 15px font size:
+	 * 6px / 15px = 0.4em
 	 */
-	--glass-drop-shadow: 0.66em 0.26em 0.4em;
-	--glass-inside-glow: 0 0.26em 1.33em;
-	--glass-reflect-right: -0.66em -0.53em 0 -0.73em;
-	--glass-reflect-bottom: 0 -0.6em 0 -0.53em;
-	--glass-small-drop-shadow: 0 0.53em 2.13em;
+	--drop-shadow: 0.66em 0.26em 0.4em;
+	--inside-glow: 0 0.26em 1.33em;
+	--reflect-right: -0.66em -0.53em 0 -0.73em;
+	--reflect-bottom: 0 -0.6em 0 -0.53em;
+	--small-drop-shadow: 0 0.53em 2.13em;
 }
 
-.glass {
-	position: relative;
-	backdrop-filter: blur(0.06em) saturate(180%);
-	-webkit-backdrop-filter: blur(0.06em) saturate(180%);
-	border: 0.06em solid rgba(255, 255, 255, 0.4);
-
-	background: rgba(255, 255, 255, 0.06);
-	box-shadow:
-		var(--glass-small-drop-shadow) rgba(31, 38, 135, 0.17),
-		inset var(--glass-inside-glow) rgba(255, 255, 255, 0.225);
-}
-
-[data-theme="dark"] .glass {
-	background: rgba(0, 0, 0, 0.3);
-}
-
-.glass::after {
+.glass::after,
+.glass-hover::after {
 	content: "";
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
+	z-index: -1;
+}
+
+.glass,
+.glass-hover:hover,
+.glass-hover:focus-visible {
+	position: relative;
+	backdrop-filter: blur(0.06em) saturate(180%);
+	-webkit-backdrop-filter: blur(0.06em) saturate(180%);
+	border: 0.06em solid rgba(255, 255, 255, 0.4);
+	background: rgba(255, 255, 255, 0.06);
+	box-shadow:
+		var(--small-drop-shadow) rgba(31, 38, 135, 0.17),
+		inset var(--inside-glow) rgba(255, 255, 255, 0.225);
+}
+
+[data-theme="dark"] .glass,
+[data-theme="dark"] .glass-hover:hover,
+[data-theme="dark"] .glass-hover:focus-visible {
+	background: rgba(0, 0, 0, 0.3);
+}
+
+.glass::after,
+.glass-hover:hover::after,
+.glass-hover:focus-visible::after {
+	opacity: 0.6;
 	border-radius: 2rem;
 	backdrop-filter: blur(0.06em);
 	-webkit-backdrop-filter: blur(0.06em);
-	opacity: 0.6;
-	z-index: -1;
-	filter: blur(0.06em) drop-shadow(var(--glass-drop-shadow) black)
-		brightness(120%);
-
 	background: rgba(255, 255, 255, 0.1);
+	filter: blur(0.06em) drop-shadow(var(--drop-shadow) black) brightness(120%);
 	box-shadow:
-		inset var(--glass-reflect-right) rgba(255, 255, 255, 0.9),
-		inset var(--glass-reflect-bottom) rgba(255, 255, 255, 0.9);
+		inset var(--reflect-right) rgba(255, 255, 255, 0.9),
+		inset var(--reflect-bottom) rgba(255, 255, 255, 0.9);
 }
 
-[data-theme="dark"] .glass:after {
+[data-theme="dark"] .glass:after,
+[data-theme="dark"] .glass-hover:hover::after,
+[data-theme="dark"] .glass-hover:focus-visible::after {
 	background: rgba(255, 255, 255, 0.05);
 	box-shadow:
-		inset var(--glass-reflect-right) rgba(255, 255, 255, 0.4),
-		inset var(--glass-reflect-bottom) rgba(255, 255, 255, 0.4);
+		inset var(--reflect-right) rgba(255, 255, 255, 0.4),
+		inset var(--reflect-bottom) rgba(255, 255, 255, 0.4);
+}
+
+/*
+ * Glass hover is flat by default,
+ * but transitions to glass on hover | focus
+ */
+
+.glass-hover {
+	backdrop-filter: blur(0.6em);
+	-webkit-backdrop-filter: blur(0.6em);
+	border: 0.06em solid #fff1;
+	box-shadow: none;
+	transition:
+		backdrop-filter 0.1s ease,
+		background 0.1s ease,
+		box-shadow 0.1s ease,
+		border 0.1s ease;
+}
+
+.glass-hover:after {
+	opacity: 0;
+	transition: opacity 0.1s ease;
+}
+
+[data-theme="light"] .glass-hover {
+	background-color: #fff1;
+}
+
+[data-theme="dark"] .glass-hover {
+	background-color: #0001;
 }
