@@ -12,7 +12,7 @@
     "npm:clickdown@^1.3.4": "1.3.4",
     "npm:esbuild@~0.27.2": "0.27.2",
     "npm:fake-indexeddb@^6.2.5": "6.2.5",
-    "npm:pocket-editor@^2.5.0": "2.5.0",
+    "npm:pocket-editor@^2.6.0": "2.6.0",
     "npm:prism-code-editor@^4.2.0": "4.2.0"
   },
   "jsr": {
@@ -258,8 +258,8 @@
         "whatwg-mimetype"
       ]
     },
-    "pocket-editor@2.5.0": {
-      "integrity": "sha512-lXGU+b1+Bzww/dG4qxTIDaB50Ko0MRZfIM0UjWGadfp90/XJ/3FIiVpHvJbj+taZ2LPAEEsPvn6+pnV6lqH5Nw=="
+    "pocket-editor@2.6.0": {
+      "integrity": "sha512-wuYaTTeoy9j5bDbwWOU2++UgmG/5LmRAq0hTdAozmKxI+4M5z2nMvQESu/ZSvlj7WyGN2RJy5tUAAFFyWeYC+w=="
     },
     "prism-code-editor@4.2.0": {
       "integrity": "sha512-0BFNP0ju4IXZe6Wrxtw9bDdhG2s4TBpWFVRZ6a0yyL71aQhSblqprld+dq/bpWowlRNhWCLdA6lJ3BHA9geEOQ=="
@@ -282,7 +282,7 @@
       "npm:clickdown@^1.3.4",
       "npm:esbuild@~0.27.2",
       "npm:fake-indexeddb@^6.2.5",
-      "npm:pocket-editor@^2.5.0",
+      "npm:pocket-editor@^2.6.0",
       "npm:prism-code-editor@^4.2.0"
     ]
   }
