@@ -668,7 +668,7 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
 
 	img.addEventListener('load', () => {
 		const isSmall = img.width <= 256 && img.height <= 256
-		const isPng = media.mimetype?.includes('png')
+		const isPng = !!media.mimetype?.includes('png')
 
 		div?.classList.toggle('pixelated', isPng && isSmall)
 		backgroundsWrapper?.classList.remove('hidden')
