@@ -968,7 +968,7 @@ function initOptionsEvents() {
 	// Updates
 
 	paramId('i_announce').addEventListener('change', function (this) {
-		interfacePopup(undefined, { announcements: this.value })
+		interfacePopup(undefined, { announcements: this.checked })
 	})
 
 	onclickdown(paramId('i_supporters_notif'), (_, target) => {

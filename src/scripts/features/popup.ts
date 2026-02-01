@@ -2,21 +2,18 @@ import { getLang, tradThis } from '../utils/translations.ts'
 import { BROWSER } from '../defaults.ts'
 import { storage } from '../storage.ts'
 
-import type { Sync } from '../../types/sync.ts'
-
 type PopupInit = {
 	old?: string
 	new: string
 	review: number
-	announce: Sync['announcements']
+	announce: 'major' | 'off'
 }
 
 type PopupUpdate = {
-	announcements?: string
+	announcements?: boolean
 }
 
 const ANNOUNCEMENT_URL = 'https://ko-fi.com/post/Bonjourr-22-pomodoro-timer-new-look-right-click-F1F11P47J8'
-const ANNOUNCEMENT_VERSION = '22.0.0'
 
 const ANNOUNCEMENT_TRNS = {
 	en: '<b>Bonjourr just got a major update! ✨</b> Discover what’s new: Pomodoro timer, universal right-click menu, improved links, refreshed design, and more.',
@@ -72,12 +69,12 @@ const REVIEW_URLS = {
 }
 
 export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
-	// force popup for debugging
+	// // force popup for debugging
 	// displayPopup('announce', true)
 	// displayPopup('review', true)
 
-	if (isAnnouncement(event?.announcements)) {
-		storage.sync.set({ announcements: event?.announcements })
+	if (event?.announcements !== undefined) {
+		storage.sync.set({ announcements: event.announcements ? 'major' : 'off' })
 		return
 	}
 
@@ -90,11 +87,9 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
 	if (init.old && init.review === -1) {
 		const major = (s: string) => Number.parseInt(s.split('.')[0])
 		const isMajorUpdate = major(init.new) > major(init.old)
-		const isNewVersion = init.new !== init.old && init.new === ANNOUNCEMENT_VERSION
 
 		const announceMajor = init.announce === 'major' && isMajorUpdate
-		const announceAny = init.announce === 'all' && isNewVersion
-		const canAnnounce = localStorage.hasUpdated === 'true' || announceAny || announceMajor
+		const canAnnounce = localStorage.hasUpdated === 'true' || announceMajor
 
 		if (canAnnounce) {
 			localStorage.hasUpdated = 'true'
@@ -181,8 +176,4 @@ function closePopup() {
 	setTimeout(() => document.getElementById('credit-container')?.removeAttribute('style'), 600)
 	document.getElementById('popup')?.classList.remove('shown')
 	removePopupTrigger()
-}
-
-function isAnnouncement(str = ''): str is Sync['announcements'] {
-	return ['all', 'major', 'off'].includes(str)
 }

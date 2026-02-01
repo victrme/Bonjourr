@@ -17,7 +17,7 @@ export interface Sync {
 	textShadow: number
 	cssHeight?: number
 	review: number
-	announcements: 'all' | 'major' | 'off'
+	announcements: 'major' | 'off'
 	supporters: Supporters
 	reviewPopup?: number | string
 	css: string
