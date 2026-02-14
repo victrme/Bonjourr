@@ -3,7 +3,7 @@ import type { WidgetName } from '../../../types/shared.ts'
 
 type Grid = string[][]
 
-const MOVE_WIDGETS: WidgetName[] = [
+export const MOVE_WIDGETS: WidgetName[] = [
 	'time',
 	'main',
 	'quicklinks',
@@ -91,6 +91,65 @@ export function gridFind(grid: Grid, id: string): [number, number][] {
 	})
 
 	return positions
+}
+
+interface WidgetInGrid {
+	width: number
+	height: number
+	positions: {
+		col: number
+		row: number
+	}[]
+}
+
+export function gridFindObject(grid: Grid, id: string): WidgetInGrid {
+	const positions = gridFind(grid, id)
+	const pos = positions.map(([c, r]) => ({
+		col: c,
+		row: r,
+	}))
+
+	const rowsAmount = [...new Set(pos.map((p) => p.row))].length
+	const colsAmount = [...new Set(pos.map((p) => p.col))].length
+
+	return {
+		width: colsAmount,
+		height: rowsAmount,
+		positions: pos,
+	}
+}
+
+/**
+ * <!> The first line is never detected as the offending one
+ * <!> because its used as the control row.
+ *
+ * Can be a problem, let's see if it is often the case.
+ */
+export function findOffendingRow(grid: Grid, id: string): number | undefined {
+	let lastWidth: number | undefined
+
+	for (let ii = 0; ii < grid.length; ii++) {
+		const row = grid[ii]
+		let currentWidth = 0
+
+		for (const col of row) {
+			if (col === id) {
+				currentWidth++
+			}
+		}
+
+		if (lastWidth && currentWidth) {
+			if (currentWidth !== lastWidth) {
+				return ii
+			}
+		}
+
+		lastWidth = currentWidth
+	}
+}
+
+export function isRectangle(grid: Grid, id: string): boolean {
+	return !findOffendingRow(grid, id)
 }
 
 //	Alignment

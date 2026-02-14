@@ -6,12 +6,15 @@ import { storage } from '../../storage.ts'
 
 import {
 	addGridWidget,
+	findOffendingRow,
 	getGridWidgets,
 	getWidgetsStorage,
-	gridFind,
+	gridFindObject,
 	gridParse,
 	gridStringify,
+	isRectangle,
 	isRowEmpty,
+	MOVE_WIDGETS,
 	spansInGridArea,
 } from './helpers.ts'
 
@@ -35,10 +38,7 @@ interface UpdateMove {
 	vertical?: string
 	horizontal?: string
 	overlay?: boolean
-	grid?: {
-		x?: string
-		y?: string
-	}
+	direction?: 'up' | 'down' | 'left' | 'right'
 }
 
 interface AlignChangeOptions {
@@ -88,8 +88,8 @@ export async function updateMoveElement(event: UpdateMove) {
 		if (event.widget) {
 			toggleWidget(data, event.widget)
 		}
-		if (event.grid) {
-			gridChange(data.move, event.grid)
+		if (event.direction) {
+			gridChange(data.move, event.id, event.direction)
 		}
 		if (event.span) {
 			toggleGridSpans(data.move, event.span)
@@ -106,45 +106,44 @@ export async function updateMoveElement(event: UpdateMove) {
 	}
 }
 
-function gridChange(move: SimpleMove, gridpos: { x?: string; y?: string }) {
-	if (!widget) {
-		return
-	}
-
-	// Get button move amount
-	const y = Number.parseInt(gridpos?.y || '0')
-	const x = Number.parseInt(gridpos?.x || '0')
-
-	const positions = gridFind(move.grid, widget)
+function gridChange(move: SimpleMove, id: WidgetName, direction: 'up' | 'down' | 'left' | 'right') {
+	const widgetInGrid = gridFindObject(move.grid, id)
+	const newWidgetInGrid = structuredClone(widgetInGrid)
 	const affectedIds: WidgetName[] = []
 
-	// step 0: Adds new line
-	const isGridOverflowing = positions.some(([col]) => move.grid[col + y] === undefined)
+	// step 1: move specified widget
 
-	if (isGridOverflowing) {
-		const columAmount = move.grid[0].length
-		const newRow = (new Array(columAmount)).fill('.')
-
-		move.grid.push(newRow)
+	for (const i in widgetInGrid.positions) {
+		if (direction === 'up') {
+			newWidgetInGrid.positions[i].row--
+		}
+		if (direction === 'down') {
+			newWidgetInGrid.positions[i].row++
+		}
+		if (direction === 'left') {
+			newWidgetInGrid.positions[i].col--
+		}
+		if (direction === 'right') {
+			newWidgetInGrid.positions[i].col++
+		}
 	}
 
-	// step 1: Find elements affected by grid change
-	for (const [col, row] of positions) {
-		const newposition = move.grid[row + y][col + x]
+	// step 2: Find elements affected by grid change
+
+	for (const { col, row } of newWidgetInGrid.positions) {
+		const newposition = move.grid[row][col]
 
 		if (newposition !== '.') {
 			affectedIds.push(newposition as WidgetName)
 		}
 	}
 
-	// step 2: remove conflicting fillings on affected elements
-	for (const id of affectedIds) {
-		if (gridFind(move.grid, id).length > 1) {
-			move.grid = spansInGridArea(move.grid, id, { remove: true })
-		}
-	}
+	console.log(affectedIds)
 
-	// step 3: replace all active position with affected
+	return
+
+	// step 3: Move all affected widgets
+
 	for (const [col, row] of positions) {
 		const newRow = Math.min(Math.max(row + y, 0), move.grid.length - 1)
 		const newCol = Math.min(Math.max(col + x, 0), move.grid[0].length - 1)
@@ -154,16 +153,29 @@ function gridChange(move: SimpleMove, gridpos: { x?: string; y?: string }) {
 		move.grid[newRow][newCol] = tempItem
 	}
 
-	// step 4: remove empty lines
+	// step 4: Find non-rectangle widgets
+
+	for (const widget of MOVE_WIDGETS) {
+		console.log(widget, isRectangle(move.grid, widget))
+	}
+
+	// step 4b: Reduce widget size until it is rectangle
+
+	// ...
+	// ...
+	// ...
+
+	// step 5: remove empty lines
+
 	for (let i = 0; i < move.grid.length; i++) {
 		if (isRowEmpty(move.grid, i)) {
 			move.grid.splice(i, 1)
 		}
 	}
 
-	// step 5: profit ??????????????
-	storage.sync.set({ move: move })
+	// step 6: profit ??????????????
 
+	storage.sync.set({ move: move })
 	setGridAreas(move.grid)
 }
 

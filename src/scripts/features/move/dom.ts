@@ -1,5 +1,5 @@
 import { elements, gridStringify } from './helpers.ts'
-import { updateMoveElement } from './index.ts'
+import { moveElements, updateMoveElement } from './index.ts'
 import { getHTMLTemplate } from '../../shared/dom.ts'
 import { onclickdown } from 'clickdown/mod'
 
@@ -58,15 +58,21 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
 	const moveGridTop = overlay.querySelector<HTMLButtonElement>('#move-grid-top')
 
 	onclickdown(moveGridBottom, () => {
+		moveElements(undefined, { id, direction: 'down' })
 		console.log(id, 'move bottom')
 	})
 	onclickdown(moveGridRight, () => {
+		moveElements(undefined, { id, direction: 'right' })
 		console.log(id, 'move right')
 	})
 	onclickdown(moveGridLeft, () => {
+		moveElements(undefined, { id, direction: 'left' })
+
 		console.log(id, 'move left')
 	})
 	onclickdown(moveGridTop, () => {
+		moveElements(undefined, { id, direction: 'up' })
+
 		console.log(id, 'move top')
 	})
 
