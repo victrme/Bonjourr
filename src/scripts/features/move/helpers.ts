@@ -3,6 +3,8 @@ import type { WidgetName } from '../../../types/shared.ts'
 
 type Grid = string[][]
 
+export type Direction = 'up' | 'down' | 'left' | 'right'
+
 export const MOVE_WIDGETS: WidgetName[] = [
 	'time',
 	'main',
@@ -93,7 +95,7 @@ export function gridFind(grid: Grid, id: string): [number, number][] {
 	return positions
 }
 
-interface WidgetInGrid {
+export interface WidgetInGrid {
 	width: number
 	height: number
 	positions: {
@@ -179,21 +181,16 @@ function getSpanDirection(grid: Grid, id: string): 'none' | 'columns' | 'rows' {
 	return 'rows'
 }
 
-export function isRowEmpty(grid: Grid, index: number) {
+export function isRowEmpty(grid: Grid, index: number): boolean {
 	if (grid[index] === undefined) {
 		return false
 	}
 
-	const row = grid[index]
-	let empty = true
+	return grid[index].every((cell) => cell === '.')
+}
 
-	row.some((cell) => {
-		if (cell !== '.' && getSpanDirection(grid, cell) !== 'columns') {
-			empty = false
-		}
-	})
-
-	return empty
+export function isColumnEmpty(grid: Grid, index: number): boolean {
+	return grid.every((row) => row[index] === '.')
 }
 
 export function spansInGridArea(
