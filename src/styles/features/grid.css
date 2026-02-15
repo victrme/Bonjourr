@@ -187,20 +187,20 @@ input[name='move-align-vertical'] {
 }
 
 /*
- * Move overlay span multiple
+ * Move overlay grow multiple
  */
 
-.move-overlay .move-overlay-span div {
+.move-overlay .move-overlay-grow div {
 	width: 100%;
 	height: 100%;
 	background-color: transparent;
 }
 
-.move-overlay .move-overlay-span div:hover {
+.move-overlay .move-overlay-grow div:hover {
 	background-color: var(--color-blue);
 }
 
-.move-overlay .move-overlay-span li:nth-child(1) {
+.move-overlay .move-overlay-grow li:nth-child(1) {
 	top: 0;
 	left: 1em;
 	right: 1em;
@@ -208,7 +208,7 @@ input[name='move-align-vertical'] {
 	cursor: n-resize;
 	margin-bottom: 1em;
 }
-.move-overlay .move-overlay-span li:nth-child(3) {
+.move-overlay .move-overlay-grow li:nth-child(3) {
 	bottom: 0;
 	left: 1em;
 	right: 1em;
@@ -216,7 +216,7 @@ input[name='move-align-vertical'] {
 	cursor: s-resize;
 	margin-top: 1em;
 }
-.move-overlay .move-overlay-span li:nth-child(2) {
+.move-overlay .move-overlay-grow li:nth-child(2) {
 	right: 0;
 	top: 1em;
 	bottom: 1em;
@@ -224,7 +224,7 @@ input[name='move-align-vertical'] {
 	cursor: e-resize;
 	margin-left: 1em;
 }
-.move-overlay .move-overlay-span li:nth-child(4) {
+.move-overlay .move-overlay-grow li:nth-child(4) {
 	left: 0;
 	top: 1em;
 	bottom: 1em;

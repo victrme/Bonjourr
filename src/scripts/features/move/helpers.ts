@@ -1,6 +1,15 @@
 import type { Move, Sync } from '../../../types/sync.ts'
 import type { WidgetName } from '../../../types/shared.ts'
 
+export interface WidgetInGrid {
+	width: number
+	height: number
+	positions: {
+		col: number
+		row: number
+	}[]
+}
+
 export type Grid = string[][]
 
 export type Direction = 'up' | 'down' | 'left' | 'right'
@@ -40,10 +49,6 @@ export function hasDuplicateInArray(arr: string[], id?: string): boolean {
 }
 
 //	Grid
-
-export function columnsAmount(grid: Grid): number {
-	return grid[0]?.length || 1
-}
 
 function gridValidate(grid: Grid): boolean {
 	const cells = grid.flat()
@@ -95,15 +100,6 @@ export function gridFind(grid: Grid, id: string): [number, number][] {
 	return positions
 }
 
-export interface WidgetInGrid {
-	width: number
-	height: number
-	positions: {
-		col: number
-		row: number
-	}[]
-}
-
 export function gridFindObject(grid: Grid, id: string): WidgetInGrid {
 	const positions = gridFind(grid, id)
 	const pos = positions.map(([c, r]) => ({
@@ -121,39 +117,6 @@ export function gridFindObject(grid: Grid, id: string): WidgetInGrid {
 	}
 }
 
-/**
- * <!> The first line is never detected as the offending one
- * <!> because its used as the control row.
- *
- * Can be a problem, let's see if it is often the case.
- */
-export function findOffendingRow(grid: Grid, id: string): number | undefined {
-	let lastWidth: number | undefined
-
-	for (let ii = 0; ii < grid.length; ii++) {
-		const row = grid[ii]
-		let currentWidth = 0
-
-		for (const col of row) {
-			if (col === id) {
-				currentWidth++
-			}
-		}
-
-		if (lastWidth && currentWidth) {
-			if (currentWidth !== lastWidth) {
-				return ii
-			}
-		}
-
-		lastWidth = currentWidth
-	}
-}
-
-export function isRectangle(grid: Grid, id: string): boolean {
-	return !findOffendingRow(grid, id)
-}
-
 //	Alignment
 
 export function alignStringify(align: { box: string; text: string }): string {
@@ -166,32 +129,6 @@ export function alignParse(string = ''): { box: string; text: string } {
 }
 
 //	Span
-
-function getSpanDirection(grid: Grid, id: string): 'none' | 'columns' | 'rows' {
-	const poses = gridFind(grid, id)
-	const rows = Object.values(poses).map(([_, row]) => row)
-
-	if (poses.length < 2) {
-		return 'none'
-	}
-	if (rows[0] !== rows[1]) {
-		return 'columns'
-	}
-
-	return 'rows'
-}
-
-export function isRowEmpty(grid: Grid, index: number): boolean {
-	if (grid[index] === undefined) {
-		return false
-	}
-
-	return grid[index].every((cell) => cell === '.')
-}
-
-export function isColumnEmpty(grid: Grid, index: number): boolean {
-	return grid.every((row) => row[index] === '.')
-}
 
 export function spansInGridArea(
 	grid: Grid,

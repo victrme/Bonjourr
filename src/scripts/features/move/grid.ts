@@ -1,4 +1,4 @@
-import { gridFind, gridFindObject, isColumnEmpty, isRectangle, isRowEmpty, MOVE_WIDGETS } from './helpers.ts'
+import { gridFind, gridFindObject, MOVE_WIDGETS } from './helpers.ts'
 import { setGridAreas } from './dom.ts'
 import { storage } from '../../storage.ts'
 
@@ -20,7 +20,6 @@ export function gridChange(move: SimpleMove, id: WidgetName, direction: Directio
 	}
 
 	// Mutates move steps by steps
-
 	addGridEdges(move, direction, widget)
 	optimisticSwap(move, id, widget, direction)
 	fixGridCollisions(move, sizes, id)
@@ -221,10 +220,6 @@ function toSizeMap(move: SimpleMove): WidgetSizes {
 	return sizes
 }
 
-function rowOfDots(move: SimpleMove): ('.')[] {
-	return new Array(move.grid[0].length).fill('.')
-}
-
 function isWidgetAtEdge(grid: Grid, widget: WidgetInGrid, dir: Direction): boolean {
 	const cols = widget.positions.map((p) => (p.col))
 	const rows = widget.positions.map((p) => (p.row))
@@ -241,4 +236,54 @@ function isWidgetAtEdge(grid: Grid, widget: WidgetInGrid, dir: Direction): boole
 		case 'left':
 			return Math.min(...cols) === 0
 	}
+}
+
+export function findOffendingRow(grid: Grid, id: string): number | undefined {
+	/**
+	 * <!> The first line is never detected as the offending one
+	 * <!> because its used as the control row.
+	 *
+	 * Can be a problem, let's see if it is often the case.
+	 */
+
+	let lastWidth: number | undefined
+
+	for (let ii = 0; ii < grid.length; ii++) {
+		const row = grid[ii]
+		let currentWidth = 0
+
+		for (const col of row) {
+			if (col === id) {
+				currentWidth++
+			}
+		}
+
+		if (lastWidth && currentWidth) {
+			if (currentWidth !== lastWidth) {
+				return ii
+			}
+		}
+
+		lastWidth = currentWidth
+	}
+}
+
+function isRectangle(grid: Grid, id: string): boolean {
+	return !findOffendingRow(grid, id)
+}
+
+function isRowEmpty(grid: Grid, index: number): boolean {
+	if (grid[index] === undefined) {
+		return false
+	}
+
+	return grid[index].every((cell) => cell === '.')
+}
+
+function isColumnEmpty(grid: Grid, index: number): boolean {
+	return grid.every((row) => row[index] === '.')
+}
+
+function rowOfDots(move: SimpleMove): ('.')[] {
+	return new Array(move.grid[0].length).fill('.')
 }

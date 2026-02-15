@@ -59,21 +59,15 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
 
 	onclickdown(moveGridBottom, () => {
 		moveElements(undefined, { id, direction: 'down' })
-		console.log(id, 'move bottom')
 	})
 	onclickdown(moveGridRight, () => {
 		moveElements(undefined, { id, direction: 'right' })
-		console.log(id, 'move right')
 	})
 	onclickdown(moveGridLeft, () => {
 		moveElements(undefined, { id, direction: 'left' })
-
-		console.log(id, 'move left')
 	})
 	onclickdown(moveGridTop, () => {
 		moveElements(undefined, { id, direction: 'up' })
-
-		console.log(id, 'move top')
 	})
 
 	// Grid align
@@ -96,24 +90,24 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
 		updateMoveElement({ id, text: texts[parseInt(this.value)] })
 	})
 
-	// Grid spans
+	// Grid grow
 
-	const moveSpanBottom = overlay.querySelector<HTMLElement>('#move-span-bottom')
-	const moveSpanRight = overlay.querySelector<HTMLElement>('#move-span-right')
-	const moveSpanLeft = overlay.querySelector<HTMLElement>('#move-span-left')
-	const moveSpanTop = overlay.querySelector<HTMLElement>('#move-span-top')
+	const moveGrowBottom = overlay.querySelector<HTMLElement>('#move-grow-bottom')
+	const moveGrowRight = overlay.querySelector<HTMLElement>('#move-grow-right')
+	const moveGrowLeft = overlay.querySelector<HTMLElement>('#move-grow-left')
+	const moveGrowTop = overlay.querySelector<HTMLElement>('#move-grow-top')
 
-	moveSpanBottom?.addEventListener('mousedown', () => {
-		console.log(id, 'start spanning bottom')
+	moveGrowBottom?.addEventListener('mousedown', () => {
+		console.log(id, 'start growing down')
 	})
-	moveSpanRight?.addEventListener('mousedown', () => {
-		console.log(id, 'start spanning right')
+	moveGrowRight?.addEventListener('mousedown', () => {
+		console.log(id, 'start growing right')
 	})
-	moveSpanLeft?.addEventListener('mousedown', () => {
-		console.log(id, 'start spanning left')
+	moveGrowLeft?.addEventListener('mousedown', () => {
+		console.log(id, 'start growing left')
 	})
-	moveSpanTop?.addEventListener('mousedown', () => {
-		console.log(id, 'start spanning top')
+	moveGrowTop?.addEventListener('mousedown', () => {
+		console.log(id, 'start growing up')
 	})
 }
 

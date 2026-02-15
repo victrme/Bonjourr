@@ -1,27 +1,19 @@
 import { addOverlay, removeOverlay, removeSelection, setAlign, setAllAligns, setGridAreas } from './dom.ts'
 import { toggleWidget } from './widgets.ts'
 import { SYNC_DEFAULT } from '../../defaults.ts'
+import { gridChange } from './grid.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import {
-	addGridWidget,
-	getGridWidgets,
-	getWidgetsStorage,
-	gridParse,
-	gridStringify,
-	spansInGridArea,
-} from './helpers.ts'
+import { addGridWidget, getGridWidgets, getWidgetsStorage, gridParse, gridStringify } from './helpers.ts'
 
 import type { SimpleMove, SimpleMoveHorizontal, SimpleMoveText, SimpleMoveVertical, Sync } from '../../../types/sync.ts'
 import type { WidgetName } from '../../../types/shared.ts'
 import type { Direction } from './helpers.ts'
-import { gridChange } from './change.ts'
 
 interface UpdateMove {
 	id?: string
 	widget?: [WidgetName, boolean]
-	span?: 'col' | 'row'
 	reset?: true
 	toggle?: boolean
 	text?: string
@@ -38,7 +30,6 @@ interface AlignChangeOptions {
 }
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
-let widget: WidgetName | undefined
 
 export function moveElements(init?: SimpleMove, events?: UpdateMove) {
 	if (!(init || events)) {
@@ -80,9 +71,6 @@ export async function updateMoveElement(event: UpdateMove) {
 		}
 		if (event.direction) {
 			gridChange(data.move, event.id, event.direction)
-		}
-		if (event.span) {
-			toggleGridSpans(data.move, event.span)
 		}
 		if (event.horizontal !== undefined) {
 			alignChange(data.move, event.id, { horizontal: event.horizontal })
@@ -164,20 +152,6 @@ function toggleMoveStatus(syncData: Sync, forceState?: boolean) {
 	}
 
 	removeSelection()
-}
-
-function toggleGridSpans(moveData: SimpleMove, direction: 'col' | 'row') {
-	if (!widget) {
-		return
-	}
-
-	const gridWithSpan = spansInGridArea(moveData.grid, widget, { toggle: direction })
-
-	moveData.grid = gridWithSpan
-
-	storage.sync.set({ move: moveData })
-
-	setGridAreas(gridWithSpan)
 }
 
 function pageWidthOverlay(moveData: SimpleMove, isOverlayEnabled?: boolean) {
