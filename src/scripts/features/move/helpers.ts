@@ -1,7 +1,7 @@
 import type { Move, Sync } from '../../../types/sync.ts'
 import type { WidgetName } from '../../../types/shared.ts'
 
-type Grid = string[][]
+export type Grid = string[][]
 
 export type Direction = 'up' | 'down' | 'left' | 'right'
 

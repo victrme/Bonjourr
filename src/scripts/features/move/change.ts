@@ -2,7 +2,7 @@ import { gridFind, gridFindObject, isColumnEmpty, isRectangle, isRowEmpty, MOVE_
 import { setGridAreas } from './dom.ts'
 import { storage } from '../../storage.ts'
 
-import type { Direction, WidgetInGrid } from './helpers.ts'
+import type { Direction, Grid, WidgetInGrid } from './helpers.ts'
 import type { SimpleMove } from '../../../types/sync.ts'
 import type { WidgetName } from '../../../types/shared.ts'
 
@@ -21,7 +21,7 @@ export function gridChange(move: SimpleMove, id: WidgetName, direction: Directio
 
 	// Mutates move steps by steps
 
-	ensureGridCapacity(move, direction, widget)
+	addGridEdges(move, direction, widget)
 	optimisticSwap(move, id, widget, direction)
 	fixGridCollisions(move, sizes, id)
 	trimGridEdges(move)
@@ -31,47 +31,38 @@ export function gridChange(move: SimpleMove, id: WidgetName, direction: Directio
 }
 
 /** Step 1 */
-function ensureGridCapacity(move: SimpleMove, dir: Direction, widget: WidgetInGrid): void {
-	if (dir === 'up' || dir === 'left') {
-		const boundaryPosition = Math.min(
-			...widget.positions.map((p) => (dir === 'up' ? p.row : p.col)),
-		)
+function addGridEdges(move: SimpleMove, dir: Direction, widget: WidgetInGrid): void {
+	const grid = move.grid
 
-		if (boundaryPosition === 0) {
-			if (dir === 'up') {
-				move.grid.unshift(rowOfDots(move))
+	const isBottom = isWidgetAtEdge(move.grid, widget, 'down')
+	const isRight = isWidgetAtEdge(move.grid, widget, 'right')
+	const isLeft = isWidgetAtEdge(move.grid, widget, 'left')
+	const isTop = isWidgetAtEdge(grid, widget, 'up')
 
-				for (const position of widget.positions) {
-					position.row++
-				}
-			}
+	if (dir === 'up' && isTop) {
+		move.grid.unshift(rowOfDots(move))
 
-			if (dir === 'left') {
-				for (const row of move.grid) {
-					row.unshift('.')
-				}
-				for (const position of widget.positions) {
-					position.col++
-				}
-			}
+		for (const position of widget.positions) {
+			position.row++
 		}
 	}
 
-	if (dir === 'down') {
-		const maxRow = Math.max(...widget.positions.map((p) => p.row))
-
-		if (maxRow === move.grid.length - 1) {
-			move.grid.push(rowOfDots(move))
+	if (dir === 'left' && isLeft) {
+		for (const row of move.grid) {
+			row.unshift('.')
+		}
+		for (const position of widget.positions) {
+			position.col++
 		}
 	}
 
-	if (dir === 'right') {
-		const maxCol = Math.max(...widget.positions.map((p) => p.col))
+	if (dir === 'down' && isBottom) {
+		move.grid.push(rowOfDots(move))
+	}
 
-		if (maxCol === move.grid[0].length - 1) {
-			for (const row of move.grid) {
-				row.push('.')
-			}
+	if (dir === 'right' && isRight) {
+		for (const row of move.grid) {
+			row.push('.')
 		}
 	}
 }
@@ -212,9 +203,7 @@ function trimGridEdges(move: SimpleMove): void {
 }
 
 /**
- * -------------------
- * | Simple helpers  |
- * -------------------
+ * helpers
  */
 
 /** */
@@ -234,4 +223,22 @@ function toSizeMap(move: SimpleMove): WidgetSizes {
 
 function rowOfDots(move: SimpleMove): ('.')[] {
 	return new Array(move.grid[0].length).fill('.')
+}
+
+function isWidgetAtEdge(grid: Grid, widget: WidgetInGrid, dir: Direction): boolean {
+	const cols = widget.positions.map((p) => (p.col))
+	const rows = widget.positions.map((p) => (p.row))
+	const lastCol = grid[0].length - 1
+	const lastRow = grid.length - 1
+
+	switch (dir) {
+		case 'up':
+			return Math.min(...rows) === 0
+		case 'right':
+			return Math.max(...cols) === lastCol
+		case 'down':
+			return Math.max(...rows) === lastRow
+		case 'left':
+			return Math.min(...cols) === 0
+	}
 }
