@@ -37,6 +37,7 @@ type UpdateLink = {
 	title: string
 	icon?: LinkIcon
 	file?: File
+	keybind?: string // for keybind
 }
 
 type AddGroups = {
@@ -568,7 +569,7 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
 	]
 }
 
-function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Sync {
+function updateLink({ id, title, icon, url, file, keybind}: UpdateLink, data: Sync): Sync {
 	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
 	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
 	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
@@ -636,6 +637,9 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 			link.url = stringMaxSize(url, 512)
 			urldom.href = link.url
 			titledom.textContent = createTitle(link)
+		}
+		if (keybind !== undefined) {
+			link.keybind = keybind || undefined
 		}
 	}
 

@@ -39,6 +39,10 @@ const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
 
+// for keybinds
+const domkeybind = document.getElementById('e-keybind') as HTMLInputElement
+const domkeybindclear = document.getElementById('e-keybind-clear') as HTMLButtonElement
+
 let inputToFocus: HTMLInputElement
 let buttonToSubmit: HTMLButtonElement
 
@@ -140,6 +144,9 @@ export async function populateDialogWithEditLink(
 
 		if (link && !link.folder) {
 			domurl.value = link.url ?? ''
+			if (link.keybind) {
+				domkeybind.value = link.keybind
+			}
 
 			const iconType = link.icon?.type ?? 'auto'
 			const iconValue = link.icon?.value ?? ''
@@ -191,6 +198,7 @@ function toggleEditInputs(): string[] {
 	domurl.value = ''
 	domiconurl.value = ''
 	domtitle.value = ''
+	domkeybind.value = ''
 
 	if (container.mini) {
 		if (target.synced) {
@@ -216,7 +224,7 @@ function toggleEditInputs(): string[] {
 		} else if (target.folder) {
 			inputs = ['title', 'delete', 'apply']
 		} else if (target.link) {
-			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'refresh', 'apply']
+			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'refresh', 'apply', 'keybind']
 		} else {
 			inputs = ['title', 'url*', 'add']
 			inputToFocus = domurl
@@ -285,6 +293,26 @@ function toggleEditInputs(): string[] {
 queueMicrotask(() => {
 	document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
 	domicontype?.addEventListener('change', toggleIconType)
+
+	domkeybind?.addEventListener('keydown', function(e: KeyboardEvent) {
+		e.preventDefault()
+		
+		// Build combination string
+		let keyCombo = ''
+		
+		if (e.ctrlKey) keyCombo += 'Ctrl+'
+		if (e.shiftKey) keyCombo += 'Shift+'
+		if (e.altKey) keyCombo += 'Alt+'
+		
+		// Add main key
+		keyCombo += e.code
+		
+		domkeybind.value = keyCombo
+	})
+	
+	domkeybindclear?.addEventListener('click', function() {
+		domkeybind.value = ''
+	})
 })
 
 /**
@@ -502,6 +530,8 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 				value: iconValue,
 			},
 			file: iconFile,
+			// save keybind
+			keybind: domkeybind.value || undefined,
 		},
 	})
 

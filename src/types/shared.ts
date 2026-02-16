@@ -82,6 +82,7 @@ export interface LinkElem {
 	title: string
 	url: string
 	icon?: LinkIcon
+	keybind?: string
 }
 
 export interface LinkIcon {

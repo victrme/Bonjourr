@@ -1,3 +1,5 @@
+import { storage } from './storage'
+
 let isMousingDownOnInput = false
 
 export function userActions() {
@@ -7,6 +9,7 @@ export function userActions() {
 	document.addEventListener('click', clickUserActions)
 	document.addEventListener('keydown', keyboardUserActions)
 	document.addEventListener('keyup', keyboardUserActions)
+	document.addEventListener('keydown', handleLinkKeybinds)
 }
 
 // Main functions
@@ -148,4 +151,35 @@ function closeSettingsOnMoveOpen() {
 			document.dispatchEvent(new CustomEvent('toggle-settings'))
 		}
 	}, 20)
+}
+// ADDITION
+async function handleLinkKeybinds(event: KeyboardEvent) {
+	const target = event.target as Element
+	
+	// Don't trigger if typing in input
+	if (['INPUT', 'TEXTAREA'].includes(target.tagName)) return
+	
+	// Build key combo (like Ctrl + A)
+	const combo = [
+		event.ctrlKey && 'Ctrl',
+		event.shiftKey && 'Shift',
+		event.altKey && 'Alt',
+		event.code
+	].filter(Boolean).join('+')
+	
+	// Find matching link
+	const data = await storage.sync.get()
+	
+	for (const key in data) {
+		const item = data[key]
+		
+		// TYPE CHECKING
+		if (item && typeof item === 'object' && 'url' in item && 'keybind' in item) {
+			if (item.keybind === combo) {
+				event.preventDefault()
+				window.open(item.url as string, data.linknewtab ? '_blank' : '_self')
+				break
+			}
+		}
+	}
 }
