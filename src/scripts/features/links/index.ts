@@ -571,7 +571,7 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
 	]
 }
 
-function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Sync {
+function updateLink({ id, title, icon, url, hotkey, file }: UpdateLink, data: Sync): Sync {
 	const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
 	const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
 	const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
@@ -637,6 +637,10 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 
 		if (titledom && urldom && url !== undefined) {
 			link.url = stringMaxSize(url, 512)
+			
+			if (hotkey !== undefined) {
+				link.hotkey = stringMaxSize(hotkey, 1)
+			}
 			urldom.href = link.url
 			titledom.textContent = createTitle(link)
 		}

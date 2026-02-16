@@ -141,6 +141,7 @@ export async function populateDialogWithEditLink(
 
 		if (link && !link.folder) {
 			domurl.value = link.url ?? ''
+			domhotkey.value = link.hotkey ?? ''
 
 			const iconType = link.icon?.type ?? 'auto'
 			const iconValue = link.icon?.value ?? ''
@@ -502,7 +503,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 			id: id,
 			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
-			hotkey: domhotkey.value,
+			hotkey: document.querySelector<HTMLInputElement>('#e-hotkey')?.value ?? '',
 			icon: {
 				type: iconType,
 				value: iconValue,
