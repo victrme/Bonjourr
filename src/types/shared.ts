@@ -81,6 +81,7 @@ export interface LinkElem {
 	order: number
 	title: string
 	url: string
+	hotkey?: string
 	icon?: LinkIcon
 }
 

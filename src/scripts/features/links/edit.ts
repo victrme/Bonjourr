@@ -33,6 +33,7 @@ let domeditlink: HTMLDialogElement
 
 const domtitle = document.getElementById('e-title') as HTMLInputElement
 const domurl = document.getElementById('e-url') as HTMLInputElement
+const domhotkey = document.getElementById('e-hotkey') as HTMLInputElement
 
 const domiconfilelabel = document.getElementById('e-icon-file-label') as HTMLSpanElement
 const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
@@ -216,9 +217,9 @@ function toggleEditInputs(): string[] {
 		} else if (target.folder) {
 			inputs = ['title', 'delete', 'apply']
 		} else if (target.link) {
-			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'refresh', 'apply']
+			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'refresh', 'apply', 'hotkey']
 		} else {
-			inputs = ['title', 'url*', 'add']
+			inputs = ['title', 'url*', 'add', 'hotkey']
 			inputToFocus = domurl
 			setSubmitOnEnter('edit-add')
 		}
@@ -230,9 +231,9 @@ function toggleEditInputs(): string[] {
 		} else if (selectall) {
 			inputs = ['delete', 'unfolder']
 		} else if (target.link) {
-			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'apply', 'unfolder']
+			inputs = ['title', 'url*', 'icon', 'icon-url*', 'delete', 'apply', 'unfolder', 'hotkey']
 		} else {
-			inputs = ['title', 'url*', 'add']
+			inputs = ['title', 'url*', 'add', 'hotkey']
 			inputToFocus = domurl
 			setSubmitOnEnter('edit-add')
 		}
@@ -366,6 +367,7 @@ function submitChanges(event: SubmitEvent) {
 					group: folder,
 					title: domtitle.value,
 					url: domurl.value,
+					hotkey: domhotkey.value,
 				}],
 			})
 		} else if (target.title && domtitle.value) { // new group
@@ -388,6 +390,7 @@ function submitChanges(event: SubmitEvent) {
 					group,
 					title: domtitle.value,
 					url: domurl.value,
+					hotkey: domhotkey.value,
 				}],
 			})
 		}
@@ -443,6 +446,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 				group: editStates.folder,
 				title: domtitle.value,
 				url: domurl.value,
+				hotkey: domhotkey.value,
 			}],
 		})
 		closeContextMenu()
@@ -455,6 +459,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 				group: editStates.group,
 				title: domtitle.value,
 				url: domurl.value,
+				hotkey: domhotkey.value,
 			}],
 		})
 		closeContextMenu()
@@ -497,6 +502,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button') {
 			id: id,
 			title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
 			url: document.querySelector<HTMLInputElement>('#e-url')?.value,
+			hotkey: domhotkey.value,
 			icon: {
 				type: iconType,
 				value: iconValue,

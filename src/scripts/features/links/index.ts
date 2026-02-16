@@ -28,12 +28,14 @@ import type { Sync } from '../../../types/sync.ts'
 type AddLinks = {
 	title: string
 	url: string
+	hotkey: string
 	group?: string
 }[]
 
 type UpdateLink = {
 	id: string
 	url?: string
+	hotkey?: string
 	title: string
 	icon?: LinkIcon
 	file?: File
@@ -494,6 +496,7 @@ function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
 			newlinks.push(validateLink(
 				link.title,
 				link.url,
+				link.hotkey,
 				// if no group is specified, adds to the selected one
 				link.group || data.linkgroups.selected,
 			))
@@ -845,7 +848,7 @@ function setRows(row: string) {
 
 // Helpers
 
-export function validateLink(title: string, url: string, parent?: string): LinkElem {
+export function validateLink(title: string, url: string, hotkey: string, parent?: string): LinkElem {
 	const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
 	const sanitizedUrl = stringMaxSize(url, 512)
 
@@ -860,6 +863,7 @@ export function validateLink(title: string, url: string, parent?: string): LinkE
 		order: Date.now(), // big number
 		title: stringMaxSize(title, 64),
 		url: prefix + sanitizedUrl,
+		hotkey: stringMaxSize(hotkey, 1)
 	}
 }
 

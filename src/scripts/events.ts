@@ -1,3 +1,6 @@
+import { LinkElem } from "../types/shared"
+import { isLink } from './features/links/helpers.ts'
+
 let isMousingDownOnInput = false
 
 export function userActions() {
@@ -7,6 +10,7 @@ export function userActions() {
 	document.addEventListener('click', clickUserActions)
 	document.addEventListener('keydown', keyboardUserActions)
 	document.addEventListener('keyup', keyboardUserActions)
+	window.addEventListener('keydown', checkHotkey)
 }
 
 // Main functions
@@ -49,6 +53,34 @@ function keyboardUserActions(event: KeyboardEvent) {
 	if (event.code === 'Tab') {
 		document.body.classList.toggle('tabbing', true)
 		return
+	}
+}
+
+async function checkHotkey(event: KeyboardEvent) {
+	if (!chrome?.storage) {
+    	return
+    }
+
+	const keyTarget = event.target as HTMLElement
+	if (keyTarget.tagName === 'INPUT') {
+		return
+	}
+	else {
+		const hotkey = event.key
+		const data = await chrome.storage.sync.get()
+
+		const links = Object.values(data).filter(isLink) as LinkElem[]
+
+		if (!links || links.length === 0) {
+			console.log("No links")
+			return
+		}
+
+		const hotkeyLink = (links as LinkElem[]).find(link => link.hotkey === hotkey)
+		if (hotkeyLink) {
+			event.preventDefault()
+			window.open(hotkeyLink.url)
+		}
 	}
 }
 
