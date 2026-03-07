@@ -125,13 +125,6 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
 		h = 12
 	}
 
-	// Avoid layout shifts every second by rounding width
-	if (clock.seconds) {
-		const second = date.getSeconds() < 10 ? 0 : Math.floor(date.getSeconds() / 10)
-		const width = getSecondsWidthInCh(second).toFixed(1)
-		domclock.style.setProperty('--seconds-width', `${width}ch`)
-	}
-
 	domclock.classList.toggle('zero', !clock.ampm && h < 10)
 
 	hh.textContent = h.toString()
