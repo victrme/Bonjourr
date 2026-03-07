@@ -32,87 +32,87 @@ import { storage } from './storage.ts'
 import { BROWSER, CURRENT_VERSION, LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT, SYSTEM_OS } from './defaults.ts'
 
 try {
-	startup()
-	serviceWorker()
-	onlineAndMobile()
+    startup()
+    serviceWorker()
+    onlineAndMobile()
 } catch (_) {
-	console.warn('Startup failed')
+    console.warn('Startup failed')
 }
 
 async function startup() {
-	let { sync, local } = await storage.init()
-	const oldVersion = sync?.about?.version
+    let { sync, local } = await storage.init()
+    const oldVersion = sync?.about?.version
 
-	if (!sync || !local) {
-		console.warn('Storage failed, loading Bonjourr with default settings')
-		sync = structuredClone(SYNC_DEFAULT)
-		local = structuredClone(LOCAL_DEFAULT)
-	}
+    if (!sync || !local) {
+        console.warn('Storage failed, loading Bonjourr with default settings')
+        sync = structuredClone(SYNC_DEFAULT)
+        local = structuredClone(LOCAL_DEFAULT)
+    }
 
-	if (oldVersion !== CURRENT_VERSION) {
-		console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
+    if (oldVersion !== CURRENT_VERSION) {
+        console.info(`Updated Bonjourr, ${oldVersion} => ${CURRENT_VERSION}`)
 
-		localStorage.setItem('update-archive', JSON.stringify(sync))
+        localStorage.setItem('update-archive', JSON.stringify(sync))
 
-		sync = filterData('update', sync)
+        sync = filterData('update', sync)
 
-		local.translations = undefined
-		storage.local.remove('translations')
-		local = { ...LOCAL_DEFAULT, ...local }
+        local.translations = undefined
+        storage.local.remove('translations')
+        local = { ...LOCAL_DEFAULT, ...local }
 
-		// <!> do not move
-		// <!> must delete old keys before upgrading storage
-		await storage.sync.clear()
-		await storage.sync.set(sync)
-	}
+        // <!> do not move
+        // <!> must delete old keys before upgrading storage
+        await storage.sync.clear()
+        await storage.sync.set(sync)
+    }
 
-	await setTranslationCache(sync.lang, local)
+    await setTranslationCache(sync.lang, local)
 
-	displayInterface(undefined, sync)
-	traduction(null, sync.lang)
-	userDate(sync.clock.timezone)
-	suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
-	weather({ sync: sync, lastWeather: local.lastWeather })
-	customFont(sync.font)
-	textShadow(sync.textShadow)
-	favicon(sync.favicon)
-	tabTitle(sync.tabtitle)
-	clock(sync)
-	darkmode(sync.dark)
-	searchbar(sync.searchbar)
-	quotes({ sync, local })
-	pomodoro(sync.pomodoro)
-	notes(sync.notes)
-	moveElements(sync.move)
-	customCss(sync.css)
-	hideElements(sync.hide)
-	backgroundsInit(sync, local, true)
-	quickLinks({ sync, local })
-	synchronization(local)
-	settingsInit(sync, local)
-	pageControl({ width: sync.pagewidth, gap: sync.pagegap })
-	operaExtensionExplainer(local.operaExplained)
-	tabsTracking()
+    displayInterface(undefined, sync)
+    traduction(null, sync.lang)
+    userDate(sync.clock.timezone)
+    suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
+    weather({ sync: sync, lastWeather: local.lastWeather })
+    customFont(sync.font)
+    textShadow(sync.textShadow)
+    favicon(sync.favicon)
+    tabTitle(sync.tabtitle)
+    clock(sync)
+    darkmode(sync.dark)
+    searchbar(sync.searchbar)
+    quotes({ sync, local })
+    pomodoro(sync.pomodoro)
+    notes(sync.notes)
+    moveElements(sync.move)
+    customCss(sync.css)
+    hideElements(sync.hide)
+    backgroundsInit(sync, local, true)
+    quickLinks({ sync, local })
+    synchronization(local)
+    settingsInit(sync, local)
+    pageControl({ width: sync.pagewidth, gap: sync.pagegap })
+    operaExtensionExplainer(local.operaExplained)
+    tabsTracking()
 
-	document.documentElement.dataset.system = SYSTEM_OS as string
-	document.documentElement.dataset.browser = BROWSER as string
-	document.documentElement.dataset.platform = PLATFORM as string
+    document.documentElement.dataset.system = SYSTEM_OS as string
+    document.documentElement.dataset.browser = BROWSER as string
+    document.documentElement.dataset.platform = PLATFORM as string
 
-	document.getElementById('time')?.classList.toggle('hidden', !sync.time)
-	document.getElementById('main')?.classList.toggle('hidden', !sync.main)
+    document.getElementById('time')?.classList.toggle('hidden', !sync.time)
+    document.getElementById('main')?.classList.toggle('hidden', !sync.main)
 
-	onInterfaceDisplay(() => {
-		document.body.classList.remove('init')
+    onInterfaceDisplay(() => {
+        document.body.classList.remove('init')
 
-		supportersNotifications(sync)
-		setPotatoComputerMode()
-		userActions()
+        supportersNotifications(sync)
+        setPotatoComputerMode()
+        userActions()
 
-		interfacePopup({
-			announce: sync.announcements,
-			review: sync.review ?? 0,
-			new: CURRENT_VERSION,
-			old: oldVersion,
-		})
-	})
+        interfacePopup({
+            announce: sync.announcements,
+            review: sync.review ?? 0,
+            new: CURRENT_VERSION,
+            old: oldVersion,
+        })
+    })
 }

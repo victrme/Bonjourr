@@ -8,458 +8,458 @@ import type { Sync } from '../types/sync.ts'
 type StorageType = 'localstorage' | 'webext-sync' | 'webext-local'
 
 interface AllStorage {
-	sync?: Sync
-	local?: Local
+    sync?: Sync
+    local?: Local
 }
 
 interface Storage {
-	sync: {
-		get: (key?: string | string[]) => Promise<Sync>
-		set: (val: Partial<Sync>) => Promise<void>
-		remove: (key: string) => void
-		clear: () => Promise<void>
-	}
-	local: {
-		get: (key?: keyof Local | (keyof Local)[]) => Promise<Local>
-		set: (val: Partial<Local>) => void
-		remove: (key: keyof Local) => void
-		clear: () => void
-	}
-	type: {
-		get: () => StorageType
-		change: (type: 'sync' | 'local', data: Sync) => void
-		init: () => StorageType
-	}
-	init: () => Promise<AllStorage>
-	clearall: () => Promise<void>
+    sync: {
+        get: (key?: string | string[]) => Promise<Sync>
+        set: (val: Partial<Sync>) => Promise<void>
+        remove: (key: string) => void
+        clear: () => Promise<void>
+    }
+    local: {
+        get: (key?: keyof Local | (keyof Local)[]) => Promise<Local>
+        set: (val: Partial<Local>) => void
+        remove: (key: keyof Local) => void
+        clear: () => void
+    }
+    type: {
+        get: () => StorageType
+        change: (type: 'sync' | 'local', data: Sync) => void
+        init: () => StorageType
+    }
+    init: () => Promise<AllStorage>
+    clearall: () => Promise<void>
 }
 
 export const storage: Storage = {
-	sync: {
-		get: syncGet,
-		set: syncSet,
-		remove: syncRemove,
-		clear: syncClear,
-	},
-	local: {
-		get: localGet,
-		set: localSet,
-		remove: localRemove,
-		clear: localClear,
-	},
-	init: init,
-	clearall: clearall,
-	type: storageTypeFn(),
+    sync: {
+        get: syncGet,
+        set: syncSet,
+        remove: syncRemove,
+        clear: syncClear,
+    },
+    local: {
+        get: localGet,
+        set: localSet,
+        remove: localRemove,
+        clear: localClear,
+    },
+    init: init,
+    clearall: clearall,
+    type: storageTypeFn(),
 }
 
 //	Storage type
 
 function storageTypeFn() {
-	let type: StorageType = 'webext-sync'
+    let type: StorageType = 'webext-sync'
 
-	function get() {
-		return type
-	}
+    function get() {
+        return type
+    }
 
-	function init() {
-		if (globalThis.chrome?.storage === undefined) {
-			type = 'localstorage'
-			return 'localstorage'
-		}
+    function init() {
+        if (globalThis.chrome?.storage === undefined) {
+            type = 'localstorage'
+            return 'localstorage'
+        }
 
-		if ((globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
-			type = 'webext-local'
-			return 'webext-local'
-		}
+        if ((globalThis.startupStorage as AllStorage)?.local?.syncStorage) {
+            type = 'webext-local'
+            return 'webext-local'
+        }
 
-		return type
-	}
+        return type
+    }
 
-	function change(type: 'sync' | 'local', data: Sync) {
-		if (globalThis.chrome?.storage === undefined) {
-			return
-		}
+    function change(type: 'sync' | 'local', data: Sync) {
+        if (globalThis.chrome?.storage === undefined) {
+            return
+        }
 
-		if (type === 'local') {
-			chrome.storage.local.set({ syncStorage: data })
-		}
+        if (type === 'local') {
+            chrome.storage.local.set({ syncStorage: data })
+        }
 
-		if (type === 'sync') {
-			chrome.storage.local.remove('syncStorage').then(() => {
-				chrome.storage.sync.set(data)
-			})
-		}
-	}
+        if (type === 'sync') {
+            chrome.storage.local.remove('syncStorage').then(() => {
+                chrome.storage.sync.set(data)
+            })
+        }
+    }
 
-	return { init, get, change }
+    return { init, get, change }
 }
 
 //	Synced data
 
 async function syncGet(key?: string | string[]): Promise<Sync> {
-	switch (storage.type.get()) {
-		case 'webext-sync': {
-			const data = await chrome.storage.sync.get(key ?? null)
-			return verifyDataAsSync(data)
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync': {
+            const data = await chrome.storage.sync.get(key ?? null)
+            return verifyDataAsSync(data)
+        }
 
-		case 'webext-local': {
-			const { syncStorage } = await chrome.storage.local.get() as Local
-			return verifyDataAsSync(syncStorage)
-		}
+        case 'webext-local': {
+            const { syncStorage } = await chrome.storage.local.get() as Local
+            return verifyDataAsSync(syncStorage)
+        }
 
-		default: {
-			return verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
-		}
-	}
+        default: {
+            return verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
+        }
+    }
 }
 
 async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
-	// console.log('sync set', JSON.stringify(keyval))
+    // console.log('sync set', JSON.stringify(keyval))
 
-	switch (storage.type.get()) {
-		case 'webext-sync': {
-			chrome.storage.sync.set(keyval, fn)
-			return
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync': {
+            chrome.storage.sync.set(keyval, fn)
+            return
+        }
 
-		case 'webext-local': {
-			const local = await chrome.storage.local.get('syncStorage') as Local
-			const data = {
-				...local.syncStorage,
-				...keyval,
-			}
+        case 'webext-local': {
+            const local = await chrome.storage.local.get('syncStorage') as Local
+            const data = {
+                ...local.syncStorage,
+                ...keyval,
+            }
 
-			chrome.storage.local.set({ syncStorage: data }, fn)
-			return
-		}
+            chrome.storage.local.set({ syncStorage: data }, fn)
+            return
+        }
 
-		case 'localstorage': {
-			if (typeof keyval !== 'object') {
-				return
-			}
+        case 'localstorage': {
+            if (typeof keyval !== 'object') {
+                return
+            }
 
-			const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
+            const data = verifyDataAsSync(parse<Sync>(localStorage.bonjourr) ?? {})
 
-			for (const [k, v] of Object.entries(keyval)) {
-				data[k] = v
-			}
+            for (const [k, v] of Object.entries(keyval)) {
+                data[k] = v
+            }
 
-			localStorage.bonjourr = JSON.stringify(data ?? {})
-			globalThis.dispatchEvent(new Event('storage'))
-			return
-		}
+            localStorage.bonjourr = JSON.stringify(data ?? {})
+            globalThis.dispatchEvent(new Event('storage'))
+            return
+        }
 
-		default:
-	}
+        default:
+    }
 }
 
 async function syncRemove(key: string) {
-	switch (storage.type.get()) {
-		case 'webext-sync': {
-			chrome.storage.sync.remove(key)
-			return
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync': {
+            chrome.storage.sync.remove(key)
+            return
+        }
 
-		case 'webext-local': {
-			const { syncStorage } = await chrome.storage.local.get('syncStorage') as Local
+        case 'webext-local': {
+            const { syncStorage } = await chrome.storage.local.get('syncStorage') as Local
 
-			if (syncStorage) {
-				delete syncStorage[key]
-				await chrome.storage.local.remove('syncStorage')
-				chrome.storage.local.set({ syncStorage })
-			}
+            if (syncStorage) {
+                delete syncStorage[key]
+                await chrome.storage.local.remove('syncStorage')
+                chrome.storage.local.set({ syncStorage })
+            }
 
-			return
-		}
+            return
+        }
 
-		case 'localstorage': {
-			localStorage.removeItem(key)
-			return
-		}
+        case 'localstorage': {
+            localStorage.removeItem(key)
+            return
+        }
 
-		default:
-	}
+        default:
+    }
 }
 
 async function syncClear() {
-	switch (storage.type.get()) {
-		case 'webext-sync': {
-			await chrome.storage.sync.clear()
-			return
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync': {
+            await chrome.storage.sync.clear()
+            return
+        }
 
-		case 'webext-local': {
-			await chrome.storage.local.remove('syncStorage')
-			return
-		}
+        case 'webext-local': {
+            await chrome.storage.local.remove('syncStorage')
+            return
+        }
 
-		case 'localstorage': {
-			localStorage.removeItem('bonjourr')
-			return
-		}
+        case 'localstorage': {
+            localStorage.removeItem('bonjourr')
+            return
+        }
 
-		default:
-	}
+        default:
+    }
 }
 
 //	Local data
 
 function localSet(value: Record<string, unknown>) {
-	// console.log('local set', JSON.stringify(value))
+    // console.log('local set', JSON.stringify(value))
 
-	switch (storage.type.get()) {
-		case 'webext-sync':
-		case 'webext-local': {
-			chrome.storage.local.set(value)
-			return
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync':
+        case 'webext-local': {
+            chrome.storage.local.set(value)
+            return
+        }
 
-		default: {
-			for (const [key, val] of Object.entries(value)) {
-				if (typeof val === 'string') {
-					localStorage.setItem(key, val)
-				} else {
-					localStorage.setItem(key, JSON.stringify(val))
-				}
-			}
-			return
-		}
-	}
+        default: {
+            for (const [key, val] of Object.entries(value)) {
+                if (typeof val === 'string') {
+                    localStorage.setItem(key, val)
+                } else {
+                    localStorage.setItem(key, JSON.stringify(val))
+                }
+            }
+            return
+        }
+    }
 }
 
 async function localGet(keys?: string | string[]): Promise<Local> {
-	switch (storage.type.get()) {
-		case 'webext-sync':
-		case 'webext-local': {
-			const data = await chrome.storage.local.get(keys) as unknown as Local
-			return data
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync':
+        case 'webext-local': {
+            const data = await chrome.storage.local.get(keys) as unknown as Local
+            return data
+        }
 
-		default: {
-			const defaults = structuredClone(LOCAL_DEFAULT) as unknown
-			const result: Record<string, unknown> = defaults as Record<string, unknown>
+        default: {
+            const defaults = structuredClone(LOCAL_DEFAULT) as unknown
+            const result: Record<string, unknown> = defaults as Record<string, unknown>
 
-			if (keys === undefined) {
-				keys = Object.keys(LOCAL_DEFAULT)
-			}
-			if (typeof keys === 'string') {
-				keys = [keys]
-			}
+            if (keys === undefined) {
+                keys = Object.keys(LOCAL_DEFAULT)
+            }
+            if (typeof keys === 'string') {
+                keys = [keys]
+            }
 
-			const localKeys = Object.keys(globalThis.localStorage)
-			const neededKeys = keys.filter((k) => localKeys.includes(k))
+            const localKeys = Object.keys(globalThis.localStorage)
+            const neededKeys = keys.filter((k) => localKeys.includes(k))
 
-			for (const key of neededKeys) {
-				const item = globalThis.localStorage.getItem(key)
-				const isJson = item && (item.startsWith('{') || item.startsWith('['))
-				const isBool = item && (item === 'true' || item === 'false')
-				const isNoom = item && Number.isNaN(Number(item)) === false
+            for (const key of neededKeys) {
+                const item = globalThis.localStorage.getItem(key)
+                const isJson = item && (item.startsWith('{') || item.startsWith('['))
+                const isBool = item && (item === 'true' || item === 'false')
+                const isNoom = item && Number.isNaN(Number(item)) === false
 
-				if (isJson) {
-					result[key] = parse(item)
-				} else if (isBool) {
-					result[key] = item === 'true'
-				} else if (isNoom) {
-					result[key] = Number.parseFloat(item)
-				} else {
-					result[key] = item
-				}
-			}
+                if (isJson) {
+                    result[key] = parse(item)
+                } else if (isBool) {
+                    result[key] = item === 'true'
+                } else if (isNoom) {
+                    result[key] = Number.parseFloat(item)
+                } else {
+                    result[key] = item
+                }
+            }
 
-			return result as unknown as Local
-		}
-	}
+            return result as unknown as Local
+        }
+    }
 }
 
 function localRemove(key: string) {
-	switch (storage.type.get()) {
-		case 'webext-sync':
-		case 'webext-local': {
-			return chrome.storage.local.remove(key)
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync':
+        case 'webext-local': {
+            return chrome.storage.local.remove(key)
+        }
 
-		case 'localstorage': {
-			localStorage.removeItem(key)
-			return
-		}
+        case 'localstorage': {
+            localStorage.removeItem(key)
+            return
+        }
 
-		default:
-	}
+        default:
+    }
 }
 
 async function localClear() {
-	switch (storage.type.get()) {
-		case 'webext-sync': {
-			chrome.storage.local.clear()
-			return
-		}
+    switch (storage.type.get()) {
+        case 'webext-sync': {
+            chrome.storage.local.clear()
+            return
+        }
 
-		case 'webext-local': {
-			const sync = (await chrome.storage.local.get('syncStorage')).syncStorage
-			await chrome.storage.local.clear()
-			await chrome.storage.local.set({ syncStorage: sync })
-			return
-		}
+        case 'webext-local': {
+            const sync = (await chrome.storage.local.get('syncStorage')).syncStorage
+            await chrome.storage.local.clear()
+            await chrome.storage.local.set({ syncStorage: sync })
+            return
+        }
 
-		case 'localstorage': {
-			for (const key of Object.keys(LOCAL_DEFAULT)) {
-				localStorage.removeItem(key)
-			}
-			return
-		}
+        case 'localstorage': {
+            for (const key of Object.keys(LOCAL_DEFAULT)) {
+                localStorage.removeItem(key)
+            }
+            return
+        }
 
-		default:
-	}
+        default:
+    }
 }
 
 //	Init data
 
 async function init(): Promise<AllStorage> {
-	const store: AllStorage = globalThis.startupStorage ?? {}
+    const store: AllStorage = globalThis.startupStorage ?? {}
 
-	if (PLATFORM !== 'online' && !webextStoreReady()) {
-		globalThis.pageReady = true
+    if (PLATFORM !== 'online' && !webextStoreReady()) {
+        globalThis.pageReady = true
 
-		await new Promise((resolve) => {
-			document.addEventListener('webextstorage', (event: CustomEventInit) => {
-				if (event.detail === 'sync') {
-					store.sync = globalThis.startupStorage.sync
-				}
-				if (event.detail === 'local') {
-					store.local = globalThis.startupStorage.local
-				}
-				if (webextStoreReady()) {
-					resolve(true)
-				}
-			})
-		})
-	}
+        await new Promise((resolve) => {
+            document.addEventListener('webextstorage', (event: CustomEventInit) => {
+                if (event.detail === 'sync') {
+                    store.sync = globalThis.startupStorage.sync
+                }
+                if (event.detail === 'local') {
+                    store.local = globalThis.startupStorage.local
+                }
+                if (webextStoreReady()) {
+                    resolve(true)
+                }
+            })
+        })
+    }
 
-	const type = storage.type.init()
+    const type = storage.type.init()
 
-	switch (type) {
-		case 'webext-local': {
-			store.sync = (globalThis.startupStorage as AllStorage).local?.syncStorage
-			store.local = globalThis.startupStorage.local
-			break
-		}
+    switch (type) {
+        case 'webext-local': {
+            store.sync = (globalThis.startupStorage as AllStorage).local?.syncStorage
+            store.local = globalThis.startupStorage.local
+            break
+        }
 
-		case 'webext-sync': {
-			store.sync = (globalThis.startupStorage as AllStorage).sync
-			store.local = (globalThis.startupStorage as AllStorage).local
-			break
-		}
+        case 'webext-sync': {
+            store.sync = (globalThis.startupStorage as AllStorage).sync
+            store.local = (globalThis.startupStorage as AllStorage).local
+            break
+        }
 
-		case 'localstorage': {
-			store.sync = await syncGet()
-			store.local = await localGet()
-			break
-		}
+        case 'localstorage': {
+            store.sync = await syncGet()
+            store.local = await localGet()
+            break
+        }
 
-		default:
-	}
+        default:
+    }
 
-	if (Object.keys(store.sync ?? {})?.length === 0) {
-		store.sync = await getSyncDefaults()
-	}
+    if (Object.keys(store.sync ?? {})?.length === 0) {
+        store.sync = await getSyncDefaults()
+    }
 
-	const sync = verifyDataAsSync(store.sync)
-	const local = verifyDataAsLocal(store.local)
+    const sync = verifyDataAsSync(store.sync)
+    const local = verifyDataAsLocal(store.local)
 
-	return {
-		sync,
-		local,
-	}
+    return {
+        sync,
+        local,
+    }
 
-	/** This waits for chrome.storage to be stored in a global variable,
+    /** This waits for chrome.storage to be stored in a global variable,
 		that is created in file `webext-storage.js` */
-	function webextStoreReady(): boolean {
-		return !!store.sync && !!store.local
-	}
+    function webextStoreReady(): boolean {
+        return !!store.sync && !!store.local
+    }
 }
 
 //	Clear all data
 
 async function clearall() {
-	sessionStorage.clear()
+    sessionStorage.clear()
 
-	Object.keys(localStorage).forEach((key) => {
-		if (key.startsWith('bonjourr-archive-') === false) {
-			localStorage.removeItem(key)
-		}
-	})
+    Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith('bonjourr-archive-') === false) {
+            localStorage.removeItem(key)
+        }
+    })
 
-	try {
-		globalThis.caches.delete('local-files')
-	} catch (err) {
-		console.warn(err)
-	}
+    try {
+        globalThis.caches.delete('local-files')
+    } catch (err) {
+        console.warn(err)
+    }
 
-	//@ts-expect-error: Type 'undefined' is not assignable to type ...
-	globalThis.startupStorage = undefined
+    //@ts-expect-error: Type 'undefined' is not assignable to type ...
+    globalThis.startupStorage = undefined
 
-	switch (storage.type.get()) {
-		case 'webext-sync': {
-			await chrome.storage.sync.clear()
-			await chrome.storage.local.clear()
+    switch (storage.type.get()) {
+        case 'webext-sync': {
+            await chrome.storage.sync.clear()
+            await chrome.storage.local.clear()
 
-			chrome.storage.sync.set(SYNC_DEFAULT)
-			chrome.storage.local.set(LOCAL_DEFAULT)
+            chrome.storage.sync.set(SYNC_DEFAULT)
+            chrome.storage.local.set(LOCAL_DEFAULT)
 
-			return
-		}
+            return
+        }
 
-		case 'webext-local': {
-			await chrome.storage.sync.clear()
-			await chrome.storage.local.clear()
+        case 'webext-local': {
+            await chrome.storage.sync.clear()
+            await chrome.storage.local.clear()
 
-			chrome.storage.local.set({
-				...LOCAL_DEFAULT,
-				syncStorage: SYNC_DEFAULT,
-			})
+            chrome.storage.local.set({
+                ...LOCAL_DEFAULT,
+                syncStorage: SYNC_DEFAULT,
+            })
 
-			return
-		}
+            return
+        }
 
-		default:
-	}
+        default:
+    }
 }
 
 //	Helpers
 
 export async function getSyncDefaults(): Promise<Sync> {
-	try {
-		const json = await (await fetch('config.json')).json()
-		return verifyDataAsSync(json)
-	} catch (_) {
-		// ...
-	}
+    try {
+        const json = await (await fetch('config.json')).json()
+        return verifyDataAsSync(json)
+    } catch (_) {
+        // ...
+    }
 
-	return SYNC_DEFAULT
+    return SYNC_DEFAULT
 }
 
 export function isStorageDefault(data: Sync): boolean {
-	const current = structuredClone(data)
-	current.review = SYNC_DEFAULT.review
-	current.showall = SYNC_DEFAULT.showall
-	current.weather.city = SYNC_DEFAULT.weather.city
-	current.quotes.last = SYNC_DEFAULT.quotes.last
+    const current = structuredClone(data)
+    current.review = SYNC_DEFAULT.review
+    current.showall = SYNC_DEFAULT.showall
+    current.weather.city = SYNC_DEFAULT.weather.city
+    current.quotes.last = SYNC_DEFAULT.quotes.last
 
-	return deepEqual(current, SYNC_DEFAULT)
+    return deepEqual(current, SYNC_DEFAULT)
 }
 
 function verifyDataAsSync(data: Partial<Sync> = {}): Sync {
-	return {
-		...SYNC_DEFAULT,
-		...data,
-	}
+    return {
+        ...SYNC_DEFAULT,
+        ...data,
+    }
 }
 
 function verifyDataAsLocal(data: Partial<Local> = {}): Local {
-	//@ts-ignore -> `x-icon-${string}` index signatures are incompatible.
-	return {
-		...LOCAL_DEFAULT,
-		...data,
-	}
+    //@ts-ignore -> `x-icon-${string}` index signatures are incompatible.
+    return {
+        ...LOCAL_DEFAULT,
+        ...data,
+    }
 }

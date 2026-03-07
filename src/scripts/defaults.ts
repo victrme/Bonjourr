@@ -19,220 +19,220 @@ export const TAB_ID = crypto.randomUUID()
 export const tabs_bc = new BroadcastChannel('bonjourr_tabs')
 
 export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
-		(navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
-	? 'ios'
-	: navigator.appVersion?.includes('Macintosh')
-	? 'mac'
-	: navigator.appVersion?.includes('Windows')
-	? 'windows'
-	: navigator.userAgent?.toLowerCase()?.includes('android')
-	? 'android'
-	: 'unknown'
+        (navigator.userAgent?.includes('Mac') && 'ontouchend' in document)
+    ? 'ios'
+    : navigator.appVersion?.includes('Macintosh')
+    ? 'mac'
+    : navigator.appVersion?.includes('Windows')
+    ? 'windows'
+    : navigator.userAgent?.toLowerCase()?.includes('android')
+    ? 'android'
+    : 'unknown'
 
 export const PLATFORM = globalThis.location?.protocol === 'moz-extension:'
-	? 'firefox'
-	: globalThis.location?.protocol === 'chrome-extension:'
-	? 'chrome'
-	: globalThis.location?.protocol === 'safari-web-extension:'
-	? 'safari'
-	: 'online'
+    ? 'firefox'
+    : globalThis.location?.protocol === 'chrome-extension:'
+    ? 'chrome'
+    : globalThis.location?.protocol === 'safari-web-extension:'
+    ? 'safari'
+    : 'online'
 
 export const BROWSER = navigator?.userAgentData?.brands.some((b) => b.brand === 'Microsoft Edge')
-	? 'edge'
-	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
-	? 'opera'
-	: navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
-	? 'chrome'
-	: navigator.userAgent?.toLowerCase()?.indexOf('firefox') > -1
-	? 'firefox'
-	: navigator.userAgent?.toLowerCase()?.indexOf('safari') > -1
-	? 'safari'
-	: 'other'
+    ? 'edge'
+    : navigator?.userAgentData?.brands.some((b) => b.brand === 'Opera')
+    ? 'opera'
+    : navigator?.userAgentData?.brands.some((b) => b.brand === 'Chromium')
+    ? 'chrome'
+    : navigator.userAgent?.toLowerCase()?.indexOf('firefox') > -1
+    ? 'firefox'
+    : navigator.userAgent?.toLowerCase()?.indexOf('safari') > -1
+    ? 'safari'
+    : 'other'
 
 export const EXTENSION: typeof chrome | typeof browser | undefined = PLATFORM === 'online'
-	? undefined
-	: PLATFORM === 'firefox'
-	? browser
-	: chrome
+    ? undefined
+    : PLATFORM === 'firefox'
+    ? browser
+    : chrome
 
 export const IS_MOBILE = navigator.userAgentData
-	? navigator.userAgentData.mobile
-	: mobileUA.some((ua) => navigator.userAgent.includes(ua))
+    ? navigator.userAgentData.mobile
+    : mobileUA.some((ua) => navigator.userAgent.includes(ua))
 
 const DEFAULT_LANG = (() => {
-	for (const code of Object.keys(langList)) {
-		if (navigator.language.replace('-', '_').includes(code)) {
-			return code as keyof typeof langList
-		}
-	}
-	return 'en'
+    for (const code of Object.keys(langList)) {
+        if (navigator.language.replace('-', '_').includes(code)) {
+            return code as keyof typeof langList
+        }
+    }
+    return 'en'
 })()
 
 export const SEARCHBAR_ENGINES = [
-	'default',
-	'google',
-	'ddg',
-	'startpage',
-	'qwant',
-	'yahoo',
-	'bing',
-	'brave',
-	'ecosia',
-	'lilo',
-	'baidu',
-	'custom',
+    'default',
+    'google',
+    'ddg',
+    'startpage',
+    'qwant',
+    'yahoo',
+    'bing',
+    'brave',
+    'ecosia',
+    'lilo',
+    'baidu',
+    'custom',
 ] as const
 
 export const SYNC_DEFAULT: Sync = {
-	about: {
-		browser: PLATFORM,
-		version: CURRENT_VERSION,
-	},
-	showall: false,
-	lang: DEFAULT_LANG,
-	dark: 'system',
-	favicon: '',
-	tabtitle: '',
-	greeting: '',
-	greetingsize: '3',
-	greetingsmode: 'auto',
-	pagegap: 1,
-	pagewidth: 1600,
-	time: true,
-	main: true,
-	dateformat: 'auto',
-	quicklinks: true,
-	textShadow: 0.2,
-	announcements: 'major',
-	review: 0,
-	css: '',
-	hide: {},
-	linkstyle: 'medium',
-	linktitles: true,
-	linkbackgrounds: true,
-	linknewtab: false,
-	linksrow: 6,
-	linkiconradius: 1.1,
-	linkgroups: {
-		on: false,
-		selected: 'default',
-		groups: ['default'],
-		pinned: [],
-		synced: [],
-	},
-	backgrounds: {
-		type: 'images',
-		fadein: 600,
-		blur: 15,
-		bright: 0.8,
-		frequency: 'hour',
-		color: '#185A63',
-		urls: '',
-		images: 'bonjourr-images-daylight',
-		videos: 'bonjourr-videos-daylight',
-		mute: true,
-		queries: {},
-		texture: {
-			type: 'none',
-		},
-	},
-	clock: {
-		size: 1,
-		ampm: false,
-		analog: false,
-		seconds: false,
-		ampmlabel: false,
-		ampmposition: 'top-left',
-		worldclocks: false,
-		timezone: 'auto',
-	},
-	analogstyle: {
-		face: 'none',
-		hands: 'modern',
-		shape: 'round',
-		border: '#ffff',
-		background: '#fff2',
-	},
-	worldclocks: [],
-	weather: {
-		city: undefined,
-		unit: 'metric',
-		provider: '',
-		moreinfo: 'none',
-		forecast: 'auto',
-		temperature: 'actual',
-		geolocation: 'approximate',
-	},
-	greetingscustom: {
-		morning: '',
-		afternoon: '',
-		evening: '',
-		night: '',
-	},
-	notes: {
-		on: false,
-		width: 40,
-		opacity: 0.1,
-		align: 'left',
-	},
-	searchbar: {
-		on: false,
-		opacity: 0.1,
-		newtab: false,
-		suggestions: true,
-		engine: 'default',
-		request: '',
-		placeholder: '',
-	},
-	quotes: {
-		on: false,
-		author: false,
-		type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
-		frequency: 'day',
-		last: undefined,
-	},
-	pomodoro: {
-		on: false,
-		mode: 'pomodoro',
-		pause: 0,
-		end: 0,
-		timeFor: {
-			pomodoro: 1500,
-			break: 300,
-			longbreak: 1200,
-		},
-		focus: false,
-		sound: true,
-		volume: 0.7,
-		alarm: 'marimba',
-		history: [],
-	},
-	font: {
-		family: '',
-		size: '14',
-		system: true,
-		weightlist: [],
-		weight: SYSTEM_OS === 'windows' ? '400' : '300',
-	},
-	supporters: {
-		enabled: true,
-	},
-	move: {
-		selection: 'single',
-		layouts: {},
-	},
+    about: {
+        browser: PLATFORM,
+        version: CURRENT_VERSION,
+    },
+    showall: false,
+    lang: DEFAULT_LANG,
+    dark: 'system',
+    favicon: '',
+    tabtitle: '',
+    greeting: '',
+    greetingsize: '3',
+    greetingsmode: 'auto',
+    pagegap: 1,
+    pagewidth: 1600,
+    time: true,
+    main: true,
+    dateformat: 'auto',
+    quicklinks: true,
+    textShadow: 0.2,
+    announcements: 'major',
+    review: 0,
+    css: '',
+    hide: {},
+    linkstyle: 'medium',
+    linktitles: true,
+    linkbackgrounds: true,
+    linknewtab: false,
+    linksrow: 6,
+    linkiconradius: 1.1,
+    linkgroups: {
+        on: false,
+        selected: 'default',
+        groups: ['default'],
+        pinned: [],
+        synced: [],
+    },
+    backgrounds: {
+        type: 'images',
+        fadein: 600,
+        blur: 15,
+        bright: 0.8,
+        frequency: 'hour',
+        color: '#185A63',
+        urls: '',
+        images: 'bonjourr-images-daylight',
+        videos: 'bonjourr-videos-daylight',
+        mute: true,
+        queries: {},
+        texture: {
+            type: 'none',
+        },
+    },
+    clock: {
+        size: 1,
+        ampm: false,
+        analog: false,
+        seconds: false,
+        ampmlabel: false,
+        ampmposition: 'top-left',
+        worldclocks: false,
+        timezone: 'auto',
+    },
+    analogstyle: {
+        face: 'none',
+        hands: 'modern',
+        shape: 'round',
+        border: '#ffff',
+        background: '#fff2',
+    },
+    worldclocks: [],
+    weather: {
+        city: undefined,
+        unit: 'metric',
+        provider: '',
+        moreinfo: 'none',
+        forecast: 'auto',
+        temperature: 'actual',
+        geolocation: 'approximate',
+    },
+    greetingscustom: {
+        morning: '',
+        afternoon: '',
+        evening: '',
+        night: '',
+    },
+    notes: {
+        on: false,
+        width: 40,
+        opacity: 0.1,
+        align: 'left',
+    },
+    searchbar: {
+        on: false,
+        opacity: 0.1,
+        newtab: false,
+        suggestions: true,
+        engine: 'default',
+        request: '',
+        placeholder: '',
+    },
+    quotes: {
+        on: false,
+        author: false,
+        type: DEFAULT_LANG === 'zh-CN' ? 'hitokoto' : 'classic',
+        frequency: 'day',
+        last: undefined,
+    },
+    pomodoro: {
+        on: false,
+        mode: 'pomodoro',
+        pause: 0,
+        end: 0,
+        timeFor: {
+            pomodoro: 1500,
+            break: 300,
+            longbreak: 1200,
+        },
+        focus: false,
+        sound: true,
+        volume: 0.7,
+        alarm: 'marimba',
+        history: [],
+    },
+    font: {
+        family: '',
+        size: '14',
+        system: true,
+        weightlist: [],
+        weight: SYSTEM_OS === 'windows' ? '400' : '300',
+    },
+    supporters: {
+        enabled: true,
+    },
+    move: {
+        selection: 'single',
+        layouts: {},
+    },
 }
 
 export const LOCAL_DEFAULT: Local = {
-	syncType: PLATFORM === 'online' ? 'off' : 'browser',
-	gistToken: '',
-	userQuoteSelection: 0,
-	translations: undefined,
-	quotesCache: [],
-	backgroundUrls: {},
-	backgroundFiles: {},
-	backgroundCollections: {},
-	backgroundCompressFiles: true,
-	backgroundLastChange: '',
-	lastWeather: undefined,
+    syncType: PLATFORM === 'online' ? 'off' : 'browser',
+    gistToken: '',
+    userQuoteSelection: 0,
+    translations: undefined,
+    quotesCache: [],
+    backgroundUrls: {},
+    backgroundFiles: {},
+    backgroundCollections: {},
+    backgroundCompressFiles: true,
+    backgroundLastChange: '',
+    lastWeather: undefined,
 }

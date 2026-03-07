@@ -1,34 +1,34 @@
 globalThis.startupBookmarks
 globalThis.startupTopsites
 globalThis.startupStorage = {
-	sync: undefined,
-	local: undefined,
+    sync: undefined,
+    local: undefined,
 }
 
 chrome.storage.sync.get().then((data) => {
-	globalThis.startupStorage.sync = data
+    globalThis.startupStorage.sync = data
 
-	if (globalThis.pageReady) {
-		document.dispatchEvent(
-			new CustomEvent('webextstorage', { detail: 'sync' }),
-		)
-	}
+    if (globalThis.pageReady) {
+        document.dispatchEvent(
+            new CustomEvent('webextstorage', { detail: 'sync' }),
+        )
+    }
 })
 
 chrome.storage.local.get().then((data) => {
-	globalThis.startupStorage.local = data
+    globalThis.startupStorage.local = data
 
-	if (globalThis.pageReady) {
-		document.dispatchEvent(
-			new CustomEvent('webextstorage', { detail: 'local' }),
-		)
-	}
+    if (globalThis.pageReady) {
+        document.dispatchEvent(
+            new CustomEvent('webextstorage', { detail: 'local' }),
+        )
+    }
 })
 
 chrome.bookmarks?.getTree().then((data) => {
-	globalThis.startupBookmarks = data
+    globalThis.startupBookmarks = data
 })
 
 chrome.topSites?.get().then((data) => {
-	globalThis.startupTopsites = data
+    globalThis.startupTopsites = data
 })

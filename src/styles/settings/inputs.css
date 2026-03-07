@@ -1,510 +1,506 @@
 aside hr {
-	width: 100%;
-	margin: 10px 0;
-	border: none;
-	border-bottom: 1px solid var(--color-input);
+    width: 100%;
+    margin: 10px 0;
+    border: none;
+    border-bottom: 1px solid var(--color-input);
 }
 
 aside .param-textarea {
-	width: 100%;
-	height: 200px;
-	margin-top: 12px;
-	padding: 12px;
-	font-size: 13px;
-	line-height: 1.5;
-	resize: none;
-	border-radius: 8px;
-	color: var(--color-text);
-	background-color: var(--color-areas);
+    width: 100%;
+    height: 200px;
+    margin-top: 12px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    resize: none;
+    border-radius: 8px;
+    color: var(--color-text);
+    background-color: var(--color-areas);
 }
 
 aside .param-btn {
-	height: 31px;
-	padding: 0 1em;
-	color: var(--color-blue);
-	border: none;
-	border-radius: 1em;
-	white-space: nowrap;
-	background-color: rgba(var(--blue), 0.15);
-	display: inline-flex;
-	justify-content: center;
-	align-items: center;
-	gap: 5px;
-	cursor: pointer;
+    height: 31px;
+    padding: 0 1em;
+    color: var(--color-blue);
+    border: none;
+    border-radius: 1em;
+    white-space: nowrap;
+    background-color: rgba(var(--blue), 0.15);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
 }
 
 aside .param-btn img,
 aside .param-btn span {
-	display: inline;
-	vertical-align: middle;
+    display: inline;
+    vertical-align: middle;
 }
 
 aside .param-btn:hover {
-	background-color: rgba(var(--blue), 0.25);
+    background-color: rgba(var(--blue), 0.25);
 }
 
 aside .param-btn:hover.btn-red {
-	color: var(--color-red);
-	background-color: rgba(var(--red), 0.25);
+    color: var(--color-red);
+    background-color: rgba(var(--red), 0.25);
 }
 
 aside .param-btn:disabled {
-	opacity: 0.66;
-	filter: grayscale(1);
-	pointer-events: none;
+    opacity: 0.66;
+    filter: grayscale(1);
+    pointer-events: none;
 }
 
 aside .inline-btn {
-	border-radius: 1em;
-	color: var(--color-blue);
-	background-color: transparent;
+    border-radius: 1em;
+    color: var(--color-blue);
+    background-color: transparent;
 }
 
 aside .inline-btn:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 aside .input-btn {
-	text-decoration: none;
-	color: var(--color-text);
-	background-color: var(--color-input);
+    text-decoration: none;
+    color: var(--color-text);
+    background-color: var(--color-input);
 }
 
 aside .input-btn:hover {
-	filter: brightness(.9);
+    filter: brightness(0.9);
 }
 
 aside .input-btn:active {
-	filter: brightness(.8);
+    filter: brightness(0.8);
 }
 
 aside .input-btn.icon-only span {
-	display: flex;
-	justify-content: center;
+    display: flex;
+    justify-content: center;
 }
 
 aside .input-btn.icon-only span svg {
-	height: 18px;
-	flex-shrink: 0;
+    height: 18px;
+    flex-shrink: 0;
 }
 
 aside .input-btn.icon-only:hover,
 aside .input-btn.icon-only:active {
-	background-color: var(--color-input);
+    background-color: var(--color-input);
 }
 
 aside textarea,
 aside .prism-code-editor {
-	font-family: var(--monospace-font-family);
+    font-family: var(--monospace-font-family);
 }
 
 aside select,
 aside input,
 aside button {
-	border-radius: 12px;
-	color: var(--color-text);
-	-webkit-appearance: none;
-	appearance: none;
+    border-radius: 12px;
+    color: var(--color-text);
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 aside input,
 aside select {
-	height: 31px;
-	width: 155px;
-	padding-inline: 13px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	background-color: var(--color-input);
+    height: 31px;
+    width: 155px;
+    padding-inline: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: var(--color-input);
 }
 
 @media only screen and (hover: hover) {
-	aside input:focus-visible,
-	aside .input-btn:active,
-	aside .tooltip:active,
-	aside .switch:hover {
-		background-color: var(--color-focused);
-	}
+    aside input:focus-visible,
+    aside .input-btn:active,
+    aside .tooltip:active,
+    aside .switch:hover {
+        background-color: var(--color-focused);
+    }
 }
 
 aside input::placeholder,
 aside input[type='text'] {
-	color: var(--color-placeholder);
+    color: var(--color-placeholder);
 }
 
 aside input[type='text']:focus-visible {
-	color: var(--color-text);
+    color: var(--color-text);
 }
 
 aside input[type='checkbox'] {
-	-webkit-tap-highlight-color: transparent;
-	cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
 }
 
 aside .switch {
-	position: relative;
-	display: inline-block;
-	height: 26px;
-	width: 59px;
-	border-radius: 16px;
-	background-color: #c6c4c7;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	overflow: visible;
-	transition: background-color 0.15s;
+    position: relative;
+    display: inline-block;
+    height: 26px;
+    width: 59px;
+    border-radius: 16px;
+    background-color: #c6c4c7;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    overflow: visible;
+    transition: background-color 0.15s;
 }
 
 [data-theme='dark'] aside .switch {
-	background-color: #39393d;
+    background-color: #39393d;
 }
 
 aside .switch:after {
-	content: '';
-	position: absolute;
-	height: 22px;
-	width: 34px;
-	border-radius: 100px;
-	background-color: white;
-	transition:
-		background-color 0.15s,
-		transform 0.15s;
+    content: '';
+    position: absolute;
+    height: 22px;
+    width: 34px;
+    border-radius: 100px;
+    background-color: white;
+    transition: background-color 0.15s, transform 0.15s;
 
-	left: 2px;
-	top: 50%;
-	margin-top: -11px;
+    left: 2px;
+    top: 50%;
+    margin-top: -11px;
 }
 
 aside .switch:checked {
-	background-color: var(--color-green);
-	/* transition: background-color 0.1s; */
+    background-color: var(--color-green);
+    /* transition: background-color 0.1s; */
 }
 
 aside .switch:checked:after {
-	transform: translateX(21px);
+    transform: translateX(21px);
 }
 
 @media only screen and (hover: hover) {
-	aside .switch:checked:hover {
-		background-color: #22c34d;
-	}
+    aside .switch:checked:hover {
+        background-color: #22c34d;
+    }
 }
 
 aside input::-webkit-calendar-picker-indicator {
-	display: none !important;
+    display: none !important;
 }
 
 aside input[type='range'] {
-	height: 2.2em;
-	-webkit-appearance: none;
-	appearance: none;
-	background-color: var(--color-param);
-	cursor: grab;
-	overflow: visible;
-	padding-inline: unset;
-	padding-left: 3px;
+    height: 2.2em;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--color-param);
+    cursor: grab;
+    overflow: visible;
+    padding-inline: unset;
+    padding-left: 3px;
 
-	/* progress support for webkit */
-	--range: calc(var(--max) - var(--min));
-	--ratio: calc((var(--value) - var(--min)) / var(--range));
-	--sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
+    /* progress support for webkit */
+    --range: calc(var(--max) - var(--min));
+    --ratio: calc((var(--value) - var(--min)) / var(--range));
+    --sx: calc(0.5 * 2em + var(--ratio) * (100% - 2em));
 }
 
 aside input[type='range']:active {
-	cursor: grabbing;
+    cursor: grabbing;
 }
 
 aside input[type='range']:focus {
-	outline: none;
+    outline: none;
 }
 
 aside input[type='range']::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	background: #fff;
-	height: 20px;
-	width: 30px;
-	border-radius: 50px;
-	border: 0;
-	box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
-	margin-top: calc(4px * 0.5 - 20px * 0.5);
+    -webkit-appearance: none;
+    background: #fff;
+    height: 20px;
+    width: 30px;
+    border-radius: 50px;
+    border: 0;
+    box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
+    margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
 aside input[type='range']::-webkit-slider-runnable-track {
-	height: 4px;
-	border: none;
-	border-radius: 0.5em;
-	box-shadow: none;
-	background:
-		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
-		#efefef;
+    height: 4px;
+    border: none;
+    border-radius: 0.5em;
+    box-shadow: none;
+    background:
+        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        #efefef;
 }
 
 [data-theme='dark'] aside input[type='range']::-webkit-slider-runnable-track {
-	background:
-		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
-		#3d3c41;
+    background:
+        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        #3d3c41;
 }
 
 /* firefox */
 aside input[type='range']::-moz-range-thumb {
-	background: #fff;
-	height: 20px;
-	width: 30px;
-	border-radius: 50px;
-	border: 0;
-	box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
-	margin-top: calc(4px * 0.5 - 20px * 0.5);
+    background: #fff;
+    height: 20px;
+    width: 30px;
+    border-radius: 50px;
+    border: 0;
+    box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
+    margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
 aside input[type='range']::-moz-range-track {
-	height: 4px;
-	border: none;
-	border-radius: 0.5em;
-	box-shadow: none;
-	background:
-		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
-		#efefef;
+    height: 4px;
+    border: none;
+    border-radius: 0.5em;
+    box-shadow: none;
+    background:
+        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        #efefef;
 }
 
 [data-theme='dark'] aside input[type='range']::-moz-range-track {
-	background:
-		linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
-		#3d3c41;
+    background:
+        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        #3d3c41;
 }
 
 /* old edge */
 aside input[type='range']::-ms-fill-upper {
-	background: transparent;
-	border-color: transparent;
+    background: transparent;
+    border-color: transparent;
 }
 
 aside input[type='range']::-ms-fill-lower {
-	background: transparent;
-	border-color: transparent;
+    background: transparent;
+    border-color: transparent;
 }
 
 aside input[type='range']::-ms-thumb {
-	width: 2em;
-	height: 2em;
-	border-radius: 1em;
-	background: var(--color-blue);
-	border: none;
-	box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
-	margin-top: 0;
-	box-sizing: border-box;
+    width: 2em;
+    height: 2em;
+    border-radius: 1em;
+    background: var(--color-blue);
+    border: none;
+    box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
+    margin-top: 0;
+    box-sizing: border-box;
 }
 
 aside input[type='range']::-ms-track {
-	height: 1em;
-	border-radius: 0.5em;
-	background: #efefef;
-	border: none;
-	box-shadow: none;
-	box-sizing: border-box;
+    height: 1em;
+    border-radius: 0.5em;
+    background: #efefef;
+    border: none;
+    box-shadow: none;
+    box-sizing: border-box;
 }
 
 aside input[type='range']::-ms-fill-lower {
-	height: 1em;
-	border-radius: 0.5em 0 0 0.5em;
-	margin: 0;
-	background: var(--color-blue);
-	border: none;
-	border-right-width: 0;
+    height: 1em;
+    border-radius: 0.5em 0 0 0.5em;
+    margin: 0;
+    background: var(--color-blue);
+    border: none;
+    border-right-width: 0;
 }
 
 aside .color-button {
-	position: relative;
+    position: relative;
 }
 
 aside .color-button input {
-	overflow: hidden;
-	position: absolute;
-	bottom: 0;
-	padding: 0;
-	opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    bottom: 0;
+    padding: 0;
+    opacity: 0;
 }
 
 aside .color-button button {
-	border: 1px solid black;
-	height: 31px;
-	width: 155px;
-	text-align: left;
-	padding-inline-start: 1em;
-	outline-offset: 2px;
-	user-select: text;
-	cursor: pointer;
+    border: 1px solid black;
+    height: 31px;
+    width: 155px;
+    text-align: left;
+    padding-inline-start: 1em;
+    outline-offset: 2px;
+    user-select: text;
+    cursor: pointer;
 }
 
 aside .inputWithSuffix {
-	width: 155px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 10px;
+    width: 155px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 aside .inputWithSuffix input {
-	flex: 1;
+    flex: 1;
 }
 
 label.input-file {
-	position: relative;
-	display: block;
-	cursor: pointer;
-	text-align: center;
-	font-size: 13px;
+    position: relative;
+    display: block;
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
 }
 
 label.input-file span {
-	position: absolute;
-	top: 50%;
-	left: 10%;
-	width: 80%;
-	margin: auto;
-	transform: translateY(-50%);
-	pointer-events: none;
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    margin: auto;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
 input[type='file'] {
-	height: 100px;
-	width: 100%;
-	color: transparent;
-	cursor: pointer;
+    height: 100px;
+    width: 100%;
+    color: transparent;
+    cursor: pointer;
 }
 
 input[type='file']::-webkit-file-selector-button,
 input[type='file']::file-selector-button {
-	display: none;
+    display: none;
 }
 
 label.input-file:active input[type='file'] {
-	background-color: var(--color-focused);
+    background-color: var(--color-focused);
 }
 
 label.input-file input[type='file'].dragover {
-	background-color: var(--color-blue);
-	transform: scale(1.02);
+    background-color: var(--color-blue);
+    transform: scale(1.02);
 }
 
 label.input-file input[type='file'].dragover ~ span {
-	color: white;
+    color: white;
 }
 
 aside form {
-	width: 155px;
+    width: 155px;
 }
 
 aside form > div {
-	display: flex;
-	gap: 4px;
-	width: 100%;
+    display: flex;
+    gap: 4px;
+    width: 100%;
 }
 
 aside form button {
-	height: 31px;
-	width: 31px;
-	padding: 0;
-	opacity: 0;
-	max-width: 0;
-	visibility: hidden;
-	background-color: var(--color-input);
-	transition:
-		opacity 0.1s,
-		max-width 0.2s;
+    height: 31px;
+    width: 31px;
+    padding: 0;
+    opacity: 0;
+    max-width: 0;
+    visibility: hidden;
+    background-color: var(--color-input);
+    transition: opacity 0.1s, max-width 0.2s;
 }
 
 aside form button:disabled {
-	cursor: default;
-	background-color: transparent;
+    cursor: default;
+    background-color: transparent;
 }
 
 aside form button span {
-	display: flex;
-	width: 31px;
-	justify-content: center;
+    display: flex;
+    width: 31px;
+    justify-content: center;
 }
 
 aside form.valid button {
-	opacity: 1;
-	max-width: 31px;
-	visibility: visible;
+    opacity: 1;
+    max-width: 31px;
+    visibility: visible;
 }
 
 aside form.valid span::after {
-	content: '✓';
+    content: '✓';
 }
 
 aside form.valid.remove span::after {
-	content: url('../../assets/interface/close.svg');
-	width: 11px;
+    content: url('../../assets/interface/close.svg');
+    width: 11px;
 }
 
 @media (hover: hover) {
-	aside form.valid button:not(:disabled):hover,
-	aside form.valid button:not(:disabled):focus-visible {
-		color: var(--color-blue);
-		background-color: rgba(var(--blue), 0.15);
-	}
+    aside form.valid button:not(:disabled):hover,
+    aside form.valid button:not(:disabled):focus-visible {
+        color: var(--color-blue);
+        background-color: rgba(var(--blue), 0.15);
+    }
 }
 
 .param {
-	margin-top: 12px;
-	padding: 10px 16px;
-	border-radius: var(--border-radius);
-	background-color: rgb(var(--color-param));
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: var(--border-radius);
+    background-color: rgb(var(--color-param));
 }
 
 .param + .param {
-	margin-top: 12px;
+    margin-top: 12px;
 }
 
 .wrapper {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	min-height: 31px;
-	padding: 4px; /* for tabbing outline */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 31px;
+    padding: 4px; /* for tabbing outline */
 }
 
 .wrapper > span {
-	display: flex;
-	align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .wrapper .tooltip {
-	margin: 0 7px;
+    margin: 0 7px;
 }
 
 .wrapper label {
-	pointer-events: none;
+    pointer-events: none;
 }
 
 .split-inputs {
-	display: flex;
-	width: 155px;
-	column-gap: 4px;
+    display: flex;
+    width: 155px;
+    column-gap: 4px;
 }
 
 .split-range {
-	height: 31px;
-	align-items: center;
+    height: 31px;
+    align-items: center;
 }
 
 .split-inputs input {
-	width: 100%;
+    width: 100%;
 }
 
 .split-range button {
-	height: 31px;
-	width: 40px;
-	font-size: 20px;
-	background-color: transparent;
+    height: 31px;
+    width: 40px;
+    font-size: 20px;
+    background-color: transparent;
 }
 
 .split-range button:not(.on) span:last-child,
 .split-range button.on span:first-child {
-	display: none;
+    display: none;
 }
 
 .split-range span {
-	display: initial;
+    display: initial;
 }

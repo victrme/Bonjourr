@@ -1,274 +1,274 @@
 @media (hover: none) and (pointer: coarse) {
-	.b_removethumb {
-		opacity: 1;
-	}
+    .b_removethumb {
+        opacity: 1;
+    }
 
-	#show-settings {
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		user-select: none;
-	}
+    #show-settings {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
 
-	#show-settings:active {
-		filter: brightness(0.5);
-	}
+    #show-settings:active {
+        filter: brightness(0.5);
+    }
 }
 
 @media screen and (max-height: 900px) {
-	body {
-		font-size: 13px;
-	}
+    body {
+        font-size: 13px;
+    }
 }
 
 @media screen and (max-width: 600px) {
-	html,
-	body {
-		font-size: 12px;
-		overflow-y: auto;
-	}
+    html,
+    body {
+        font-size: 12px;
+        overflow-y: auto;
+    }
 
-	.not-mobile {
-		display: none;
-	}
+    .not-mobile {
+        display: none;
+    }
 
-	#editlink {
-		max-width: 80%;
-	}
+    #editlink {
+        max-width: 80%;
+    }
 
-	#link-list {
-		padding: 2em;
-	}
+    #link-list {
+        padding: 2em;
+    }
 
-	#linkblocks.medium,
-	#linkblocks.large {
-		--folder-padding: 1.5em 1em;
-	}
+    #linkblocks.medium,
+    #linkblocks.large {
+        --folder-padding: 1.5em 1em;
+    }
 
-	#linkblocks.text,
-	#linkblocks.inline,
-	#linkblocks.small {
-		--folder-padding: 1.5em;
-	}
+    #linkblocks.text,
+    #linkblocks.inline,
+    #linkblocks.small {
+        --folder-padding: 1.5em;
+    }
 
-	#element-mover {
-		font-size: 12px;
-	}
+    #element-mover {
+        font-size: 12px;
+    }
 
-	#interface {
-		padding-bottom: 77px;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-around;
-	}
+    #interface {
+        padding-bottom: 77px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
 
-	body #interface.pushed {
-		transform: none;
-	}
+    body #interface.pushed {
+        transform: none;
+    }
 
-	#quotes_container {
-		width: 90vw;
-	}
+    #quotes_container {
+        width: 90vw;
+    }
 
-	#show-settings button {
-		height: 3.3em;
-		width: 3.3em;
-		border-radius: 10px;
-	}
+    #show-settings button {
+        height: 3.3em;
+        width: 3.3em;
+        border-radius: 10px;
+    }
 
-	#show-settings img {
-		width: 2em;
-	}
+    #show-settings img {
+        width: 2em;
+    }
 
-	aside {
-		top: 100dvh;
-		right: auto;
-		left: 0%;
-		bottom: -100dvh;
-		height: 100dvh;
-		width: 100%;
-		padding: 0 12px;
-		font-size: 14px;
-		border-radius: 1em;
-	}
+    aside {
+        top: 100dvh;
+        right: auto;
+        left: 0%;
+        bottom: -100dvh;
+        height: 100dvh;
+        width: 100%;
+        padding: 0 12px;
+        font-size: 14px;
+        border-radius: 1em;
+    }
 
-	aside.shown {
-		transform: translateX(0) translateY(-75dvh);
-	}
+    aside.shown {
+        transform: translateX(0) translateY(-75dvh);
+    }
 
-	#mobile-drag-zone {
-		display: block;
-	}
+    #mobile-drag-zone {
+        display: block;
+    }
 
-	#mobile-drag-zone + .settings-title {
-		margin-top: 0;
-	}
+    #mobile-drag-zone + .settings-title {
+        margin-top: 0;
+    }
 
-	.settings-title {
-		margin: 32px 16px 0px 16px;
-	}
+    .settings-title {
+        margin: 32px 16px 0px 16px;
+    }
 
-	@supports not (min-height: 100dvh) {
-		aside {
-			top: 100vh;
-			bottom: -100vh;
-			height: 100vh;
-		}
+    @supports not (min-height: 100dvh) {
+        aside {
+            top: 100vh;
+            bottom: -100vh;
+            height: 100vh;
+        }
 
-		#mobile-drag-zone.shown {
-			transform: translateY(-75vh);
-		}
-	}
+        #mobile-drag-zone.shown {
+            transform: translateY(-75vh);
+        }
+    }
 
-	#f_addlink > div {
-		align-items: center;
-	}
+    #f_addlink > div {
+        align-items: center;
+    }
 
-	#f_addlink > div > div {
-		width: 100%;
-		flex-direction: column;
-	}
+    #f_addlink > div > div {
+        width: 100%;
+        flex-direction: column;
+    }
 
-	aside::-webkit-scrollbar {
-		display: none;
-	}
+    aside::-webkit-scrollbar {
+        display: none;
+    }
 
-	#i_addlink-title,
-	#i_addlink-url,
-	#i_city {
-		width: 100%;
-	}
+    #i_addlink-title,
+    #i_addlink-url,
+    #i_city {
+        width: 100%;
+    }
 
-	#f_location {
-		width: 155px;
-	}
+    #f_location {
+        width: 155px;
+    }
 
-	#location_options.shown {
-		max-height: 100px;
-	}
+    #location_options.shown {
+        max-height: 100px;
+    }
 
-	#pagewidth,
-	#grid-layout-wrapper {
-		display: none;
-	}
+    #pagewidth,
+    #grid-layout-wrapper {
+        display: none;
+    }
 
-	#settings-footer {
-		width: 85%;
-		padding-bottom: 13vh;
-	}
+    #settings-footer {
+        width: 85%;
+        padding-bottom: 13vh;
+    }
 
-	#credit-container {
-		width: 100%;
-		padding-right: 7em;
-		padding-left: 1.5em;
-	}
+    #credit-container {
+        width: 100%;
+        padding-right: 7em;
+        padding-left: 1.5em;
+    }
 
-	#credit {
-		display: block;
-		line-height: 14px;
-	}
+    #credit {
+        display: block;
+        line-height: 14px;
+    }
 
-	#credit a,
-	#credit p,
-	#credit span {
-		font-size: 11px;
-	}
+    #credit a,
+    #credit p,
+    #credit span {
+        font-size: 11px;
+    }
 }
 
 /* fix iPhone notch in landscape */
 @media (orientation: landscape) and (hover: none) and (pointer: coarse) {
-	body {
-		padding: env(safe-area-inset);
-		overflow-y: scroll;
-	}
+    body {
+        padding: env(safe-area-inset);
+        overflow-y: scroll;
+    }
 
-	#main,
-	#time {
-		min-height: unset;
-	}
+    #main,
+    #time {
+        min-height: unset;
+    }
 }
 
 /* touch screens! */
 @media only screen and (hover: none) and (pointer: coarse) {
-	#image-background-overlay {
-		position: fixed;
-	}
+    #image-background-overlay {
+        position: fixed;
+    }
 
-	#sb-suggestions,
-	#searchbar {
-		font-size: 1.7em;
-		box-sizing: border-box;
-	}
+    #sb-suggestions,
+    #searchbar {
+        font-size: 1.7em;
+        box-sizing: border-box;
+    }
 
-	#sb-buttons {
-		font-size: 1.6em;
-	}
+    #sb-buttons {
+        font-size: 1.6em;
+    }
 
-	#sb-buttons button {
-		padding: 0 1em;
-	}
+    #sb-buttons button {
+        padding: 0 1em;
+    }
 
-	/* #notes_container #pocket-editor {
-		line-height: 1.7em;
-	} */
+    /* #notes_container #pocket-editor {
+    	line-height: 1.7em;
+    } */
 
-	#notes_container #pocket-editor input[type='checkbox'] {
-		width: calc(var(--font-size) * 1.5);
-		height: calc(var(--font-size) * 1.5);
-	}
+    #notes_container #pocket-editor input[type='checkbox'] {
+        width: calc(var(--font-size) * 1.5);
+        height: calc(var(--font-size) * 1.5);
+    }
 
-	#link-mini .link-title.add-group {
-		visibility: visible;
-	}
+    #link-mini .link-title.add-group {
+        visibility: visible;
+    }
 
-	[data-pocket-editor] [data-todo] p {
-		display: flex;
-		align-items: center;
-	}
+    [data-pocket-editor] [data-todo] p {
+        display: flex;
+        align-items: center;
+    }
 
-	aside,
-	button,
-	select,
-	option,
-	input,
-	#settings-footer {
-		font-size: 15px;
-	}
+    aside,
+    button,
+    select,
+    option,
+    input,
+    #settings-footer {
+        font-size: 15px;
+    }
 
-	aside input[type='range']::-webkit-slider-thumb {
-		height: 25px;
-		width: 25px;
-		border-radius: 50px;
-	}
+    aside input[type='range']::-webkit-slider-thumb {
+        height: 25px;
+        width: 25px;
+        border-radius: 50px;
+    }
 
-	aside .settings-title {
-		margin: 32px 16px 0px 16px; 
-	}
+    aside .settings-title {
+        margin: 32px 16px 0px 16px;
+    }
 
-	aside .wrapper {
-		padding: unset;
-		min-height: 38px;
-	}
+    aside .wrapper {
+        padding: unset;
+        min-height: 38px;
+    }
 
-	aside input:not(.range, .switch),
-	aside .input-btn,
-	aside form button,
-	aside select {
-		min-height: 36px;
-		border-radius: 13px;
-	}
+    aside input:not(.range, .switch),
+    aside .input-btn,
+    aside form button,
+    aside select {
+        min-height: 36px;
+        border-radius: 13px;
+    }
 
-	aside .input-btn.icon-only:hover {
-		background-color: initial;
-	}
+    aside .input-btn.icon-only:hover {
+        background-color: initial;
+    }
 
-	aside .switch:checked:hover {
-		background-color: var(--color-green);
-	}
+    aside .switch:checked:hover {
+        background-color: var(--color-green);
+    }
 
-	#settings .tooltip {
-		width: 25px;
-		height: 25px;
-		min-width: 25px;
-		font-size: 15px;
-	}
+    #settings .tooltip {
+        width: 25px;
+        height: 25px;
+        min-width: 25px;
+        font-size: 15px;
+    }
 }

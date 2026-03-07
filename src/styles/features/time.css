@@ -1,531 +1,531 @@
 #time {
-	position: relative;
+    position: relative;
 }
 
 #time:before {
-	box-shadow: 0px 0px 100px 40px rgba(34, 34, 34, 0.2666666667);
+    box-shadow: 0px 0px 100px 40px rgba(34, 34, 34, 0.2666666667);
 }
 
 #time.hidden {
-	display: none;
+    display: none;
 }
 
 #time.seconds .digital-mm-separator,
 #time.seconds .digital-ss {
-	display: inline;
+    display: inline;
 }
 
 #time.seconds .analog-seconds {
-	display: block;
+    display: block;
 }
 
 #time.is-analog .digital {
-	display: none;
+    display: none;
 }
 
 #time.is-analog .analog {
-	display: inline-block;
+    display: inline-block;
 }
 
 #time-container {
-	display: inline-flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-	gap: 4em;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4em;
 }
 
 .digital {
-	margin: 0;
-	margin-bottom: 0.1em;
-	margin-inline-start: calc(var(--seconds-margin-offset) / 2);
-	font-size: calc(var(--clock-size) * 6);
-	line-height: 1em;
-	font-weight: 200;
-	font-weight: var(--font-weight-clock);
-	direction: ltr;
+    margin: 0;
+    margin-bottom: 0.1em;
+    margin-inline-start: calc(var(--seconds-margin-offset) / 2);
+    font-size: calc(var(--clock-size) * 6);
+    line-height: 1em;
+    font-weight: 200;
+    font-weight: var(--font-weight-clock);
+    direction: ltr;
 }
 
 .digital[data-ampm-label][data-ampm][data-ampmposition='top-right'],
 .digital[data-ampm-label][data-ampm][data-ampmposition='bottom-right'] {
-	margin-left: var(--seconds-width);
+    margin-left: var(--seconds-width);
 }
 
 .digital span {
-	text-align: left;
+    text-align: left;
 }
 
 .digital-hh,
 .digital-mm,
 .digital-hh-separator {
-	display: inline-block;
+    display: inline-block;
 }
 
 .digital-hh-leading-zero,
 .digital-mm-separator,
 .digital-ss {
-	display: none;
+    display: none;
 }
 
 .digital.zero .digital-hh-leading-zero {
-	display: inline-block;
+    display: inline-block;
 }
 
 .digital-number-width {
-	position: absolute;
-	z-index: -1;
-	opacity: 0;
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
 }
 
 .digital-ampm {
-	/* margin: 0.2em; */
-	font-size: 0.4em;
-	line-height: 0.8em;
-	vertical-align: top;
+    /* margin: 0.2em; */
+    font-size: 0.4em;
+    line-height: 0.8em;
+    vertical-align: top;
 }
 
 [data-ampmposition='bottom-right'] .digital-ampm,
 [data-ampmposition='top-right'] .digital-ampm {
-	margin-left: 0.2em;
+    margin-left: 0.2em;
 }
 
 [data-ampmposition='bottom-left'] .digital-ampm,
 [data-ampmposition='top-left'] .digital-ampm {
-	margin-right: 0.2em;
+    margin-right: 0.2em;
 }
 
 [data-ampmposition='bottom-right'] .digital-ampm,
 [data-ampmposition='bottom-left'] .digital-ampm {
-	margin-bottom: 0.2em;
+    margin-bottom: 0.2em;
 }
 
 [data-ampmposition='top-right'] .digital-ampm,
 [data-ampmposition='top-left'] .digital-ampm {
-	margin-top: 0.2em;
+    margin-top: 0.2em;
 }
 
 .digital-ampm,
 .digital-am,
 .digital-pm {
-	display: none;
+    display: none;
 }
 
 [data-ampm-label][data-ampm][data-ampmposition] .digital-ampm,
 [data-ampm-label][data-ampm='am'][data-ampmposition] .digital-am,
 [data-ampm-label][data-ampm='pm'][data-ampmposition] .digital-pm {
-	display: inline-block;
+    display: inline-block;
 }
 
 .seconds [data-ampm-label][data-ampm] {
-	margin-inline-end: 0.5em;
+    margin-inline-end: 0.5em;
 }
 
 #time[data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm,
 #time[data-ampm-label][data-ampm][data-ampmposition='bottom-left'] .digital-ampm {
-	vertical-align: bottom;
+    vertical-align: bottom;
 }
 
 /* AM/PM top right, seconds */
 #time[class='seconds'][data-ampm-label][data-ampm][data-ampmposition='top-right'] .digital-ampm {
-	margin-left: 1ch;
+    margin-left: 1ch;
 }
 
 /* AM/PM bottom right, seconds */
 #time[class='seconds'][data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm {
-	margin-left: 1ch;
-	vertical-align: bottom;
+    margin-left: 1ch;
+    vertical-align: bottom;
 }
 
 #time.seconds .digital-ss {
-	display: inline-block;
-	width: var(--seconds-width);
+    display: inline-block;
+    width: var(--seconds-width);
 }
 
 .analog {
-	display: none;
-	position: relative;
-	width: calc(var(--clock-size) * 8);
-	height: calc(var(--clock-size) * 8);
-	border: calc(var(--clock-size) * 0.2) solid;
-	border-color: var(--analog-border);
-	background-color: var(--analog-background);
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
-	/* box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); */
+    display: none;
+    position: relative;
+    width: calc(var(--clock-size) * 8);
+    height: calc(var(--clock-size) * 8);
+    border: calc(var(--clock-size) * 0.2) solid;
+    border-color: var(--analog-border);
+    background-color: var(--analog-background);
+    backdrop-filter: blur(1em);
+    -webkit-backdrop-filter: blur(1em);
+    /* box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); */
 }
 
 /* shape */
 #time[data-shape='round'] .analog {
-	border-radius: 100%;
+    border-radius: 100%;
 }
 
 #time[data-shape='square'] .analog {
-	border-radius: calc(var(--clock-size) * 0.4);
+    border-radius: calc(var(--clock-size) * 0.4);
 }
 
 #time[data-shape='rectangle'] .analog {
-	border-radius: calc(var(--clock-size) * 1.5);
-	height: calc(var(--clock-size) * 9.5);
+    border-radius: calc(var(--clock-size) * 1.5);
+    height: calc(var(--clock-size) * 9.5);
 }
 
 /* background */
 #time.transparent .analog {
-	box-shadow: unset;
-	backdrop-filter: none;
-	-webkit-backdrop-filter: none;
+    box-shadow: unset;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 /* center */
 .analog-center {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: calc(var(--clock-size) * 0.4);
-	height: calc(var(--clock-size) * 0.4);
-	border-radius: calc(var(--clock-size) * 0.4);
-	transform: translate(-50%, -50%);
-	background-color: white;
-	z-index: 5;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--clock-size) * 0.4);
+    height: calc(var(--clock-size) * 0.4);
+    border-radius: calc(var(--clock-size) * 0.4);
+    transform: translate(-50%, -50%);
+    background-color: white;
+    z-index: 5;
 }
 
 /* hands */
 .analog-minutes,
 .analog-hours,
 .analog-seconds {
-	transform: rotate(var(--deg));
-	position: absolute;
-	display: block;
-	bottom: 50%;
-	left: 50%;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-	width: calc(var(--clock-size) * 0.2);
-	/* margin-left: calc(var(--clock-size) * -0.1); */
-	border-radius: calc(var(--clock-size) * 0.2);
-	transform-origin: bottom center;
-	background-color: white;
-	will-change: transform;
-	left: 0;
-	right: 0;
-	margin: auto;
+    transform: rotate(var(--deg));
+    position: absolute;
+    display: block;
+    bottom: 50%;
+    left: 50%;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    width: calc(var(--clock-size) * 0.2);
+    /* margin-left: calc(var(--clock-size) * -0.1); */
+    border-radius: calc(var(--clock-size) * 0.2);
+    transform-origin: bottom center;
+    background-color: white;
+    will-change: transform;
+    left: 0;
+    right: 0;
+    margin: auto;
 }
 
 .analog-hours {
-	height: calc(var(--clock-size) * 2.4);
+    height: calc(var(--clock-size) * 2.4);
 }
 
 .analog-minutes {
-	height: calc(var(--clock-size) * 3.6);
+    height: calc(var(--clock-size) * 3.6);
 }
 
 .analog-seconds {
-	display: none;
-	height: calc(var(--clock-size) * 3.6);
-	opacity: 0.8;
-	background-color: #e30713;
-	width: calc(var(--clock-size) * 0.1);
+    display: none;
+    height: calc(var(--clock-size) * 3.6);
+    opacity: 0.8;
+    background-color: #e30713;
+    width: calc(var(--clock-size) * 0.1);
 }
 
 /* swiss hands */
 #time[data-hands='swiss'] .analog-center {
-	display: none;
+    display: none;
 }
 
 #time[data-hands='swiss'].seconds .analog-center {
-	display: block;
-	background-color: #e30713;
-	width: calc(var(--clock-size) * 0.3);
-	height: calc(var(--clock-size) * 0.3);
+    display: block;
+    background-color: #e30713;
+    width: calc(var(--clock-size) * 0.3);
+    height: calc(var(--clock-size) * 0.3);
 }
 
 #time[data-hands='swiss'] .analog-hours {
-	height: 30%;
-	width: calc(var(--clock-size) * 0.35);
-	border-radius: 0;
+    height: 30%;
+    width: calc(var(--clock-size) * 0.35);
+    border-radius: 0;
 }
 
 /* bit that pokes out */
 #time[data-hands='swiss'] .analog-hours:after {
-	content: '';
-	display: block;
-	position: absolute;
-	background-color: white;
-	width: calc(var(--clock-size) * 0.35);
-	height: calc(var(--clock-size) * 1.2);
-	bottom: calc(var(--clock-size) * -1.2);
-	left: 50%;
-	transform: translateX(-50%);
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: white;
+    width: calc(var(--clock-size) * 0.35);
+    height: calc(var(--clock-size) * 1.2);
+    bottom: calc(var(--clock-size) * -1.2);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #time[data-hands='swiss'] .analog-minutes {
-	height: calc(var(--clock-size) * 3.69);
-	width: calc(var(--clock-size) * 0.25);
-	border-radius: 0;
+    height: calc(var(--clock-size) * 3.69);
+    width: calc(var(--clock-size) * 0.25);
+    border-radius: 0;
 }
 
 /* bit that pokes out */
 #time[data-hands='swiss'] .analog-minutes:after {
-	content: '';
-	display: block;
-	position: absolute;
-	background-color: white;
-	width: calc(var(--clock-size) * 0.25);
-	height: calc(var(--clock-size) * 1.2);
-	bottom: calc(var(--clock-size) * -1.2);
-	left: 50%;
-	transform: translateX(-50%);
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: white;
+    width: calc(var(--clock-size) * 0.25);
+    height: calc(var(--clock-size) * 1.2);
+    bottom: calc(var(--clock-size) * -1.2);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #time[data-hands='swiss'] .analog-seconds {
-	height: calc(var(--clock-size) * 2.8);
-	border-radius: 0;
-	opacity: 1;
+    height: calc(var(--clock-size) * 2.8);
+    border-radius: 0;
+    opacity: 1;
 }
 
 /* bit that pokes out */
 #time[data-hands='swiss'] .analog-seconds:after {
-	content: '';
-	display: block;
-	position: absolute;
-	background-color: #e30713;
-	width: calc(var(--clock-size) * 0.1);
-	height: calc(var(--clock-size) * 1.2);
-	bottom: calc(var(--clock-size) * -1.2);
-	left: 50%;
-	transform: translateX(-50%);
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: #e30713;
+    width: calc(var(--clock-size) * 0.1);
+    height: calc(var(--clock-size) * 1.2);
+    bottom: calc(var(--clock-size) * -1.2);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* circle at the end */
 #time[data-hands='swiss'] .analog-seconds:before {
-	content: '';
-	display: block;
-	position: absolute;
-	width: calc(var(--clock-size) * 0.65);
-	height: calc(var(--clock-size) * 0.65);
-	background-color: #e30713;
-	left: 50%;
-	transform: translateX(-50%);
-	border-radius: 100%;
+    content: '';
+    display: block;
+    position: absolute;
+    width: calc(var(--clock-size) * 0.65);
+    height: calc(var(--clock-size) * 0.65);
+    background-color: #e30713;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 100%;
 }
 
 /* braun hands */
 #time[data-hands='braun'].seconds .analog-center {
-	background-color: #f9b603;
-	width: calc(var(--clock-size) * 0.5);
-	height: calc(var(--clock-size) * 0.5);
+    background-color: #f9b603;
+    width: calc(var(--clock-size) * 0.5);
+    height: calc(var(--clock-size) * 0.5);
 }
 
 #time[data-hands='braun'].seconds .analog-seconds {
-	background-color: #f9b603;
-	opacity: 1;
-	height: calc(var(--clock-size) * 3.5);
+    background-color: #f9b603;
+    opacity: 1;
+    height: calc(var(--clock-size) * 3.5);
 }
 
 /* bit that pokes out */
 #time[data-hands='braun'] .analog-seconds:after {
-	content: '';
-	display: block;
-	position: absolute;
-	border-radius: 0 0 10px 10px;
-	background-color: #f9b603;
-	width: calc(var(--clock-size) * 0.3);
-	height: calc(var(--clock-size) * 0.75);
-	bottom: calc(var(--clock-size) * -0.75);
-	left: 50%;
-	transform: translateX(-50%);
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    content: '';
+    display: block;
+    position: absolute;
+    border-radius: 0 0 10px 10px;
+    background-color: #f9b603;
+    width: calc(var(--clock-size) * 0.3);
+    height: calc(var(--clock-size) * 0.75);
+    bottom: calc(var(--clock-size) * -0.75);
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
 #time[data-hands='braun'] .analog-hours {
-	width: calc(var(--clock-size) * 0.3);
-	height: calc(var(--clock-size) * 2.58);
+    width: calc(var(--clock-size) * 0.3);
+    height: calc(var(--clock-size) * 2.58);
 }
 
 #time[data-hands='braun'] .analog-minutes {
-	height: calc(var(--clock-size) * 3.33);
+    height: calc(var(--clock-size) * 3.33);
 }
 
 /* classic hands */
 #time[data-hands='classic'] .analog-hours,
 #time[data-hands='classic'] .analog-minutes {
-	background-color: transparent;
-	position: absolute;
-	background-position: center;
-	background-repeat: no-repeat;
-	box-shadow: unset;
-	filter: invert(1);
-	opacity: 1;
+    background-color: transparent;
+    position: absolute;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: unset;
+    filter: invert(1);
+    opacity: 1;
 }
 
 #time[data-hands='classic'].white-opaque .analog-hours,
 #time[data-hands='classic'].white-opaque .analog-minutes {
-	filter: unset;
+    filter: unset;
 }
 
 #time[data-hands='classic'] .analog-hours {
-	background-image: url('../../assets/interface/clock/classic_hours.svg');
-	height: calc(var(--clock-size) * 2.35);
-	width: calc(var(--clock-size) * 1.5);
+    background-image: url('../../assets/interface/clock/classic_hours.svg');
+    height: calc(var(--clock-size) * 2.35);
+    width: calc(var(--clock-size) * 1.5);
 }
 
 #time[data-hands='classic'] .analog-minutes {
-	background-image: url('../../assets/interface/clock/classic_minutes.svg');
-	height: calc(var(--clock-size) * 3.4);
-	width: calc(var(--clock-size) * 1.2);
+    background-image: url('../../assets/interface/clock/classic_minutes.svg');
+    height: calc(var(--clock-size) * 3.4);
+    width: calc(var(--clock-size) * 1.2);
 }
 
 #time[data-hands='classic'] .analog-seconds,
 #time[data-hands='classic'].seconds .analog-center {
-	background-color: #cdaa35;
-	opacity: 1;
+    background-color: #cdaa35;
+    opacity: 1;
 }
 
 #time[data-hands='classic'] .analog-seconds:after {
-	content: '';
-	display: block;
-	position: absolute;
-	background-color: #cdaa35;
-	width: calc(var(--clock-size) * 0.08);
-	height: calc(var(--clock-size) * 0.9);
-	bottom: calc(var(--clock-size) * -0.9);
-	left: 50%;
-	transform: translateX(-50%);
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: #cdaa35;
+    width: calc(var(--clock-size) * 0.08);
+    height: calc(var(--clock-size) * 0.9);
+    bottom: calc(var(--clock-size) * -0.9);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* Apple Watch hands */
 #time[data-hands='apple'] .analog-hours,
 #time[data-hands='apple'] .analog-minutes {
-	height: calc(var(--clock-size) * 0.7);
-	width: calc(var(--clock-size) * 0.1);
-	border-radius: 0;
+    height: calc(var(--clock-size) * 0.7);
+    width: calc(var(--clock-size) * 0.1);
+    border-radius: 0;
 }
 
 #time[data-hands='apple'] .analog-hours:before,
 #time[data-hands='apple'] .analog-minutes:before {
-	content: '';
-	display: block;
-	position: absolute;
-	width: calc(var(--clock-size) * 0.3);
-	background-color: white;
-	left: 50%;
-	transform: translateX(-50%);
-	border-radius: 8px;
+    content: '';
+    display: block;
+    position: absolute;
+    width: calc(var(--clock-size) * 0.3);
+    background-color: white;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 8px;
 }
 
 #time[data-hands='apple'] .analog-hours:before {
-	height: calc(var(--clock-size) * 1.4);
-	top: calc(var(--clock-size) * -1.35);
+    height: calc(var(--clock-size) * 1.4);
+    top: calc(var(--clock-size) * -1.35);
 }
 
 #time[data-hands='apple'] .analog-minutes:before {
-	height: calc(var(--clock-size) * 2.5);
-	top: calc(var(--clock-size) * -2.48);
+    height: calc(var(--clock-size) * 2.5);
+    top: calc(var(--clock-size) * -2.48);
 }
 
 #time[data-hands='apple'].white-opaque .analog-hours:before,
 #time[data-hands='apple'].white-opaque .analog-minutes:before {
-	background-color: black;
+    background-color: black;
 }
 
 #time[data-hands='apple'].seconds .analog-seconds {
-	background-color: #f06142;
-	width: calc(var(--clock-size) * 0.08);
-	opacity: 1;
-	z-index: 1;
+    background-color: #f06142;
+    width: calc(var(--clock-size) * 0.08);
+    opacity: 1;
+    z-index: 1;
 }
 
 /* bit that pokes out */
 #time[data-hands='apple'] .analog-seconds:after {
-	content: '';
-	display: block;
-	position: absolute;
-	background-color: #f06142;
-	width: calc(var(--clock-size) * 0.08);
-	height: calc(var(--clock-size) * 0.9);
-	bottom: calc(var(--clock-size) * -0.9);
-	left: 50%;
-	transform: translateX(-50%);
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: #f06142;
+    width: calc(var(--clock-size) * 0.08);
+    height: calc(var(--clock-size) * 0.9);
+    bottom: calc(var(--clock-size) * -0.9);
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #time[data-hands='apple'].seconds .analog-center {
-	background-color: #f06142;
+    background-color: #f06142;
 }
 
 #time[data-hands='apple'].seconds .analog-center:before {
-	content: '';
-	width: calc(var(--clock-size) * 0.17);
-	height: calc(var(--clock-size) * 0.17);
-	background-color: black;
-	position: absolute;
-	display: block;
-	border-radius: 100%;
-	left: 50%;
-	top: 50%;
-	transform: translateX(-50%) translateY(-50%);
+    content: '';
+    width: calc(var(--clock-size) * 0.17);
+    height: calc(var(--clock-size) * 0.17);
+    background-color: black;
+    position: absolute;
+    display: block;
+    border-radius: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 #time[data-hands='apple'].seconds.white-opaque .analog-center:before {
-	background-color: white;
+    background-color: white;
 }
 
 /* white circle at the base of the hands */
 #time[data-hands='apple'] .analog:after {
-	content: '';
-	width: calc(var(--clock-size) * 0.45);
-	height: calc(var(--clock-size) * 0.45);
-	background-color: white;
-	position: absolute;
-	display: block;
-	border-radius: 100%;
-	left: 50%;
-	top: 50%;
-	transform: translateX(-50%) translateY(-50%);
+    content: '';
+    width: calc(var(--clock-size) * 0.45);
+    height: calc(var(--clock-size) * 0.45);
+    background-color: white;
+    position: absolute;
+    display: block;
+    border-radius: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 #time[data-hands='apple'].white-opaque .analog:after {
-	background-color: black;
+    background-color: black;
 }
 
 /* faces */
 .analog-face {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	font-size: var(--clock-size);
-	--center: calc(50% - 0.5em);
-	--padding: 0.75em;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    font-size: var(--clock-size);
+    --center: calc(50% - 0.5em);
+    --padding: 0.75em;
 }
 
 .analog-face span {
-	position: absolute;
-	display: block;
-	opacity: 0.6;
-	width: 1em;
-	height: 1em;
-	line-height: 1em;
-	text-align: center;
+    position: absolute;
+    display: block;
+    opacity: 0.6;
+    width: 1em;
+    height: 1em;
+    line-height: 1em;
+    text-align: center;
 }
 
 #time[data-face='swiss'] .analog-face,
 #time[data-face='braun'] .analog-face {
-	background-size: 95%;
-	background-position: center;
-	background-repeat: no-repeat;
+    background-size: 95%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #time[data-face='swiss'] .analog-face {
-	background-image: url('../../assets/interface/clock/swiss-railway-white.svg');
+    background-image: url('../../assets/interface/clock/swiss-railway-white.svg');
 }
 
 #time[data-face='braun'] .analog-face {
-	background-image: url('../../assets/interface/clock/braun-white.svg');
+    background-image: url('../../assets/interface/clock/braun-white.svg');
 }
 
 #time[data-face='swiss'].white-opaque .analog-face {
-	background-image: url('../../assets/interface/clock/swiss-railway-black.svg');
+    background-image: url('../../assets/interface/clock/swiss-railway-black.svg');
 }
 
 #time[data-face='braun'].white-opaque .analog-face {
-	background-image: url('../../assets/interface/clock/braun-black.svg');
+    background-image: url('../../assets/interface/clock/braun-black.svg');
 }
 
 #time.white-opaque:not([data-hands='classic']) .analog .analog-minutes,
@@ -533,72 +533,72 @@
 #time.white-opaque[data-hands='modern'] .analog-center,
 #time.white-opaque .analog .analog-minutes:after,
 #time.white-opaque .analog .analog-hours:after {
-	background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 #time.white-opaque .analog-face span {
-	color: black;
-	opacity: 0.9;
+    color: black;
+    opacity: 0.9;
 }
 
 .analog-face span:nth-child(1) {
-	left: var(--center);
-	top: var(--padding);
+    left: var(--center);
+    top: var(--padding);
 }
 
 .analog-face span:nth-child(2) {
-	top: var(--center);
-	right: var(--padding);
+    top: var(--center);
+    right: var(--padding);
 }
 
 .analog-face span:nth-child(3) {
-	left: var(--center);
-	bottom: var(--padding);
+    left: var(--center);
+    bottom: var(--padding);
 }
 
 .analog-face span:nth-child(4) {
-	top: var(--center);
-	left: var(--padding);
+    top: var(--center);
+    left: var(--padding);
 }
 
 #time p {
-	font-size: 1.5em;
+    font-size: 1.5em;
 }
 
 #time .clock-date-aa {
-	display: inline-block;
+    display: inline-block;
 }
 
 #time .clock-date-aa::first-letter {
-	text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 #time.analog .clock-date {
-	margin-top: 1em;
+    margin-top: 1em;
 }
 
 .clock-region {
-	margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 #time-container.he_hidden ~ .clock-date {
-	margin-top: 0;
+    margin-top: 0;
 }
 
 .clock-date-aa-separator::after,
 .clock-date-bb-separator::after {
-	content: ' ';
+    content: ' ';
 }
 
 .clock-date.us .clock-date-aa-separator::after {
-	content: ', ';
+    content: ', ';
 }
 
 .clock-date-secondary {
-	display: block;
-	font-size: smaller;
+    display: block;
+    font-size: smaller;
 }
 
 .clock-date-secondary::after {
-	content: '\200b';
+    content: '\200b';
 }

@@ -1,75 +1,75 @@
 /* Link blocks */
 
 #linkblocks {
-	--in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
+    --in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 }
 
 #linkblocks.hidden {
-	display: none;
+    display: none;
 }
 
 .select-all .link div,
 .select-all .link span {
-	/* split div and span instead of just ".link" */
-	/* to keep folder blur with filter */
-	filter: grayscale(1) brightness(0.6);
+    /* split div and span instead of just ".link" */
+    /* to keep folder blur with filter */
+    filter: grayscale(1) brightness(0.6);
 }
 
 .select-all .selected div,
 .select-all .selected span {
-	filter: none;
+    filter: none;
 }
 
 .select-all.inline .link:hover span,
 .select-all.text .link:hover span {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 .text-left #link-mini,
 .text-left .link-list {
-	justify-content: start;
+    justify-content: start;
 }
 
 .text-left #link-mini {
-	text-align: left;
+    text-align: left;
 }
 
 .text-left .link-group {
-	align-items: start;
+    align-items: start;
 }
 
 .text-right #link-mini,
 .text-right .link-list {
-	justify-content: end;
+    justify-content: end;
 }
 
 .text-right #link-mini {
-	text-align: right;
+    text-align: right;
 }
 
 .text-right .link-group {
-	align-items: end;
+    align-items: end;
 }
 
 /* Link Group */
 
 .link-group {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	row-gap: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 1em;
 }
 
 .link-group.pinned {
-	margin-bottom: 3em;
+    margin-bottom: 3em;
 }
 
 .link-group.hiding .link-list {
-	opacity: 0;
+    opacity: 0;
 }
 
 .link-group.hiding .link {
-	transform: scale(0.9);
+    transform: scale(0.9);
 }
 
 /* Overengineered brightness because filter disables backdrop with .link-folder */
@@ -77,75 +77,75 @@
 .link-folder:active img,
 .link-group.hiding .link-elem,
 .link-group.hiding .link-folder img {
-	filter: brightness(0.8);
+    filter: brightness(0.8);
 }
 
 .link-folder:active div,
 .link-group.hiding .link-folder div {
-	backdrop-filter: blur(1em) brightness(0.8);
-	-webkit-backdrop-filter: blur(1em) brightness(0.8);
+    backdrop-filter: blur(1em) brightness(0.8);
+    -webkit-backdrop-filter: blur(1em) brightness(0.8);
 }
 
 .link-group.in-folder .link-list {
-	display: flex; /* do not remove, fixes backdrop filter on Safari */
-	padding: var(--folder-padding);
-	background-color: #fff2;
-	border: 1px solid #fff4;
-	backdrop-filter: blur(2em);
-	-webkit-backdrop-filter: blur(2em);
+    display: flex; /* do not remove, fixes backdrop filter on Safari */
+    padding: var(--folder-padding);
+    background-color: #fff2;
+    border: 1px solid #fff4;
+    backdrop-filter: blur(2em);
+    -webkit-backdrop-filter: blur(2em);
 }
 
 .link-list {
-	position: relative;
-	display: inline-flex;
-	visibility: visible;
-	flex-wrap: wrap;
-	justify-content: center;
-	row-gap: var(--row-gap);
-	column-gap: var(--column-gap);
-	min-height: var(--min-height);
-	min-width: 6em;
-	padding: 0;
-	margin: 0;
-	max-width: var(--links-width);
-	background-color: transparent;
-	border: 1px solid transparent;
-	border-radius: var(--border-radius);
-	z-index: 2;
-	transition: opacity 0.05s var(--out-cubic);
+    position: relative;
+    display: inline-flex;
+    visibility: visible;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--row-gap);
+    column-gap: var(--column-gap);
+    min-height: var(--min-height);
+    min-width: 6em;
+    padding: 0;
+    margin: 0;
+    max-width: var(--links-width);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius);
+    z-index: 2;
+    transition: opacity 0.05s var(--out-cubic);
 }
 
 /* Link titles */
 
 .link-title {
-	display: none;
-	max-width: 26ch;
-	padding: 0.2em 1em;
-	overflow: hidden;
-	white-space: nowrap;
-	text-align: center;
-	text-overflow: ellipsis;
-	opacity: 0.7;
-	color: white;
-	font-size: 1em;
-	border-radius: 8px;
-	border: 1px solid transparent;
-	background-color: transparent;
-	cursor: pointer;
-	transition: transform 0.2s var(--in-out-bounce);
+    display: none;
+    max-width: 26ch;
+    padding: 0.2em 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    text-overflow: ellipsis;
+    opacity: 0.7;
+    color: white;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background-color: transparent;
+    cursor: pointer;
+    transition: transform 0.2s var(--in-out-bounce);
 }
 
 .link-group .link-title {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 .with-groups .link-group.pinned .link-title,
 .link-group.in-folder .link-title {
-	display: initial;
+    display: initial;
 }
 
 .link-title:hover {
-	opacity: 1;
+    opacity: 1;
 }
 
 /*
@@ -156,184 +156,178 @@
 
 .link-title.selected,
 .link-title.selected.selected-group {
-	opacity: 1;
-	outline: 2px solid var(--color-blue);
-	background-color: rgba(var(--blue), 0.15);
+    opacity: 1;
+    outline: 2px solid var(--color-blue);
+    background-color: rgba(var(--blue), 0.15);
 }
 
 .link-group.pinned .link-title,
 .link-title.selected-group {
-	opacity: 1;
-	cursor: initial;
-	border-color: #fff1;
-	background-color: #fff2;
-	backdrop-filter: blur(2em);
-	-webkit-backdrop-filter: blur(2em);
+    opacity: 1;
+    cursor: initial;
+    border-color: #fff1;
+    background-color: #fff2;
+    backdrop-filter: blur(2em);
+    -webkit-backdrop-filter: blur(2em);
 }
 
 .link-group.in-folder .link-title {
-	user-select: none;
-	pointer-events: none;
-	-webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+    -webkit-user-select: none;
 }
 
 /* Link */
 
 .link {
-	transition:
-		transform 0.2s var(--in-out-bounce),
-		opacity 0.1s var(--in-out-bounce),
-		filter 0.06s;
+    transition: transform 0.2s var(--in-out-bounce), opacity 0.1s var(--in-out-bounce), filter 0.06s;
 }
 
 .link {
-	width: var(--block-size);
-	cursor: pointer;
-	touch-action: none;
+    width: var(--block-size);
+    cursor: pointer;
+    touch-action: none;
 }
 
 .link div,
 .link img {
-	transition-duration: 0.05s;
-	transition-timing-function: var(--out-cubic);
-	transition-property: transform, box-shadow, border-color, background-color;
+    transition-duration: 0.05s;
+    transition-timing-function: var(--out-cubic);
+    transition-property: transform, box-shadow, border-color, background-color;
 }
 
 .link div {
-	margin: auto;
-	flex-shrink: 0;
-	width: var(--icon-size);
-	height: var(--icon-size);
-	box-sizing: border-box;
+    margin: auto;
+    flex-shrink: 0;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    box-sizing: border-box;
 }
 
 .link a {
-	color: white;
-	cursor: pointer;
-	text-decoration: none;
-	transition: width 0.2s var(--out-cubic);
-	-webkit-touch-callout: none;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+    transition: width 0.2s var(--out-cubic);
+    -webkit-touch-callout: none;
 }
 
 .link img {
-	width: 100%;
-	height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .link span {
-	display: none;
-	width: 100%;
-	padding-top: 0.4em;
-	line-height: 1.2em;
-	max-height: 3.6em;
-	overflow: hidden;
-	word-wrap: break-word;
+    display: none;
+    width: 100%;
+    padding-top: 0.4em;
+    line-height: 1.2em;
+    max-height: 3.6em;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 
 .titles .link span {
-	display: block;
+    display: block;
 }
 
 .titles.small .link span {
-	display: inline;
-	width: unset;
-	top: 3.5em;
+    display: inline;
+    width: unset;
+    top: 3.5em;
 }
 
 .backgrounds .link div {
-	background-color: white;
-	border-color: white;
-	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    border-color: white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
 }
 
 .backgrounds .link div:hover {
-	box-shadow: unset;
+    box-shadow: unset;
 }
 
 .link.removed {
-	margin: 0 calc(var(--column-gap) / 2 * -1); /* minus half of gap */
-	width: 0 !important;
-	opacity: 0;
-	overflow: hidden;
-	transition:
-		width 0.3s 0.3s var(--out-cubic),
-		margin 0.3s 0.3s var(--out-cubic),
-		opacity 0.3s var(--out-cubic);
+    margin: 0 calc(var(--column-gap) / 2 * -1); /* minus half of gap */
+    width: 0 !important;
+    opacity: 0;
+    overflow: hidden;
+    transition: width 0.3s 0.3s var(--out-cubic), margin 0.3s 0.3s var(--out-cubic), opacity 0.3s var(--out-cubic);
 }
 
 .link.removed span {
-	min-height: 0 !important;
-	max-height: 0 !important;
-	transition: max-height 0.3s 0.3s var(--out-cubic);
+    min-height: 0 !important;
+    max-height: 0 !important;
+    transition: max-height 0.3s 0.3s var(--out-cubic);
 }
 
 .link.removed div {
-	transform: scale(0.6);
+    transform: scale(0.6);
 }
 
 #linkblocks.large .link.selected div,
 #linkblocks.medium .link.selected div,
 #linkblocks.small .link.selected div {
-	box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-	outline: 0.3em solid var(--color-blue);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    outline: 0.3em solid var(--color-blue);
 }
 
 #linkblocks.inline .link-folder.selected,
 #linkblocks.inline .link.selected a,
 #linkblocks.text .link-folder.selected,
 #linkblocks.text .link.selected a {
-	border-radius: 0.5em;
-	outline: 0.2em solid var(--color-blue);
-	background-color: rgba(0, 114, 238, 0.1333333333);
+    border-radius: 0.5em;
+    outline: 0.2em solid var(--color-blue);
+    background-color: rgba(0, 114, 238, 0.1333333333);
 }
 
 #linkblocks.inline .link.selected:hover span,
 #linkblocks.text .link.selected:hover span {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 @media only screen and (hover: hover) {
-	#linkblocks.backgrounds .link:hover div {
-		box-shadow: 0px 0.2em 1em #0003;
-	}
+    #linkblocks.backgrounds .link:hover div {
+        box-shadow: 0px 0.2em 1em #0003;
+    }
 
-	.link:hover:not(.selected) div {
-		transform: scale(0.95);
-	}
+    .link:hover:not(.selected) div {
+        transform: scale(0.95);
+    }
 }
 
 .link-folder > div {
-	display: grid;
-	column-gap: 4px;
-	height: var(--icon-size);
-	grid-template-columns: 1fr 1fr;
-	border: 1px solid transparent;
-	box-sizing: border-box;
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
+    display: grid;
+    column-gap: 4px;
+    height: var(--icon-size);
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    backdrop-filter: blur(1em);
+    -webkit-backdrop-filter: blur(1em);
 }
 
 .link-folder img[src] {
-	display: initial;
+    display: initial;
 }
 
 .link-folder img {
-	display: none;
-	/* border-radius: 4px; */
-	/* padding: 2px; */
-	user-select: none;
-	-webkit-touch-callout: none;
-	-webkit-user-select: none;
+    display: none;
+    /* border-radius: 4px; */
+    /* padding: 2px; */
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
 }
 
 #linkblocks .link-folder > div,
 #linkblocks.backgrounds .link-folder > div {
-	background-color: #fff3;
-	border-color: #fff4;
+    background-color: #fff3;
+    border-color: #fff4;
 }
 
 #linkblocks.backgrounds .link-folder img {
-	background-color: white;
+    background-color: white;
 }
 
 /* Link styles */
@@ -341,409 +335,409 @@
 /* Large */
 
 #linkblocks.large {
-	--min-height: 5.2em;
-	--column-gap: 0.6em;
-	--row-gap: 1em;
-	--icon-size: 4.8em;
-	--block-size: 6.5em;
-	--folder-padding: 2em;
+    --min-height: 5.2em;
+    --column-gap: 0.6em;
+    --row-gap: 1em;
+    --icon-size: 4.8em;
+    --block-size: 6.5em;
+    --folder-padding: 2em;
 }
 
 .large .link div {
-	padding: var(--link-padding);
-	border-radius: var(--link-outer-radius);
+    padding: var(--link-padding);
+    border-radius: var(--link-outer-radius);
 }
 
 .large .link img {
-	border-radius: calc(var(--link-outer-radius) - var(--link-padding));
+    border-radius: calc(var(--link-outer-radius) - var(--link-padding));
 }
 
 .large .link-folder div {
-	padding: 5px;
+    padding: 5px;
 }
 
 .large .link-folder img {
-	/* 0.45 cause they're about 45% smaller than the large links themselves */
-	border-radius: calc(var(--link-outer-radius) * 0.45);
-	padding: calc(var(--link-padding) * 0.45);
-	width: 100%;
-	aspect-ratio: 1/1;
-	height: auto;
-	box-sizing: border-box;
+    /* 0.45 cause they're about 45% smaller than the large links themselves */
+    border-radius: calc(var(--link-outer-radius) * 0.45);
+    padding: calc(var(--link-padding) * 0.45);
+    width: 100%;
+    aspect-ratio: 1/1;
+    height: auto;
+    box-sizing: border-box;
 }
 
 /* Medium */
 
 #linkblocks.medium {
-	--min-height: 3.9em;
-	--column-gap: 0.6em;
-	--row-gap: 1em;
-	--icon-size: 3.5em;
-	--block-size: 4.7em;
-	--folder-padding: 1.6em;
+    --min-height: 3.9em;
+    --column-gap: 0.6em;
+    --row-gap: 1em;
+    --icon-size: 3.5em;
+    --block-size: 4.7em;
+    --folder-padding: 1.6em;
 }
 
 .medium .link div {
-	/* .77 because they're about 77% the size of large links */
-	padding: calc(var(--link-padding) * 0.77);
-	border-radius: calc(var(--link-outer-radius) * 0.77);
+    /* .77 because they're about 77% the size of large links */
+    padding: calc(var(--link-padding) * 0.77);
+    border-radius: calc(var(--link-outer-radius) * 0.77);
 }
 
 .medium .link img {
-	border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.77);
+    border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.77);
 }
 
 /* Small */
 
 #linkblocks.small {
-	--min-height: 2.5em;
-	--block-size: 2.5em;
-	--column-gap: 1.5em;
-	--row-gap: 1.5em;
-	--folder-padding: 1.2em;
+    --min-height: 2.5em;
+    --block-size: 2.5em;
+    --column-gap: 1.5em;
+    --row-gap: 1.5em;
+    --folder-padding: 1.2em;
 }
 
 .small #link-list {
-	min-height: 2em;
-	gap: 1.5em;
+    min-height: 2em;
+    gap: 1.5em;
 }
 
 .small a,
 .small .link {
-	position: relative;
+    position: relative;
 }
 
 .small .link {
-	width: var(--block-size);
+    width: var(--block-size);
 }
 
 .small .link div {
-	width: var(--block-size);
-	height: var(--block-size);
+    width: var(--block-size);
+    height: var(--block-size);
 
-	/* .77 because they're about 77% the size of large links */
-	padding: calc(var(--link-padding) * 0.57);
-	border-radius: calc(var(--link-outer-radius) * 0.57);
+    /* .77 because they're about 77% the size of large links */
+    padding: calc(var(--link-padding) * 0.57);
+    border-radius: calc(var(--link-outer-radius) * 0.57);
 }
 
 .small .link img {
-	border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.57);
+    border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.57);
 }
 
 .small .link span {
-	position: absolute;
-	visibility: hidden;
-	top: 3em;
-	transform: translateX(-50%);
-	padding: 0em 0.6em;
-	opacity: 0;
-	color: white;
-	font-size: 0.9em;
-	line-height: 1.3em;
-	max-height: 3.9em;
-	text-shadow: none;
-	border-radius: 0.3em;
-	background-color: rgba(255, 255, 255, 0.2);
-	border: 1px solid rgba(255, 255, 255, 0.075);
-	backdrop-filter: blur(1em);
-	-webkit-backdrop-filter: blur(1em);
-	transition: opacity 0.2s;
-	z-index: 1;
+    position: absolute;
+    visibility: hidden;
+    top: 3em;
+    transform: translateX(-50%);
+    padding: 0em 0.6em;
+    opacity: 0;
+    color: white;
+    font-size: 0.9em;
+    line-height: 1.3em;
+    max-height: 3.9em;
+    text-shadow: none;
+    border-radius: 0.3em;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    backdrop-filter: blur(1em);
+    -webkit-backdrop-filter: blur(1em);
+    transition: opacity 0.2s;
+    z-index: 1;
 }
 
 .small .link span:empty {
-	display: none;
+    display: none;
 }
 
 .small .link:hover span {
-	opacity: 1;
-	visibility: visible;
+    opacity: 1;
+    visibility: visible;
 }
 
 .small.removed {
-	margin-right: -1em;
-	margin-left: -1em;
+    margin-right: -1em;
+    margin-left: -1em;
 }
 
 /* Inline */
 
 #linkblocks.inline {
-	--min-height: 2.4em;
-	--block-size: 2em;
-	--column-gap: 1em;
-	--row-gap: 1em;
-	--icon-size: 2em;
-	--folder-padding: 1.2em;
-	justify-content: flex-start;
+    --min-height: 2.4em;
+    --block-size: 2em;
+    --column-gap: 1em;
+    --row-gap: 1em;
+    --icon-size: 2em;
+    --folder-padding: 1.2em;
+    justify-content: flex-start;
 }
 
 .inline .link-folder div {
-	display: block;
-	padding: 4px;
+    display: block;
+    padding: 4px;
 }
 
 .inline .link-folder img {
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .inline .link-folder img:not(:first-child) {
-	display: none;
+    display: none;
 }
 
 .inline .link span {
-	padding: 0 0.2em;
-	outline: 3px solid transparent;
+    padding: 0 0.2em;
+    outline: 3px solid transparent;
 }
 
 .inline .link {
-	width: auto;
+    width: auto;
 }
 
 .inline .link:hover {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .inline .link:hover div {
-	box-shadow: none;
-	transform: none;
+    box-shadow: none;
+    transform: none;
 }
 
 .inline .link-folder,
 .inline .link a {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	column-gap: 0.6em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 0.6em;
 }
 
 .inline .link div {
-	/* it's 43% the size of a big ass link icon */
-	padding: calc(var(--link-padding) * 0.43);
-	border-radius: calc(var(--link-outer-radius) * 0.43);
+    /* it's 43% the size of a big ass link icon */
+    padding: calc(var(--link-padding) * 0.43);
+    border-radius: calc(var(--link-outer-radius) * 0.43);
 }
 
 .inline .link img {
-	border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.43);
+    border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.43);
 }
 
 .inline .link span {
-	display: block;
-	max-width: 8.4em;
-	font-size: 1.2em;
-	text-overflow: ellipsis;
-	white-space: pre;
-	line-height: 2em;
-	padding: 0;
+    display: block;
+    max-width: 8.4em;
+    font-size: 1.2em;
+    text-overflow: ellipsis;
+    white-space: pre;
+    line-height: 2em;
+    padding: 0;
 }
 
 /* Text */
 
 .text {
-	--min-height: 2em;
-	--column-gap: 1.8em;
-	--row-gap: 1em;
-	--folder-padding: 1em;
-	justify-content: flex-start;
+    --min-height: 2em;
+    --column-gap: 1.8em;
+    --row-gap: 1em;
+    --folder-padding: 1em;
+    justify-content: flex-start;
 }
 
 .text .link {
-	width: auto;
+    width: auto;
 }
 
 .text .link:hover span {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .text .link div,
 .text .link img {
-	display: none;
+    display: none;
 }
 
 .text .link span {
-	display: inline-block;
-	width: 100%;
-	max-width: 16em;
-	font-size: 1.5em;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: pre;
-	border-radius: 8px;
+    display: inline-block;
+    width: 100%;
+    max-width: 16em;
+    font-size: 1.5em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: pre;
+    border-radius: 8px;
 }
 
 /* Folder styles for medium and small */
 
 .medium .link-folder div,
 .small .link-folder div {
-	position: relative;
-	display: block;
+    position: relative;
+    display: block;
 }
 
 .medium .link-folder img,
 .small .link-folder img {
-	position: absolute;
-	width: 50%;
-	height: 50%;
-	box-sizing: border-box;
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    box-sizing: border-box;
 }
 
 .medium .link-folder img {
-	/* because they're about 42% the size of large icons */
-	padding: calc(var(--link-padding) * 0.42);
-	border-radius: calc(var(--link-outer-radius) * 0.42);
+    /* because they're about 42% the size of large icons */
+    padding: calc(var(--link-padding) * 0.42);
+    border-radius: calc(var(--link-outer-radius) * 0.42);
 }
 
 .small .link-folder img {
-	padding: calc(var(--link-padding) * 0.27);
-	border-radius: calc(var(--link-outer-radius) * 0.27);
+    padding: calc(var(--link-padding) * 0.27);
+    border-radius: calc(var(--link-outer-radius) * 0.27);
 }
 
 .medium .link-folder img:nth-child(1),
 .small .link-folder img:nth-child(1) {
-	top: 15%;
-	left: 15%;
-	z-index: 5;
+    top: 15%;
+    left: 15%;
+    z-index: 5;
 }
 
 .medium .link-folder img:nth-child(2),
 .small .link-folder img:nth-child(2) {
-	top: 30%;
-	left: 30%;
-	z-index: 4;
+    top: 30%;
+    left: 30%;
+    z-index: 4;
 }
 
 .medium .link-folder img:nth-child(3),
 .medium .link-folder img:nth-child(4),
 .small .link-folder img:nth-child(3),
 .small .link-folder img:nth-child(4) {
-	display: none;
+    display: none;
 }
 
 /* Links drag and drop */
 
 .link.drop-target img,
 .link.drop-source div {
-	transform: scale(0.8);
+    transform: scale(0.8);
 }
 
 .link.drop-source span {
-	opacity: 0;
-	transition: opacity 0.05s;
+    opacity: 0;
+    transition: opacity 0.05s;
 }
 
 .link.drop-target div {
-	border-color: #fff4;
-	background-color: #fff3;
+    border-color: #fff4;
+    background-color: #fff3;
 }
 
 .drop-target.link-group,
 .drop-target.link-folder img {
-	opacity: 0.5;
+    opacity: 0.5;
 }
 
 .large .drop-target.link-folder img {
-	transform: none;
+    transform: none;
 }
 
 .inline .link.drop-source div,
 .text .link.drop-source div {
-	opacity: 0;
+    opacity: 0;
 }
 
 .inline .drop-source span,
 .text .drop-source span {
-	transform: scale(0.8);
+    transform: scale(0.8);
 }
 
 .inline .drop-target span,
 .inline .drop-target div,
 .text .drop-target span,
 .text .drop-target div {
-	opacity: 0.5;
+    opacity: 0.5;
 }
 
 .in-drag#link-mini,
 .in-drag.link-group .link-list,
 .in-drag.link-group.in-folder .link-list {
-	padding: 0;
-	max-width: none;
-	will-change: transform;
-	width: calc(var(--drag-width) - 2px);
-	height: calc(var(--drag-height) - 2px);
+    padding: 0;
+    max-width: none;
+    will-change: transform;
+    width: calc(var(--drag-width) - 2px);
+    height: calc(var(--drag-height) - 2px);
 }
 
 .in-drag a,
 .in-drag div {
-	user-select: none;
-	pointer-events: none;
+    user-select: none;
+    pointer-events: none;
 }
 
 .in-drag#link-mini .link-title,
 .in-drag .link {
-	pointer-events: none;
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 3;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3;
 }
 
 .in-drag#link-mini .link-title {
-	border-color: #fff2;
+    border-color: #fff2;
 }
 
 .in-drag .on {
-	z-index: 4;
-	transition: none;
-	pointer-events: none;
+    z-index: 4;
+    transition: none;
+    pointer-events: none;
 }
 
 /* Link mini (at the bottom) */
 
 #link-mini {
-	display: none;
-	width: 100%;
-	padding-top: 1em;
-	padding-right: 4em;
+    display: none;
+    width: 100%;
+    padding-top: 1em;
+    padding-right: 4em;
 }
 
 #link-mini > div {
-	position: relative;
-	display: inline-flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-	column-gap: 1em;
-	row-gap: 0.5em;
-	box-sizing: border-box;
+    position: relative;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 1em;
+    row-gap: 0.5em;
+    box-sizing: border-box;
 }
 
 #link-mini .link-title {
-	display: initial;
+    display: initial;
 }
 
 #link-mini .add-group {
-	position: absolute;
-	visibility: hidden;
-	font-weight: bold;
-	width: 3em;
-	right: -4em;
+    position: absolute;
+    visibility: hidden;
+    font-weight: bold;
+    width: 3em;
+    right: -4em;
 }
 
 #link-mini .add-group:hover,
 #link-mini .add-group.selected,
 #link-mini:hover .add-group {
-	visibility: visible;
+    visibility: visible;
 }
 
 #link-mini.in-drag .add-group {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 .link-group.in-folder + #link-mini {
-	/* hides link-mini when opening folder in bottom group */
-	display: none;
+    /* hides link-mini when opening folder in bottom group */
+    display: none;
 }
 
 .with-groups #link-mini,
 .in-folder #link-mini {
-	display: block;
+    display: block;
 }

@@ -1,6 +1,7 @@
 # Bonjourr Development Guide
 
-This document provides essential information for agentic coding agents working on the Bonjourr codebase. Bonjourr is a minimalist and customizable "new tab" browser extension built using Deno.
+This document provides essential information for agentic coding agents working on the Bonjourr codebase. Bonjourr is a
+minimalist and customizable "new tab" browser extension built using Deno.
 
 ## 1. Development Environment & Commands
 
@@ -10,11 +11,11 @@ Bonjourr uses **Deno** as its primary runtime and task runner. Avoid using `npm`
 
 - **Full Build:** `deno task build`
 - **Platform-Specific (Dev Mode):**
-    - Chrome: `deno task chrome`
-    - Firefox: `deno task firefox`
-    - Edge: `deno task edge`
-    - Safari: `deno task safari`
-    - Online (Web version): `deno task online`
+  - Chrome: `deno task chrome`
+  - Firefox: `deno task firefox`
+  - Edge: `deno task edge`
+  - Safari: `deno task safari`
+  - Online (Web version): `deno task online`
 - **Serve Locally:** `deno task serve` (runs on port 8000 by default)
 
 ### Linting & Formatting
@@ -65,17 +66,18 @@ Bonjourr strictly follows Deno's built-in formatting and linting rules.
 
 - Bonjourr is a browser extension; direct DOM manipulation is standard.
 - Use `document.getElementById` or `document.querySelector`.
-- Use `dataset` for state management on the `<html>` or `<body>` elements (e.g., `document.documentElement.dataset.theme = 'dark'`).
+- Use `dataset` for state management on the `<html>` or `<body>` elements (e.g.,
+  `document.documentElement.dataset.theme = 'dark'`).
 
 ---
 
 ## 3. Project Structure
 
 - `/src/scripts/`: Main application logic.
-    - `features/`: Modular components (clock, weather, backgrounds, etc.).
-    - `shared/`: Utility functions used across features.
-    - `utils/`: Low-level helpers (translations, permissions, etc.).
-    - `services/`: Background services and storage management.
+  - `features/`: Modular components (clock, weather, backgrounds, etc.).
+  - `shared/`: Utility functions used across features.
+  - `utils/`: Low-level helpers (translations, permissions, etc.).
+  - `services/`: Background services and storage management.
 - `/src/types/`: TypeScript definitions.
 - `/tasks/`: Build and automation scripts (written in TypeScript).
 - `/tests/`: Test suite using `deno test`.
@@ -88,9 +90,9 @@ Bonjourr strictly follows Deno's built-in formatting and linting rules.
 - All user-facing strings should be localized.
 - Use `traduction(null, sync.lang)` for initial translation and `setTranslationCache` for caching.
 - To update translations after adding new keys to `_locales`, run:
-    ```bash
-    deno task translate
-    ```
+  ```bash
+  deno task translate
+  ```
 
 ---
 
@@ -99,8 +101,10 @@ Bonjourr strictly follows Deno's built-in formatting and linting rules.
 1. **Self-Verification:** After modifying code, always run `deno task types` and `deno lint` to ensure no regressions.
 2. **Tab Consistency:** Ensure your editor settings respect the use of tabs for this project.
 3. **No Semicolons:** Do not add semicolons as they will be stripped by the formatter anyway.
-4. **Platform Awareness:** When modifying features, consider if the change affects all platforms (Chrome, Firefox, Safari, Online). Use constants from `src/scripts/defaults.ts` to check `PLATFORM` or `BROWSER` if necessary.
-5. **Storage:** Use the `storage` abstraction in `src/scripts/storage.ts` instead of direct `chrome.storage` calls where possible to ensure cross-browser compatibility.
+4. **Platform Awareness:** When modifying features, consider if the change affects all platforms (Chrome, Firefox,
+   Safari, Online). Use constants from `src/scripts/defaults.ts` to check `PLATFORM` or `BROWSER` if necessary.
+5. **Storage:** Use the `storage` abstraction in `src/scripts/storage.ts` instead of direct `chrome.storage` calls where
+   possible to ensure cross-browser compatibility.
 6. Do not try to add dependencies, find a native solution
 7. Repeat yourself instead of writing difficult code
 
@@ -110,54 +114,55 @@ Bonjourr strictly follows Deno's built-in formatting and linting rules.
 
 ### Core Entry Point: The Dispatcher
 
-Each feature exports a single function that acts as a state switcher. It handles two distinct phases: **Initialization** and **Live Updates**.
+Each feature exports a single function that acts as a state switcher. It handles two distinct phases: **Initialization**
+and **Live Updates**.
 
 ```typescript
 export function feature(init?: FeatureSync, update?: FeatureUpdate) {
-	if (update) {
-		updateFeature(update); // Live update from Settings
-		return;
-	}
-	if (init) {
-		initFeature(init); // Initial load on Startup
-	}
+    if (update) {
+        updateFeature(update) // Live update from Settings
+        return
+    }
+    if (init) {
+        initFeature(init) // Initial load on Startup
+    }
 }
 ```
 
 ### UI Handlers (Setters)
 
-Features use internal "handle" or "set" functions to manipulate the DOM. This keeps logic DRY as both initialization and updates use the same UI handles.
+Features use internal "handle" or "set" functions to manipulate the DOM. This keeps logic DRY as both initialization and
+updates use the same UI handles.
 
 - **Styling**: Prefer CSS variables on `document.documentElement` (`--feature-property`).
 - **State**: Use `dataset` attributes or class toggles on the feature's container.
 
 ```typescript
-const setWidth = (val: number) =>
-	document.documentElement.style.setProperty("--feature-width", `${val}em`);
+const setWidth = (val: number) => document.documentElement.style.setProperty('--feature-width', `${val}em`)
 
-const handleToggle = (state: boolean) =>
-	container?.classList.toggle("hidden", !state);
+const handleToggle = (state: boolean) => container?.classList.toggle('hidden', !state)
 ```
 
 ### The `updateFeature` Logic
 
 This internal function processes partial changes from the settings menu.
 
-1.  **Read**: Fetches the current feature state from `storage.sync`.
-2.  **Apply**: Updates the object and immediately triggers the relevant **UI Handlers**.
-3.  **Persist**: Saves the updated object using `eventDebounce({ feature })` to optimize storage writes.
+1. **Read**: Fetches the current feature state from `storage.sync`.
+2. **Apply**: Updates the object and immediately triggers the relevant **UI Handlers**.
+3. **Persist**: Saves the updated object using `eventDebounce({ feature })` to optimize storage writes.
 
 ### Settings Wiring (`src/scripts/settings.ts`)
 
 The settings module acts as a declarative controller that connects HTML inputs to feature functions.
 
-Settings are wired using standard DOM events or the `onclickdown` utility. The convention is to pass `undefined` as the first argument to signify a live update.
+Settings are wired using standard DOM events or the `onclickdown` utility. The convention is to pass `undefined` as the
+first argument to signify a live update.
 
 ```typescript
 // Example Wiring in initOptionsEvents()
-paramId("i_feature-property").addEventListener("input", function () {
-	feature(undefined, { property: this.value });
-});
+paramId('i_feature-property').addEventListener('input', function () {
+    feature(undefined, { property: this.value })
+})
 ```
 
 ### Input Mapping Convention
@@ -171,9 +176,12 @@ paramId("i_feature-property").addEventListener("input", function () {
 
 ### Feature Best Practices
 
-- **Parallel States**: Ensure the `init` logic and `update` logic are idempotent so settings can be changed repeatedly without side effects.
-- **Decoupling**: The settings menu should never manipulate the feature's DOM directly; it must always go through the `feature()` entry point.
-- **Persistence**: Only use `eventDebounce` for values that change frequently (like sliders) to avoid hitting browser storage limits.
+- **Parallel States**: Ensure the `init` logic and `update` logic are idempotent so settings can be changed repeatedly
+  without side effects.
+- **Decoupling**: The settings menu should never manipulate the feature's DOM directly; it must always go through the
+  `feature()` entry point.
+- **Persistence**: Only use `eventDebounce` for values that change frequently (like sliders) to avoid hitting browser
+  storage limits.
 - **Naming**: File names use `kebab-case`, while entry point functions use `camelCase` matching the feature name.
 
 ---
@@ -182,7 +190,8 @@ paramId("i_feature-property").addEventListener("input", function () {
 
 ### Main Entry Point
 
-The primary CSS entry point is `src/styles/style.css`. This file acts as a manifest that imports all other CSS modules in a specific order.
+The primary CSS entry point is `src/styles/style.css`. This file acts as a manifest that imports all other CSS modules
+in a specific order.
 
 ### Import Order
 
@@ -218,10 +227,10 @@ Global variables are defined in `_global.css` as CSS custom properties:
 
 ```css
 :root {
-	--page-width: 1600px;
-	--page-gap: 1em;
-	--font-family: -apple-system, system-ui, Ubuntu, Roboto, "Open Sans";
-	--border-radius: 25px;
+    --page-width: 1600px;
+    --page-gap: 1em;
+    --font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans';
+    --border-radius: 25px;
 }
 ```
 
@@ -230,16 +239,16 @@ Global variables are defined in `_global.css` as CSS custom properties:
 Light and dark themes are handled via data attributes:
 
 ```css
-[data-theme="light"] {
-	--color-text: #222222;
-	--color-param: 255, 255, 255;
-	--color-settings: #f2f2f7;
+[data-theme='light'] {
+    --color-text: #222222;
+    --color-param: 255, 255, 255;
+    --color-settings: #f2f2f7;
 }
 
-[data-theme="dark"] {
-	--color-text: #ffffff;
-	--color-param: 0, 0, 0;
-	--color-settings: #000000;
+[data-theme='dark'] {
+    --color-text: #ffffff;
+    --color-param: 0, 0, 0;
+    --color-settings: #000000;
 }
 ```
 
