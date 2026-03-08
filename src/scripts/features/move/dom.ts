@@ -97,17 +97,17 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
 	const moveGrowLeft = overlay.querySelector<HTMLElement>('#move-grow-left')
 	const moveGrowTop = overlay.querySelector<HTMLElement>('#move-grow-top')
 
-	moveGrowBottom?.addEventListener('mousedown', () => {
-		console.log(id, 'start growing down')
+	onclickdown(moveGrowBottom, () => {
+		moveElements(undefined, { id, grow: 'down' })
 	})
-	moveGrowRight?.addEventListener('mousedown', () => {
-		console.log(id, 'start growing right')
+	onclickdown(moveGrowRight, () => {
+		moveElements(undefined, { id, grow: 'right' })
 	})
-	moveGrowLeft?.addEventListener('mousedown', () => {
-		console.log(id, 'start growing left')
+	onclickdown(moveGrowLeft, () => {
+		moveElements(undefined, { id, grow: 'left' })
 	})
-	moveGrowTop?.addEventListener('mousedown', () => {
-		console.log(id, 'start growing up')
+	onclickdown(moveGrowTop, () => {
+		moveElements(undefined, { id, grow: 'up' })
 	})
 }
 
