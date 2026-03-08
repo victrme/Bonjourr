@@ -15,7 +15,7 @@ import {
 import type { Widgets } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
+export function toggleWidget(data: Sync, widget: [Widgets, boolean]): void {
     if (!widget) {
         return
     }
@@ -63,7 +63,7 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]) {
     interfaceTransition.transition(200)
 }
 
-export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
+export function toggleWidgetInSettings(states: [Widgets, boolean][]): void {
     const inputids: { [key in Widgets]: string } = {
         time: 'i_time',
         main: 'i_main',
@@ -83,7 +83,7 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]) {
     }
 }
 
-export function toggleWidgetOnInterface(states: [Widgets, boolean][]) {
+export function toggleWidgetOnInterface(states: [Widgets, boolean][]): void {
     const domids: { [key in Widgets]: string } = {
         time: 'time',
         main: 'main',

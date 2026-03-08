@@ -18,7 +18,7 @@ type NotesEvent = {
 
 const container = document.getElementById('notes_container')
 
-export function notes(init?: Notes, event?: NotesEvent) {
+export function notes(init?: Notes, event?: NotesEvent): void {
     if (event) {
         updateNotes(event)
         return
@@ -29,7 +29,7 @@ export function notes(init?: Notes, event?: NotesEvent) {
     }
 }
 
-async function updateNotes(event: NotesEvent) {
+async function updateNotes(event: NotesEvent): Promise<void> {
     const notes = (await storage.sync.get('notes'))?.notes
 
     if (!notes) {
@@ -62,7 +62,7 @@ async function updateNotes(event: NotesEvent) {
 //	Funcs
 //
 
-function initNotes(init: Notes) {
+function initNotes(init: Notes): void {
     document.getElementById('pocket-editor')?.remove()
 
     handleAlign(init.align)
@@ -77,22 +77,22 @@ function initNotes(init: Notes) {
     })
 }
 
-function handleToggle(state: boolean) {
+function handleToggle(state: boolean): void {
     container?.classList.toggle('hidden', !state)
 }
 
-function handleAlign(value: string) {
+function handleAlign(value: string): void {
     container?.classList.toggle('center-align', value === 'center')
     container?.classList.toggle('right-align', value === 'right')
 }
 
-function handleWidth(value?: number) {
+function handleWidth(value?: number): void {
     if (value) {
         document.documentElement.style.setProperty('--notes-width', `${value.toString()}em`)
     }
 }
 
-function handleBackground(hex = '#fff2') {
+function handleBackground(hex = '#fff2'): void {
     if (container) {
         container?.classList.toggle('opaque', hex.includes('#fff') && opacityFromHex(hex) > 7)
         document.documentElement.style.setProperty('--notes-background', hex)

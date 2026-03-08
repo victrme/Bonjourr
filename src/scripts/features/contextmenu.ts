@@ -48,7 +48,7 @@ const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
 
 let eventLocation: EventLocation
 
-export function openContextMenu(event: Event) {
+export function openContextMenu(event: Event): void {
     const selection = globalThis.getSelection() // imperfect selected text detection to allow for OS context menu
 
     if (selection && !selection.isCollapsed) {
@@ -134,7 +134,7 @@ export function openContextMenu(event: Event) {
     }
 }
 
-function populateDialogWithAction(actionType: string, attribute?: string) {
+function populateDialogWithAction(actionType: string, attribute?: string): void {
     let selector = `[data-action="${actionType}"]`
 
     if (attribute) {
@@ -144,7 +144,7 @@ function populateDialogWithAction(actionType: string, attribute?: string) {
     showTheseElements(selector)
 }
 
-export function positionContextMenu(event: Event) {
+export function positionContextMenu(event: Event): void {
     const editRects = domdialog.getBoundingClientRect()
     const withPointer = event.type === 'contextmenu' || event.type === 'click' || event.type === 'touchstart'
     const withKeyboard = event.type === 'keyup' && (event as KeyboardEvent)?.key === 'e'
@@ -193,7 +193,7 @@ export function positionContextMenu(event: Event) {
     domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
 }
 
-export function openSettingsButtonEvent(event: Event) {
+export function openSettingsButtonEvent(event: Event): void {
     const target = event.target as HTMLButtonElement
     const sectionToScrollTo = target.getAttribute('data-attribute')
 
@@ -210,7 +210,7 @@ export function openSettingsButtonEvent(event: Event) {
     }
 }
 
-function showTheseElements(query: string) {
+function showTheseElements(query: string): void {
     document.querySelectorAll<HTMLElement>(query).forEach((element) => {
         element.classList.add('on')
     })
@@ -275,7 +275,7 @@ queueMicrotask(() => {
     }
 })
 
-export function closeContextMenu() {
+export function closeContextMenu(): void {
     if (domdialog.open) {
         const selected = document.querySelectorAll('.link-title.selected, .link.selected')
 
@@ -292,7 +292,7 @@ export function closeContextMenu() {
     }
 }
 
-export function handleBackgroundActions(backgrounds: Backgrounds) {
+export function handleBackgroundActions(backgrounds: Backgrounds): void {
     const muteButton = document.getElementById('b_interface-background-mute')
     const type = backgrounds.type
     const freq = backgrounds.frequency
@@ -309,7 +309,7 @@ export function handleBackgroundActions(backgrounds: Backgrounds) {
     }
 }
 
-export function initBackgroundActionsEvents() {
+export function initBackgroundActionsEvents(): void {
     onclickdown(document.getElementById('b_interface-background-pause'), () => {
         toggleBackgroundPause()
     })
@@ -327,7 +327,7 @@ export function initBackgroundActionsEvents() {
     })
 }
 
-async function toggleMuteVideo() {
+async function toggleMuteVideo(): Promise<void> {
     const muteInput = document.querySelector<HTMLInputElement>('#i_background-mute-videos')
     const muteContextButton = document.getElementById('b_interface-background-mute')
     const sync = await storage.sync.get('backgrounds')
@@ -343,7 +343,7 @@ async function toggleMuteVideo() {
     backgroundUpdate({ mute: !lastMuteStatus })
 }
 
-async function toggleBackgroundPause() {
+async function toggleBackgroundPause(): Promise<void> {
     const freqInput = document.querySelector<HTMLSelectElement>('#i_freq')
     const button = document.getElementById('b_interface-background-pause')
     const paused = button?.classList.contains('paused')
@@ -362,7 +362,7 @@ async function toggleBackgroundPause() {
     }
 }
 
-async function downloadImage() {
+async function downloadImage(): Promise<void> {
     const dombutton = document.querySelector<HTMLButtonElement>('#b_interface-background-download')
     const domsave = document.querySelector<HTMLAnchorElement>('#download-background')
 

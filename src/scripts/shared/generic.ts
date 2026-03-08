@@ -1,8 +1,8 @@
-export function stringMaxSize(str: string, size: number) {
+export function stringMaxSize(str: string, size: number): string {
     return str.length > size ? str.slice(0, size) : str
 }
 
-export function randomString(len: number) {
+export function randomString(len: number): string {
     const chars = 'abcdefghijklmnopqr'
     return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }

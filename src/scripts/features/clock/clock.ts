@@ -1,4 +1,4 @@
-import { fixunits, getSecondsWidthInCh, setSecondsWidthInCh } from './helpers.ts'
+import { fixunits, type getSecondsWidthInCh, setSecondsWidthInCh } from './helpers.ts'
 import { setUserDate, userDate } from '../../shared/time.ts'
 import { displayGreetings } from './greetings.ts'
 import { clockDate } from './date.ts'

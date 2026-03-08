@@ -1,12 +1,19 @@
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 
-export function networkForm(targetId: string) {
+interface NetworkFormReturn {
+    load: () => void
+    reset: () => void
+    warn: (err: unknown) => void
+    accept: (inputId?: string, value?: string) => void
+}
+
+export function networkForm(targetId: string): NetworkFormReturn {
     let form: HTMLFormElement
     let button: HTMLButtonElement
     let message: HTMLSpanElement
     let loadTimeout = 0
 
-    onSettingsLoad(() => {
+    onSettingsLoad((): void => {
         form = document.getElementById(targetId) as HTMLFormElement
         button = form?.querySelector('button:last-of-type') as HTMLButtonElement
         message = form?.querySelector('small') as HTMLSpanElement
@@ -31,13 +38,13 @@ export function networkForm(targetId: string) {
         })
     })
 
-    function reset() {
+    function reset(): void {
         form.classList.remove('load', 'warn', 'valid', 'remove')
         button.removeAttribute('disabled')
         clearTimeout(loadTimeout)
     }
 
-    function load() {
+    function load(): void {
         loadTimeout = setTimeout(() => {
             form.classList.remove('warn')
             form.classList.add('valid', 'load')
@@ -45,7 +52,7 @@ export function networkForm(targetId: string) {
         }, 50)
     }
 
-    function warn(err: unknown) {
+    function warn(err: unknown): void {
         form.classList.add('warn')
         form.classList.remove('load')
         button.setAttribute('disabled', '')
@@ -53,7 +60,7 @@ export function networkForm(targetId: string) {
         clearTimeout(loadTimeout)
     }
 
-    function accept(inputId?: string, value?: string) {
+    function accept(inputId?: string, value?: string): void {
         if (inputId && form.checkValidity()) {
             form.classList.remove('valid')
 

@@ -3,9 +3,9 @@ import { TAB_ID, tabs_bc } from '../defaults.ts'
 /**
  * To keep track of which Bonjourr tab the user interacted with last
  */
-export function tabsTracking() {
+export function tabsTracking(): void {
     // Whenever the tab becomes visible or focused, mark it as active
-    function updateLastActiveTab() {
+    function updateLastActiveTab(): void {
         localStorage.setItem('lastActiveTab', TAB_ID)
     }
 

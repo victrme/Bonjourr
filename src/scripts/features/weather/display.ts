@@ -7,7 +7,7 @@ import type { Weather } from '../../../types/sync.ts'
 
 let weatherFirstStart = true
 
-export function displayWeather(data: Weather, lastWeather: LastWeather) {
+export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     const useSinograms = getLang().includes('zh') || getLang().includes('ja')
     const currentDesc = document.getElementById('current-desc')
     const currentTemp = document.getElementById('current-temp')
@@ -116,7 +116,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather) {
     }
 }
 
-export function handleForecastDisplay(forecast: string) {
+export function handleForecastDisplay(forecast: string): void {
     const date = userDate()
     const morningOrLateDay = date.getHours() < 12 || date.getHours() > getSunsetHour()
     const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'

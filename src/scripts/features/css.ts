@@ -3,7 +3,7 @@ import { stringMaxSize } from '../shared/generic.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { tradThis } from '../utils/translations.ts'
 
-export function customCss(init?: string, event?: { styling: string }) {
+export function customCss(init?: string, event?: { styling: string }): void {
     const stylelink = document.getElementById('styles') as HTMLStyleElement
 
     if (event) {

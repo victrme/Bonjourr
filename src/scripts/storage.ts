@@ -75,7 +75,7 @@ function storageTypeFn() {
         return type
     }
 
-    function change(type: 'sync' | 'local', data: Sync) {
+    function change(type: 'sync' | 'local', data: Sync): void {
         if (globalThis.chrome?.storage === undefined) {
             return
         }
@@ -114,7 +114,7 @@ async function syncGet(key?: string | string[]): Promise<Sync> {
     }
 }
 
-async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
+async function syncSet(keyval: Record<string, unknown>, fn = () => {}): Promise<void> {
     // console.log('sync set', JSON.stringify(keyval))
 
     switch (storage.type.get()) {
@@ -154,7 +154,7 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}) {
     }
 }
 
-async function syncRemove(key: string) {
+async function syncRemove(key: string): Promise<void> {
     switch (storage.type.get()) {
         case 'webext-sync': {
             chrome.storage.sync.remove(key)
@@ -182,7 +182,7 @@ async function syncRemove(key: string) {
     }
 }
 
-async function syncClear() {
+async function syncClear(): Promise<void> {
     switch (storage.type.get()) {
         case 'webext-sync': {
             await chrome.storage.sync.clear()
@@ -205,7 +205,7 @@ async function syncClear() {
 
 //	Local data
 
-function localSet(value: Record<string, unknown>) {
+function localSet(value: Record<string, unknown>): void {
     // console.log('local set', JSON.stringify(value))
 
     switch (storage.type.get()) {
@@ -272,7 +272,7 @@ async function localGet(keys?: string | string[]): Promise<Local> {
     }
 }
 
-function localRemove(key: string) {
+function localRemove(key: string): Promise<void> {
     switch (storage.type.get()) {
         case 'webext-sync':
         case 'webext-local': {
@@ -281,14 +281,16 @@ function localRemove(key: string) {
 
         case 'localstorage': {
             localStorage.removeItem(key)
-            return
+            return Promise.resolve()
         }
 
-        default:
+        default: {
+            return Promise.resolve()
+        }
     }
 }
 
-async function localClear() {
+async function localClear(): Promise<void> {
     switch (storage.type.get()) {
         case 'webext-sync': {
             chrome.storage.local.clear()
@@ -381,7 +383,7 @@ async function init(): Promise<AllStorage> {
 
 //	Clear all data
 
-async function clearall() {
+async function clearall(): Promise<void> {
     sessionStorage.clear()
 
     Object.keys(localStorage).forEach((key) => {

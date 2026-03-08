@@ -39,7 +39,7 @@ const monthBackgrounds = [
 
 let modalDataLoaded = false
 
-export function supportersNotifications(init?: Sync, update?: SupportersUpdate) {
+export function supportersNotifications(init?: Sync, update?: SupportersUpdate): void {
     if (update?.translate) {
         setNotifStrings()
         return
@@ -69,7 +69,7 @@ function canShowSupporters(sync?: Sync): boolean {
     }
 }
 
-export function initSupportersSettingsNotif(sync: Sync) {
+export function initSupportersSettingsNotif(sync: Sync): void {
     if (!canShowSupporters(sync)) {
         return
     }
@@ -100,7 +100,7 @@ export function initSupportersSettingsNotif(sync: Sync) {
     })
 }
 
-async function updateSupportersOption(update: SupportersUpdate) {
+async function updateSupportersOption(update: SupportersUpdate): Promise<void> {
     const data = await storage.sync.get()
 
     if (update.enabled !== undefined) {
@@ -113,7 +113,7 @@ async function updateSupportersOption(update: SupportersUpdate) {
     storage.sync.set({ supporters: data.supporters })
 }
 
-function setNotifStrings() {
+function setNotifStrings(): void {
     const currentMonth = new Date().toLocaleString('en-US', { month: 'long' })
     const introString = `This ${currentMonth}, Bonjourr is brought to you by our lovely supporters.`
     const notifTitle = document.getElementById('supporters-notif-title')
@@ -125,7 +125,7 @@ function setNotifStrings() {
     }
 }
 
-function initSupportersModal() {
+function initSupportersModal(): void {
     const template = document.getElementById('supporters-modal-template') as HTMLTemplateElement
     const doc = document.importNode(template.content, true)
     const supportersModal = doc.getElementById('supporters-modal-container') as HTMLElement
@@ -169,7 +169,7 @@ function initSupportersModal() {
     })
 }
 
-function toggleSupportersModal(toggle: boolean) {
+function toggleSupportersModal(toggle: boolean): void {
     document.dispatchEvent(new CustomEvent('toggle-settings'))
 
     if (toggle) {
@@ -179,7 +179,7 @@ function toggleSupportersModal(toggle: boolean) {
     }
 }
 
-export async function loadModalData() {
+export async function loadModalData(): Promise<void> {
     if (modalDataLoaded) {
         return
     }

@@ -59,7 +59,7 @@ export function setUserDate(timezone: string): void {
     userSetDate = userDate(timezone)
 }
 
-export function daylightPeriod(time?: number) {
+export function daylightPeriod(time?: number): 'night' | 'noon' | 'evening' | 'day' {
     // noon & evening are + /- 60 min around sunrise/set
 
     const mins = minutator(time ? new Date(time) : new Date())
@@ -133,6 +133,6 @@ export function needsChange(every: string, last: number): boolean {
     }
 }
 
-export function minutator(date: Date) {
+export function minutator(date: Date): number {
     return date.getHours() * 60 + date.getMinutes()
 }

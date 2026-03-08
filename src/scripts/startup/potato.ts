@@ -1,6 +1,6 @@
 import { BROWSER } from '../defaults.ts'
 
-export function setPotatoComputerMode() {
+export function setPotatoComputerMode(): void {
     if (BROWSER === 'firefox' || BROWSER === 'safari') {
         // firefox fingerprinting protection disables webgl info, smh
         // safari always have hardware acceleration, no need for potato

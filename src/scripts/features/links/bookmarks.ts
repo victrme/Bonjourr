@@ -32,7 +32,7 @@ type BookmarksFolderItem = {
 
 let browserBookmarkFolders: BookmarksFolder[] = []
 
-export async function linksImport() {
+export async function linksImport(): void {
     const data = await storage.sync.get()
 
     for (const node of document.querySelectorAll('#bookmarks-container > *') ?? []) {
@@ -43,7 +43,7 @@ export async function linksImport() {
     createBookmarksDialog()
 }
 
-export async function initBookmarkSync(data: Sync) {
+export async function initBookmarkSync(data: Sync): void {
     let treenode = await getBookmarkTree()
     let permission = !!treenode
 
@@ -81,7 +81,7 @@ export function syncBookmarks(group: string): Link[] {
 
 // Bookmarks Dialog
 
-function createBookmarksDialog() {
+function createBookmarksDialog(): void {
     const bookmarkFolders = browserBookmarkFolders
 
     let bookmarksdom = document.querySelector<HTMLDialogElement>('#bookmarks')
@@ -170,7 +170,7 @@ function createBookmarksDialog() {
     setTimeout(() => bookmarksdom.classList.add('shown'))
 }
 
-function importSelectedBookmarks() {
+function importSelectedBookmarks(): void {
     const folders = browserBookmarkFolders
     const bookmarksdom = document.getElementById('bookmarks') as HTMLDialogElement
     const selectedLinks = bookmarksdom.querySelectorAll<HTMLLIElement>('.bookmarks-folder li.selected')
@@ -231,7 +231,7 @@ function importSelectedBookmarks() {
     })
 }
 
-function handleApplyButtonText() {
+function handleApplyButtonText(): void {
     const applybutton = document.getElementById('bmk_apply') as HTMLElement
     const links = document.querySelectorAll('#bookmarks li.selected')
     const folders = document.querySelectorAll('#bookmarks .bookmarks-folder.selected')
@@ -240,7 +240,7 @@ function handleApplyButtonText() {
     toggleDisabled(applybutton, emptySelection)
 }
 
-function closeDialog(event?: Event) {
+function closeDialog(event?: Event): void {
     const path = (event?.composedPath() ?? []) as Element[]
     const id = path[0]?.id ?? ''
 
@@ -255,7 +255,7 @@ function closeDialog(event?: Event) {
     }
 }
 
-function toggleFolderSelect(folder: HTMLElement) {
+function toggleFolderSelect(folder: HTMLElement): void {
     const selectButton = folder.querySelector('.b_bookmarks-folder-select')
     const syncButton = folder.querySelector('.b_bookmarks-folder-sync')
 
@@ -278,7 +278,7 @@ function toggleFolderSelect(folder: HTMLElement) {
     handleApplyButtonText()
 }
 
-function toggleFolderSync(folder: HTMLElement) {
+function toggleFolderSync(folder: HTMLElement): void {
     if (folder.classList.contains('synced')) {
         folder.classList.remove('synced')
     } else {
@@ -337,7 +337,7 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
 }
 
 function bookmarkTreeToFolderList(treenode: Treenode, data: Sync): BookmarksFolder[] {
-    function createMapFromTree(treenode: Treenode) {
+    function createMapFromTree(treenode: Treenode): void {
         if (!treenode.children) {
             return
         }

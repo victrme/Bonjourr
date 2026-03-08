@@ -4,7 +4,7 @@ import type { Local, Translations } from '../../types/local.ts'
 let trns: Translations | undefined
 let currentTrnsLang = 'en'
 
-export async function setTranslationCache(language: string, local?: Local) {
+export async function setTranslationCache(language: string, local?: Local): Promise<void> {
     const lang = countryCodeToLanguageCode(language)
 
     if (lang === 'en') {
@@ -26,7 +26,7 @@ export async function setTranslationCache(language: string, local?: Local) {
     currentTrnsLang = lang
 }
 
-export function traduction(scope: Element | null, lang = 'en') {
+export function traduction(scope: Element | null, lang = 'en'): void {
     if (lang === 'en') {
         return
     }
@@ -46,7 +46,7 @@ export function traduction(scope: Element | null, lang = 'en') {
     currentTrnsLang = lang
 }
 
-export async function toggleTraduction(lang: string) {
+export async function toggleTraduction(lang: string): Promise<void> {
     const tags = document.querySelectorAll('.trn')
     const toggleDict: { [key: string]: string } = {}
     const currentDict = { ...trns }

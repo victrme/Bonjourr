@@ -42,7 +42,7 @@ import type { Local } from '../types/local.ts'
 let settingsInitSync: Sync
 let settingsInitLocal: Local
 
-export function settingsInit(sync: Sync, local: Local) {
+export function settingsInit(sync: Sync, local: Local): void {
     const showsettings = document.getElementById('show-settings')
 
     settingsInitSync = sync
@@ -64,7 +64,7 @@ export function settingsInit(sync: Sync, local: Local) {
     })
 }
 
-function settingsInitEvent(event: Event) {
+function settingsInitEvent(event: Event): void {
     const showsettings = document.getElementById('show-settings')
     const settings = document.getElementById('settings')
 
@@ -134,7 +134,7 @@ function settingsInitEvent(event: Event) {
     }, 500)
 }
 
-function settingsToggle(event?: CustomEvent) {
+function settingsToggle(event?: CustomEvent): void {
     const domshowsettings = document.getElementById('show-settings')
     const dominterface = document.getElementById('interface')
     const domsettings = document.getElementById('settings')
@@ -167,7 +167,7 @@ function settingsToggle(event?: CustomEvent) {
     document.dispatchEvent(new Event('close-edit'))
 }
 
-function initOptionsValues(data: Sync, local: Local) {
+function initOptionsValues(data: Sync, local: Local): void {
     const domsettings = document.getElementById('settings') as HTMLElement
     const userQuotes = data.quotes?.userlist?.[0] ? data.quotes?.userlist : undefined
 
@@ -401,7 +401,7 @@ function initOptionsValues(data: Sync, local: Local) {
     }
 }
 
-function initOptionsEvents() {
+function initOptionsEvents(): void {
     onclickdown(paramId('b_accept-permissions'), async () => {
         await getPermissions('topSites', 'bookmarks')
 
@@ -1116,7 +1116,7 @@ function initOptionsEvents() {
     }
 }
 
-function initWorldClocksAndTimezone(data: Sync) {
+function initWorldClocksAndTimezone(data: Sync): void {
     const template = document.getElementById('timezones-select-template') as HTMLTemplateElement
     const citiesSelector = 'input[name="worldclock-city"]'
     const timezonesSelector = '.worldclocks-item select'
@@ -1162,7 +1162,7 @@ function initWorldClocksAndTimezone(data: Sync) {
     }
 }
 
-function translatePlaceholders() {
+function translatePlaceholders(): void {
     const cases = [
         ['i_title', 'Name'],
         ['i_greeting', 'Name'],
@@ -1185,7 +1185,7 @@ function translatePlaceholders() {
     }
 }
 
-function translateAriaLabels() {
+function translateAriaLabels(): void {
     for (const element of document.querySelectorAll('[title]')) {
         const title = element.getAttribute('title') ?? ''
 
@@ -1194,7 +1194,7 @@ function translateAriaLabels() {
     }
 }
 
-async function switchLangs(nextLang: Langs) {
+async function switchLangs(nextLang: Langs): Promise<void> {
     await toggleTraduction(nextLang)
 
     storage.sync.set({ lang: nextLang })
@@ -1225,7 +1225,7 @@ async function switchLangs(nextLang: Langs) {
     setModeGlider()
 }
 
-function showall(val: boolean, event: boolean) {
+function showall(val: boolean, event: boolean): void {
     document.getElementById('settings')?.classList.toggle('all', val)
 
     if (event) {
@@ -1233,7 +1233,7 @@ function showall(val: boolean, event: boolean) {
     }
 }
 
-function settingsFooter() {
+function settingsFooter(): void {
     const one = document.querySelector<HTMLAnchorElement>('#signature-one')
     const two = document.querySelector<HTMLAnchorElement>('#signature-two')
     const version = document.getElementById('version')
@@ -1253,7 +1253,7 @@ function settingsFooter() {
 
 // 	Mobile settings drawer bar
 
-function settingsDrawerBar() {
+function settingsDrawerBar(): void {
     const drawerDragDebounce = debounce(() => {
         ;(document.getElementById('settings-footer') as HTMLDivElement).style.removeProperty('padding')
         drawerDragEvents()
@@ -1272,7 +1272,7 @@ function settingsDrawerBar() {
     drawerDragEvents()
 }
 
-function drawerDragEvents() {
+function drawerDragEvents(): void {
     const mobileDragZone = document.getElementById('mobile-drag-zone') as HTMLElement
     const settingsDom = document.getElementById('settings') as HTMLElement
     let settingsVh = -75
@@ -1373,7 +1373,7 @@ function drawerDragEvents() {
 
 //	Settings management
 
-function copySettings() {
+function copySettings(): void {
     const copybtn = document.querySelector('#b_settings-copy span')
     const pre = document.getElementById('settings-data')
 
@@ -1391,7 +1391,7 @@ function copySettings() {
     }
 }
 
-async function saveImportFile() {
+async function saveImportFile(): Promise<void> {
     const a = document.getElementById('file-download')
 
     if (!a) {
@@ -1414,7 +1414,7 @@ async function saveImportFile() {
     a.click()
 }
 
-function loadImportFile(target: HTMLInputElement) {
+function loadImportFile(target: HTMLInputElement): void {
     function decodeExportFile(str: string): Partial<Sync> {
         let result = {}
 
@@ -1456,7 +1456,7 @@ function loadImportFile(target: HTMLInputElement) {
     reader.readAsText(file)
 }
 
-async function importSettings(imported: Partial<Sync>) {
+async function importSettings(imported: Partial<Sync>): Promise<void> {
     try {
         let data = await storage.sync.get()
 
@@ -1485,7 +1485,7 @@ async function importSettings(imported: Partial<Sync>) {
     }
 }
 
-function resetSettings(action: 'yes' | 'no' | 'first') {
+function resetSettings(action: 'yes' | 'no' | 'first'): void {
     if (action === 'yes') {
         storage.clearall().then(fadeOut)
         return
@@ -1495,14 +1495,14 @@ function resetSettings(action: 'yes' | 'no' | 'first') {
     document.getElementById('reset-conf')?.classList.toggle('shown', action === 'first')
 }
 
-export function updateSettingsJson(data?: Sync) {
+export function updateSettingsJson(data?: Sync): void {
     try {
         data ? updateTextArea(data) : storage.sync.get().then(updateTextArea)
     } catch (err) {
         console.warn(err)
     }
 
-    function updateTextArea(data: Sync) {
+    function updateTextArea(data: Sync): void {
         const pre = document.getElementById('settings-data')
 
         if (pre && data.about) {
@@ -1513,7 +1513,7 @@ export function updateSettingsJson(data?: Sync) {
     }
 }
 
-function updateSettingsEvent() {
+function updateSettingsEvent(): void {
     // On settings changes, update export code
     // beforeunload stuff because of this issue: https://github.com/victrme/Bonjourr/issues/194
     const storageUpdate = () => updateSettingsJson()
@@ -1527,7 +1527,7 @@ function updateSettingsEvent() {
     }
 }
 
-async function toggleSettingsChangesButtons(action: string) {
+async function toggleSettingsChangesButtons(action: string): Promise<void> {
     const textarea = paramId('settings-data')
     const data = await storage.sync.get()
     let hasChanges = false
@@ -1569,21 +1569,21 @@ async function toggleSettingsChangesButtons(action: string) {
 
 //	Helpers
 
-function paramId(str: string) {
+function paramId(str: string): HTMLInputElement {
     return document.getElementById(str) as HTMLInputElement
 }
 
-function setCheckbox(id: string, cat: boolean) {
+function setCheckbox(id: string, cat: boolean): void {
     const checkbox = paramId(id) as HTMLInputElement
     checkbox.checked = cat
 }
 
-function setInput(id: string, val: string | number) {
+function setInput(id: string, val: string | number): void {
     const input = paramId(id) as HTMLInputElement
     input.value = typeof val === 'string' ? val : val?.toString()
 }
 
-function setFormInput(id: string, defaults: string, value?: string) {
+function setFormInput(id: string, defaults: string, value?: string): void {
     const input = paramId(id) as HTMLInputElement
 
     if (value) {

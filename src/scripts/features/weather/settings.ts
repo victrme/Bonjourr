@@ -16,7 +16,7 @@ const unitForm = networkForm('f_units')
 const geolForm = networkForm('f_geol')
 const suggestionsDebounce = debounce(fillLocationSuggestions, 600)
 
-export async function weatherUpdate(update: WeatherUpdate) {
+export async function weatherUpdate(update: WeatherUpdate): void {
     const { weather, hide } = await storage.sync.get(['weather', 'hide'])
     let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
@@ -81,7 +81,7 @@ export async function weatherUpdate(update: WeatherUpdate) {
     }
 }
 
-async function updateManualLocation(weather: Weather, lastWeather?: LastWeather) {
+async function updateManualLocation(weather: Weather, lastWeather?: LastWeather): void {
     const iCity = document.getElementById('i_city') as HTMLInputElement
     let city = iCity.value
 
@@ -125,7 +125,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
     }
 }
 
-async function updateGeolocation(geol: string, weather: Weather, lastWeather?: LastWeather) {
+async function updateGeolocation(geol: string, weather: Weather, lastWeather?: LastWeather): void {
     geolForm.load()
 
     if (!isGeolocation(geol)) {
@@ -160,7 +160,7 @@ async function updateGeolocation(geol: string, weather: Weather, lastWeather?: L
     geolForm.accept()
 }
 
-export function handleGeolOption(data: Weather) {
+export function handleGeolOption(data: Weather): void {
     const iCity = document.querySelector<HTMLInputElement>('#i_city')
     const iGeol = document.querySelector<HTMLInputElement>('#i_geol')
 
@@ -173,7 +173,7 @@ export function handleGeolOption(data: Weather) {
 
 // Location suggestions
 
-function updateSuggestions(updateEvent: Event) {
+function updateSuggestions(updateEvent: Event): void {
     const fLocation = document.querySelector<HTMLFormElement>('#f_location')
     const iCity = document.querySelector<HTMLInputElement>('#i_city')
     const event = updateEvent as InputEvent
@@ -189,7 +189,7 @@ function updateSuggestions(updateEvent: Event) {
     }
 }
 
-function removeLocationSuggestions() {
+function removeLocationSuggestions(): void {
     const datalist = document.querySelector<HTMLDataListElement>('#dl_cityfound')
     const nodelist = datalist?.children ?? []
     for (const node of nodelist) {
@@ -197,7 +197,7 @@ function removeLocationSuggestions() {
     }
 }
 
-async function fillLocationSuggestions() {
+async function fillLocationSuggestions(): void {
     const dlCityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
     const iCity = document.getElementById('i_city') as HTMLInputElement
     const city = iCity.value

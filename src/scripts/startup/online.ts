@@ -6,7 +6,7 @@ import { weather } from '../features/weather/index.ts'
 import { storage } from '../storage.ts'
 import { clock } from '../features/clock/index.ts'
 
-export function onlineAndMobile() {
+export function onlineAndMobile(): void {
     const dominterface = document.getElementById('interface') as HTMLDivElement
     const onlineFirefoxMobile = PLATFORM === 'online' && BROWSER === 'firefox' && IS_MOBILE
     const onlineSafariIos = PLATFORM === 'online' && BROWSER === 'safari' && SYSTEM_OS === 'ios'
@@ -42,7 +42,7 @@ export function onlineAndMobile() {
         })
     }
 
-    async function updateOnVisibilityChange() {
+    async function updateOnVisibilityChange(): Promise<void> {
         if (visibilityHasChanged === false) {
             visibilityHasChanged = true
             return
@@ -70,16 +70,16 @@ export function onlineAndMobile() {
         }
     }
 
-    function triggerAnimationFrame() {
+    function triggerAnimationFrame(): void {
         updateAppHeight()
         firefoxRafTimeout = requestAnimationFrame(triggerAnimationFrame)
     }
 
-    function updateAppHeight() {
+    function updateAppHeight(): void {
         document.documentElement.style.setProperty('--app-height', `${globalThis.innerHeight}px`)
     }
 
-    function disableTouchAction() {
+    function disableTouchAction(): void {
         const settingsDom = document.getElementById('settings') as HTMLElement
         if (dominterface && settingsDom) {
             dominterface.style.touchAction = 'none'
@@ -87,7 +87,7 @@ export function onlineAndMobile() {
         }
     }
 
-    function enableTouchAction() {
+    function enableTouchAction(): void {
         const settingsDom = document.getElementById('settings') as HTMLElement
         if (dominterface && settingsDom) {
             dominterface.style.removeProperty('touch-action')

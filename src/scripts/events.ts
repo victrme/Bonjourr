@@ -1,6 +1,6 @@
 let isMousingDownOnInput = false
 
-export function userActions() {
+export function userActions(): void {
     document.body.addEventListener('mousedown', detectTargetAsInputs)
     document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
@@ -11,7 +11,7 @@ export function userActions() {
 
 // Main functions
 
-function keyboardUserActions(event: KeyboardEvent) {
+function keyboardUserActions(event: KeyboardEvent): void {
     const domsuggestions = document.getElementById('sb-suggestions')
 
     if (event.code === 'Escape') {
@@ -52,7 +52,7 @@ function keyboardUserActions(event: KeyboardEvent) {
     }
 }
 
-function clickUserActions(event: MouseEvent) {
+function clickUserActions(event: MouseEvent): void {
     if (isMousingDownOnInput) {
         return
     }
@@ -133,13 +133,13 @@ function isOpen() {
     }
 }
 
-function detectTargetAsInputs(event: Event) {
+function detectTargetAsInputs(event: Event): void {
     const path = event.composedPath() as Element[]
     const tagName = path[0]?.tagName ?? ''
     isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
 }
 
-function closeSettingsOnMoveOpen() {
+function closeSettingsOnMoveOpen(): void {
     setTimeout(() => {
         const elementmover = document.getElementById('element-mover')
         const moverHasOpened = elementmover?.classList.contains('hidden') === false

@@ -7,12 +7,12 @@ import type { Widgets } from '../../../types/shared.ts'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
-export function setGridAreas(grid: MoveLayout['grid'] | string) {
+export function setGridAreas(grid: MoveLayout['grid'] | string): void {
     const property = typeof grid === 'string' ? grid : gridStringify(grid)
     document.documentElement.style.setProperty('--grid', property)
 }
 
-export function setAlign(id: Widgets, align?: MoveAlign) {
+export function setAlign(id: Widgets, align?: MoveAlign): void {
     const { box, text } = align ?? { box: '', text: '' }
     const elem = elements[id]
 
@@ -34,13 +34,13 @@ export function setAlign(id: Widgets, align?: MoveAlign) {
     }
 }
 
-export function setAllAligns(items: MoveLayout['items']) {
+export function setAllAligns(items: MoveLayout['items']): void {
     for (const [widget, align] of Object.entries(items)) {
         setAlign(widget as Widgets, align)
     }
 }
 
-export function addOverlay(id: Widgets) {
+export function addOverlay(id: Widgets): void {
     const button = document.createElement('button')
     button.id = `move-overlay-${id}`
     button.className = 'move-overlay'
@@ -51,7 +51,7 @@ export function addOverlay(id: Widgets) {
     })
 }
 
-export function removeOverlay(id?: Widgets) {
+export function removeOverlay(id?: Widgets): void {
     if (id) {
         document.querySelector(`#move-overlay-${id}`)?.remove()
     } else {
@@ -61,7 +61,7 @@ export function removeOverlay(id?: Widgets) {
     }
 }
 
-export function removeSelection() {
+export function removeSelection(): void {
     const toolbox = document.getElementById('element-mover')
     const elements = document.querySelectorAll<HTMLElement>(
         '.move-overlay, #grid-mover button, .grid-spanner, #element-mover button',
@@ -75,7 +75,7 @@ export function removeSelection() {
     toolbox?.classList.remove('active')
 }
 
-export function interfaceFade(fade: 'in' | 'out') {
+export function interfaceFade(fade: 'in' | 'out'): void {
     if (fade === 'in') {
         const dominterface = document.getElementById('interface') as HTMLElement
         dominterface.style.removeProperty('opacity')

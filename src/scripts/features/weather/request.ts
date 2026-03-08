@@ -10,7 +10,7 @@ import type { LastWeather } from '../../../types/local.ts'
 import type { Weather } from '../../../types/sync.ts'
 import type { Coords } from './index.ts'
 
-export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather) {
+export async function weatherCacheControl(data: Weather, lastWeather?: LastWeather): Promise<void> {
     handleForecastDisplay(data.forecast)
 
     if (!lastWeather) {
@@ -121,7 +121,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
     }
 }
 
-async function firstStartWeather(data: Weather) {
+async function firstStartWeather(data: Weather): Promise<void> {
     const currentWeather = await requestNewWeather(data)
 
     if (currentWeather) {

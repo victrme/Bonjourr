@@ -211,7 +211,7 @@ function isGistIdValid(id?: string): boolean {
     return true
 }
 
-function gistHeaders(token: string) {
+function gistHeaders(token: string): HeadersInit {
     return {
         Authorization: `Bearer ${token}`,
         Accept: 'application/vnd.github+json',

@@ -1,7 +1,7 @@
 import { BROWSER, PLATFORM } from '../defaults.ts'
 import { storage } from '../storage.ts'
 
-export function operaExtensionExplainer(explained?: true) {
+export function operaExtensionExplainer(explained?: true): void {
     if (explained || BROWSER !== 'opera' || PLATFORM !== 'chrome') {
         return
     }

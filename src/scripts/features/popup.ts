@@ -68,7 +68,7 @@ const REVIEW_URLS = {
     other: 'https://bonjourr.fr/help#%EF%B8%8F-reviews',
 }
 
-export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
+export function interfacePopup(init?: PopupInit, event?: PopupUpdate): void {
     // // force popup for debugging
     // displayPopup('announce', true)
     // displayPopup('review', true)
@@ -114,7 +114,7 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate) {
     localStorage.reviewCounter = reviewCounter + 1
 }
 
-function displayPopup(type: 'review' | 'announce', showIcon = false) {
+function displayPopup(type: 'review' | 'announce', showIcon = false): void {
     const template = document.getElementById('popup-template') as HTMLTemplateElement
     const doc = document.importNode(template.content, true)
     const popup = doc.getElementById('popup')
@@ -160,18 +160,18 @@ function createPopupButton(href: string, text: string): HTMLAnchorElement {
 
 //
 
-function removePopupTrigger() {
+function removePopupTrigger(): void {
     storage.sync.set({ review: -1 })
     localStorage.removeItem('reviewCounter')
     localStorage.removeItem('hasUpdated')
 }
 
-function openPopup() {
+function openPopup(): void {
     setTimeout(() => document.getElementById('popup')?.classList.add('shown'), 800)
     setTimeout(() => document.getElementById('credit-container')?.setAttribute('style', 'opacity: 0'), 400)
 }
 
-function closePopup() {
+function closePopup(): void {
     setTimeout(() => document.getElementById('popup')?.remove(), 200)
     setTimeout(() => document.getElementById('credit-container')?.removeAttribute('style'), 600)
     document.getElementById('popup')?.classList.remove('shown')

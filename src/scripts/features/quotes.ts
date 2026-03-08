@@ -30,7 +30,7 @@ type QuotesUpdate = {
 const quotesTypeForm = networkForm('f_qttype')
 const quotesUrlForm = networkForm('f_qturl')
 
-export async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
+export async function quotes(init?: QuotesInit, update?: QuotesUpdate): Promise<void> {
     if (update) {
         updateQuotes(update)
         return
@@ -76,7 +76,7 @@ export async function quotes(init?: QuotesInit, update?: QuotesUpdate) {
 
 // ─── UPDATE
 
-async function updateQuotes({ author, frequency, type, userlist, url, refresh }: QuotesUpdate) {
+async function updateQuotes({ author, frequency, type, userlist, url, refresh }: QuotesUpdate): Promise<void> {
     const data = await storage.sync.get(['lang', 'quotes'])
     const local = await storage.local.get('quotesCache')
 
@@ -117,7 +117,7 @@ async function updateQuotes({ author, frequency, type, userlist, url, refresh }:
     storage.sync.set({ quotes: data.quotes })
 }
 
-async function updateQuotesData(data: Sync) {
+async function updateQuotesData(data: Sync): Promise<void> {
     const isUser = data.quotes.type === 'user'
     let list: Quote[] = []
     let selection = 0

@@ -12,7 +12,7 @@ let resetTimeout: number
 let firstPos = { x: 0, y: 0 }
 let moverPos = { x: 0, y: 0 }
 
-export function toolboxEvents() {
+export function toolboxEvents(): void {
     const elementEntries = Object.entries(elements)
     const moverBtns = document.querySelectorAll<HTMLElement>('#grid-mover button')
     const boxAlignBtns = document.querySelectorAll<HTMLElement>('#box-alignment-mover button')
@@ -56,7 +56,7 @@ export function toolboxEvents() {
     moverdom?.addEventListener('touchstart', startDrag, { passive: false })
     moverdom?.addEventListener('touchend', removeDrag)
 
-    function startDrag(event: Event) {
+    function startDrag(event: Event): void {
         const target = event.target as HTMLElement
         const validTags = target?.tagName === 'HR' || target?.tagName === 'P'
         const validIds = target?.id === 'element-mover' || target?.id === 'close-mover-wrapper'
@@ -66,7 +66,7 @@ export function toolboxEvents() {
         }
     }
 
-    function moverDrag(event: MouseEvent | TouchEvent) {
+    function moverDrag(event: MouseEvent | TouchEvent): void {
         const pos = (event as TouchEvent).touches ? (event as TouchEvent).touches[0] : (event as MouseEvent)
 
         const x = pos.clientX
@@ -89,7 +89,7 @@ export function toolboxEvents() {
         }
     }
 
-    function removeDrag() {
+    function removeDrag(): void {
         firstPos = { x: 0, y: 0 }
         ;(moverdom as HTMLElement).style.removeProperty('cursor')
         document.documentElement.style.removeProperty('overscroll-behavior')
@@ -98,13 +98,13 @@ export function toolboxEvents() {
     }
 }
 
-export function layoutButtons(selection: Move['selection']) {
+export function layoutButtons(selection: Move['selection']): void {
     for (const button of document.querySelectorAll<HTMLButtonElement>('#grid-layout button')) {
         button.classList.toggle('selected', button.dataset.layout === selection)
     }
 }
 
-export function gridButtons(id: Widgets) {
+export function gridButtons(id: Widgets): void {
     const property = document.documentElement?.style.getPropertyValue('--grid') || ''
     const grid = gridParse(property)
 
@@ -168,7 +168,7 @@ export function gridButtons(id: Widgets) {
     }
 }
 
-export function spanButtons(id: Widgets) {
+export function spanButtons(id: Widgets): void {
     const gridstring = document.documentElement?.style.getPropertyValue('--grid') || ''
     const grid = gridParse(gridstring)
 
@@ -196,7 +196,7 @@ export function spanButtons(id: Widgets) {
     applyStates('row', hasRowDuplicates)
 }
 
-export function alignButtons(align?: MoveAlign) {
+export function alignButtons(align?: MoveAlign): void {
     const { box, text } = align ?? { box: '', text: '' }
     const boxBtns = document.querySelectorAll<HTMLButtonElement>('#box-alignment-mover button')
     const textBtns = document.querySelectorAll<HTMLButtonElement>('#text-alignment-mover button')
@@ -231,7 +231,7 @@ export function resetButton(): boolean {
     return confirm
 }
 
-export function showSpanButtons(column: string) {
+export function showSpanButtons(column: string): void {
     column !== 'single'
         ? document.getElementById('grid-spanner-container')?.classList.add('active')
         : document.getElementById('grid-spanner-container')?.classList.remove('active')

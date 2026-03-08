@@ -30,7 +30,7 @@ export type WeatherUpdate = {
 
 let pollingInterval = 0
 
-export function weather(init?: WeatherInit, update?: WeatherUpdate) {
+export function weather(init?: WeatherInit, update?: WeatherUpdate): void {
     if (update) {
         weatherUpdate(update)
         return

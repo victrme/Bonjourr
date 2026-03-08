@@ -1,6 +1,6 @@
 import { ENVIRONNEMENT, PLATFORM } from '../defaults.ts'
 
-export function serviceWorker() {
+export function serviceWorker(): void {
     if (ENVIRONNEMENT !== 'PROD' || PLATFORM !== 'online' || !('serviceWorker' in navigator)) {
         return
     }

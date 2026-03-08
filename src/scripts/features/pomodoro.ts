@@ -34,7 +34,7 @@ const pomodoroContainer = document.getElementById('pomodoro_container') as HTMLD
 const pomodoroStart = document.getElementById('pmdr_start') as HTMLButtonElement
 const pomodoroPause = document.getElementById('pmdr_pause') as HTMLButtonElement
 const pomodoroReset = document.getElementById('pmdr_reset') as HTMLButtonElement
-const timer_dom = document.getElementById('pmdr_timer') as HTMLSpanElement
+const timerDom = document.getElementById('pmdr_timer') as HTMLSpanElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 
@@ -55,7 +55,7 @@ const getTimeForMode = (mode: PomodoroMode): number => {
     return currentPomodoroData.timeFor[mode]
 }
 
-export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
+export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate): void {
     if (update) {
         updatePomodoro(update)
         return
@@ -72,7 +72,7 @@ export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
     }
 }
 
-function initPomodoro(init: Pomodoro) {
+function initPomodoro(init: Pomodoro): void {
     currentPomodoroData = init
 
     togglePomodoroFocus(init.focus && init.on)
@@ -88,7 +88,7 @@ function initPomodoro(init: Pomodoro) {
 }
 
 // events
-function handleUserInput() {
+function handleUserInput(): void {
     // different modes
     radioButtons.forEach(function (btn) {
         btn.addEventListener('change', (e) => {
@@ -162,7 +162,7 @@ function handleUserInput() {
     })
 }
 
-function listenToBroadcast() {
+function listenToBroadcast(): void {
     // receiving data from other tabs
 
     broadcast.addEventListener('message', ({ data = {} }) => {
@@ -187,7 +187,7 @@ function listenToBroadcast() {
     })
 }
 
-function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean) {
+function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean): void {
     resetTimeouts()
     setModeGlider(mode, animate)
     stopTimer()
@@ -198,13 +198,13 @@ function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean) {
     }
 }
 
-function resetTimeouts() {
+function resetTimeouts(): void {
     // if user interact with pomodoro before the end of the timeouts
     clearTimeout(tabTitleTimeout)
     clearTimeout(timeModeTimeout)
 }
 
-export function setModeGlider(mode?: PomodoroMode, animate?: boolean) {
+export function setModeGlider(mode?: PomodoroMode, animate?: boolean): void {
     const pomodoroModes = document.querySelector<HTMLElement>('#pmdr_modes')
     const allModes = pomodoroModes?.querySelectorAll<HTMLElement>('.pomodoro_mode')
     const activeMode = pomodoroModes?.querySelector<HTMLElement>('.pomodoro_mode.active')
@@ -244,7 +244,7 @@ export function setModeGlider(mode?: PomodoroMode, animate?: boolean) {
     }
 }
 
-function initTimer(pomodoro: Pomodoro) {
+function initTimer(pomodoro: Pomodoro): void {
     const isTimerRunning = pomodoro.end && Date.now() < pomodoro.end
     const isTimerDefaultStopped = !pomodoro.end || Date.now() > pomodoro.end
 
@@ -259,7 +259,7 @@ function initTimer(pomodoro: Pomodoro) {
 }
 
 // inspired by https://github.com/mohammedyh/pomodoro-timer cause logic is so good
-function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number) {
+function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number): void {
     fromButton ??= false
 
     stopTimer()
@@ -308,7 +308,7 @@ function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number) {
     }
 }
 
-function startCountdown(endtime: number) {
+function startCountdown(endtime: number): void {
     // inserted as soon as possible
     insertTime(calculateSecondsLeft(endtime))
 
@@ -319,7 +319,7 @@ function startCountdown(endtime: number) {
     toggleStartPause(true)
 }
 
-function pauseTimer() {
+function pauseTimer(): void {
     stopTimer()
 
     updatePomodoro({
@@ -327,17 +327,17 @@ function pauseTimer() {
     })
 }
 
-function toggleStartPause(started: boolean) {
+function toggleStartPause(started: boolean): void {
     if (!pomodoroContainer) return
     pomodoroContainer.classList.toggle('started', started)
 }
 
-function stopTimer() {
+function stopTimer(): void {
     clearInterval(countdown)
     toggleStartPause(false)
 }
 
-function resetTimer() {
+function resetTimer(): void {
     switchMode(currentPomodoroData.mode as PomodoroMode)
 }
 
@@ -360,8 +360,8 @@ function calculateSecondsLeft(end: number) {
     return secondsLeft
 }
 
-function insertTime(seconds: number, timerIsStarted = true) {
-    if (!timer_dom) {
+function insertTime(seconds: number, timerIsStarted = true): void {
+    if (!timerDom) {
         return
     }
 
@@ -370,12 +370,12 @@ function insertTime(seconds: number, timerIsStarted = true) {
     const displayTime = `${minutes}:${secondsRemaining < 10 ? '0' : ''}${secondsRemaining}`
 
     // inserts to dom
-    timer_dom.textContent = displayTime
+    timerDom.textContent = displayTime
 
     handleTabTitle(displayTime, timerIsStarted)
 }
 
-function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
+function handleTabTitle(displayTime: string, timerIsStarted: boolean): void {
     const originalTitle = document.title
     const match = originalTitle.match(/\| (.*)/)
     const afterPipe = match?.[1] ?? originalTitle
@@ -396,11 +396,11 @@ function handleTabTitle(displayTime: string, timerIsStarted: boolean) {
     tabTitle(newTitle)
 }
 
-function handleToggle(state: boolean) {
+function handleToggle(state: boolean): void {
     pomodoroContainer?.classList.toggle('hidden', !state)
 }
 
-export function togglePomodoroFocus(focus: boolean) {
+export function togglePomodoroFocus(focus: boolean): void {
     // needed for sliding animation
     const enablingFocus = focus && !currentPomodoroData.focus
     const disablingFocus = !focus && currentPomodoroData.focus

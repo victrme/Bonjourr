@@ -21,7 +21,7 @@ interface SyncUpdate {
 const gistsyncform = networkForm('f_gistsync')
 const urlsyncform = networkForm('f_urlsync')
 
-export function synchronization(init?: Local, update?: SyncUpdate) {
+export function synchronization(init?: Local, update?: SyncUpdate): void {
     if (init) {
         onSettingsLoad(() => {
             toggleSyncSettingsOption(init)
@@ -34,7 +34,7 @@ export function synchronization(init?: Local, update?: SyncUpdate) {
     }
 }
 
-async function updateSyncOption(update: SyncUpdate) {
+async function updateSyncOption(update: SyncUpdate): void {
     const local = await storage.local.get(['gistId', 'gistToken', 'distantUrl', 'syncType'])
     const data = await storage.sync.get()
 
@@ -165,7 +165,7 @@ async function handleStoragePersistence(type?: SyncType): Promise<boolean | unde
     }
 }
 
-async function toggleSyncSettingsOption(local?: Local) {
+async function toggleSyncSettingsOption(local?: Local): void {
     const gistId = local?.gistId
     const gistToken = local?.gistToken
     const distantUrl = local?.distantUrl

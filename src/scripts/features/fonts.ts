@@ -56,7 +56,7 @@ export const systemfont = (() => {
     return fonts.linux
 })()
 
-export function customFont(init?: Font, event?: CustomFontUpdate) {
+export function customFont(init?: Font, event?: CustomFontUpdate): void {
     if (event) {
         updateCustomFont(event)
         return
@@ -81,7 +81,7 @@ export function customFont(init?: Font, event?: CustomFontUpdate) {
 //	Updates
 //
 
-async function updateCustomFont({ family, weight, size, lang, autocomplete }: CustomFontUpdate) {
+async function updateCustomFont({ family, weight, size, lang, autocomplete }: CustomFontUpdate): Promise<void> {
     if (autocomplete) {
         setAutocompleteSettings()
         return
@@ -164,7 +164,7 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
     return font
 }
 
-async function handleLangSwitch(font: Font) {
+async function handleLangSwitch(font: Font): Promise<void> {
     const noCustomOrSystemFont = !font.family || font?.system
 
     if (noCustomOrSystemFont) {
@@ -213,7 +213,7 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
     return
 }
 
-function displayFont({ family, size, weight, system }: Font) {
+function displayFont({ family, size, weight, system }: Font): void {
     // Weight: default bonjourr lowers font weight on clock (because we like it)
     const clockWeight = Number.parseInt(weight) > 100
         ? systemfont.weights[systemfont.weights.indexOf(weight) - 1]
@@ -244,7 +244,7 @@ function displayFont({ family, size, weight, system }: Font) {
     setFontSize(size)
 }
 
-function setFontSize(size: string) {
+function setFontSize(size: string): void {
     document.documentElement.style.setProperty('--font-size', `${Number.parseInt(size) / 16}em`)
 }
 
@@ -252,13 +252,13 @@ function setFontSize(size: string) {
 //	Settings options
 //
 
-function initFontSettings(font?: Font) {
+function initFontSettings(font?: Font): void {
     const hasCustomWeights = font && font.weightlist.length > 0
     const weights = hasCustomWeights ? font.weightlist : systemfont.weights
     setWeightSettings(weights)
 }
 
-async function setAutocompleteSettings(isLangSwitch?: boolean) {
+async function setAutocompleteSettings(isLangSwitch?: boolean): Promise<void> {
     const dlFontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
 
     if (isLangSwitch && dlFontfamily?.childNodes) {
@@ -285,7 +285,7 @@ async function setAutocompleteSettings(isLangSwitch?: boolean) {
     }
 }
 
-function setWeightSettings(weights: string[]) {
+function setWeightSettings(weights: string[]): void {
     const options = document.querySelectorAll<HTMLOptionElement>('#i_weight option')
 
     for (const option of options) {

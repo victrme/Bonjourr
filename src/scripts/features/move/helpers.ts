@@ -88,7 +88,7 @@ export function gridParse(area = ''): Grid {
     return stringToGrid(`\"`)
 }
 
-export function gridStringify(grid: Grid) {
+export function gridStringify(grid: Grid): string {
     let areas = ''
 
     // 2
@@ -144,7 +144,7 @@ function getSpanDirection(grid: Grid, id: string): 'none' | 'columns' | 'rows' {
     return 'rows'
 }
 
-export function isRowEmpty(grid: Grid, index: number) {
+export function isRowEmpty(grid: Grid, index: number): boolean {
     if (grid[index] === undefined) {
         return false
     }
@@ -165,13 +165,13 @@ export function spansInGridArea(
     grid: Grid,
     id: Widgets,
     { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true },
-) {
-    function addSpans(row: string[]) {
+): string[] {
+    function addSpans(row: string[]): void {
         const target = row.indexOf(id)
         const stopper = [false, false]
         let arr = row
 
-        function replaceWithId(a: string[], i: number, lim: number) {
+        function replaceWithId(a: string[], i: number, lim: number): string[] {
             // not stopping and elem exit
             if (!stopper[lim] && a[i]) {
                 if (a[i] === '.') {
@@ -193,7 +193,7 @@ export function spansInGridArea(
         return arr
     }
 
-    function removeSpans(arr: string[]) {
+    function removeSpans(arr: string[]): string[] {
         let keepfirst = true
         return arr.map((a) => {
             if (a === id) {

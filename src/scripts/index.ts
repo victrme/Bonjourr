@@ -39,7 +39,7 @@ try {
     console.warn('Startup failed')
 }
 
-async function startup() {
+async function startup(): Promise<void> {
     let { sync, local } = await storage.init()
     const oldVersion = sync?.about?.version
 

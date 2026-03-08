@@ -60,7 +60,7 @@ type UpdateMove = {
 const dominterface = document.querySelector<HTMLElement>('#interface')
 let widget: Widgets | undefined
 
-export function moveElements(init?: Move, events?: UpdateMove) {
+export function moveElements(init?: Move, events?: UpdateMove): void {
     if (!(init || events)) {
         updateMoveElement({ reset: true })
         return
@@ -83,7 +83,7 @@ export function moveElements(init?: Move, events?: UpdateMove) {
     }
 }
 
-export async function updateMoveElement(event: UpdateMove) {
+export async function updateMoveElement(event: UpdateMove): Promise<void> {
     const data = await storage.sync.get()
 
     if (!data.move) {
@@ -122,7 +122,7 @@ export async function updateMoveElement(event: UpdateMove) {
     }
 }
 
-function gridChange(move: Move, gridpos: { x?: string; y?: string }) {
+function gridChange(move: Move, gridpos: { x?: string; y?: string }): void {
     if (!widget) {
         return
     }
@@ -193,7 +193,7 @@ function gridChange(move: Move, gridpos: { x?: string; y?: string }) {
     gridButtons(widget)
 }
 
-function alignChange(move: Move, value: string, type: 'box' | 'text') {
+function alignChange(move: Move, value: string, type: 'box' | 'text'): void {
     if (!widget) {
         return
     }
@@ -216,7 +216,7 @@ function alignChange(move: Move, value: string, type: 'box' | 'text') {
     setAlign(widget, align)
 }
 
-function layoutChange(data: Sync, column: string) {
+function layoutChange(data: Sync, column: string): void {
     if (column === data.move.selection) {
         return
     }
@@ -272,7 +272,7 @@ function layoutChange(data: Sync, column: string) {
     interfaceTransition.transition(200)
 }
 
-function layoutReset(data: Sync) {
+function layoutReset(data: Sync): void {
     const enabledWidgets = getWidgetsStorage(data)
     let grid = ''
 
@@ -304,7 +304,7 @@ function layoutReset(data: Sync) {
     })
 }
 
-function elementSelection(move: Move, select: string) {
+function elementSelection(move: Move, select: string): void {
     removeSelection()
 
     // Remove selection modifiers and quit if failed to get id
@@ -322,7 +322,7 @@ function elementSelection(move: Move, select: string) {
     document.getElementById('element-mover')?.classList.add('active')
 }
 
-function toggleMoveStatus(data: Sync, force?: boolean) {
+function toggleMoveStatus(data: Sync, force?: boolean): void {
     const mover = document.getElementById('element-mover') as HTMLElement
     const bEditmove = document.getElementById('b_editmove') as HTMLButtonElement
     const isEditing = dominterface?.classList.contains('move-edit')
@@ -349,7 +349,7 @@ function toggleMoveStatus(data: Sync, force?: boolean) {
     removeSelection()
 }
 
-function toggleGridSpans(move: Move, dir: 'col' | 'row') {
+function toggleGridSpans(move: Move, dir: 'col' | 'row'): void {
     if (!widget) {
         return
     }
@@ -369,7 +369,7 @@ function toggleGridSpans(move: Move, dir: 'col' | 'row') {
     spanButtons(widget)
 }
 
-function pageWidthOverlay(move: Move, overlay?: boolean) {
+function pageWidthOverlay(move: Move, overlay?: boolean): void {
     const isEditing = document.getElementById('interface')?.classList?.contains('move-edit')
     const hasOverlays = document.querySelector('.move-overlay')
 

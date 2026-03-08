@@ -55,7 +55,7 @@ const setBackground = (value = '#fff2') => {
         ?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
-export function searchbar(init?: Searchbar, update?: SearchbarUpdate) {
+export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
     if (update) {
         updateSearchbar(update)
         return
@@ -96,7 +96,7 @@ async function updateSearchbar({
     request,
     suggestions,
     width,
-}: SearchbarUpdate) {
+}: SearchbarUpdate): Promise<void> {
     const { searchbar } = await storage.sync.get('searchbar')
 
     if (!searchbar) {
@@ -211,7 +211,7 @@ function createSearchUrl(val: string, engine: string): string {
     return result
 }
 
-function submitSearch(e: Event) {
+function submitSearch(e: Event): void {
     e.preventDefault()
 
     const canUseDefault = !IS_MOBILE && (PLATFORM === 'chrome' || PLATFORM === 'firefox')
@@ -251,12 +251,12 @@ function submitSearch(e: Event) {
 //	Suggestions
 //
 
-function initSuggestions() {
+function initSuggestions(): void {
     function selectShownResult(next: UndefinedElement): UndefinedElement {
         return next?.classList.contains('shown') ? next : null
     }
 
-    function applyResultContentToInput(elem: UndefinedElement) {
+    function applyResultContentToInput(elem: UndefinedElement): void {
         if (!(elem && domsearchbar)) {
             return
         }
@@ -301,7 +301,7 @@ function initSuggestions() {
         domsuggestions?.appendChild(li)
     }
 
-    function toggleSuggestions(e: FocusEvent) {
+    function toggleSuggestions(e: FocusEvent): void {
         const relatedTarget = e?.relatedTarget as Element
         const targetIsResult = relatedTarget?.parentElement?.id === 'sb-suggestions'
         const hasResults = document.querySelectorAll('#sb-suggestions li.shown')?.length > 0
@@ -312,7 +312,7 @@ function initSuggestions() {
         }
     }
 
-    function navigateSuggestions(e: KeyboardEvent) {
+    function navigateSuggestions(e: KeyboardEvent): void {
         const isArrowDown = e.code === 'ArrowDown'
         const isArrowUp = e.code === 'ArrowUp'
         const isEnter = e.code === 'Enter'
@@ -345,7 +345,7 @@ function initSuggestions() {
         lastSelected?.setAttribute('aria-selected', 'true')
     }
 
-    function hideResultsAndSuggestions() {
+    function hideResultsAndSuggestions(): void {
         const children = Object.values(domsuggestions?.children ?? [])
         for (const child of children) {
             child.classList.remove('shown')
@@ -353,7 +353,7 @@ function initSuggestions() {
         domsuggestions?.classList.remove('shown')
     }
 
-    async function createSuggestionSocket() {
+    async function createSuggestionSocket(): Promise<void> {
         socket = await apiWebSocket('suggestions')
 
         socket?.addEventListener('message', (event: MessageEvent) => {
@@ -375,7 +375,7 @@ function initSuggestions() {
     createSuggestionSocket()
 }
 
-function suggestions(results: Suggestions) {
+function suggestions(results: Suggestions): void {
     const input = domsearchbar as HTMLInputElement
     const liList = domsuggestions?.querySelectorAll('li') ?? []
 
@@ -441,7 +441,7 @@ function suggestions(results: Suggestions) {
 //	Searchbar Events
 //
 
-function handleUserInput(e: Event) {
+function handleUserInput(e: Event): void {
     const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
     const hasProtocol = value.startsWith('http://') || value.startsWith('https://')
     const withProtocol = hasProtocol ? value : `https://${value}`
@@ -477,13 +477,13 @@ function handleUserInput(e: Event) {
     }
 }
 
-function toggleInputButton(enabled: boolean) {
+function toggleInputButton(enabled: boolean): void {
     document.getElementById('sb-buttons')?.classList.toggle('shown', enabled)
     document.getElementById('sb_empty')?.toggleAttribute('disabled', !enabled)
     document.getElementById('sb_submit')?.toggleAttribute('disabled', !enabled)
 }
 
-function removeInputText() {
+function removeInputText(): void {
     if (domsearchbar) {
         domsearchbar.focus()
         domsearchbar.value = ''
@@ -491,13 +491,13 @@ function removeInputText() {
     }
 }
 
-function focusSearchbar() {
+function focusSearchbar(): void {
     if (dombuttons?.classList.contains('shown') === false) {
         domsearchbar?.focus()
     }
 }
 
-function searchbarShortcut(event: KeyboardEvent) {
+function searchbarShortcut(event: KeyboardEvent): void {
     const target = event.target as Element
     const fromBody = target.tagName === 'BODY'
 
