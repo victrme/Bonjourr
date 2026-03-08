@@ -1,6 +1,8 @@
+type UnknownObject = Record<string, unknown>
+
 // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
-export function deepEqual(object1: Record<string, unknown>, object2: Record<string, unknown>) {
-    function isObject(object: unknown) {
+export function deepEqual(object1: UnknownObject, object2: UnknownObject): boolean {
+    function isObject(object: unknown): boolean {
         return object !== null && typeof object === 'object'
     }
 
@@ -15,8 +17,7 @@ export function deepEqual(object1: Record<string, unknown>, object2: Record<stri
         const val1 = object1[key]
         const val2 = object2[key]
         const areObjects = isObject(val1) && isObject(val2)
-        const areDifferent =
-            (areObjects && !deepEqual(val1 as Record<string, unknown>, val2 as Record<string, unknown>)) ||
+        const areDifferent = (areObjects && !deepEqual(val1 as UnknownObject, val2 as UnknownObject)) ||
             (!areObjects && val1 !== val2)
 
         if (areDifferent) {

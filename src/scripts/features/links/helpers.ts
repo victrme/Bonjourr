@@ -5,7 +5,7 @@ import { tradThis } from '../../utils/translations.ts'
 import type { Link, LinkElem, LinkIconType } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-export function getDefaultIcon(url: string, refresh?: number) {
+export function getDefaultIcon(url: string, refresh?: number): string {
     if (refresh) {
         return `${API_DOMAIN}/favicon/blob/${url}?r=${refresh}`
     }
@@ -111,6 +111,6 @@ export function isLinkIconType(type: string): type is LinkIconType {
 }
 
 // to figure out if a string is a valid number
-export function isNumber(value: string) {
+export function isNumber(value: string): boolean {
     return !isNaN(parseFloat(value))
 }

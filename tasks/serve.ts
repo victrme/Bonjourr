@@ -5,7 +5,7 @@ try {
     // console.log(_e)
 }
 
-export function httpServer(port: number, baseUrl = 'release/online') {
+export function httpServer(port: number, baseUrl = 'release/online'): void {
     const contentTypeList: Record<string, string> = {
         '.webmanifest': 'application/manifest+json',
         '.js': 'text/javascript',

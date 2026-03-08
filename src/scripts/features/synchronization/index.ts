@@ -34,7 +34,7 @@ export function synchronization(init?: Local, update?: SyncUpdate): void {
     }
 }
 
-async function updateSyncOption(update: SyncUpdate): void {
+async function updateSyncOption(update: SyncUpdate): Promise<void> {
     const local = await storage.local.get(['gistId', 'gistToken', 'distantUrl', 'syncType'])
     const data = await storage.sync.get()
 
@@ -165,7 +165,7 @@ async function handleStoragePersistence(type?: SyncType): Promise<boolean | unde
     }
 }
 
-async function toggleSyncSettingsOption(local?: Local): void {
+async function toggleSyncSettingsOption(local?: Local): Promise<void> {
     const gistId = local?.gistId
     const gistToken = local?.gistToken
     const distantUrl = local?.distantUrl

@@ -57,7 +57,7 @@ const sinogramRegex = /zh-CN|zh-HK|ja/
 const defaultTimezones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
 const defaultRegions = ['Paris', 'New York', 'Tokyo', 'Lisbon', 'Los Angeles']
 
-export function clock(init?: Sync, event?: ClockUpdate) {
+export function clock(init?: Sync, event?: ClockUpdate): void {
     if (event) {
         clockUpdate(event)
         return
@@ -86,7 +86,7 @@ export function clock(init?: Sync, event?: ClockUpdate) {
 
 //	Update
 
-async function clockUpdate(update: ClockUpdate) {
+async function clockUpdate(update: ClockUpdate): Promise<void> {
     const data = await storage.sync.get()
     const analogstyle = data.analogstyle ?? structuredClone(defaultAnalogStyle)
 
@@ -228,7 +228,7 @@ async function clockUpdate(update: ClockUpdate) {
     clockSize(data.clock.size)
 }
 
-function analogStyle(style: AnalogStyle = structuredClone(defaultAnalogStyle)) {
+function analogStyle(style: AnalogStyle = structuredClone(defaultAnalogStyle)): void {
     const { face, shape, hands } = style
 
     const time = document.getElementById('time') as HTMLElement
@@ -274,10 +274,10 @@ function analogStyle(style: AnalogStyle = structuredClone(defaultAnalogStyle)) {
     time.style.setProperty('--analog-background', style.background)
 }
 
-function clockSize(size = 5) {
+function clockSize(size = 5): void {
     document.documentElement.style.setProperty('--clock-size', `${size.toString()}em`)
 }
 
-function greetingSize(size = '3') {
+function greetingSize(size = '3'): void {
     document.documentElement.style.setProperty('--greeting-size', `${size}em`)
 }

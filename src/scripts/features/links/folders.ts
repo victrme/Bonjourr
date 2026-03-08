@@ -14,12 +14,12 @@ queueMicrotask(() => {
     document.addEventListener('close-folder', closeFolder)
 })
 
-export async function folderClick(event: MouseEvent | KeyboardEvent) {
+export async function folderClick(event: MouseEvent | KeyboardEvent): Promise<void> {
     const li = getLiFromEvent(event)
 
-    let rightClick = false,
-        ctrlClick = false,
-        middleClick = false
+    let rightClick = false
+    let ctrlClick = false
+    let middleClick = false
 
     if (event instanceof MouseEvent) {
         rightClick = event.button === 2
@@ -65,13 +65,13 @@ function openFolder(data: Sync, li: HTMLLIElement): void {
     transition.finally(show)
     transition.transition(40)
 
-    function hide() {
+    function hide(): void {
         linkgroup.dataset.folder = li?.id
         linkgroup.classList.add('hiding')
         linkgroup.classList.remove('in-folder')
     }
 
-    function changeToFolder() {
+    function changeToFolder(): void {
         initblocks(data)
 
         if (linktitle) {
@@ -79,12 +79,12 @@ function openFolder(data: Sync, li: HTMLLIElement): void {
         }
     }
 
-    function show() {
+    function show(): void {
         linkgroup.classList.replace('hiding', 'in-folder')
     }
 }
 
-async function closeFolder() {
+async function closeFolder(): Promise<void> {
     if (document.querySelector('.link-group.dropping')) {
         return
     }
@@ -96,7 +96,7 @@ async function closeFolder() {
     transition.finally(show)
     transition.transition(40)
 
-    function hide() {
+    function hide(): void {
         const folders = document.querySelectorAll<HTMLDivElement>('.link-group.in-folder')
 
         for (const group of folders) {
@@ -105,12 +105,12 @@ async function closeFolder() {
         }
     }
 
-    function changeToTab() {
+    function changeToTab(): void {
         domlinkblocks.classList.toggle('with-groups', data.linkgroups.on)
         initblocks(data)
     }
 
-    function show() {
+    function show(): void {
         const groups = document.querySelectorAll<HTMLDivElement>('.link-group')
 
         for (const group of groups) {
@@ -120,7 +120,7 @@ async function closeFolder() {
     }
 }
 
-function openAllLinks(data: Sync, li: HTMLLIElement) {
+function openAllLinks(data: Sync, li: HTMLLIElement): void {
     const linksInFolder = getLinksInFolder(data, li.id)
 
     for (const link of linksInFolder) {

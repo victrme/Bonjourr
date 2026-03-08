@@ -1,7 +1,7 @@
-import { fixunits, type getSecondsWidthInCh, setSecondsWidthInCh } from './helpers.ts'
 import { setUserDate, userDate } from '../../shared/time.ts'
 import { displayGreetings } from './greetings.ts'
 import { clockDate } from './date.ts'
+import { fixunits } from './helpers.ts'
 
 import type { Clock, WorldClock } from '../../../types/sync.ts'
 import type { DateFormat } from './date.ts'
@@ -16,7 +16,7 @@ export interface ClockStartOptions {
 
 let clockInterval: number
 
-export function startClock(options: ClockStartOptions) {
+export function startClock(options: ClockStartOptions): void {
     const { clock, world, dateformat, greetings } = options
 
     document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
@@ -29,8 +29,6 @@ export function startClock(options: ClockStartOptions) {
     })
 
     const clocks: WorldClock[] = []
-
-    setSecondsWidthInCh()
 
     if (clock.worldclocks) {
         clocks.push(...world.filter(({ region }) => region))
@@ -48,7 +46,7 @@ export function startClock(options: ClockStartOptions) {
     clearInterval(clockInterval)
     clockInterval = setInterval(start, 1000)
 
-    function start(firstStart?: true) {
+    function start(firstStart?: true): void {
         for (let index = 0; index < clocks.length; index++) {
             const { region, timezone } = clocks[index]
             const domclock = getClock(index)
@@ -93,7 +91,7 @@ function getClock(index: number): HTMLDivElement {
     return clone
 }
 
-function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
+function digital(wrapper: HTMLElement, clock: Clock, timezone: string): void {
     const date = userDate(timezone)
     const domclock = wrapper.querySelector<HTMLElement>('.digital')
     const hh = wrapper.querySelector('.digital-hh') as HTMLElement
@@ -150,7 +148,7 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string) {
     }
 }
 
-function analog(wrapper: HTMLElement, clock: Clock, timezone: string) {
+function analog(wrapper: HTMLElement, clock: Clock, timezone: string): void {
     const date = userDate(timezone)
     const m = ((date.getMinutes() + date.getSeconds() / 60) * 6).toFixed(1)
     const h = (((date.getHours() % 12) + date.getMinutes() / 60) * 30).toFixed(1)

@@ -165,8 +165,8 @@ export function spansInGridArea(
     grid: Grid,
     id: Widgets,
     { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true },
-): string[] {
-    function addSpans(row: string[]): void {
+): string[][] {
+    function addSpans(row: string[]): string[] {
         const target = row.indexOf(id)
         const stopper = [false, false]
         let arr = row

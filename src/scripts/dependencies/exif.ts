@@ -61,7 +61,13 @@ function readTags(
     return tags
 }
 
-function readTagValue(file: DataView, entryOffset: number, tiffStart: number, _dirStart: number, bigEnd: boolean) {
+function readTagValue(
+    file: DataView,
+    entryOffset: number,
+    tiffStart: number,
+    _dirStart: number,
+    bigEnd: boolean,
+): string | number | number[] | undefined {
     const type = file.getUint16(entryOffset + 2, !bigEnd)
     const numValues = file.getUint32(entryOffset + 4, !bigEnd)
     const valueOffset = file.getUint32(entryOffset + 8, !bigEnd) + tiffStart

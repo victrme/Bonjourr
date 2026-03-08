@@ -107,7 +107,7 @@ const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer = 0
 
-export async function quickLinks(init?: LinksInit, event?: LinksUpdate) {
+export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise<void> {
     if (event) {
         linksUpdate(event)
         return
@@ -283,7 +283,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
     return li
 }
 
-function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyle']) {
+function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyle']): HTMLLIElement {
     const li = getHTMLTemplate<HTMLLIElement>('link-elem-template', 'li')
     const span = li.querySelector('span')
     const anchor = li.querySelector('a')
@@ -308,7 +308,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
     return li
 }
 
-function createIcons(local: Local) {
+function createIcons(local: Local): void {
     for (const [img, url] of initIconList) {
         if (url.startsWith('link')) {
             img.src = local[`x-icon-${url}`] ?? ''
@@ -354,7 +354,7 @@ function createIcons(local: Local) {
     }, 400)
 }
 
-function initRows(row: number, style: string) {
+function initRows(row: number, style: string): void {
     const sizes = {
         large: { width: 4.8, gap: 2.3 },
         medium: { width: 3.5, gap: 2 },
@@ -376,7 +376,7 @@ queueMicrotask(() => {
     document.addEventListener('remove-select-all', removeSelectAll)
 })
 
-function selectAll(event: MouseEvent) {
+function selectAll(event: MouseEvent): void {
     clearTimeout(selectallTimer)
 
     const selectAllActive = domlinkblocks.className.includes('select-all')
@@ -406,7 +406,7 @@ function selectAll(event: MouseEvent) {
     }
 }
 
-function removeSelectAll() {
+function removeSelectAll(): void {
     clearTimeout(selectallTimer)
     domlinkblocks.classList.remove('select-all')
     for (const li of domlinkblocks.querySelectorAll('.link')) {
@@ -416,7 +416,7 @@ function removeSelectAll() {
 
 // Updates
 
-export async function linksUpdate(update: LinksUpdate) {
+export async function linksUpdate(update: LinksUpdate): Promise<void> {
     let data = await storage.sync.get()
 
     if (update.addLinks) {
@@ -789,7 +789,7 @@ function setOpenInNewTab(newtab: boolean, data: Sync): Sync {
     return data
 }
 
-async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrounds?: boolean }) {
+async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrounds?: boolean }): Promise<void> {
     const data = await storage.sync.get()
     const style = styles.style ?? 'large'
     const { titles } = styles
@@ -832,11 +832,11 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
     }
 }
 
-function setRadius(radius: string | number) {
+function setRadius(radius: string | number): void {
     document.documentElement.style.setProperty('--link-outer-radius', `${radius}em`)
 }
 
-function setRows(row: string) {
+function setRows(row: string): void {
     const style = [...domlinkblocks.classList].filter(isLinkStyle)[0] ?? 'large'
     const val = Number.parseInt(row ?? '6')
     initRows(val, style)
@@ -863,7 +863,7 @@ export function validateLink(title: string, url: string, parent?: string): LinkE
     }
 }
 
-function animateLinksRemove(ids: string[]) {
+function animateLinksRemove(ids: string[]): void {
     for (const id of ids) {
         document.getElementById(id)?.classList.add('removed')
         setTimeout(() => document.getElementById(id)?.remove(), 600)

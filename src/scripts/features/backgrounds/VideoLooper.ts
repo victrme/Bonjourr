@@ -50,7 +50,7 @@ export class VideoLooper {
     // Public
     //
 
-    public loop() {
+    public loop(): void {
         this.video2.play()
 
         this.video1.addEventListener('timeupdate', () => {
@@ -68,7 +68,7 @@ export class VideoLooper {
         })
     }
 
-    public stop() {
+    public stop(): void {
         this.video1.pause()
         this.video2.pause()
         this.video1.currentTime = 0
@@ -77,7 +77,7 @@ export class VideoLooper {
         this.video2.classList.remove('hiding')
     }
 
-    public remove() {
+    public remove(): void {
         this.container.style.opacity = '0'
 
         setTimeout(() => {
@@ -98,7 +98,7 @@ export class VideoLooper {
         return this.container
     }
 
-    public setFadeTime(fadetime: number) {
+    public setFadeTime(fadetime: number): void {
         const realDuration = this.getRealDuration()
         const halfDurationInMs = Math.round((realDuration / 2) * 1000)
         const isFadeTooLong = halfDurationInMs < fadetime
@@ -120,7 +120,7 @@ export class VideoLooper {
         this.addTransitionDuration(this.fadetime)
     }
 
-    public setPlaybackRate(playbackRate: number) {
+    public setPlaybackRate(playbackRate: number): void {
         this.playbackRate = playbackRate
         this.video1.playbackRate = playbackRate
         this.video2.playbackRate = playbackRate
@@ -130,7 +130,7 @@ export class VideoLooper {
     // Private
     //
 
-    private async applyMuteStatus(video: HTMLVideoElement) {
+    private async applyMuteStatus(video: HTMLVideoElement): Promise<void> {
         try {
             const result = await storage.sync.get(['backgrounds'])
             const isMuted = result.backgrounds?.mute ?? true
@@ -165,7 +165,7 @@ export class VideoLooper {
             this.container.prepend(elem)
         })
 
-        elem.addEventListener('muteStatusChange', function (event: CustomEvent<{ status: boolean }>) {
+        elem.addEventListener('muteStatusChange', function (event: CustomEvent<{ status: boolean }>): void {
             elem.muted = event.detail.status
         } as EventListener)
 
@@ -189,11 +189,11 @@ export class VideoLooper {
         }
     }
 
-    private addTransitionDuration(fadetime: number) {
+    private addTransitionDuration(fadetime: number): void {
         this.container.style.setProperty('--video-fadetime', fadetime + 'ms')
     }
 
-    private isEnding(vid: HTMLVideoElement) {
+    private isEnding(vid: HTMLVideoElement): boolean {
         const currentTime = (vid.currentTime * 1000) / this.playbackRate
         const duration = (vid.duration * 1000) / this.playbackRate
 

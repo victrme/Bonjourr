@@ -76,10 +76,9 @@ export async function imageDimensions(src: string): Promise<{ width: number; hei
     let height = 3000
 
     await new Promise((resolve) => {
-        img.addEventListener('load', function () {
+        img.addEventListener('load', () => {
             width = img.width
             height = img.height
-
             img.remove()
             resolve(true)
         })

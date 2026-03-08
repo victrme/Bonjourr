@@ -240,7 +240,7 @@ function tradTemplateString(doc: DocumentFragment, selector: string, text: strin
 }
 
 // glitter animation based off this: github.com/pweth/javascript-snow
-function initGlitter() {
+function initGlitter(): void {
     interface Snowfall {
         canvas: HTMLCanvasElement
         context: CanvasRenderingContext2D

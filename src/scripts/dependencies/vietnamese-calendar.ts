@@ -11,7 +11,7 @@
  */
 
 /* Discard the fractional part of a number, e.g., INT(3.2) = 3 */
-function INT(d: number) {
+function INT(d: number): number {
     return Math.floor(d)
 }
 
@@ -19,7 +19,7 @@ function INT(d: number) {
  * of days between 1/1/4713 BC (Julian calendar) and dd/mm/yyyy.
  * Formula from http://www.tondering.dk/claus/calendar.html
  */
-function jdFromDate(dd: number, mm: number, yy: number) {
+function jdFromDate(dd: number, mm: number, yy: number): number {
     const a = INT((14 - mm) / 12)
     const y = yy + 4800 - a
     const m = mm + 12 * a - 3
@@ -32,7 +32,7 @@ function jdFromDate(dd: number, mm: number, yy: number) {
 }
 
 /* Convert a Julian day number to day/month/year. Parameter jd is an integer */
-function jdToDate(jd: number) {
+function jdToDate(jd: number): [number, number, number] {
     let a: number
     let b: number
     let c: number
@@ -62,7 +62,7 @@ function jdToDate(jd: number) {
  * Returns a floating number, e.g., 2415079.9758617813 for k=2 or 2414961.935157746 for k=-2
  * Algorithm from: "Astronomical Algorithms" by Jean Meeus, 1998
  */
-function NewMoon(k: number) {
+function NewMoon(k: number): number {
     let deltat: number
 
     const T = k / 1236.85 // Time in Julian centuries from 1900 January 0.5
@@ -100,7 +100,7 @@ function NewMoon(k: number) {
  * Parameter: floating number jdn, the number of days since 1/1/4713 BC noon
  * Algorithm from: "Astronomical Algorithms" by Jean Meeus, 1998
  */
-function SunLongitude(jdn: number) {
+function SunLongitude(jdn: number): number {
     const T = (jdn - 2451545.0) / 36525 // Time in Julian centuries from 2000-01-01 12:00:00 GMT
     const T2 = T * T
     const dr = Math.PI / 180 // degree to radian
@@ -121,19 +121,19 @@ function SunLongitude(jdn: number) {
  * From the day after March equinox and the 1st major term after March equinox, 0 is returned.
  * After that, return 1, 2, 3 ...
  */
-function getSunLongitude(dayNumber: number, timeZone: number) {
+function getSunLongitude(dayNumber: number, timeZone: number): number {
     return INT((SunLongitude(dayNumber - 0.5 - timeZone / 24) / Math.PI) * 6)
 }
 
 /* Compute the day of the k-th new moon in the given time zone.
  * The time zone if the time difference between local time and UTC: 7.0 for UTC+7:00
  */
-function getNewMoonDay(k: number, timeZone: number) {
+function getNewMoonDay(k: number, timeZone: number): number {
     return INT(NewMoon(k) + 0.5 + timeZone / 24)
 }
 
 /* Find the day that starts the luner month 11 of the given year for the given time zone */
-function getLunarMonth11(yy: number, timeZone: number) {
+function getLunarMonth11(yy: number, timeZone: number): number {
     //off = jdFromDate(31, 12, yy) - 2415021.076998695;
     const off = jdFromDate(31, 12, yy) - 2415021
     const k = INT(off / 29.530588853)
@@ -148,7 +148,7 @@ function getLunarMonth11(yy: number, timeZone: number) {
 }
 
 /* Find the index of the leap month after the month starting on the day a11. */
-function getLeapMonthOffset(a11: number, timeZone: number) {
+function getLeapMonthOffset(a11: number, timeZone: number): number {
     const k = INT((a11 - 2415021.076998695) / 29.530588853 + 0.5)
     let last = 0
     let i = 1 // We start with the month following lunar month 11
@@ -164,7 +164,7 @@ function getLeapMonthOffset(a11: number, timeZone: number) {
 }
 
 /* Comvert solar date dd/mm/yyyy to the corresponding lunar date */
-function convertSolar2Lunar(dd: number, mm: number, yy: number, timeZone: number) {
+function convertSolar2Lunar(dd: number, mm: number, yy: number, timeZone: number): [number, number, number, number] {
     const dayNumber = jdFromDate(dd, mm, yy)
     const k = INT((dayNumber - 2415021.076998695) / 29.530588853)
     let monthStart = getNewMoonDay(k + 1, timeZone)
@@ -219,7 +219,7 @@ function _convertLunar2Solar(
     lunarYear: number,
     lunarLeap: number,
     timeZone: number,
-) {
+): [number, number, number] {
     let a11: number
     let b11: number
 
@@ -260,7 +260,7 @@ function _convertLunar2Solar(
     return jdToDate(monthStart + lunarDay - 1)
 }
 
-export function getVnCalendar(date: Date) {
+export function getVnCalendar(date: Date): string {
     const can = ['Giáp', 'Ất', 'Bính', 'Đinh', 'Mậu', 'Kỷ', 'Canh', 'Tân', 'Nhâm', 'Quý']
     const chi = ['Tý', 'Sửu', 'Dần', 'Mão', 'Thìn', 'Tỵ', 'Ngọ', 'Mùi', 'Thân', 'Dậu', 'Tuất', 'Hợi']
 

@@ -35,7 +35,6 @@
             "tags": ["recommended"],
             "include": [
                 "eqeqeq",
-                "camelcase",
                 "explicit-function-return-type",
                 "verbatim-module-syntax",
                 "single-var-declarator",

@@ -33,7 +33,7 @@ let currentVideoLooper: VideoLooper
 
 // Update
 
-export async function addLocalBackgrounds(filelist: FileList | File[], local: Local) {
+export async function addLocalBackgrounds(filelist: FileList | File[], local: Local): Promise<void> {
     try {
         const thumbnailsContainer = document.getElementById('thumbnails-container')
         const filesData: Record<string, LocalFileData> = {}
@@ -171,7 +171,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
     }
 }
 
-async function removeLocalBackgrounds() {
+async function removeLocalBackgrounds(): Promise<void> {
     try {
         const local = await storage.local.get()
         const selectedIds = getSelection()
@@ -210,7 +210,7 @@ async function removeLocalBackgrounds() {
     }
 }
 
-async function updateFileOptions(option: LocalFileOption, value: string) {
+async function updateFileOptions(option: LocalFileOption, value: string): Promise<void> {
     const selection = getSelection()[0]
     const local = await storage.local.get('backgroundFiles')
     const file = local.backgroundFiles[selection]
@@ -288,7 +288,7 @@ async function updateFileOptions(option: LocalFileOption, value: string) {
 
 //	Settings options
 
-export function initFilesSettingsOptions(local: Local) {
+export function initFilesSettingsOptions(local: Local): void {
     if (IS_MOBILE) {
         const container = document.getElementById('thumbnails-container')
         container?.style.setProperty('--thumbnails-columns', '2')
@@ -314,7 +314,7 @@ export function initFilesSettingsOptions(local: Local) {
 
     // option functions
 
-    function fileOptionsEvent(this: HTMLInputElement) {
+    function fileOptionsEvent(this: HTMLInputElement): void {
         const { id, value, checked } = this
 
         if (id === 'i_background-size') {
@@ -340,7 +340,7 @@ export function initFilesSettingsOptions(local: Local) {
         }
     }
 
-    function renderThumbnailOnIntersection(entries: IntersectionObserverEntry[]) {
+    function renderThumbnailOnIntersection(entries: IntersectionObserverEntry[]): void {
         for (const { target, isIntersecting } of entries) {
             const isLoading = target.classList.contains('loading')
             const id = target.id ?? ''
@@ -358,19 +358,19 @@ export function initFilesSettingsOptions(local: Local) {
         }
     }
 
-    function handleGridView() {
+    function handleGridView(): void {
         const container = document.getElementById('thumbnails-container') as HTMLElement
         const currentZoom = globalThis.getComputedStyle(container).getPropertyValue('--thumbnails-columns')
         const newZoom = Math.max((Number.parseInt(currentZoom) + 1) % 6, 1)
         container.style.setProperty('--thumbnails-columns', newZoom.toString())
     }
 
-    function toggleFileOptions() {
+    function toggleFileOptions(): void {
         document.getElementById('background-file-options')?.classList.toggle('shown')
     }
 }
 
-function handleFilesSettingsOptions(local: Local) {
+function handleFilesSettingsOptions(local: Local): void {
     const backgroundFiles = local.backgroundFiles
     const thumbnailsContainer = document.getElementById('thumbnails-container')
     const thumbs = document.querySelectorAll<HTMLElement>('.thumbnail')
@@ -452,7 +452,7 @@ function handleFilesSettingsOptions(local: Local) {
     toggleFileButtons()
 }
 
-function toggleFileButtons() {
+function toggleFileButtons(): void {
     const thmbRemove = document.getElementById('b_thumbnail-remove')
     const thmbOptions = document.getElementById('b_thumbnail-options')
     const selected = document.querySelectorAll('.thumbnail.selected').length
@@ -524,7 +524,7 @@ function addThumbnailImage(id: string, local: Local, data: LocalFileData): void 
     })
 }
 
-async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEvent) {
+async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEvent): Promise<void> {
     const hasCtrl = mouseEvent.ctrlKey || mouseEvent.metaKey
     const shiftKey = mouseEvent.shiftKey
     const isLeftClick = mouseEvent.button === 0
@@ -676,7 +676,7 @@ export async function mediaFromFiles(
 
 //	Helpers
 
-function unselectAll() {
+function unselectAll(): void {
     for (const node of document.querySelectorAll('.thumbnail.selected')) {
         node?.classList?.remove('selected')
     }
@@ -748,7 +748,7 @@ async function generateImageFromVideo(file: File): Promise<Blob | null> {
     return blob
 }
 
-export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
+export async function localFilesCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean): Promise<void> {
     local = await sanitizeMetadatas(local)
 
     const ids = lastUsedBackgroundFiles(local.backgroundFiles)
@@ -780,7 +780,7 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 
 //  Storage
 
-async function saveFileToCache(id: string, filedata: LocalFileData) {
+async function saveFileToCache(id: string, filedata: LocalFileData): Promise<void> {
     const cache = await getCache('local-files')
     const { full, small } = filedata
 
@@ -812,7 +812,7 @@ export async function getFileFromCache(id: string): Promise<LocalFileData> {
     return { full, small }
 }
 
-async function removeFilesFromCache(ids: string[]) {
+async function removeFilesFromCache(ids: string[]): Promise<true> {
     const cache = await getCache('local-files')
 
     for (const id of ids) {

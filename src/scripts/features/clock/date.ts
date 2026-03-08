@@ -5,7 +5,7 @@ import type { Sync } from '../../../types/sync.ts'
 
 export type DateFormat = Sync['dateformat']
 
-export function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, timezone: string) {
+export function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, timezone: string): void {
     const datedom = wrapper.querySelector('.clock-date') as HTMLElement
     const aa = wrapper.querySelector('.clock-date-aa') as HTMLElement
     const bb = wrapper.querySelector('.clock-date-bb') as HTMLElement

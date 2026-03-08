@@ -1,4 +1,4 @@
-export function hashcode(str: string) {
+export function hashcode(str: string): string {
     // Generate a Hash from string in Javascript
     // https://stackoverflow.com/a/52171480
 

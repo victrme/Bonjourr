@@ -26,6 +26,16 @@ import type { Local } from '../../../types/local.ts'
 
 type BackgroundSize = 'full' | 'small'
 
+interface CollectionGetReturn {
+    images: () => BackgroundImage[]
+    videos: () => BackgroundVideo[]
+}
+
+interface CollectionSetReturn {
+    fromList: (list: Background[]) => Local
+    fromApi: (json: Record<string, Background[]>) => Local
+}
+
 interface BackgroundUpdate {
     freq?: string
     type?: string
@@ -305,7 +315,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
     }
 }
 
-export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<Backgrounds>) {
+export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<Backgrounds>): Promise<void> {
     const data = await storage.sync.get('backgrounds')
 
     if (blur !== undefined) {
@@ -324,13 +334,13 @@ export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<B
     storage.sync.set({ backgrounds: data.backgrounds })
 }
 
-async function solidUpdate(value: string) {
+async function solidUpdate(value: string): Promise<void> {
     const data = await storage.sync.get('backgrounds')
     data.backgrounds.color = value
     storage.sync.set({ backgrounds: data.backgrounds })
 }
 
-function previewFadein(ms: number) {
+function previewFadein(ms: number): void {
     const wrapper = document.getElementById('background-wrapper')
     const setOpacity = (val: number) => wrapper?.setAttribute('style', `opacity: ${val}`)
 
@@ -341,7 +351,7 @@ function previewFadein(ms: number) {
 
 //	Cache & network
 
-async function backgroundCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
+async function backgroundCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean): Promise<void> {
     if (backgrounds.type === 'color') {
         return
     }
@@ -547,7 +557,7 @@ function getCollectionNameFromMedia(media: Background, local: Local): string {
     return collMap.get(media.urls.full)
 }
 
-function getCollection(backgrounds: Backgrounds, local: Local) {
+function getCollection(backgrounds: Backgrounds, local: Local): CollectionGetReturn {
     switch (backgrounds.type) {
         case 'files':
         case 'urls':
@@ -565,14 +575,14 @@ function getCollection(backgrounds: Backgrounds, local: Local) {
 
     // Check collection format
 
-    const images = () => {
+    const images = (): BackgroundImage[] => {
         if (areOnlyImages(collection)) {
             return collection
         }
         throw new Error('Wrong background format')
     }
 
-    const videos = () => {
+    const videos = (): BackgroundVideo[] => {
         if (areOnlyVideos(collection)) {
             return collection
         }
@@ -582,7 +592,7 @@ function getCollection(backgrounds: Backgrounds, local: Local) {
     return { images, videos }
 }
 
-function setCollection(backgrounds: Backgrounds, local: Local) {
+function setCollection(backgrounds: Backgrounds, local: Local): CollectionSetReturn {
     switch (backgrounds.type) {
         case 'files':
         case 'urls':
@@ -717,7 +727,7 @@ function createVideoItem(src: string, media: BackgroundVideo, duration: number):
     return container
 }
 
-function preloadBackground(media: Background | undefined, res?: BackgroundSize) {
+function preloadBackground(media: Background | undefined, res?: BackgroundSize): void | Promise<unknown> {
     if (!media) {
         return
     }
@@ -764,7 +774,7 @@ export function removeBackgrounds(): void {
     setTimeout(() => mediaWrapper.firstChild?.remove(), 2000)
 }
 
-function applyFilters({ blur, bright, fadein }: Partial<Backgrounds>) {
+function applyFilters({ blur, bright, fadein }: Partial<Backgrounds>): void {
     if (blur !== undefined) {
         document.documentElement.style.setProperty('--blur', `${blur}px`)
         document.body.classList.toggle('blurred', blur >= 15)
@@ -801,14 +811,14 @@ function applyTexture(texture: Backgrounds['texture']): void {
 
 // 	Settings options
 
-export function initBackgroundOptions(sync: Sync, local: Local) {
+export function initBackgroundOptions(sync: Sync, local: Local): void {
     initFilesSettingsOptions(local)
     initUrlsEditor(sync.backgrounds, local)
     createProviderSelect(sync.backgrounds)
     handleBackgroundOptions(sync.backgrounds)
 }
 
-function handleBackgroundOptions(backgrounds: Backgrounds) {
+function handleBackgroundOptions(backgrounds: Backgrounds): void {
     const type = backgrounds.type
     const withVideos = type === 'videos' || type === 'files' || type === 'urls'
 
@@ -825,7 +835,7 @@ function handleBackgroundOptions(backgrounds: Backgrounds) {
     handleBackgroundActions(backgrounds)
 }
 
-function handleTextureOptions(backgrounds: Backgrounds) {
+function handleTextureOptions(backgrounds: Backgrounds): void {
     const hasTexture = backgrounds.texture.type !== 'none'
 
     document.getElementById('background-texture-options')?.classList.toggle('shown', hasTexture)
@@ -859,7 +869,7 @@ function handleTextureOptions(backgrounds: Backgrounds) {
     }
 }
 
-function handleProviderOptions(backgrounds: Backgrounds) {
+function handleProviderOptions(backgrounds: Backgrounds): void {
     switch (backgrounds.type) {
         case 'files':
         case 'urls':
@@ -891,7 +901,7 @@ function handleProviderOptions(backgrounds: Backgrounds) {
     }
 }
 
-function createProviderSelect(backgrounds: Backgrounds) {
+function createProviderSelect(backgrounds: Backgrounds): void {
     const backgroundProvider = document.querySelector<HTMLSelectElement>('#i_background-provider')
     const providersType = backgrounds.type === 'images' ? 'IMAGES' : 'VIDEOS'
     const providersList = PROVIDERS[providersType]
@@ -929,7 +939,7 @@ function createProviderSelect(backgrounds: Backgrounds) {
     }
 }
 
-async function blurResolutionControl(sync: Sync, local: Local) {
+async function blurResolutionControl(sync: Sync, local: Local): Promise<void> {
     if (sync.backgrounds.type === 'files') {
         const ids = lastUsedBackgroundFiles(local.backgroundFiles)
         const image = await mediaFromFiles(ids[0], local)
@@ -949,7 +959,7 @@ async function blurResolutionControl(sync: Sync, local: Local) {
 
 //  Helpers
 
-async function getCurrentBackgrounds(sync: Sync, local: Local) {
+async function getCurrentBackgrounds(sync: Sync, local: Local): Promise<[Background, Background] | []> {
     if (sync.backgrounds.type === 'files') {
         const ids = lastUsedBackgroundFiles(local.backgroundFiles)
         const current = await mediaFromFiles(ids[0], local)
@@ -984,7 +994,7 @@ function detectBackgroundSize(): 'full' | 'small' {
     return document.body.className.includes('blurred') ? 'small' : 'full'
 }
 
-function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement) {
+function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement): void {
     let color = image.color
 
     if (BROWSER === 'safari' && !color) {
@@ -1001,7 +1011,7 @@ function applySafariThemeColor(image: BackgroundImage, img: HTMLImageElement) {
     }
 }
 
-function pauseVideoOnVisibilityChange() {
+function pauseVideoOnVisibilityChange(): void {
     document.querySelectorAll('video')?.forEach((video) => {
         if (document.hidden) {
             video.pause()
@@ -1011,7 +1021,7 @@ function pauseVideoOnVisibilityChange() {
     })
 }
 
-function getAverageColor(img: HTMLImageElement) {
+function getAverageColor(img: HTMLImageElement): undefined | string {
     try {
         // Create a canvas element
         const canvas = document.createElement('canvas')
@@ -1061,8 +1071,8 @@ function getAverageColor(img: HTMLImageElement) {
     }
 }
 
-export function toggleMuteStatus(muted = true) {
-    document.querySelectorAll<HTMLVideoElement>('#background-media video').forEach(function (video) {
+export function toggleMuteStatus(muted = true): void {
+    document.querySelectorAll<HTMLVideoElement>('#background-media video').forEach((video) => {
         video.dispatchEvent(
             new CustomEvent('muteStatusChange', {
                 detail: {

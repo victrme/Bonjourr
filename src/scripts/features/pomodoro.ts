@@ -90,7 +90,7 @@ function initPomodoro(init: Pomodoro): void {
 // events
 function handleUserInput(): void {
     // different modes
-    radioButtons.forEach(function (btn) {
+    radioButtons.forEach((btn) => {
         btn.addEventListener('change', (e) => {
             const newMode = (e.target as HTMLInputElement).value as PomodoroMode
 
@@ -341,7 +341,7 @@ function resetTimer(): void {
     switchMode(currentPomodoroData.mode as PomodoroMode)
 }
 
-function calculateSecondsLeft(end: number) {
+function calculateSecondsLeft(end: number): number {
     const secondsLeft = Math.round((end - Date.now()) / 1000)
 
     // time's up!
@@ -468,7 +468,7 @@ export function togglePomodoroFocus(focus: boolean): void {
     }
 }
 
-function ringTheAlarm() {
+function ringTheAlarm(): void {
     // only triggers on the last active tab
     const lastTab = localStorage.getItem('lastActiveTab')
     const willRingAndSave = lastTab === TAB_ID
@@ -494,7 +494,7 @@ function ringTheAlarm() {
     }
 }
 
-function playSound() {
+function playSound(): void {
     const filename = currentPomodoroData.alarm || 'marimba'
     const volume = currentPomodoroData.volume ?? .7
 
@@ -503,7 +503,7 @@ function playSound() {
     alarmAudio.play()
 }
 
-function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
+function setPomodoroInfo(history: PomodoroHistoryEntry[]): void {
     const now = new Date()
 
     let pomsToday = 0
@@ -534,7 +534,7 @@ function setPomodoroInfo(history: PomodoroHistoryEntry[]) {
     ;(document.getElementById('poms-month') as HTMLSpanElement).textContent = pomsMonth.toString()
 }
 
-async function updatePomodoro(update: PomodoroUpdate) {
+async function updatePomodoro(update: PomodoroUpdate): Promise<void> {
     const data = await storage.sync.get(['pomodoro'])
 
     if (update.listen) {

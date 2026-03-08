@@ -11,7 +11,7 @@ import type { LinkGroups, Sync } from '../../../types/sync.ts'
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 
-export function initGroups(data: Sync, init?: true) {
+export function initGroups(data: Sync, init?: true): void {
     if (!init) {
         for (const node of document.querySelectorAll('#link-mini button') ?? []) {
             node.remove()
@@ -27,7 +27,7 @@ export function initGroups(data: Sync, init?: true) {
     }, { passive: false })
 }
 
-function createGroups(linkgroups: LinkGroups) {
+function createGroups(linkgroups: LinkGroups): void {
     const { groups, pinned, synced, selected } = linkgroups
 
     for (const group of [...groups, '+']) {
@@ -69,7 +69,7 @@ function createGroups(linkgroups: LinkGroups) {
     domlinkblocks?.classList.toggle('with-groups', linkgroups.on)
 }
 
-function changeGroup(event: Event) {
+function changeGroup(event: Event): void {
     let button: HTMLButtonElement
 
     if (event.type === 'wheel') {
@@ -100,7 +100,7 @@ function changeGroup(event: Event) {
     transition.finally(showNewGroup)
     transition.transition(100)
 
-    async function recreateLinksFromNewGroup() {
+    async function recreateLinksFromNewGroup(): Promise<void> {
         const buttons = document.querySelectorAll<HTMLElement>('#link-mini button')
         const data = await storage.sync.get()
         const group = button.dataset.group ?? data.linkgroups.groups[0]
@@ -114,12 +114,12 @@ function changeGroup(event: Event) {
         initblocks(data)
     }
 
-    function hideCurrentGroup() {
+    function hideCurrentGroup(): void {
         domlinkblocks.classList.remove('in-folder')
         domlinkblocks.classList.add('hiding')
     }
 
-    function showNewGroup() {
+    function showNewGroup(): void {
         domlinkblocks.classList.remove('hiding')
     }
 }
@@ -206,7 +206,7 @@ export function deleteGroup(group: string, data: Sync): Sync {
     return data
 }
 
-export function moveGroups(mini: string[], data: Sync) {
+export function moveGroups(mini: string[], data: Sync): Sync {
     const userMini = mini.filter((name) => name !== '+')
 
     data.linkgroups.groups = data.linkgroups.pinned.concat(userMini)
@@ -215,7 +215,7 @@ export function moveGroups(mini: string[], data: Sync) {
     return data
 }
 
-export async function togglePinGroup(group: string, action: 'pin' | 'unpin') {
+export async function togglePinGroup(group: string, action: 'pin' | 'unpin'): Promise<void> {
     const data = await storage.sync.get()
     const { groups, pinned } = data.linkgroups
 

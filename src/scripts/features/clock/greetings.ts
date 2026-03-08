@@ -11,7 +11,7 @@ export interface Greetings {
 
 const oneInFive = Math.random() > 0.8 ? 1 : 0
 
-export function displayGreetings({ mode, name, custom }: Greetings) {
+export function displayGreetings({ mode, name, custom }: Greetings): void {
     const date = userDate()
     const domgreetings = document.getElementById('greetings') as HTMLTitleElement
     const domgreeting = document.getElementById('greeting') as HTMLSpanElement

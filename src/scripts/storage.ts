@@ -12,6 +12,12 @@ interface AllStorage {
     local?: Local
 }
 
+interface StorageTypeReturn {
+    init: () => StorageType
+    get: () => StorageType
+    change: (type: 'sync' | 'local', data: Sync) => void
+}
+
 interface Storage {
     sync: {
         get: (key?: string | string[]) => Promise<Sync>
@@ -54,14 +60,14 @@ export const storage: Storage = {
 
 //	Storage type
 
-function storageTypeFn() {
+function storageTypeFn(): StorageTypeReturn {
     let type: StorageType = 'webext-sync'
 
-    function get() {
+    function get(): StorageType {
         return type
     }
 
-    function init() {
+    function init(): StorageType {
         if (globalThis.chrome?.storage === undefined) {
             type = 'localstorage'
             return 'localstorage'

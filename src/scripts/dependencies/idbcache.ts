@@ -35,7 +35,7 @@ export class IDBCache {
         })
     }
 
-    async put(request: Request, response: Response) {
+    async put(request: Request, response: Response): Promise<void> {
         const blob = await response.blob()
         await this.withStore('readwrite', (s) => s.put(blob, request.url))
     }
@@ -46,7 +46,7 @@ export class IDBCache {
         return blob ? new Response(blob) : undefined
     }
 
-    async delete(request: Request | string) {
+    async delete(request: Request | string): Promise<void> {
         const key = typeof request === 'string' ? request : request.url
         await this.withStore('readwrite', (s) => s.delete(key))
     }

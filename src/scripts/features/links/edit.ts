@@ -52,7 +52,7 @@ export async function populateDialogWithEditLink(
     event: Event,
     domdialog: HTMLDialogElement,
     newLinkFromGlobal?: boolean,
-) {
+): Promise<void> {
     domeditlink = domdialog
 
     const path = getComposedPath(event.target)
@@ -106,7 +106,7 @@ export async function populateDialogWithEditLink(
     event.preventDefault()
 
     // removes buttons from the global context menu
-    domeditlink.querySelectorAll('#contextActions button, #background-actions').forEach(function (contextButton) {
+    domeditlink.querySelectorAll('#contextActions button, #background-actions').forEach(function (contextButton): void {
         contextButton.classList.remove('on')
     })
 
@@ -291,13 +291,13 @@ queueMicrotask(() => {
  * HTML has peculiar (and limiting) ways of figuring out which button to submit to on enter
  * this is needed to be sure hitting enter triggers the same reaction as clicking the right button
  */
-function setSubmitOnEnter(theButton: string) {
+function setSubmitOnEnter(theButton: string): void {
     if (!buttonToSubmit) {
         buttonToSubmit = document.getElementById(theButton ?? 'edit-apply') as HTMLButtonElement
 
-        document.getElementById('editlink-form')?.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault() // prevent default submit
+        document.getElementById('editlink-form')?.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault() // prevent default submit
                 buttonToSubmit.click() // triggers demanded button
             }
         })
@@ -306,7 +306,7 @@ function setSubmitOnEnter(theButton: string) {
     }
 }
 
-function toggleIconType(iconType: Event | string) {
+function toggleIconType(iconType: Event | string): void {
     if (iconType instanceof Event) { // figures out the needed icon type if it's from event change
         const target = iconType.target as HTMLInputElement
         iconType = target.value
@@ -335,7 +335,7 @@ function toggleIconType(iconType: Event | string) {
     document.getElementById('edit-icon-file')?.classList.toggle('on', iconType === 'file')
 }
 
-function submitChanges(event: SubmitEvent) {
+function submitChanges(event: SubmitEvent): void {
     const change = event.submitter?.id
     const { container, target, group, folder, selected, selectall } = editStates
 
@@ -415,7 +415,7 @@ function submitChanges(event: SubmitEvent) {
     setTimeout(closeContextMenu)
 }
 
-function applyLinkChanges(_origin: 'inputs' | 'button') {
+function applyLinkChanges(_origin: 'inputs' | 'button'): void {
     const id = editStates.selected[0]
     const li = document.querySelector<HTMLLIElement>(`#${id}`)
     const _inputs = document.querySelectorAll<HTMLInputElement>('#editlink input')

@@ -1,4 +1,4 @@
-import { TAB_ID, tabs_bc } from '../defaults.ts'
+import { TAB_ID, tabsBc } from '../defaults.ts'
 
 /**
  * To keep track of which Bonjourr tab the user interacted with last
@@ -22,10 +22,10 @@ export function tabsTracking(): void {
 
     // sends event to other tabs when tab gets closed
     globalThis.window.addEventListener('beforeunload', () => {
-        tabs_bc.postMessage('tabClosed')
+        tabsBc.postMessage('tabClosed')
     })
 
-    tabs_bc.onmessage = (event) => {
+    tabsBc.onmessage = (event) => {
         // when receiving tabClosed event, sets this tab as the last active one
         if (event.data === 'tabClosed') {
             updateLastActiveTab()

@@ -48,7 +48,7 @@ if (env === 'prod' && platform === undefined) {
 
 // Build or Watch
 
-function builder(platform: Platform, env: Env) {
+function builder(platform: Platform, env: Env): void {
     console.time(`${platform} built in`)
 
     addDirectories(platform)
@@ -62,7 +62,7 @@ function builder(platform: Platform, env: Env) {
     console.timeEnd(`${platform} built in`)
 }
 
-function watcher(platform: Platform) {
+function watcher(platform: Platform): void {
     watchTasks('_locales', (_filename) => {
         locales(platform)
     })
@@ -86,7 +86,7 @@ function watcher(platform: Platform) {
     })
 }
 
-function addDirectories(platform: Platform) {
+function addDirectories(platform: Platform): void {
     try {
         if (existsSync(`release/${platform}/src`)) {
             return
@@ -103,7 +103,7 @@ function addDirectories(platform: Platform) {
 
 // Tasks
 
-function html(platform: Platform) {
+function html(platform: Platform): void {
     const indexdata = Deno.readTextFileSync('src/index.html')
     const settingsdata = Deno.readTextFileSync('src/settings.html')
     const helpModeData = Deno.readTextFileSync('src/help-mode.html')
@@ -134,7 +134,7 @@ function html(platform: Platform) {
     Deno.writeTextFileSync(`release/${platform}/index.html`, html)
 }
 
-function styles(platform: Platform, env: Env) {
+function styles(platform: Platform, env: Env): void {
     try {
         buildSync({
             entryPoints: ['src/styles/style.css'],
@@ -157,7 +157,7 @@ function styles(platform: Platform, env: Env) {
     }
 }
 
-function scripts(platform: Platform, env: Env) {
+function scripts(platform: Platform, env: Env): void {
     try {
         buildSync({
             entryPoints: ['src/scripts/index.ts'],
@@ -195,7 +195,7 @@ function scripts(platform: Platform, env: Env) {
     }
 }
 
-function assets(platform: Platform) {
+function assets(platform: Platform): void {
     const source = `src/assets`
     const target = `release/${platform}/src/assets`
 
@@ -225,7 +225,7 @@ function assets(platform: Platform) {
     copyDir(`${source}/sounds`, `${target}/sounds`)
 }
 
-function manifests(platform: Platform) {
+function manifests(platform: Platform): void {
     if (platform === 'online') {
         Deno.copyFileSync(
             'src/manifests/manifest.webmanifest',
@@ -236,7 +236,7 @@ function manifests(platform: Platform) {
     }
 }
 
-function locales(platform: Platform) {
+function locales(platform: Platform): void {
     const langs = Array.from(Deno.readDirSync('_locales'))
         .filter((entry) => entry.isDirectory && entry.name !== '.DS_Store')
         .map((entry) => entry.name)
@@ -256,7 +256,7 @@ function locales(platform: Platform) {
 
 // Deno stuff
 
-async function watchTasks(path: string, callback: (filename: string) => void) {
+async function watchTasks(path: string, callback: (filename: string) => void): Promise<void> {
     const watcher = Deno.watchFs(path)
     let debounce = 0
 
@@ -277,7 +277,7 @@ async function watchTasks(path: string, callback: (filename: string) => void) {
     }
 }
 
-function copyDir(source: string, destination: string) {
+function copyDir(source: string, destination: string): void {
     ensureDirSync(destination)
 
     for (const dirEntry of Deno.readDirSync(source)) {

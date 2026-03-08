@@ -2,29 +2,7 @@ import type { AnalogStyle, Sync } from '../../../types/sync.ts'
 
 type DateFormat = Sync['dateformat']
 
-let numberWidths = [1]
-
-export function setSecondsWidthInCh() {
-    const span = document.querySelector<HTMLElement>('.digital-number-width')
-
-    if (!span) {
-        return
-    }
-
-    const zero = span.offsetWidth
-    numberWidths = [1]
-
-    for (let i = 1; i < 6; i++) {
-        span.textContent = i.toString()
-        numberWidths.push(Math.round((span.offsetWidth / zero) * 10) / 10)
-    }
-}
-
-export function getSecondsWidthInCh(second: number): number {
-    return Math.min(...numberWidths) + numberWidths[second]
-}
-
-export function fixunits(val: number) {
+export function fixunits(val: number): string {
     return (val < 10 ? '0' : '') + val.toString()
 }
 

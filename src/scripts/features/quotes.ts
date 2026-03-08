@@ -177,7 +177,7 @@ function handleUserListChange(input: string): string | undefined {
     return input
 }
 
-function refreshQuotes(sync: Sync, quoteslist: Local['quotesCache'] = []) {
+function refreshQuotes(sync: Sync, quoteslist: Local['quotesCache'] = []): void {
     const { lang, quotes } = sync
     const { type, url, userlist } = quotes
 
@@ -269,11 +269,11 @@ function controlCacheList(list: Quote[], lang: string, type: Quotes['type'], url
 
 // ─── DOM
 
-function toggleAuthorAlwaysOn(state: boolean) {
+function toggleAuthorAlwaysOn(state: boolean): void {
     document.getElementById('author')?.classList.toggle('always-on', state)
 }
 
-function insertToDom(quote?: Quote) {
+function insertToDom(quote?: Quote): void {
     const quoteDom = document.getElementById('quote')
     const authorDom = document.getElementById('author')
 
@@ -324,7 +324,7 @@ function isQuotesType(type = ''): type is Quotes['type'] {
 
 const urlRegEx = /^https?:\/\//i
 
-function canStoreUrl(url: string | undefined) {
+function canStoreUrl(url: string | undefined): boolean {
     if (url === undefined) {
         return false
     }

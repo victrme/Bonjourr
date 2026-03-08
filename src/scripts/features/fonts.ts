@@ -297,7 +297,7 @@ function setWeightSettings(weights: string[]): void {
 //	Helpers
 //
 
-export async function fontIsAvailableInSubset(lang?: string, family?: string) {
+export async function fontIsAvailableInSubset(lang?: string, family?: string): Promise<boolean | undefined> {
     const fontlist = (await (await apiFetch('/fonts'))?.json()) as Fontsource[]
     const font = fontlist?.find((item) => item.family === family)
     const subset = getRequiredSubset(lang)

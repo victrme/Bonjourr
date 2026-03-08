@@ -3,9 +3,9 @@ import { stringMaxSize } from '../../shared/generic.ts'
 import { needsChange } from '../../shared/time.ts'
 import { storage } from '../../storage.ts'
 
+import type { BackgroundUrl, BackgroundUrlState, Local } from '../../../types/local.ts'
 import type { Background, BackgroundImage } from '../../../types/shared.ts'
 import type { EditorOptions, PrismEditor } from 'prism-code-editor'
-import type { BackgroundUrl, BackgroundUrlState, Local } from '../../../types/local.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
 
 type UrlInfos = {
@@ -18,7 +18,7 @@ type UrlInfos = {
 let globalUrlValue = ''
 let backgroundUrlsEditor: PrismEditor
 
-export function urlsCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean) {
+export function urlsCacheControl(backgrounds: Backgrounds, local: Local, needNew?: boolean): void {
     const urls = lastUsedValidUrls(local.backgroundUrls)
 
     if (urls.length === 0) {
@@ -109,7 +109,7 @@ export function getUrlsAsCollection(local: Local): [string[], BackgroundImage[]]
 
 // Editor
 
-export async function initUrlsEditor(backgrounds: Backgrounds, local: Local) {
+export async function initUrlsEditor(backgrounds: Backgrounds, local: Local): Promise<void> {
     globalUrlValue = backgrounds.urls
 
     const { createBackgroundUrlsEditor } = await import('../csseditor.ts')
@@ -144,7 +144,7 @@ export async function initUrlsEditor(backgrounds: Backgrounds, local: Local) {
     }
 }
 
-function highlightUrlsEditorLine(url: string, state: BackgroundUrlState) {
+function highlightUrlsEditorLine(url: string, state: BackgroundUrlState): void {
     const lines = backgroundUrlsEditor.wrapper.querySelectorAll('.pce-line')
     const line = lines.values().find((l) => l.textContent === `${url}\n`)
     const noContent = !line?.textContent?.replace('\n', '')
@@ -156,7 +156,7 @@ function highlightUrlsEditorLine(url: string, state: BackgroundUrlState) {
     line?.classList.toggle('warn', lineState === 'CANT_REACH' || lineState === 'NOT_URL')
 }
 
-export function toggleUrlsButton(storage: string, value: string) {
+export function toggleUrlsButton(storage: string, value: string): void {
     const button = document.querySelector<HTMLButtonElement>('#b_background-urls')
 
     if (storage === value) {
@@ -166,7 +166,7 @@ export function toggleUrlsButton(storage: string, value: string) {
     }
 }
 
-export function applyUrls(backgrounds: Backgrounds) {
+export function applyUrls(backgrounds: Backgrounds): void {
     const editorValue = backgroundUrlsEditor.value
     const backgroundUrls: Local['backgroundUrls'] = {}
 
@@ -188,7 +188,7 @@ export function applyUrls(backgrounds: Backgrounds) {
     checkUrlInfos(backgroundUrls)
 }
 
-async function checkUrlInfos(backgroundUrls: Local['backgroundUrls']) {
+async function checkUrlInfos(backgroundUrls: Local['backgroundUrls']): Promise<void> {
     const entries = Object.entries(backgroundUrls)
 
     for (const [url] of entries) {

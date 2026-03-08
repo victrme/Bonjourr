@@ -1,6 +1,6 @@
 import { getReadableTextColor, hexToHSL, hexToRGB } from './generic.ts'
 
-export function webkitRangeTrackColor(input: HTMLInputElement) {
+export function webkitRangeTrackColor(input: HTMLInputElement): void {
     const { min, max, value } = input
 
     input.style.setProperty('--value', value)
@@ -8,7 +8,7 @@ export function webkitRangeTrackColor(input: HTMLInputElement) {
     input.style.setProperty('--max', max || '100')
 }
 
-export function toggleDisabled(element: Element | null, force?: boolean) {
+export function toggleDisabled(element: Element | null, force?: boolean): void {
     if (element) {
         const toggle = force !== undefined ? force : typeof element.getAttribute('disabled') === 'string'
 
@@ -58,7 +58,7 @@ export function getComposedPath(target: EventTarget | null): HTMLElement[] {
     return path
 }
 
-export function turnRefreshButton(event: Event, canTurn: boolean) {
+export function turnRefreshButton(event: Event, canTurn: boolean): void {
     let target = event.target as Element
 
     if (target.tagName === 'path' && target.parentElement) target = target.parentElement
@@ -73,7 +73,7 @@ export function turnRefreshButton(event: Event, canTurn: boolean) {
     )
 }
 
-export function fadeOut() {
+export function fadeOut(): void {
     const dominterface = document.getElementById('interface') as HTMLElement
     dominterface.click()
     dominterface.style.transition = 'opacity .4s'
@@ -110,7 +110,7 @@ export function hexColorFromSplitRange(id: string): string {
     return color + alpha
 }
 
-export function colorInput(id: string, color?: string) {
+export function colorInput(id: string, color?: string): void {
     const wrapper = document.getElementById(id)
     const button = wrapper?.querySelector<HTMLInputElement>('button')
     const input = wrapper?.querySelector<HTMLInputElement>('input')

@@ -1,6 +1,8 @@
 import type { Sync } from '../../types/sync.ts'
 
-const features: ('clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro')[] = ['clock', 'links']
+type InterfaceWidgetName = 'clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro'
+
+const features: InterfaceWidgetName[] = ['clock', 'links']
 let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
@@ -10,7 +12,7 @@ export function onInterfaceDisplay(callback: () => undefined): void {
     }
 }
 
-export function displayInterface(ready?: 'clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro', data?: Sync) {
+export function displayInterface(ready?: InterfaceWidgetName, data?: Sync): void {
     if (data) {
         if (data?.font?.family) {
             features.push('fonts')

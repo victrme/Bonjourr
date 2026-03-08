@@ -419,27 +419,27 @@ function initOptionsEvents(): void {
         showall(target.checked, true)
     })
 
-    paramId('i_lang').addEventListener('change', function () {
+    paramId('i_lang').addEventListener('change', function (): void {
         switchLangs(this.value as Langs)
     })
 
-    paramId('i_favicon').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_favicon').addEventListener('input', function (this: HTMLInputElement): void {
         favicon(this.value, true)
     })
 
-    paramId('i_favicon').addEventListener('change', function () {
+    paramId('i_favicon').addEventListener('change', function (): void {
         this.blur()
     })
 
-    paramId('i_tabtitle').addEventListener('input', function () {
+    paramId('i_tabtitle').addEventListener('input', function (): void {
         tabTitle(this.value, true)
     })
 
-    paramId('i_tabtitle').addEventListener('change', function () {
+    paramId('i_tabtitle').addEventListener('change', function (): void {
         this.blur()
     })
 
-    paramId('i_dark').addEventListener('change', function () {
+    paramId('i_dark').addEventListener('change', function (): void {
         darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
     })
 
@@ -453,7 +453,7 @@ function initOptionsEvents(): void {
         moveElements(undefined, { widget: ['quicklinks', target.checked] })
     })
 
-    paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent) {
+    paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent): void {
         event.preventDefault()
 
         quickLinks(undefined, {
@@ -478,7 +478,7 @@ function initOptionsEvents(): void {
         quickLinks(undefined, { newtab: target.checked })
     })
 
-    paramId('i_linkstyle').addEventListener('change', function (this) {
+    paramId('i_linkstyle').addEventListener('change', function (this): void {
         quickLinks(undefined, { styles: { style: this.value } })
     })
 
@@ -494,11 +494,11 @@ function initOptionsEvents(): void {
         })
     })
 
-    paramId('i_row').addEventListener('input', function (this) {
+    paramId('i_row').addEventListener('input', function (this): void {
         quickLinks(undefined, { row: this.value })
     })
 
-    paramId('i_icon_radius').addEventListener('input', function (this) {
+    paramId('i_icon_radius').addEventListener('input', function (this): void {
         quickLinks(undefined, { iconradius: this.value })
     })
 
@@ -509,33 +509,33 @@ function initOptionsEvents(): void {
 
     // Backgrounds
 
-    paramId('i_type').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_type').addEventListener('change', function (this: HTMLInputElement): void {
         backgroundUpdate({ type: this.value })
     })
 
-    paramId('b_solid-background').addEventListener('click', function () {
+    paramId('b_solid-background').addEventListener('click', function (): void {
         paramId('i_solid-background').click()
     })
 
-    paramId('i_solid-background').addEventListener('input', function () {
+    paramId('i_solid-background').addEventListener('input', function (): void {
         backgroundUpdate({ color: this.value })
     })
 
-    paramId('i_background-provider').addEventListener('input', function () {
+    paramId('i_background-provider').addEventListener('input', function (): void {
         backgroundUpdate({ provider: this.value })
     })
 
-    paramId('f_background-user-coll').addEventListener('submit', function (this, event: SubmitEvent) {
+    paramId('f_background-user-coll').addEventListener('submit', function (this, event: SubmitEvent): void {
         backgroundUpdate({ query: event })
         event.preventDefault()
     })
 
-    paramId('f_background-user-search').addEventListener('submit', function (this, event: SubmitEvent) {
+    paramId('f_background-user-search').addEventListener('submit', function (this, event: SubmitEvent): void {
         backgroundUpdate({ query: event })
         event.preventDefault()
     })
 
-    paramId('i_freq').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_freq').addEventListener('change', function (this: HTMLInputElement): void {
         backgroundUpdate({ freq: this.value })
     })
 
@@ -543,7 +543,7 @@ function initOptionsEvents(): void {
         backgroundUpdate({ refresh: event })
     })
 
-    paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_background-upload').addEventListener('change', function (this: HTMLInputElement): void {
         backgroundUpdate({ files: this.files })
     })
 
@@ -558,39 +558,39 @@ function initOptionsEvents(): void {
 
     // Background filters
 
-    paramId('i_texture').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_texture').addEventListener('change', function (this: HTMLInputElement): void {
         backgroundUpdate({ texture: this.value })
     })
 
-    paramId('b_texture-color').addEventListener('click', function () {
+    paramId('b_texture-color').addEventListener('click', function (): void {
         paramId('i_texture-color').click()
     })
 
-    paramId('i_texture-color').addEventListener('input', function () {
+    paramId('i_texture-color').addEventListener('input', function (): void {
         backgroundUpdate({ texturecolor: this.value })
     })
 
-    paramId('i_texture-size').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_texture-size').addEventListener('input', function (this: HTMLInputElement): void {
         backgroundUpdate({ texturesize: this.value })
     })
 
-    paramId('i_texture-opacity').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_texture-opacity').addEventListener('input', function (this: HTMLInputElement): void {
         backgroundUpdate({ textureopacity: this.value })
     })
 
-    paramId('i_blur').addEventListener('pointerdown', function (this: HTMLInputElement) {
+    paramId('i_blur').addEventListener('pointerdown', function (this: HTMLInputElement): void {
         backgroundUpdate({ blurenter: true })
     })
 
-    paramId('i_blur').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_blur').addEventListener('input', function (this: HTMLInputElement): void {
         backgroundUpdate({ blur: this.value })
     })
 
-    paramId('i_bright').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_bright').addEventListener('input', function (this: HTMLInputElement): void {
         backgroundUpdate({ bright: this.value })
     })
 
-    paramId('i_fadein').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_fadein').addEventListener('input', function (this: HTMLInputElement): void {
         backgroundUpdate({ fadein: this.value })
     })
 
@@ -613,19 +613,19 @@ function initOptionsEvents(): void {
         clock(undefined, { worldclocks: target.checked })
     })
 
-    paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement): void {
         clock(undefined, { face: this.value })
     })
 
-    paramId('i_clockhands').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_clockhands').addEventListener('change', function (this: HTMLInputElement): void {
         clock(undefined, { hands: this.value })
     })
 
-    paramId('i_analog-border-opacity').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_analog-border-opacity').addEventListener('input', function (this: HTMLInputElement): void {
         clock(undefined, { border: 'opacity' })
     })
 
-    paramId('i_analog-background-opacity').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_analog-background-opacity').addEventListener('input', function (this: HTMLInputElement): void {
         clock(undefined, { background: 'opacity' })
     })
 
@@ -637,11 +637,11 @@ function initOptionsEvents(): void {
         clock(undefined, { background: 'shade' })
     })
 
-    paramId('i_clockshape').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_clockshape').addEventListener('change', function (this: HTMLInputElement): void {
         clock(undefined, { shape: this.value })
     })
 
-    paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_clocksize').addEventListener('input', function (this: HTMLInputElement): void {
         clock(undefined, { size: Number.parseFloat(this.value) })
     })
 
@@ -659,19 +659,19 @@ function initOptionsEvents(): void {
         paramId('ampm_position')?.classList.toggle('shown', target.checked)
     })
 
-    paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement): void {
         clock(undefined, { ampmposition: this.value })
     })
 
-    paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_timezone').addEventListener('change', function (this: HTMLInputElement): void {
         clock(undefined, { timezone: this.value })
     })
 
-    paramId('i_dateformat').addEventListener('change', function (this) {
+    paramId('i_dateformat').addEventListener('change', function (this): void {
         clock(undefined, { dateformat: this.value })
     })
 
-    paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement): void {
         hideElements({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
     })
 
@@ -681,41 +681,41 @@ function initOptionsEvents(): void {
         moveElements(undefined, { widget: ['main', target.checked] })
     })
 
-    paramId('i_geol').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_geol').addEventListener('change', function (this: HTMLInputElement): void {
         weather(undefined, { geol: this?.value })
     })
 
-    paramId('i_city').addEventListener('input', function (this: HTMLInputElement, event: Event) {
+    paramId('i_city').addEventListener('input', function (this: HTMLInputElement, event: Event): void {
         weather(undefined, { suggestions: event })
     })
 
-    paramId('f_location').addEventListener('submit', function (this, event: SubmitEvent) {
+    paramId('f_location').addEventListener('submit', function (this, event: SubmitEvent): void {
         weather(undefined, { city: true })
         event.preventDefault()
     })
 
-    paramId('i_units').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_units').addEventListener('change', function (this: HTMLInputElement): void {
         weather(undefined, { units: this.value })
     })
 
-    paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_forecast').addEventListener('change', function (this: HTMLInputElement): void {
         weather(undefined, { forecast: this.value })
     })
 
-    paramId('i_temp').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_temp').addEventListener('change', function (this: HTMLInputElement): void {
         weather(undefined, { temp: this.value })
     })
 
-    paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_moreinfo').addEventListener('change', function (this: HTMLInputElement): void {
         weather(undefined, { moreinfo: this.value })
     })
 
-    paramId('i_provider').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_provider').addEventListener('change', function (this: HTMLInputElement): void {
         weather(undefined, { provider: this.value })
         this.blur()
     })
 
-    paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_weatherhide').addEventListener('change', function (this: HTMLInputElement): void {
         const weatherdesc = this.value === 'disabled' || this.value === 'desc'
         const weathericon = this.value === 'disabled' || this.value === 'icon'
         hideElements({ weatherdesc, weathericon }, { isEvent: true })
@@ -729,7 +729,7 @@ function initOptionsEvents(): void {
 
     // Greetings
 
-    paramId('i_greeting').addEventListener('input', function () {
+    paramId('i_greeting').addEventListener('input', function (): void {
         clock(undefined, { greeting: this.value })
     })
 
@@ -737,24 +737,24 @@ function initOptionsEvents(): void {
         paramId('i_greeting').blur()
     })
 
-    paramId('i_greetsize').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_greetsize').addEventListener('input', function (this: HTMLInputElement): void {
         clock(undefined, { greetingsize: this.value })
     })
 
-    paramId('i_greetmode').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_greetmode').addEventListener('change', function (this: HTMLInputElement): void {
         clock(undefined, { greetingsmode: this.value })
     })
 
-    paramId(`i_greetmorning`).addEventListener('input', function () {
+    paramId(`i_greetmorning`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { morning: this.value } })
     })
-    paramId(`i_greetafternoon`).addEventListener('input', function () {
+    paramId(`i_greetafternoon`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { afternoon: this.value } })
     })
-    paramId(`i_greetevening`).addEventListener('input', function () {
+    paramId(`i_greetevening`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { evening: this.value } })
     })
-    paramId(`i_greetnight`).addEventListener('input', function () {
+    paramId(`i_greetnight`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { night: this.value } })
     })
 
@@ -777,15 +777,15 @@ function initOptionsEvents(): void {
         moveElements(undefined, { widget: ['notes', target.checked] })
     })
 
-    paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement): void {
         notes(undefined, { align: this.value })
     })
 
-    paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement): void {
         notes(undefined, { width: this.value })
     })
 
-    paramId('i_notes-opacity').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_notes-opacity').addEventListener('input', function (this: HTMLInputElement): void {
         notes(undefined, { background: true })
     })
 
@@ -800,11 +800,11 @@ function initOptionsEvents(): void {
         getPermissions('search')
     })
 
-    paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement) {
+    paramId('i_sbengine').addEventListener('change', function (this: HTMLInputElement): void {
         searchbar(undefined, { engine: this.value })
     })
 
-    paramId('i_sb-opacity').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_sb-opacity').addEventListener('input', function (this: HTMLInputElement): void {
         searchbar(undefined, { background: true })
     })
 
@@ -812,11 +812,11 @@ function initOptionsEvents(): void {
         searchbar(undefined, { background: true })
     })
 
-    paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement) {
+    paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement): void {
         searchbar(undefined, { width: this.value })
     })
 
-    paramId('f_sbrequest').addEventListener('submit', function (this, event: SubmitEvent) {
+    paramId('f_sbrequest').addEventListener('submit', function (this, event: SubmitEvent): void {
         searchbar(undefined, { request: true })
         event.preventDefault()
     })
@@ -829,7 +829,7 @@ function initOptionsEvents(): void {
         searchbar(undefined, { suggestions: target.checked })
     })
 
-    paramId('i_sbplaceholder').addEventListener('keyup', function () {
+    paramId('i_sbplaceholder').addEventListener('keyup', function (): void {
         searchbar(undefined, { placeholder: this.value })
     })
 
@@ -843,11 +843,11 @@ function initOptionsEvents(): void {
         moveElements(undefined, { widget: ['quotes', target.checked] })
     })
 
-    paramId('i_qtfreq').addEventListener('change', function () {
+    paramId('i_qtfreq').addEventListener('change', function (): void {
         quotes(undefined, { frequency: this.value })
     })
 
-    paramId('i_qttype').addEventListener('change', function () {
+    paramId('i_qttype').addEventListener('change', function (): void {
         quotes(undefined, { type: this.value })
     })
 
@@ -861,11 +861,11 @@ function initOptionsEvents(): void {
         quotes(undefined, { author: target.checked })
     })
 
-    paramId('i_qtlist').addEventListener('change', function () {
+    paramId('i_qtlist').addEventListener('change', function (): void {
         quotes(undefined, { userlist: this.value })
     })
 
-    paramId('f_qturl').addEventListener('submit', function (this, event: SubmitEvent) {
+    paramId('f_qturl').addEventListener('submit', function (this, event: SubmitEvent): void {
         event.preventDefault()
 
         quotes(undefined, { url: paramId('i_qturl').value })
@@ -893,23 +893,23 @@ function initOptionsEvents(): void {
         pomodoro(undefined, { listen: true })
     })
 
-    paramId('i_pmdr_alarms').addEventListener('change', function () {
+    paramId('i_pmdr_alarms').addEventListener('change', function (): void {
         pomodoro(undefined, { alarm: this.value })
     })
 
-    paramId('i_pmdr_volume').addEventListener('input', function () {
+    paramId('i_pmdr_volume').addEventListener('input', function (): void {
         pomodoro(undefined, { volume: Number(this.value) })
     })
 
-    paramId('i_pmdr_pomodoro').addEventListener('input', function () {
+    paramId('i_pmdr_pomodoro').addEventListener('input', function (): void {
         pomodoro(undefined, { timeFor: { pomodoro: Number(this.value) } })
     })
 
-    paramId('i_pmdr_break').addEventListener('input', function () {
+    paramId('i_pmdr_break').addEventListener('input', function (): void {
         pomodoro(undefined, { timeFor: { break: Number(this.value) } })
     })
 
-    paramId('i_pmdr_longbreak').addEventListener('input', function () {
+    paramId('i_pmdr_longbreak').addEventListener('input', function (): void {
         pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
     })
 
@@ -924,15 +924,15 @@ function initOptionsEvents(): void {
         event.preventDefault()
     })
 
-    paramId('i_weight').addEventListener('input', function () {
+    paramId('i_weight').addEventListener('input', function (): void {
         customFont(undefined, { weight: this.value })
     })
 
-    paramId('i_size').addEventListener('input', function () {
+    paramId('i_size').addEventListener('input', function (): void {
         customFont(undefined, { size: this.value })
     })
 
-    paramId('i_textshadow').addEventListener('input', function () {
+    paramId('i_textshadow').addEventListener('input', function (): void {
         textShadow(undefined, Number.parseFloat(this.value))
     })
 
@@ -946,15 +946,15 @@ function initOptionsEvents(): void {
         })
     })
 
-    paramId('i_pagecolumns').addEventListener('change', function () {
+    paramId('i_pagecolumns').addEventListener('change', function (): void {
         moveElements(undefined, { layout: this.value, toggle: true })
     })
 
-    paramId('i_pagewidth').addEventListener('input', function () {
+    paramId('i_pagewidth').addEventListener('input', function (): void {
         pageControl({ width: Number.parseInt(this.value) }, true)
     })
 
-    paramId('i_pagegap').addEventListener('input', function () {
+    paramId('i_pagegap').addEventListener('input', function (): void {
         pageControl({ gap: Number.parseFloat(this.value) }, true)
     })
 
@@ -967,7 +967,7 @@ function initOptionsEvents(): void {
 
     // Updates
 
-    paramId('i_announce').addEventListener('change', function (this) {
+    paramId('i_announce').addEventListener('change', function (this): void {
         interfacePopup(undefined, { announcements: this.checked })
     })
 
@@ -977,16 +977,16 @@ function initOptionsEvents(): void {
 
     // Sync
 
-    paramId('i_synctype').addEventListener('change', function (this) {
+    paramId('i_synctype').addEventListener('change', function (this): void {
         synchronization(undefined, { type: this.value })
     })
 
-    paramId('f_gistsync').addEventListener('submit', function (this, event) {
+    paramId('f_gistsync').addEventListener('submit', function (this, event): void {
         event.preventDefault()
         synchronization(undefined, { gistToken: paramId('i_gistsync').value })
     })
 
-    paramId('f_urlsync').addEventListener('submit', function (this, event) {
+    paramId('f_urlsync').addEventListener('submit', function (this, event): void {
         event.preventDefault()
         synchronization(undefined, { url: paramId('i_urlsync').value })
     })
@@ -1018,7 +1018,7 @@ function initOptionsEvents(): void {
         paramId('settings-managment').classList.remove('dragging-file')
     })
 
-    paramId('b_file-load').addEventListener('click', function (this) {
+    paramId('b_file-load').addEventListener('click', function (this): void {
         paramId('file-import')?.click()
     })
 
@@ -1026,7 +1026,7 @@ function initOptionsEvents(): void {
         saveImportFile()
     })
 
-    paramId('file-import').addEventListener('change', function (this) {
+    paramId('file-import').addEventListener('change', function (this): void {
         loadImportFile(this)
     })
 
@@ -1286,7 +1286,7 @@ function drawerDragEvents(): void {
         passive: false,
     })
 
-    function dragStart(e: Event) {
+    function dragStart(e: Event): void {
         e.preventDefault()
 
         // prevents touchEvent and pointerEvent from firing at the same time
@@ -1316,7 +1316,7 @@ function drawerDragEvents(): void {
         document.body.classList.add('dragging-mobile-settings')
     }
 
-    function dragMove(e: Event) {
+    function dragMove(e: Event): void {
         let clientY = 0
 
         // Get mouse / touch y position
@@ -1338,7 +1338,7 @@ function drawerDragEvents(): void {
         }
     }
 
-    function dragEnd(e: Event) {
+    function dragEnd(e: Event): void {
         let clientY = 0
 
         // Get mouse / touch y position

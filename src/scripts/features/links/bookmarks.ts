@@ -32,18 +32,19 @@ type BookmarksFolderItem = {
 
 let browserBookmarkFolders: BookmarksFolder[] = []
 
-export async function linksImport(): void {
+export async function linksImport(): Promise<void> {
     const data = await storage.sync.get()
 
     for (const node of document.querySelectorAll('#bookmarks-container > *') ?? []) {
         node.remove()
     }
 
-    await initBookmarkSync(data)
-    createBookmarksDialog()
+    initBookmarkSync(data).then(() => {
+        createBookmarksDialog()
+    })
 }
 
-export async function initBookmarkSync(data: Sync): void {
+export async function initBookmarkSync(data: Sync): Promise<void> {
     let treenode = await getBookmarkTree()
     let permission = !!treenode
 

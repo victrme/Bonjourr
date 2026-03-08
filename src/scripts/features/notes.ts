@@ -99,7 +99,7 @@ function handleBackground(hex = '#fff2'): void {
     }
 }
 
-function translateNotesText() {
+function translateNotesText(): string {
     let lang = getLang()
 
     if (!(lang && lang in langList)) {

@@ -3,7 +3,7 @@ import { tradThis } from '../../utils/translations.ts'
 import type { Backgrounds } from '../../../types/sync.ts'
 import type { Background } from '../../../types/shared.ts'
 
-export function toggleCredits(backgrounds: Backgrounds) {
+export function toggleCredits(backgrounds: Backgrounds): void {
     const domcontainer = document.getElementById('credit-container')
     const domcredit = document.getElementById('credit')
     const domsave = document.getElementById('a_interface-background-download')
@@ -37,7 +37,7 @@ export function toggleCredits(backgrounds: Backgrounds) {
     }
 }
 
-export function updateCredits(image?: Background) {
+export function updateCredits(image?: Background): void {
     const domcontainer = document.getElementById('credit-container')
     const domcredit = document.getElementById('credit')
     const domsave = document.getElementById('download-background')

@@ -235,7 +235,7 @@ queueMicrotask(() => {
 
     // Update spans next to file inputs on value change
     domdialog.querySelectorAll<HTMLInputElement>('input[type="file"]')?.forEach((input) => {
-        input.addEventListener('change', function (this) {
+        input.addEventListener('change', function (this): void {
             const span = this.nextElementSibling
             const isSpan = span?.tagName === 'SPAN'
             const file = this.files?.[0]

@@ -16,7 +16,7 @@ const unitForm = networkForm('f_units')
 const geolForm = networkForm('f_geol')
 const suggestionsDebounce = debounce(fillLocationSuggestions, 600)
 
-export async function weatherUpdate(update: WeatherUpdate): void {
+export async function weatherUpdate(update: WeatherUpdate): Promise<void> {
     const { weather, hide } = await storage.sync.get(['weather', 'hide'])
     let lastWeather = (await storage.local.get('lastWeather')).lastWeather
 
@@ -81,7 +81,7 @@ export async function weatherUpdate(update: WeatherUpdate): void {
     }
 }
 
-async function updateManualLocation(weather: Weather, lastWeather?: LastWeather): void {
+async function updateManualLocation(weather: Weather, lastWeather?: LastWeather): Promise<void> {
     const iCity = document.getElementById('i_city') as HTMLInputElement
     let city = iCity.value
 
@@ -125,7 +125,7 @@ async function updateManualLocation(weather: Weather, lastWeather?: LastWeather)
     }
 }
 
-async function updateGeolocation(geol: string, weather: Weather, lastWeather?: LastWeather): void {
+async function updateGeolocation(geol: string, weather: Weather, lastWeather?: LastWeather): Promise<void> {
     geolForm.load()
 
     if (!isGeolocation(geol)) {
@@ -197,7 +197,7 @@ function removeLocationSuggestions(): void {
     }
 }
 
-async function fillLocationSuggestions(): void {
+async function fillLocationSuggestions(): Promise<void> {
     const dlCityfound = document.querySelector<HTMLDataListElement>('#dl_cityfound')
     const iCity = document.getElementById('i_city') as HTMLInputElement
     const city = iCity.value

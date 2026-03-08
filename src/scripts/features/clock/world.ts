@@ -2,7 +2,7 @@
 
 import type { Sync } from '../../../types/sync.ts'
 
-export function toggleWorldClocksOptions() {
+export function toggleWorldClocksOptions(): void {
     const parents = document.querySelectorAll<HTMLElement>('.worldclocks-item')
     const inputs = document.querySelectorAll<HTMLInputElement>('.worldclocks-item input')
     let hasWorld = false
@@ -18,7 +18,7 @@ export function toggleWorldClocksOptions() {
     })
 }
 
-export function toggleTimezoneOptions(data: Sync) {
+export function toggleTimezoneOptions(data: Sync): void {
     const timezoneOptions = document.getElementById('timezone_options')
     const hasWorldClock = data.clock.worldclocks && !!data?.worldclocks[0]?.region
 

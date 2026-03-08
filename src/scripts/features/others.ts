@@ -6,7 +6,7 @@ import { tradThis } from '../utils/translations.ts'
 import { storage } from '../storage.ts'
 
 export function favicon(val?: string, isEvent?: true): void {
-    function createFavicon(emoji?: string) {
+    function createFavicon(emoji?: string): void {
         const svgtext = `<text y=".9em" font-size="85">${emoji}</text>`
         const svgtag = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">${svgtext}</svg>`
         const svgdata = `data:image/svg+xml,${svgtag}`

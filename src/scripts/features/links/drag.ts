@@ -41,7 +41,7 @@ let domlinktitles: NodeListOf<HTMLButtonElement>
 let domlinkgroups: NodeListOf<HTMLDivElement>
 let domlinkgroup: HTMLDivElement
 
-export function startDrag(event: PointerEvent) {
+export function startDrag(event: PointerEvent): void {
     const path = event.composedPath() as HTMLElement[]
     const type = path.some((element) => element?.className?.includes('link-title')) ? 'mini' : 'link'
     const isMini = type === 'mini'
@@ -176,7 +176,7 @@ export function startDrag(event: PointerEvent) {
     }
 }
 
-function beforeStartDrag(event: PointerEvent, type: 'mini' | 'link') {
+function beforeStartDrag(event: PointerEvent, type: 'mini' | 'link'): void {
     // Prevent drag move event if user slips on click
     // By only starting drag if pointer moves more than 10px deadzone
 
@@ -191,7 +191,7 @@ function beforeStartDrag(event: PointerEvent, type: 'mini' | 'link') {
     target?.addEventListener('pointermove', pointerDeadzone)
     target?.addEventListener('pointerup', pointerDeadzone)
 
-    function pointerDeadzone(event: PointerEvent) {
+    function pointerDeadzone(event: PointerEvent): void {
         const precision = event.pointerType === 'touch' ? 7 : 14
         const ox = Math.abs(cox - event.offsetX)
         const oy = Math.abs(coy - event.offsetY)
@@ -215,7 +215,7 @@ function beforeStartDrag(event: PointerEvent, type: 'mini' | 'link') {
     }
 }
 
-function moveDrag(event: TouchEvent | PointerEvent) {
+function moveDrag(event: TouchEvent | PointerEvent): void {
     const { x, y } = getPosFromEvent(event)
 
     dx = x - cox
@@ -284,7 +284,7 @@ function moveDrag(event: TouchEvent | PointerEvent) {
     }
 }
 
-function applyDragMoveBlocks(id: string) {
+function applyDragMoveBlocks(id: string): void {
     const targetIndex = initids.indexOf(id)
 
     if (lastIndex === targetIndex) {
@@ -307,7 +307,7 @@ function applyDragMoveBlocks(id: string) {
     }
 }
 
-function applyDragChangeParent(id: string, type: DropType) {
+function applyDragChangeParent(id: string, type: DropType): void {
     const propertyValue = getComputedStyle(domlinkblocks).getPropertyValue('--drop-delay')
     const dropDelay = type === 'group' ? 0 : Number.parseInt(propertyValue || '120')
 
@@ -348,7 +348,7 @@ function applyDragChangeParent(id: string, type: DropType) {
     }, dropDelay)
 }
 
-function endDrag(event: Event) {
+function endDrag(event: Event): void {
     event.preventDefault()
 
     document.documentElement.removeEventListener('pointermove', moveDrag)
@@ -435,13 +435,13 @@ function endDrag(event: Event) {
 
 //	Small stuff
 
-function deplaceElem(dom?: HTMLElement, x = 0, y = 0) {
+function deplaceElem(dom?: HTMLElement, x = 0, y = 0): void {
     if (dom) {
         dom.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
     }
 }
 
-function deplaceDraggedElem() {
+function deplaceDraggedElem(): void {
     const block = blocks.get(draggedId)
 
     if (block) {
@@ -511,7 +511,7 @@ function isDraggingOver({ x, y }: { x: number; y: number }): [DropArea, string, 
     }
 }
 
-function getPosFromEvent(event: TouchEvent | PointerEvent) {
+function getPosFromEvent(event: TouchEvent | PointerEvent): { x: number; y: number } {
     switch (event.type) {
         case 'touchmove': {
             const touch = (event as TouchEvent).touches[0]
