@@ -124,7 +124,12 @@ function clickUserActions(event: MouseEvent): void {
 
 // Handlers
 
-function isOpen() {
+function isOpen(): {
+    settings: boolean
+    folder: boolean
+    selectall: boolean | undefined
+    contextmenu: boolean | undefined
+} {
     return {
         settings: !!document.getElementById('settings')?.classList.contains('shown'),
         folder: !!document.querySelector('.in-folder'),
