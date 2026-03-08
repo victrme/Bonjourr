@@ -30,18 +30,12 @@
     },
     "nodeModulesDir": "auto",
     "lint": {
-        "include": [
-            "src",
-            "tasks",
-            "tests",
-            "_locales"
-        ],
+        "include": ["src", "tasks", "tests", "_locales"],
         "rules": {
-            "tags": [
-                "recommended"
-            ],
+            "tags": ["recommended"],
             "include": [
                 "eqeqeq",
+                "explicit-function-return-type",
                 "verbatim-module-syntax",
                 "single-var-declarator",
                 "no-sparse-arrays",
@@ -58,24 +52,11 @@
         "useTabs": false,
         "semiColons": false,
         "singleQuote": true,
-        "include": [
-            "src",
-            "tasks",
-            "tests",
-            "_locales"
-        ]
+        "include": ["src", "tasks", "tests", "_locales"]
     },
     "compilerOptions": {
         "strict": true,
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "dom.asynciterable",
-            "deno.ns"
-        ],
-        "types": [
-            "@types/firefox-webext-browser",
-            "@types/chrome"
-        ]
+        "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"],
+        "types": ["@types/firefox-webext-browser", "@types/chrome"]
     }
 }
