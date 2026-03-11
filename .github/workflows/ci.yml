@@ -23,6 +23,13 @@ jobs:
             - uses: ./.github/actions/deno
             - run: deno check
 
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: ./.github/actions/deno
+            - run: deno lint
+
     format:
         runs-on: ubuntu-latest
         steps:

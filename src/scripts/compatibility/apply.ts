@@ -14,64 +14,64 @@ import type { Sync } from '../../types/sync.ts'
 export function filterData(from: 'update', current: Sync): Sync
 export function filterData(from: 'import', current: Sync, target: Partial<Sync>): Sync
 export function filterData(from: 'update' | 'import', current: Sync, target?: Partial<Sync>): Sync {
-	let newcurrent = current
-	let newtarget = target ?? {}
+    let newcurrent = current
+    let newtarget = target ?? {}
 
-	if (from === 'update') {
-		const user = toSemVer(newcurrent.about.version)
-		newcurrent = filterByVersion(newcurrent, user) as Sync
-	}
+    if (from === 'update') {
+        const user = toSemVer(newcurrent.about.version)
+        newcurrent = filterByVersion(newcurrent, user) as Sync
+    }
 
-	if (from === 'import') {
-		// Prepare imported data compatibility
-		newtarget = filterByVersion(newtarget, toSemVer(undefined))
+    if (from === 'import') {
+        // Prepare imported data compatibility
+        newtarget = filterByVersion(newtarget, toSemVer(undefined))
 
-		// Detect if merging between settings is needed
-		const currentKeyAmount = Object.keys(newcurrent).length
-		const targetKeyAmount = Object.keys(newtarget).length
-		const needMerging = targetKeyAmount !== currentKeyAmount
+        // Detect if merging between settings is needed
+        const currentKeyAmount = Object.keys(newcurrent).length
+        const targetKeyAmount = Object.keys(newtarget).length
+        const needMerging = targetKeyAmount !== currentKeyAmount
 
-		if (needMerging) {
-			newcurrent = deepmergeAll(newcurrent, newtarget) as Sync
+        if (needMerging) {
+            newcurrent = deepmergeAll(newcurrent, newtarget) as Sync
 
-			// After merge only
-			newcurrent = removeLinkgroupDuplicates(newcurrent)
-			newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
-			newcurrent = toggleMoveWidgets(newcurrent, newtarget)
-		} else {
-			newcurrent = newtarget as Sync
-		}
-	}
+            // After merge only
+            newcurrent = removeLinkgroupDuplicates(newcurrent)
+            newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
+            newcurrent = toggleMoveWidgets(newcurrent, newtarget)
+        } else {
+            newcurrent = newtarget as Sync
+        }
+    }
 
-	//
+    //
 
-	newcurrent.about = {
-		browser: PLATFORM,
-		version: CURRENT_VERSION,
-	}
+    newcurrent.about = {
+        browser: PLATFORM,
+        version: CURRENT_VERSION,
+    }
 
-	delete newcurrent.syncbookmarks
-	delete newcurrent.settingssync
-	delete newcurrent.custom_every
-	delete newcurrent.custom_time
-	delete newcurrent.searchbar_newtab
-	delete newcurrent.searchbar_newtab
-	delete newcurrent.searchbar_engine
-	delete newcurrent.cssHeight
-	delete newcurrent.linktabs
-	delete newcurrent.links
-	delete newcurrent.dynamic
-	delete newcurrent.unsplash
-	delete newcurrent.background_blur
-	delete newcurrent.background_bright
-	delete newcurrent.background_type
-	delete newcurrent.usdate
-	//@ts-ignore -> Property '...' does not exist on type '...'
-	delete newcurrent?.weather?.location
-	//@ts-ignore -> Property '...' does not exist on type '...'
-	delete newcurrent?.weather?.lastState
-	//@ts-ignore -> Property '...' does not exist on type '...'
-	delete newcurrent?.weather?.lastCall
+    delete newcurrent.syncbookmarks
+    delete newcurrent.settingssync
+    delete newcurrent.custom_every
+    delete newcurrent.custom_time
+    delete newcurrent.searchbar_newtab
+    delete newcurrent.searchbar_newtab
+    delete newcurrent.searchbar_engine
+    delete newcurrent.cssHeight
+    delete newcurrent.linktabs
+    delete newcurrent.links
+    delete newcurrent.dynamic
+    delete newcurrent.unsplash
+    delete newcurrent.background_blur
+    delete newcurrent.background_bright
+    delete newcurrent.background_type
+    delete newcurrent.usdate
+    //@ts-ignore -> Property '...' does not exist on type '...'
+    delete newcurrent?.weather?.location
+    //@ts-ignore -> Property '...' does not exist on type '...'
+    delete newcurrent?.weather?.lastState
+    //@ts-ignore -> Property '...' does not exist on type '...'
+    delete newcurrent?.weather?.lastCall
 
-	return newcurrent
+    return newcurrent
 }
