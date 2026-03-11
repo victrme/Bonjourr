@@ -37,6 +37,9 @@ const pomodoroReset = document.getElementById('pmdr_reset') as HTMLButtonElement
 const timerDom = document.getElementById('pmdr_timer') as HTMLSpanElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
+const customBreakControls = document.getElementById('pmdr_custombreak_controls') as HTMLDivElement
+const customBreakMinus = document.getElementById('pmdr_custombreak_minus') as HTMLButtonElement
+const customBreakPlus = document.getElementById('pmdr_custombreak_plus') as HTMLButtonElement
 
 // to communicate with other tabs
 const broadcast = new BroadcastChannel('bonjourr_pomodoro') as BroadcastChannel
@@ -52,7 +55,7 @@ const setModeButton = (value = '') => {
 }
 
 const getTimeForMode = (mode: PomodoroMode): number => {
-    return currentPomodoroData.timeFor[mode]
+	return currentPomodoroData.timeFor[mode] ?? 300
 }
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate): void {
@@ -84,82 +87,91 @@ function initPomodoro(init: Pomodoro): void {
     listenToBroadcast()
     handleUserInput()
 
-    setPomodoroInfo(init.history)
+	setPomodoroInfo(init.history)
+	toggleCustomBreakControls(init.mode)
 }
 
 // events
-function handleUserInput(): void {
-    // different modes
-    radioButtons.forEach((btn) => {
-        btn.addEventListener('change', (e) => {
-            const newMode = (e.target as HTMLInputElement).value as PomodoroMode
+function handleUserInput() {
+	// different modes
+	radioButtons.forEach(function (btn) {
+		btn.addEventListener('change', (e) => {
+			const newMode = (e.target as HTMLInputElement).value as PomodoroMode
 
-            switchMode(newMode, true)
+			switchMode(newMode, true)
 
-            broadcast.postMessage({
-                type: 'switch-mode',
-                mode: newMode,
-            })
-        })
-    })
+			broadcast.postMessage({
+				type: 'switch-mode',
+				mode: newMode,
+			})
+		})
+	})
 
-    pomodoroStart?.addEventListener('click', () => {
-        if (currentPomodoroData.mode) {
-            storage.sync.get().then((sync) => {
-                startTimer(sync.pomodoro, true)
-            })
+	pomodoroStart?.addEventListener('click', () => {
+		if (currentPomodoroData.mode) {
+			storage.sync.get().then((sync) => {
+				startTimer(sync.pomodoro, true)
+			})
 
-            broadcast.postMessage({
-                type: 'start-pomodoro',
-                time: getTimeForMode(currentPomodoroData.mode),
-            })
-        }
-    })
+			broadcast.postMessage({
+				type: 'start-pomodoro',
+				time: getTimeForMode(currentPomodoroData.mode),
+			})
+		}
+	})
 
-    pomodoroPause?.addEventListener('click', () => {
-        pauseTimer()
+	pomodoroPause?.addEventListener('click', () => {
+		pauseTimer()
 
-        broadcast.postMessage({
-            type: 'pause-pomodoro',
-        })
-    })
+		broadcast.postMessage({
+			type: 'pause-pomodoro',
+		})
+	})
 
-    pomodoroReset?.addEventListener('pointerdown', (e) => {
-        resetTimer()
+	pomodoroReset?.addEventListener('pointerdown', (e) => {
+		resetTimer()
 
-        broadcast.postMessage({
-            type: 'reset-pomodoro',
-        })
+		broadcast.postMessage({
+			type: 'reset-pomodoro',
+		})
 
-        turnRefreshButton(e, true)
-    })
+		turnRefreshButton(e, true)
+	})
 
-    focusButton?.addEventListener('change', (e) => {
-        const focusIsChecked = (e.target as HTMLInputElement).checked as boolean
+	focusButton?.addEventListener('change', (e) => {
+		const focusIsChecked = (e.target as HTMLInputElement).checked as boolean
 
-        togglePomodoroFocus(focusIsChecked)
-        updatePomodoro({ focus: focusIsChecked })
+		togglePomodoroFocus(focusIsChecked)
+		updatePomodoro({ focus: focusIsChecked })
 
-        broadcast.postMessage({
-            type: 'toggle-focus',
-            on: focusIsChecked,
-        })
-    })
+		broadcast.postMessage({
+			type: 'toggle-focus',
+			on: focusIsChecked,
+		})
+	})
 
-    // makes mode buttons and focus button accessible to keyboard inputs
-    document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach((el) => {
-        el.addEventListener('keydown', (e: KeyboardEvent) => {
-            if (e.code === 'Space' || e.code === 'Enter') {
-                const input = el.querySelector<HTMLInputElement>('input[type="radio"], input[type="checkbox"]')
-                if (!input) return
+	customBreakMinus?.addEventListener('click', () => {
+		adjustCustomBreak(-1)
+	})
 
-                input.checked = !input.checked
-                input.dispatchEvent(new Event('change', { bubbles: true }))
+	customBreakPlus?.addEventListener('click', () => {
+		adjustCustomBreak(1)
+	})
 
-                e.preventDefault() // prevent page scroll on Space
-            }
-        })
-    })
+	// makes mode buttons and focus button accessible to keyboard inputs
+	document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach((el) => {
+		el.addEventListener('keydown', (e: KeyboardEvent) => {
+			if (e.code === 'Space' || e.code === 'Enter') {
+				const input = el.querySelector<HTMLInputElement>('input[type="radio"], input[type="checkbox"]')
+				if (!input) return
+
+				input.checked = !input.checked
+				input.dispatchEvent(new Event('change', { bubbles: true }))
+
+				e.preventDefault() // prevent page scroll on Space
+			}
+		})
+	})
 }
 
 function listenToBroadcast(): void {
@@ -187,21 +199,37 @@ function listenToBroadcast(): void {
     })
 }
 
-function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean): void {
-    resetTimeouts()
-    setModeGlider(mode, animate)
-    stopTimer()
-    insertTime(getTimeForMode(mode), false)
+function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean) {
+	resetTimeouts()
+	setModeGlider(mode, animate)
+	toggleCustomBreakControls(mode)
+	stopTimer()
+	insertTime(getTimeForMode(mode), false)
 
     if (!init) {
         updatePomodoro({ mode: mode, end: 0, pause: 0 })
     }
 }
 
-function resetTimeouts(): void {
-    // if user interact with pomodoro before the end of the timeouts
-    clearTimeout(tabTitleTimeout)
-    clearTimeout(timeModeTimeout)
+function toggleCustomBreakControls(mode?: PomodoroMode) {
+	customBreakControls?.classList.toggle('hidden', mode !== 'custombreak')
+}
+
+function adjustCustomBreak(deltaMinutes: number) {
+	if (currentPomodoroData.mode !== 'custombreak') {
+		return
+	}
+
+	const currentSeconds = currentPomodoroData.timeFor.custombreak ?? 300
+	const nextSeconds = Math.min(59 * 60, Math.max(60, currentSeconds + deltaMinutes * 60))
+
+	pomodoro(undefined, { timeFor: { custombreak: nextSeconds / 60 } })
+}
+
+function resetTimeouts() {
+	// if user interact with pomodoro before the end of the timeouts
+	clearTimeout(tabTitleTimeout)
+	clearTimeout(timeModeTimeout)
 }
 
 export function setModeGlider(mode?: PomodoroMode, animate?: boolean): void {

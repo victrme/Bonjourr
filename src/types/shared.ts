@@ -9,7 +9,7 @@ export type QuoteUserInput = [string, string][]
 export type Widgets = 'time' | 'main' | 'quicklinks' | 'notes' | 'quotes' | 'searchbar' | 'pomodoro'
 export type Frequency = 'tabs' | 'hour' | 'day' | 'period' | 'pause'
 export type LinkIconType = 'auto' | 'library' | 'file' | 'url'
-export type PomodoroMode = 'pomodoro' | 'break' | 'longbreak'
+export type PomodoroMode = 'pomodoro' | 'break' | 'longbreak' | 'custombreak'
 export type SearchEngines =
     | 'default'
     | 'google'

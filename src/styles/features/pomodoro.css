@@ -177,6 +177,29 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     font-weight: 400;
 }
 
+#pmdr_custombreak_controls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: .75em;
+	margin-top: .5em;
+}
+
+#pmdr_custombreak_controls.hidden {
+	display: none;
+}
+
+#pmdr_custombreak_controls button {
+	height: 2.4em;
+	min-width: 2.4em;
+	padding: 0 .6em;
+	border-radius: 999px;
+	font-size: 1.1em;
+	font-weight: 600;
+	line-height: 1;
+	color: white;
+}
+
 #bottomControls {
     display: flex;
     justify-content: center;

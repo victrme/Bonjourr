@@ -167,238 +167,238 @@ function settingsToggle(event?: CustomEvent): void {
     document.dispatchEvent(new Event('close-edit'))
 }
 
-function initOptionsValues(data: Sync, local: Local): void {
-    const domsettings = document.getElementById('settings') as HTMLElement
-    const userQuotes = data.quotes?.userlist?.[0] ? data.quotes?.userlist : undefined
+function initOptionsValues(data: Sync, local: Local) {
+	const domsettings = document.getElementById('settings') as HTMLElement
+	const userQuotes = data.quotes?.userlist?.[0] ? data.quotes?.userlist : undefined
 
-    setInput('i_blur', data.backgrounds.blur ?? 15)
-    setInput('i_bright', data.backgrounds.bright ?? 0.8)
-    setInput('i_fadein', data.backgrounds.fadein ?? 400)
-    setInput('i_row', data.linksrow || 8)
-    setInput('i_icon_radius', data.linkiconradius || 1.1)
-    setInput('i_linkstyle', data.linkstyle || 'default')
-    setInput('i_type', data.backgrounds.type || 'images')
-    setInput('i_freq', data.backgrounds?.frequency || 'hour')
-    setInput('i_dark', data.dark || 'system')
-    setInput('i_favicon', data.favicon ?? '')
-    setInput('i_tabtitle', data.tabtitle ?? '')
-    setInput('i_solid-background', data.backgrounds.color ?? '#185A63')
-    setInput('i_texture', data.backgrounds.texture.type ?? 'none')
-    setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
-    setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
-    setInput('i_texture-color', data.backgrounds.texture.color ?? '#ffffff')
-    setInput('i_pagewidth', data.pagewidth || 1600)
-    setInput('i_pagegap', data.pagegap ?? 1)
-    setInput('i_dateformat', data.dateformat || 'eu')
-    setInput('i_greeting', data.greeting ?? '')
-    setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
-    setInput('i_greetafternoon', data.greetingscustom?.afternoon ?? '')
-    setInput('i_greetevening', data.greetingscustom?.evening ?? '')
-    setInput('i_greetnight', data.greetingscustom?.night ?? '')
-    setInput('i_textshadow', data.textShadow ?? 0.2)
-    setInput('i_noteswidth', data.notes?.width || 50)
-    setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
-    setInput('i_notesalign', data.notes?.align || 'left')
-    setInput('i_sbengine', data.searchbar?.engine || 'google')
-    setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
-    setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
-    setInput('i_sbwidth', data.searchbar?.width ?? 30)
-    setInput('i_sbrequest', data.searchbar?.request || '')
-    setInput('i_qtfreq', data.quotes?.frequency || 'day')
-    setInput('i_qttype', data.quotes?.type || 'classic')
-    setInput('i_qtlist', userQuotes ?? '')
-    setInput('i_qturl', data.quotes?.url ?? '')
-    setInput('i_clockface', data.analogstyle?.face || 'none')
-    setInput('i_clockhands', data.analogstyle?.hands || 'none')
-    setInput('i_clockshape', data.analogstyle?.shape || 'round')
-    setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
-    setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
-    setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
-    setInput('i_clocksize', data.clock?.size ?? 5)
-    setInput('i_greetsize', data.greetingsize ?? 3)
-    setInput('i_greetmode', data.greetingsmode ?? 'auto')
-    setInput('i_timezone', data.clock?.timezone || 'auto')
-    setInput('i_geol', data.weather?.geolocation || 'approximate')
-    setInput('i_units', data.weather?.unit ?? 'metric')
-    setInput('i_forecast', data.weather?.forecast || 'auto')
-    setInput('i_temp', data.weather?.temperature || 'actual')
-    setInput('i_moreinfo', data.weather?.moreinfo || 'none')
-    setInput('i_provider', data.weather?.provider ?? '')
-    setInput('i_weight', data.font?.weight || '300')
-    setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
-    setInput('i_announce', data.announcements ?? 'major')
-    setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
-    setInput('i_pmdr_volume', data.pomodoro?.volume ?? 0.7)
-    setInput('i_pmdr_alarms', data.pomodoro?.alarm ?? 'marimba')
-    setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
-    setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
-    setInput('i_pmdr_pomodoro', data.pomodoro?.timeFor.pomodoro / 60)
-    setInput('i_pmdr_longbreak', data.pomodoro?.timeFor.longbreak / 60)
+	setInput('i_blur', data.backgrounds.blur ?? 15)
+	setInput('i_bright', data.backgrounds.bright ?? 0.8)
+	setInput('i_fadein', data.backgrounds.fadein ?? 400)
+	setInput('i_row', data.linksrow || 8)
+	setInput('i_icon_radius', data.linkiconradius || 1.1)
+	setInput('i_linkstyle', data.linkstyle || 'default')
+	setInput('i_type', data.backgrounds.type || 'images')
+	setInput('i_freq', data.backgrounds?.frequency || 'hour')
+	setInput('i_dark', data.dark || 'system')
+	setInput('i_favicon', data.favicon ?? '')
+	setInput('i_tabtitle', data.tabtitle ?? '')
+	setInput('i_solid-background', data.backgrounds.color ?? '#185A63')
+	setInput('i_texture', data.backgrounds.texture.type ?? 'none')
+	setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
+	setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
+	setInput('i_texture-color', data.backgrounds.texture.color ?? '#ffffff')
+	setInput('i_pagewidth', data.pagewidth || 1600)
+	setInput('i_pagegap', data.pagegap ?? 1)
+	setInput('i_dateformat', data.dateformat || 'eu')
+	setInput('i_greeting', data.greeting ?? '')
+	setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
+	setInput('i_greetafternoon', data.greetingscustom?.afternoon ?? '')
+	setInput('i_greetevening', data.greetingscustom?.evening ?? '')
+	setInput('i_greetnight', data.greetingscustom?.night ?? '')
+	setInput('i_textshadow', data.textShadow ?? 0.2)
+	setInput('i_noteswidth', data.notes?.width || 50)
+	setInput('i_notes-opacity', opacityFromHex(data.notes?.background ?? '#fff2'))
+	setInput('i_notesalign', data.notes?.align || 'left')
+	setInput('i_sbengine', data.searchbar?.engine || 'google')
+	setInput('i_sbplaceholder', data.searchbar?.placeholder || '')
+	setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
+	setInput('i_sbwidth', data.searchbar?.width ?? 30)
+	setInput('i_sbrequest', data.searchbar?.request || '')
+	setInput('i_qtfreq', data.quotes?.frequency || 'day')
+	setInput('i_qttype', data.quotes?.type || 'classic')
+	setInput('i_qtlist', userQuotes ?? '')
+	setInput('i_qturl', data.quotes?.url ?? '')
+	setInput('i_clockface', data.analogstyle?.face || 'none')
+	setInput('i_clockhands', data.analogstyle?.hands || 'none')
+	setInput('i_clockshape', data.analogstyle?.shape || 'round')
+	setInput('i_analog-border-opacity', opacityFromHex(data.analogstyle?.border ?? '#ffff'))
+	setInput('i_analog-background-opacity', opacityFromHex(data.analogstyle?.background ?? '#fff2'))
+	setInput('i_ampm_position', data.clock.ampmposition || 'top-left')
+	setInput('i_clocksize', data.clock?.size ?? 5)
+	setInput('i_greetsize', data.greetingsize ?? 3)
+	setInput('i_greetmode', data.greetingsmode ?? 'auto')
+	setInput('i_timezone', data.clock?.timezone || 'auto')
+	setInput('i_geol', data.weather?.geolocation || 'approximate')
+	setInput('i_units', data.weather?.unit ?? 'metric')
+	setInput('i_forecast', data.weather?.forecast || 'auto')
+	setInput('i_temp', data.weather?.temperature || 'actual')
+	setInput('i_moreinfo', data.weather?.moreinfo || 'none')
+	setInput('i_provider', data.weather?.provider ?? '')
+	setInput('i_weight', data.font?.weight || '300')
+	setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
+	setInput('i_announce', data.announcements ?? 'major')
+	setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
+	setInput('i_pmdr_volume', data.pomodoro?.volume ?? 0.7)
+	setInput('i_pmdr_alarms', data.pomodoro?.alarm ?? 'marimba')
+	setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
+	setInput('i_pmdr_pomodoro', data.pomodoro?.timeFor.pomodoro / 60)
+	setInput('i_pmdr_longbreak', data.pomodoro?.timeFor.longbreak / 60)
+	setInput('i_pmdr_custombreak', (data.pomodoro?.timeFor.custombreak ?? 300) / 60)
 
-    setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
-    setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
-    setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
-    setFormInput('i_urlsync', 'https://pastebin.com/raw/y7XhhiDs', local?.distantUrl)
+	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
+	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
+	setFormInput('i_gistsync', 'github_pat_XX000X00X', local?.gistToken)
+	setFormInput('i_urlsync', 'https://pastebin.com/raw/y7XhhiDs', local?.distantUrl)
 
-    setCheckbox('i_showall', data.showall)
-    setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
-    setCheckbox('i_background-mute-videos', data.backgrounds.mute ?? true)
-    setCheckbox('i_quicklinks', data.quicklinks)
-    setCheckbox('i_linkgroups', data?.linkgroups?.on)
-    setCheckbox('i_linknewtab', data.linknewtab)
-    setCheckbox('i_time', data.time)
-    setCheckbox('i_analog', data.clock?.analog ?? false)
-    setCheckbox('i_seconds', data.clock?.seconds ?? false)
-    setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
-    setCheckbox('i_main', data.main)
-    setCheckbox('i_greethide', !data.hide?.greetings)
-    setCheckbox('i_notes', data.notes?.on ?? false)
-    setCheckbox('i_sb', data.searchbar?.on ?? false)
-    setCheckbox('i_quotes', data.quotes?.on ?? false)
-    setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
-    setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
-    setCheckbox('i_ampm', data.clock?.ampm ?? false)
-    setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
-    setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
-    setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
-    setCheckbox('i_qtauthor', data.quotes?.author ?? false)
-    setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
+	setCheckbox('i_showall', data.showall)
+	setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
+	setCheckbox('i_background-mute-videos', data.backgrounds.mute ?? true)
+	setCheckbox('i_quicklinks', data.quicklinks)
+	setCheckbox('i_linkgroups', data?.linkgroups?.on)
+	setCheckbox('i_linknewtab', data.linknewtab)
+	setCheckbox('i_time', data.time)
+	setCheckbox('i_analog', data.clock?.analog ?? false)
+	setCheckbox('i_seconds', data.clock?.seconds ?? false)
+	setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
+	setCheckbox('i_main', data.main)
+	setCheckbox('i_greethide', !data.hide?.greetings)
+	setCheckbox('i_notes', data.notes?.on ?? false)
+	setCheckbox('i_sb', data.searchbar?.on ?? false)
+	setCheckbox('i_quotes', data.quotes?.on ?? false)
+	setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
+	setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
+	setCheckbox('i_ampm', data.clock?.ampm ?? false)
+	setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
+	setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
+	setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
+	setCheckbox('i_qtauthor', data.quotes?.author ?? false)
+	setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
 
-    colorInput('solid-background', data.backgrounds.color)
-    colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
+	colorInput('solid-background', data.backgrounds.color)
+	colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
 
-    paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
-    paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
-    paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
-    paramId('i_analog-background-shade')?.classList.toggle(
-        'on',
-        (data.analogstyle?.background ?? '#fff').includes('#000'),
-    )
+	paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
+	paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
+	paramId('i_analog-border-shade')?.classList.toggle('on', (data.analogstyle?.border ?? '#fff').includes('#000'))
+	paramId('i_analog-background-shade')?.classList.toggle(
+		'on',
+		(data.analogstyle?.background ?? '#fff').includes('#000'),
+	)
 
-    // Change edit tips on mobile
-    if (IS_MOBILE) {
-        const tooltiptext = domsettings.querySelector('.tooltiptext .instructions')
-        const text = tradThis('Edit your Quick Links by long-pressing the icon.')
+	// Change edit tips on mobile
+	if (IS_MOBILE) {
+		const tooltiptext = domsettings.querySelector('.tooltiptext .instructions')
+		const text = tradThis('Edit your Quick Links by long-pressing the icon.')
 
-        if (tooltiptext) {
-            tooltiptext.textContent = text
-        }
-    }
+		if (tooltiptext) {
+			tooltiptext.textContent = text
+		}
+	}
 
-    // inserts languages in select
-    const langInput = paramId('i_lang')
+	// inserts languages in select
+	const langInput = paramId('i_lang')
 
-    for (const [code, title] of Object.entries(langList)) {
-        const option = document.createElement('option')
-        option.value = code
-        option.text = title
-        langInput.appendChild(option)
-    }
+	for (const [code, title] of Object.entries(langList)) {
+		const option = document.createElement('option')
+		option.value = code
+		option.text = title
+		langInput.appendChild(option)
+	}
 
-    // must be init after children appening
-    setInput('i_lang', data.lang || 'en')
+	// must be init after children appening
+	setInput('i_lang', data.lang || 'en')
 
-    // Activate feature options
-    paramId('time_options')?.classList.toggle('shown', data.time)
-    paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
-    paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
-    paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
-    paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
-    paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
-    paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
-    paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
-    paramId('main_options')?.classList.toggle('shown', data.main)
-    paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
-    paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
-    paramId('pomodoro_options')?.classList.toggle('shown', data.pomodoro.on)
-    paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
-    paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
-    paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
-    paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
+	// Activate feature options
+	paramId('time_options')?.classList.toggle('shown', data.time)
+	paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
+	paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
+	paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
+	paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+	paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
+	paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
+	paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
+	paramId('main_options')?.classList.toggle('shown', data.main)
+	paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
+	paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
+	paramId('pomodoro_options')?.classList.toggle('shown', data.pomodoro.on)
+	paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
+	paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
+	paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 
-    // Page layout
-    const gridLayoutButtons = domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button')
-    const selectedLayout = data.move?.selection || 'single'
+	// Page layout
+	const gridLayoutButtons = domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button')
+	const selectedLayout = data.move?.selection || 'single'
 
-    for (const button of gridLayoutButtons) {
-        button?.classList.toggle('selected', button.dataset.layout === selectedLayout)
-    }
+	for (const button of gridLayoutButtons) {
+		button?.classList.toggle('selected', button.dataset.layout === selectedLayout)
+	}
 
-    // Link show title
-    paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
-    paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
+	// Link show title
+	paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
+	paramId('b_showbackgrounds').classList.toggle('on', data?.linkbackgrounds ?? true)
 
-    // Time & main hide elems
-    const disableWeather = data.hide?.weatherdesc && data.hide?.weathericon
-    const descOnly = data.hide?.weatherdesc
-    const iconOnly = data.hide?.weathericon
-    const dateOnly = data.hide?.clock
-    const clockOnly = data.hide?.date
-    let hideTime = 'all'
-    let hideWeather = 'all'
+	// Time & main hide elems
+	const disableWeather = data.hide?.weatherdesc && data.hide?.weathericon
+	const descOnly = data.hide?.weatherdesc
+	const iconOnly = data.hide?.weathericon
+	const dateOnly = data.hide?.clock
+	const clockOnly = data.hide?.date
+	let hideTime = 'all'
+	let hideWeather = 'all'
 
-    if (dateOnly) {
-        hideTime = 'date'
-    } else if (clockOnly) {
-        hideTime = 'clock'
-    }
+	if (dateOnly) {
+		hideTime = 'date'
+	} else if (clockOnly) {
+		hideTime = 'clock'
+	}
 
-    if (disableWeather) {
-        hideWeather = 'disabled'
-    } else if (descOnly) {
-        hideWeather = 'desc'
-    } else if (iconOnly) {
-        hideWeather = 'icon'
-    }
+	if (disableWeather) {
+		hideWeather = 'disabled'
+	} else if (descOnly) {
+		hideWeather = 'desc'
+	} else if (iconOnly) {
+		hideWeather = 'icon'
+	}
 
-    setInput('i_timehide', hideTime)
-    setInput('i_weatherhide', hideWeather)
+	setInput('i_timehide', hideTime)
+	setInput('i_weatherhide', hideWeather)
 
-    // Quotes option display
-    paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
-    paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
-    paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
+	// Quotes option display
+	paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
+	paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
+	paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
 
-    const settingsForms = document.querySelectorAll<HTMLFormElement>('#settings form')
+	const settingsForms = document.querySelectorAll<HTMLFormElement>('#settings form')
 
-    for (const form of settingsForms) {
-        const inputs = form.querySelectorAll<HTMLInputElement>('input')
+	for (const form of settingsForms) {
+		const inputs = form.querySelectorAll<HTMLInputElement>('input')
 
-        for (const input of inputs) {
-            input.addEventListener('input', () => {
-                form.classList.toggle('valid', form.checkValidity())
-            })
-        }
-    }
+		for (const input of inputs) {
+			input.addEventListener('input', () => {
+				form.classList.toggle('valid', form.checkValidity())
+			})
+		}
+	}
 
-    // Change Sync name based on browser
-    const browserSyncOption = document.querySelector<HTMLElement>("#i_synctype option[value='browser']")
+	// Change Sync name based on browser
+	const browserSyncOption = document.querySelector<HTMLElement>("#i_synctype option[value='browser']")
 
-    if (browserSyncOption) {
-        if (PLATFORM === 'firefox') {
-            browserSyncOption.textContent = 'Firefox Sync'
-        } else if (PLATFORM === 'chrome' && BROWSER === 'edge') {
-            browserSyncOption.textContent = 'Edge Sync'
-        } else if (PLATFORM === 'chrome') {
-            browserSyncOption.textContent = 'Chrome Sync'
-        } else if (PLATFORM === 'safari') {
-            browserSyncOption.textContent = 'Safari'
-        } else {
-            browserSyncOption.textContent = tradThis('Automatic')
-        }
-    }
+	if (browserSyncOption) {
+		if (PLATFORM === 'firefox') {
+			browserSyncOption.textContent = 'Firefox Sync'
+		} else if (PLATFORM === 'chrome' && BROWSER === 'edge') {
+			browserSyncOption.textContent = 'Edge Sync'
+		} else if (PLATFORM === 'chrome') {
+			browserSyncOption.textContent = 'Chrome Sync'
+		} else if (PLATFORM === 'safari') {
+			browserSyncOption.textContent = 'Safari'
+		} else {
+			browserSyncOption.textContent = tradThis('Automatic')
+		}
+	}
 
-    // supportersNotifications(data?.supporters);
+	// supportersNotifications(data?.supporters);
 
-    // required for the range input's track color separation to work in webkit browsers
-    // yes, it blows.
-    for (const input of document.querySelectorAll<HTMLInputElement>('input[type="range"]')) {
-        webkitRangeTrackColor(input)
+	// required for the range input's track color separation to work in webkit browsers
+	// yes, it blows.
+	for (const input of document.querySelectorAll<HTMLInputElement>('input[type="range"]')) {
+		webkitRangeTrackColor(input)
 
-        input.addEventListener('input', () => {
-            input.style.setProperty('--value', input.value)
-        })
-    }
+		input.addEventListener('input', () => {
+			input.style.setProperty('--value', input.value)
+		})
+	}
 }
 
 function initOptionsEvents(): void {
@@ -909,11 +909,13 @@ function initOptionsEvents(): void {
         pomodoro(undefined, { timeFor: { break: Number(this.value) } })
     })
 
-    paramId('i_pmdr_longbreak').addEventListener('input', function (): void {
-        pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
-    })
-
-    // Custom fonts
+	paramId('i_pmdr_longbreak').addEventListener('input', function () {
+		pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
+	})
+	paramId('i_pmdr_custombreak').addEventListener('input', function (this: HTMLInputElement) {
+		pomodoro(undefined, { timeFor: { custombreak: Number(this.value) } })
+	})
+	// Custom fonts
 
     paramId('i_customfont').addEventListener('pointerenter', () => {
         customFont(undefined, { autocomplete: true })

@@ -1,1085 +1,1084 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
-    <head>
-        <title>New tab</title>
-
-        <meta charset="utf-8" />
-        <meta name="theme-color" content="#000" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
-        />
-
-        <!-- default icon -->
-        <!-- icon -->
-        <!-- manifest -->
-        <!-- webext-storage -->
-
-        <link rel="stylesheet" href="src/styles/style.css" />
-        <style type="text/css" id="styles"></style>
-        <style type="text/css" id="fontface"></style>
-
-        <script src="src/scripts/help-mode.js" defer></script>
-        <script src="src/scripts/main.js" defer></script>
-    </head>
-
-    <body class="init loading">
-        <dialog id="contextmenu">
-            <form id="editlink-form">
-                <label id="edit-title" autofocus>
-                    <span class="trn">Title</span>
-                    <input
-                        id="e-title"
-                        type="text"
-                        name="e-title"
-                        maxlength="64"
-                        autocomplete="off"
-                        placeholder="Example"
-                    />
-                </label>
-
-                <label id="edit-url">
-                    <span class="trn">Link</span>
-                    <input
-                        id="e-url"
-                        type="text"
-                        name="e-url"
-                        maxlength="512"
-                        autocomplete="off"
-                        autocorrect="off"
-                        autocapitalize="off"
-                        placeholder="https://example.com"
-                    />
-                </label>
-
-                <label id="edit-icon">
-                    <span class="trn">Icon</span>
-                    <select name="edit-icon" id="e-icon-type">
-                        <option value="auto" class="trn">Website favicon</option>
-                        <option value="file" class="trn">Local file</option>
-                        <option value="url" class="trn">URL</option>
-                    </select>
-                </label>
-
-                <label id="edit-icon-file">
-                    <span class="trn">File</span>
-                    <input id="e-icon-file" type="file" name="edit-icon-file" accept="image/*" />
-                    <span id="e-icon-file-label" class="trn">No file chosen</span>
-                </label>
-
-                <label id="edit-icon-url">
-                    <span class="trn">URL</span>
-                    <input
-                        id="e-icon-url"
-                        type="url"
-                        name="e-icon-url"
-                        maxlength="7600"
-                        autocomplete="off"
-                        placeholder="https://example.com/favicon.ico"
-                    />
-                </label>
-
-                <hr />
-
-                <!-- <button type="submit" class="trn" id="edit-inputs">Submit from inputs</button> -->
-                <button type="submit" class="btn-red" id="edit-delete" formnovalidate>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                        />
-                    </svg>
-
-                    <span class="trn">Delete something</span>
-                </button>
-
-                <button type="submit" id="edit-refresh">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                        />
-                    </svg>
-
-                    <span class="trn">Refresh icon</span>
-                </button>
-
-                <button type="submit" id="edit-add">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                        />
-                    </svg>
-
-                    <span class="trn">Add something</span>
-                </button>
-
-                <button type="submit" id="edit-pin">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                        />
-                    </svg>
-
-                    <span class="trn">Pin group</span>
-                </button>
-
-                <button type="submit" id="edit-unpin">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-6"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                        />
-                    </svg>
-
-                    <span class="trn">Unpin group</span>
-                </button>
-
-                <button type="submit" id="edit-unfolder">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
-                        />
-                    </svg>
-
-                    <span class="trn">Remove from folder</span>
-                </button>
-
-                <button type="submit" id="edit-apply">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M3 3v18h18V6l-3-3H3ZM7.5 3v6h9V3M6 21v-9h12v9M14.25 5.25v1.5"
-                        />
-                    </svg>
-                    <span class="trn">Apply changes</span>
-                </button>
-                <button type="submit" class="trn" id="edit-synced">Synced links cannot be modified</button>
-            </form>
-
-            <div id="contextActions">
-                <button
-                    data-action="openTheseSettings"
-                    data-attribute="time_title"
-                    title="Open the time settings"
-                    aria-label="Open the time settings"
-                >
-                    <svg
-                        clip-rule="evenodd"
-                        fill-rule="evenodd"
-                        fill="currentColor"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g transform="translate(0)">
-                            <path d="m9 7h2v5h5v2h-7z" fill-rule="nonzero" />
-                            <path
-                                d="m22 12c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-2 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"
-                            />
-                        </g>
-                    </svg>
-                    <span class="trn">Edit time settings</span>
-                </button>
-
-                <button
-                    data-action="openTheseSettings"
-                    data-attribute="main_title"
-                    title="Open the weather settings"
-                    aria-label="Open the weather settings"
-                >
-                    <svg
-                        clip-rule="evenodd"
-                        fill-rule="evenodd"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g fill="currentColor" transform="translate(-0 -.00002)">
-                            <path
-                                d="m12 16c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"
-                            />
-                            <path
-                                d="m11 0h2v4.062c-.328-.041-.661-.062-1-.062s-.672.021-1 .062zm-3.906 5.68-2.872-2.872-1.414 1.414 2.872 2.872c.411-.528.886-1.003 1.414-1.414zm-3.032 5.32h-4.062v2h4.062c-.041-.328-.062-.661-.062-1s.021-.672.062-1zm1.618 5.906-2.872 2.872 1.414 1.414 2.872-2.872c-.528-.411-1.003-.886-1.414-1.414zm5.32 3.032v4.062h2v-4.062c-.328.041-.661.062-1 .062s-.672-.021-1-.062zm5.906-1.618 2.872 2.872 1.414-1.414-2.872-2.872c-.411.528-.886 1.003-1.414 1.414zm3.032-5.32h4.062v-2h-4.062c.041.328.062.661.062 1s-.021.672-.062 1zm-1.618-5.906 2.872-2.872-1.414-1.414-2.872 2.872c.528.411 1.003.886 1.414 1.414z"
-                            />
-                        </g>
-                    </svg>
-
-                    <span class="trn">Edit weather & greetings</span>
-                </button>
-
-                <button
-                    data-action="openTheseSettings"
-                    data-attribute="quotes_title"
-                    title="Open the quotes settings"
-                    aria-label="Open the quotes settings"
-                >
-                    <svg
-                        clip-rule="evenodd"
-                        fill-rule="evenodd"
-                        fill="currentColor"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g fill-rule="nonzero" transform="translate(-.00001 0)">
-                            <path d="m9.135 9h3l-2.135 5.608h-3z" />
-                            <path d="m14.135 9h3l-2.135 5.608h-3z" />
-                        </g>
-                    </svg>
-
-                    <span class="trn">Edit quotes settings</span>
-                </button>
-
-                <button
-                    data-action="openTheseSettings"
-                    data-attribute="pomodoro_title"
-                    title="Open the pomodoro settings"
-                    aria-label="Open the pomodoro settings"
-                >
-                    <svg
-                        class="w-64 h-64"
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
-                        id="mdi-timer-outline"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            d="M12,20A7,7 0 0,1 5,13A7,7 0 0,1 12,6A7,7 0 0,1 19,13A7,7 0 0,1 12,20M19.03,7.39L20.45,5.97C20,5.46 19.55,5 19.04,4.56L17.62,6C16.07,4.74 14.12,4 12,4A9,9 0 0,0 3,13A9,9 0 0,0 12,22C17,22 21,17.97 21,13C21,10.88 20.26,8.93 19.03,7.39M11,14H13V8H11M15,1H9V3H15V1Z"
-                        >
-                        </path>
-                    </svg>
-
-                    <span class="trn">Edit pomodoro settings</span>
-                </button>
-
-                <button
-                    data-action="openTheseSettings"
-                    data-attribute="background_title"
-                    title="Open the background settings"
-                    aria-label="Open the background settings"
-                >
-                    <svg
-                        clip-rule="evenodd"
-                        fill="currentColor"
-                        fill-rule="evenodd"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g transform="translate(0 -.00001)">
-                            <path
-                                d="m7 7c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm-1 3c0-.552.448-1 1-1s1 .448 1 1-.448 1-1 1-1-.448-1-1z"
-                            />
-                            <path
-                                d="m3 3c-1.657 0-3 1.343-3 3v12c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-12c0-1.657-1.343-3-3-3zm18 2h-18c-.552 0-1 .448-1 1v12c0 .552.448 1 1 1h4.314l6.878-6.879c1.172-1.171 3.072-1.171 4.243 0l3.565 3.565v-9.686c0-.552-.448-1-1-1zm0 14h-10.858l5.465-5.464c.39-.391 1.023-.391 1.414 0l4.886 4.886c-.159.341-.505.578-.907.578z"
-                            />
-                        </g>
-                    </svg>
-
-                    <span class="trn">Edit background settings</span>
-                </button>
-
-                <button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
-                    <svg
-                        clip-rule="evenodd"
-                        fill="currentColor"
-                        fill-rule="evenodd"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g fill-rule="nonzero">
-                            <path
-                                d="m14.828 12 1.415 1.414 2.828-2.828c1.562-1.562 1.562-4.095 0-5.657s-4.095-1.562-5.657 0l-2.828 2.828 1.414 1.415 2.828-2.829c.782-.781 2.048-.781 2.829 0s.781 2.047 0 2.829z"
-                            />
-                            <path
-                                d="m12 14.829 1.414 1.414-2.828 2.828c-1.562 1.562-4.095 1.562-5.657 0s-1.562-4.095 0-5.657l2.828-2.828 1.415 1.414-2.829 2.829c-.781.781-.781 2.047 0 2.828s2.048.781 2.829 0z"
-                            />
-                            <path
-                                d="m14.829 10.586c.39-.391.39-1.024 0-1.415-.391-.39-1.024-.39-1.415 0l-4.242 4.243c-.391.391-.391 1.024 0 1.414.39.391 1.023.391 1.414 0z"
-                            />
-                        </g>
-                    </svg>
-                    <span class="trn">Add new quick link</span>
-                </button>
-            </div>
-
-            <div id="pomodoro-info">
-                <hr />
-                <div><span class="trn">Sessions today</span>: <span id="poms-today">0</span></div>
-                <div><span class="trn">This week</span>: <span id="poms-week">0</span></div>
-                <div><span class="trn">This month</span>: <span id="poms-month">0</span></div>
-            </div>
-
-            <div id="background-actions">
-                <hr />
-                <a id="download-background"></a>
-
-                <div class="buttons">
-                    <button
-                        id="b_interface-background-mute"
-                        class="not-safari"
-                        title="Enable or disable background video sound"
-                        aria-label="Enable or disable background video sound"
-                    >
-                        <span id="interface-background-mute-icon" class="iconContainer">
-                            <svg
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                viewBox="0 0 22 19"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m17.25 9.75 2.25 2.25m0 0 2.25 2.25m-2.25-2.25 2.25-2.25m-2.25 2.25-2.25 2.25m-10.5-6 4.72-4.72c.141-.14.331-.219.53-.219.411 0 .75.338.75.749v15.88c0 .411-.339.749-.75.749-.199 0-.389-.079-.53-.219l-4.72-4.72h-2.24c-.88 0-1.704-.507-1.938-1.354-.214-.781-.323-1.586-.322-2.396 0-.83.112-1.633.322-2.396.234-.848 1.058-1.354 1.938-1.354z"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    transform="translate(-1.5 -2.56066)"
-                                />
-                            </svg>
-                        </span>
-
-                        <span class="trn" id="interface-background-mute-string">Mute video background</span>
-
-                        <span id="interface-background-unmute-icon" class="iconContainer">
-                            <svg
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                viewBox="0 0 22 19"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m19.114 5.636c1.687 1.687 2.636 3.978 2.636 6.364s-.949 4.677-2.636 6.364m-2.651-10.076c2.036 2.036 2.036 5.388 0 7.424m-9.713-7.462 4.72-4.72c.141-.14.331-.219.53-.219.411 0 .75.338.75.749v15.88c0 .411-.339.749-.75.749-.199 0-.389-.079-.53-.219l-4.72-4.72h-2.24c-.88 0-1.704-.507-1.938-1.354-.214-.781-.323-1.586-.322-2.396 0-.83.112-1.633.322-2.396.234-.848 1.058-1.354 1.938-1.354z"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    transform="translate(-1.5 -2.56066)"
-                                />
-                            </svg>
-                        </span>
-
-                        <span class="trn" id="interface-background-unmute-string">Unmute video background</span>
-                    </button>
-
-                    <button
-                        id="b_interface-background-download"
-                        title="Download the current background"
-                        aria-label="Download the current background"
-                        class="idle"
-                    >
-                        <span id="idle-download" class="iconContainer">
-                            <svg
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 14 14"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <g fill-rule="nonzero" fill="currentColor" transform="translate(-3.33333 -5.33333)">
-                                    <path
-                                        d="m9.167 6.167c0-.461.373-.834.833-.834s.833.373.833.834v5.964l2.703-2.702 1.178 1.179-4.714 4.714-4.714-4.714 1.179-1.179 2.702 2.702z"
-                                    />
-                                    <path
-                                        d="m3.333 13.667h1.667v3.333h10v-3.333h1.667v3.333c0 .921-.746 1.667-1.667 1.667h-10c-.92 0-1.667-.746-1.667-1.667z"
-                                    />
-                                </g>
-                            </svg>
-                        </span>
-
-                        <span id="is-downloading" class="iconContainer">
-                            <svg
-                                class="spin"
-                                fill="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
-                                    opacity=".25"
-                                />
-                                <path
-                                    d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"
-                                />
-                            </svg>
-                        </span>
-                        <span class="trn">Download background</span>
-                    </button>
-
-                    <button
-                        id="b_interface-background-pause"
-                        title="Lock the current background"
-                        aria-label="Lock the current background"
-                    >
-                        <span id="interface-background-pause-icon" class="iconContainer">
-                            <svg
-                                fill="currentColor"
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 18 21"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6s6 2.686 6 6zm-6-7c2.209 0 4 1.791 4 4v3h-8v-3c0-2.209 1.791-4 4-4zm6 9h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z"
-                                    transform="translate(-3 -1.5)"
-                                />
-                            </svg>
-                        </span>
-
-                        <span class="trn" id="interface-background-pause-string">Lock current background</span>
-
-                        <span id="interface-background-play-icon" class="iconContainer">
-                            <svg
-                                fill="currentColor"
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 18 21"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6 3.145 0 5.725 2.42 5.979 5.5h-2.01c-.246-1.973-1.929-3.5-3.969-3.5-2.209 0-4 1.791-4 4v3zm0 2h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z"
-                                    transform="translate(-3 -1.5)"
-                                />
-                            </svg>
-                        </span>
-
-                        <span class="trn" id="interface-background-play-string">Unlock current background</span>
-                    </button>
-
-                    <button
-                        id="b_interface-background-refresh"
-                        class="refresh-btn"
-                        title="Change to another background"
-                        aria-label="Change to another background"
-                    >
-                        <span class="iconContainer">
-                            <svg
-                                fill="currentColor"
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m20.3 13.43c-.521-.162-1.084.13-1.25.65-.967 2.956-3.76 4.956-6.87 4.92-3.888.044-7.125-3.113-7.18-7 .055-3.887 3.292-7.044 7.18-7 1.697-.004 3.343.587 4.65 1.67l-2.17-.36c-.054-.009-.108-.013-.162-.013-.49 0-.911.359-.988.843-.009.054-.013.108-.013.162 0 .49.359.911.843.988l4.24.7h.17c.116 0 .231-.02.34-.06.037-.014.07-.034.1-.06.072-.027.139-.064.2-.11l.09-.11c0-.05.09-.09.13-.15s0-.1.05-.14c.028-.058.051-.118.07-.18l.75-4c.012-.063.018-.126.018-.19 0-.558-.46-1.018-1.018-1.018-.487 0-.909.35-1 .828l-.27 1.45c-1.674-1.45-3.815-2.25-6.03-2.25-4.985-.044-9.125 4.015-9.18 9 .055 4.985 4.195 9.044 9.18 9 3.999.061 7.593-2.514 8.82-6.32.027-.092.041-.188.041-.284 0-.451-.305-.849-.741-.966z"
-                                    fill-rule="nonzero"
-                                    transform="matrix(1.33257 0 0 1.33257 -3.99772 -3.98641)"
-                                />
-                            </svg>
-                        </span>
-                        <span class="trn">Next background</span>
-                    </button>
-                </div>
-            </div>
-        </dialog>
-
-        <dialog id="element-mover" class="hidden">
-            <div id="grid-selection">
-                <p class="trn">Editing</p>
-                <h3 id="mover-title" class="trn">No selection</h3>
-            </div>
-
-            <div>
-                <p class="trn">Grid position</p>
-                <div id="grid-mover" class="mover">
-                    <button type="button" data-row="-1">
-                        <i class="chevron rotate-half"></i>
-                    </button>
-                    <button type="button" data-col="-1">
-                        <i class="chevron rotate-quart"></i>
-                    </button>
-                    <button type="button" data-col="1">
-                        <i class="chevron rotate-quart-r"></i>
-                    </button>
-                    <button type="button" data-row="1">
-                        <i class="chevron"></i>
-                    </button>
-                </div>
-            </div>
-            <div id="grid-spanner-container">
-                <button class="grid-spanner trn" id="grid-span-rows">Fill row</button>
-                <button class="grid-spanner trn" id="grid-span-cols">Fill column</button>
-            </div>
-            <div>
-                <p class="trn">Box alignment</p>
-                <div id="box-alignment-mover" class="mover">
-                    <button type="button" data-align="baseline">
-                        <i class="box-corner"></i>
-                    </button>
-                    <button type="button" data-align="baseline center">
-                        <i class="box-side rotate-half"></i>
-                    </button>
-                    <button type="button" data-align="baseline end">
-                        <i class="box-corner rotate-quart"></i>
-                    </button>
-                    <button type="button" data-align="center baseline">
-                        <i class="box-side rotate-quart"></i>
-                    </button>
-                    <button type="button" data-align="center">
-                        <i class="box-center"></i>
-                    </button>
-                    <button type="button" data-align="center end">
-                        <i class="box-side rotate-quart-r"></i>
-                    </button>
-                    <button type="button" data-align="end baseline">
-                        <i class="box-corner rotate-quart-r"></i>
-                    </button>
-                    <button type="button" data-align="end center">
-                        <i class="box-side"></i>
-                    </button>
-                    <button type="button" data-align="end">
-                        <i class="box-corner rotate-half"></i>
-                    </button>
-                </div>
-            </div>
-            <div>
-                <p class="trn">Text alignment</p>
-                <div id="text-alignment-mover" class="mover">
-                    <button data-align="left">
-                        <i class="text-left"></i>
-                    </button>
-                    <button data-align="center">
-                        <i class="text-center"></i>
-                    </button>
-                    <button data-align="right">
-                        <i class="text-right"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div id="close-mover-wrapper">
-                <hr />
-
-                <button id="b_resetlayout" class="trn btn-red">Reset layout</button>
-                <button id="close-mover" class="trn">Done</button>
-            </div>
-        </dialog>
-
-        <div id="background-wrapper" class="hidden" data-type="images" data-texture="none">
-            <div id="background-media"></div>
-            <div id="background-color"></div>
-            <div id="background-texture"></div>
-        </div>
-
-        <main id="interface">
-            <div id="time">
-                <div id="time-container" data-hide="clock">
-                    <div id="clock-wrapper" class="clock-wrapper" data-index="0">
-                        <h1 class="digital" data-hide="clock">
-                            <span class="digital-hh-leading-zero">0</span><span
-                                class="digital-hh"
-                            ></span><span
-                                class="digital-hh-separator"
-                            >:</span><span
-                                class="digital-mm"
-                            ></span><span
-                                class="digital-mm-separator"
-                            >:</span><span
-                                class="digital-ss"
-                            ></span><span
-                                class="digital-am"
-                            >am</span><span
-                                class="digital-pm"
-                            >pm</span>
-                        </h1>
-
-                        <div class="analog" data-hide="clock">
-                            <div class="analog-face">
-                                <span>12</span>
-                                <span>3</span>
-                                <span>6</span>
-                                <span>9</span>
-                            </div>
-
-                            <div class="analog-center"></div>
-                            <span class="analog-hours"></span>
-                            <span class="analog-minutes"></span>
-                            <span class="analog-seconds"></span>
-                        </div>
-
-                        <p class="clock-region">Paris</p>
-
-                        <p class="clock-date" data-hide="date">
-                            <span class="clock-date-aa"></span>
-                            <span class="clock-date-aa-separator"></span>
-                            <span class="clock-date-bb"></span>
-                            <span class="clock-date-bb-separator"></span>
-                            <span class="clock-date-cc"></span>
-                            <span class="clock-date-secondary"></span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="main" class="hidden">
-                <h2 id="greetings" data-hide="greetings">
-                    <span id="greeting"></span>
-                    <span id="greeting-name"></span>
-                </h2>
-
-                <a id="weather" class="wait init" rel="noreferrer">
-                    <div id="description" data-hide="weatherdesc">
-                        <p id="current">
-                            <span id="current-desc"></span>
-                            <span id="current-temp"></span>
-                        </p>
-                        <p id="forecast">forecast</p>
-                    </div>
-
-                    <div id="tempContainer" data-hide="weathericon">
-                        <span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
-                        <p>00</p>
-                    </div>
-                </a>
-            </div>
-
-            <div id="notes_container" class="hidden"></div>
-
-            <form id="sb_container" class="hidden">
-                <div id="searchbar-wrapper">
-                    <input
-                        id="searchbar"
-                        type="text"
-                        name="searchbar"
-                        autocomplete="off"
-                        spellcheck="false"
-                        aria-label="Search bar"
-                    />
-
-                    <div id="sb-buttons">
-                        <button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
-
-                        <hr />
-
-                        <button id="sb_submit" aria-label="Submit search" type="submit" disabled>
-                            <img
-                                src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDk1IDQ2NiAzODUgMzU2YTIwOSAyMDkgMCAwIDAtMTQtMjgzIDIwOSAyMDkgMCAwIDAtMjk4IDAgMjA5IDIwOSAwIDAgMCAwIDI5OCAyMTAgMjEwIDAgMCAwIDI4MyAxNGwxMTAgMTEwYTIwIDIwIDAgMSAwIDI5LTI5ek0xMDIgMzQyYTE2OSAxNjkgMCAwIDEgMC0yNDAgMTY5IDE2OSAwIDAgMSAyNDAgMCAxNjkgMTY5IDAgMCAxIDAgMjQwIDE2OSAxNjkgMCAwIDEtMjQwIDB6Ii8+PC9zdmc+"
-                                class="default-search-icon"
-                                draggable="false"
-                                alt=""
-                            />
-                        </button>
-                    </div>
-                </div>
-
-                <ul id="sb-suggestions"></ul>
-            </form>
-
-            <div id="pomodoro_container" class="hidden">
-                <fieldset id="pmdr_modes" class="glass">
-                    <div class="pomodoro_mode" tabindex="0">
-                        <input type="radio" id="pmdr-pomodoro" name="pomodoro_modes" value="pomodoro" checked />
-                        <label for="pmdr-pomodoro" class="trn">Pomodoro</label>
-                    </div>
-
-                    <div class="pomodoro_mode" tabindex="0">
-                        <input type="radio" id="pmdr-break" name="pomodoro_modes" value="break" />
-                        <label class="trn" for="pmdr-break">Break</label>
-                    </div>
-
-                    <div class="pomodoro_mode" tabindex="0">
-                        <input type="radio" id="pmdr-longbreak" name="pomodoro_modes" value="longbreak" />
-                        <label class="trn" for="pmdr-longbreak">Long break</label>
-                    </div>
-
-                    <span class="glider"></span>
-                </fieldset>
-
-                <span id="pmdr_timer">00:00</span>
-
-                <div id="bottomControls">
-                    <button id="pmdr_start" class="glass">
-                        <svg
-                            class="w-64 h-64"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                        >
-                            <path
-                                d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
-                            >
-                            </path>
-                        </svg>
-                    </button>
-
-                    <button id="pmdr_pause" class="glass">
-                        <svg
-                            class="w-64 h-64"
-                            fill="currentColor"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                        >
-                            <path
-                                d="M48 64C21.5 64 0 85.5 0 112L0 400c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48L48 64zm192 0c-26.5 0-48 21.5-48 48l0 288c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48l-32 0z"
-                            >
-                            </path>
-                        </svg>
-                    </button>
-
-                    <button id="pmdr_reset" class="glass">
-                        <svg
-                            fill="currentColor"
-                            clip-rule="evenodd"
-                            fill-rule="evenodd"
-                            stroke-linejoin="round"
-                            stroke-miterlimit="2"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="m20.3 13.43c-.521-.162-1.084.13-1.25.65-.967 2.956-3.76 4.956-6.87 4.92-3.888.044-7.125-3.113-7.18-7 .055-3.887 3.292-7.044 7.18-7 1.697-.004 3.343.587 4.65 1.67l-2.17-.36c-.054-.009-.108-.013-.162-.013-.49 0-.911.359-.988.843-.009.054-.013.108-.013.162 0 .49.359.911.843.988l4.24.7h.17c.116 0 .231-.02.34-.06.037-.014.07-.034.1-.06.072-.027.139-.064.2-.11l.09-.11c0-.05.09-.09.13-.15s0-.1.05-.14c.028-.058.051-.118.07-.18l.75-4c.012-.063.018-.126.018-.19 0-.558-.46-1.018-1.018-1.018-.487 0-.909.35-1 .828l-.27 1.45c-1.674-1.45-3.815-2.25-6.03-2.25-4.985-.044-9.125 4.015-9.18 9 .055 4.985 4.195 9.044 9.18 9 3.999.061 7.593-2.514 8.82-6.32.027-.092.041-.188.041-.284 0-.451-.305-.849-.741-.966z"
-                                fill-rule="nonzero"
-                                transform="matrix(1.33257 0 0 1.33257 -3.99772 -3.98641)"
-                            />
-                        </svg>
-                    </button>
-
-                    <label id="focus-toggle" tabindex="0">
-                        <input type="checkbox" id="pmdr-focus" name="pmdr-focus" value="pmdr-focus" />
-                        <span class="slider" for="pmdr-focus"></span>
-                        <span class="trn">Focus</span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="linkblocks">
-                <div id="link-mini">
-                    <div></div>
-                </div>
-            </div>
-
-            <div id="quotes_container" class="hidden">
-                <p id="quote"></p>
-                <p id="author"></p>
-            </div>
-        </main>
-
-        <div id="credit-container">
-            <div id="credit"></div>
-        </div>
-
-        <div id="show-settings" data-hide="settingsicon">
-            <button aria-label="Toggle settings menu" title="Toggle settings menu">
-                <img
-                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTkuNjYiIGhlaWdodD0iMTk5LjkzIiB2aWV3Qm94PSIwIDAgNTIuODMgNTIuOSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5LjczIDUyLjU3Yy0uMjYtLjItLjkzLTEuNDEtMS40OC0yLjcxLTEuMS0yLjU3LTEuNDItMi45My0yLjQyLTIuNjgtLjUxLjEzLS44OS42Ni0xLjY3IDIuMzYtMS4yIDIuNTktMS42IDMuMTEtMi40IDMuMTEtMS4xIDAtMS4zNS0uNTgtMS41MS0zLjQ4LS4xMy0yLjM4LS4yMy0yLjc4LS43My0zLjItLjMyLS4yNS0uNy0uNDYtLjg0LS40NnMtMS4yNS45NS0yLjQ2IDIuMTJjLTEuMjIgMS4xNi0yLjM4IDIuMTEtMi41OSAyLjExLS41MiAwLTEuMjUtLjg2LTEuMjUtMS40OSAwLS4yOC4zLTEuNTYuNjctMi44NCAxLjEyLTMuODQuNDYtNC4zMS0zLjQ3LTIuNTQtMi4xNS45OC0yLjYgMS4xLTMuMTYuODMtMS4wOC0uNDktLjg1LTEuNDUuOTMtMy45IDEuNzItMi4zNyAxLjkxLTMuMDcgMS0zLjY2LS41LS4zLTEuMDYtLjMzLTMuMi0uMTEtMi45LjI5LTMuMjcuMjItMy42LS42NC0uMzMtLjg5LjA1LTEuMzcgMi4yLTIuODMgMS4wNy0uNzIgMi4xNC0xLjUgMi4zOC0xLjc0IDEuMS0xLjEuMTYtMS45Ny0yLjk3LTIuNzhDLjM4IDI3LjMzLS4yOCAyNi44Mi4xIDI1LjcyYy4yMy0uNjQuNTMtLjc5IDIuOTctMS40MiAxLjUtLjQgMi45LS44NSAzLjEtMS4wMy43Ny0uNjMuNDYtMS41NC0uODQtMi40NC0yLjM1LTEuNjItMy44LTIuODUtMy44LTMuMjEgMC0uMi4yMi0uNjQuNS0uOTcuNDgtLjYuNS0uNiAzLjM1LS4zIDIuNTYuMjkgMi45LjI3IDMuMzQtLjEyLjI3LS4yNC40OC0uNjQuNDgtLjg5IDAtLjI0LS43LTEuNS0xLjU4LTIuOC0uODgtMS4yOS0xLjU5LTIuNTMtMS41OS0yLjc3IDAtLjQ4LjgtMS4zIDEuMjctMS4zLjE3IDAgMS40My41NiAyLjggMS4yNCAyLjIyIDEuMSAyLjU5IDEuMiAzLjE5LjkzLjg0LS4zOC44Ni0uOTYuMTMtMy44Mi0uNjgtMi42OC0uNjEtMy40Mi4zNi0zLjc2LjY4LS4yNC44Ny0uMTIgMi45MSAxLjkxIDEuMiAxLjIgMi4zNyAyLjE3IDIuNiAyLjE3Ljg4IDAgMS4yNi0uODkgMS41NC0zLjdDMjEuMTMuNTkgMjEuNCAwIDIyLjQ0IDBjLjY3IDAgMS4xNy43MSAyLjI0IDMuMjMgMS40OCAzLjQ2IDIuMzggMy41IDMuOTguMTRDMjkuOTUuNjUgMzAuMjYuMjcgMzEuMi4yN2MxIDAgMS4xOS40NiAxLjM4IDMuNTMuMDkgMS40NC4zIDIuNzguNDYgMi45OC42OC44MiAxLjYxLjQgMy43LTEuNjIgMS4xMi0xLjEgMi4xOC0xLjk4IDIuMzUtMS45OC4xNyAwIC41NC4xMi44Mi4yNy43LjM4LjY2IDEuMzktLjIgNC4yMy0uNjggMi4zLS42OCAyLjM4LS4yMSAyLjkuNjYuNzQgMS4wNi42OCAzLjY3LS41MyAyLjQzLTEuMTIgMy4wNC0xLjI1IDMuNTUtLjc0LjY0LjY0LjMgMS42NC0xLjMgMy44NC0xLjI4IDEuNzgtMS41NyAyLjM1LTEuNDQgMi44OC4yMy45LjkgMS4wOSAzLjE0Ljg2IDMuMjUtLjMyIDMuNTctLjI5IDQuMDUuNDQuMzguNi4zOS43Mi4wMyAxLjI3LS4yMi4zNC0xLjM1IDEuMjQtMi41MiAyLTEuMTYuNzctMi4xNyAxLjYtMi4yMyAxLjg1LS4yNS45Mi4yNiAxLjU5IDEuNDQgMS45IDMuOTMgMS4wMiA0LjcgMS4zMyA0Ljg2IDEuOTYuMyAxLjI0LS4yMiAxLjYzLTMuMDUgMi4yOC00LjEuOTItNC40OCAxLjkzLTEuNTQgMy45NSAzLjE1IDIuMTcgMy42MyAyLjg5IDIuNTkgMy44NC0uNDguNDMtLjc0LjQ1LTMuMzQuMTUtMi41NS0uMjgtMi44NS0uMjctMy4zLjE0LS4yOC4yNS0uNS42NS0uNS44OCAwIC4yNC43IDEuNDkgMS41OCAyLjc4Ljg3IDEuMjkgMS41OSAyLjU2IDEuNTkgMi44M3MtLjMxLjY5LS42OS45M2MtLjY3LjQ0LS43NC40Mi0zLjMtLjgzLTIuMy0xLjE0LTIuNjgtMS4yNS0zLjI4LS45OC0uODQuMzgtLjg3IDEuMDktLjEzIDMuNzQuNzEgMi41Ni42MiAzLjUtLjM2IDMuODQtLjcuMjUtLjg2LjE0LTIuODgtMS45MS0zLjEtMy4xNi0zLjctMi45My00LjE0IDEuNTItLjIxIDIuMS0uMzkgMi44NS0uNzQgMy4xMS0uNTguNDMtLjkzLjQyLTEuNTMtLjAxem0uNzUtMTAuMjNjMS4xMi0uMjkgMi43OC0uOTEgMy42OC0xLjM5YTIwLjE2IDIwLjE2IDAgMCAwIDYuMjMtNS44N2MxLjE2LTIuMzcgMi4yNC00LjMzIDIuMDItNi45bC03LjQzLS4wN2MtNi44Mi0uMDctNy40Ni0uMDMtNy44NS40LS43Ny44Ni03LjA4IDEyLjAxLTcuMDggMTIuNTEgMCAxLjU3IDYuMzQgMi4zNyAxMC40MyAxLjMyem0tOS43My05LjEzYzEuOTYtMy40IDMuNTMtNi4zOCAzLjUzLTYuNzUgMC0xLjAzLTYuOTEtMTIuODItNy41Ny0xMi45MS0uNzQtLjExLTMuNjggMy4wNS00LjggNS4xNmExNi45OCAxNi45OCAwIDAgMC0uMDIgMTUuNDZjMS4xMiAyLjEgNC4wOCA1LjMgNC44IDUuMi4zOS0uMDYgMS41LTEuNzYgNC4wNi02LjE2em0yMS4xOC0xMi4xM0ExNyAxNyAwIDAgMCAzMC4xIDEwLjQyYy0zLjUzLS44OS05LjgtLjAyLTEwIDEuMzgtLjA4LjUgNi4wNSAxMS40OCA3LjAzIDEyLjYxLjM4LjQzIDEuMDIuNDYgNy44NC40bDcuNDMtLjA3Yy4xOS0xLjI3LS4xLTIuNi0uNDgtMy42NnoiLz48L3N2Zz4="
-                    alt=""
-                    draggable="false"
-                />
-            </button>
-        </div>
-
-        <aside id="settings" class="init hidden" style="display: none">
-            <!-- settings -->
-        </aside>
-
-        <div id="templates">
-            <template id="bookmarks-dialog-template">
-                <dialog id="bookmarks">
-                    <div id="bookmarks-header">
-                        <div id="bookmarks-intro">
-                            <span class="trn">
-                                Synchronized groups are automatically updated to match your browser bookmarks. Learn
-                                more on
-                            </span>
-
-                            <a class="trn" target="_blank" href="https://bonjourr.fr/docs/overview#link-groups"
-                            >our documentation</a>.
-                        </div>
-
-                        <div id="bookmarks-buttons">
-                            <button id="bmk_close" class="trn btn-red">Close</button>
-                            <button id="bmk_apply" class="trn" disabled>Import selection</button>
-                        </div>
-                    </div>
-
-                    <div id="bookmarks-container"></div>
-                </dialog>
-            </template>
-
-            <template id="bookmarks-folder-template">
-                <div class="bookmarks-folder">
-                    <div class="bookmarks-folder-title">
-                        <h2>
-                            <span class="bookmarks-folder-title-content"></span>
-                            <span class="bookmarks-folder-title-synced trn">(synced)</span>
-                        </h2>
-                        <div>
-                            <button class="trn b_bookmarks-folder-select">Select group</button>
-                            <button class="trn b_bookmarks-folder-sync" disabled>Sync with browser</button>
-                        </div>
-                    </div>
-                    <ol></ol>
-                </div>
-            </template>
-
-            <template id="bookmarks-item-template">
-                <li>
-                    <button>
-                        <img draggable="false" loading="lazy" alt="" />
-                        <p class="bookmark-title"></p>
-                        <p class="bookmark-url"></p>
-                    </button>
-                </li>
-            </template>
-
-            <template id="link-group-template">
-                <div class="link-group">
-                    <ul class="link-list"></ul>
-                    <button class="link-title"></button>
-                </div>
-            </template>
-
-            <template id="link-elem-template">
-                <li class="link link-elem">
-                    <a rel="noreferrer noopener" draggable="false">
-                        <div>
-                            <img alt="" draggable="false" />
-                        </div>
-                        <span></span>
-                    </a>
-                </li>
-            </template>
-
-            <template id="link-folder-template">
-                <li class="link link-folder" tabindex="0">
-                    <div>
-                        <img alt="" draggable="false" />
-                        <img alt="" draggable="false" />
-                        <img alt="" draggable="false" />
-                        <img alt="" draggable="false" />
-                    </div>
-                    <span></span>
-                </li>
-            </template>
-
-            <template id="popup-template">
-                <div id="popup">
-                    <div id="popup_text">
-                        <div id="popup_close" tabindex="0">✕</div>
-                        <img id="popup_icon" src="src/assets/interface/version-22-promo.png" alt="Version 22 icon" />
-                        <p id="popup_desc"></p>
-                    </div>
-                    <div id="popup_buttons"></div>
-                </div>
-            </template>
-
-            <template id="supporters-modal-template">
-                <div id="supporters-modal-container">
-                    <canvas id="glitter"></canvas>
-                    <dialog id="supporters-modal">
-                        <button id="supporters-modal-close" tabindex="0">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-
-                        <main>
-                            <header>
-                                <h2>✨ <span></span> ✨</h2>
-                                <p></p>
-                            </header>
-
-                            <section>
-                                <div id="supporters-monthly">
-                                    <h3></h3>
-                                    <ul></ul>
-                                </div>
-
-                                <div id="supporters-once">
-                                    <h3></h3>
-                                    <ul></ul>
-                                </div>
-                            </section>
-                        </main>
-
-                        <footer>
-                            <p></p>
-
-                            <a
-                                id="donate-button"
-                                href="https://ko-fi.com/bonjourr"
-                                title="Donate on Bonjourr's Ko-Fi page"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="1.5"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                                    />
-                                </svg>
-                                <span id="donate-button-text" class="trn"></span>
-                            </a>
-                        </footer>
-                    </dialog>
-                </div>
-            </template>
-
-            <template id="opera-explainer-template">
-                <dialog id="opera-explainer">
-                    <div>
-                        <h1 class="trn">Ok so... this is embarassing 😅</h1>
-
-                        <p class="trn">
-                            Opera does not allow extensions to modify its new tab. While there is no official statement,
-                            we believe this is because ads on their speed dial is a good revenue source for them.
-                        </p>
-
-                        <h2 class="trn">What to do from here?</h2>
-
-                        <ul>
-                            <li class="trn">Remove Bonjourr and use Opera speed dial</li>
-                            <li class="trn">Use a similar browser like Brave or Vivaldi</li>
-                            <li>
-                                <span class="trn">Follow </span>
-                                <a href="https://bonjourr.fr/docs#opera" class="trn"
-                                >this tutorial on our documentation</a>
-                                <span class="trn">. Bonjourr, or any homepage, should somewhat work!</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <hr />
-
-                    <button id="b_opera-explained" class="trn">Close and access Bonjourr</button>
-                </dialog>
-            </template>
-
-            <!-- help-mode -->
-            <style>
-                #help-mode-prompt {
-                    position: fixed;
-                    top: 40vh;
-                    left: 0;
-                    right: 0;
-                    color: #eeeeee;
-                    font-family: system-ui;
-                    font-size: 1em;
-                    text-align: center;
-                    z-index: 1;
-                }
-
-                #help-mode-prompt h1 {
-                    margin-bottom: 0;
-                }
-
-                #help-mode-prompt p {
-                    margin-top: 0.5em;
-                }
-
-                #help-buttons {
-                    margin-top: 1.5em;
-                    display: flex;
-                    justify-content: center;
-                    gap: 1em;
-                }
-
-                .help-btn {
-                    cursor: pointer;
-                    height: 31px;
-                    padding: 0 1em;
-                    color: var(--color-blue);
-                    border: none;
-                    border-radius: 1em;
-                    white-space: nowrap;
-                    background-color: rgba(var(--blue), 0.25);
-                    display: inline-flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 5px;
-                }
-
-                .help-btn:hover {
-                    background-color: rgba(var(--blue), 0.35);
-                }
-
-                .help-btn[disabled] {
-                    color: #777777;
-                    background-color: #282828;
-                    cursor: not-allowed;
-                }
-
-                .help-btn.danger:hover {
-                    color: var(--color-red);
-                    background-color: rgba(var(--red), 0.25);
-                }
-            </style>
-        </div>
-    </body>
+	<head>
+		<title>New tab</title>
+
+		<meta charset="utf-8" />
+		<meta name="theme-color" content="#000" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"
+		/>
+
+		<!-- default icon -->
+		<!-- icon -->
+		<!-- manifest -->
+		<!-- webext-storage -->
+
+		<link rel="stylesheet" href="src/styles/style.css" />
+		<style type="text/css" id="styles"></style>
+		<style type="text/css" id="fontface"></style>
+
+		<script src="src/scripts/help-mode.js" defer></script>
+		<script src="src/scripts/main.js" defer></script>
+	</head>
+
+	<body class="init loading">
+		<dialog id="contextmenu">
+			<form id="editlink-form">
+				<label id="edit-title" autofocus>
+					<span class="trn">Title</span>
+					<input
+						id="e-title"
+						type="text"
+						name="e-title"
+						maxlength="64"
+						autocomplete="off"
+						placeholder="Example"
+					/>
+				</label>
+
+				<label id="edit-url">
+					<span class="trn">Link</span>
+					<input
+						id="e-url"
+						type="text"
+						name="e-url"
+						maxlength="512"
+						autocomplete="off"
+						autocorrect="off"
+						autocapitalize="off"
+						placeholder="https://example.com"
+					/>
+				</label>
+
+				<label id="edit-icon">
+					<span class="trn">Icon</span>
+					<select name="edit-icon" id="e-icon-type">
+						<option value="auto" class="trn">Website favicon</option>
+						<option value="file" class="trn">Local file</option>
+						<option value="url" class="trn">URL</option>
+					</select>
+				</label>
+
+				<label id="edit-icon-file">
+					<span class="trn">File</span>
+					<input id="e-icon-file" type="file" name="edit-icon-file" accept="image/*" />
+					<span id="e-icon-file-label" class="trn">No file chosen</span>
+				</label>
+
+				<label id="edit-icon-url">
+					<span class="trn">URL</span>
+					<input
+						id="e-icon-url"
+						type="url"
+						name="e-icon-url"
+						maxlength="7600"
+						autocomplete="off"
+						placeholder="https://example.com/favicon.ico"
+					/>
+				</label>
+
+				<hr />
+
+				<!-- <button type="submit" class="trn" id="edit-inputs">Submit from inputs</button> -->
+				<button type="submit" class="btn-red" id="edit-delete" formnovalidate>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+						/>
+					</svg>
+
+					<span class="trn">Delete something</span>
+				</button>
+
+				<button type="submit" id="edit-refresh">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+						/>
+					</svg>
+
+					<span class="trn">Refresh icon</span>
+				</button>
+
+				<button type="submit" id="edit-add">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+						/>
+					</svg>
+
+					<span class="trn">Add something</span>
+				</button>
+
+				<button type="submit" id="edit-pin">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+						/>
+					</svg>
+
+					<span class="trn">Pin group</span>
+				</button>
+
+				<button type="submit" id="edit-unpin">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="size-6"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+						/>
+					</svg>
+
+					<span class="trn">Unpin group</span>
+				</button>
+
+				<button type="submit" id="edit-unfolder">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+						/>
+					</svg>
+
+					<span class="trn">Remove from folder</span>
+				</button>
+
+				<button type="submit" id="edit-apply">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M3 3v18h18V6l-3-3H3ZM7.5 3v6h9V3M6 21v-9h12v9M14.25 5.25v1.5"
+						/>
+					</svg>
+					<span class="trn">Apply changes</span>
+				</button>
+				<button type="submit" class="trn" id="edit-synced">Synced links cannot be modified</button>
+			</form>
+
+			<div id="contextActions">
+				<button
+					data-action="openTheseSettings"
+					data-attribute="time_title"
+					title="Open the time settings"
+					aria-label="Open the time settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill-rule="evenodd"
+						fill="currentColor"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g transform="translate(0)">
+							<path d="m9 7h2v5h5v2h-7z" fill-rule="nonzero" />
+							<path
+								d="m22 12c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-2 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"
+							/>
+						</g>
+					</svg>
+					<span class="trn">Edit time settings</span>
+				</button>
+
+				<button
+					data-action="openTheseSettings"
+					data-attribute="main_title"
+					title="Open the weather settings"
+					aria-label="Open the weather settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill-rule="evenodd"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g fill="currentColor" transform="translate(-0 -.00002)">
+							<path
+								d="m12 16c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"
+							/>
+							<path
+								d="m11 0h2v4.062c-.328-.041-.661-.062-1-.062s-.672.021-1 .062zm-3.906 5.68-2.872-2.872-1.414 1.414 2.872 2.872c.411-.528.886-1.003 1.414-1.414zm-3.032 5.32h-4.062v2h4.062c-.041-.328-.062-.661-.062-1s.021-.672.062-1zm1.618 5.906-2.872 2.872 1.414 1.414 2.872-2.872c-.528-.411-1.003-.886-1.414-1.414zm5.32 3.032v4.062h2v-4.062c-.328.041-.661.062-1 .062s-.672-.021-1-.062zm5.906-1.618 2.872 2.872 1.414-1.414-2.872-2.872c-.411.528-.886 1.003-1.414 1.414zm3.032-5.32h4.062v-2h-4.062c.041.328.062.661.062 1s-.021.672-.062 1zm-1.618-5.906 2.872-2.872-1.414-1.414-2.872 2.872c.528.411 1.003.886 1.414 1.414z"
+							/>
+						</g>
+					</svg>
+
+					<span class="trn">Edit weather & greetings</span>
+				</button>
+
+				<button
+					data-action="openTheseSettings"
+					data-attribute="quotes_title"
+					title="Open the quotes settings"
+					aria-label="Open the quotes settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill-rule="evenodd"
+						fill="currentColor"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g fill-rule="nonzero" transform="translate(-.00001 0)">
+							<path d="m9.135 9h3l-2.135 5.608h-3z" />
+							<path d="m14.135 9h3l-2.135 5.608h-3z" />
+						</g>
+					</svg>
+
+					<span class="trn">Edit quotes settings</span>
+				</button>
+
+				<button
+					data-action="openTheseSettings"
+					data-attribute="pomodoro_title"
+					title="Open the pomodoro settings"
+					aria-label="Open the pomodoro settings"
+				>
+					<svg
+						class="w-64 h-64"
+						fill="currentColor"
+						xmlns="http://www.w3.org/2000/svg"
+						id="mdi-timer-outline"
+						viewBox="0 0 24 24"
+					>
+						<path
+							d="M12,20A7,7 0 0,1 5,13A7,7 0 0,1 12,6A7,7 0 0,1 19,13A7,7 0 0,1 12,20M19.03,7.39L20.45,5.97C20,5.46 19.55,5 19.04,4.56L17.62,6C16.07,4.74 14.12,4 12,4A9,9 0 0,0 3,13A9,9 0 0,0 12,22C17,22 21,17.97 21,13C21,10.88 20.26,8.93 19.03,7.39M11,14H13V8H11M15,1H9V3H15V1Z"
+						></path>
+					</svg>
+
+					<span class="trn">Edit pomodoro settings</span>
+				</button>
+
+				<button
+					data-action="openTheseSettings"
+					data-attribute="background_title"
+					title="Open the background settings"
+					aria-label="Open the background settings"
+				>
+					<svg
+						clip-rule="evenodd"
+						fill="currentColor"
+						fill-rule="evenodd"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g transform="translate(0 -.00001)">
+							<path
+								d="m7 7c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm-1 3c0-.552.448-1 1-1s1 .448 1 1-.448 1-1 1-1-.448-1-1z"
+							/>
+							<path
+								d="m3 3c-1.657 0-3 1.343-3 3v12c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-12c0-1.657-1.343-3-3-3zm18 2h-18c-.552 0-1 .448-1 1v12c0 .552.448 1 1 1h4.314l6.878-6.879c1.172-1.171 3.072-1.171 4.243 0l3.565 3.565v-9.686c0-.552-.448-1-1-1zm0 14h-10.858l5.465-5.464c.39-.391 1.023-.391 1.414 0l4.886 4.886c-.159.341-.505.578-.907.578z"
+							/>
+						</g>
+					</svg>
+
+					<span class="trn">Edit background settings</span>
+				</button>
+
+				<button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
+					<svg
+						clip-rule="evenodd"
+						fill="currentColor"
+						fill-rule="evenodd"
+						stroke-linejoin="round"
+						stroke-miterlimit="2"
+						viewBox="0 0 24 24"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<g fill-rule="nonzero">
+							<path
+								d="m14.828 12 1.415 1.414 2.828-2.828c1.562-1.562 1.562-4.095 0-5.657s-4.095-1.562-5.657 0l-2.828 2.828 1.414 1.415 2.828-2.829c.782-.781 2.048-.781 2.829 0s.781 2.047 0 2.829z"
+							/>
+							<path
+								d="m12 14.829 1.414 1.414-2.828 2.828c-1.562 1.562-4.095 1.562-5.657 0s-1.562-4.095 0-5.657l2.828-2.828 1.415 1.414-2.829 2.829c-.781.781-.781 2.047 0 2.828s2.048.781 2.829 0z"
+							/>
+							<path
+								d="m14.829 10.586c.39-.391.39-1.024 0-1.415-.391-.39-1.024-.39-1.415 0l-4.242 4.243c-.391.391-.391 1.024 0 1.414.39.391 1.023.391 1.414 0z"
+							/>
+						</g>
+					</svg>
+					<span class="trn">Add new quick link</span>
+				</button>
+			</div>
+
+			<div id="pomodoro-info">
+				<hr />
+				<div><span class="trn">Sessions today</span>: <span id="poms-today">0</span></div>
+				<div><span class="trn">This week</span>: <span id="poms-week">0</span></div>
+				<div><span class="trn">This month</span>: <span id="poms-month">0</span></div>
+			</div>
+
+			<div id="background-actions">
+				<hr />
+				<a id="download-background"></a>
+
+				<div class="buttons">
+					<button
+						id="b_interface-background-mute"
+						class="not-safari"
+						title="Enable or disable background video sound"
+						aria-label="Enable or disable background video sound"
+					>
+						<span id="interface-background-mute-icon" class="iconContainer">
+							<svg
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								viewBox="0 0 22 19"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="m17.25 9.75 2.25 2.25m0 0 2.25 2.25m-2.25-2.25 2.25-2.25m-2.25 2.25-2.25 2.25m-10.5-6 4.72-4.72c.141-.14.331-.219.53-.219.411 0 .75.338.75.749v15.88c0 .411-.339.749-.75.749-.199 0-.389-.079-.53-.219l-4.72-4.72h-2.24c-.88 0-1.704-.507-1.938-1.354-.214-.781-.323-1.586-.322-2.396 0-.83.112-1.633.322-2.396.234-.848 1.058-1.354 1.938-1.354z"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									transform="translate(-1.5 -2.56066)"
+								/>
+							</svg>
+						</span>
+
+						<span class="trn" id="interface-background-mute-string">Mute video background</span>
+
+						<span id="interface-background-unmute-icon" class="iconContainer">
+							<svg
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								viewBox="0 0 22 19"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="m19.114 5.636c1.687 1.687 2.636 3.978 2.636 6.364s-.949 4.677-2.636 6.364m-2.651-10.076c2.036 2.036 2.036 5.388 0 7.424m-9.713-7.462 4.72-4.72c.141-.14.331-.219.53-.219.411 0 .75.338.75.749v15.88c0 .411-.339.749-.75.749-.199 0-.389-.079-.53-.219l-4.72-4.72h-2.24c-.88 0-1.704-.507-1.938-1.354-.214-.781-.323-1.586-.322-2.396 0-.83.112-1.633.322-2.396.234-.848 1.058-1.354 1.938-1.354z"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									transform="translate(-1.5 -2.56066)"
+								/>
+							</svg>
+						</span>
+
+						<span class="trn" id="interface-background-unmute-string">Unmute video background</span>
+					</button>
+
+					<button
+						id="b_interface-background-download"
+						title="Download the current background"
+						aria-label="Download the current background"
+						class="idle"
+					>
+						<span id="idle-download" class="iconContainer">
+							<svg
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 14 14"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<g fill-rule="nonzero" fill="currentColor" transform="translate(-3.33333 -5.33333)">
+									<path
+										d="m9.167 6.167c0-.461.373-.834.833-.834s.833.373.833.834v5.964l2.703-2.702 1.178 1.179-4.714 4.714-4.714-4.714 1.179-1.179 2.702 2.702z"
+									/>
+									<path
+										d="m3.333 13.667h1.667v3.333h10v-3.333h1.667v3.333c0 .921-.746 1.667-1.667 1.667h-10c-.92 0-1.667-.746-1.667-1.667z"
+									/>
+								</g>
+							</svg>
+						</span>
+
+						<span id="is-downloading" class="iconContainer">
+							<svg
+								class="spin"
+								fill="currentColor"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
+									opacity=".25"
+								/>
+								<path
+									d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"
+								/>
+							</svg>
+						</span>
+						<span class="trn">Download background</span>
+					</button>
+
+					<button
+						id="b_interface-background-pause"
+						title="Lock the current background"
+						aria-label="Lock the current background"
+					>
+						<span id="interface-background-pause-icon" class="iconContainer">
+							<svg
+								fill="currentColor"
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 18 21"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6s6 2.686 6 6zm-6-7c2.209 0 4 1.791 4 4v3h-8v-3c0-2.209 1.791-4 4-4zm6 9h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z"
+									transform="translate(-3 -1.5)"
+								/>
+							</svg>
+						</span>
+
+						<span class="trn" id="interface-background-pause-string">Lock current background</span>
+
+						<span id="interface-background-play-icon" class="iconContainer">
+							<svg
+								fill="currentColor"
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 18 21"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6 3.145 0 5.725 2.42 5.979 5.5h-2.01c-.246-1.973-1.929-3.5-3.969-3.5-2.209 0-4 1.791-4 4v3zm0 2h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z"
+									transform="translate(-3 -1.5)"
+								/>
+							</svg>
+						</span>
+
+						<span class="trn" id="interface-background-play-string">Unlock current background</span>
+					</button>
+
+					<button
+						id="b_interface-background-refresh"
+						class="refresh-btn"
+						title="Change to another background"
+						aria-label="Change to another background"
+					>
+						<span class="iconContainer">
+							<svg
+								fill="currentColor"
+								clip-rule="evenodd"
+								fill-rule="evenodd"
+								stroke-linejoin="round"
+								stroke-miterlimit="2"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="m20.3 13.43c-.521-.162-1.084.13-1.25.65-.967 2.956-3.76 4.956-6.87 4.92-3.888.044-7.125-3.113-7.18-7 .055-3.887 3.292-7.044 7.18-7 1.697-.004 3.343.587 4.65 1.67l-2.17-.36c-.054-.009-.108-.013-.162-.013-.49 0-.911.359-.988.843-.009.054-.013.108-.013.162 0 .49.359.911.843.988l4.24.7h.17c.116 0 .231-.02.34-.06.037-.014.07-.034.1-.06.072-.027.139-.064.2-.11l.09-.11c0-.05.09-.09.13-.15s0-.1.05-.14c.028-.058.051-.118.07-.18l.75-4c.012-.063.018-.126.018-.19 0-.558-.46-1.018-1.018-1.018-.487 0-.909.35-1 .828l-.27 1.45c-1.674-1.45-3.815-2.25-6.03-2.25-4.985-.044-9.125 4.015-9.18 9 .055 4.985 4.195 9.044 9.18 9 3.999.061 7.593-2.514 8.82-6.32.027-.092.041-.188.041-.284 0-.451-.305-.849-.741-.966z"
+									fill-rule="nonzero"
+									transform="matrix(1.33257 0 0 1.33257 -3.99772 -3.98641)"
+								/>
+							</svg>
+						</span>
+						<span class="trn">Next background</span>
+					</button>
+				</div>
+			</div>
+		</dialog>
+
+		<dialog id="element-mover" class="hidden">
+			<div id="grid-selection">
+				<p class="trn">Editing</p>
+				<h3 id="mover-title" class="trn">No selection</h3>
+			</div>
+
+			<div>
+				<p class="trn">Grid position</p>
+				<div id="grid-mover" class="mover">
+					<button type="button" data-row="-1">
+						<i class="chevron rotate-half"></i>
+					</button>
+					<button type="button" data-col="-1">
+						<i class="chevron rotate-quart"></i>
+					</button>
+					<button type="button" data-col="1">
+						<i class="chevron rotate-quart-r"></i>
+					</button>
+					<button type="button" data-row="1">
+						<i class="chevron"></i>
+					</button>
+				</div>
+			</div>
+			<div id="grid-spanner-container">
+				<button class="grid-spanner trn" id="grid-span-rows">Fill row</button>
+				<button class="grid-spanner trn" id="grid-span-cols">Fill column</button>
+			</div>
+			<div>
+				<p class="trn">Box alignment</p>
+				<div id="box-alignment-mover" class="mover">
+					<button type="button" data-align="baseline">
+						<i class="box-corner"></i>
+					</button>
+					<button type="button" data-align="baseline center">
+						<i class="box-side rotate-half"></i>
+					</button>
+					<button type="button" data-align="baseline end">
+						<i class="box-corner rotate-quart"></i>
+					</button>
+					<button type="button" data-align="center baseline">
+						<i class="box-side rotate-quart"></i>
+					</button>
+					<button type="button" data-align="center">
+						<i class="box-center"></i>
+					</button>
+					<button type="button" data-align="center end">
+						<i class="box-side rotate-quart-r"></i>
+					</button>
+					<button type="button" data-align="end baseline">
+						<i class="box-corner rotate-quart-r"></i>
+					</button>
+					<button type="button" data-align="end center">
+						<i class="box-side"></i>
+					</button>
+					<button type="button" data-align="end">
+						<i class="box-corner rotate-half"></i>
+					</button>
+				</div>
+			</div>
+			<div>
+				<p class="trn">Text alignment</p>
+				<div id="text-alignment-mover" class="mover">
+					<button data-align="left">
+						<i class="text-left"></i>
+					</button>
+					<button data-align="center">
+						<i class="text-center"></i>
+					</button>
+					<button data-align="right">
+						<i class="text-right"></i>
+					</button>
+				</div>
+			</div>
+
+			<div id="close-mover-wrapper">
+				<hr />
+
+				<button id="b_resetlayout" class="trn btn-red">Reset layout</button>
+				<button id="close-mover" class="trn">Done</button>
+			</div>
+		</dialog>
+
+		<div id="background-wrapper" class="hidden" data-type="images" data-texture="none">
+			<div id="background-media"></div>
+			<div id="background-color"></div>
+			<div id="background-texture"></div>
+		</div>
+
+		<main id="interface">
+			<div id="time">
+				<div id="time-container" data-hide="clock">
+					<div id="clock-wrapper" class="clock-wrapper" data-index="0">
+						<h1 class="digital" data-hide="clock">
+							<span class="digital-hh-leading-zero">0</span><span class="digital-hh"></span
+							><span class="digital-hh-separator">:</span><span class="digital-mm"></span
+							><span class="digital-mm-separator">:</span><span class="digital-ss"></span
+							><span class="digital-number-width">0</span
+							><span class="digital-ampm">
+								<span class="digital-am">am</span><span class="digital-pm">pm</span>
+							</span>
+						</h1>
+
+						<div class="analog" data-hide="clock">
+							<div class="analog-face">
+								<span>12</span>
+								<span>3</span>
+								<span>6</span>
+								<span>9</span>
+							</div>
+
+							<div class="analog-center"></div>
+							<span class="analog-hours"></span>
+							<span class="analog-minutes"></span>
+							<span class="analog-seconds"></span>
+						</div>
+
+						<p class="clock-region">Paris</p>
+
+						<p class="clock-date" data-hide="date">
+							<span class="clock-date-aa"></span>
+							<span class="clock-date-aa-separator"></span>
+							<span class="clock-date-bb"></span>
+							<span class="clock-date-bb-separator"></span>
+							<span class="clock-date-cc"></span>
+							<span class="clock-date-secondary"></span>
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<div id="main" class="hidden">
+				<h2 id="greetings" data-hide="greetings">
+					<span id="greeting"></span>
+					<span id="greeting-name"></span>
+				</h2>
+
+				<a id="weather" class="wait init" rel="noreferrer">
+					<div id="description" data-hide="weatherdesc">
+						<p id="current">
+							<span id="current-desc"></span>
+							<span id="current-temp"></span>
+						</p>
+						<p id="forecast">forecast</p>
+					</div>
+
+					<div id="tempContainer" data-hide="weathericon">
+						<span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
+						<p>00</p>
+					</div>
+				</a>
+			</div>
+
+			<div id="notes_container" class="hidden"></div>
+
+			<form id="sb_container" class="hidden">
+				<div id="searchbar-wrapper">
+					<input
+						id="searchbar"
+						type="text"
+						name="searchbar"
+						autocomplete="off"
+						spellcheck="false"
+						aria-label="Search bar"
+					/>
+
+					<div id="sb-buttons">
+						<button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
+
+						<hr />
+
+						<button id="sb_submit" aria-label="Submit search" type="submit" disabled>
+							<img
+								src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDk1IDQ2NiAzODUgMzU2YTIwOSAyMDkgMCAwIDAtMTQtMjgzIDIwOSAyMDkgMCAwIDAtMjk4IDAgMjA5IDIwOSAwIDAgMCAwIDI5OCAyMTAgMjEwIDAgMCAwIDI4MyAxNGwxMTAgMTEwYTIwIDIwIDAgMSAwIDI5LTI5ek0xMDIgMzQyYTE2OSAxNjkgMCAwIDEgMC0yNDAgMTY5IDE2OSAwIDAgMSAyNDAgMCAxNjkgMTY5IDAgMCAxIDAgMjQwIDE2OSAxNjkgMCAwIDEtMjQwIDB6Ii8+PC9zdmc+"
+								class="default-search-icon"
+								draggable="false"
+								alt=""
+							/>
+						</button>
+					</div>
+				</div>
+
+				<ul id="sb-suggestions"></ul>
+			</form>
+
+			<div id="pomodoro_container" class="hidden">
+				<fieldset id="pmdr_modes" class="glass">
+					<div class="pomodoro_mode" tabindex="0">
+						<input type="radio" id="pmdr-pomodoro" name="pomodoro_modes" value="pomodoro" checked />
+						<label for="pmdr-pomodoro" class="trn">Pomodoro</label>
+					</div>
+
+					<div class="pomodoro_mode" tabindex="0">
+						<input type="radio" id="pmdr-break" name="pomodoro_modes" value="break" />
+						<label class="trn" for="pmdr-break">Break</label>
+					</div>
+
+					<div class="pomodoro_mode" tabindex="0">
+						<input type="radio" id="pmdr-longbreak" name="pomodoro_modes" value="longbreak" />
+						<label class="trn" for="pmdr-longbreak">Long break</label>
+					</div>
+
+					<div class="pomodoro_mode" tabindex="0">
+						<input type="radio" id="pmdr-custombreak" name="pomodoro_modes" value="custombreak" />
+						<label class="trn" for="pmdr-custombreak">Custom break</label>
+					</div>
+					<span class="glider"></span>
+				</fieldset>
+				<span id="pmdr_timer">00:00</span>
+
+				<div id="pmdr_custombreak_controls" class="hidden">
+					<button id="pmdr_custombreak_minus" class="glass" aria-label="Decrease custom break">−</button>
+					<button id="pmdr_custombreak_plus" class="glass" aria-label="Increase custom break">+</button>
+				</div>
+
+				<div id="bottomControls">
+					<button id="pmdr_start" class="glass">
+						<svg
+							class="w-64 h-64"
+							fill="currentColor"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 384 512"
+						>
+							<path
+								d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80L0 432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
+							></path>
+						</svg>
+					</button>
+
+					<button id="pmdr_pause" class="glass">
+						<svg
+							class="w-64 h-64"
+							fill="currentColor"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 320 512"
+						>
+							<path
+								d="M48 64C21.5 64 0 85.5 0 112L0 400c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48L48 64zm192 0c-26.5 0-48 21.5-48 48l0 288c0 26.5 21.5 48 48 48l32 0c26.5 0 48-21.5 48-48l0-288c0-26.5-21.5-48-48-48l-32 0z"
+							></path>
+						</svg>
+					</button>
+
+					<button id="pmdr_reset" class="glass">
+						<svg
+							fill="currentColor"
+							clip-rule="evenodd"
+							fill-rule="evenodd"
+							stroke-linejoin="round"
+							stroke-miterlimit="2"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path
+								d="m20.3 13.43c-.521-.162-1.084.13-1.25.65-.967 2.956-3.76 4.956-6.87 4.92-3.888.044-7.125-3.113-7.18-7 .055-3.887 3.292-7.044 7.18-7 1.697-.004 3.343.587 4.65 1.67l-2.17-.36c-.054-.009-.108-.013-.162-.013-.49 0-.911.359-.988.843-.009.054-.013.108-.013.162 0 .49.359.911.843.988l4.24.7h.17c.116 0 .231-.02.34-.06.037-.014.07-.034.1-.06.072-.027.139-.064.2-.11l.09-.11c0-.05.09-.09.13-.15s0-.1.05-.14c.028-.058.051-.118.07-.18l.75-4c.012-.063.018-.126.018-.19 0-.558-.46-1.018-1.018-1.018-.487 0-.909.35-1 .828l-.27 1.45c-1.674-1.45-3.815-2.25-6.03-2.25-4.985-.044-9.125 4.015-9.18 9 .055 4.985 4.195 9.044 9.18 9 3.999.061 7.593-2.514 8.82-6.32.027-.092.041-.188.041-.284 0-.451-.305-.849-.741-.966z"
+								fill-rule="nonzero"
+								transform="matrix(1.33257 0 0 1.33257 -3.99772 -3.98641)"
+							/>
+						</svg>
+					</button>
+
+					<label id="focus-toggle" tabindex="0">
+						<input type="checkbox" id="pmdr-focus" name="pmdr-focus" value="pmdr-focus" />
+						<span class="slider" for="pmdr-focus"></span>
+						<span class="trn">Focus</span>
+					</label>
+				</div>
+			</div>
+
+			<div id="linkblocks">
+				<div id="link-mini">
+					<div></div>
+				</div>
+			</div>
+
+			<div id="quotes_container" class="hidden">
+				<p id="quote"></p>
+				<p id="author"></p>
+			</div>
+		</main>
+
+		<div id="credit-container">
+			<div id="credit"></div>
+		</div>
+
+		<div id="show-settings" data-hide="settingsicon">
+			<button aria-label="Toggle settings menu" title="Toggle settings menu">
+				<img
+					src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTkuNjYiIGhlaWdodD0iMTk5LjkzIiB2aWV3Qm94PSIwIDAgNTIuODMgNTIuOSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5LjczIDUyLjU3Yy0uMjYtLjItLjkzLTEuNDEtMS40OC0yLjcxLTEuMS0yLjU3LTEuNDItMi45My0yLjQyLTIuNjgtLjUxLjEzLS44OS42Ni0xLjY3IDIuMzYtMS4yIDIuNTktMS42IDMuMTEtMi40IDMuMTEtMS4xIDAtMS4zNS0uNTgtMS41MS0zLjQ4LS4xMy0yLjM4LS4yMy0yLjc4LS43My0zLjItLjMyLS4yNS0uNy0uNDYtLjg0LS40NnMtMS4yNS45NS0yLjQ2IDIuMTJjLTEuMjIgMS4xNi0yLjM4IDIuMTEtMi41OSAyLjExLS41MiAwLTEuMjUtLjg2LTEuMjUtMS40OSAwLS4yOC4zLTEuNTYuNjctMi44NCAxLjEyLTMuODQuNDYtNC4zMS0zLjQ3LTIuNTQtMi4xNS45OC0yLjYgMS4xLTMuMTYuODMtMS4wOC0uNDktLjg1LTEuNDUuOTMtMy45IDEuNzItMi4zNyAxLjkxLTMuMDcgMS0zLjY2LS41LS4zLTEuMDYtLjMzLTMuMi0uMTEtMi45LjI5LTMuMjcuMjItMy42LS42NC0uMzMtLjg5LjA1LTEuMzcgMi4yLTIuODMgMS4wNy0uNzIgMi4xNC0xLjUgMi4zOC0xLjc0IDEuMS0xLjEuMTYtMS45Ny0yLjk3LTIuNzhDLjM4IDI3LjMzLS4yOCAyNi44Mi4xIDI1LjcyYy4yMy0uNjQuNTMtLjc5IDIuOTctMS40MiAxLjUtLjQgMi45LS44NSAzLjEtMS4wMy43Ny0uNjMuNDYtMS41NC0uODQtMi40NC0yLjM1LTEuNjItMy44LTIuODUtMy44LTMuMjEgMC0uMi4yMi0uNjQuNS0uOTcuNDgtLjYuNS0uNiAzLjM1LS4zIDIuNTYuMjkgMi45LjI3IDMuMzQtLjEyLjI3LS4yNC40OC0uNjQuNDgtLjg5IDAtLjI0LS43LTEuNS0xLjU4LTIuOC0uODgtMS4yOS0xLjU5LTIuNTMtMS41OS0yLjc3IDAtLjQ4LjgtMS4zIDEuMjctMS4zLjE3IDAgMS40My41NiAyLjggMS4yNCAyLjIyIDEuMSAyLjU5IDEuMiAzLjE5LjkzLjg0LS4zOC44Ni0uOTYuMTMtMy44Mi0uNjgtMi42OC0uNjEtMy40Mi4zNi0zLjc2LjY4LS4yNC44Ny0uMTIgMi45MSAxLjkxIDEuMiAxLjIgMi4zNyAyLjE3IDIuNiAyLjE3Ljg4IDAgMS4yNi0uODkgMS41NC0zLjdDMjEuMTMuNTkgMjEuNCAwIDIyLjQ0IDBjLjY3IDAgMS4xNy43MSAyLjI0IDMuMjMgMS40OCAzLjQ2IDIuMzggMy41IDMuOTguMTRDMjkuOTUuNjUgMzAuMjYuMjcgMzEuMi4yN2MxIDAgMS4xOS40NiAxLjM4IDMuNTMuMDkgMS40NC4zIDIuNzguNDYgMi45OC42OC44MiAxLjYxLjQgMy43LTEuNjIgMS4xMi0xLjEgMi4xOC0xLjk4IDIuMzUtMS45OC4xNyAwIC41NC4xMi44Mi4yNy43LjM4LjY2IDEuMzktLjIgNC4yMy0uNjggMi4zLS42OCAyLjM4LS4yMSAyLjkuNjYuNzQgMS4wNi42OCAzLjY3LS41MyAyLjQzLTEuMTIgMy4wNC0xLjI1IDMuNTUtLjc0LjY0LjY0LjMgMS42NC0xLjMgMy44NC0xLjI4IDEuNzgtMS41NyAyLjM1LTEuNDQgMi44OC4yMy45LjkgMS4wOSAzLjE0Ljg2IDMuMjUtLjMyIDMuNTctLjI5IDQuMDUuNDQuMzguNi4zOS43Mi4wMyAxLjI3LS4yMi4zNC0xLjM1IDEuMjQtMi41MiAyLTEuMTYuNzctMi4xNyAxLjYtMi4yMyAxLjg1LS4yNS45Mi4yNiAxLjU5IDEuNDQgMS45IDMuOTMgMS4wMiA0LjcgMS4zMyA0Ljg2IDEuOTYuMyAxLjI0LS4yMiAxLjYzLTMuMDUgMi4yOC00LjEuOTItNC40OCAxLjkzLTEuNTQgMy45NSAzLjE1IDIuMTcgMy42MyAyLjg5IDIuNTkgMy44NC0uNDguNDMtLjc0LjQ1LTMuMzQuMTUtMi41NS0uMjgtMi44NS0uMjctMy4zLjE0LS4yOC4yNS0uNS42NS0uNS44OCAwIC4yNC43IDEuNDkgMS41OCAyLjc4Ljg3IDEuMjkgMS41OSAyLjU2IDEuNTkgMi44M3MtLjMxLjY5LS42OS45M2MtLjY3LjQ0LS43NC40Mi0zLjMtLjgzLTIuMy0xLjE0LTIuNjgtMS4yNS0zLjI4LS45OC0uODQuMzgtLjg3IDEuMDktLjEzIDMuNzQuNzEgMi41Ni42MiAzLjUtLjM2IDMuODQtLjcuMjUtLjg2LjE0LTIuODgtMS45MS0zLjEtMy4xNi0zLjctMi45My00LjE0IDEuNTItLjIxIDIuMS0uMzkgMi44NS0uNzQgMy4xMS0uNTguNDMtLjkzLjQyLTEuNTMtLjAxem0uNzUtMTAuMjNjMS4xMi0uMjkgMi43OC0uOTEgMy42OC0xLjM5YTIwLjE2IDIwLjE2IDAgMCAwIDYuMjMtNS44N2MxLjE2LTIuMzcgMi4yNC00LjMzIDIuMDItNi45bC03LjQzLS4wN2MtNi44Mi0uMDctNy40Ni0uMDMtNy44NS40LS43Ny44Ni03LjA4IDEyLjAxLTcuMDggMTIuNTEgMCAxLjU3IDYuMzQgMi4zNyAxMC40MyAxLjMyem0tOS43My05LjEzYzEuOTYtMy40IDMuNTMtNi4zOCAzLjUzLTYuNzUgMC0xLjAzLTYuOTEtMTIuODItNy41Ny0xMi45MS0uNzQtLjExLTMuNjggMy4wNS00LjggNS4xNmExNi45OCAxNi45OCAwIDAgMC0uMDIgMTUuNDZjMS4xMiAyLjEgNC4wOCA1LjMgNC44IDUuMi4zOS0uMDYgMS41LTEuNzYgNC4wNi02LjE2em0yMS4xOC0xMi4xM0ExNyAxNyAwIDAgMCAzMC4xIDEwLjQyYy0zLjUzLS44OS05LjgtLjAyLTEwIDEuMzgtLjA4LjUgNi4wNSAxMS40OCA3LjAzIDEyLjYxLjM4LjQzIDEuMDIuNDYgNy44NC40bDcuNDMtLjA3Yy4xOS0xLjI3LS4xLTIuNi0uNDgtMy42NnoiLz48L3N2Zz4="
+					alt=""
+					draggable="false"
+				/>
+			</button>
+		</div>
+
+		<aside id="settings" class="init hidden" style="display: none">
+			<!-- settings -->
+		</aside>
+
+		<div id="templates">
+			<template id="bookmarks-dialog-template">
+				<dialog id="bookmarks">
+					<div id="bookmarks-header">
+						<div id="bookmarks-intro">
+							<span class="trn">
+								Synchronized groups are automatically updated to match your browser bookmarks. Learn
+								more on
+							</span>
+
+							<a class="trn" target="_blank" href="https://bonjourr.fr/docs/overview#link-groups"
+								>our documentation</a
+							>.
+						</div>
+
+						<div id="bookmarks-buttons">
+							<button id="bmk_close" class="trn btn-red">Close</button>
+							<button id="bmk_apply" class="trn" disabled>Import selection</button>
+						</div>
+					</div>
+
+					<div id="bookmarks-container"></div>
+				</dialog>
+			</template>
+
+			<template id="bookmarks-folder-template">
+				<div class="bookmarks-folder">
+					<div class="bookmarks-folder-title">
+						<h2>
+							<span class="bookmarks-folder-title-content"></span>
+							<span class="bookmarks-folder-title-synced trn">(synced)</span>
+						</h2>
+						<div>
+							<button class="trn b_bookmarks-folder-select">Select group</button>
+							<button class="trn b_bookmarks-folder-sync" disabled>Sync with browser</button>
+						</div>
+					</div>
+					<ol></ol>
+				</div>
+			</template>
+
+			<template id="bookmarks-item-template">
+				<li>
+					<button>
+						<img draggable="false" loading="lazy" alt="" />
+						<p class="bookmark-title"></p>
+						<p class="bookmark-url"></p>
+					</button>
+				</li>
+			</template>
+
+			<template id="link-group-template">
+				<div class="link-group">
+					<ul class="link-list"></ul>
+					<button class="link-title"></button>
+				</div>
+			</template>
+
+			<template id="link-elem-template">
+				<li class="link link-elem">
+					<a rel="noreferrer noopener" draggable="false">
+						<div>
+							<img alt="" draggable="false" />
+						</div>
+						<span></span>
+					</a>
+				</li>
+			</template>
+
+			<template id="link-folder-template">
+				<li class="link link-folder" tabindex="0">
+					<div>
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+						<img alt="" draggable="false" />
+					</div>
+					<span></span>
+				</li>
+			</template>
+
+			<template id="popup-template">
+				<div id="popup">
+					<div id="popup_text">
+						<div id="popup_close" tabindex="0">✕</div>
+						<img id="popup_icon" src="src/assets/interface/version-22-promo.png" alt="Version 22 icon" />
+						<p id="popup_desc"></p>
+					</div>
+					<div id="popup_buttons"></div>
+				</div>
+			</template>
+
+			<template id="supporters-modal-template">
+				<div id="supporters-modal-container">
+					<canvas id="glitter"></canvas>
+					<dialog id="supporters-modal">
+						<button id="supporters-modal-close" tabindex="0">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+							</svg>
+						</button>
+
+						<main>
+							<header>
+								<h2>✨ <span></span> ✨</h2>
+								<p></p>
+							</header>
+
+							<section>
+								<div id="supporters-monthly">
+									<h3></h3>
+									<ul></ul>
+								</div>
+
+								<div id="supporters-once">
+									<h3></h3>
+									<ul></ul>
+								</div>
+							</section>
+						</main>
+
+						<footer>
+							<p></p>
+
+							<a
+								id="donate-button"
+								href="https://ko-fi.com/bonjourr"
+								title="Donate on Bonjourr's Ko-Fi page"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+									/>
+								</svg>
+								<span id="donate-button-text" class="trn"></span>
+							</a>
+						</footer>
+					</dialog>
+				</div>
+			</template>
+
+			<template id="opera-explainer-template">
+				<dialog id="opera-explainer">
+					<div>
+						<h1 class="trn">Ok so... this is embarassing 😅</h1>
+
+						<p class="trn">
+							Opera does not allow extensions to modify its new tab. While there is no official statement,
+							we believe this is because ads on their speed dial is a good revenue source for them.
+						</p>
+
+						<h2 class="trn">What to do from here?</h2>
+
+						<ul>
+							<li class="trn">Remove Bonjourr and use Opera speed dial</li>
+							<li class="trn">Use a similar browser like Brave or Vivaldi</li>
+							<li>
+								<span class="trn">Follow </span>
+								<a href="https://bonjourr.fr/docs#opera" class="trn"
+									>this tutorial on our documentation</a
+								>
+								<span class="trn">. Bonjourr, or any homepage, should somewhat work!</span>
+							</li>
+						</ul>
+					</div>
+
+					<hr />
+
+					<button id="b_opera-explained" class="trn">Close and access Bonjourr</button>
+				</dialog>
+			</template>
+
+			<!-- help-mode -->
+			<style>
+				#help-mode-prompt {
+					position: fixed;
+					top: 40vh;
+					left: 0;
+					right: 0;
+					color: #eeeeee;
+					font-family: system-ui;
+					font-size: 1em;
+					text-align: center;
+					z-index: 1;
+				}
+
+				#help-mode-prompt h1 {
+					margin-bottom: 0;
+				}
+
+				#help-mode-prompt p {
+					margin-top: 0.5em;
+				}
+
+				#help-buttons {
+					margin-top: 1.5em;
+					display: flex;
+					justify-content: center;
+					gap: 1em;
+				}
+
+				.help-btn {
+					cursor: pointer;
+					height: 31px;
+					padding: 0 1em;
+					color: var(--color-blue);
+					border: none;
+					border-radius: 1em;
+					white-space: nowrap;
+					background-color: rgba(var(--blue), 0.25);
+					display: inline-flex;
+					justify-content: center;
+					align-items: center;
+					gap: 5px;
+				}
+
+				.help-btn:hover {
+					background-color: rgba(var(--blue), 0.35);
+				}
+
+				.help-btn[disabled] {
+					color: #777777;
+					background-color: #282828;
+					cursor: not-allowed;
+				}
+
+				.help-btn.danger:hover {
+					color: var(--color-red);
+					background-color: rgba(var(--red), 0.25);
+				}
+			</style>
+		</div>
+	</body>
 </html>
