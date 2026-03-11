@@ -231,9 +231,9 @@ function initOptionsValues(data: Sync, local: Local) {
 	setInput('i_pmdr_volume', data.pomodoro?.volume ?? 0.7)
 	setInput('i_pmdr_alarms', data.pomodoro?.alarm ?? 'marimba')
 	setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
-	setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
 	setInput('i_pmdr_pomodoro', data.pomodoro?.timeFor.pomodoro / 60)
 	setInput('i_pmdr_longbreak', data.pomodoro?.timeFor.longbreak / 60)
+	setInput('i_pmdr_custombreak', (data.pomodoro?.timeFor.custombreak ?? 300) / 60)
 
 	setFormInput('i_city', local.lastWeather?.approximation?.city ?? 'Paris', data.weather.city)
 	setFormInput('i_customfont', systemfont.placeholder, data.font?.family)
@@ -912,7 +912,9 @@ function initOptionsEvents() {
 	paramId('i_pmdr_longbreak').addEventListener('input', function () {
 		pomodoro(undefined, { timeFor: { longbreak: Number(this.value) } })
 	})
-
+	paramId('i_pmdr_custombreak').addEventListener('input', function (this: HTMLInputElement) {
+		pomodoro(undefined, { timeFor: { custombreak: Number(this.value) } })
+	})
 	// Custom fonts
 
 	paramId('i_customfont').addEventListener('pointerenter', () => {

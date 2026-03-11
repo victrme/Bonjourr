@@ -744,10 +744,18 @@
 						<label class="trn" for="pmdr-longbreak">Long break</label>
 					</div>
 
+					<div class="pomodoro_mode" tabindex="0">
+						<input type="radio" id="pmdr-custombreak" name="pomodoro_modes" value="custombreak" />
+						<label class="trn" for="pmdr-custombreak">Custom break</label>
+					</div>
 					<span class="glider"></span>
 				</fieldset>
-
 				<span id="pmdr_timer">00:00</span>
+
+				<div id="pmdr_custombreak_controls" class="hidden">
+					<button id="pmdr_custombreak_minus" class="glass" aria-label="Decrease custom break">−</button>
+					<button id="pmdr_custombreak_plus" class="glass" aria-label="Increase custom break">+</button>
+				</div>
 
 				<div id="bottomControls">
 					<button id="pmdr_start" class="glass">

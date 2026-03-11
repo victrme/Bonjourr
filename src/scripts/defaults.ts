@@ -200,6 +200,7 @@ export const SYNC_DEFAULT: Sync = {
 			pomodoro: 1500,
 			break: 300,
 			longbreak: 1200,
+			custombreak: 300,
 		},
 		focus: false,
 		sound: true,

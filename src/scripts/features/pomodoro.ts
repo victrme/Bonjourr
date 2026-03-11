@@ -37,6 +37,9 @@ const pomodoroReset = document.getElementById('pmdr_reset') as HTMLButtonElement
 const timer_dom = document.getElementById('pmdr_timer') as HTMLSpanElement
 const radioButtons = document.querySelectorAll('#pmdr_modes input[type="radio"]')
 const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
+const customBreakControls = document.getElementById('pmdr_custombreak_controls') as HTMLDivElement
+const customBreakMinus = document.getElementById('pmdr_custombreak_minus') as HTMLButtonElement
+const customBreakPlus = document.getElementById('pmdr_custombreak_plus') as HTMLButtonElement
 
 // to communicate with other tabs
 const broadcast = new BroadcastChannel('bonjourr_pomodoro') as BroadcastChannel
@@ -52,7 +55,7 @@ const setModeButton = (value = '') => {
 }
 
 const getTimeForMode = (mode: PomodoroMode): number => {
-	return currentPomodoroData.timeFor[mode]
+	return currentPomodoroData.timeFor[mode] ?? 300
 }
 
 export function pomodoro(init?: Pomodoro, update?: PomodoroUpdate) {
@@ -85,6 +88,7 @@ function initPomodoro(init: Pomodoro) {
 	handleUserInput()
 
 	setPomodoroInfo(init.history)
+	toggleCustomBreakControls(init.mode)
 }
 
 // events
@@ -146,6 +150,14 @@ function handleUserInput() {
 		})
 	})
 
+	customBreakMinus?.addEventListener('click', () => {
+		adjustCustomBreak(-1)
+	})
+
+	customBreakPlus?.addEventListener('click', () => {
+		adjustCustomBreak(1)
+	})
+
 	// makes mode buttons and focus button accessible to keyboard inputs
 	document.querySelectorAll<HTMLElement>('.pomodoro_mode, #focus-toggle').forEach((el) => {
 		el.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -190,12 +202,28 @@ function listenToBroadcast() {
 function switchMode(mode: PomodoroMode, animate?: boolean, init?: boolean) {
 	resetTimeouts()
 	setModeGlider(mode, animate)
+	toggleCustomBreakControls(mode)
 	stopTimer()
 	insertTime(getTimeForMode(mode), false)
 
 	if (!init) {
 		updatePomodoro({ mode: mode, end: 0, pause: 0 })
 	}
+}
+
+function toggleCustomBreakControls(mode?: PomodoroMode) {
+	customBreakControls?.classList.toggle('hidden', mode !== 'custombreak')
+}
+
+function adjustCustomBreak(deltaMinutes: number) {
+	if (currentPomodoroData.mode !== 'custombreak') {
+		return
+	}
+
+	const currentSeconds = currentPomodoroData.timeFor.custombreak ?? 300
+	const nextSeconds = Math.min(59 * 60, Math.max(60, currentSeconds + deltaMinutes * 60))
+
+	pomodoro(undefined, { timeFor: { custombreak: nextSeconds / 60 } })
 }
 
 function resetTimeouts() {
