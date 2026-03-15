@@ -312,7 +312,7 @@
     "Width": "Širina",
     "Notes shade": "Nijansa beleške",
 
-    "Search bar": "Polje za pretragu",
+    "Search bar": "Traka za pretragu",
     "Suggestions": "Predlozi",
     "Search engine": "Pretraživač",
     "Change the endpoint of the search bar.": "Promenite izvor trake za pretragu.",
@@ -321,7 +321,7 @@
     "startpage": "https://www.startpage.com/do/search?query=%s&language=serbian",
     "qwant": "https://www.qwant.com/?q=%s&locale=sr_RS",
     "yahoo": "https://search.yahoo.com/search?q=%s",
-    "bing": "https://www.bing.com/search?q=%s&cc=sr-cyrl",
+    "bing": "https://www.bing.com/search?q=%s&cc=sr-latn",
     "URL request": "URL zahtev",
     "URL seems wrong": "URL izgleda pogrešno",
     "No %s present in URL": "%s ne postoji u URL-u",
