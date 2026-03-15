@@ -116,7 +116,7 @@ If you feel like we've earned it and you want to support independant open source
 - **🇩🇰 Danish translation** · kar1 · [GitHub](https://github.com/kar1)
 - **🇫🇮 Finnish translation** · jaajko · [Jaajko](https://jaajko.fi) · [GitHub](https://github.com/jaajko)
 - **🇭🇺 Hungarian translation** · cook3r · [GitHub](https://github.com/cook3r)
-- **🇷🇸 Serbian translation** · stormigy · [GitHub](https://github.com/stormigy)
+- **🇷🇸 Serbian translation** · [stormigy](https://github.com/stormigy) & [Radoš Milićev](https://github.com/rammba)
 - **🇭🇰 Traditional Chinese translation** · Pu · [GitHub](https://github.com/unknownnumbers)
 - **🇬🇷 Modern Greek translation** · [tseli0s](https://github.com/tseli0s) · [trlef19](https://github.com/trlef19)
 - **🇮🇷 Farsi translation** · ar3h1d · [Github](https://github.com/ar3h1d)

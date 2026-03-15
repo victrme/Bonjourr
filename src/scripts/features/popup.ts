@@ -38,7 +38,7 @@ const ANNOUNCEMENT_TRNS = {
     ro: '<b>Bonjourr a primit o actualizare majoră! ✨</b> Descoperă noutățile: cronometru Pomodoro, meniu universal de clic dreapta, linkuri îmbunătățite, design reîmprospătat și multe altele.',
     el: '<b>Το Bonjourr μόλις απέκτησε μια μεγάλη ενημέρωση! ✨</b> Ανακαλύψτε τι νέο υπάρχει: χρονοδιακόπτης Pomodoro, καθολικό μενού δεξιού κλικ, βελτιωμένοι σύνδεσμοι, ανανεωμένος σχεδιασμός και πολλά ακόμη.',
     hy: '<b>Bonjourr-ը ստացել է մեծ թարմացում։ ✨</b> Բացահայտեք նորությունները․ Pomodoro ժամանակաչափ, ունիվերսալ աջ սեղմման ընտրացանկ, բարելավված հղումներ, թարմացված դիզայն և ավելին։',
-    sr: '<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro tajmer, univerzalni meni desnog klika, unapređene veze, osvežen dizajn i još mnogo toga.',
+    sr: '<b>Bonjourr је добио велико ажурирање! ✨</b> Откријте новости: Pomodoro тајмер, универзални мени десног клика, унапређене везе, освежен дизајн и још много тога.',
     'sr-YU':
         '<b>Bonjourr je dobio veliko ažuriranje! ✨</b> Otkrijte novosti: Pomodoro tajmer, univerzalni meni desnog klika, unapređene veze, osvežen dizajn i još mnogo toga.',
     uk: '<b>Bonjourr отримав велике оновлення! ✨</b> Дізнайтеся, що нового: таймер Pomodoro, універсальне меню правої кнопки миші, покращені посилання, оновлений дизайн та інше.',
