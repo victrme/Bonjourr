@@ -682,6 +682,7 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
         div?.classList.toggle('pixelated', isPng && isSmall)
         backgroundsWrapper?.classList.remove('hidden')
         applyThemeColor(media, img)
+        applyAspectRatioVars(img)
         updateCredits(media)
 
         if (callback) {
@@ -995,19 +996,31 @@ function detectBackgroundSize(): 'full' | 'small' {
 
 function applyThemeColor(image: BackgroundImage, img: HTMLImageElement): void {
     let color = image.color
-
+    
     if (!color) {
         color = getAverageColor(img)
     }
-
+    
     if (color) {
-        const fadein = Number.parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
+        // adds HTML's theme-color
         document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
-
-        setTimeout(() => {
-            document.documentElement.style.setProperty('--average-color', color)
-        }, fadein)
+        
+        // CSS variable
+        document.documentElement.style.setProperty('--average-color', color)
     }
+
+}
+
+// calculates the current background's aspect ratio and sets it as CSS variable
+function applyAspectRatioVars(img: HTMLImageElement): void {
+    const width = img.naturalWidth
+    const height = img.naturalHeight
+
+    if (!width || !height) return
+
+    const ratio = width / height
+
+    document.documentElement.style.setProperty('--img-ratio', ratio.toString())
 }
 
 function pauseVideoOnVisibilityChange(): void {
