@@ -42,11 +42,33 @@
     height: 100%;
 }
 
+#background-media:has(.portrait-image) {
+    height: 90vh;
+    top: 5vh;
+    bottom: 5vh;
+    width: 90vw;
+    left: 5vw;
+    right: 5vw;
+    display: flex;
+    align-items: center; 
+
+    box-sizing: border-box;
+    position: relative;
+}
+
+#background-media .portrait-image {
+    max-height: 100%;
+    max-width: 100%;
+    position: absolute;
+    border-radius: 20px;
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
 #background-wrapper.hidden {
     opacity: 0;
 }
 
-#background-wrapper #background-media,
+#background-wrapper:not(:has(.portrait-image)) #background-media,
 #background-wrapper[data-type='color'] #background-color {
     display: block;
 }
@@ -70,12 +92,14 @@
 }
 
 #background-media .video-looper,
-#background-media .background-image {
+#background-media .background-image,
+#background-media .portrait-image {
     transition: opacity 1.2s;
 }
 
 #background-media .video-looper.hiding,
-#background-media .background-image.hiding {
+#background-media .background-image.hiding,
+#background-media .portrait-image.hiding {
     opacity: 0;
 }
 
@@ -85,8 +109,13 @@
 }
 
 body.init #background-media .video-looper,
-body.init #background-media .background-image {
+body.init #background-media .background-image,
+body.init #background-media .portrait-image {
     transition: none;
+}
+
+body:not(.init) {
+    transition: background-color var(--fade-in);
 }
 
 #background-color {

@@ -659,30 +659,38 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
         const children = Object.values(mediaWrapper?.children)
         const notHiding = children.filter((child) => !child.className.includes('hiding'))
         const lastVisible = notHiding.at(-1)
+        
+        const isPortraitImage = children[0].classList.contains('portrait-image')
 
         if (fast) {
             document.body.classList.remove('init')
             setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 200)
         } else {
             lastVisible?.classList.add('hiding')
+
+            if (isPortraitImage) {
+                setTimeout(() => children[0]?.classList.remove('hiding'), 1) 
+            }
+
             setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
         }
-    }
+    } 
 }
 
-function createImageItem(src: string, media: BackgroundImage, callback?: () => void): HTMLDivElement {
+function createImageItem(src: string, media: BackgroundImage, callback?: () => void): HTMLDivElement | HTMLImageElement {
+    const portrait = true
+
     const backgroundsWrapper = document.getElementById('background-wrapper')
-    const div = document.createElement('div')
+    const imgElem = portrait ? document.createElement('img') : document.createElement('div')
     const img = new Image()
 
     img.addEventListener('load', () => {
         const isSmall = img.width <= 256 && img.height <= 256
         const isPng = !!media.mimetype?.includes('png')
 
-        div?.classList.toggle('pixelated', isPng && isSmall)
+        imgElem?.classList.toggle('pixelated', isPng && isSmall)
         backgroundsWrapper?.classList.remove('hidden')
         applyThemeColor(media, img)
-        applyAspectRatioVars(img)
         updateCredits(media)
 
         if (callback) {
@@ -693,18 +701,31 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
     img.src = src
     img.remove()
 
-    div.classList.add('background-image')
-    div.style.backgroundImage = `url(${src})`
+    if (portrait) {
+        imgElem.classList.add('portrait-image')
 
-    if (media?.file?.position) {
-        const { size, x, y } = media.file.position
-
-        div.style.backgroundSize = size
-        div.style.backgroundPositionX = x
-        div.style.backgroundPositionY = y
+        if (!document.body.classList.contains('init')) {
+            imgElem.classList.add('hiding')
+        }
+    } else {
+        imgElem.classList.add('background-image')
     }
 
-    return div
+    if (!portrait) {
+        imgElem.style.backgroundImage = `url(${src})`
+
+        if (media?.file?.position) {
+            const { size, x, y } = media.file.position
+
+            imgElem.style.backgroundSize = size
+            imgElem.style.backgroundPositionX = x
+            imgElem.style.backgroundPositionY = y
+        }
+    } 
+    
+    if (portrait) imgElem.src = src
+
+    return imgElem
 }
 
 function createVideoItem(src: string, media: BackgroundVideo, duration: number): HTMLElement {
