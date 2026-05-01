@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "בונז'ור · דף בית מינימליסטי",
-        "description": "שם התוסף"
+        "message": "Bonjourr · Minimalist Startpage",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "שפרו את חוויית הגלישה שלכם באינטרנט עם בונז'ור, דף בית יפהפה וקל משקל הניתן להתאמה אישית",
-        "description": "תיאור התוסף"
+        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
+        "description": "extension description"
     }
 }
