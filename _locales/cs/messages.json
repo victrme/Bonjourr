@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Minimalistická úvodní stránka",
+        "message": "Bonjourr · Minimalist Startpage",
         "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Zlepšete svůj zážitek z prohlížení webu pomocí krásné a jednoduché domovské stránky Bonjourr.",
+        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
         "description": "extension description"
     }
 }
