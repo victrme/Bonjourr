@@ -678,7 +678,7 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
 }
 
 function createImageItem(src: string, media: BackgroundImage, callback?: () => void): HTMLDivElement | HTMLImageElement {
-    const portrait = true
+    const portrait = media.isPortrait
 
     const backgroundsWrapper = document.getElementById('background-wrapper')
     const imgElem = portrait ? document.createElement('img') : document.createElement('div')
@@ -723,7 +723,7 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
         }
     } 
     
-    if (portrait) imgElem.src = src
+    if (portrait) (imgElem as HTMLImageElement).src = src
 
     return imgElem
 }

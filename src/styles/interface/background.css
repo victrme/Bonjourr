@@ -60,8 +60,8 @@
     max-height: 100%;
     max-width: 100%;
     position: absolute;
-    border-radius: 20px;
-    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    border-radius: clamp(10px, 2vw, 20px);
+    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
 }
 
 #background-wrapper.hidden {

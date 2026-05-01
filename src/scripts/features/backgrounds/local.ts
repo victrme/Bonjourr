@@ -660,6 +660,10 @@ export async function mediaFromFiles(
             small: URL.createObjectURL(data.small),
         }
 
+        // Get dimensions to determine if portrait
+        const dimensions = await imageDimensions(urls.full)
+        const isPortrait = dimensions.width < dimensions.height
+
         const image: BackgroundImage = {
             format: 'image',
             mimetype: data.full.type,
@@ -668,6 +672,7 @@ export async function mediaFromFiles(
                 full: urls.full,
                 small: urls.small,
             },
+            isPortrait,
         }
 
         return image

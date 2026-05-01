@@ -57,6 +57,7 @@ export interface BackgroundImage {
         focal_length: string
         iso: number
     }
+    isPortrait?: boolean
     file?: BackgroundFile
 }
 
