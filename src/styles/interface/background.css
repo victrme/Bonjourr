@@ -94,7 +94,7 @@
 #background-media .video-looper,
 #background-media .background-image,
 #background-media .portrait-image {
-    transition: opacity 1.2s;
+    transition: opacity var(--fade-in);
 }
 
 #background-media .video-looper.hiding,

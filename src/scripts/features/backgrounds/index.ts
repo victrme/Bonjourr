@@ -660,7 +660,7 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
         const notHiding = children.filter((child) => !child.className.includes('hiding'))
         const lastVisible = notHiding.at(-1)
         
-        const isPortraitImage = children[0].classList.contains('portrait-image')
+        // const isPortraitImage = children[0].classList.contains('portrait-image')
 
         if (fast) {
             document.body.classList.remove('init')
@@ -668,9 +668,9 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
         } else {
             lastVisible?.classList.add('hiding')
 
-            if (isPortraitImage) {
+            // if (isPortraitImage) {
                 setTimeout(() => children[0]?.classList.remove('hiding'), 1) 
-            }
+            // }
 
             setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
         }
@@ -701,17 +701,15 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
     img.src = src
     img.remove()
 
-    if (portrait) {
-        imgElem.classList.add('portrait-image')
-
-        if (!document.body.classList.contains('init')) {
-            imgElem.classList.add('hiding')
-        }
-    } else {
-        imgElem.classList.add('background-image')
+    if (!document.body.classList.contains('init')) {
+        imgElem.classList.add('hiding')
     }
 
-    if (!portrait) {
+    if (portrait) {
+        imgElem.classList.add('portrait-image');
+        (imgElem as HTMLImageElement).src = src
+    } else {
+        imgElem.classList.add('background-image')
         imgElem.style.backgroundImage = `url(${src})`
 
         if (media?.file?.position) {
@@ -723,8 +721,6 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
         }
     } 
     
-    if (portrait) (imgElem as HTMLImageElement).src = src
-
     return imgElem
 }
 
