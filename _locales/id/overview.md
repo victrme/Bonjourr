@@ -1,57 +1,53 @@
-Setiap kali Anda membuka jendela atau tab baru, Anda akan disambut oleh halaman yang tampak minimalis ini yang akan
-membantu ketenangan dan produktivitas Anda. Berkat latar belakang berkualitas tinggi yang cantik yang berubah sesuai
-dengan suasana hati hari itu, tab baru Anda akan selalu terasa segar.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-Bonjourr dibangun sebagai alternatif yang lebih modern untuk homepage seperti Momentum. Kami mengambil inspirasi dari
-iOS dan bahasa desain Apple untuk menciptakan homepage yang indah ini yang akan membantu Anda fokus pada hal-hal yang
-penting.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-Berikut beberapa fitur utama: 🍏 Bahasa desain iOS 🏞 Latar belakang 4K dinamis yang berubah sesuai dengan suasana hati
-hari itu ⚡️ Cepat & ringan! 🔎 Bilah pencarian (kompatibel dengan semua mesin pencari) 🕰 Jam analog dengan beberapa
-tampilan jam 🌤 Cuaca 🔗 Tautan Cepat 👋 Menyapa Anda dengan nama Anda 🌘 Mode gelap 🥖 Emoji sebagai favicon 🧑💻 Gaya
-CSS khusus 📝 Font khusus 🔒 Privasi terfokus 🌎 Multibahasa
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-Bonjourr bertujuan untuk terlihat dan terasa minimal, sambil tetap memberi Anda banyak opsi untuk menyesuaikannya sesuai
-keinginan Anda. Atur latar belakang Anda sendiri (atau koleksi Unsplash!), aktifkan jam analog yang indah, atur font dan
-Quick Links Anda sendiri.... Anda bahkan dapat melihat dokumentasi kami di mana kami mengumpulkan beberapa cuplikan gaya
-untuk melakukan lebih banyak lagi.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-Proyek ini sepenuhnya open source, ramah pengembang dan benar-benar menghormati privasi Anda. Kami tidak mengumpulkan
-data apa pun, Anda juga tidak perlu membuat akun untuk menggunakannya.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 Latar belakang 4K yang dinamis Kami memilih sendiri beberapa foto Unsplash yang paling indah sehingga tab baru Anda
-akan selalu terasa segar. Temukan foto-foto berkualitas tinggi dari pemandangan, hewan, dan alam yang luar biasa.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ Cepat & ringan! Bonjourr dibangun dengan vanilla JavaScript dan dioptimalkan untuk kinerja terbaik.
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 Bilah pencarian Bilah pencarian terintegrasi Bonjourr kompatibel dengan semua mesin pencari. Ya, semuanya! Jika Anda
-mau, Anda bahkan bisa menambahkan mesin pencari kustom Anda sendiri.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 Jam analog Jam bawaan Bonjourr dibuat menyerupai apa yang Anda miliki di iPhone dan perangkat iOS lainnya. Tetapi jika
-Anda ingin sesuatu yang lebih eksotis, Anda bisa menggantinya dengan jam analog yang sangat keren, dan menyesuaikannya
-sesuai keinginan Anda.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 Cuaca Dalam kalimat sederhana, dapatkan ringkasan cuaca dan prakiraan cuaca lokal Anda saat ini.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 Tautan Cepat Ini tidak akan menjadi homepage yang nyata tanpa bookmark! Bonjourr memungkinkan Anda untuk menambahkan
-bookmark Anda sendiri, mengubah ikonnya dan mengimpor bookmark Anda saat ini dari browser Anda.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 Mode gelap Sama seperti di iOS, Bonjourr memiliki mode gelap otomatis yang indah.
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 Emoji sebagai favicon
+🥖 Emoji as favicon
 
-🔒 Privasi terfokus Beberapa homepage seperti Momentum mendorong Anda untuk membuat akun, memberi mereka beberapa info
-pribadi, menggunakan lebih banyak izin dan mengandalkan banyak layanan pihak ketiga. Bonjourr tidak mengumpulkan data
-apa pun, bahkan untuk tujuan analisis, menggunakan izin minimal, mengandalkan lebih sedikit layanan pihak ketiga dan
-tentu saja tidak memiliki sistem akun apa pun. Bonjourr menjadi sumber terbuka juga berarti Anda bisa dengan mudah
-memeriksa apakah klaim kami benar.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑💻 Penataan CSS khusus Punya ide spesifik dalam pikiran Anda? Bonjourr telah Anda liput dengan bagian gaya kustom.
-Anda bisa menyesuaikan dan melakukan apa saja ketika Anda menambahkan CSS Anda sendiri.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 Font khusus Ingin font tertentu di beranda Anda? Anda dapat dengan mudah memilihnya berkat integrasi Bonjourr dengan
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
 Google Fonts.
 
-🌎 Multibahasa Berkat kontributor kami yang luar biasa, Bonjourr tersedia dalam +20 bahasa yang berbeda.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
