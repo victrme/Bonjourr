@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr Мінімалістична домашня сторінка",
-        "description": "назва розширення"
+        "message": "Bonjourr · Minimalist Startpage",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Поліпшіть свій перегляд вебсторінок з Bonjourr, красивою, настроюваною та легкою домашньою сторінкою.",
-        "description": "опис розширення"
+        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
+        "description": "extension description"
     }
 }
