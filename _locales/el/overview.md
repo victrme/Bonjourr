@@ -1,60 +1,53 @@
-Κάθε φορά που θα ανοίγετε ένα νέο παράθυρο ή μία καρτέλα, θα καλωσορίζεστε από αυτήν την μινιμαλιστική σελίδα που θα
-βοηθήσει στην χαλάρωση και παραγωγικότητα. Χάρη στις πανέμορφες, υψηλής ποιότητας ταπετσαρίες που αλλάζουν με βάση την
-διάθεση της μέρας, οι νέες σας καρτέλες θα έχουν μια φρέσκια αίσθηση.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-Το Bonjourr δημιουργήθηκε ως μία πιο σύγχρονη εναλλακτική σε αρχικές σελίδες όπως το Momentum. Εμπνευστήκαμε από το iOS
-και τα θέματα της Apple για να δημιουργήσουμε αυτή την υπέροχη αρχική σελίδα που θα σας βοηθήσει να εστιάσετε σε αυτά
-που μετράνε.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-Μερικά σημαντικά χαρακτηριστικά: 🍏 Γλώσσα σχεδιασμού από το iOS 🏞 Δυναμικά εναλλασόμενες 4K ταπετσαρίες που αλλάζουν
-ανάλογα με τον καιρό και την ώρα ⚡️ Γρήγορο και ελαφρύ! 🔎 Γραμμή αναζήτησης (Συμβατή με όλες τις μηχανές αναζήτησης) 🕰
-Αναλογικό ρολόι με διάφορα clock faces 🌤 Καιρός 🔗 Γρήγοροι σύνδεσμοι 👋 Σας χαιρετάει με το όνομα σας 🌘 Σκούρο θέμα 🥖
-Emoji σαν favicon 🧑‍💻 Προσαρμοσμένο στυλ CSS 📝 Προσαρμοσμένες γραμματοσειρές 🔒 Επικεντρωμένο στην ιδιωτικότητα 🌎
-Πολυγλωσσικό
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-Το Bonjourr έχει ως στόχο να φαίνεται και να έχει μια μινιμαλιστική αίσθηση, ενώ ταυτόχρονα φέρει πολλές ρυθμίσεις για
-να το προσαρμόσετε στην αρέσκεια σας. Χρησιμοποιήστε τις δικές σας ταπετσαρίες (ή συλλογές Unsplash!), ενεργοποιήστε το
-όμορφο αναλογικό ρολόι, βάλτε τις δικές σας γραμματοσειρές και Γρήγορους Συνδέσμους... μπορείτε ακόμα να τσεκάρετε την
-αναφορά μας όπου μεταγλωττίσαμε λίγο κώδικα για στυλ για να κάνετε ακόμα περισσότερα.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-Αυτό το έργο είναι πλήρως ανοιχτού κώδικα, φιλικό προς τον προγραμματιστή και πραγματικά σέβεται την ιδιωτικότητα σου.
-Δεν χρησιμοποιούμε οποιαδήποτε δεδομένα, ούτε χρειάζεστε έναν λογαριασμό για να το χρησιμοποιήσετε.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 Δυναμικά εναλλασόμενες 4K ταπετσαρίες Επιλέξαμε με το χέρι μερικές από τις πιο φαντασμαγορικές φωτογραφίες του
-Unsplash ώστε τα νέα tabs σας να νιώθουν πάντα φρέσκα. Ανακαλύψτε υψηλής ποιότητας φωτογραφίες απο εκπληκτικά τοπία, ζώα
-και φύση.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ Γρήγορο & Ελαφρύ! Το Bonjourr είναι φτιαγμένο με καθαρή JavaScript και βελτιστοποιημένο για την καλύτερη δυνατή
-εμπειρία.
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 Γραμμή αναζήτησης Η ενσωματωμένη γραμμή αναζήτησης του Bonjourr είναι συμβατή με όλες τις μηχανές αναζήτησης. Ναι,
-όλες! Αν θέλεις, μπορείς ακόμα και να βάλεις την δικιά σου μηχανή αναζήτησης.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 Αναλογικό ρολόι Το προεπιλεγμένο ρολόι του Bonjourr είναι φτιαγμένο να θυμίζει αύτο που έχεις στο iPhone και άλλες
-συσκευές iOS. Αλλά αν σας αρέσει κάτι πιο εξωτικό, μπορείτε να το αντικαταστήσετε με ένα πιο καλό αναλογικό ρολόι, και
-να το τροποποιήσετε όπως σας αρέσει.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 Καιρός Σε μια απλή πρόταση, πάρτε μια γενικευμένη ιδέα από τον τοπικό σας καιρό και την πρόβλεψη αυτού.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 Γρήγοροι Σύνδεσμοι Δεν θα ήταν μια αληθινή αρχική σελίδα χωρίς σελιδοδείκτες! Το Bonjourr σου επιτρέπει να βάλεις
-τους δικούς σου σελιδοδείκτες, να αλλάξεις τα εικονίδια τους και να εισάγεις τους σελιδοδείκτες του περιηγητή σου.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 Σκούρο θέμα Όπως και στο iOS, το Bonjourr έχει ένα πανέμορφο, αυτόματο σκούρο θέμα.
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 Emoji σαν favicon
+🥖 Emoji as favicon
 
-🔒 Επικεντρωμένο στην ιδιωτικότητα Κάποιες αρχικές σελίδες όπως το Momentum σε ενθαρρύνουν να δημουργήσεις έναν
-λογαριασμό, να δώσεις προσωπικά σου στοιχεία, χρησιμοποιούν παραπάνω δικαιώματα και βασίζονται σε υπηρεσίες τρίτων. Το
-Bonjourr δεν μαζεύει καθόλου δεδομένα χρήστη, ούτε καν για αναλυτικούς σκοπούς, χρησιμοποιεί ελάχιστα δικαιώματα,
-βασίζεται σε λιγότερες υπηρεσίες τρίτων και φυσικά δεν έχει κάποιο σύστημα λογαριασμών. Εφόσον το Bonjourr είναι
-ανοιχτού κώδικα μπορεί κάποιος να επιβεβαιώσει μόνος του πως αυτοί οι ισχυρισμοί είναι αληθείς.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 Προσαρμοσμένο στυλ CSS Έχεις μια ιδέα στο μυαλό σου; Το Bonjourr σε έχει καλυμένο με την ενότητα προσαρμοσμένης CSS.
-Μπορείτε να το τροποποιήσετε και να κάνετε οτιδήποτε με προσαρμοσμένη CSS.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 Προσαρμοσμένες γραμματοσειρές Θέλετε μια προσαρμοσμένη γραμματοσειρά στην αρχική σας οθόνη; Μπορείτε εύκολα να την
-επιλέτε χάρη στην ενσωμάτωση του Bonjourr με το Google Fonts.
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
+Google Fonts.
 
-🌎 Πολυγλωσσικό Χάρη στους καταπληκτικούς εθελοντές μας, το Bonjourr είναι διαθέσιμο σε +20 διαφορετικές γλώσσες.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
