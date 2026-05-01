@@ -1,56 +1,53 @@
-Cada vegada que obris una nova finestra o pestanya, seràs rebut per aquesta pàgina d'aspecte minimalista que ajudarà a
-la teva serenitat i productivitat. Gràcies als seus preciosos fons d'alta qualitat que canvien segons l'ambient del dia,
-les teves noves pestanyes sempre semblaran fresques.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-Bonjourr es va crear com una alternativa més moderna a pàgines d'inici com Momentum. Ens vam inspirar en iOS i el
-llenguatge de disseny d'Apple per crear aquesta bonica pàgina d'inici que t'ajudarà a centrar-te en el que és important.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-Aquí tens algunes característiques clau: 🍏 Llenguatge de disseny d'iOS 🏞 Fons dinàmics en 4K que canvien segons
-l'ambient del dia ⚡️ Ràpid i lleuger! 🔎 Barra de cerca (compatible amb tots els motors de cerca) 🕰 Rellotge analògic
-amb múltiples esferes 🌤 Temps 🔗 Enllaços ràpids 👋 Et saluda pel teu nom 🌘 Mode fosc 🥖 Emoji com a favicon 🧑‍💻
-Estilització CSS personalitzada 📝 Fonts personalitzades 🔒 Centrat en la privacitat 🌎 Multilingüe
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-Bonjourr pretén tenir un aspecte i sensació minimalista, mentre que encara t'ofereix moltes opcions per personalitzar-lo
-al teu gust. Estableix els teus propis fons (o col·leccions d'Unsplash!), activa el bonic rellotge analògic, estableix
-la teva pròpia font i enllaços ràpids... Fins i tot pots consultar la nostra documentació on hem recopilat alguns
-fragments d'estil per fer encara més.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-El projecte és totalment de codi obert, amigable per als desenvolupadors i realment respecta la teva privacitat. No
-recollim cap dada, ni necessites crear un compte per utilitzar-lo.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 Fons dinàmics en 4K Hem seleccionat a mà algunes de les fotos més boniques d'Unsplash perquè les teves noves pestanyes
-sempre semblin fresques. Descobreix fotos d'alta qualitat d'increïbles paisatges, animals i natura.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ Ràpid i lleuger! Bonjourr està construït amb JavaScript pur i optimitzat per al millor rendiment possible.
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 Barra de cerca La barra de cerca integrada de Bonjourr és compatible amb tots els motors de cerca. Sí, tots! Si vols,
-fins i tot pots afegir el teu propi motor de cerca personalitzat.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 Rellotge analògic El rellotge per defecte de Bonjourr està fet per assemblar-se al que tens a l'iPhone i altres
-dispositius iOS. Però si vols alguna cosa més exòtica, pots reemplaçar-lo amb un rellotge analògic molt cool, i
-personalitzar-lo com vulguis.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 Temps En una simple frase, obtén un resum del teu temps local actual i la previsió.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 Enllaços ràpids No seria una veritable pàgina d'inici sense marcadors! Bonjourr et permet afegir els teus propis
-marcadors, canviar les seves icones i importar els teus marcadors actuals des del teu navegador.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 Mode fosc Igual que a iOS, Bonjourr té un bonic mode fosc automàtic.
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 Emoji com a favicon
+🥖 Emoji as favicon
 
-🔒 Centrat en la privacitat Algunes pàgines d'inici com Momentum t'animen a crear un compte, donar-los informació
-personal, utilitzar més permisos i dependre de molts serveis de tercers. Bonjourr no recull cap dada, ni tan sols per a
-fins analítics, utilitza permisos mínims, depèn de menys serveis de tercers i, per descomptat, no té cap sistema de
-comptes. Que Bonjourr sigui de codi obert també significa que pots comprovar fàcilment si les nostres afirmacions són
-certes.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 Estilització CSS personalitzada Tens una idea específica en ment? Bonjourr et cobreix amb la secció d'estils
-personalitzats. Pots personalitzar i fer qualsevol cosa quan afegeixes el teu propi CSS.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 Fonts personalitzades Vols una font específica a la teva pàgina d'inici? Pots seleccionar-la fàcilment gràcies a la
-integració de Bonjourr amb Google Fonts.
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
+Google Fonts.
 
-🌎 Multilingüe Gràcies als nostres fantàstics col·laboradors, Bonjourr està disponible en més de 20 idiomes diferents.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
