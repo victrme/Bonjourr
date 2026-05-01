@@ -1,51 +1,53 @@
-新しいウィンドウやタブを開くたびに、このミニマルな外観のページがお出迎え。その日の気分によって変わるゴージャスで高品質な背景のおかげで、新しいタブはいつも新鮮に感じられます。
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-Bonjourr は、Momentum のようなホームページに代わる、よりモダンなホームページとして作られました。iOS と Apple
-のデザイン言語からヒントを得て、重要なことに集中できる美しいホームページを作りました。
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-主な特徴は以下の通りです： iOS デザイン言語 🏞 その日の気分によって変わるダイナミックな 4K 背景 ⚡️ 高速＆軽量！ ᔎ
-検索バー (すべての検索エンジンに対応) アナログ時計（複数の時計の文字盤を搭載 天気予報 🔗 クイックリンク 👋
-名前でお出迎え 🌘 ダークモード 絵文字をファビコンに表示 🧑‍💻 カスタム CSS スタイリング 📝 カスタムフォント 🔒
-プライバシー重視 多言語対応
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-Bonjourr
-は、見た目も使い勝手もミニマムを目指しつつ、自分好みにカスタマイズできるオプションをたくさん用意しています。背景の設定（または
-Unsplash
-コレクション！）、美しいアナログ時計の有効化、独自のフォントやクイックリンクの設定...。さらに多くのことができるように、私たちがいくつかのスタイルスニペットをまとめたドキュメントをチェックすることもできます。
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-このプロジェクトは完全にオープンソースで、開発者に優しく、プライバシーを尊重しています。私たちはいかなるデータも収集しませんし、使用するためにアカウントを作成する必要もありません。
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 ダイナミックな 4K 背景 新しいタブが常に新鮮に感じられるように、最も美しい Unsplash
-の写真を厳選しました。素晴らしい風景、動物、自然の高画質写真をご覧ください。
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ 高速＆軽量！ Bonjourr はバニラ JavaScript で構築され、可能な限り最高のパフォーマンスのために最適化されています。
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-検索バー Bonjourr
-の統合検索バーは、すべての検索エンジンと互換性があります。そう、全てです！お望みであれば、独自の検索エンジンを追加することもできます。
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-アナログ時計 Bonjourr のデフォルトの時計は、iPhone やその他の iOS
-デバイスに搭載されているものに似せて作られています。しかし、もっとエキゾチックなものがお望みなら、とてもクールなアナログ時計に置き換えて、お好きなようにカスタマイズすることができます。
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-天気予報 簡単な文章で、現在の天気と予報を表示します。
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 クイックリンク ブックマークなしでは本当のホームページとは言えません！Bonjourr
-では、自分のブックマークを追加したり、アイコンを変更したり、ブラウザから現在のブックマークをインポートすることができます。
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-ダークモード iOS のように、Bonjourr には美しい自動ダークモードがあります。
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-ᥖ 絵文字をファビコンに
+🥖 Emoji as favicon
 
-🔒 プライバシー重視 Momentum
-のようなホームページの中には、アカウントを作成し、個人情報を提供し、より多くのパーミッションを使用し、多くのサードパーティサービスに依存することを勧めるものがあります。Bonjourr
-は、分析目的であってもデータを収集せず、最小限のパーミッションを使用し、より少ないサードパーティ・サービスに依存し、もちろんアカウント・システムもありません。Bonjourr
-がオープンソースであるということは、私たちの主張が真実かどうかを簡単にチェックできるということでもあります。
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 カスタム CSS スタイリング 特定のアイデアをお持ちですか？Bonjourr
-はカスタムスタイルのセクションであなたをカバーします。独自の CSS を追加すれば、何でもカスタマイズできます。
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 カスタムフォント ホームページに特定のフォントを使いたいですか？Bonjourr が Google Fonts
-と連携しているので、簡単に選択できます。
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
+Google Fonts.
 
-多言語対応 私たちの素晴らしい貢献者のおかげで、Bonjourr は +20 ヶ国語に対応しています。
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
