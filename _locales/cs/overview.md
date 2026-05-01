@@ -1,57 +1,53 @@
-Pokaždé, když otevřete nové okno nebo kartu, přivítá vás tato minimalisticky vypadající stránka, která pomůže vašemu
-klidu a produktivitě. Díky nádhernému vysoce kvalitnímu pozadí, které se mění podle denní nálady, budou vaše nové karty
-vypadat vždy svěže.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-Bonjourr byl vytvořen jako modernější alternativa k domovským stránkám, jako je Momentum. Při vytváření této krásné
-domovské stránky, která vám pomůže soustředit se na to, co je důležité, jsme se inspirovali systémem iOS a designovým
-jazykem společnosti Apple.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-Zde je několik klíčových funkcí: 🍏 designový jazyk iOS 🏞 Dynamické pozadí 4K, které se mění podle denní nálady ⚡️
-Rychle a snadno! 🔎 Vyhledávací panel (kompatibilní se všemi vyhledávači) 🕰 Analogové hodiny s několika ciferníky 🌤
-Počasí 🔗 Rychlé odkazy 👋 Pozdraví vás podle jména 🌘 Tmavý režim 🥖 Emoji jako favicon 🧑‍💻 Vlastní CSS styl 📝 Vlastní
-písma 🔒 Zaměřeno na soukromí 🌎 Vícejazyčnost
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-Bonjourr se snaží vypadat a působit minimalisticky, ale nabízí spoustu možností, jak si jej přizpůsobit podle svých
-představ. Nastavte si vlastní pozadí (nebo kolekce Unsplash!), zapněte si krásné analogové hodiny, nastavte si vlastní
-písma a rychlé odkazy... Můžete se dokonce podívat do naší dokumentace, kde jsme pro vás připravili několik útržků
-stylů, které vám umožní ještě více.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-Projekt je zcela otevřený, přátelský k vývojářům a ve skutečnosti respektuje vaše soukromí. Neshromažďujeme žádné údaje,
-ani si nemusíte vytvářet účet, abyste jej mohli používat.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 Dynamická pozadí 4K Vybrali jsme pro vás ty nejkrásnější fotografie, takže vaše nové karty budou vypadat vždy svěže.
-Objevte vysoce kvalitní fotografie neuvěřitelných krajin, zvířat a přírody.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ Rychle a snadno! Bonjourr je vytvořen pomocí vanilla JavaScriptu a optimalizován pro nejlepší výkon.
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 Vyhledávací panel Integrovaný vyhledávací panel Bonjourr je kompatibilní se všemi vyhledávači. Ano, se všemi! Pokud
-chcete, můžete si dokonce přidat vlastní vyhledávač.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 Analogové hodiny Výchozí hodiny Bonjourr jsou navrženy tak, aby se podobaly těm, které máte na iPhonu a dalších
-zařízeních se systémem iOS. Pokud byste však chtěli něco exotičtějšího, můžete je nahradit velmi povedenými analogovými
-hodinami a přizpůsobit si je podle svých představ.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 Počasí Jednoduchou větou získáte přehled o místním aktuálním počasí a předpovědi.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 Rychlé odkazy Bez záložek by to nebyla pravá domovská stránka! Bonjourr umožňuje přidávat vlastní záložky, měnit
-jejich ikony a importovat aktuální záložky z prohlížeče.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 Tmavý režim Stejně jako iOS má i Bonjourr krásný automatický tmavý režim.
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 Emoji jako favicon
+🥖 Emoji as favicon
 
-🔒 Zaměřeno na ochranu soukromí Některé domovské stránky, jako například Momentum, vás vybízejí k vytvoření účtu,
-poskytnutí některých osobních údajů, používání více oprávnění a spoléhání se na mnoho služeb třetích stran. Bonjourr
-neshromažďuje žádné údaje, a to ani pro analytické účely, používá minimum oprávnění, spoléhá na méně služeb třetích
-stran a samozřejmě nemá žádný systém účtů. To, že je Bonjourr open source, také znamená, že si můžete snadno ověřit, zda
-jsou naše tvrzení pravdivá.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 Vlastní styly CSS Máte na mysli nějaký konkrétní nápad? Bonjourr vám nabízí sekci vlastních stylů. Když přidáte
-vlastní CSS, můžete si je přizpůsobit a udělat cokoli.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 Vlastní písma Chcete na své domovské stránce konkrétní písmo? Můžete si ho snadno vybrat díky integraci Bonjourr s
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
 Google Fonts.
 
-🌎 Vícejazyčnost Díky našim úžasným přispěvatelům je Bonjourr k dispozici v +20 různých jazycích.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
