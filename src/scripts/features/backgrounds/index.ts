@@ -678,10 +678,20 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
     img.addEventListener('load', () => {
         const isSmall = img.width <= 256 && img.height <= 256
         const isPng = !!media.mimetype?.includes('png')
+        const isPortrait = img.width < img.height
+        const aspectRatio = (img.width / img.height)
 
         div?.classList.toggle('pixelated', isPng && isSmall)
+        div?.classList.toggle('portrait', isPortrait)
+
+        if (isPortrait) {
+            div.style.aspectRatio = aspectRatio.toString()
+            div.style.width = `min(90vw, calc(90vh * ${aspectRatio}))`
+        }
+
         backgroundsWrapper?.classList.remove('hidden')
         applyThemeColor(media, img)
+        applyAspectRatioVars(img)
         updateCredits(media)
 
         if (callback) {
@@ -1001,13 +1011,25 @@ function applyThemeColor(image: BackgroundImage, img: HTMLImageElement): void {
     }
 
     if (color) {
-        const fadein = Number.parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
+        // const fadein = Number.parseInt(document.documentElement.style.getPropertyValue('--fade-in'))
         document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color)
 
-        setTimeout(() => {
+        // setTimeout(() => {
             document.documentElement.style.setProperty('--average-color', color)
-        }, fadein)
+        // }, fadein)
     }
+}
+
+// calculates the current background's aspect ratio and sets it as CSS variable
+function applyAspectRatioVars(img: HTMLImageElement): void {
+    const width = img.naturalWidth
+    const height = img.naturalHeight
+
+    if (!width || !height) return
+
+    const ratio = width / height
+
+    document.documentElement.style.setProperty('--img-ratio', ratio.toString())
 }
 
 function pauseVideoOnVisibilityChange(): void {

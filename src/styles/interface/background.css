@@ -31,6 +31,15 @@
     image-rendering: pixelated;
 }
 
+#background-wrapper .background-image.portrait {
+    transform: unset;
+    position: absolute;
+
+    height: auto;
+    left: 5vw;
+    top: 5vh;
+}
+
 #background-media .video-looper,
 #background-media .background-image,
 #background-color,
