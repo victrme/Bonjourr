@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · シンプルさを極めたスタートページ",
+        "message": "Bonjourr · Minimalist Startpage",
         "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Bonjourrを使ってブラウジング体験向上。　ビューティフルな、幅広く調整可能な、かつ軽量なスタートページ。",
+        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
         "description": "extension description"
     }
 }
