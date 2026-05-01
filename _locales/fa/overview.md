@@ -1,52 +1,53 @@
-هر موقع که پنجره یا صفحه‌ی جدیدی باز کنید، این صفحه‌ی مینیمالیست به شما خوش‌آمد می‌گوید و به آرامش و بهره‌وری شما کمک می‌کند.
-به لطف پس‌زمینه‌های زیبا و باکیفیتی که برای حال و هوای هر روز عوض می‌شوند، صفحه‌ی جدید شما همواره تازه است.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-بُنژور به عنوان جایگزینی برای نرم‌افزارهای صفحه‌ی نخست مثل Momentum ساخته شده است. ما از iOS و زبان طراحی Apple الهام
-گرفتیم که این صفحه‌ی نخست زیبا را بسازیم تا به شما کمک کند که روی موضوعات واقعا مهم تمرکز کنید.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-یک سری از توانایی‌های اساسی: 🍏 زبان طراحی iOS 🏞 پس‌زمینه‌های پویای 4K که برای حال و هوای هر روز عوض می‌شوند ⚡️ سریع و سبک!
-🔎 نوار جستجو (انطباق‌پذیر با همه‌ی موتورهای جستجو) 🕰 ساعت عقربه‌ای با صفحه‌های متعدد 🌤 آب و هوا 🔗 پیوندهای سریع 👋
-خوش‌آمدگویی با اسم شما 🌘 حالت تاریک 🥖 ایموجی به عنوان favicon 🧑‍💻 طراحی ظاهر با CSS دلخواه 📝 فونت‌های دلخواه 🔒 تمرکز بر
-حریم شخصی 🌎 چند زبانه
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-بُنژور می‌خواهد احساس و ظاهر مینیمال داشته باشد، و همچنین تنظیمات زیادی برای شخصی‌سازی به سلیقه‌ی شما فراهم کند. پس‌زمینه‌ی
-خودتان را تنظیم کنید (یا از مجموعه‌های Unsplash انتخاب کنید!)، ساعت زیبای عقربه‌ای را فعال کنید، فونت و پیوندهای سریع
-خودتان را داشته باشید... حتی می‌توانید مستندات ما را ببینید که در آن چند قطعه‌ی شخصی‌سازی بیشتر قرار داده‌ایم.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-این پروژه کاملا متن‌باز است، دوستدار برنامه‌نویس‌ها است و واقعا به حریم شخصی شما احترام می‌گذارد. ما هیچ اطلاعاتی ذخیره
-نمی‌کنیم، و شما برای استفاده از نرم‌افزار احتیاج به ساختن حساب کاربری ندارید.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 پس‌زمینه‌های 4K پویا ما گزیده‌ای از زیباترین پس‌زمینه‌های Unsplash را انتخاب کرده‌ایم تا صفحه‌ی جدید شما همیشه تازه باشد.
-تصاویر باکیفیت از مناظر، حیوانات و طبیعت را کشف کنید.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ سریع و سبک! بُنژور با جاوا اسکریپت ساده نوشته شده و برای بهترین بازدهی بهینه شده است.
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 نوار جستجو نوار جستجوی کارگذاشته شده در بُنژور با همه‌ی موتورهای جستجو انطباق‌پذیر است. بله، همه‌ی آن‌ها! حتی اگر بخواهید،
-می‌توانید موتور جستجوی دلخواه خودتان را اضافه کنید.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 ساعت عقربه‌ای ساعت پیش‌فرض بُنژور ساخته شده تا شبیه ساعت iPhone و دستگاه‌های iOS دیگر باشد. اما اگر دنبال چیز جالب‌تری
-هستید، می‌توانید این ساعت را با ساعت عقربه‌ای جایگزین کنید، و آن را به دلخواه خودتان شخصی‌سازی کنید.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 آب و هوا با یک جمله‌ی ساده، خلاصه‌ای از آب و هوای محلی و پیش‌بینی آب و هوا را دریافت کنید.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 نشان‌های سریع بدون نشان‌ها این یک صفحه‌ی نخست واقعی نمی‌شد! بُنژور اجازه می‌دهد نشان‌های خوتان را اضافه کنید، آیکون‌های آن‌ها
-را عوض کنید و نشان‌های خودتان را از مرورگرتان وارد کنید.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 حالت تاریک درست مثل iOS بُنژور یک حالت تاریک زیبا و خودکار دارد
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 ایموجی به عنوان favicon
+🥖 Emoji as favicon
 
-🔒 تمرکز بر حریم شخصی بعضی از نرم‌افزارهای صفحه‌ی نخست شما را تشویق می‌کنند که حساب کاربری بسازید، اطلاعات شخصی خود را در
-اختیار آن‌ها قرار دهید، اختیارات بیشتری به آن‌ها بدهید و از سرویس‌های شخص ثالث بیشتری استفاده کنید. بُنژور هیچ اطلاعاتی ذخیره
-نمی‌کند، نه حتی برای استفاده‌های آماری، حداقل اختیارات را دارد، به سرویس‌های شخص ثالث کمتری وابسته است و البته هیچ سیستم
-حساب کاربری ندارد. و از آن‌جایی که بُنژور متن‌باز است، می‌توانید خودتان همه‌ی این ادعاها را بررسی کنید.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 ظاهرسازی CSS دلخواه ایده‌ی خاصی در ذهن دارید؟ بُنژور با قسمت ظاهرسازی CSS دلخواه، به شما کمک می‌کند . وقتی که شما CSS
-خودتان را اضافه می‌کنید می‌توانید هرکاری کنید و همه‌چیز را شخصی‌سازی کنید.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 فونت‌های دلخواه فونت خاصی را برای صفحه‌ی نخست خود در نظر دارید؟ به لطف استفاده‌ی بُنژور از Google Fonts می‌توانید به راحتی
-هر فونتی را انتخاب کنید.
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
+Google Fonts.
 
-🌎 چندزبانه به لطف مشارکت‌کنندگان عالی‌ای که داریم، بُنژور در ۱۶ زبان مختلف قابل استفاده است.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
