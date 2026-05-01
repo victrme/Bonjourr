@@ -1,57 +1,53 @@
-Joka kerta kun avaat uuden ikkunan tai välilehden, sinua tervehtii tämä minimalistisen näköinen sivu joka auttaa sinun
-tyyneyttäsi ja tuottavuuttasi. Upeiden ja laadukkaiden taustojensa ansiosta, jotka vaihtelevat päivän tunnelman mukaan,
-sinun uudet välilehtesi tuntuvat aina tuoreilta.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-Bonjourr rakennettiin modernimmaksi vaihtoehdoksi kotisivuille, kuten Momentumille. Saimme inspiraation iOS:ltä ja
-Applen muotoilukieleltä luodaksemme tämän kauniin aloitussivun joka auttaa sinua keskittymään olennaiseen.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-Tässä on joitain pääpiirteitä: 🍏 iOS:än muotoilukieli 🏞 Dynaamiset 4K-taustat, jotka vaihtelevat päivän tunnelman
-mukaan ⚡️ Nopea & kevyt! 🔎 Hakupalkki (yhteensopiva kaikkien hakukoneiden kanssa) 🕰 Analoginen kello useilla
-kellotauluilla 🌤 Sää 🔗 Pikalinkit 👋 Tervehtii sinua nimelläsi 🌘 Tumma tila 🥖 Emoji faviconina 🧑‍💻 Mukautettu
-CSS-tyyli 📝 Mukautetut fontit 🔒 Yksityisyyteen keskittynyt 🌎 Monikielinen
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-Bonjourr pyrkii näyttämään ja tuntumaan minimaaliselta, mutta tarjoaa silti paljon vaihtoehtoja muokata sitä
-mieleiseksesi. Aseta omat taustasi (tai Unsplash-kokoelmat!), ota käyttöön kaunis analoginen kello, aseta sinun oma
-fontti ja pikalinkit... Voit jopa tutustua dokumentaatioomme, johon olemme koonneet tyylikatkelmia tehdäksemme vielä
-enemmän.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-Projekti on täysin avoimen lähdekoodin, kehittäjäystävällinen ja oikeasti kunnioittaa yksityisyyttäsi. Emme kerää yhtään
-tietoja, eikä sinun tarvitse luoda tiliä käyttääksesi sitä.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 Dynaamiset 4K-taustat Valitsimme käsin joitakin kauneimmista Unsplash-kuvista jotta sinun uudet välilehtesi tuntuvat
-aina tuoreilta. Löydä korkealaatuisia kuvia uskomattomista maisemista, eläimistä ja luonnosta.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ Nopea & kevyt! Bonjourr on rakennettu Vanilla JavaScriptillä ja optimoitu parhaan mahdollisen suorituskyvyn
-saavuttamiseksi.
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 Hakupalkki Bonjourrin integroitu hakupalkki on yhteensopiva kaikkien hakukoneiden kanssa. Kyllä, niiden kaikkien! Jos
-haluat, voit jopa lisätä oman mukautetun hakukoneen.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 Analoginen kello Bonjourrin oletuskello on tehty muistuttamaan iPhonen ja muiden iOS-laitteiden kelloa. Mutta jos
-haluat jotain eksoottisempaa, voit korvata sen erittäin siistillä analogisella kellolla ja muokata sitä haluamallasi
-tavalla.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 Sää Yksinkertaisella lauseella, hanki yhteenveto paikallisesta nykyisestä säästä ja ennusteesta.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 Pikalinkit Se ei olisi oikea kotisivu ilman kirjanmerkkejä! Bonjourrin avulla voit lisätä omia kirjanmerkkejäsi,
-muuttaa niiden kuvakkeita ja tuoda nykyiset kirjanmerkkisi selaimesta.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 Tumma tila Aivan kuten iOS:ssä, Bonjourrissa on kaunis automaattinen tumma tila.
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 Emoji faviconina
+🥖 Emoji as favicon
 
-🔒 Yksityisyyteen keskittynyt Jotkut kotisivut, kuten Momentum, kannustavat sinua luomaan tilin, antamaan heille
-henkilökohtaisia ​​tietoja, käyttämään enemmän käyttöoikeuksia ja luottamaan moniin kolmannen osapuolen palveluihin.
-Bonjourr ei kerää yhtään tietoja edes analyyttisiin tarkoituksiin, käytä minimaalisia käyttöoikeuksia, luota harvempiin
-kolmannen osapuolen palveluihin eikä sillä tietenkään ole tilijärjestelmää. Bonjourrin avoimena lähdekoodina oleminen
-tarkoittaa myös sitä, että voit helposti tarkistaa, pitävätkö väitteemme paikkansa.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 Mukautettu CSS-tyyli Onko sinulla jokin tietty idea mielessä? Bonjourr tarjoaa sinulle mukautettuja tyylejä -osion.
-Voit muokata ja tehdä mitä tahansa, kun lisäät oman CSS:n.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 Mukautetut fontit Haluatko tietyn fontin kotisivullesi? Voit valita sen helposti Bonjourrin ja Google Fontsin
-integroinnin ansiosta.
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
+Google Fonts.
 
-🌎 Monikielinen Mahtavien avustajiemme ansiosta, Bonjourr on saatavilla 20+ eri kielellä.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
