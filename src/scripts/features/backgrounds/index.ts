@@ -665,6 +665,7 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
             setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 200)
         } else {
             lastVisible?.classList.add('hiding')
+            setTimeout(() => children[0]?.classList.remove('hiding'), 1) 
             setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
         }
     }
@@ -698,6 +699,10 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
             callback()
         }
     })
+
+    if (!document.body.classList.contains('init')) {
+        div.classList.add('hiding')
+    }
 
     img.src = src
     img.remove()

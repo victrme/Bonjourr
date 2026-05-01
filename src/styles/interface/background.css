@@ -38,6 +38,9 @@
     height: auto;
     left: 5vw;
     top: 5vh;
+
+    border-radius: clamp(10px, 2vw, 20px);
+    box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
 }
 
 #background-media .video-looper,
@@ -96,6 +99,10 @@
 body.init #background-media .video-looper,
 body.init #background-media .background-image {
     transition: none;
+}
+
+body:not(.init) {
+    transition: background-color var(--fade-in);
 }
 
 #background-color {
