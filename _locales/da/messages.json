@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Minimalistisk startside",
-        "description": "Udvidelsesnavn"
+        "message": "Bonjourr · Minimalist Startpage",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Forbedre din web oplevelse med Bonjourr, en moderne, tilpasningsvenlig og letvægts hjemmeside.",
-        "description": "Udvidelsesbeskrivelse"
+        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
+        "description": "extension description"
     }
 }
