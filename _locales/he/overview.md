@@ -1,51 +1,53 @@
-בכל פעם שתפתחו חלון או כרטיסייה חדשה, תתקבלו בדף מינימליסטי שיעזור לכם לשמור על רוגע ופרודקטיביות. בזכות רקעים נהדרים
-באיכות גבוהה שמשתנים בהתאם לאווירה של היום, כל כרטיסייה חדשה תרגיש מרעננת ומיוחדת.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-בונז'ור נבנתה כתחליף מודרני יותר לדפי בית כמו מומנטום. לקחנו השראה משפת העיצוב של אפל כדי ליצור את דף הבית היפהפה הזה
-שיעזור לכם להתמקד במה שחשוב
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-הנה כמה תכונות עיקריות: 🍏 שפת עיצוב של iOS 🏞 רקעים דינמיים ברזולוציית 4-קיי המשתנים בהתאם לאווירה של היום ⚡️ מהיר וקל
-משקל 🔎 סרגל חיפוש (תואם לכל מנועי החיפוש) 🕰 שעון אנלוגי עם מספר עיצובים 🌤 מזג אוויר 🔗 קישורים מהירים 👋 מברך אותך בשמך
-🌘 מצב כהה 🥖 אימוג'י כסמל אתר 🧑‍💻 עיצוב סי-אס-אס מותאם אישית 📝 גופנים מותאמים אישית 🔒 ממוקד בפרטיות 🌎 רב-לשוני
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-בונז'ור שואפת להיראות ולהרגיש מינימלית, תוך כדי שהיא מציעה שפע של אפשרויות התאמה אישית בדיוק לפי הטעם שלך. ניתן להגדיר
-רקעים משלך, להפעיל שעון אנלוגי יפהפה, לבחור גופן משלך וקישורים מהירים... אפשר אפילו לבדוק את התיעוד שלנו, שבו ריכזנו
-קטעי עיצוב שיאפשרו לך לעשות אפילו יותר.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-הפרויקט כולו קוד פתוח, ידידותי למפתחים ובאמת מכבד את הפרטיות שלך. אנחנו לא אוספים שום מידע, וגם אין צורך ליצור חשבון
-כדיי להשתמש בו.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 רקעים דינמיים ברזולוציית 4-קיי בחרנו בקפידה כמה מהתמונות היפות ביותר מאנספלאש כדי שהכרטיסיות החדשות שלכם תמיד ירגישו
-מרעננות. גלו תמונות באיכות גבוהה של טבע, נופים ובעלי חיים מדהימים.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ מהיר וקל משקל בונז'ור בנויה עם ג'אווהסקריפט סטנדרטי ומותאם לביצועים הטובים ביותר
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 סרגל חיפוש שורת החיפוש המובנית של בונז'ור תואמת לכל מנועי החיפוש — כן, לכולם! ואם תרצה, תוכל גם להוסיף מנוע חיפוש
-מותאם אישית משלך.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 שעון אנלוגי שעון ברירת המחדל של בונז'ור עוצב כך שיראה כמו זה שבאייפון ובמכשירים אחרים של אפל. אבל אם אתה מעדיף משהו
-מיוחד יותר – אפשר להחליף אותו בשעון אנלוגי מרשים במיוחד, ולהתאים אותו בדיוק לטעם שלך.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 מזג אוויר במשפט פשוט, קבל סיכום של מזג האוויר הנוכחי והתחזית באזור שלך.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 קישורים מהירים זה לא יהיה דף בית אמיתי בלי סימניות! בונז'ור מאפשרת לך להוסיף סימניות משלך, לשנות את הסמלים שלהן
-ואפילו לייבא את הסימניות הקיימות מהדפדפן שלך.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 מצב כהה בדיוק כמו במערכת ההפעלה של אפל, לבונז'ור יש מצב כהה אוטומטי ויפהפה.
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 אימוג'י כסמל אתר
+🥖 Emoji as favicon
 
-🔒 ממוקד בפרטיות דפי בית מסוימים כמו מומנטום מעודדים אותך ליצור חשבון, למסור פרטים אישיים, לאשר יותר הרשאות ולהסתמך על
-שירותים חיצוניים רבים. בונז'ור, לעומת זאת, לא אוספת שום מידע, אפילו לא לצורכי סטטיסטיקה, משתמשת במינימום הרשאות, מסתמכת
-על כמה שפחות שירותים חיצוניים, וכמובן, לא דורשת יצירת חשבון. העובדה שבונז'ור מבוססת על קוד פתוח מאפשרת לך לבדוק בעצמך
-שכל ההבטחות שלנו נכונות.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 עיצוב סי-אס-אס מותאם אישית יש לך רעיון מסוים בראש? בונז'ור דואגת לך עם אזור העיצובים המותאמים אישית. תוכל לעצב כל דבר
-כשתוסיף את קוד הסי-אס-אס שלך.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 גופנים מותאמים אישית רוצה גופן ספציפי בדף הבית שלך? תוכל לבחור אותו בקלות בזכות האינטגרציה של בונז'ור עם "גוגל
-פונטס".
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
+Google Fonts.
 
-🌎 רב-לשוני הודות לתורמים המדהימים שלנו, בונז'ור זמינה ביותר מ-20 שפות שונות.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
