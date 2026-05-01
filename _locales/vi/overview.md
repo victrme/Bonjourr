@@ -1,56 +1,53 @@
-Mỗi khi bạn mở một cửa sổ hoặc tab mới, bạn sẽ được chào đón bởi trang có giao diện tối giản này, giúp bạn cảm thấy bình
-yên và tăng năng suất. Nhờ vào những hình nền chất lượng cao độ phân giải 4K tuyệt đẹp, thay đổi theo tâm trạng của
-ngày, các tab mới của bạn sẽ luôn cảm thấy mới mẻ.
+Every time you open a new window or tab, you'll be greeted by this minimalist looking page that will help your serenity
+and productivity. Thanks to its gorgeous high quality backgrounds that change according to the mood of the day, your new
+tabs will always feel fresh.
 
-Bonjourr được xây dựng như một sự lựa chọn hiện đại hơn so với các trang chủ như Momentum. Chúng tôi lấy cảm hứng từ iOS
-và ngôn ngữ thiết kế của Apple để tạo ra trang chủ đẹp mắt này, giúp bạn tập trung vào những điều quan trọng.
+Bonjourr was built as a more modern alternative to homepages like Momentum. We took inspiration from iOS and Apple's
+design language to create this beautiful homepage that will help you focus on what matters.
 
-Dưới đây là một số tính năng chính: 🍏 Ngôn ngữ thiết kế của iOS 🏞 Hình nền động 4K thay đổi theo tâm trạng của ngày ⚡️
-Nhanh và nhẹ! 🔎 Thanh tìm kiếm (tương thích với tất cả các công cụ tìm kiếm) 🕰 Đồng hồ kim với nhiều kiểu dáng 🌤 Thời
-tiết 🔗 Liên kết nhanh 👋 Chào bạn với tên của bạn 🌘 Chế độ tối 🥖 Emoji làm biểu tượng trang 🧑‍💻 CSS tùy chỉnh 📝 Phông
-chữ tùy chỉnh 🔒 Tập trung vào quyền riêng tư 🌎 Đa ngôn ngữ
+Here's some key features: 🍏 iOS design language 🏞 Dynamic 4K backgrounds that change according to the mood of the day
+⚡️ Fast & lightweight! 🔎 Search bar (compatible with all search engines) 🕰 Analog clock with multiple clock faces 🌤
+Weather 🔗 Quick Links 👋 Greets you by your name 🌘 Dark mode 🥖 Emoji as favicon 🧑‍💻 Custom CSS styling 📝 Custom fonts
+🔒 Privacy focused 🌎 Multilingual
 
-Bonjourr nhắm đến việc có vẻ ngoài tối giản nhưng vẫn mang đến nhiều tùy chọn để tùy chỉnh theo ý thích của bạn. Thiết
-lập hình nền của riêng bạn (hoặc bộ sưu tập Unsplash!), kích hoạt đồng hồ kim đẹp mắt, thiết lập phông chữ và Liên kết
-Nhanh của riêng bạn... Bạn có thể thậm chí kiểm tra tài liệu của chúng tôi để xem chúng tôi đã tổng hợp một số đoạn mã
-CSS để thực hiện nhiều hơn nữa.
+Bonjourr aims to look and feel minimal, while still bringing you lots of options to customise it to your liking. Set
+your own backgrounds (or Unsplash collections!), enable the beautiful analog clock, set your own font and Quick Links...
+You can even Check out our documentation where we compiled some style snippets to do even more.
 
-Dự án hoàn toàn mã nguồn mở, thân thiện với nhà phát triển và thực sự tôn trọng quyền riêng tư của bạn. Chúng tôi không
-thu thập bất kỳ dữ liệu nào, bạn cũng không cần tạo tài khoản để sử dụng nó.
+The project is entirely open source, developer friendly and actually respects your privacy. We do not collect any data,
+nor do you need to create an account to use it.
 
 ---
 
-🏞 Hình nền 4k Chúng tôi đã chọn lựa một số bức ảnh tuyệt đẹp từ Unsplash để tab mới của bạn luôn cảm thấy mới mẻ. Khám
-phá những bức ảnh chất lượng cao về các cảnh đẹp tự nhiên, động vật và thiên nhiên tuyệt vời.
+🏞 Dynamic 4K backgrounds We handpicked some of the most beautiful Unsplash photos so that your new tabs will always feel
+fresh. Discover high quality photos of incredible landscapes, animals and nature.
 
-⚡️ Nhanh và nhẹ! Bonjourr được xây dựng bằng JavaScript thuần túy và được tối ưu hóa cho hiệu suất tốt nhất có thể.
+⚡️ Fast & lightweight! Bonjourr is built with vanilla JavaScript and optimised for the best possible performance.
 
-🔎 Thanh tìm kiếm Thanh tìm kiếm tích hợp của Bonjourr tương thích với tất cả các công cụ tìm kiếm. Vâng, tất cả! Nếu
-bạn muốn, bạn còn có thể thêm công cụ tìm kiếm tùy chỉnh của riêng mình.
+🔎 Search bar The integrated search bar of Bonjourr is compatible with all search engines. Yes, all of them! If you
+want, you can even add you own custom search engine.
 
-🕰 Đồng hồ kim Đồng hồ mặc định của Bonjourr được thiết kế để giống với những gì bạn thấy trên iPhone và các thiết bị iOS
-khác. Nhưng nếu bạn muốn một cái gì đó độc đáo hơn, bạn có thể thay thế nó bằng một chiếc đồng hồ kim rất đẹp, và tùy
-chỉnh nó theo ý bạn.
+🕰 Analog clock Bonjourr's default clock is made to resemble what you have on the iPhone and other iOS devices. But if
+you'd like something more exotic, you can replace it with a very cool analog clock, and customise it as you'd like.
 
-🌤 Thời tiết Chỉ trong một câu đơn giản, nhận được tóm tắt về thời tiết hiện tại và dự báo địa phương của bạn.
+🌤 Weather In a simple sentence, get a summary of you local current weather and forecast.
 
-🔗 Liên kết nhanh Nó sẽ không thể là một trang chủ thực sự nếu thiếu bookmark! Bonjourr cho phép bạn thêm các bookmark
-của riêng bạn, thay đổi biểu tượng của chúng và nhập các bookmark hiện tại từ trình duyệt của bạn.
+🔗 Quick Links It wouldn't be a real homepage without bookmarks! Bonjourr allows you to add your own bookmarks, change
+their icons and import your current bookmarks from your browser.
 
-🌘 Chế độ tối Giống như trên iOS, Bonjourr có chế độ tối tự động đẹp mắt.
+🌘 Dark mode Just like on iOS, Bonjourr has a beautiful automatic dark mode.
 
-🥖 Emoji làm biểu tượng trang
+🥖 Emoji as favicon
 
-🔒 Tập trung vào quyền riêng tư Một số trang chủ như Momentum khuyến khích bạn tạo tài khoản, cung cấp thông tin cá
-nhân, sử dụng nhiều quyền hạn hơn và dựa vào nhiều dịch vụ của bên thứ ba. Bonjourr không thu thập bất kỳ dữ liệu nào,
-ngay cả cho mục đích phân tích, sử dụng ít quyền hạn hơn, dựa vào ít dịch vụ của bên thứ ba và tất nhiên là không có hệ
-thống tài khoản nào cả. Việc Bonjourr mã nguồn mở cũng có nghĩa là bạn có thể dễ dàng kiểm tra xem những tuyên bố của
-chúng tôi có đúng không.
+🔒 Privacy focused Some homepages like Momentum encourage you to create an account, give them some personal info, use
+more permissions and rely on many third party services. Bonjourr doesn’t collect any data, even for analytics purposes,
+use minimal permissions, rely on fewer third party services and of course doesn’t have any account system. Bonjourr
+being open source also means that you can easily check out if our claims are true.
 
-🧑‍💻 CSS tùy chỉnh Có một ý tưởng cụ thể trong đầu? Bonjourr có phần tùy chỉnh phong cách để bạn có thể tùy chỉnh và làm
-bất cứ điều gì khi bạn thêm CSS của riêng bạn.
+🧑‍💻 Custom CSS styling Have a specific idea in mind? Bonjourr has you covered with the custom styles section. You can
+customise and do anything when you add your own CSS.
 
-📝 Phông chữ tùy chỉnh Muốn một phông chữ cụ thể trên trang chủ của bạn? Bạn có thể dễ dàng chọn nó nhờ tích hợp
-Bonjourr với Google Fonts.
+📝 Custom fonts Want a specific font on your homepage ? You can easily select it thanks to Bonjourr's integration with
+Google Fonts.
 
-🌎 Đa ngôn ngữ Nhờ các đóng góp tuyệt vời từ cộng đồng, Bonjourr có sẵn trong hơn 20 ngôn ngữ khác nhau.
+🌎 Multilanguage Thanks to our awesome contributors, Bonjourr is available in more than 20 different languages.
