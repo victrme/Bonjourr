@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr Мінімалістычная хатняя старонка",
-        "description": "назва дадатку"
+        "message": "Bonjourr · Minimalist Startpage",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Зрабіце вэб-сёрфінг камфортнейшым з Bonjourr: стыльны, лёгкі, наладжвальны дадатак.",
-        "description": "апісанне дадатку"
+        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
+        "description": "extension description"
     }
 }
