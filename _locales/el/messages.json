@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Μινιμαλιστική Αρχική Σελίδα",
-        "description": "όνομα επέκτασης"
+        "message": "Bonjourr · Minimalist Startpage",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Βελτιώστε την εμπειρεία πλοήγησης σας με το Bonjourr, μια πανέμορφη, προσαρμόσιμη και ελαφριά αρχική σελίδα.",
-        "description": "περιγραφή επέκτασης"
+        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
+        "description": "extension description"
     }
 }
