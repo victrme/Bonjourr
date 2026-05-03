@@ -31,7 +31,7 @@
     image-rendering: pixelated;
 }
 
-#background-wrapper .background-image.portrait {
+#background-wrapper .background-image.framed {
     transform: unset;
     position: absolute;
 

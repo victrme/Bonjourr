@@ -43,6 +43,10 @@
     max-height: 60px;
 }
 
+#background-frame-mode-option.shown {
+    max-height: 104px;
+}
+
 #background-freq-option.shown {
     max-height: 60px;
 }

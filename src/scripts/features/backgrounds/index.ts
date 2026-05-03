@@ -19,7 +19,7 @@ import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
 import { storage } from '../../storage.ts'
 
-import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '../../../types/shared.ts'
+import type { Background, BackgroundImage, BackgroundVideo, Frequency, Frame } from '../../../types/shared.ts'
 import type { Backgrounds, Sync } from '../../../types/sync.ts'
 import type { Local } from '../../../types/local.ts'
 
@@ -37,6 +37,7 @@ interface CollectionSetReturn {
 
 interface BackgroundUpdate {
     freq?: string
+    frame?: Frame
     type?: string
     blur?: string
     blurenter?: true
@@ -171,6 +172,13 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
         storage.sync.set({ backgrounds: data.backgrounds })
         handleBackgroundOptions(data.backgrounds)
+    }
+
+    if (update.frame) {
+        data.backgrounds.frame = update.frame
+        // applyFrame(update.frame)
+        
+        storage.sync.set({ backgrounds: data.backgrounds })
     }
 
     if (update.refresh) {
@@ -492,6 +500,7 @@ async function fetchNewBackgrounds(backgrounds: Backgrounds): Promise<Record<str
     }
 
     const screen = `?h=${height}&w=${width}`
+
     const query = backgrounds.queries[collectionName] ?? ''
     const search = query ? `&query=${query}` : ''
 
@@ -646,6 +655,7 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
         resolution = media.mimetype === 'image/gif' ? 'full' : resolution
         const src = media.urls[resolution]
         item = createImageItem(src, media)
+        console.log(media)
     } else {
         const fade = 4000 //ms
         const src = media.urls[resolution]
@@ -659,7 +669,7 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
         const children = Object.values(mediaWrapper?.children)
         const notHiding = children.filter((child) => !child.className.includes('hiding'))
         const lastVisible = notHiding.at(-1)
-
+        console.log(fast)
         if (fast) {
             document.body.classList.remove('init')
             setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 200)
@@ -679,13 +689,15 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
     img.addEventListener('load', () => {
         const isSmall = img.width <= 256 && img.height <= 256
         const isPng = !!media.mimetype?.includes('png')
-        const isPortrait = img.width < img.height
+        const imageIsPortrait = img.width < img.height
         const aspectRatio = (img.width / img.height)
 
-        div?.classList.toggle('pixelated', isPng && isSmall)
-        div?.classList.toggle('portrait', isPortrait)
+        // applyFrame(img.width < img.height)
 
-        if (isPortrait) {
+        div?.classList.toggle('pixelated', isPng && isSmall)
+        div?.classList.toggle('framed', imageIsPortrait)
+
+        if (imageIsPortrait) {
             div.style.aspectRatio = aspectRatio.toString()
             div.style.width = `min(90vw, calc(90vh * ${aspectRatio}))`
         }
@@ -700,7 +712,8 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
         }
     })
 
-    if (!document.body.classList.contains('init')) {
+    // so there's a transition when switching backgrounds
+    if (!document.body.classList.contains('init') && backgroundsWrapper?.querySelector('#background-media')?.children.length) {
         div.classList.add('hiding')
     }
 
@@ -841,6 +854,7 @@ function handleBackgroundOptions(backgrounds: Backgrounds): void {
     document.getElementById('unsplash_options')?.classList.toggle('shown', type === 'images')
     document.getElementById('background-urls-option')?.classList.toggle('shown', type === 'urls')
     document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
+    document.getElementById('background-frame-mode-option')?.classList.toggle('shown', type !== 'color')
     document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
     document.getElementById('background-video-sound-options')?.classList.toggle('shown', withVideos)
 
@@ -969,6 +983,10 @@ async function blurResolutionControl(sync: Sync, local: Local): Promise<void> {
         applyBackground(current, 'full', 'fast')
         preloadBackground(next, 'full')
     })
+}
+
+function applyFrame(frame: string,): void {
+    console.log(frame)
 }
 
 //  Helpers

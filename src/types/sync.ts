@@ -1,4 +1,4 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
+import type { BackgroundImage, BackgroundVideo, Frequency, Frame, Link, PomodoroMode, Widgets } from './shared.ts'
 
 export interface Sync {
     showall: boolean
@@ -74,6 +74,7 @@ export interface Hide {
 export interface Backgrounds {
     type: 'files' | 'urls' | 'images' | 'videos' | 'color'
     frequency: Frequency
+    frame: Frame
     fadein: number
     bright: number
     blur: number

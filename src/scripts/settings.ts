@@ -179,6 +179,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_linkstyle', data.linkstyle || 'default')
     setInput('i_type', data.backgrounds.type || 'images')
     setInput('i_freq', data.backgrounds?.frequency || 'hour')
+    setInput('i_frame', data.backgrounds?.frame || 'portrait')
     setInput('i_dark', data.dark || 'system')
     setInput('i_favicon', data.favicon ?? '')
     setInput('i_tabtitle', data.tabtitle ?? '')
@@ -537,6 +538,10 @@ function initOptionsEvents(): void {
 
     paramId('i_freq').addEventListener('change', function (this: HTMLInputElement): void {
         backgroundUpdate({ freq: this.value })
+    })
+
+    paramId('i_frame').addEventListener('change', function (this: HTMLInputElement): void {
+        backgroundUpdate({ frame: this.value })
     })
 
     onclickdown(paramId('i_refresh'), (event) => {
