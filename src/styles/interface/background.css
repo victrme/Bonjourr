@@ -37,16 +37,25 @@
 #background-wrapper[data-framing="always"] .background-image:not(.portrait) {
     transform: unset;
     position: absolute;
-
     height: auto;
     left: 5vw;
     top: 5vh;
-
     border-radius: clamp(10px, 2vw, 20px);
     box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
-    
     aspect-ratio: var(--aspect-ratio);
     width: min(90vw, calc(90vh * var(--aspect-ratio)));
+}
+
+#background-wrapper[data-framing="portrait"] #background-media:has(.background-image.portrait) ~ #background-texture,
+#background-wrapper[data-framing="landscape"] #background-media:has(.background-image:not(.portrait)) ~ #background-texture,
+#background-wrapper[data-framing="always"] #background-media:has(.background-image) ~ #background-texture {
+    z-index: 0;
+}
+
+#background-wrapper[data-framing="portrait"] #background-media:has(.background-image.portrait) .background-image,
+#background-wrapper[data-framing="landscape"] #background-media:has(.background-image:not(.portrait)) .background-image,
+#background-wrapper[data-framing="always"] #background-media .background-image {
+    z-index: 1;
 }
 
 #background-media .video-looper,
