@@ -31,7 +31,10 @@
     image-rendering: pixelated;
 }
 
-#background-wrapper .background-image.framed {
+#background-wrapper[data-framing="portrait"] .background-image.portrait,
+#background-wrapper[data-framing="landscape"] .background-image:not(.portrait),
+#background-wrapper[data-framing="always"] .background-image.portrait,
+#background-wrapper[data-framing="always"] .background-image:not(.portrait) {
     transform: unset;
     position: absolute;
 
@@ -41,6 +44,9 @@
 
     border-radius: clamp(10px, 2vw, 20px);
     box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 4px;
+    
+    aspect-ratio: var(--aspect-ratio);
+    width: min(90vw, calc(90vh * var(--aspect-ratio)));
 }
 
 #background-media .video-looper,

@@ -89,6 +89,7 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
     toggleCredits(sync.backgrounds)
     applyFilters(sync.backgrounds)
     applyTexture(sync.backgrounds.texture)
+    applyFrame(sync.backgrounds.frame)
     handleBackgroundActions(sync.backgrounds)
     document.getElementById('background-wrapper')?.setAttribute('data-type', sync.backgrounds.type)
 
@@ -176,7 +177,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
     if (update.frame) {
         data.backgrounds.frame = update.frame
-        // applyFrame(update.frame)
+        applyFrame(update.frame)
         
         storage.sync.set({ backgrounds: data.backgrounds })
     }
@@ -689,22 +690,17 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
     img.addEventListener('load', () => {
         const isSmall = img.width <= 256 && img.height <= 256
         const isPng = !!media.mimetype?.includes('png')
-        const imageIsPortrait = img.width < img.height
-        const aspectRatio = (img.width / img.height)
-
-        // applyFrame(img.width < img.height)
-
+        
         div?.classList.toggle('pixelated', isPng && isSmall)
-        div?.classList.toggle('framed', imageIsPortrait)
 
-        if (imageIsPortrait) {
-            div.style.aspectRatio = aspectRatio.toString()
-            div.style.width = `min(90vw, calc(90vh * ${aspectRatio}))`
-        }
+        // div?.classList.toggle('framed', imageIsPortrait)
+        div?.classList.toggle('portrait', img.width < img.height)
+
+        const aspectRatio = (img.width / img.height)
+        div.style.setProperty('--aspect-ratio', aspectRatio.toString())
 
         backgroundsWrapper?.classList.remove('hidden')
         applyThemeColor(media, img)
-        applyAspectRatioVars(img)
         updateCredits(media)
 
         if (callback) {
@@ -986,7 +982,8 @@ async function blurResolutionControl(sync: Sync, local: Local): Promise<void> {
 }
 
 function applyFrame(frame: string,): void {
-    console.log(frame)
+    const wrapper = document.getElementById('background-wrapper')
+    wrapper?.setAttribute('data-framing', frame)
 }
 
 //  Helpers
@@ -1041,18 +1038,6 @@ function applyThemeColor(image: BackgroundImage, img: HTMLImageElement): void {
             document.documentElement.style.setProperty('--average-color', color)
         // }, fadein)
     }
-}
-
-// calculates the current background's aspect ratio and sets it as CSS variable
-function applyAspectRatioVars(img: HTMLImageElement): void {
-    const width = img.naturalWidth
-    const height = img.naturalHeight
-
-    if (!width || !height) return
-
-    const ratio = width / height
-
-    document.documentElement.style.setProperty('--img-ratio', ratio.toString())
 }
 
 function pauseVideoOnVisibilityChange(): void {
