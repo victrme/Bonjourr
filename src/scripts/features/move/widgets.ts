@@ -1,6 +1,7 @@
 import { addOverlay, interfaceFade, removeOverlay, removeSelection, setAllAligns, setGridAreas } from './dom.ts'
 import { transitioner } from '../../utils/transitioner.ts'
 import { storage } from '../../storage.ts'
+import { games } from '../games/index.ts'
 import { weather } from '../weather/index.ts'
 import {
     addGridWidget,
@@ -54,6 +55,10 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]): void {
                 weather({ sync: newdata, lastWeather: local.lastWeather })
             })
         }
+
+        if (id === 'games' && newdata.games) {
+            games(newdata.games)
+        }
     })
 
     interfaceTransition.finally(() => {
@@ -69,6 +74,7 @@ export function toggleWidgetInSettings(states: [Widgets, boolean][]): void {
         main: 'i_main',
         quicklinks: 'i_quicklinks',
         notes: 'i_notes',
+        games: 'i_games',
         quotes: 'i_quotes',
         pomodoro: 'i_pomodoro',
         searchbar: 'i_sb',
@@ -89,6 +95,7 @@ export function toggleWidgetOnInterface(states: [Widgets, boolean][]): void {
         main: 'main',
         quicklinks: 'linkblocks',
         notes: 'notes_container',
+        games: 'games_container',
         quotes: 'quotes_container',
         pomodoro: 'pomodoro_container',
         searchbar: 'sb_container',

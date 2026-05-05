@@ -10,6 +10,7 @@ import { hideElements } from './features/hide.ts'
 import { linksImport } from './features/links/bookmarks.ts'
 import { quickLinks } from './features/links/index.ts'
 import { searchbar } from './features/searchbar.ts'
+import { games } from './features/games/index.ts'
 import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
@@ -19,6 +20,7 @@ import { togglePomodoroFocus } from './features/pomodoro.ts'
 import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton, webkitRangeTrackColor } from './shared/dom.ts'
+import { networkForm } from './shared/form.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
 import { settingsNotifications } from './utils/notifications.ts'
@@ -38,6 +40,8 @@ import type { Sync } from '../types/sync.ts'
 import type { Local } from '../types/local.ts'
 
 // Initialization
+
+const gamesAuthForm = networkForm('f_gamesauth')
 
 let settingsInitSync: Sync
 let settingsInitLocal: Local
@@ -204,6 +208,12 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
     setInput('i_sbwidth', data.searchbar?.width ?? 30)
     setInput('i_sbrequest', data.searchbar?.request || '')
+    setInput('i_games_range', data.games?.range ?? '14d')
+    setInput('i_games_platform', data.games?.platform ?? 'all')
+    setInput('i_games_hypes', data.games?.minHypes ?? 0)
+    setInput('i_games_size', data.games?.size ?? 9.5)
+    setInput('i_games_clientid', local.igdbClientId ?? '')
+    setInput('i_games_secret', local.igdbClientSecret ?? '')
     setInput('i_qtfreq', data.quotes?.frequency || 'day')
     setInput('i_qttype', data.quotes?.type || 'classic')
     setInput('i_qtlist', userQuotes ?? '')
@@ -254,6 +264,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_greethide', !data.hide?.greetings)
     setCheckbox('i_notes', data.notes?.on ?? false)
     setCheckbox('i_sb', data.searchbar?.on ?? false)
+    setCheckbox('i_games', data.games?.on ?? false)
     setCheckbox('i_quotes', data.quotes?.on ?? false)
     setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
     setCheckbox('i_pmdr_sound', data.pomodoro?.sound ?? true)
@@ -314,6 +325,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
     paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
     paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
+    paramId('games_options')?.classList.toggle('shown', data.games?.on)
     paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
 
     // Page layout
@@ -835,6 +847,65 @@ function initOptionsEvents(): void {
 
     paramId('i_sbplaceholder').addEventListener('change', () => {
         paramId('i_sbplaceholder').blur()
+    })
+
+    // Games
+
+    onclickdown(paramId('i_games'), (_, target) => {
+        moveElements(undefined, { widget: ['games', target.checked] })
+    })
+
+    paramId('i_games_range').addEventListener('change', function (): void {
+        games(undefined, { range: this.value })
+    })
+
+    paramId('i_games_platform').addEventListener('change', function (): void {
+        games(undefined, { platform: this.value })
+    })
+
+    paramId('i_games_hypes').addEventListener('input', function (): void {
+        games(undefined, { minHypes: Number(this.value) })
+    })
+
+    paramId('i_games_size').addEventListener('input', function (): void {
+        games(undefined, { size: Number(this.value) })
+    })
+
+    paramId('f_gamesauth').addEventListener('submit', async function (this, event): Promise<void> {
+        event.preventDefault()
+
+        const igdbClientId = paramId('i_games_clientid').value.trim()
+        const igdbClientSecret = paramId('i_games_secret').value.trim()
+
+        if (!igdbClientId || !igdbClientSecret) {
+            gamesAuthForm.warn(tradThis('Enter both IGDB client ID and client secret'))
+            return
+        }
+
+        gamesAuthForm.load()
+
+        try {
+            const { verifyIgdbCredentials } = await import('./features/games/request.ts')
+            const localPatch = await verifyIgdbCredentials(igdbClientId, igdbClientSecret)
+
+            storage.local.set(localPatch)
+
+            settingsInitLocal.igdbClientId = localPatch.igdbClientId
+            settingsInitLocal.igdbClientSecret = localPatch.igdbClientSecret
+            settingsInitLocal.igdbAccessToken = localPatch.igdbAccessToken
+            settingsInitLocal.igdbAccessTokenExpiresAt = localPatch.igdbAccessTokenExpiresAt
+
+            gamesAuthForm.success(tradThis('IGDB connection verified'))
+            setTimeout(() => gamesAuthForm.accept(), 600)
+
+            const sync = await storage.sync.get('games')
+
+            if (sync.games?.on) {
+                games(sync.games)
+            }
+        } catch (error) {
+            gamesAuthForm.warn(tradThis(error as string))
+        }
     })
 
     // Quotes

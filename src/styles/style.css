@@ -40,6 +40,7 @@
 @import './features/main';
 @import './features/searchbar';
 @import './features/notes';
+@import './features/games';
 @import './features/links';
 @import './features/quotes';
 @import './features/pomodoro';

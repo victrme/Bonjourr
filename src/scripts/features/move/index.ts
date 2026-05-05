@@ -298,6 +298,7 @@ function layoutReset(data: Sync): void {
         main: undefined,
         time: undefined,
         notes: undefined,
+        games: undefined,
         searchbar: undefined,
         quotes: undefined,
         pomodoro: undefined,

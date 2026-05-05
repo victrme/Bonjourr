@@ -1518,6 +1518,139 @@
     </div>
 </div>
 
+<div class="settings-title" id="games_title">
+    <h2 class="trn">Games releases</h2>
+
+    <button class="tooltip ttgames" title="Tips on game releases" aria-label="Tips on game releases">?</button>
+
+    <p class="tooltiptext dropdown ttgames">
+        <span class="trn">Advanced local mode: add your own IGDB client ID and client secret.</span>
+        <a
+            class="trn"
+            href="https://api-docs.igdb.com/#getting-started"
+            rel="noreferrer noopener"
+            target="_blank"
+        >Get IGDB API access</a>
+    </p>
+</div>
+
+<div class="param">
+    <div class="activate_games wrapper">
+        <label for="i_games" class="trn">Enable</label>
+        <input id="i_games" class="switch" type="checkbox" />
+    </div>
+
+    <div id="games_options" class="dropdown">
+        <hr />
+
+        <div class="wrapper">
+            <label for="i_games_range" class="trn">Release window</label>
+            <select id="i_games_range">
+                <option value="7d" class="trn">Next 7 days</option>
+                <option value="14d" class="trn">Next 14 days</option>
+                <option value="30d" class="trn">Next 30 days</option>
+            </select>
+        </div>
+
+        <hr />
+
+        <div class="wrapper">
+            <label for="i_games_platform" class="trn">Platform</label>
+            <select id="i_games_platform">
+                <option value="all" class="trn">All platforms</option>
+                <option value="pc">PC</option>
+                <option value="playstation">PlayStation</option>
+                <option value="xbox">Xbox</option>
+                <option value="nintendo">Nintendo</option>
+            </select>
+        </div>
+
+        <hr />
+
+        <div class="wrapper">
+            <label for="i_games_hypes" class="trn">Minimum hypes</label>
+            <input
+                id="i_games_hypes"
+                type="range"
+                name="i_games_hypes"
+                min="0"
+                max="100"
+                step="5"
+                value="0"
+                class="range"
+            />
+        </div>
+
+        <hr />
+
+        <div class="wrapper">
+            <label for="i_games_size" class="trn">Card size</label>
+            <input
+                id="i_games_size"
+                type="range"
+                name="i_games_size"
+                min="7"
+                max="12"
+                step="0.5"
+                value="9.5"
+                class="range"
+            />
+        </div>
+
+        <hr />
+
+        <div class="wrapper">
+            <span>
+                <span class="trn">IGDB credentials</span>
+                <button class="tooltip ttgamescredentials" title="What does this do?" aria-label="What does this do?">
+                    ?
+                </button>
+            </span>
+
+            <form id="f_gamesauth" class="network-form">
+                <div class="games-auth-row">
+                    <input
+                        id="i_games_clientid"
+                        name="games-clientid"
+                        type="text"
+                        placeholder="Client ID"
+                        maxlength="128"
+                        autocomplete="off"
+                        spellcheck="false"
+                    />
+                </div>
+
+                <div class="games-auth-row">
+                    <input
+                        id="i_games_secret"
+                        name="games-secret"
+                        type="password"
+                        placeholder="Client secret"
+                        maxlength="256"
+                        autocomplete="off"
+                        spellcheck="false"
+                    />
+                    <button type="submit" id="b_gamesauth">
+                        <span></span>
+                    </button>
+                </div>
+
+                <small class="network-form-warning"></small>
+            </form>
+        </div>
+
+        <p class="tooltiptext dropdown ttgamescredentials">
+            <span class="trn">Stored locally on this device only. Use this for personal setups.</span>
+            <a
+                class="trn"
+                href="https://api-docs.igdb.com/#getting-started"
+                rel="noreferrer noopener"
+                target="_blank"
+            >Follow IGDB setup guide</a>
+        </p>
+    </div>
+</div>
+
 <div class="settings-title" id="quotes_title">
     <h2 id="lbl-quotes" class="trn">Quotes</h2>
 

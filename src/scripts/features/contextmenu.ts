@@ -13,6 +13,7 @@ interface EventLocation {
         link: boolean
         time: boolean
         main: boolean
+        games: boolean
         quotes: boolean
         pomodoro: boolean
     }
@@ -32,6 +33,10 @@ const sectionMatching: Record<string, Section> = {
     main: {
         section: '#main',
         scrollto: 'main_title',
+    },
+    games: {
+        section: '#games_container',
+        scrollto: 'games_title',
     },
     quotes: {
         section: '#quotes_container',
@@ -62,6 +67,7 @@ export function openContextMenu(event: Event): void {
             link: !!target.closest('#linkblocks'),
             time: !!target.closest(sectionMatching.time.section),
             main: !!target.closest(sectionMatching.main.section),
+            games: !!target.closest(sectionMatching.games.section),
             quotes: !!target.closest(sectionMatching.quotes.section),
             pomodoro: !!target.closest(sectionMatching.pomodoro.section),
         },

@@ -1,4 +1,14 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
+import type {
+    BackgroundImage,
+    BackgroundVideo,
+    Frequency,
+    GamesLimit,
+    GamesPlatform,
+    GamesRange,
+    Link,
+    PomodoroMode,
+    Widgets,
+} from './shared.ts'
 
 export interface Sync {
     showall: boolean
@@ -43,6 +53,7 @@ export interface Sync {
     worldclocks: WorldClock[]
     weather: Weather
     searchbar: Searchbar
+    games?: Games
     quotes: Quotes
     pomodoro: Pomodoro
     font: Font
@@ -170,6 +181,15 @@ export interface Notes {
     width?: number
     background?: string
     opacity?: number
+}
+
+export interface Games {
+    on: boolean
+    range: GamesRange
+    platform: GamesPlatform
+    limit: GamesLimit
+    minHypes: number
+    size: number
 }
 
 export interface Quotes {

@@ -8,6 +8,7 @@ import { hideElements } from './features/hide.ts'
 import { customFont } from './features/fonts.ts'
 import { quickLinks } from './features/links/index.ts'
 import { searchbar } from './features/searchbar.ts'
+import { games } from './features/games/index.ts'
 import { customCss } from './features/css.ts'
 import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
@@ -80,6 +81,7 @@ async function startup(): Promise<void> {
     clock(sync)
     darkmode(sync.dark)
     searchbar(sync.searchbar)
+    games(sync.games)
     quotes({ sync, local })
     pomodoro(sync.pomodoro)
     notes(sync.notes)

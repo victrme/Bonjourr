@@ -22,6 +22,10 @@
     "permissions": [
         "storage"
     ],
+    "host_permissions": [
+        "https://id.twitch.tv/*",
+        "https://api.igdb.com/*"
+    ],
     "optional_permissions": [
         "bookmarks",
         "topSites",

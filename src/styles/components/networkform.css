@@ -3,6 +3,7 @@
 }
 
 .network-form.warn span::after,
+.network-form.success span::after,
 .network-form.load span::after {
     display: block;
     margin: auto;
@@ -29,8 +30,14 @@
     background-image: url('../../assets/labels/info.svg');
 }
 
+.network-form.success span::after {
+    background-image: url('../../assets/labels/check.svg');
+}
+
 .network-form.warn button,
-.network-form.warn span {
+.network-form.warn span,
+.network-form.success button,
+.network-form.success span {
     width: 22px;
     max-width: 22px;
 }
@@ -44,4 +51,9 @@
 
 .network-form.warn .network-form-warning {
     display: block;
+}
+
+.network-form.success .network-form-warning {
+    display: block;
+    color: var(--color-green);
 }

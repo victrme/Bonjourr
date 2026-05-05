@@ -267,6 +267,24 @@
 
                 <button
                     data-action="openTheseSettings"
+                    data-attribute="games_title"
+                    title="Open the games settings"
+                    aria-label="Open the games settings"
+                >
+                    <svg
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M7.5 8C5.016 8 3 10.016 3 12.5v2.042c0 1.31.565 2.555 1.55 3.417l.605.529a2.25 2.25 0 0 0 3.51-.724l.627-1.413c.239-.54.775-.889 1.365-.889h2.686c.59 0 1.126.349 1.365.889l.627 1.413a2.25 2.25 0 0 0 3.51.724l.605-.529A4.5 4.5 0 0 0 21 14.542V12.5C21 10.016 18.984 8 16.5 8h-9Zm1.25 2.25h1.5v1.5h1.5v1.5h-1.5v1.5h-1.5v-1.5h-1.5v-1.5h1.5v-1.5Zm8.25 1a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Zm-2.5 2.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z"
+                        />
+                    </svg>
+                    <span class="trn">Edit games settings</span>
+                </button>
+
+                <button
+                    data-action="openTheseSettings"
                     data-attribute="quotes_title"
                     title="Open the quotes settings"
                     aria-label="Open the quotes settings"
@@ -705,6 +723,14 @@
             </div>
 
             <div id="notes_container" class="hidden"></div>
+
+            <div id="games_container" class="hidden">
+                <div id="games_header">
+                    <p class="trn">Upcoming releases</p>
+                </div>
+
+                <ul id="games_list"></ul>
+            </div>
 
             <form id="sb_container" class="hidden">
                 <div id="searchbar-wrapper">

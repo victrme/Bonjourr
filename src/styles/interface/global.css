@@ -33,6 +33,7 @@
 .move-edit #linkblocks,
 .move-edit #sb_container,
 .move-edit #notes_container,
+.move-edit #games_container,
 .move-edit #quotes_container,
 .move-edit #pomodoro_container {
     z-index: 3;
@@ -46,6 +47,7 @@
 #linkblocks,
 #sb_container,
 #notes_container,
+#games_container,
 #quotes_container,
 #pomodoro_container {
     place-self: center;

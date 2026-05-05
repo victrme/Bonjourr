@@ -38,6 +38,11 @@
     grid-area: notes;
 }
 
+#move-overlay-games,
+#games_container {
+    grid-area: games;
+}
+
 #move-overlay-quicklinks,
 #linkblocks {
     grid-area: quicklinks;

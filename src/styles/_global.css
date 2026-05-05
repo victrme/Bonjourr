@@ -263,20 +263,24 @@ body::-webkit-scrollbar {
 
 aside::-webkit-scrollbar,
 textarea::-webkit-scrollbar,
-.pce-overlays::-webkit-scrollbar {
+.pce-overlays::-webkit-scrollbar,
+#games_list::-webkit-scrollbar {
     width: 10px;
+    height: 10px;
 }
 
 aside::-webkit-scrollbar-track,
 textarea::-webkit-scrollbar-track,
-.pce-overlays::-webkit-scrollbar-track {
+.pce-overlays::-webkit-scrollbar-track,
+#games_list::-webkit-scrollbar-track {
     box-shadow: inset 0 0 10px 10px transparent;
     border: solid 3px transparent;
 }
 
 aside::-webkit-scrollbar-thumb,
 textarea::-webkit-scrollbar-thumb,
-.pce-overlays::-webkit-scrollbar-thumb {
+.pce-overlays::-webkit-scrollbar-thumb,
+#games_list::-webkit-scrollbar-thumb {
     box-shadow: inset 0 0 10px 10px var(--color-border);
     border: solid 3px transparent;
     border-radius: 10px;

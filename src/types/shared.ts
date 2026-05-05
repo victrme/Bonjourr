@@ -6,10 +6,14 @@ export type Langs = keyof typeof langList
 export type Link = LinkFolder | LinkElem
 export type Background = BackgroundImage | BackgroundVideo
 export type QuoteUserInput = [string, string][]
-export type Widgets = 'time' | 'main' | 'quicklinks' | 'notes' | 'quotes' | 'searchbar' | 'pomodoro'
+export type Widgets = 'time' | 'main' | 'quicklinks' | 'notes' | 'games' | 'quotes' | 'searchbar' | 'pomodoro'
 export type Frequency = 'tabs' | 'hour' | 'day' | 'period' | 'pause'
 export type LinkIconType = 'auto' | 'library' | 'file' | 'url'
 export type PomodoroMode = 'pomodoro' | 'break' | 'longbreak'
+export type GamesRange = '7d' | '14d' | '30d'
+export type GamesPlatform = 'all' | 'pc' | 'playstation' | 'xbox' | 'nintendo'
+export type GamesLimit = 3 | 5 | 10
+export type GamesHypes = number
 export type SearchEngines =
     | 'default'
     | 'google'
@@ -100,6 +104,24 @@ export interface LinkFolder {
 export interface Quote {
     author: string
     content: string
+}
+
+export interface GameReleaseItem {
+    id: string
+    title: string
+    releaseDate: string
+    platform: string
+    cover?: string
+    url?: string
+}
+
+export interface GamesQuery {
+    range: GamesRange
+    platform: GamesPlatform
+    limit: number
+    minHypes: GamesHypes
+    startAt?: number
+    endAt?: number
 }
 
 export interface SimpleWeather {

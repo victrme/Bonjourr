@@ -137,6 +137,25 @@
     max-height: 120px;
 }
 
+#games_options.shown {
+    max-height: 520px;
+}
+
+#f_gamesauth {
+    display: grid;
+    gap: 8px;
+}
+
+#f_gamesauth .games-auth-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+}
+
+#f_gamesauth .games-auth-row:first-child {
+    grid-template-columns: minmax(0, 1fr);
+}
+
 #quotes_options.shown {
     max-height: 450px;
 }

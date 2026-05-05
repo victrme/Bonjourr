@@ -472,6 +472,7 @@ export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
             time: imported.time ?? current.time,
             main: imported.main ?? current.main,
             notes: imported.notes?.on ?? current.notes?.on,
+            games: imported.games?.on ?? current.games?.on,
             quotes: imported.quotes?.on ?? current.quotes?.on,
             pomodoro: imported.pomodoro?.on ?? current.pomodoro?.on,
             searchbar: imported.searchbar?.on ?? current.searchbar?.on,
@@ -482,6 +483,7 @@ export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
             time: current.time !== importStates.time,
             main: current.main !== importStates.main,
             notes: current.notes?.on !== importStates.notes,
+            games: current.games?.on !== importStates.games,
             quotes: current.quotes?.on !== importStates.quotes,
             searchbar: current.searchbar?.on !== importStates.searchbar,
             quicklinks: current.quicklinks !== importStates.quicklinks,
@@ -489,7 +491,7 @@ export function toggleMoveWidgets(current: Sync, imported: Import): Sync {
 
         // Force single layout with old imports
         // Partial imports, for example links list only, will not force single
-        if (Object.keys(imported).some((key) => key.match(/time|main|notes|quotes|searchbar|quicklinks/g))) {
+        if (Object.keys(imported).some((key) => key.match(/time|main|notes|games|quotes|searchbar|quicklinks/g))) {
             current.move.selection = 'single'
         }
 

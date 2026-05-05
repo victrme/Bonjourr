@@ -4,6 +4,7 @@ interface NetworkFormReturn {
     load: () => void
     reset: () => void
     warn: (err: unknown) => void
+    success: (messageText: string) => void
     accept: (inputId?: string, value?: string) => void
 }
 
@@ -31,15 +32,15 @@ export function networkForm(targetId: string): NetworkFormReturn {
         }
 
         form?.addEventListener('input', () => {
-            if (form.classList.contains('warn')) {
-                form.classList.remove('warn')
+            if (form.classList.contains('warn') || form.classList.contains('success')) {
+                form.classList.remove('warn', 'success')
                 button.removeAttribute('disabled')
             }
         })
     })
 
     function reset(): void {
-        form.classList.remove('load', 'warn', 'valid', 'remove')
+        form.classList.remove('load', 'warn', 'success', 'valid', 'remove')
         button.removeAttribute('disabled')
         clearTimeout(loadTimeout)
     }
@@ -57,6 +58,14 @@ export function networkForm(targetId: string): NetworkFormReturn {
         form.classList.remove('load')
         button.setAttribute('disabled', '')
         message.textContent = err as string
+        clearTimeout(loadTimeout)
+    }
+
+    function success(messageText: string): void {
+        form.classList.add('success')
+        form.classList.remove('load', 'warn')
+        button.setAttribute('disabled', '')
+        message.textContent = messageText
         clearTimeout(loadTimeout)
     }
 
@@ -78,6 +87,7 @@ export function networkForm(targetId: string): NetworkFormReturn {
     return {
         load,
         warn,
+        success,
         reset,
         accept,
     }
