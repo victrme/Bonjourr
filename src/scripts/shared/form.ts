@@ -1,77 +1,84 @@
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 
-export function networkForm(targetId: string) {
-	let form: HTMLFormElement
-	let button: HTMLButtonElement
-	let message: HTMLSpanElement
-	let loadTimeout = 0
+interface NetworkFormReturn {
+    load: () => void
+    reset: () => void
+    warn: (err: unknown) => void
+    accept: (inputId?: string, value?: string) => void
+}
 
-	onSettingsLoad(() => {
-		form = document.getElementById(targetId) as HTMLFormElement
-		button = form?.querySelector('button:last-of-type') as HTMLButtonElement
-		message = form?.querySelector('small') as HTMLSpanElement
+export function networkForm(targetId: string): NetworkFormReturn {
+    let form: HTMLFormElement
+    let button: HTMLButtonElement
+    let message: HTMLSpanElement
+    let loadTimeout = 0
 
-		for (const input of form.querySelectorAll('input')) {
-			input?.addEventListener('input', () => {
-				const placeholder = input.getAttribute('placeholder')
-				const isSame = placeholder === input.value
-				const isEmpty = input.value === ''
-				const isValid = form.checkValidity()
+    onSettingsLoad((): void => {
+        form = document.getElementById(targetId) as HTMLFormElement
+        button = form?.querySelector('button:last-of-type') as HTMLButtonElement
+        message = form?.querySelector('small') as HTMLSpanElement
 
-				form.classList.toggle('valid', isValid)
-				form.classList.toggle('remove', isValid && (isSame || isEmpty))
-			})
-		}
+        for (const input of form.querySelectorAll('input')) {
+            input?.addEventListener('input', () => {
+                const placeholder = input.getAttribute('placeholder')
+                const isSame = placeholder === input.value
+                const isEmpty = input.value === ''
+                const isValid = form.checkValidity()
 
-		form?.addEventListener('input', () => {
-			if (form.classList.contains('warn')) {
-				form.classList.remove('warn')
-				button.removeAttribute('disabled')
-			}
-		})
-	})
+                form.classList.toggle('valid', isValid)
+                form.classList.toggle('remove', isValid && (isSame || isEmpty))
+            })
+        }
 
-	function reset() {
-		form.classList.remove('load', 'warn', 'valid', 'remove')
-		button.removeAttribute('disabled')
-		clearTimeout(loadTimeout)
-	}
+        form?.addEventListener('input', () => {
+            if (form.classList.contains('warn')) {
+                form.classList.remove('warn')
+                button.removeAttribute('disabled')
+            }
+        })
+    })
 
-	function load() {
-		loadTimeout = setTimeout(() => {
-			form.classList.remove('warn')
-			form.classList.add('valid', 'load')
-			button.setAttribute('disabled', 'disabled')
-		}, 50)
-	}
+    function reset(): void {
+        form.classList.remove('load', 'warn', 'valid', 'remove')
+        button.removeAttribute('disabled')
+        clearTimeout(loadTimeout)
+    }
 
-	function warn(err: unknown) {
-		form.classList.add('warn')
-		form.classList.remove('load')
-		button.setAttribute('disabled', '')
-		message.textContent = err as string
-		clearTimeout(loadTimeout)
-	}
+    function load(): void {
+        loadTimeout = setTimeout(() => {
+            form.classList.remove('warn')
+            form.classList.add('valid', 'load')
+            button.setAttribute('disabled', 'disabled')
+        }, 50)
+    }
 
-	function accept(inputId?: string, value?: string) {
-		if (inputId && form.checkValidity()) {
-			form.classList.remove('valid')
+    function warn(err: unknown): void {
+        form.classList.add('warn')
+        form.classList.remove('load')
+        button.setAttribute('disabled', '')
+        message.textContent = err as string
+        clearTimeout(loadTimeout)
+    }
 
-			const input = document.getElementById(inputId)
+    function accept(inputId?: string, value?: string): void {
+        if (inputId && form.checkValidity()) {
+            form.classList.remove('valid')
 
-			if (input && value) {
-				input.setAttribute('placeholder', value)
-			}
-		}
+            const input = document.getElementById(inputId)
 
-		clearTimeout(loadTimeout)
-		setTimeout(() => reset(), 200)
-	}
+            if (input && value) {
+                input.setAttribute('placeholder', value)
+            }
+        }
 
-	return {
-		load,
-		warn,
-		reset,
-		accept,
-	}
+        clearTimeout(loadTimeout)
+        setTimeout(() => reset(), 200)
+    }
+
+    return {
+        load,
+        warn,
+        reset,
+        accept,
+    }
 }

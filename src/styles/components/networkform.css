@@ -1,47 +1,47 @@
 .network-form input {
-	width: 100%;
+    width: 100%;
 }
 
 .network-form.warn span::after,
 .network-form.load span::after {
-	display: block;
-	margin: auto;
-	width: 20px;
-	height: 20px;
-	color: transparent;
-	background-size: cover;
+    display: block;
+    margin: auto;
+    width: 20px;
+    height: 20px;
+    color: transparent;
+    background-size: cover;
 }
 
 @keyframes spin {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 .network-form.load span::after {
-	animation: spin 600ms linear infinite;
-	background-image: url('../../assets/labels/spinner.svg');
+    animation: spin 600ms linear infinite;
+    background-image: url('../../assets/labels/spinner.svg');
 }
 .network-form.warn span::after {
-	background-image: url('../../assets/labels/info.svg');
+    background-image: url('../../assets/labels/info.svg');
 }
 
 .network-form.warn button,
 .network-form.warn span {
-	width: 22px;
-	max-width: 22px;
+    width: 22px;
+    max-width: 22px;
 }
 
 .network-form-warning {
-	display: none;
-	color: orange;
-	text-align: right;
-	padding: 6px 2px 0;
+    display: none;
+    color: orange;
+    text-align: right;
+    padding: 6px 2px 0;
 }
 
 .network-form.warn .network-form-warning {
-	display: block;
+    display: block;
 }

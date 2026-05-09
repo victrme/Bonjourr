@@ -1,0 +1,17 @@
+{
+  "language_servers": [
+    "deno",
+    "!biome",
+    "!typescript-language-server",
+    "!vscode-html-language-server",
+    "!vscode-css-language-server"
+  ],
+  "languages": {
+    "JSON": {
+      "language_servers": ["json-language-server"],
+      "formatter": "prettier",
+      "tab_size": 4,
+    },
+  },
+  "formatter": "language_server",
+}

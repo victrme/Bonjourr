@@ -1,10 +1,10 @@
 {
-	"extensionName": {
-		"message": "Bonjourr · Homepage minimalista",
-		"description": "nome dell'estensione"
-	},
-	"extensionDesc": {
-		"message": "Migliora la tua esperienza di navigazione con Bonjourr, una bellissima e personalizzabile pagina iniziale.",
-		"description": "descrizione dell'estensione"
-	}
+    "extensionName": {
+        "message": "Bonjourr · Homepage minimalista",
+        "description": "nome dell'estensione"
+    },
+    "extensionDesc": {
+        "message": "Migliora la tua esperienza di navigazione con Bonjourr, una bellissima e personalizzabile pagina iniziale.",
+        "description": "descrizione dell'estensione"
+    }
 }

@@ -1,10 +1,10 @@
 {
-	"extensionName": {
-		"message": "بونجور - صفحة البداية البسيطة",
-		"description": "اسم بونجور"
-	},
-	"extensionDesc": {
-		"message": "صفحة بداية جميلة وقابلة للتخصيص وخفيفة الوزن.",
-		"description": "وصف بونجور"
-	}
+    "extensionName": {
+        "message": "بونجور - صفحة البداية البسيطة",
+        "description": "اسم بونجور"
+    },
+    "extensionDesc": {
+        "message": "صفحة بداية جميلة وقابلة للتخصيص وخفيفة الوزن.",
+        "description": "وصف بونجور"
+    }
 }

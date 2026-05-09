@@ -1,23 +1,23 @@
 #settings-notifications {
-	margin-top: 2.2em;
+    margin-top: 2.2em;
 }
 
 #settings-notifications .param,
 #settings-notifications {
-	position: absolute;
-	visibility: hidden;
+    position: absolute;
+    visibility: hidden;
 }
 
 #settings-notifications .param.shown,
 #settings-notifications.shown {
-	position: static;
-	visibility: visible;
+    position: static;
+    visibility: visible;
 }
 
 #settings-notifications .param {
-	margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 #settings-notifications label {
-	padding-inline-end: 1em;
+    padding-inline-end: 1em;
 }

@@ -1,52 +1,54 @@
 import type { Sync } from '../../types/sync.ts'
 
-const features: ('clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro')[] = ['clock', 'links']
+type InterfaceWidgetName = 'clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro'
+
+const features: InterfaceWidgetName[] = ['clock', 'links']
 let interfaceDisplayCallback = () => undefined
 let loadtime = performance.now()
 
 export function onInterfaceDisplay(callback: () => undefined): void {
-	if (callback) {
-		interfaceDisplayCallback = callback
-	}
+    if (callback) {
+        interfaceDisplayCallback = callback
+    }
 }
 
-export function displayInterface(ready?: 'clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro', data?: Sync) {
-	if (data) {
-		if (data?.font?.family) {
-			features.push('fonts')
-		}
-		if (data?.quotes?.on) {
-			features.push('quotes')
-		}
-		if (data?.pomodoro?.on) {
-			features.push('pomodoro')
-		}
+export function displayInterface(ready?: InterfaceWidgetName, data?: Sync): void {
+    if (data) {
+        if (data?.font?.family) {
+            features.push('fonts')
+        }
+        if (data?.quotes?.on) {
+            features.push('quotes')
+        }
+        if (data?.pomodoro?.on) {
+            features.push('pomodoro')
+        }
 
-		return
-	}
+        return
+    }
 
-	if (!ready) {
-		return
-	}
+    if (!ready) {
+        return
+    }
 
-	const index = features.indexOf(ready)
+    const index = features.indexOf(ready)
 
-	if (index !== -1) {
-		features.splice(index, 1)
-	} else {
-		return
-	}
+    if (index !== -1) {
+        features.splice(index, 1)
+    } else {
+        return
+    }
 
-	if (features.length > 0) {
-		return
-	}
+    if (features.length > 0) {
+        return
+    }
 
-	loadtime = Math.min(performance.now() - loadtime, 333)
-	loadtime = loadtime > 33 ? loadtime : 0
-	document.documentElement.style.setProperty('--load-time-transition', `${loadtime}ms`)
-	document.body.classList.remove('loading')
+    loadtime = Math.min(performance.now() - loadtime, 333)
+    loadtime = loadtime > 33 ? loadtime : 0
+    document.documentElement.style.setProperty('--load-time-transition', `${loadtime}ms`)
+    document.body.classList.remove('loading')
 
-	const delay = Math.max(333, loadtime)
+    const delay = Math.max(333, loadtime)
 
-	setTimeout(() => interfaceDisplayCallback(), delay)
+    setTimeout(() => interfaceDisplayCallback(), delay)
 }

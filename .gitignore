@@ -1,21 +1,25 @@
 .DS_Store
-config.codekit3
 .directory
 .vscode
+.zed
+.idea
 .prettierignore
+.wrangler
+config.codekit3
 manifest.json
+
+.env
 .env.json
 env.json
 
 node_modules/
 release/
 archives/
-test-results
+test-results/
 playwright-report
 playwright/.cache
-.wrangler
 
-yarn.lock
 package-lock.json
 pnpm-lock.yaml
+yarn.lock
 bun.lockb

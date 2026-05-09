@@ -1,3 +1,25 @@
+## 22.1.0
+
+- New features:
+  - Pomodoro: new default alarm tune, ability to change its volume
+  - HTML's `theme-color` meta tag based on the current background now available to all browsers
+  - New language: Hindi by @Shriyash-24 
+- Improvements & Bug fixes:
+  - Improved security when fetching favicons #758
+  - Stricter condition for pixelated backgrounds #771
+  - Fixed debug text appearing in Notes when pasting text #761
+  - Context menu doesn't open anymore when you swipe from the bottom on tablets
+  - Context menu now closes when you switch tabs
+- Localization updates (thank you!!):
+  - Serbian by @rammba
+  - Chinese (Hong Kong) by @unknownnumbers 
+  - Italian by @antarcorrado
+  - Vietnamese by @megai2k14 & @trmdi 
+  - Portuguese by @Blackspirits 
+  - Russian by @walway 
+  - Belarusian by @The518thGuy 
+  - Polish by @Zylvo
+
 ## 22.0.0
 
 - 	New widget! Stay focused on your goals with the Pomodoro timer:
