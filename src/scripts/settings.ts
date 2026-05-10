@@ -187,8 +187,6 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
     setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
     setInput('i_texture-color', data.backgrounds.texture.color ?? '#ffffff')
-    setInput('i_pagewidth', data.pagewidth || 1600)
-    setInput('i_pagegap', data.pagegap ?? 1)
     setInput('i_dateformat', data.dateformat || 'eu')
     setInput('i_greeting', data.greeting ?? '')
     setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
@@ -315,14 +313,6 @@ function initOptionsValues(data: Sync, local: Local): void {
     paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
     paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
     paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
-
-    // Page layout
-    const gridLayoutButtons = domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button')
-    const selectedLayout = data.move?.selection || 'single'
-
-    for (const button of gridLayoutButtons) {
-        button?.classList.toggle('selected', button.dataset.layout === selectedLayout)
-    }
 
     // Link show title
     paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
@@ -945,25 +935,6 @@ function initOptionsEvents(): void {
             toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
         })
     })
-
-    paramId('i_pagecolumns').addEventListener('change', function (): void {
-        moveElements(undefined, { layout: this.value, toggle: true })
-    })
-
-    paramId('i_pagewidth').addEventListener('input', function (): void {
-        pageControl({ width: Number.parseInt(this.value) }, true)
-    })
-
-    paramId('i_pagegap').addEventListener('input', function (): void {
-        pageControl({ gap: Number.parseFloat(this.value) }, true)
-    })
-
-    paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), {
-        passive: true,
-    })
-    paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
-    paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
-    paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
     // Updates
 

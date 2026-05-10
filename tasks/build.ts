@@ -223,6 +223,7 @@ function assets(platform: Platform): void {
     copyDir(`${source}/interface`, `${target}/interface`)
     copyDir(`${source}/labels`, `${target}/labels`)
     copyDir(`${source}/sounds`, `${target}/sounds`)
+    copyDir(`${source}/move`, `${target}/move`)
 }
 
 function manifests(platform: Platform): void {

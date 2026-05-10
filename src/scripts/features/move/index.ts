@@ -6,14 +6,11 @@ import { storage } from '../../storage.ts'
 
 import {
     addGridWidget,
-    findOffendingRow,
     getGridWidgets,
     getWidgetsStorage,
     gridFindObject,
     gridParse,
     gridStringify,
-    isRectangle,
-    isRowEmpty,
     MOVE_WIDGETS,
     spansInGridArea,
 } from './helpers.ts'
@@ -50,7 +47,7 @@ interface AlignChangeOptions {
 const dominterface = document.querySelector<HTMLElement>('#interface')
 let widget: WidgetName | undefined
 
-export function moveElements(init?: SimpleMove, events?: UpdateMove) {
+export function moveElements(init?: SimpleMove, events?: UpdateMove): void {
     if (!(init || events)) {
         updateMoveElement({ reset: true })
         return
@@ -106,7 +103,7 @@ export async function updateMoveElement(event: UpdateMove): Promise<void> {
     }
 }
 
-function gridChange(move: SimpleMove, id: WidgetName, direction: 'up' | 'down' | 'left' | 'right') {
+function gridChange(move: SimpleMove, id: WidgetName, direction: 'up' | 'down' | 'left' | 'right'): void {
     const widgetInGrid = gridFindObject(move.grid, id)
     const newWidgetInGrid = structuredClone(widgetInGrid)
     const affectedIds: WidgetName[] = []
@@ -156,7 +153,7 @@ function gridChange(move: SimpleMove, id: WidgetName, direction: 'up' | 'down' |
     // step 4: Find non-rectangle widgets
 
     for (const widget of MOVE_WIDGETS) {
-        console.log(widget, isRectangle(move.grid, widget))
+        // console.log(widget, isRectangle(move.grid, widget))
     }
 
     // step 4b: Reduce widget size until it is rectangle
@@ -179,7 +176,7 @@ function gridChange(move: SimpleMove, id: WidgetName, direction: 'up' | 'down' |
     setGridAreas(move.grid)
 }
 
-function alignChange(move: SimpleMove, id: WidgetName, options: AlignChangeOptions) {
+function alignChange(move: SimpleMove, id: WidgetName, options: AlignChangeOptions): void {
     if (isHorizontalAlign(options.horizontal)) {
         move.widgets[id].horizontal = options.horizontal
     }
@@ -223,7 +220,7 @@ function layoutReset(data: Sync): void {
     })
 }
 
-function toggleMoveStatus(data: Sync, force?: boolean) {
+function toggleMoveStatus(data: Sync, force?: boolean): void {
     const bEditmove = document.getElementById('b_editmove') as HTMLButtonElement
     const isEditing = dominterface?.classList.contains('move-edit')
     const hasOverlay = document.querySelector('.move-overlay') === null

@@ -46,7 +46,7 @@ export interface Sync {
     quotes: Quotes
     pomodoro: Pomodoro
     font: Font
-    move: Move
+    move: SimpleMove
     about: {
         browser: string
         version: string

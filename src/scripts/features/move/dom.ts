@@ -8,7 +8,7 @@ import type { WidgetName } from '../../../types/shared.ts'
 
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
-export function setGridAreas(grid: MoveLayout['grid'] | string) {
+export function setGridAreas(grid: MoveLayout['grid'] | string): void {
     if (typeof grid === 'string') {
         document.documentElement.style.setProperty('--grid', grid)
     } else {
@@ -16,7 +16,7 @@ export function setGridAreas(grid: MoveLayout['grid'] | string) {
     }
 }
 
-export function setAlign(id: WidgetName, align: SimpleMoveWidget) {
+export function setAlign(id: WidgetName, align: SimpleMoveWidget): void {
     const elem = elements[id]
 
     if (elem) {
@@ -43,7 +43,7 @@ export function setAlign(id: WidgetName, align: SimpleMoveWidget) {
     }
 }
 
-export function setAllAligns(widgets: Record<WidgetName, SimpleMoveWidget>) {
+export function setAllAligns(widgets: Record<WidgetName, SimpleMoveWidget>): void {
     for (const [widget, align] of Object.entries(widgets)) {
         setAlign(widget as WidgetName, align)
     }
@@ -80,13 +80,13 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
     const verticals = ['baseline', 'center', 'end']
     const texts = ['left', 'center', 'right']
 
-    moveAlignHorizontal?.addEventListener('input', function () {
+    moveAlignHorizontal?.addEventListener('input', function (): void {
         updateMoveElement({ id, horizontal: horizontals[parseInt(this.value)] })
     })
-    moveAlignVertical?.addEventListener('input', function () {
+    moveAlignVertical?.addEventListener('input', function (): void {
         updateMoveElement({ id, vertical: verticals[parseInt(this.value)] })
     })
-    moveAlignText?.addEventListener('input', function () {
+    moveAlignText?.addEventListener('input', function (): void {
         updateMoveElement({ id, text: texts[parseInt(this.value)] })
     })
 
@@ -111,7 +111,7 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
     })
 }
 
-export function addOverlay(id: WidgetName) {
+export function addOverlay(id: WidgetName): void {
     const overlay = getHTMLTemplate<HTMLDivElement>('move-overlay-template', '.move-overlay')
     overlay.id = `move-overlay-${id}`
 
@@ -119,7 +119,7 @@ export function addOverlay(id: WidgetName) {
     initOverlayActions(overlay, id)
 }
 
-export function removeOverlay(id?: WidgetName) {
+export function removeOverlay(id?: WidgetName): void {
     if (id) {
         document.querySelector(`#move-overlay-${id}`)?.remove()
     } else {
@@ -129,7 +129,7 @@ export function removeOverlay(id?: WidgetName) {
     }
 }
 
-export function removeSelection() {
+export function removeSelection(): void {
     // const toolbox = document.getElementById('element-mover')
     const elements = document.querySelectorAll<HTMLElement>(
         '.move-overlay, #grid-mover button, .grid-spanner, #element-mover button',
