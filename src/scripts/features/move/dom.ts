@@ -58,16 +58,16 @@ export function initOverlayActions(overlay: HTMLDivElement, id: WidgetName): voi
     const moveGridTop = overlay.querySelector<HTMLButtonElement>('#move-grid-top')
 
     onclickdown(moveGridBottom, () => {
-        moveElements(undefined, { id, direction: 'down' })
+        moveElements(undefined, { id, move: 'down' })
     })
     onclickdown(moveGridRight, () => {
-        moveElements(undefined, { id, direction: 'right' })
+        moveElements(undefined, { id, move: 'right' })
     })
     onclickdown(moveGridLeft, () => {
-        moveElements(undefined, { id, direction: 'left' })
+        moveElements(undefined, { id, move: 'left' })
     })
     onclickdown(moveGridTop, () => {
-        moveElements(undefined, { id, direction: 'up' })
+        moveElements(undefined, { id, move: 'up' })
     })
 
     // Grid align

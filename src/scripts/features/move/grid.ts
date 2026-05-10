@@ -11,7 +11,7 @@ type WidgetSizes = Map<WidgetName, WidgetSize>
 
 //
 
-export function gridChange(move: SimpleMove, id: WidgetName, direction: Direction): void {
+export function gridMove(move: SimpleMove, id: WidgetName, direction: Direction): void {
     const widget = gridFindObject(move.grid, id)
     const sizes = toSizeMap(move)
 

@@ -2,6 +2,7 @@ import type { Move, Sync } from '../../../types/sync.ts'
 import type { WidgetName } from '../../../types/shared.ts'
 
 export interface WidgetInGrid {
+    id: WidgetName
     width: number
     height: number
     positions: {
@@ -100,7 +101,7 @@ export function gridFind(grid: Grid, id: string): [number, number][] {
     return positions
 }
 
-export function gridFindObject(grid: Grid, id: string): WidgetInGrid {
+export function gridFindObject(grid: Grid, id: WidgetName): WidgetInGrid {
     const positions = gridFind(grid, id)
     const pos = positions.map(([c, r]) => ({
         col: c,
@@ -111,6 +112,7 @@ export function gridFindObject(grid: Grid, id: string): WidgetInGrid {
     const colsAmount = [...new Set(pos.map((p) => p.col))].length
 
     return {
+        id: id,
         width: colsAmount,
         height: rowsAmount,
         positions: pos,
@@ -135,12 +137,12 @@ export function spansInGridArea(
     id: WidgetName,
     { toggle, remove }: { toggle?: 'row' | 'col'; remove?: true },
 ): Grid {
-    function addSpans(row: string[]) {
+    function addSpans(row: string[]): string[] {
         const target = row.indexOf(id)
         const stopper = [false, false]
         let arr = row
 
-        function replaceWithId(a: string[], i: number, lim: number) {
+        function replaceWithId(a: string[], i: number, lim: number): string[] {
             // not stopping and elem exit
             if (!stopper[lim] && a[i]) {
                 if (a[i] === '.') {
@@ -162,7 +164,7 @@ export function spansInGridArea(
         return arr
     }
 
-    function removeSpans(arr: string[]) {
+    function removeSpans(arr: string[]): string[] {
         let keepfirst = true
         return arr.map((a) => {
             if (a === id) {
@@ -268,7 +270,7 @@ export function getGridWidgets(area: string): WidgetName[] {
 }
 
 export function addGridWidget(grid: string, id: WidgetName): string {
-    const newrow = addGridRow(id)
+    const newrow = addGridRow(grid, id)
     let rows = grid.split("'").filter((row) => !(row === ' ' || row === ''))
     let position = 0
 
@@ -316,9 +318,33 @@ export function removeGridWidget(grid: string, id: WidgetName, _: Move['selectio
     return rows.join(' ')
 }
 
-function addGridRow(id: WidgetName): string {
-    const firstcolumn = selection === 'triple' ? '. ' : ''
-    const lastcolumn = selection === 'triple' || selection === 'double' ? ' .' : ''
+function addGridRow(grid: string, id: WidgetName): string {
+    const parsedGrid = gridParse(grid)
 
-    return `${firstcolumn}${id}${lastcolumn}`
+    if (parsedGrid.length === 0) {
+        return id
+    }
+
+    const colsAmount = grid[0].length
+    const isColsAmountEven = colsAmount % 2 === 0
+
+    if (colsAmount === 1) {
+        return id
+    }
+    if (colsAmount === 2) {
+        return `${id} .`
+    }
+    if (colsAmount === 3) {
+        return `. ${id} .`
+    }
+
+    let rightColumns = new Array(colsAmount / 2).fill('.')
+    let leftColumns = new Array(colsAmount / 2).fill('.')
+
+    if (isColsAmountEven) {
+        leftColumns = new Array((colsAmount / 2) - 1).fill('.')
+        rightColumns = new Array(colsAmount / 2).fill('.')
+    }
+
+    return `${leftColumns}${id}${rightColumns}`
 }

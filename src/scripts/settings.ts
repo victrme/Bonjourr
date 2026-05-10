@@ -936,6 +936,10 @@ function initOptionsEvents(): void {
         })
     })
 
+    onclickdown(paramId('b_resetmove'), () => {
+        moveElements(undefined, { reset: true })
+    })
+
     // Updates
 
     paramId('i_announce').addEventListener('change', function (this): void {

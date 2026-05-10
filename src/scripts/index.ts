@@ -114,5 +114,8 @@ async function startup(): Promise<void> {
             new: CURRENT_VERSION,
             old: oldVersion,
         })
+
+        // DEV: move-ux-rework
+        moveElements(undefined, { toggle: true })
     })
 }
