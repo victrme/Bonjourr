@@ -1,5 +1,5 @@
 import { addOverlay, removeOverlay, removeSelection, setAlign, setAllAligns, setGridAreas } from './dom.ts'
-import { addGridWidget, getWidgetsStorage, gridParse } from './helpers.ts'
+import { addGridWidget, getWidgetsStorage, gridParse, isDomHealthy } from './helpers.ts'
 import { SYNC_DEFAULT } from '../../defaults.ts'
 import { toggleWidget } from './widgets.ts'
 import { gridMove } from './grid.ts'
@@ -34,7 +34,7 @@ interface AlignChangeOptions {
 const dominterface = document.querySelector<HTMLElement>('#interface')
 
 export function moveElements(init?: SimpleMove, events?: UpdateMove): void {
-    if (!(init || events)) {
+    if (!init && !events) {
         updateMoveElement({ reset: true })
         return
     }
@@ -48,6 +48,12 @@ export function moveElements(init?: SimpleMove, events?: UpdateMove): void {
         setAllAligns(init.widgets)
         setGridAreas(init.grid)
     }
+
+    queueMicrotask(() => {
+        if (isDomHealthy() === false) {
+            updateMoveElement({ reset: true })
+        }
+    })
 }
 
 export async function updateMoveElement(event: UpdateMove): Promise<void> {

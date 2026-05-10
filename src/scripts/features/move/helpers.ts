@@ -49,6 +49,18 @@ export function hasDuplicateInArray(arr: string[], id?: string): boolean {
     return arr.filter((a) => a === id).length > 1
 }
 
+export function isDomHealthy(): boolean {
+    const dominterface = document.querySelector<HTMLElement>('#interface')
+
+    if (!dominterface) {
+        return false
+    }
+
+    console.log(getComputedStyle(dominterface).gridTemplateAreas)
+
+    return getComputedStyle(dominterface).gridTemplateAreas !== 'none'
+}
+
 //	Grid
 
 function gridValidate(grid: Grid): boolean {
