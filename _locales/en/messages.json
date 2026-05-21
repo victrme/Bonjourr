@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Minimalist Startpage",
+        "message": "Bonjourr · Minimalist New Tab Page",
         "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Improve your web browsing experience with Bonjourr, a beautiful, customizable and lightweight homepage.",
+        "message": "A beautiful and customizable new tab page inspired by iOS, designed for a calm and focused browsing experience.",
         "description": "extension description"
     }
 }
