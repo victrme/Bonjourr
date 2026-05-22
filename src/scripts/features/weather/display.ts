@@ -1,7 +1,7 @@
 import { minutator, suntime, userDate } from '../../shared/time.ts'
 import { getLang, tradThis } from '../../utils/translations.ts'
 import { getSunsetHour } from './index.ts'
-
+import { resolveWeatherCondition } from './icon.ts'
 import type { LastWeather } from '../../../types/local.ts'
 import type { Weather } from '../../../types/sync.ts'
 
@@ -46,7 +46,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     }
 
     const handleWidget = () => {
-        const condition = lastWeather.icon_id
+        const condition = resolveWeatherCondition(lastWeather.icon_id, lastWeather.description)
 
         if (!tempContainer) {
             return

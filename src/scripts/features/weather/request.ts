@@ -1,5 +1,6 @@
 import { displayWeather, handleForecastDisplay } from './display.ts'
 import { getLang, tradThis } from '../../utils/translations.ts'
+import { resolveWeatherCondition } from './icon.ts'
 import { handleGeolOption } from './settings.ts'
 import { getSunsetHour } from './index.ts'
 import { suntime } from '../../shared/time.ts'
@@ -107,7 +108,7 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
         forecasted_high: forecastedHigh,
         description,
         feels_like: feels,
-        icon_id: icon,
+        icon_id: resolveWeatherCondition(icon, description),
         sunrise,
         sunset,
         temp,
