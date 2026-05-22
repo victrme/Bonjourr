@@ -21,7 +21,7 @@ Bonjourr est une alternative moderne aux extensions comme Momentum et Tabliss, a
 - Polices et styles CSS personnalisés
 - Mode sombre
 - Options d'apparence flexibles
-- Disponible en 33 langues
+- Disponible en 43 langues
 
 🔒 La vie privée avant tout
 Bonjourr ne collecte aucune donnée, ne nécessite pas de compte et ne demande que les permissions essentielles. Les arrière-plans sont créés par des humains et n'utilisent pas l'IA générative. Entièrement open source et transparent.

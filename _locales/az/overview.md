@@ -21,7 +21,7 @@ Bonjourr, Momentum və Tabliss kimi genişlənmələrə müasir bir alternativdi
 - Xüsusi şriftlər və CSS stilləri
 - Qaranlıq rejim
 - Çevik görünüş seçimləri
-- 33 dildə mövcuddur
+- 43 dildə mövcuddur
 
 🔒 Gizlilik hər şeydən önce
 Bonjourr heç bir məlumat toplamır, hesab tələb etmir və yalnız lazımi icazələr istəyir. Arxa planlar insanlar tərəfindən yaradılır və generativ süni intellektdən istifadə etmir. Tamamilə açıq mənbəli və şəffafdır.

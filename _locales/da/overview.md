@@ -21,7 +21,7 @@ Bonjourr er et moderne alternativ til udvidelser som Momentum og Tabliss — det
 - Brugerdefinerede skrifttyper og CSS-styling
 - Mørk tilstand
 - Fleksible udseendeindstillinger
-- Tilgængelig på 33 sprog
+- Tilgængelig på 43 sprog
 
 🔒 Privatliv først
 Bonjourr indsamler ingen data, kræver ingen konto og beder kun om de nødvendige tilladelser. Baggrunde er skabt af mennesker og bruger ikke generativ AI. Fuldt open source og transparent.

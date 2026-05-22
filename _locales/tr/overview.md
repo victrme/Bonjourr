@@ -21,7 +21,7 @@ Bonjourr, Momentum ve Tabliss gibi uzantılara modern bir alternatiftir — iOS'
 - Özel yazı tipleri ve CSS stilleri
 - Karanlık mod
 - Esnek görünüm seçenekleri
-- 33 dilde kullanılabilir
+- 43 dilde kullanılabilir
 
 🔒 Gizlilik önce gelir
 Bonjourr hiçbir veri toplamaz, hesap gerektirmez ve yalnızca gerekli izinleri ister. Arka planlar insanlar tarafından oluşturulur ve üretken yapay zeka kullanmaz. Tamamen açık kaynaklı ve şeffaftır.

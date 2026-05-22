@@ -21,7 +21,7 @@ Bonjourr — Momentum va Tabliss kabi kengaytmalarga zamonaviy muqobil bo'lib, i
 - Maxsus shriftlar va CSS uslublari
 - Qorong'u rejim
 - Moslashuvchan ko'rinish imkoniyatlari
-- 33 tilda mavjud
+- 43 tilda mavjud
 
 🔒 Maxfiylik birinchi o'rinda
 Bonjourr hech qanday ma'lumot to'plamaydi, hisob talab qilmaydi va faqat zarur ruxsatlarni so'raydi. Orqa fonlar odamlar tomonidan yaratiladi va generativ sun'iy intellektdan foydalanmaydi. To'liq ochiq manba va shaffof.

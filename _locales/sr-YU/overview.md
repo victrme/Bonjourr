@@ -21,7 +21,7 @@ Bonjourr je moderna alternativa dodacima kao što su Momentum i Tabliss — spaj
 - Prilagođeni fontovi i CSS stilovi
 - Tamni režim
 - Fleksibilne mogućnosti izgleda
-- Dostupan na 33 jezika
+- Dostupan na 43 jezika
 
 🔒 Privatnost na prvom mestu
 Bonjourr ne prikuplja nikakve podatke, ne zahteva nalog i traži samo neophodne dozvole. Pozadine izrađuju ljudi i ne koriste generativnu veštačku inteligenciju. Potpuno otvorenog koda i transparentan.

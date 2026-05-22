@@ -21,7 +21,7 @@ Bonjourr to nowoczesna alternatywa dla rozszerzeń takich jak Momentum i Tabliss
 - Niestandardowe czcionki i style CSS
 - Tryb ciemny
 - Elastyczne opcje wyglądu
-- Dostępny w 33 językach
+- Dostępny w 43 językach
 
 🔒 Prywatność na pierwszym miejscu
 Bonjourr nie zbiera żadnych danych, nie wymaga konta i prosi tylko o niezbędne uprawnienia. Tła są tworzone przez ludzi i nie wykorzystują generatywnej AI. W pełni open source i przejrzysty.

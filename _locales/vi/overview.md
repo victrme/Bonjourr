@@ -21,7 +21,7 @@ Bonjourr là lựa chọn hiện đại thay thế cho các tiện ích như Mom
 - Phông chữ tùy chỉnh và kiểu CSS
 - Chế độ tối
 - Tùy chọn giao diện linh hoạt
-- Có sẵn bằng 33 ngôn ngữ
+- Có sẵn bằng 43 ngôn ngữ
 
 🔒 Quyền riêng tư là trên hết
 Bonjourr không thu thập dữ liệu, không yêu cầu tài khoản và chỉ xin các quyền cần thiết. Hình nền được tạo bởi con người và không sử dụng AI tạo sinh. Hoàn toàn mã nguồn mở và minh bạch.

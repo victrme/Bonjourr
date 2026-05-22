@@ -21,7 +21,7 @@ A Bonjourr modern alternatívája az olyan kiegészítőknek, mint a Momentum é
 - Egyéni betűtípusok és CSS-stílusok
 - Sötét mód
 - Rugalmas megjelenési lehetőségek
-- Elérhető 33 nyelven
+- Elérhető 43 nyelven
 
 🔒 Az adatvédelem az első
 A Bonjourr nem gyűjt adatokat, nem igényel fiókot, és csak a szükséges engedélyeket kéri. A háttérképeket emberek készítik, és nem használnak generatív mesterséges intelligenciát. Teljesen nyílt forráskódú és átlátható.

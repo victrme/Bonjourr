@@ -21,7 +21,7 @@ Bonjourr er nútímalegt val í stað viðbóta eins og Momentum og Tabliss — 
 - Sérsniðin letur og CSS-stílar
 - Dökkt þema
 - Sveigjanlegar útlitsstillingar
-- Í boði á 33 tungumálum
+- Í boði á 43 tungumálum
 
 🔒 Friðhelgi í fyrirrúmi
 Bonjourr safnar engum gögnum, krefst engrar aðgangsorðs og biður aðeins um nauðsynlegar heimildir. Bakmyndir eru búnar til af mannfólki og nota ekki skapandi gervigreind. Að fullu opinn hugbúnaður og gegnsær.

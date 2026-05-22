@@ -21,7 +21,7 @@ Bonjourr és una alternativa moderna a extensions com Momentum i Tabliss, que co
 - Fonts personalitzades i estils CSS
 - Mode fosc
 - Opcions d'aparença flexibles
-- Disponible en 33 idiomes
+- Disponible en 43 idiomes
 
 🔒 Privadesa primer
 Bonjourr no recull cap dada, no requereix compte i només sol·licita els permisos imprescindibles. Els fons són creats per persones i no utilitzen IA generativa. Totalment open source i transparent.

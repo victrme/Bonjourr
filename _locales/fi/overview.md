@@ -21,7 +21,7 @@ Bonjourr on moderni vaihtoehto Momentumin ja Tablissin kaltaisille laajennuksill
 - Mukautetut fontit ja CSS-tyylit
 - Tumma tila
 - Joustavat ulkoasuasetukset
-- Saatavilla 33 kielellä
+- Saatavilla 43 kielellä
 
 🔒 Yksityisyys ensin
 Bonjourr ei kerää tietoja, ei vaadi tiliä eikä pyydä muita kuin välttämättömät käyttöoikeudet. Taustakuvat ovat ihmisten tekemiä eivätkä hyödynnä generatiivista tekoälyä. Täysin avoimen lähdekoodin ja läpinäkyvä.
