@@ -1,6 +1,4 @@
-Every time you open a new tab, Bonjourr transforms your default start page into a beautiful, lightweight experience designed for focus and clarity.
-
-Built as a modern alternative to extensions like Momentum and Tabliss, Bonjourr blends iOS-inspired design with powerful customization tools, creating a calm, functional homepage you'll actually enjoy opening.
+Bonjourr is a modern alternative to extensions like Momentum and Tabliss, blending iOS-inspired design with powerful customization tools to create a calm, functional new tab page you'll actually enjoy opening.
 
 🏆 Featured in Google Chrome's Favorites of 2023
 
@@ -26,7 +24,9 @@ Built as a modern alternative to extensions like Momentum and Tabliss, Bonjourr 
 - Available in 33 languages
 
 🔒 Privacy first
-Bonjourr collects no data, requires no account, and requests minimal permissions. There is no generative AI. Fully open source and transparent.
+Bonjourr collects no data, requires no account, and requests minimal permissions. Backgrounds are made by humans and do not use generative AI. Fully open source and transparent.
 
 👨‍💻 Independently made
 Bonjourr is crafted by two independent developers who genuinely care about design, privacy and doing things well, not a company with a roadmap driven by ads or investors.
+
+If you're looking for a beautiful homepage or startpage, Bonjourr is built for you.
