@@ -8,7 +8,6 @@ body #background-wrapper:after {
     transition: opacity 0.5s ease;
     position: absolute;
     inset: 0;
-    will-change: opacity;
     opacity: 0;
     box-shadow: inset 0px 0px 285px rgba(0, 0, 0, 0.9);
 }
