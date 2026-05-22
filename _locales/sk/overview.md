@@ -1,56 +1,32 @@
-Pri každom otvorení nového okna alebo karty Ťa privíta táto minimalisticky vyzerajúca stránka, ktorá prispeje k tvojej
-pohode a produktivite. Vďaka nádherným vysokokvalitným pozadiam, ktoré sa menia podľa časti dňa, budú tvoje nové karty
-vždy pôsobiť sviežo.
+Bonjourr je moderná alternatíva k rozšíreniam ako Momentum a Tabliss — spája dizajn inšpirovaný iOS s výkonnými nástrojmi na prispôsobenie a vytvára pokojnú a funkčnú novú kartu, ktorú skutočne radi otvárate.
 
-Bonjourr bol vytvorený ako modernejšia alternatíva k domovským stránkam ako Momentum. Inšpirovali sme sa dizajnovým
-jazykom iOS a Apple, aby sme vytvorili túto krásnu domovskú stránku, ktorá Ti pomôže sústrediť sa na to, čo je dôležité.
+🏆 Vybraný medzi obľúbenými rozšíreniami Google Chrome 2023
 
-Tu sú niektoré kľúčové vlastnosti: 🍏 Dizajnový jazyk iOS 🏞 Dynamické 4K pozadia, ktoré sa menia podľa časti dňa ⚡️
-Rýchly a nenáročný! 🔎 Vyhľadávací panel (kompatibilný so všetkými vyhľadávačmi) 🕰 Analógové hodiny s rôznými ciferníkmi
-🌤 Počasie 🔗 Rýchle odkazy 👋 Privítanie menom 🌘 Tmavý režim 🥖 Emoji ako favicon 🧑‍💻 Vlastné CSS štýly 📝 Vlastné písma
-🔒 Zamerané na ochranu súkromia 🌎 Viacjazyčný
+🌄 Krásny v predvolenom nastavení
+- Dynamické 4K a video pozadia meniace náladu podľa dennej doby
+- Čisté rozhranie inšpirované iOS
+- Ľahký a plynulý výkon
 
-Bonjourr sa snaží pôsobiť minimalisticky, pričom stále poskytuje množstvo možností na prispôsobenie podľa tvojich
-predstáv. Nastav si vlastné pozadia (alebo Unsplash kolekcie!), zapni krásne analógové hodiny, nastav si vlastné písma a
-rýchle odkazy… Môžeš si pozrieť aj našu dokumentáciu, kde sme zhromaždili niekoľko štýlových ukážok, ktoré Ti umožnia
-spraviť ešte viac.
+⚡️ Nástroje produktivity
+- Spravujte záložky pomocou Rýchlych odkazov
+- Panel vyhľadávania kompatibilný so všetkými vyhľadávačmi, vrátane vlastných
+- Poznámky a kontrolné zoznamy v Markdowne
+- Pomodoro časovač
+- Predpoveď počasia
+- Denné inšpiratívne citáty
 
-Celý projekt je open source, prívetivý pre vývojárov a rešpektuje tvoje súkromie. Nezhromažďujeme žiadne údaje a na
-používanie nie je potrebné vytvárať účet.
+🎨 Plné prispôsobenie
+- Presná kontrola nad pozadím, záložkami a rozložením
+- Analógové hodiny vo viacerých štýloch
+- Vlastné písma a CSS štýly
+- Tmavý režim
+- Flexibilné možnosti vzhľadu
+- Dostupný v 33 jazykoch
 
----
+🔒 Súkromie na prvom mieste
+Bonjourr nezhromažďuje žiadne údaje, nevyžaduje účet a žiada iba nevyhnutné oprávnenia. Pozadia vytvárajú ľudia a nevyužívajú generatívnu AI. Plne open source a transparentný.
 
-🏞 Dynamické 4K pozadia Vybrali sme niektoré z najkrajších fotografií z Unsplash, aby tvoje nové karty vždy pôsobili
-sviežo. Objav vysokokvalitné fotografie úchvatných krajín, zvierat a prírody.
+👨‍💻 Vyvíjaný nezávisle
+Bonjourr tvoria dvaja nezávislí vývojári, ktorým skutočne záleží na dizajne, súkromí a poctivej práci — nie firma, ktorej plán určujú inzerenti alebo investori.
 
-⚡️ Rýchly a nenáročný! Bonjourr je vytvorený pomocou čistého JavaScriptu a optimalizovaný pre čo najlepší výkon.
-
-🔎 Vyhľadávací panel Integrovaný vyhľadávací panel Bonjourr je kompatibilný so všetkými vyhľadávačmi. Áno, so všetkými!
-Ak chceš, môžeš si dokonca pridať vlastný vyhľadávač.
-
-🕰 Analógové hodiny Predvolené hodiny Bonjourr sú navrhnuté tak, aby pripomínali tie na tvojom iPhone a iných
-zariadeniach iOS. Ak však chceš niečo exotickejšie, môžeš ich nahradiť veľmi štýlovými analógovými hodinami a
-prispôsobiť si ich podľa svojich predstáv.
-
-🌤 Počasie Jednoduchým spôsobom získaš prehľad o aktuálnom počasí a predpovedi v tvojom okolí.
-
-🔗 Rýchle odkazy Bez záložiek by to nebola pravá domovská stránka! Bonjourr Ti umožňuje pridať vlastné záložky, zmeniť
-ich ikony a importovať aktuálne záložky z tvojho prehliadača.
-
-🌘 Tmavý režim Rovnako ako na iOS, Bonjourr má krásny automatický tmavý režim.
-
-🥖 Emoji ako favicon
-
-🔒 Zamerané na ochranu súkromia Niektoré domovské stránky, ako napríklad Momentum, vyzývajú k vytvoreniu účtu,
-poskytnutiu osobných údajov, použitiu väčšieho počtu povolení a spoliehajú sa na mnoho služieb tretích strán. Bonjourr
-nezbiera žiadne údaje, ani na účely analýzy, používa minimum povolení, spolieha sa na menší počet služieb tretích strán
-a samozrejme nevyžaduje žiadne účty. To, že Bonjourr je open source, tiež znamená, že si môžeš ľahko overiť, či sú naše
-tvrdenia pravdivé.
-
-🧑‍💻 Vlastné CSS štýly Máš konkrétnu predstavu? Bonjourr Ti ponúka možnosť prispôsobiť všetko pomocou sekcie vlastných
-štýlov. Môžeš si prispôsobiť a urobiť čokoľvek pridaním vlastných CSS.
-
-📝 Vlastné písma Chceš na svojej domovskej stránke konkrétne písmo? Vďaka integrácii Bonjourru s Google Fonts si ho
-môžeš jednoducho vybrať.
-
-🌎 Viacjazyčný Vďaka našim úžasným prispievateľom je Bonjourr k dispozícii vo viac ako 20 rôznych jazykoch.
+Ak hľadáte krásnu domovskú stránku alebo novú kartu, Bonjourr je tu pre vás.

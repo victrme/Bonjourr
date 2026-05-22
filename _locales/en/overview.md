@@ -21,7 +21,7 @@ Bonjourr is a modern alternative to extensions like Momentum and Tabliss, blendi
 - Custom fonts and CSS styling
 - Dark mode support
 - Flexible appearance options
-- Available in 33 languages
+- Available in 43 languages
 
 🔒 Privacy first
 Bonjourr collects no data, requires no account, and requests minimal permissions. Backgrounds are made by humans and do not use generative AI. Fully open source and transparent.
