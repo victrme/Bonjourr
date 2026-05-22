@@ -1,10 +1,10 @@
 {
-    "extensionName": {
-        "message": "Bonjourr · Minimalistisk startside",
-        "description": "Udvidelsesnavn"
-    },
-    "extensionDesc": {
-        "message": "Forbedre din web oplevelse med Bonjourr, en moderne, tilpasningsvenlig og letvægts hjemmeside.",
-        "description": "Udvidelsesbeskrivelse"
-    }
+  "extensionName": {
+    "message": "Bonjourr · Minimalistisk Ny Fane",
+    "description": "extension name"
+  },
+  "extensionDesc": {
+    "message": "En smuk og tilpasselig ny fane inspireret af iOS, designet til en rolig og fokuseret browsingoplevelse.",
+    "description": "extension description"
+  }
 }

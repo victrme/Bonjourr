@@ -1,10 +1,10 @@
 {
-    "extensionName": {
-        "message": "Bonjourr · Página de inicio minimalista",
-        "description": "Nombre de la extensión"
-    },
-    "extensionDesc": {
-        "message": "Mejore su experiencia de navegación con Bonjourr, una página inicial bonita, ligera y personalizable.",
-        "description": "Descripción de la extensión"
-    }
+  "extensionName": {
+    "message": "Bonjourr · Nueva Pestaña Minimalista",
+    "description": "extension name"
+  },
+  "extensionDesc": {
+    "message": "Una página de inicio bonita y personalizable inspirada en iOS, diseñada para una experiencia de navegación tranquila y enfocada.",
+    "description": "extension description"
+  }
 }

@@ -1,10 +1,10 @@
 {
-    "extensionName": {
-        "message": "Bonjourr · シンプルさを極めたスタートページ",
-        "description": "extension name"
-    },
-    "extensionDesc": {
-        "message": "Bonjourrを使ってブラウジング体験向上。　ビューティフルな、幅広く調整可能な、かつ軽量なスタートページ。",
-        "description": "extension description"
-    }
+  "extensionName": {
+    "message": "Bonjourr · シンプルな新しいタブ",
+    "description": "extension name"
+  },
+  "extensionDesc": {
+    "message": "iOSにインスパイアされた、美しくカスタマイズ可能な新しいタブページ。落ち着いた集中できるブラウジング体験のために設計されました。",
+    "description": "extension description"
+  }
 }
