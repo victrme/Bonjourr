@@ -15,6 +15,7 @@ export interface ClockStartOptions {
 }
 
 let clockInterval: number
+let clockVisibilityListener: (() => void) | null = null
 
 export function startClock(options: ClockStartOptions): void {
     const { clock, world, dateformat, greetings } = options
@@ -44,7 +45,23 @@ export function startClock(options: ClockStartOptions): void {
 
     start(true)
     clearInterval(clockInterval)
-    clockInterval = setInterval(start, 1000)
+
+    if (clockVisibilityListener) {
+        document.removeEventListener('visibilitychange', clockVisibilityListener)
+    }
+
+    if (!document.hidden) {
+        clockInterval = setInterval(start, 1000)
+    }
+
+    clockVisibilityListener = () => {
+        clearInterval(clockInterval)
+        if (!document.hidden) {
+            start()
+            clockInterval = setInterval(start, 1000)
+        }
+    }
+    document.addEventListener('visibilitychange', clockVisibilityListener)
 
     function start(firstStart?: true): void {
         for (let index = 0; index < clocks.length; index++) {

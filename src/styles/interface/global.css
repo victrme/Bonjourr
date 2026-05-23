@@ -8,7 +8,6 @@
     padding: 4em 1em 6em 1em;
     margin: 0 auto;
     box-sizing: border-box;
-    will-change: transform;
     font-size: var(--font-size);
     font-family: var(--font-family);
     font-weight: var(--font-weight);

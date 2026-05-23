@@ -313,7 +313,7 @@ function startCountdown(endtime: number): void {
 
     countdown = setInterval(() => {
         insertTime(calculateSecondsLeft(endtime))
-    }, 100)
+    }, 1000)
 
     toggleStartPause(true)
 }

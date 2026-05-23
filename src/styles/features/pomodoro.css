@@ -34,7 +34,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
 }
 
 #pomodoro_container.clone {
-    will-change: transform, gap;
+    will-change: transform;
     transition: transform var(--pmdr-focus-transition) ease, gap var(--pmdr-focus-transition) ease;
 }
 
