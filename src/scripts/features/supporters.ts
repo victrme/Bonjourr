@@ -58,6 +58,9 @@ export function supportersNotifications(init?: Sync, update?: SupportersUpdate):
 }
 
 function canShowSupporters(sync?: Sync): boolean {
+    // // forces supporters notification for debugging
+    // return true
+
     const hasSupportersDisabled = !sync?.supporters || !sync.supporters.enabled
     const canGetReviewPopup = sync?.review !== -1
     const closedMonth = sync?.supporters.closedMonth
