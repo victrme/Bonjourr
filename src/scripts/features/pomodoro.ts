@@ -310,12 +310,18 @@ function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number): vo
 
 function startCountdown(endtime: number): void {
     insertTime(calculateSecondsLeft(endtime))
-
-    countdown = setInterval(() => {
-        insertTime(calculateSecondsLeft(endtime))
-    }, 1000)
-
     toggleStartPause(true)
+
+    // Align ticks to the shared end time so every tab updates at the same
+    // instant instead of drifting up to a second apart.
+    const firstDelay = (((endtime - Date.now()) % 1000) + 1000) % 1000 || 1000
+
+    countdown = setTimeout(() => {
+        insertTime(calculateSecondsLeft(endtime))
+        countdown = setInterval(() => {
+            insertTime(calculateSecondsLeft(endtime))
+        }, 1000)
+    }, firstDelay)
 }
 
 function pauseTimer(): void {
