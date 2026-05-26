@@ -566,12 +566,8 @@
     font-size: 1.5em;
 }
 
-#time .clock-date-aa {
-    display: inline-block;
-}
-
-#time .clock-date-aa::first-letter {
-    text-transform: uppercase;
+#time .clock-date::first-letter {
+    text-transform: capitalize;
 }
 
 #time.analog .clock-date {
