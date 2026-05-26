@@ -303,7 +303,6 @@ function initOptionsValues(data: Sync, local: Local): void {
     paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
     paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
     paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
-    paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
     paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
     paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
     paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)

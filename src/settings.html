@@ -727,6 +727,34 @@
     <div id="time_options" class="dropdown">
         <hr />
 
+        <div id="w_ampm" class="wrapper">
+            <label for="i_ampm" class="trn">12-Hour Time</label>
+            <input id="i_ampm" class="switch" type="checkbox" />
+        </div>
+
+        <div id="ampm_label" class="as dropdown">
+            <hr />
+            <div id="w_ampm-label" class="wrapper">
+                <label for="i_ampm-label" class="trn">Show AM/PM</label>
+                <input id="i_ampm-label" class="switch" type="checkbox" />
+            </div>
+        </div>
+
+         <div id="ampm_position" class="as dropdown">
+            <hr />
+            <div class="wrapper">
+                <label for="i_ampm_position" class="trn">AM/PM position</label>
+                <select id="i_ampm_position">
+                    <option value="top-left" class="trn">Top left</option>
+                    <option value="top-right" class="trn">Top right</option>
+                    <option value="bottom-left" class="trn">Bottom left</option>
+                    <option value="bottom-right" class="trn">Bottom right</option>
+                </select>
+            </div>
+        </div>
+
+        <hr />
+
         <div class="seconds wrapper">
             <label for="i_seconds" class="trn">Show seconds</label>
             <input id="i_seconds" class="switch" type="checkbox" />
@@ -858,39 +886,9 @@
                         </button>
                     </div>
                 </div>
+                <hr />
+                                
             </div>
-
-            <div id="digital_options" class="dropdown shown">
-                <div id="w_ampm" class="wrapper">
-                    <label for="i_ampm" class="trn">12-Hour Time</label>
-                    <input id="i_ampm" class="switch" type="checkbox" />
-                </div>
-
-                <div id="ampm_label" class="dropdown">
-                    <hr />
-
-                    <div id="w_ampm-label" class="wrapper">
-                        <label for="i_ampm-label" class="trn">Show AM/PM</label>
-                        <input id="i_ampm-label" class="switch" type="checkbox" />
-                    </div>
-                </div>
-
-                <div id="ampm_position" class="dropdown">
-                    <hr />
-
-                    <div class="wrapper">
-                        <label for="i_ampm_position" class="trn">AM/PM position</label>
-                        <select id="i_ampm_position">
-                            <option value="top-left" class="trn">Top left</option>
-                            <option value="top-right" class="trn">Top right</option>
-                            <option value="bottom-left" class="trn">Bottom left</option>
-                            <option value="bottom-right" class="trn">Bottom right</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <hr />
         </div>
 
         <div class="wrapper">
@@ -920,8 +918,34 @@
                 />
             </div>
 
+            <div id="timezone_options" class="dropdown shown">
+                <hr />
+
+                <div class="wrapper">
+                    <label for="i_timezone" class="trn">Time zone</label>
+                    <select id="i_timezone" class="">
+                        <optgroup label="Automatic">
+                            <option value="auto" class="trn">Automatic</option>
+                        </optgroup>
+                        <optgroup></optgroup>
+                    </select>
+                </div>
+            </div>
+
             <hr />
 
+            <div class="wrapper">
+                <label for="i_timehide" class="trn">Show</label>
+                <select id="i_timehide">
+                    <option value="all" class="trn">Clock and date</option>
+                    <option value="date" class="trn">Clock only</option>
+                    <option value="clock" class="trn">Date only</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="as as_worldclocks dropdown">
+            <hr />
             <div class="wrapper">
                 <label for="i_worldclocks" class="trn">World clocks</label>
                 <input id="i_worldclocks" class="switch" type="checkbox" />
@@ -990,31 +1014,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div id="timezone_options" class="dropdown shown">
-                <hr />
-
-                <div class="wrapper">
-                    <label for="i_timezone" class="trn">Time zone</label>
-                    <select id="i_timezone" class="">
-                        <optgroup label="Automatic">
-                            <option value="auto" class="trn">Automatic</option>
-                        </optgroup>
-                        <optgroup></optgroup>
-                    </select>
-                </div>
-            </div>
-
-            <hr />
-
-            <div class="wrapper">
-                <label for="i_timehide" class="trn">Show</label>
-                <select id="i_timehide">
-                    <option value="all" class="trn">Clock and date</option>
-                    <option value="date" class="trn">Clock only</option>
-                    <option value="clock" class="trn">Date only</option>
-                </select>
             </div>
         </div>
     </div>

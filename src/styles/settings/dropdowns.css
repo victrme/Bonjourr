@@ -62,15 +62,11 @@
 /* Dropdowns: Time & Date Options */
 
 #time_options.shown {
-    max-height: 920px;
-}
-
-#digital_options.shown {
-    max-height: 180px;
+    max-height: 1102px;
 }
 
 #analog_options.shown {
-    max-height: 280px;
+    max-height: 330px;
 }
 
 #greetings_options.shown {
@@ -81,11 +77,11 @@
     max-height: 300px;
 }
 
-#ampm_label.shown {
+.all #ampm_label.shown {
     max-height: 60px;
 }
 
-#ampm_position.shown {
+.all #ampm_position.shown {
     max-height: 60px;
 }
 
@@ -199,6 +195,10 @@
 
 .all .as_timedate {
     max-height: 430px;
+}
+
+.all .as_worldclocks {
+    max-height: 361px;
 }
 
 .all .as_searchbar {
