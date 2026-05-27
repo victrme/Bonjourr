@@ -127,6 +127,7 @@ export function openContextMenu(event: Event): void {
         // add new link button if quick links are enabled
         if (!document.querySelector('#linkblocks.hidden')) {
             populateDialogWithAction('add-new-link')
+            populateDialogWithAction('openTheseSettings', 'links_title')
         }
 
         showTheseElements('#background-actions')

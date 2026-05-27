@@ -121,19 +121,7 @@
                 </button>
 
                 <button type="submit" id="edit-add">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                        />
-                    </svg>
+                    <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 717 717" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="50" transform="translate(-41.6667 -41.6667)"><path d="m400 733.333c183.333 0 333.333-150 333.333-333.333s-150-333.333-333.333-333.333-333.333 150-333.333 333.333 150 333.333 333.333 333.333z"/><path d="m266.667 400h266.666"/><path d="m400 533.333v-266.666"/></g></svg>
 
                     <span class="trn">Add something</span>
                 </button>
@@ -339,7 +327,12 @@
                     <span class="trn">Edit background settings</span>
                 </button>
 
-                <button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
+                <button
+                    data-action="openTheseSettings"
+                    data-attribute="links_title"
+                    title="Open the background settings"
+                    aria-label="Open the background settings"
+                >
                     <svg
                         clip-rule="evenodd"
                         fill="currentColor"
@@ -361,6 +354,12 @@
                             />
                         </g>
                     </svg>
+
+                    <span class="trn">Edit quick links settings</span>
+                </button>
+
+                <button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
+                    <svg clip-rule="evenodd" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 717 717" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="currentColor" stroke-width="50" transform="translate(-41.6667 -41.6667)"><path d="m400 733.333c183.333 0 333.333-150 333.333-333.333s-150-333.333-333.333-333.333-333.333 150-333.333 333.333 150 333.333 333.333 333.333z"/><path d="m266.667 400h266.666"/><path d="m400 533.333v-266.666"/></g></svg>
                     <span class="trn">Add new quick link</span>
                 </button>
             </div>
