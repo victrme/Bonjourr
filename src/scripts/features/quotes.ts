@@ -281,7 +281,8 @@ function insertToDom(quote?: Quote): void {
         return
     }
 
-    quoteDom.textContent = quote.content
+    // for skiping lines with "\n"
+    quoteDom.textContent = quote.content.replace(/\\n/g, "\n") 
     authorDom.textContent = quote.author
 }
 
