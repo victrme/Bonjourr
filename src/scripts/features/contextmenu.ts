@@ -65,7 +65,7 @@ export function openContextMenu(event: Event): void {
             quotes: !!target.closest(sectionMatching.quotes.section),
             pomodoro: !!target.closest(sectionMatching.pomodoro.section),
         },
-        interface: target.matches('main#interface'),
+        interface: target.matches('main#interface') || target.matches('body') ,
     }
 
     const pointer = event as PointerEvent
@@ -229,8 +229,8 @@ queueMicrotask(() => {
             return
         }
 
-        // if right click inside interface, custom context menu
-        if (mainInterface?.contains(event.target as Node)) {
+        // if right click inside interface/body, custom context menu
+        if (mainInterface?.contains(event.target as Node) || event.target === document.body) {
             openContextMenu(event)
             return
         }
