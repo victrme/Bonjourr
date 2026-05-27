@@ -70,11 +70,14 @@
 }
 
 #sb-buttons {
-    display: none;
+    display: flex;
+    opacity: 0;
+    visibility: hidden;
 }
 
 #sb-buttons.shown {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
 }
 
 #sb-buttons button {
