@@ -303,8 +303,10 @@ function initOptionsValues(data: Sync, local: Local): void {
     paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
     paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
     paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
+    paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+    paramId('d_ampm')?.classList.toggle('shown', true)
     paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
-    paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
+    paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel && data.clock.ampm)
     paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
     paramId('main_options')?.classList.toggle('shown', data.main)
     paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
@@ -649,6 +651,10 @@ function initOptionsEvents(): void {
 
         // shows/hides ampm_label option
         paramId('ampm_label')?.classList.toggle('shown', target.checked)
+
+        // same for its position based on ampm_label AND 12h time toggle
+        const ampm_toggle = document.querySelector('#i_ampm-label') as HTMLInputElement
+        paramId('ampm_position')?.classList.toggle('shown', target.checked && ampm_toggle.checked)
     })
 
     onclickdown(paramId('i_ampm-label'), (_, target) => {

@@ -92,6 +92,7 @@ async function clockUpdate(update: ClockUpdate): Promise<void> {
 
     if (update.analog !== undefined) {
         document.getElementById('analog_options')?.classList.toggle('shown', update.analog)
+        document.getElementById('digital_options')?.classList.toggle('shown', !update.analog)
     }
 
     if (isDateFormat(update.dateformat)) {

@@ -725,31 +725,35 @@
     </div>
 
     <div id="time_options" class="dropdown">
-        <hr />
-
-        <div id="w_ampm" class="wrapper">
-            <label for="i_ampm" class="trn">12-Hour Time</label>
-            <input id="i_ampm" class="switch" type="checkbox" />
-        </div>
-
-        <div id="ampm_label" class="as dropdown">
+        <div class="dropdown" id="digital_options">
             <hr />
-            <div id="w_ampm-label" class="wrapper">
-                <label for="i_ampm-label" class="trn">Show AM/PM</label>
-                <input id="i_ampm-label" class="switch" type="checkbox" />
+
+            <div class="dropdown" id="d_ampm">
+                <div id="w_ampm" class="wrapper">
+                    <label for="i_ampm" class="trn">12-Hour Time</label>
+                    <input id="i_ampm" class="switch" type="checkbox" />
+                </div>
             </div>
-        </div>
 
-         <div id="ampm_position" class="as dropdown">
-            <hr />
-            <div class="wrapper">
-                <label for="i_ampm_position" class="trn">AM/PM position</label>
-                <select id="i_ampm_position">
-                    <option value="top-left" class="trn">Top left</option>
-                    <option value="top-right" class="trn">Top right</option>
-                    <option value="bottom-left" class="trn">Bottom left</option>
-                    <option value="bottom-right" class="trn">Bottom right</option>
-                </select>
+            <div id="ampm_label" class="as dropdown">
+                <hr />
+                <div id="w_ampm-label" class="wrapper">
+                    <label for="i_ampm-label" class="trn">Show AM/PM</label>
+                    <input id="i_ampm-label" class="switch" type="checkbox" />
+                </div>
+            </div>
+
+            <div id="ampm_position" class="as dropdown">
+                <hr />
+                <div class="wrapper">
+                    <label for="i_ampm_position" class="trn">AM/PM position</label>
+                    <select id="i_ampm_position">
+                        <option value="top-left" class="trn">Top left</option>
+                        <option value="top-right" class="trn">Top right</option>
+                        <option value="bottom-left" class="trn">Bottom left</option>
+                        <option value="bottom-right" class="trn">Bottom right</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -901,7 +905,7 @@
             </select>
         </div>
 
-        <div class="as as_timedate">
+        <div class="as as_timedate dropdown">
             <hr />
 
             <div class="wrapper">
