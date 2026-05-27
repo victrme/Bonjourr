@@ -770,11 +770,10 @@
             <label for="i_analog" class="trn">Analog clock</label>
             <input id="i_analog" class="switch" type="checkbox" />
         </div>
-
-        <hr />
-
+        
         <div id="clocktype_options" class="as as_clocktype dropdown">
             <div id="analog_options" class="dropdown">
+                <hr />
                 <div id="w_clockshape" class="wrapper">
                     <label for="i_clockshape" class="trn">Clock shape</label>
                     <select id="i_clockshape" class="">
@@ -890,10 +889,24 @@
                         </button>
                     </div>
                 </div>
-                <hr />
-                                
+                             
             </div>
         </div>
+
+        <div id="timezone_options" class="dropdown shown">
+            <hr />
+            <div class="wrapper">
+                <label for="i_timezone" class="trn">Time zone</label>
+                <select id="i_timezone" class="">
+                    <optgroup label="Automatic">
+                        <option value="auto" class="trn">Automatic</option>
+                    </optgroup>
+                    <optgroup></optgroup>
+                </select>
+            </div>
+        </div>
+
+        <hr />
 
         <div class="wrapper">
             <label for="i_dateformat" class="trn">Date format</label>
@@ -920,20 +933,6 @@
                     value="1"
                     class="range"
                 />
-            </div>
-
-            <div id="timezone_options" class="dropdown shown">
-                <hr />
-
-                <div class="wrapper">
-                    <label for="i_timezone" class="trn">Time zone</label>
-                    <select id="i_timezone" class="">
-                        <optgroup label="Automatic">
-                            <option value="auto" class="trn">Automatic</option>
-                        </optgroup>
-                        <optgroup></optgroup>
-                    </select>
-                </div>
             </div>
 
             <hr />
