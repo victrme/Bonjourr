@@ -65,7 +65,7 @@ export function openContextMenu(event: Event): void {
             quotes: !!target.closest(sectionMatching.quotes.section),
             pomodoro: !!target.closest(sectionMatching.pomodoro.section),
         },
-        interface: target.matches('main#interface') || target.matches('body') ,
+        interface: target.matches('main#interface') || target.matches('body'),
     }
 
     const pointer = event as PointerEvent
