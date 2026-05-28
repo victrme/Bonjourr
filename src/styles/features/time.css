@@ -117,7 +117,7 @@
 
 .digital[data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm,
 .digital[data-ampm-label][data-ampm][data-ampmposition='bottom-left'] .digital-ampm {
-	vertical-align: bottom;
+    vertical-align: bottom;
 }
 
 /* AM/PM top right, seconds */

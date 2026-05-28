@@ -27,6 +27,7 @@
     --greeting-size: 3em;
     --supporters-notif-height: -171px;
     --supporters-notif-background: 'https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=1074&auto=format&fit=crop';
+    /* these are used in rgba sometimes for dynamic transparency */
     --red: 230, 75, 67;
     --blue: 41, 144, 255;
     --color-red: #e64b43;
