@@ -1013,14 +1013,14 @@ function initOptionsEvents(): void {
         synchronization(undefined, { down: true })
     })
 
-    // Settings managment
+    // Settings management
 
-    paramId('settings-managment').addEventListener('dragenter', () => {
-        paramId('settings-managment').classList.add('dragging-file')
+    paramId('settings-management').addEventListener('dragenter', () => {
+        paramId('settings-management').classList.add('dragging-file')
     })
 
     paramId('file-import').addEventListener('dragleave', () => {
-        paramId('settings-managment').classList.remove('dragging-file')
+        paramId('settings-management').classList.remove('dragging-file')
     })
 
     paramId('b_file-load').addEventListener('click', function (this): void {
