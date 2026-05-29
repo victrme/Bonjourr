@@ -41,7 +41,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         if (currentDesc && currentTemp && iconText) {
             currentDesc.innerHTML = weatherReport + dot
             currentTemp.innerHTML = tempReport
-            iconText.innerHTML = `${maintemp}°`
+            iconText.innerHTML = setUnitsToWeatherReport("<temp1>", unit, maintemp)
         }
     }
 
