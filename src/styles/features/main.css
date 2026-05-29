@@ -36,6 +36,10 @@
     opacity: 0.66;
 }
 
+#weather:not([data-show-unit=true]) .temp-unit {
+    display: none;
+}
+
 #description {
     font-size: 1.5em;
     min-height: 1.5em;

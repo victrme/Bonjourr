@@ -251,6 +251,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_seconds', data.clock?.seconds ?? false)
     setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
     setCheckbox('i_main', data.main)
+    setCheckbox('i_show_unit', data.weather.show_unit)
     setCheckbox('i_greethide', !data.hide?.greetings)
     setCheckbox('i_notes', data.notes?.on ?? false)
     setCheckbox('i_sb', data.searchbar?.on ?? false)
@@ -725,6 +726,10 @@ function initOptionsEvents(): void {
         const weathericon = this.value === 'disabled' || this.value === 'icon'
         hideElements({ weatherdesc, weathericon }, { isEvent: true })
         weather(undefined, { unhide: true })
+    })
+
+    onclickdown(paramId('i_show_unit'), (_, target) => {
+        weather(undefined, { show_unit: target.checked })
     })
 
     onclickdown(paramId('i_greethide'), (_, target) => {

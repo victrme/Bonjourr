@@ -31,6 +31,11 @@ export async function weatherUpdate(update: WeatherUpdate): Promise<void> {
         unitForm.accept()
     }
 
+    if (update.show_unit !== undefined) {
+        weather.show_unit = update.show_unit
+        handleShowUnit(update.show_unit)
+    }
+
     if (isForecast(update.forecast)) {
         weather.forecast = update.forecast
     }
@@ -230,6 +235,10 @@ async function fillLocationSuggestions(): Promise<void> {
     } catch (_error) {
         // ...
     }
+}
+
+export function handleShowUnit(show_unit = false): void {
+    document.querySelector('#weather')?.setAttribute('data-show-unit', String(show_unit))
 }
 
 // Type check

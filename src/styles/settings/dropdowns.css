@@ -112,7 +112,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-    max-height: 885px;
+    max-height: 900px;
 }
 
 #weather_provider.shown {

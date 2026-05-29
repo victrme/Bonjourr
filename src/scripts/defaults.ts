@@ -157,6 +157,7 @@ export const SYNC_DEFAULT: Sync = {
     weather: {
         city: undefined,
         unit: 'metric',
+        show_unit: false,
         provider: '',
         moreinfo: 'none',
         forecast: 'auto',
