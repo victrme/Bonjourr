@@ -168,17 +168,7 @@ export function toggleUrlsButton(storage: string, value: string): void {
 
 export function applyUrls(backgrounds: Backgrounds): void {
     const editorValue = backgroundUrlsEditor.value
-    const backgroundUrls: Local['backgroundUrls'] = {}
-
-    for (const url of editorValue.split('\n')) {
-        if (url.startsWith('http')) {
-            backgroundUrls[url] = {
-                lastUsed: new Date().toString(),
-                format: formatFromFileExt(url),
-                state: 'NONE',
-            }
-        }
-    }
+    const backgroundUrls = buildBackgroundUrls(parseUrlList(editorValue), 'NONE')
 
     globalUrlValue = backgrounds.urls = editorValue
     storage.local.set({ backgroundUrls })
@@ -186,6 +176,27 @@ export function applyUrls(backgrounds: Backgrounds): void {
 
     toggleUrlsButton('osef', 'osef')
     checkUrlInfos(backgroundUrls)
+}
+
+export function parseUrlList(urls: string): string[] {
+    return urls
+        .split('\n')
+        .map((url) => url.trim())
+        .filter((url) => url.startsWith('http'))
+}
+
+export function buildBackgroundUrls(urls: string[], initialState: BackgroundUrlState = 'OK'): Local['backgroundUrls'] {
+    const backgroundUrls: Local['backgroundUrls'] = {}
+
+    for (const url of urls) {
+        backgroundUrls[url] = {
+            lastUsed: new Date().toString(),
+            format: formatFromFileExt(url),
+            state: initialState,
+        }
+    }
+
+    return backgroundUrls
 }
 
 async function checkUrlInfos(backgroundUrls: Local['backgroundUrls']): Promise<void> {
