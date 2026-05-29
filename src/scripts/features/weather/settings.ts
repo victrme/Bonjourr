@@ -1,6 +1,6 @@
 import { getGeolocation, requestNewWeather, weatherCacheControl } from './request.ts'
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
-import { displayWeather } from './display.ts'
+import { displayWeather, handleShowUnit } from './display.ts'
 import { stringMaxSize } from '../../shared/generic.ts'
 import { networkForm } from '../../shared/form.ts'
 import { debounce } from '../../utils/debounce.ts'
@@ -235,10 +235,6 @@ async function fillLocationSuggestions(): Promise<void> {
     } catch (_error) {
         // ...
     }
-}
-
-export function handleShowUnit(show_unit = false): void {
-    document.querySelector('#weather')?.setAttribute('data-show-unit', String(show_unit))
 }
 
 // Type check

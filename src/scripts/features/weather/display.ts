@@ -109,6 +109,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     handleMoreInfo()
     handleDescription()
     handleForecastData()
+    handleShowUnit(data.show_unit)
 
     if (weatherFirstStart) {
         weatherFirstStart = false
@@ -117,6 +118,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     }
 }
 
+// potential flaw: forecast timing is based on computer date instead of userDate()
 export function handleForecastDisplay(forecast: string): void {
     // // forces forecast for debugging
     // return
@@ -126,9 +128,9 @@ export function handleForecastDisplay(forecast: string): void {
     const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'
 
     if (isTimeForForecast && !document.getElementById('forecast')) {
-        const p = document.createElement('p')
-        p.id = 'forecast'
-        document.getElementById('description')?.appendChild(p)
+        const span = document.createElement('span')
+        span.id = 'forecast'
+        document.getElementById('current')?.appendChild(span)
     }
 
     if (!isTimeForForecast) {
@@ -152,4 +154,8 @@ function setUnitsToWeatherReport(report: string, unit: string, temp1: number, te
     }
     
     return report
+}
+
+export function handleShowUnit(show_unit = false): void {
+    document.querySelector('#weather')?.setAttribute('data-show-unit', String(show_unit))
 }
