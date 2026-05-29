@@ -13,6 +13,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     const currentTemp = document.getElementById('current-temp')
     const tempContainer = document.getElementById('tempContainer')
     const weatherdom = document.getElementById('weather')
+    const unit = data.unit
     const dot = useSinograms ? '。' : '. '
     const date = userDate()
 
@@ -23,25 +24,24 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         let tempReport = ''
 
         if (data.temperature === 'actual') {
-            tempReport = tradThis('It is currently <temp1>°')
+            tempReport = tradThis('It is currently <temp1>')
         }
         if (data.temperature === 'feelslike') {
-            tempReport = tradThis('It currently feels like <temp2>°')
+            tempReport = tradThis('It currently feels like <temp2>')
         }
         if (data.temperature === 'both') {
-            tempReport = tradThis('It is currently <temp1>° and feels like <temp2>°')
+            tempReport = tradThis('It is currently <temp1> and feels like <temp2>')
         }
 
         const iconText = tempContainer?.querySelector('p')
         const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
 
-        tempReport = tempReport.replace('<temp1>', actual.toString())
-        tempReport = tempReport.replace('<temp2>', feels.toString())
+        tempReport = setUnitsToWeatherReport(tempReport, unit, actual, feels)
 
         if (currentDesc && currentTemp && iconText) {
-            currentDesc.textContent = weatherReport + dot
-            currentTemp.textContent = tempReport
-            iconText.textContent = `${maintemp}°`
+            currentDesc.innerHTML = weatherReport + dot
+            currentTemp.innerHTML = tempReport
+            iconText.innerHTML = `${maintemp}°`
         }
     }
 
@@ -67,17 +67,17 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         let string = ''
 
         if (day === 'today') {
-            string = tradThis('with a high of <temp1>° today')
+            string = tradThis('with a high of <temp1> today')
         }
         if (day === 'tomorrow') {
-            string = tradThis('with a high of <temp1>° tomorrow')
+            string = tradThis('with a high of <temp1> tomorrow')
         }
 
-        string = string.replace('<temp1>', lastWeather.forecasted_high.toString())
+        string = setUnitsToWeatherReport(string, unit, lastWeather.forecasted_high)
         string += dot
 
         if (forecastdom) {
-            forecastdom.textContent = string
+            forecastdom.innerHTML = string
         }
     }
 
@@ -130,4 +130,22 @@ export function handleForecastDisplay(forecast: string): void {
     if (!isTimeForForecast) {
         document.querySelector('#forecast')?.remove()
     }
+}
+
+function setUnitsToWeatherReport(report: string, unit: string, temp1: number, temp2?: number): string {
+    unit = unit === "imperial" ? "F" : "C"
+
+    report = report.replace(
+        '<temp1>',
+        `<span class="temp">${ temp1 }°<span class="temp-unit">${ unit }</span></span>`
+    )
+
+    if (temp2 !== undefined) {
+        report = report.replace(
+            '<temp2>',
+            `<span class="temp">${ temp2 }°<span class="temp-unit">${ unit }</span></span>`
+        )
+    }
+    
+    return report
 }
