@@ -264,7 +264,7 @@
     "Cannot find correct city": "Doğru şehir bulunamadı",
     "No internet connection": "İnternet bağlantısı yok",
     "Cannot reach weather service": "Hava durumu servisine ulaşılamıyor",
-    "Unit": "Birim",
+    "Temperature unit": "Birim",
     "Celsius": "Celsius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Hava Durumu",

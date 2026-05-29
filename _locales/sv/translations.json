@@ -264,7 +264,7 @@
     "Cannot find correct city": "Kan inte hitta rätt stad",
     "No internet connection": "Ingen internetuppkoppling",
     "Cannot reach weather service": "Kan inte nå vädertjänsten",
-    "Unit": "Enhet",
+    "Temperature unit": "Enhet",
     "Celsius": "Celsius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Prognos",

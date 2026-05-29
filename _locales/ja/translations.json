@@ -264,7 +264,7 @@
     "Cannot find correct city": "正しい都市が見つかりません",
     "No internet connection": "インターネット接続なし",
     "Cannot reach weather service": "天気予報サービスにアクセスできません",
-    "Unit": "ユニット",
+    "Temperature unit": "ユニット",
     "Celsius": "セ氏",
     "Fahrenheit": "カ氏",
     "Forecast": "天気予報",

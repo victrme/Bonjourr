@@ -264,7 +264,7 @@
     "Cannot find correct city": "Finn ekki réttan stað",
     "No internet connection": "Engin internettenging",
     "Cannot reach weather service": "Get ekki náð í veðurþjónustu",
-    "Unit": "Eining",
+    "Temperature unit": "Eining",
     "Celsius": "Celsius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Spá",

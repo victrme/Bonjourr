@@ -264,7 +264,7 @@
     "Cannot find correct city": "Δεν μπορώ να βρω τη σωστή πόλη",
     "No internet connection": "Δεν υπάρχει σύνδεση στο διαδίκτυο",
     "Cannot reach weather service": "Δεν είναι δυνατή η πρόσβαση στην υπηρεσία καιρού",
-    "Unit": "Μονάδα",
+    "Temperature unit": "Μονάδα",
     "Celsius": "Κελσίου",
     "Fahrenheit": "Φαρενάιτ",
     "Forecast": "Πρόβλεψη",

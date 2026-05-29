@@ -280,7 +280,7 @@
     "Cannot find correct city": "Nije moguće pronaći tačan grad",
     "No internet connection": "Nema internet konekcije",
     "Cannot reach weather service": "Nije moguće pristupiti meteorološkoj službi",
-    "Unit": "Jedinica",
+    "Temperature unit": "Jedinica",
     "Celsius": "Celzijus",
     "Fahrenheit": "Farenhrajt",
     "Forecast": "Vremenska prognoza",

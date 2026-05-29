@@ -264,7 +264,7 @@
     "Cannot find correct city": "Nedá sa nájsť správne mesto",
     "No internet connection": "Žiadne internetové pripojenie",
     "Cannot reach weather service": "Nedá sa spojiť so službou počasia",
-    "Unit": "Jednotky",
+    "Temperature unit": "Jednotky",
     "Celsius": "Celzius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Predpoveď",

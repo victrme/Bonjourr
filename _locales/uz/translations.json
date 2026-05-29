@@ -280,7 +280,7 @@
     "Cannot find correct city": "To'g'ri shaharni topib bo'lmadi",
     "No internet connection": "Internet ulanishi yo'q",
     "Cannot reach weather service": "Ob-havo xizmatiga ulab bo'lmayapti",
-    "Unit": "Birlik",
+    "Temperature unit": "Birlik",
     "Celsius": "Celsius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Bashorat",

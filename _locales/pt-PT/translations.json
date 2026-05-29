@@ -259,7 +259,7 @@
     "Cannot find correct city": "Não é possível encontrar a cidade correta",
     "No internet connection": "Sem ligação à internet",
     "Cannot reach weather service": "Não é possível aceder ao serviço meteorológico",
-    "Unit": "Unidade",
+    "Temperature unit": "Unidade",
     "Celsius": "Celsius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Previsão",

@@ -264,7 +264,7 @@
     "Cannot find correct city": "Չհաջողվեց գտնել ճիշտ քաղաքը",
     "No internet connection": "Ինտերնետ կապ չկա",
     "Cannot reach weather service": "Հնարավոր չէ կապվել եղանակային ծառայության հետ",
-    "Unit": "Միավոր",
+    "Temperature unit": "Միավոր",
     "Celsius": "Ցելսիուս",
     "Fahrenheit": "Ֆարենհայտ",
     "Forecast": "Կանխատեսում",

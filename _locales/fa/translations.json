@@ -264,7 +264,7 @@
     "Cannot find correct city": "شهر صحیح پیدا نمی شود",
     "No internet connection": "بدون اتصال به اینترنت",
     "Cannot reach weather service": "دسترسی به خدمات هواشناسی امکان پذیر نیست",
-    "Unit": "واحد",
+    "Temperature unit": "واحد",
     "Celsius": "سانتی‌گراد",
     "Fahrenheit": "فرانهایت",
     "Forecast": "پیش‌بینی",

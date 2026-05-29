@@ -264,7 +264,7 @@
     "Cannot find correct city": "Düzgün şəhəri tapa bilinmir",
     "No internet connection": "İnternet bağlantısı yoxdur",
     "Cannot reach weather service": "Hava xidmətinə çatmaq mümkün deyil",
-    "Unit": "Vahid",
+    "Temperature unit": "Vahid",
     "Celsius": "Celsius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Proqnoz",

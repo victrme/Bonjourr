@@ -264,7 +264,7 @@
     "Cannot find correct city": "Не атрымалася знайсці горад",
     "No internet connection": "Няма злучэння з інтэрнэтам",
     "Cannot reach weather service": "Не атрымалася злучыцца з сэрвісам надвор'я",
-    "Unit": "Градусы",
+    "Temperature unit": "Градусы",
     "Celsius": "Цэльсія",
     "Fahrenheit": "Фарэнгайта",
     "Forecast": "Прагноз",

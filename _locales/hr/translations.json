@@ -264,7 +264,7 @@
     "Cannot find correct city": "Ne mogu pronaći točan grad",
     "No internet connection": "Nema internetske veze",
     "Cannot reach weather service": "Ne mogu doći do meteorološke službe",
-    "Unit": "Jedinica",
+    "Temperature unit": "Jedinica",
     "Celsius": "Celzijus",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Prognoza",

@@ -264,7 +264,7 @@
     "Cannot find correct city": "無法找到正確的城市",
     "No internet connection": "沒有網路連線",
     "Cannot reach weather service": "無法獲取天氣服務",
-    "Unit": "單位",
+    "Temperature unit": "單位",
     "Celsius": "攝氏度",
     "Fahrenheit": "華氏度",
     "Forecast": "預報",

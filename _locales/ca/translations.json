@@ -264,7 +264,7 @@
     "Cannot find correct city": "No es pot trobar la ciutat correcta",
     "No internet connection": "Sense connexió a Internet",
     "Cannot reach weather service": "No es pot arribar al servei meteorològic",
-    "Unit": "Unitat",
+    "Temperature unit": "Unitat",
     "Celsius": "Celsius",
     "Fahrenheit": "Fahrenheit",
     "Forecast": "Previsió",
