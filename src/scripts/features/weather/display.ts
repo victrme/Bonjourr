@@ -12,6 +12,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     const currentDesc = document.getElementById('current-desc')
     const currentTemp = document.getElementById('current-temp')
     const tempContainer = document.getElementById('tempContainer')
+    const dotContainer = document.getElementById('dotContainer')
     const weatherdom = document.getElementById('weather')
     const unit = data.unit
     const dot = useSinograms ? '。' : '. '
@@ -38,9 +39,10 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
 
         tempReport = setUnitsToWeatherReport(tempReport, unit, actual, feels)
 
-        if (currentDesc && currentTemp && iconText) {
+        if (currentDesc && currentTemp && dotContainer && iconText) {
             currentDesc.innerHTML = weatherReport + dot
             currentTemp.innerHTML = tempReport
+            dotContainer.innerText = dot
             iconText.innerHTML = setUnitsToWeatherReport("<temp1>", unit, maintemp)
         }
     }
@@ -64,17 +66,16 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     const handleForecastData = () => {
         const forecastdom = document.getElementById('forecast')
         const day = date.getHours() > getSunsetHour() ? 'tomorrow' : 'today'
-        let string = ''
+        let string = '<br />'
 
         if (day === 'today') {
-            string = tradThis('with a high of <temp1> today')
+            string += tradThis('with a high of <temp1> today')
         }
         if (day === 'tomorrow') {
-            string = tradThis('with a high of <temp1> tomorrow')
+            string += tradThis('with a high of <temp1> tomorrow')
         }
 
         string = setUnitsToWeatherReport(string, unit, lastWeather.forecasted_high)
-        string += dot
 
         if (forecastdom) {
             forecastdom.innerHTML = string
@@ -117,6 +118,9 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
 }
 
 export function handleForecastDisplay(forecast: string): void {
+    // // forces forecast for debugging
+    // return
+    
     const date = userDate()
     const morningOrLateDay = date.getHours() < 12 || date.getHours() > getSunsetHour()
     const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'
