@@ -61,7 +61,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         if (useEl) {
             useEl.setAttribute(
                 'href',
-                `src/assets/interface/weather/weather-sprites.svg#weather-${daytime}-${condition}`,
+                `src/assets/interface/weather-sprites.svg#weather-${daytime}-${condition}`,
             )
         }
     }
