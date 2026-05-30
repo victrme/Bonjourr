@@ -213,7 +213,7 @@
 }
 
 .in-folder .link a {
-    color: var(--font-on-blur-color);
+    color: rgb(var(--font-on-blur-color));
 }
 
 .link img {

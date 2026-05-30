@@ -9,6 +9,7 @@ import { apiFetch } from '../shared/api.ts'
 import { subsets } from '../langs.ts'
 import { storage } from '../storage.ts'
 import { clock } from './clock/index.ts'
+import { hexToRGB } from '../shared/generic.ts'
 
 import type { Font, Sync } from '../../types/sync.ts'
 
@@ -103,6 +104,7 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete, colo
     if (color) {
         data.font.color = color
         colorInput('font-color', color)
+
         setFontColor(color)
     }
 
@@ -259,7 +261,11 @@ function setFontSize(size: string): void {
 }
 
 export function setFontColor(color: string): void {
-    document.documentElement.style.setProperty('--font-color', color)
+    const rgbColor = hexToRGB(color)
+
+    document.documentElement.style.setProperty('--font-color', 
+        `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`
+    )
 }
 
 //

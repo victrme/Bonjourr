@@ -23,7 +23,7 @@
     transition: background-color 0.1s var(--out-cubic);
 }
 
-#show-settings img {
+#show-settings svg {
     width: 2.6em;
     transition: transform 0.33s var(--out-cubic);
 }
@@ -41,7 +41,7 @@
     opacity: 1;
 }
 
-#show-settings:hover img {
+#show-settings:hover svg {
     transform: rotate(20deg);
 }
 
@@ -57,6 +57,6 @@
     background-color: rgba(102, 102, 102, 0.4);
 }
 
-#show-settings.shown img {
+#show-settings.shown svg {
     transform: rotate(60deg);
 }

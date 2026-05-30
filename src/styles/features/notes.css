@@ -27,7 +27,7 @@
 }
 
 #pocket-editor {
-    color: #fff;
+    color: rgb(var(--font-on-blur-color));
     font-size: 1.3em;
     padding: 1.2em;
     min-width: 0;

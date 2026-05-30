@@ -111,7 +111,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     -webkit-backdrop-filter: blur(2px) saturate(180%);
     border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.17), inset 0 4px 20px rgba(255, 255, 255, 0.225);
-    color: var(--font-on-blur-color);
+    color: rgb(var(--font-on-blur-color));
 }
 
 [data-theme='dark'] .glass {
@@ -183,6 +183,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     justify-content: center;
     align-items: center;
     gap: 1em;
+    color: rgb(var(--font-on-blur-color));
 }
 
 #bottomControls button {
@@ -194,7 +195,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     padding: 0.2em;
     border-radius: 100%;
     box-sizing: border-box;
-    color: white;
     font-size: inherit;
 }
 
@@ -208,7 +208,6 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     align-items: center;
     gap: 8px;
     font-weight: 400;
-    color: white;
     padding: 0.4em 0.8em;
     border-radius: 10em;
     cursor: pointer;
