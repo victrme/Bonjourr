@@ -211,6 +211,7 @@ export const SYNC_DEFAULT: Sync = {
         family: '',
         size: '14',
         system: true,
+        color: '#ffffff',
         weightlist: [],
         weight: SYSTEM_OS === 'windows' ? '400' : '300',
     },

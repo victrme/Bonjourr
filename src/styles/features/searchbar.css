@@ -22,7 +22,7 @@
 }
 
 #sb_container.opaque #searchbar::placeholder {
-    color: rgb(var(--font-on-blur-color) / 0.5); 
+    color: rgb(var(--font-on-blur-color) / 0.5);
 }
 
 #sb_container.opaque hr {

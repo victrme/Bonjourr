@@ -327,11 +327,12 @@ aside .color-button button {
     cursor: pointer;
     background-color: rgb(var(--input-color));
     color: contrast-color(rgb(var(--input-color)));
-    border: 1px solid color-mix(
-        in srgb,
-        rgb(var(--input-color)) 85%,
-        black
-    );
+    border: 1px solid
+        color-mix(
+            in srgb,
+            rgb(var(--input-color)) 85%,
+            black
+        );
 }
 
 aside .inputWithSuffix {

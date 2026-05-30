@@ -56,7 +56,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         const { sunrise, sunset, dusk } = suntime()
         const daytime = now < sunrise || now > sunset + dusk ? 'night' : 'day'
 
-        const useEl = document.querySelector<SVGUseElement>('#weather-icon use');
+        const useEl = document.querySelector<SVGUseElement>('#weather-icon use')
 
         if (useEl) {
             useEl.setAttribute(

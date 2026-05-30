@@ -121,8 +121,6 @@ export function colorInput(id: string, color?: string): void {
 
         const rgbColor = hexToRGB(color)
 
-        button.style.setProperty('--input-color', 
-            `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`
-        )
+        button.style.setProperty('--input-color', `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`)
     }
 }

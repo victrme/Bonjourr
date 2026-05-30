@@ -263,9 +263,7 @@ function setFontSize(size: string): void {
 export function setFontColor(color: string): void {
     const rgbColor = hexToRGB(color)
 
-    document.documentElement.style.setProperty('--font-color', 
-        `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`
-    )
+    document.documentElement.style.setProperty('--font-color', `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`)
 }
 
 //
