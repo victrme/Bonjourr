@@ -1,5 +1,6 @@
 import { getLang, tradThis } from '../utils/translations.ts'
 import { displayInterface } from '../shared/display.ts'
+import { colorInput } from '../shared/dom.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { networkForm } from '../shared/form.ts'
@@ -24,6 +25,7 @@ type CustomFontUpdate = {
     size?: string
     family?: string
     weight?: string
+    color?: string
 }
 
 const familyForm = networkForm('f_customfont')
@@ -81,7 +83,7 @@ export function customFont(init?: Font, event?: CustomFontUpdate): void {
 //	Updates
 //
 
-async function updateCustomFont({ family, weight, size, lang, autocomplete }: CustomFontUpdate): Promise<void> {
+async function updateCustomFont({ family, weight, size, lang, autocomplete, color }: CustomFontUpdate): Promise<void> {
     if (autocomplete) {
         setAutocompleteSettings()
         return
@@ -96,6 +98,12 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete }: Cu
     if (weight) {
         data.font.weight = weight || '400'
         displayFont(data.font)
+    }
+
+    if (color) {
+        data.font.color = color
+        colorInput('font-color', color)
+        setFontColor(color)
     }
 
     if (size) {
@@ -121,6 +129,7 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
         size: data.font.size,
         weight: SYSTEM_OS === 'windows' ? '400' : '300',
         weightlist: systemfont.weights,
+        color: data.font.color,
     }
 
     switch (familyType) {
@@ -213,7 +222,7 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
     return
 }
 
-function displayFont({ family, size, weight, system }: Font): void {
+function displayFont({ family, size, weight, system, color }: Font): void {
     // Weight: default bonjourr lowers font weight on clock (because we like it)
     const clockWeight = Number.parseInt(weight) > 100
         ? systemfont.weights[systemfont.weights.indexOf(weight) - 1]
@@ -242,10 +251,15 @@ function displayFont({ family, size, weight, system }: Font): void {
     document.documentElement.style.setProperty('--font-weight', weight)
     document.documentElement.style.setProperty('--font-weight-clock', family ? weight : clockWeight)
     setFontSize(size)
+    setFontColor(color)
 }
 
 function setFontSize(size: string): void {
     document.documentElement.style.setProperty('--font-size', `${Number.parseInt(size) / 16}em`)
+}
+
+export function setFontColor(color: string): void {
+    document.documentElement.style.setProperty('--font-color', color)
 }
 
 //

@@ -21,6 +21,7 @@
     --monospace-font-family: Consolas, Monaco, Ubuntu Mono, monospace;
     --font-weight-clock: 200;
     --font-weight: 400;
+    --font-color: #ffffff;
     --font-size: 1em;
     --pomodoro-font-size: 14px;
     --clock-size: 6em;
@@ -101,7 +102,7 @@ input[type='checkbox'] {
 body {
     margin: 0;
     opacity: 1;
-    color: white;
+    color: var(--font-color);
     font-size: 1em;
     font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
     text-align: center;
