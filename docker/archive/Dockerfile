@@ -1,11 +1,9 @@
-FROM denoland/deno:2.6.3
+FROM denoland/deno:alpine-2.8.1
 
 COPY . .
 
-RUN apt-get update && apt-get install -y zip && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache zip
 
 RUN deno install --frozen
 
-RUN chmod +x ./docker/archive/script.sh
-
-CMD ["docker/archive/script.sh"]
+CMD ["deno", "run", "--allow-all", "tasks/archive.ts"]
