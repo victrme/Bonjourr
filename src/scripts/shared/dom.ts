@@ -1,4 +1,4 @@
-import { getReadableTextColor, hexToHSL, hexToRGB } from './generic.ts'
+import { hexToRGB } from './generic.ts'
 
 export function webkitRangeTrackColor(input: HTMLInputElement): void {
     const { min, max, value } = input
@@ -117,15 +117,12 @@ export function colorInput(id: string, color?: string): void {
 
     if (button && input) {
         color ??= input.value
-
-        const hsl = hexToHSL(color)
-
-        // darker color for border
-        hsl.l = Math.max(0, hsl.l - 10)
-
-        button.style.borderColor = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`
         button.textContent = color
-        button.style.backgroundColor = color
-        button.style.color = getReadableTextColor(hexToRGB(color))
+
+        const rgbColor = hexToRGB(color)
+
+        button.style.setProperty('--input-color', 
+            `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`
+        )
     }
 }
