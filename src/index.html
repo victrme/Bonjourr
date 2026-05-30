@@ -706,7 +706,10 @@
                     </div>
 
                     <div id="tempContainer" data-hide="weathericon">
-                        <span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
+                        <svg id="weather-icon" aria-hidden="true">
+                            <use href="src/assets/interface/weather/weather-sprites.svg#weather-day-overcastclouds">
+                            </use>
+                        </svg>
                         <p>00</p>
                     </div>
                 </a>

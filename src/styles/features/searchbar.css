@@ -118,6 +118,7 @@
     border: 1px solid #fff1;
     background-color: var(--searchbar-background);
     z-index: 4;
+    color: var(--font-on-blur-color);
 }
 
 #sb-suggestions.shown {
