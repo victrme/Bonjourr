@@ -2,6 +2,7 @@ import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions, toggleMuteStatus } from './features/backgrounds/index.ts'
+import { parseUrlList, buildBackgroundUrls } from './features/backgrounds/urls.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
@@ -1484,6 +1485,15 @@ async function importSettings(imported: Partial<Sync>): Promise<void> {
 
         storage.sync.clear()
         storage.sync.set(data)
+
+        if (imported?.backgrounds?.type === 'urls') {
+            const urls = parseUrlList(imported.backgrounds.urls ?? '')
+
+            if (urls.length > 0) {
+                storage.local.set({ backgroundUrls: buildBackgroundUrls(urls) })
+            }
+        }
+
         fadeOut()
     } catch (_) {
         // ...
