@@ -199,8 +199,7 @@ Prerequisites:
 #### Docker CLI
 
 ```bash
-docker compose -f docker/app/compose.yaml up
-
+docker compose -f docker/compose.yaml up
 # or
 deno task app
 ```
