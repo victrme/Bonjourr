@@ -11,7 +11,7 @@
         "types": "deno check",
         "format": "deno fmt",
         "docker:app": "docker compose -f docker/compose.yaml up",
-        "docker:archive": "deno task archive:build && deno task archive:run",
+        "docker:archive": "deno task docker:archive:build && deno task docker:archive:run",
         "docker:archive:run": "docker run --rm -v ./release:/release bonjourr-archive",
         "docker:archive:build": "docker build -f docker/archive/Dockerfile -t bonjourr-archive ."
     },
