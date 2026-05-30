@@ -1,33 +1,39 @@
-const version = '22.0.1'
+const VERSION = '22.0.1'
 
-async function run(cmd: string, args: string[], cwd?: string): Promise<void> {
-    const { success } = await new Deno.Command(cmd, { args, cwd }).output()
-    if (!success) throw new Error(`Command failed: ${cmd} ${args.join(' ')}`)
-}
-
-await run('deno', ['task', 'build'])
+buildPlatforms()
+archiveSource()
 
 for await (const entry of Deno.readDir('./release')) {
-    if (!entry.isDirectory) continue
-
-    const name = entry.name
-    const archive = `bonjourr-${name}-${version}.zip`
-
-    console.log(`Archiving ${name}...`)
-
-    await run('zip', ['-r', archive, '.'], `./release/${name}`)
+    if (entry.isDirectory) {
+        archivePlatform(entry.name)
+    }
 }
 
-console.log('Archiving source...')
+/*
+ * Functions
+ */
 
-await run('zip', [
-    '-r',
-    `./release/firefox/bonjourr-source-${version}.zip`,
-    '_locales',
-    'docker',
-    'src',
-    'tasks',
-    'deno.json',
-    'deno.lock',
-    'README.md',
-])
+function buildPlatforms(): void {
+    console.log('Build platforms')
+
+    new Deno.Command('deno', { args: ['task', 'build'] }).outputSync()
+}
+
+function archiveSource(): void {
+    const files = ['_locales', 'docker', 'src', 'tasks', 'deno.json', 'deno.lock', 'README.md']
+    const outfile = `./release/firefox/bonjourr-source-${VERSION}.zip`
+    const args = ['-r', outfile, ...files]
+
+    console.log('Archiving source')
+
+    new Deno.Command('zip', { args }).outputSync()
+}
+
+function archivePlatform(name: string): void {
+    const args = ['-r', `bonjourr-${name}-${VERSION}.zip`, '.']
+    const cwd = `./release/${name}`
+
+    console.log(`Archiving ${name}`)
+
+    new Deno.Command('zip', { args, cwd }).outputSync()
+}
