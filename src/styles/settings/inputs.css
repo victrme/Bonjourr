@@ -210,10 +210,6 @@ aside input[type='range']:active {
     cursor: grabbing;
 }
 
-aside input[type='range']:focus {
-    outline: none;
-}
-
 aside input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
     background: #fff;

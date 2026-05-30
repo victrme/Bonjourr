@@ -126,7 +126,7 @@
     text-align: center;
     text-overflow: ellipsis;
     opacity: 0.7;
-    color: white;
+    color: var(--font-color);
     font-size: 1em;
     border-radius: 8px;
     border: 1px solid transparent;
@@ -205,11 +205,15 @@
 }
 
 .link a {
-    color: white;
+    color: var(--font-color);
     cursor: pointer;
     text-decoration: none;
     transition: width 0.2s var(--out-cubic);
     -webkit-touch-callout: none;
+}
+
+.in-folder .link a {
+    color: var(--font-on-blur-color);
 }
 
 .link img {
