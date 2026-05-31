@@ -28,7 +28,7 @@ aside.hidden {
 aside.shown {
     -webkit-transform: translateX(-100%);
     transform: translateX(-100%);
-    box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 1px 20px 1px rgb(0 0 0 / 0.15);
 }
 
 aside.see-through {

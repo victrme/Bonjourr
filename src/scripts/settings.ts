@@ -226,6 +226,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_moreinfo', data.weather?.moreinfo || 'none')
     setInput('i_provider', data.weather?.provider ?? '')
     setInput('i_weight', data.font?.weight || '300')
+    setInput('i_font-color', data.font.color ?? '#ffffff')
     setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
     setInput('i_announce', data.announcements ?? 'major')
     setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
@@ -267,6 +268,7 @@ function initOptionsValues(data: Sync, local: Local): void {
 
     colorInput('solid-background', data.backgrounds.color)
     colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
+    colorInput('font-color', data.font.color)
 
     paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
     paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
@@ -932,6 +934,14 @@ function initOptionsEvents(): void {
 
     paramId('i_weight').addEventListener('input', function (): void {
         customFont(undefined, { weight: this.value })
+    })
+
+    paramId('b_font-color').addEventListener('click', function (): void {
+        paramId('i_font-color').click()
+    })
+
+    paramId('i_font-color').addEventListener('input', function (): void {
+        customFont(undefined, { color: this.value })
     })
 
     paramId('i_size').addEventListener('input', function (): void {

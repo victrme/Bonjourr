@@ -3,7 +3,7 @@
 }
 
 #time:before {
-    box-shadow: 0px 0px 100px 40px rgba(34, 34, 34, 0.2666666667);
+    box-shadow: 0px 0px 100px 40px rgb(34 34 34 / 0.2666666667);
 }
 
 #time.hidden {
@@ -146,7 +146,7 @@
     background-color: var(--analog-background);
     backdrop-filter: blur(1em);
     -webkit-backdrop-filter: blur(1em);
-    /* box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); */
+    /* box-shadow: 0 1px 5px rgb(0 0 0 / 0.2); */
 }
 
 /* shape */
@@ -192,7 +192,7 @@
     display: block;
     bottom: 50%;
     left: 50%;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.2);
     width: calc(var(--clock-size) * 0.2);
     /* margin-left: calc(var(--clock-size) * -0.1); */
     border-radius: calc(var(--clock-size) * 0.2);
@@ -327,7 +327,7 @@
     bottom: calc(var(--clock-size) * -0.75);
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.2);
 }
 
 #time[data-hands='braun'] .analog-hours {
@@ -528,7 +528,7 @@
 #time.white-opaque[data-hands='modern'] .analog-center,
 #time.white-opaque .analog .analog-minutes:after,
 #time.white-opaque .analog .analog-hours:after {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgb(0 0 0 / 0.9);
 }
 
 #time.white-opaque .analog-face span {

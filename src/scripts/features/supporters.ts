@@ -309,9 +309,9 @@ function initGlitter(): void {
 
             // Apply shadow blur and color
             snowfall.context.shadowBlur = 8 // Adjust blur amount
-            snowfall.context.shadowColor = `rgba(255, 202, 56, ${this.opacity})` // Shadow color (same as snowflake color)
+            snowfall.context.shadowColor = `rgb(255 202 56 / ${this.opacity})` // Shadow color (same as snowflake color)
 
-            snowfall.context.fillStyle = `rgba(255, 202, 56, ${this.opacity})` // Sets the fill color
+            snowfall.context.fillStyle = `rgb(255 202 56 / ${this.opacity})` // Sets the fill color
             snowfall.context.fill() // Fills the circle with the color
             snowfall.context.closePath() // Closes the path
 

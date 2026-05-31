@@ -56,9 +56,14 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         const { sunrise, sunset, dusk } = suntime()
         const daytime = now < sunrise || now > sunset + dusk ? 'night' : 'day'
 
-        const icon = document.getElementById('weather-icon') as HTMLImageElement
-        icon.dataset.daytime = daytime
-        icon.dataset.condition = condition
+        const useEl = document.querySelector<SVGUseElement>('#weather-icon use')
+
+        if (useEl) {
+            useEl.setAttribute(
+                'href',
+                `src/assets/interface/weather-sprites.svg#weather-${daytime}-${condition}`,
+            )
+        }
     }
 
     const handleForecastData = () => {
