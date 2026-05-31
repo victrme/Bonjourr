@@ -50,6 +50,11 @@
     min-height: 1.2em;
 }
 
+#forecast:before {
+    content:"\a";
+    white-space: pre;
+}
+
 #tempContainer {
     display: inline-flex;
     justify-content: center;
@@ -59,7 +64,7 @@
     column-gap: 0.5em;
 }
 
-#tempContainer p {
+#tempContainer .temp {
     font-size: 2.2em;
 }
 

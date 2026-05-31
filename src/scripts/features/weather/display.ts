@@ -34,16 +34,22 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
             tempReport = tradThis('It is currently <temp1> and feels like <temp2>')
         }
 
-        const iconText = tempContainer?.querySelector('p')
+        const weatherIcon = tempContainer?.querySelector('#weather-icon')
         const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
 
-        tempReport = setUnitsToWeatherReport(tempReport, unit, actual, feels)
+        if (currentDesc && currentTemp && dotContainer && weatherIcon) {
+            currentTemp.replaceChildren(
+                replaceTemp(tempReport, {
+                    temp1: getTempNode(actual, unit),
+                    temp2: getTempNode(feels, unit),
+                })
+            )
 
-        if (currentDesc && currentTemp && dotContainer && iconText) {
-            currentDesc.innerHTML = weatherReport + dot
-            currentTemp.innerHTML = tempReport
+            currentDesc.innerText = weatherReport + dot
             dotContainer.innerText = dot
-            iconText.innerHTML = setUnitsToWeatherReport("<temp1>", unit, maintemp)
+
+            tempContainer?.querySelector('.temp')?.remove()
+            weatherIcon.after(getTempNode(maintemp, unit)) 
         }
     }
 
@@ -66,7 +72,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     const handleForecastData = () => {
         const forecastdom = document.getElementById('forecast')
         const day = date.getHours() > getSunsetHour() ? 'tomorrow' : 'today'
-        let string = '<br />'
+        let string = ''
 
         if (day === 'today') {
             string += tradThis('with a high of <temp1> today')
@@ -75,10 +81,12 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
             string += tradThis('with a high of <temp1> tomorrow')
         }
 
-        string = setUnitsToWeatherReport(string, unit, lastWeather.forecasted_high)
-
         if (forecastdom) {
-            forecastdom.innerHTML = string
+            forecastdom.replaceChildren(
+                replaceTemp(string, {
+                    temp1: getTempNode(lastWeather.forecasted_high, unit)
+                })
+            )
         }
     }
 
@@ -138,22 +146,33 @@ export function handleForecastDisplay(forecast: string): void {
     }
 }
 
-function setUnitsToWeatherReport(report: string, unit: string, temp1: number, temp2?: number): string {
+function getTempNode(value: number, unit: string): Node {
     unit = unit === "imperial" ? "F" : "C"
 
-    report = report.replace(
-        '<temp1>',
-        `<span class="temp">${ temp1 }°<span class="temp-unit">${ unit }</span></span>`
-    )
+    const tpl = document.getElementById('temp') as HTMLTemplateElement
 
-    if (temp2 !== undefined) {
-        report = report.replace(
-            '<temp2>',
-            `<span class="temp">${ temp2 }°<span class="temp-unit">${ unit }</span></span>`
-        )
-    }
-    
-    return report
+    const node = tpl.content.cloneNode(true) as DocumentFragment
+
+    const valueEl = node.querySelector('.temp-value')
+    const unitEl = node.querySelector('.temp-unit')
+
+    if (valueEl) valueEl.textContent = `${value}°`
+    if (unitEl) unitEl.textContent = unit
+
+    return node
+}
+
+function replaceTemp(str: string, map: Record<string, Node>): DocumentFragment {
+    const frag = document.createDocumentFragment()
+
+    str.split(/(<temp\d+>)/g).forEach(part => {
+        const match = part.match(/<temp(\d+)>/)
+
+        if (match) frag.append(map[`temp${match[1]}`])
+        else frag.append(part && document.createTextNode(part))
+    })
+
+    return frag
 }
 
 export function handleShowUnit(show_unit = false): void {

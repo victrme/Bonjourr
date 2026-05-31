@@ -704,7 +704,6 @@
 
                     <div id="tempContainer" data-hide="weathericon">
                         <span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
-                        <p>00</p>
                     </div>
                 </a>
             </div>
@@ -849,6 +848,9 @@
         </aside>
 
         <div id="templates">
+            <!-- prettier-ignore -->
+            <template id="temp"><span class="temp"><span class="temp-value"></span><span class="temp-unit"></span></span></template>
+
             <template id="bookmarks-dialog-template">
                 <dialog id="bookmarks">
                     <div id="bookmarks-header">
