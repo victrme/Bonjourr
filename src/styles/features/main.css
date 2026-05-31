@@ -59,7 +59,7 @@
     font-size: 2.2em;
 }
 
-#weather-icon {
+.weather-icon {
     height: 3.3em;
     width: 3.3em;
     border: none;

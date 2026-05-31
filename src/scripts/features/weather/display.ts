@@ -56,13 +56,14 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         const { sunrise, sunset, dusk } = suntime()
         const daytime = now < sunrise || now > sunset + dusk ? 'night' : 'day'
 
-        const useEl = document.querySelector<SVGUseElement>('#weather-icon use')
+        const iconName = `weather-${daytime}-${condition}`
+        
+        const svg = document.querySelector<SVGSVGElement>('.weather-icon')
+        const useEl = svg?.querySelector('use')
 
-        if (useEl) {
-            useEl.setAttribute(
-                'href',
-                `src/assets/interface/weather-sprites.svg#weather-${daytime}-${condition}`,
-            )
+        if (svg && useEl) {
+            svg.id = iconName
+            useEl.href.baseVal = `src/assets/interface/weather-sprites.svg#${iconName}`
         }
     }
 
