@@ -210,7 +210,7 @@ export interface Weather {
     ccode?: string
     city?: string
     unit: 'metric' | 'imperial'
-    show_unit: boolean,
+    show_unit: boolean
     geolocation: 'precise' | 'approximate' | 'off'
     forecast: 'auto' | 'always' | 'never'
     temperature: 'actual' | 'feelslike' | 'both'

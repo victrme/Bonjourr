@@ -36,7 +36,7 @@
     opacity: 0.66;
 }
 
-#weather:not([data-show-unit=true]) .temp-unit {
+#weather:not([data-show-unit='true']) .temp-unit {
     display: none;
 }
 
@@ -51,7 +51,7 @@
 }
 
 #forecast:before {
-    content:"\a";
+    content: '\a';
     white-space: pre;
 }
 

@@ -42,14 +42,14 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
                 replaceTemp(tempReport, {
                     temp1: getTempNode(actual, unit),
                     temp2: getTempNode(feels, unit),
-                })
+                }),
             )
 
             currentDesc.innerText = weatherReport + dot
             dotContainer.innerText = dot
 
             tempContainer?.querySelector('.temp')?.remove()
-            weatherIcon.after(getTempNode(maintemp, unit)) 
+            weatherIcon.after(getTempNode(maintemp, unit))
         }
     }
 
@@ -84,8 +84,8 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         if (forecastdom) {
             forecastdom.replaceChildren(
                 replaceTemp(string, {
-                    temp1: getTempNode(lastWeather.forecasted_high, unit)
-                })
+                    temp1: getTempNode(lastWeather.forecasted_high, unit),
+                }),
             )
         }
     }
@@ -130,7 +130,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
 export function handleForecastDisplay(forecast: string): void {
     // // forces forecast for debugging
     // return
-    
+
     const date = userDate()
     const morningOrLateDay = date.getHours() < 12 || date.getHours() > getSunsetHour()
     const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'
@@ -147,7 +147,7 @@ export function handleForecastDisplay(forecast: string): void {
 }
 
 function getTempNode(value: number, unit: string): Node {
-    unit = unit === "imperial" ? "F" : "C"
+    unit = unit === 'imperial' ? 'F' : 'C'
 
     const tpl = document.getElementById('temp') as HTMLTemplateElement
 
@@ -165,7 +165,7 @@ function getTempNode(value: number, unit: string): Node {
 function replaceTemp(str: string, map: Record<string, Node>): DocumentFragment {
     const frag = document.createDocumentFragment()
 
-    str.split(/(<temp\d+>)/g).forEach(part => {
+    str.split(/(<temp\d+>)/g).forEach((part) => {
         const match = part.match(/<temp(\d+)>/)
 
         if (match) frag.append(map[`temp${match[1]}`])
