@@ -15,7 +15,7 @@
 
 #notes_container.opaque #pocket-editor [data-selected] {
     color: #222;
-    background-color: rgba(34, 34, 34, 0.1333333333);
+    background-color: rgb(34 34 34 / 0.1333333333);
 }
 
 #notes_container.center-align #pocket-editor {
@@ -36,8 +36,8 @@
     border-radius: 1em;
     line-height: 1.5em;
     letter-spacing: initial;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    border: 1px solid rgba(255, 255, 255, 0.075);
+    box-shadow: rgb(0 0 0 / 0.24) 0px 3px 8px;
+    border: 1px solid rgb(255 255 255 / 0.075);
     background-color: var(--notes-background);
     backdrop-filter: blur(2em);
     -webkit-backdrop-filter: blur(2em);
@@ -45,7 +45,7 @@
 
 #pocket-editor [data-selected] {
     color: #fff;
-    background-color: rgba(255, 255, 255, 0.1333333333);
+    background-color: rgb(255 255 255 / 0.1333333333);
 }
 
 #pocket-editor:empty:after {

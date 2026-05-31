@@ -64,5 +64,5 @@
     width: 3.3em;
     border: none;
     background-size: cover;
-    filter: drop-shadow(1px 2px 12px rgba(0, 0, 0, var(--text-shadow-alpha)));
+    filter: drop-shadow(1px 2px 12px rgb(0 0 0 / var(--text-shadow-alpha)));
 }

@@ -25,7 +25,7 @@ aside .param-btn {
     border: none;
     border-radius: 1em;
     white-space: nowrap;
-    background-color: rgba(var(--blue), 0.15);
+    background-color: rgb(var(--blue) / 0.15);
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -40,12 +40,12 @@ aside .param-btn span {
 }
 
 aside .param-btn:hover {
-    background-color: rgba(var(--blue), 0.25);
+    background-color: rgb(var(--blue) / 0.25);
 }
 
 aside .param-btn:hover.btn-red {
     color: var(--color-red);
-    background-color: rgba(var(--red), 0.25);
+    background-color: rgb(var(--red) / 0.25);
 }
 
 aside .param-btn:disabled {
@@ -217,7 +217,7 @@ aside input[type='range']::-webkit-slider-thumb {
     width: 30px;
     border-radius: 50px;
     border: 0;
-    box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
+    box-shadow: 0px 1px 4px 2px rgb(20 20 20 / 0.17);
     margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
@@ -244,7 +244,7 @@ aside input[type='range']::-moz-range-thumb {
     width: 30px;
     border-radius: 50px;
     border: 0;
-    box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
+    box-shadow: 0px 1px 4px 2px rgb(20 20 20 / 0.17);
     margin-top: calc(4px * 0.5 - 20px * 0.5);
 }
 
@@ -281,7 +281,7 @@ aside input[type='range']::-ms-thumb {
     border-radius: 1em;
     background: var(--color-blue);
     border: none;
-    box-shadow: 0px 1px 4px 2px rgba(20, 20, 20, 0.17);
+    box-shadow: 0px 1px 4px 2px rgb(20 20 20 / 0.17);
     margin-top: 0;
     box-sizing: border-box;
 }
@@ -441,7 +441,7 @@ aside form.valid.remove span::after {
     aside form.valid button:not(:disabled):hover,
     aside form.valid button:not(:disabled):focus-visible {
         color: var(--color-blue);
-        background-color: rgba(var(--blue), 0.15);
+        background-color: rgb(var(--blue) / 0.15);
     }
 }
 
