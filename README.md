@@ -131,7 +131,7 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 👨‍💻 On pull requests
 
-Bonjourr is open to pull requests, but they do need to be in the spirit of the extension. If you'd like to add a feature, please [open an issue](https://github.com/victrme/Bonjourr/issues) before you start working on it so we can discuss of its implementation.
+Bonjourr is open to pull requests, but they do need to be in the spirit of the extension. If you'd like to add a feature, please [open an issue](https://github.com/victrme/Bonjourr/issues) before you start working on it so we can discuss of its implementation. Additionaly, please read our [technical documentation](https://github.com/victrme/Bonjourr/blob/master/docs/TECHNICAL.md).
 
 ## 🏃‍♂️ Running Bonjourr
 
