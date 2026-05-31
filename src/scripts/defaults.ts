@@ -71,8 +71,8 @@ const DEFAULT_LANG = (() => {
 // Countries that use imperial units (Fahrenheit): US, Liberia, Myanmar, some Caribbean islands
 const DEFAULT_UNIT = (() => {
     const locale = navigator.language?.toLowerCase() ?? ''
-	const imperialLocales = ['en-us', 'en-lr', 'my-mm', 'en-bs', 'en-bz', 'en-ky', 'en-pw']
-	return imperialLocales.some((l) => locale.startsWith(l)) ? 'imperial' : 'metric'
+    const imperialLocales = ['en-us', 'en-lr', 'my-mm', 'en-bs', 'en-bz', 'en-ky', 'en-pw']
+    return imperialLocales.some((l) => locale.startsWith(l)) ? 'imperial' : 'metric'
 })()
 
 export const SEARCHBAR_ENGINES = [

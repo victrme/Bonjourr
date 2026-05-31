@@ -2,7 +2,7 @@ import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions, toggleMuteStatus } from './features/backgrounds/index.ts'
-import { parseUrlList, buildBackgroundUrls } from './features/backgrounds/urls.ts'
+import { buildBackgroundUrls, parseUrlList } from './features/backgrounds/urls.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
