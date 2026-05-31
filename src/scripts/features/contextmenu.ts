@@ -125,9 +125,10 @@ export function openContextMenu(event: Event): void {
     if (eventLocation.interface) {
         populateDialogWithAction('openTheseSettings', 'background_title')
 
-        if (showsAllSettings) {
-            populateDialogWithAction('openTheseSettings', 'layout_title')
-        }
+        // to be added when new move elem is done
+        // if (showsAllSettings) {
+        //     populateDialogWithAction('openTheseSettings', 'layout_title')
+        // }
 
         // add new link button if quick links are enabled
         if (!document.querySelector('#linkblocks.hidden')) {
