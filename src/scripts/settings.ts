@@ -120,6 +120,7 @@ function settingsInitEvent(event: Event): void {
     initOptionsValues(sync, local)
     initOptionsEvents()
     settingsFooter()
+    initSettingsSearch()
 
     // 3. Can be deferred
 
@@ -1607,4 +1608,47 @@ function setFormInput(id: string, defaults: string, value?: string): void {
     } else {
         input.setAttribute('placeholder', defaults)
     }
+}
+
+function initSettingsSearch(): void {
+    const searchInput = document.getElementById('settings-search') as HTMLInputElement | null;
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        const query = target.value.toLowerCase().trim();
+        
+        // Bonjourr wraps individual settings inside elements with a '.param' class
+        const params = document.querySelectorAll<HTMLElement>('#settings-container .param');
+
+        params.forEach((param) => {
+            const textContent = param.textContent?.toLowerCase() || '';
+
+            if (query === '') {
+                param.style.display = '';
+            } else if (textContent.includes(query)) {
+                param.style.display = '';
+            } else {
+                param.style.display = 'none';
+            }
+        });
+
+        // Hide or show group/section headers if all their nested controls are hidden
+        const categories = document.querySelectorAll<HTMLElement>('#settings-container .category, #settings-container fieldset');
+        categories.forEach((category) => {
+            if (query === '') {
+                category.style.display = '';
+                return;
+            }
+            
+            // Check if this specific group still has any visible parameters left
+            const visibleParams = category.querySelectorAll<HTMLElement>('.param:not([style*="display: none"])');
+            
+            if (visibleParams.length === 0) {
+                category.style.display = 'none';
+            } else {
+                category.style.display = '';
+            }
+        });
+    });
 }
