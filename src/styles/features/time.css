@@ -3,7 +3,7 @@
 }
 
 #time:before {
-    box-shadow: 0px 0px 100px 40px rgba(34, 34, 34, 0.2666666667);
+    box-shadow: 0px 0px 100px 40px rgb(34 34 34 / 0.2666666667);
 }
 
 #time.hidden {
@@ -36,6 +36,7 @@
 }
 
 .digital {
+    position: relative;
     margin: 0;
     margin-bottom: 0.1em;
     margin-inline-start: calc(var(--seconds-margin-offset) / 2);
@@ -44,11 +45,6 @@
     font-weight: 200;
     font-weight: var(--font-weight-clock);
     direction: ltr;
-}
-
-.digital[data-ampm-label][data-ampm][data-ampmposition='top-right'],
-.digital[data-ampm-label][data-ampm][data-ampmposition='bottom-right'] {
-    margin-left: var(--seconds-width);
 }
 
 .digital span {
@@ -71,76 +67,74 @@
     display: inline-block;
 }
 
-.digital-number-width {
-    position: absolute;
-    z-index: -1;
-    opacity: 0;
-}
-
-.digital-ampm {
-    /* margin: 0.2em; */
-    font-size: 0.4em;
-    line-height: 0.8em;
-    vertical-align: top;
-}
-
-[data-ampmposition='bottom-right'] .digital-ampm,
-[data-ampmposition='top-right'] .digital-ampm {
-    margin-left: 0.2em;
-}
-
-[data-ampmposition='bottom-left'] .digital-ampm,
-[data-ampmposition='top-left'] .digital-ampm {
-    margin-right: 0.2em;
-}
-
-[data-ampmposition='bottom-right'] .digital-ampm,
-[data-ampmposition='bottom-left'] .digital-ampm {
-    margin-bottom: 0.2em;
-}
-
-[data-ampmposition='top-right'] .digital-ampm,
-[data-ampmposition='top-left'] .digital-ampm {
-    margin-top: 0.2em;
-}
-
-.digital-ampm,
-.digital-am,
-.digital-pm {
-    display: none;
-}
-
-[data-ampm-label][data-ampm][data-ampmposition] .digital-ampm,
-[data-ampm-label][data-ampm='am'][data-ampmposition] .digital-am,
-[data-ampm-label][data-ampm='pm'][data-ampmposition] .digital-pm {
-    display: inline-block;
-}
-
-.seconds [data-ampm-label][data-ampm] {
-    margin-inline-end: 0.5em;
-}
-
-#time[data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm,
-#time[data-ampm-label][data-ampm][data-ampmposition='bottom-left'] .digital-ampm {
-    vertical-align: bottom;
-}
-
-/* AM/PM top right, seconds */
-#time[class='seconds'][data-ampm-label][data-ampm][data-ampmposition='top-right'] .digital-ampm {
-    margin-left: 1ch;
-}
-
-/* AM/PM bottom right, seconds */
-#time[class='seconds'][data-ampm-label][data-ampm][data-ampmposition='bottom-right'] .digital-ampm {
-    margin-left: 1ch;
-    vertical-align: bottom;
-}
-
 #time.seconds .digital-ss {
     display: inline-block;
     width: var(--seconds-width);
     font-variant-numeric: tabular-nums;
 }
+
+/*
+ * Digital AM/PM
+ */
+
+.digital-ampm {
+    font-size: 0.4em;
+    line-height: 0.8em;
+}
+
+.digital-am,
+.digital-pm {
+    padding-inline: 0.2em;
+}
+
+.digital-am,
+.digital-pm,
+.digital-ampm {
+    display: none;
+}
+
+[data-ampm][data-ampm-label] .digital-ampm {
+    position: absolute;
+    display: inline-block;
+}
+
+[data-ampm='pm'][data-ampm-label] .digital-pm,
+[data-ampm='am'][data-ampm-label] .digital-am {
+    display: inline-block;
+}
+
+[data-ampm-label='top-left'] .digital-ampm,
+[data-ampm-label='bottom-left'] .digital-ampm {
+    left: 0;
+
+    .digital-am,
+    .digital-pm {
+        transform: translateX(-100%);
+    }
+}
+
+[data-ampm-label='bottom-right'] .digital-ampm,
+[data-ampm-label='bottom-left'] .digital-ampm {
+    bottom: 0;
+}
+
+[data-ampm-label='top-left'] .digital-am,
+[data-ampm-label='top-left'] .digital-pm,
+[data-ampm-label='top-right'] .digital-am,
+[data-ampm-label='top-right'] .digital-pm {
+    vertical-align: text-bottom;
+}
+
+[data-ampm-label='bottom-left'] .digital-am,
+[data-ampm-label='bottom-left'] .digital-pm,
+[data-ampm-label='bottom-right'] .digital-am,
+[data-appm-label='bottom-right'] .digital-pm {
+    vertical-align: text-top;
+}
+
+/*
+ * Analog clock
+ */
 
 .analog {
     display: none;
@@ -152,7 +146,7 @@
     background-color: var(--analog-background);
     backdrop-filter: blur(1em);
     -webkit-backdrop-filter: blur(1em);
-    /* box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2); */
+    /* box-shadow: 0 1px 5px rgb(0 0 0 / 0.2); */
 }
 
 /* shape */
@@ -198,7 +192,7 @@
     display: block;
     bottom: 50%;
     left: 50%;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.2);
     width: calc(var(--clock-size) * 0.2);
     /* margin-left: calc(var(--clock-size) * -0.1); */
     border-radius: calc(var(--clock-size) * 0.2);
@@ -332,7 +326,7 @@
     bottom: calc(var(--clock-size) * -0.75);
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.2);
 }
 
 #time[data-hands='braun'] .analog-hours {
@@ -533,7 +527,7 @@
 #time.white-opaque[data-hands='modern'] .analog-center,
 #time.white-opaque .analog .analog-minutes:after,
 #time.white-opaque .analog .analog-hours:after {
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgb(0 0 0 / 0.9);
 }
 
 #time.white-opaque .analog-face span {
@@ -565,12 +559,8 @@
     font-size: 1.5em;
 }
 
-#time .clock-date-aa {
-    display: inline-block;
-}
-
-#time .clock-date-aa::first-letter {
-    text-transform: uppercase;
+#time .clock-date::first-letter {
+    text-transform: capitalize;
 }
 
 #time.analog .clock-date {

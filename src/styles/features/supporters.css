@@ -13,8 +13,8 @@
     background-image:
         linear-gradient(
             to left,
-            rgba(var(--color-param), 0) 0%,
-            rgba(var(--color-param), 0.9) 55%,
+            rgb(var(--color-param) / 0) 0%,
+            rgb(var(--color-param) / 0.9) 55%,
             rgb(var(--color-param)) 100%
         ),
         var(--background);
@@ -23,7 +23,7 @@
     background-position: right center;
     transition: box-shadow 0.1s;
     cursor: pointer;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    box-shadow: rgb(100 100 111 / 0.2) 0px 7px 29px 0px;
 }
 
 [data-theme='dark'] #supporters-notif {
@@ -50,7 +50,7 @@
     width: 30px;
     height: 30px;
     position: absolute;
-    /* box-shadow: rgba(43, 43, 49, 0.3) 0px 5px 9px 0px; */
+    /* box-shadow: rgb(43 43 49 / 0.3) 0px 5px 9px 0px; */
     backdrop-filter: blur(4em);
     -webkit-backdrop-filter: blur(4em);
     background-color: var(--color-dialog);
@@ -97,7 +97,7 @@
 
 #supporters-notif #supporters-notif-button {
     border-radius: 100px;
-    background-color: rgba(var(--blue));
+    background-color: rgb(var(--blue));
     color: white;
     padding: 0.7em 0.9em;
     margin-top: 1em;
@@ -117,7 +117,7 @@
     height: 7px;
     left: -2px;
     top: -2px;
-    background-color: rgb(30, 161, 255);
+    background-color: rgb(30 161 255);
     border-radius: 100%;
     z-index: 10;
     transition: opacity 0.3s;
@@ -174,7 +174,7 @@ html[data-supporters] #show-settings.shown:after {
     box-sizing: border-box;
     position: relative;
     border: 1px solid #fff1;
-    background-color: rgba(243, 243, 243, 0.8);
+    background-color: rgb(243 243 243 / 0.8);
     color: #131313;
     border-radius: var(--border-radius);
     margin: 1em;
@@ -182,7 +182,7 @@ html[data-supporters] #show-settings.shown:after {
 }
 
 [data-theme='dark'] #supporters-modal {
-    background-color: rgba(20, 20, 20, 0.8);
+    background-color: rgb(20 20 20 / 0.8);
     color: var(--color-text);
 }
 
@@ -312,19 +312,19 @@ html[data-supporters] #show-settings.shown:after {
     gap: 1em;
     text-align: left;
     box-sizing: border-box;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    box-shadow: rgb(99 99 99 / 0.2) 0px 2px 8px 0px;
     background-color: rgb(var(--color-param));
 }
 
 [data-theme='dark'] #supporters-modal footer {
     background-color: #111111;
-    box-shadow: rgba(20, 20, 20, 0.2) 0px 2px 8px 0px;
+    box-shadow: rgb(20 20 20 / 0.2) 0px 2px 8px 0px;
 }
 
 #supporters-modal footer a {
     border-radius: 2em;
-    background-color: rgba(var(--blue));
-    border: 1px solid rgba(var(--blue));
+    background-color: rgb(var(--blue));
+    border: 1px solid rgb(var(--blue));
     color: white;
     padding: 0.45em 0.75em;
     text-decoration: none;
@@ -332,7 +332,7 @@ html[data-supporters] #show-settings.shown:after {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    box-shadow: rgba(100, 100, 111, 0) 0px 0px 0px 0px;
+    box-shadow: rgb(100 100 111 / 0) 0px 0px 0px 0px;
     transition:
         box-shadow cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s,
         border cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s;

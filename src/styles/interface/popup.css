@@ -30,6 +30,7 @@
     backdrop-filter: blur(2em);
     -webkit-backdrop-filter: blur(2em);
     transition: opacity 2s, background-color 0.1s, color 0.1s;
+    color: rgb(var(--font-on-blur-color));
 }
 
 #popup_buttons {
@@ -46,7 +47,6 @@
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    color: white;
     background-color: #fff2;
     border: 1px solid #fff1;
 }

@@ -151,11 +151,14 @@ If you wish to self-host the APIs used by Bonjourr, you can do so by following t
 # In root directory
 deno install
 
-# These commands watch changes for each platforms
+# These commands watch changes for each platform
 deno task chrome
 deno task edge
 deno task firefox
 deno task online
+
+# Or build all platforms at once
+deno task build
 ```
 
 #### Chrome
@@ -196,15 +199,9 @@ Prerequisites:
 #### Docker CLI
 
 ```bash
-# Build the container image
-docker build -t bonjourr/bonjourr . -f docker/app/Dockerfile
-
-docker run --rm -p "8000:80/tcp" -it bonjourr/bonjourr
-```
-
-```bash
-# Build using docker compose
-docker compose up -f docker/compose.app.yaml -d
+docker compose -f docker/compose.yaml up
+# or
+deno task app
 ```
 
 Go to http://0.0.0.0:8000/

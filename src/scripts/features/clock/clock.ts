@@ -111,21 +111,20 @@ function getClock(index: number): HTMLDivElement {
 function digital(wrapper: HTMLElement, clock: Clock, timezone: string): void {
     const date = userDate(timezone)
     const domclock = wrapper.querySelector<HTMLElement>('.digital')
-    const hh = wrapper.querySelector('.digital-hh') as HTMLElement
-    const mm = wrapper.querySelector('.digital-mm') as HTMLElement
-    const ss = wrapper.querySelector('.digital-ss') as HTMLElement
-    const ampm = wrapper.querySelector('.digital-ampm') as HTMLElement
+    const hh = wrapper.querySelector<HTMLElement>('.digital-hh')
+    const mm = wrapper.querySelector<HTMLElement>('.digital-mm')
+    const ss = wrapper.querySelector<HTMLElement>('.digital-ss')
 
     const m = fixunits(date.getMinutes())
     const s = fixunits(date.getSeconds())
     let h = clock.ampm ? date.getHours() % 12 : date.getHours()
 
-    if (!domclock) {
+    if (!domclock || !hh || !mm || !ss) {
         return
     }
 
     if (clock.ampmlabel) {
-        domclock.dataset.ampmLabel = ''
+        domclock.dataset.ampmLabel = clock.ampmposition ?? 'top-left'
     } else {
         delete domclock.dataset.ampmLabel
     }
@@ -145,24 +144,6 @@ function digital(wrapper: HTMLElement, clock: Clock, timezone: string): void {
     hh.textContent = h.toString()
     mm.textContent = m.toString()
     ss.textContent = s.toString()
-
-    if (clock.ampm) {
-        if (clock.ampmposition) {
-            domclock.dataset.ampmposition = clock.ampmposition
-        } else {
-            domclock.dataset.ampmposition = 'top-left'
-        }
-
-        if (clock.ampmposition === 'top-right' || clock.ampmposition === 'bottom-right') {
-            if (ampm && domclock.lastElementChild !== ampm) {
-                domclock.insertBefore(ampm, domclock.lastElementChild)
-            }
-        } else if (clock.ampmposition === 'top-left' || clock.ampmposition === 'bottom-left') {
-            if (ampm && domclock.firstElementChild !== ampm) {
-                domclock.insertBefore(ampm, domclock.firstElementChild)
-            }
-        }
-    }
 }
 
 function analog(wrapper: HTMLElement, clock: Clock, timezone: string): void {

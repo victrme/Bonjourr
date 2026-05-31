@@ -65,7 +65,7 @@ export function openContextMenu(event: Event): void {
             quotes: !!target.closest(sectionMatching.quotes.section),
             pomodoro: !!target.closest(sectionMatching.pomodoro.section),
         },
-        interface: target.matches('main#interface'),
+        interface: target.matches('main#interface') || target.matches('body'),
     }
 
     const pointer = event as PointerEvent
@@ -74,6 +74,7 @@ export function openContextMenu(event: Event): void {
 
     const clickedOnWidgets = Object.values(eventLocation.widgets).some((v) => v)
     const menuWillOpen = !(ctrlRightClick || notPressingE) && clickedOnWidgets || eventLocation.interface
+    const showsAllSettings = (document.querySelector('#i_showall') as HTMLInputElement).checked
 
     if (!menuWillOpen) {
         return
@@ -124,9 +125,14 @@ export function openContextMenu(event: Event): void {
     if (eventLocation.interface) {
         populateDialogWithAction('openTheseSettings', 'background_title')
 
+        if (showsAllSettings) {
+            populateDialogWithAction('openTheseSettings', 'layout_title')
+        }
+
         // add new link button if quick links are enabled
         if (!document.querySelector('#linkblocks.hidden')) {
             populateDialogWithAction('add-new-link')
+            populateDialogWithAction('openTheseSettings', 'links_title')
         }
 
         showTheseElements('#background-actions')
@@ -223,8 +229,8 @@ queueMicrotask(() => {
             return
         }
 
-        // if right click inside interface, custom context menu
-        if (mainInterface?.contains(event.target as Node)) {
+        // if right click inside interface/body, custom context menu
+        if (mainInterface?.contains(event.target as Node) || event.target === document.body) {
             openContextMenu(event)
             return
         }

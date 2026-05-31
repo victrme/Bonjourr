@@ -136,7 +136,7 @@ function styles(platform: Platform, env: Env): void {
             outfile: `release/${platform}/src/styles/style.css`,
             format: 'iife',
             bundle: true,
-            minify: platform === 'online',
+            minify: false,
             loader: {
                 '.svg': 'dataurl',
                 '.png': 'file',
@@ -157,8 +157,10 @@ function scripts(platform: Platform, env: Env): void {
         buildSync({
             entryPoints: ['src/scripts/index.ts'],
             outfile: `release/${platform}/src/scripts/main.js`,
+            format: 'iife',
+            target: 'esnext',
             bundle: true,
-            minify: platform === 'online',
+            minify: false,
             sourcemap: env === 'dev',
             define: {
                 ENV: `"${env.toUpperCase()}"`,

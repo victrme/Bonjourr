@@ -94,11 +94,11 @@
 }
 
 .thumbnail:active::after {
-    background-color: rgba(var(--blue), 0.4);
+    background-color: rgb(var(--blue) / 0.4);
 }
 
 .thumbnail.selected::after {
-    background-color: rgba(var(--blue), 0.2);
+    background-color: rgb(var(--blue) / 0.2);
 }
 
 .thumbnail.loading img {

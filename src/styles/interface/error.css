@@ -14,7 +14,7 @@
     opacity: 0;
     color: #fff;
     border-radius: 20px;
-    background-color: rgba(0, 0, 0, 0.1333333333);
+    background-color: rgb(0 0 0 / 0.1333333333);
     backdrop-filter: blur(2em);
     -webkit-backdrop-filter: blur(2em);
     transition: opacity 0.4s;
@@ -28,7 +28,7 @@
     pointer-events: all;
     padding: 8px 16px;
     text-align: left;
-    background-color: rgba(17, 17, 17, 0.2666666667);
+    background-color: rgb(17 17 17 / 0.2666666667);
     margin-top: 3em;
 }
 
@@ -43,7 +43,7 @@
     overflow-x: hidden;
     border: none;
     font-family: var(--monospace-font-family);
-    background-color: rgba(17, 17, 17, 0.2666666667);
+    background-color: rgb(17 17 17 / 0.2666666667);
 }
 
 #error a {

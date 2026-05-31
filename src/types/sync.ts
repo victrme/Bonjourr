@@ -157,6 +157,7 @@ export interface Font {
     family: string
     size: string
     weight: string
+    color: string
     weightlist: string[]
     system?: boolean
     url?: string
