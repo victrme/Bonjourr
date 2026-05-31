@@ -325,8 +325,8 @@ aside .color-button button {
     outline-offset: 2px;
     user-select: text;
     cursor: pointer;
+    color: white;
     background-color: rgb(var(--input-color));
-    color: contrast-color(rgb(var(--input-color)));
     border: 1px solid
         color-mix(
             in srgb,

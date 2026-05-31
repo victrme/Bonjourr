@@ -1,4 +1,4 @@
-import { hexToRGB } from './generic.ts'
+import { getReadableTextColor, hexToRGB } from './generic.ts'
 
 export function webkitRangeTrackColor(input: HTMLInputElement): void {
     const { min, max, value } = input
@@ -119,8 +119,12 @@ export function colorInput(id: string, color?: string): void {
         color ??= input.value
         button.textContent = color
 
-        const rgbColor = hexToRGB(color)
+        // to be replaced with css contrast-color() later
+        button.style.color = getReadableTextColor(hexToRGB(color))
 
-        button.style.setProperty('--input-color', `${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b}`)
+        const rgbColor = hexToRGB(color)
+        button.style.setProperty('--input-color', 
+            `${rgbColor.r} ${rgbColor.g} ${rgbColor.b}`
+        )
     }
 }
