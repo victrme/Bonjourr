@@ -5,6 +5,7 @@ import { debounce } from '../utils/debounce.ts'
 import { storage } from '../storage.ts'
 
 import type { Sync } from '../../types/sync.ts'
+import { getReviewCounter } from './popup.ts'
 
 interface SupportersApi {
     date: string
@@ -57,12 +58,16 @@ export function supportersNotifications(init?: Sync, update?: SupportersUpdate):
 }
 
 function canShowSupporters(sync?: Sync): boolean {
+    // // forces supporters notificaion for debugging
+    // return true;
+
     const hasSupportersDisabled = !sync?.supporters || !sync.supporters.enabled
-    const canGetReviewPopup = sync?.review !== -1
+    const isNewUser = (getReviewCounter() <= 45 || getReviewCounter() === 0) && sync?.review !== -1
+
     const closedMonth = sync?.supporters.closedMonth
     const currentMonth = new Date().getMonth() + 1
 
-    if (hasSupportersDisabled || canGetReviewPopup) {
+    if (hasSupportersDisabled || isNewUser) {
         return false
     } else {
         return currentMonth !== closedMonth
@@ -306,9 +311,9 @@ function initGlitter(): void {
 
             // Apply shadow blur and color
             snowfall.context.shadowBlur = 8 // Adjust blur amount
-            snowfall.context.shadowColor = `rgba(255, 202, 56, ${this.opacity})` // Shadow color (same as snowflake color)
+            snowfall.context.shadowColor = `rgb(255 202 56 / ${this.opacity})` // Shadow color (same as snowflake color)
 
-            snowfall.context.fillStyle = `rgba(255, 202, 56, ${this.opacity})` // Sets the fill color
+            snowfall.context.fillStyle = `rgb(255 202 56 / ${this.opacity})` // Sets the fill color
             snowfall.context.fill() // Fills the circle with the color
             snowfall.context.closePath() // Closes the path
 

@@ -8,7 +8,7 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '22.1.0'
+export const CURRENT_VERSION = '22.2.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -66,6 +66,13 @@ const DEFAULT_LANG = (() => {
         }
     }
     return 'en'
+})()
+
+// Countries that use imperial units (Fahrenheit): US, Liberia, Myanmar, some Caribbean islands
+const DEFAULT_UNIT = (() => {
+    const locale = navigator.language?.toLowerCase() ?? ''
+    const imperialLocales = ['en-us', 'en-lr', 'my-mm', 'en-bs', 'en-bz', 'en-ky', 'en-pw']
+    return imperialLocales.some((l) => locale.startsWith(l)) ? 'imperial' : 'metric'
 })()
 
 export const SEARCHBAR_ENGINES = [
@@ -156,7 +163,8 @@ export const SYNC_DEFAULT: Sync = {
     worldclocks: [],
     weather: {
         city: undefined,
-        unit: 'metric',
+        unit: DEFAULT_UNIT,
+        show_unit: false,
         provider: '',
         moreinfo: 'none',
         forecast: 'auto',
@@ -211,6 +219,7 @@ export const SYNC_DEFAULT: Sync = {
         family: '',
         size: '14',
         system: true,
+        color: '#ffffff',
         weightlist: [],
         weight: SYSTEM_OS === 'windows' ? '400' : '300',
     },

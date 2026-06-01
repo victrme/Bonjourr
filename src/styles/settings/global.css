@@ -28,7 +28,7 @@ aside.hidden {
 aside.shown {
     -webkit-transform: translateX(-100%);
     transform: translateX(-100%);
-    box-shadow: 0px 1px 20px 1px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 1px 20px 1px rgb(0 0 0 / 0.15);
 }
 
 aside.see-through {
@@ -76,6 +76,6 @@ aside.change-theme #notes_options,
 aside.change-theme #quotes_options,
 aside.change-theme #pomodoro_options,
 aside.change-theme #searchbar_options,
-aside.change-theme #settings-managment {
+aside.change-theme #settings-management {
     display: none;
 }

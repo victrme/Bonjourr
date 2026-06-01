@@ -122,17 +122,20 @@
 
                 <button type="submit" id="edit-add">
                     <svg
+                        clip-rule="evenodd"
+                        fill-rule="evenodd"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        viewBox="0 0 717 717"
                         xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
                     >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                        />
+                        <g fill="none" stroke="currentColor" stroke-width="50" transform="translate(-41.6667 -41.6667)">
+                            <path
+                                d="m400 733.333c183.333 0 333.333-150 333.333-333.333s-150-333.333-333.333-333.333-333.333 150-333.333 333.333 150 333.333 333.333 333.333z"
+                            />
+                            <path d="m266.667 400h266.666" />
+                            <path d="m400 533.333v-266.666" />
+                        </g>
                     </svg>
 
                     <span class="trn">Add something</span>
@@ -339,7 +342,39 @@
                     <span class="trn">Edit background settings</span>
                 </button>
 
-                <button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
+                <!-- to be added when new move elem is done -->
+                <!-- <button
+                    data-action="openTheseSettings"
+                    data-attribute="layout_title"
+                    title="Open the layout settings"
+                    aria-label="Open the layout settings"
+                >
+                    <svg
+                        clip-rule="evenodd"
+                        fill-rule="evenodd"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        viewBox="0 0 717 717"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <g fill="none" stroke="currentColor" stroke-width="50" transform="translate(-41.6667 -41.6667)">
+                            <path
+                                d="m300 733.333h200c166.667 0 233.333-66.666 233.333-233.333v-200c0-166.667-66.666-233.333-233.333-233.333h-200c-166.667 0-233.333 66.666-233.333 233.333v200c0 166.667 66.666 233.333 233.333 233.333z"
+                            />
+                            <path d="m333.333 66.667v666.666" />
+                            <path d="m333.333 400h400" />
+                        </g>
+                    </svg>
+
+                    <span class="trn">Edit layout settings</span>
+                </button> -->
+
+                <button
+                    data-action="openTheseSettings"
+                    data-attribute="links_title"
+                    title="Open the quick links settings"
+                    aria-label="Open the quick links settings"
+                >
                     <svg
                         clip-rule="evenodd"
                         fill="currentColor"
@@ -359,6 +394,27 @@
                             <path
                                 d="m14.829 10.586c.39-.391.39-1.024 0-1.415-.391-.39-1.024-.39-1.415 0l-4.242 4.243c-.391.391-.391 1.024 0 1.414.39.391 1.023.391 1.414 0z"
                             />
+                        </g>
+                    </svg>
+
+                    <span class="trn">Edit quick links settings</span>
+                </button>
+
+                <button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
+                    <svg
+                        clip-rule="evenodd"
+                        fill-rule="evenodd"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        viewBox="0 0 717 717"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <g fill="none" stroke="currentColor" stroke-width="50" transform="translate(-41.6667 -41.6667)">
+                            <path
+                                d="m400 733.333c183.333 0 333.333-150 333.333-333.333s-150-333.333-333.333-333.333-333.333 150-333.333 333.333 150 333.333 333.333 333.333z"
+                            />
+                            <path d="m266.667 400h266.666" />
+                            <path d="m400 533.333v-266.666" />
                         </g>
                     </svg>
                     <span class="trn">Add new quick link</span>
@@ -647,11 +703,10 @@
                                 class="digital-mm-separator"
                             >:</span><span
                                 class="digital-ss"
-                            ></span><span
-                                class="digital-am"
-                            >am</span><span
-                                class="digital-pm"
-                            >pm</span>
+                            >
+                                <!-- prettier-ignore -->
+                            </span><span class="digital-ampm"><span class="digital-am">am</span><span class="digital-pm"
+                                >pm</span></span>
                         </h1>
 
                         <div class="analog" data-hide="clock">
@@ -671,7 +726,6 @@
                         <p class="clock-region">Paris</p>
 
                         <p class="clock-date" data-hide="date">
-                            <!-- prettier-ignore -->
                             <span class="clock-date-aa"></span><span class="clock-date-aa-separator"></span>
                             <span class="clock-date-bb"></span>
                             <span class="clock-date-bb-separator"></span>
@@ -689,17 +743,28 @@
                 </h2>
 
                 <a id="weather" class="wait init" rel="noreferrer">
-                    <div id="description" data-hide="weatherdesc">
-                        <p id="current">
-                            <span id="current-desc"></span>
-                            <span id="current-temp"></span>
-                        </p>
-                        <p id="forecast">forecast</p>
-                    </div>
+                    <p id="description" data-hide="weatherdesc">
+                        <span id="current"><span id="current-desc"></span><span id="current-temp"><span
+                                    id="current-a"
+                                ></span><span class="temp" id="current-temp-a"><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span><span id="current-b"></span><span
+                                    class="temp"
+                                    id="current-temp-b"
+                                ><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span></span></span><span id="forecast"><span id="forecast-a"></span><span
+                                class="temp"
+                            ><span class="temp-value"></span><span class="temp-unit"></span></span><span
+                                id="forecast-b"
+                            ></span></span><span id="dotContainer"></span>
+                    </p>
 
                     <div id="tempContainer" data-hide="weathericon">
-                        <span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
-                        <p>00</p>
+                        <svg class="weather-icon" aria-hidden="true">
+                            <use href="src/assets/interface/weather-sprites.svg#weather-day-overcastclouds"></use>
+                        </svg>
+                        <span class="temp"><span class="temp-value"></span><span class="temp-unit"></span></span>
                     </div>
                 </a>
             </div>
@@ -723,12 +788,12 @@
                         <hr />
 
                         <button id="sb_submit" aria-label="Submit search" type="submit" disabled>
-                            <img
-                                src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDk1IDQ2NiAzODUgMzU2YTIwOSAyMDkgMCAwIDAtMTQtMjgzIDIwOSAyMDkgMCAwIDAtMjk4IDAgMjA5IDIwOSAwIDAgMCAwIDI5OCAyMTAgMjEwIDAgMCAwIDI4MyAxNGwxMTAgMTEwYTIwIDIwIDAgMSAwIDI5LTI5ek0xMDIgMzQyYTE2OSAxNjkgMCAwIDEgMC0yNDAgMTY5IDE2OSAwIDAgMSAyNDAgMCAxNjkgMTY5IDAgMCAxIDAgMjQwIDE2OSAxNjkgMCAwIDEtMjQwIDB6Ii8+PC9zdmc+"
-                                class="default-search-icon"
-                                draggable="false"
-                                alt=""
-                            />
+                            <svg class="default-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path
+                                    fill="currentColor"
+                                    d="M495 466 385 356a209 209 0 0 0-14-283 209 209 0 0 0-298 0 209 209 0 0 0 0 298 210 210 0 0 0 283 14l110 110a20 20 0 1 0 29-29zM102 342a169 169 0 0 1 0-240 169 169 0 0 1 240 0 169 169 0 0 1 0 240 169 169 0 0 1-240 0z"
+                                />
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -831,11 +896,12 @@
 
         <div id="show-settings" data-hide="settingsicon">
             <button aria-label="Toggle settings menu" title="Toggle settings menu">
-                <img
-                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTkuNjYiIGhlaWdodD0iMTk5LjkzIiB2aWV3Qm94PSIwIDAgNTIuODMgNTIuOSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5LjczIDUyLjU3Yy0uMjYtLjItLjkzLTEuNDEtMS40OC0yLjcxLTEuMS0yLjU3LTEuNDItMi45My0yLjQyLTIuNjgtLjUxLjEzLS44OS42Ni0xLjY3IDIuMzYtMS4yIDIuNTktMS42IDMuMTEtMi40IDMuMTEtMS4xIDAtMS4zNS0uNTgtMS41MS0zLjQ4LS4xMy0yLjM4LS4yMy0yLjc4LS43My0zLjItLjMyLS4yNS0uNy0uNDYtLjg0LS40NnMtMS4yNS45NS0yLjQ2IDIuMTJjLTEuMjIgMS4xNi0yLjM4IDIuMTEtMi41OSAyLjExLS41MiAwLTEuMjUtLjg2LTEuMjUtMS40OSAwLS4yOC4zLTEuNTYuNjctMi44NCAxLjEyLTMuODQuNDYtNC4zMS0zLjQ3LTIuNTQtMi4xNS45OC0yLjYgMS4xLTMuMTYuODMtMS4wOC0uNDktLjg1LTEuNDUuOTMtMy45IDEuNzItMi4zNyAxLjkxLTMuMDcgMS0zLjY2LS41LS4zLTEuMDYtLjMzLTMuMi0uMTEtMi45LjI5LTMuMjcuMjItMy42LS42NC0uMzMtLjg5LjA1LTEuMzcgMi4yLTIuODMgMS4wNy0uNzIgMi4xNC0xLjUgMi4zOC0xLjc0IDEuMS0xLjEuMTYtMS45Ny0yLjk3LTIuNzhDLjM4IDI3LjMzLS4yOCAyNi44Mi4xIDI1LjcyYy4yMy0uNjQuNTMtLjc5IDIuOTctMS40MiAxLjUtLjQgMi45LS44NSAzLjEtMS4wMy43Ny0uNjMuNDYtMS41NC0uODQtMi40NC0yLjM1LTEuNjItMy44LTIuODUtMy44LTMuMjEgMC0uMi4yMi0uNjQuNS0uOTcuNDgtLjYuNS0uNiAzLjM1LS4zIDIuNTYuMjkgMi45LjI3IDMuMzQtLjEyLjI3LS4yNC40OC0uNjQuNDgtLjg5IDAtLjI0LS43LTEuNS0xLjU4LTIuOC0uODgtMS4yOS0xLjU5LTIuNTMtMS41OS0yLjc3IDAtLjQ4LjgtMS4zIDEuMjctMS4zLjE3IDAgMS40My41NiAyLjggMS4yNCAyLjIyIDEuMSAyLjU5IDEuMiAzLjE5LjkzLjg0LS4zOC44Ni0uOTYuMTMtMy44Mi0uNjgtMi42OC0uNjEtMy40Mi4zNi0zLjc2LjY4LS4yNC44Ny0uMTIgMi45MSAxLjkxIDEuMiAxLjIgMi4zNyAyLjE3IDIuNiAyLjE3Ljg4IDAgMS4yNi0uODkgMS41NC0zLjdDMjEuMTMuNTkgMjEuNCAwIDIyLjQ0IDBjLjY3IDAgMS4xNy43MSAyLjI0IDMuMjMgMS40OCAzLjQ2IDIuMzggMy41IDMuOTguMTRDMjkuOTUuNjUgMzAuMjYuMjcgMzEuMi4yN2MxIDAgMS4xOS40NiAxLjM4IDMuNTMuMDkgMS40NC4zIDIuNzguNDYgMi45OC42OC44MiAxLjYxLjQgMy43LTEuNjIgMS4xMi0xLjEgMi4xOC0xLjk4IDIuMzUtMS45OC4xNyAwIC41NC4xMi44Mi4yNy43LjM4LjY2IDEuMzktLjIgNC4yMy0uNjggMi4zLS42OCAyLjM4LS4yMSAyLjkuNjYuNzQgMS4wNi42OCAzLjY3LS41MyAyLjQzLTEuMTIgMy4wNC0xLjI1IDMuNTUtLjc0LjY0LjY0LjMgMS42NC0xLjMgMy44NC0xLjI4IDEuNzgtMS41NyAyLjM1LTEuNDQgMi44OC4yMy45LjkgMS4wOSAzLjE0Ljg2IDMuMjUtLjMyIDMuNTctLjI5IDQuMDUuNDQuMzguNi4zOS43Mi4wMyAxLjI3LS4yMi4zNC0xLjM1IDEuMjQtMi41MiAyLTEuMTYuNzctMi4xNyAxLjYtMi4yMyAxLjg1LS4yNS45Mi4yNiAxLjU5IDEuNDQgMS45IDMuOTMgMS4wMiA0LjcgMS4zMyA0Ljg2IDEuOTYuMyAxLjI0LS4yMiAxLjYzLTMuMDUgMi4yOC00LjEuOTItNC40OCAxLjkzLTEuNTQgMy45NSAzLjE1IDIuMTcgMy42MyAyLjg5IDIuNTkgMy44NC0uNDguNDMtLjc0LjQ1LTMuMzQuMTUtMi41NS0uMjgtMi44NS0uMjctMy4zLjE0LS4yOC4yNS0uNS42NS0uNS44OCAwIC4yNC43IDEuNDkgMS41OCAyLjc4Ljg3IDEuMjkgMS41OSAyLjU2IDEuNTkgMi44M3MtLjMxLjY5LS42OS45M2MtLjY3LjQ0LS43NC40Mi0zLjMtLjgzLTIuMy0xLjE0LTIuNjgtMS4yNS0zLjI4LS45OC0uODQuMzgtLjg3IDEuMDktLjEzIDMuNzQuNzEgMi41Ni42MiAzLjUtLjM2IDMuODQtLjcuMjUtLjg2LjE0LTIuODgtMS45MS0zLjEtMy4xNi0zLjctMi45My00LjE0IDEuNTItLjIxIDIuMS0uMzkgMi44NS0uNzQgMy4xMS0uNTguNDMtLjkzLjQyLTEuNTMtLjAxem0uNzUtMTAuMjNjMS4xMi0uMjkgMi43OC0uOTEgMy42OC0xLjM5YTIwLjE2IDIwLjE2IDAgMCAwIDYuMjMtNS44N2MxLjE2LTIuMzcgMi4yNC00LjMzIDIuMDItNi45bC03LjQzLS4wN2MtNi44Mi0uMDctNy40Ni0uMDMtNy44NS40LS43Ny44Ni03LjA4IDEyLjAxLTcuMDggMTIuNTEgMCAxLjU3IDYuMzQgMi4zNyAxMC40MyAxLjMyem0tOS43My05LjEzYzEuOTYtMy40IDMuNTMtNi4zOCAzLjUzLTYuNzUgMC0xLjAzLTYuOTEtMTIuODItNy41Ny0xMi45MS0uNzQtLjExLTMuNjggMy4wNS00LjggNS4xNmExNi45OCAxNi45OCAwIDAgMC0uMDIgMTUuNDZjMS4xMiAyLjEgNC4wOCA1LjMgNC44IDUuMi4zOS0uMDYgMS41LTEuNzYgNC4wNi02LjE2em0yMS4xOC0xMi4xM0ExNyAxNyAwIDAgMCAzMC4xIDEwLjQyYy0zLjUzLS44OS05LjgtLjAyLTEwIDEuMzgtLjA4LjUgNi4wNSAxMS40OCA3LjAzIDEyLjYxLjM4LjQzIDEuMDIuNDYgNy44NC40bDcuNDMtLjA3Yy4xOS0xLjI3LS4xLTIuNi0uNDgtMy42NnoiLz48L3N2Zz4="
-                    alt=""
-                    draggable="false"
-                />
+                <svg xmlns="http://www.w3.org/2000/svg" width="199.66" height="199.93" viewBox="0 0 52.83 52.9">
+                    <path
+                        fill="var(--icon-color, #fff)"
+                        d="M29.73 52.57c-.26-.2-.93-1.41-1.48-2.71-1.1-2.57-1.42-2.93-2.42-2.68-.51.13-.89.66-1.67 2.36-1.2 2.59-1.6 3.11-2.4 3.11-1.1 0-1.35-.58-1.51-3.48-.13-2.38-.23-2.78-.73-3.2-.32-.25-.7-.46-.84-.46s-1.25.95-2.46 2.12c-1.22 1.16-2.38 2.11-2.59 2.11-.52 0-1.25-.86-1.25-1.49 0-.28.3-1.56.67-2.84 1.12-3.84.46-4.31-3.47-2.54-2.15.98-2.6 1.1-3.16.83-1.08-.49-.85-1.45.93-3.9 1.72-2.37 1.91-3.07 1-3.66-.5-.3-1.06-.33-3.2-.11-2.9.29-3.27.22-3.6-.64-.33-.89.05-1.37 2.2-2.83 1.07-.72 2.14-1.5 2.38-1.74 1.1-1.1.16-1.97-2.97-2.78C.38 27.33-.28 26.82.1 25.72c.23-.64.53-.79 2.97-1.42 1.5-.4 2.9-.85 3.1-1.03.77-.63.46-1.54-.84-2.44-2.35-1.62-3.8-2.85-3.8-3.21 0-.2.22-.64.5-.97.48-.6.5-.6 3.35-.3 2.56.29 2.9.27 3.34-.12.27-.24.48-.64.48-.89 0-.24-.7-1.5-1.58-2.8-.88-1.29-1.59-2.53-1.59-2.77 0-.48.8-1.3 1.27-1.3.17 0 1.43.56 2.8 1.24 2.22 1.1 2.59 1.2 3.19.93.84-.38.86-.96.13-3.82-.68-2.68-.61-3.42.36-3.76.68-.24.87-.12 2.91 1.91 1.2 1.2 2.37 2.17 2.6 2.17.88 0 1.26-.89 1.54-3.7C21.13.59 21.4 0 22.44 0c.67 0 1.17.71 2.24 3.23 1.48 3.46 2.38 3.5 3.98.14C29.95.65 30.26.27 31.2.27c1 0 1.19.46 1.38 3.53.09 1.44.3 2.78.46 2.98.68.82 1.61.4 3.7-1.62 1.12-1.1 2.18-1.98 2.35-1.98.17 0 .54.12.82.27.7.38.66 1.39-.2 4.23-.68 2.3-.68 2.38-.21 2.9.66.74 1.06.68 3.67-.53 2.43-1.12 3.04-1.25 3.55-.74.64.64.3 1.64-1.3 3.84-1.28 1.78-1.57 2.35-1.44 2.88.23.9.9 1.09 3.14.86 3.25-.32 3.57-.29 4.05.44.38.6.39.72.03 1.27-.22.34-1.35 1.24-2.52 2-1.16.77-2.17 1.6-2.23 1.85-.25.92.26 1.59 1.44 1.9 3.93 1.02 4.7 1.33 4.86 1.96.3 1.24-.22 1.63-3.05 2.28-4.1.92-4.48 1.93-1.54 3.95 3.15 2.17 3.63 2.89 2.59 3.84-.48.43-.74.45-3.34.15-2.55-.28-2.85-.27-3.3.14-.28.25-.5.65-.5.88 0 .24.7 1.49 1.58 2.78.87 1.29 1.59 2.56 1.59 2.83s-.31.69-.69.93c-.67.44-.74.42-3.3-.83-2.3-1.14-2.68-1.25-3.28-.98-.84.38-.87 1.09-.13 3.74.71 2.56.62 3.5-.36 3.84-.7.25-.86.14-2.88-1.91-3.1-3.16-3.7-2.93-4.14 1.52-.21 2.1-.39 2.85-.74 3.11-.58.43-.93.42-1.53-.01zm.75-10.23c1.12-.29 2.78-.91 3.68-1.39a20.16 20.16 0 0 0 6.23-5.87c1.16-2.37 2.24-4.33 2.02-6.9l-7.43-.07c-6.82-.07-7.46-.03-7.85.4-.77.86-7.08 12.01-7.08 12.51 0 1.57 6.34 2.37 10.43 1.32zm-9.73-9.13c1.96-3.4 3.53-6.38 3.53-6.75 0-1.03-6.91-12.82-7.57-12.91-.74-.11-3.68 3.05-4.8 5.16a16.98 16.98 0 0 0-.02 15.46c1.12 2.1 4.08 5.3 4.8 5.2.39-.06 1.5-1.76 4.06-6.16zm21.18-12.13A17 17 0 0 0 30.1 10.42c-3.53-.89-9.8-.02-10 1.38-.08.5 6.05 11.48 7.03 12.61.38.43 1.02.46 7.84.4l7.43-.07c.19-1.27-.1-2.6-.48-3.66z"
+                    />
+                </svg>
             </button>
         </div>
 
@@ -1058,7 +1124,7 @@
                     border: none;
                     border-radius: 1em;
                     white-space: nowrap;
-                    background-color: rgba(var(--blue), 0.25);
+                    background-color: rgb(var(--blue) / 0.25);
                     display: inline-flex;
                     justify-content: center;
                     align-items: center;
@@ -1066,7 +1132,7 @@
                 }
 
                 .help-btn:hover {
-                    background-color: rgba(var(--blue), 0.35);
+                    background-color: rgb(var(--blue) / 0.35);
                 }
 
                 .help-btn[disabled] {
@@ -1077,7 +1143,7 @@
 
                 .help-btn.danger:hover {
                     color: var(--color-red);
-                    background-color: rgba(var(--red), 0.25);
+                    background-color: rgb(var(--red) / 0.25);
                 }
             </style>
         </div>

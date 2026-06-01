@@ -1,11 +1,11 @@
-#settings-managment {
+#settings-management {
     position: relative;
 }
 
-#settings-managment.dragging-file {
+#settings-management.dragging-file {
     opacity: 0.5;
 }
-#settings-managment.dragging-file #file-import {
+#settings-management.dragging-file #file-import {
     position: absolute;
     display: initial;
     top: 0;

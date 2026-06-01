@@ -391,6 +391,7 @@ function suggestions(results: Suggestions): void {
             return
         }
 
+        // flaw: suggestions magnifying glass isn't colored by --font-on-blur-color
         const searchIcon = 'src/assets/interface/magnifying-glass.svg'
         const image = result.image ?? searchIcon
         const desc = result.desc ?? ''

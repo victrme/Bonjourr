@@ -157,6 +157,7 @@ export interface Font {
     family: string
     size: string
     weight: string
+    color: string
     weightlist: string[]
     system?: boolean
     url?: string
@@ -210,6 +211,7 @@ export interface Weather {
     ccode?: string
     city?: string
     unit: 'metric' | 'imperial'
+    show_unit: boolean
     geolocation: 'precise' | 'approximate' | 'off'
     forecast: 'auto' | 'always' | 'never'
     temperature: 'actual' | 'feelslike' | 'both'

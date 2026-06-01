@@ -2,6 +2,7 @@ import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions, toggleMuteStatus } from './features/backgrounds/index.ts'
+import { buildBackgroundUrls, parseUrlList } from './features/backgrounds/urls.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
@@ -225,6 +226,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_moreinfo', data.weather?.moreinfo || 'none')
     setInput('i_provider', data.weather?.provider ?? '')
     setInput('i_weight', data.font?.weight || '300')
+    setInput('i_font-color', data.font.color ?? '#ffffff')
     setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
     setInput('i_announce', data.announcements ?? 'major')
     setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
@@ -251,6 +253,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_seconds', data.clock?.seconds ?? false)
     setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
     setCheckbox('i_main', data.main)
+    setCheckbox('i_show_unit', data.weather.show_unit)
     setCheckbox('i_greethide', !data.hide?.greetings)
     setCheckbox('i_notes', data.notes?.on ?? false)
     setCheckbox('i_sb', data.searchbar?.on ?? false)
@@ -266,6 +269,7 @@ function initOptionsValues(data: Sync, local: Local): void {
 
     colorInput('solid-background', data.backgrounds.color)
     colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
+    colorInput('font-color', data.font.color)
 
     paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
     paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
@@ -304,8 +308,9 @@ function initOptionsValues(data: Sync, local: Local): void {
     paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
     paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
     paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
+    paramId('d_ampm')?.classList.toggle('shown', true)
     paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
-    paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
+    paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel && data.clock.ampm)
     paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
     paramId('main_options')?.classList.toggle('shown', data.main)
     paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
@@ -650,6 +655,10 @@ function initOptionsEvents(): void {
 
         // shows/hides ampm_label option
         paramId('ampm_label')?.classList.toggle('shown', target.checked)
+
+        // same for its position based on ampm_label AND 12h time toggle
+        const ampm_toggle = document.querySelector('#i_ampm-label') as HTMLInputElement
+        paramId('ampm_position')?.classList.toggle('shown', target.checked && ampm_toggle.checked)
     })
 
     onclickdown(paramId('i_ampm-label'), (_, target) => {
@@ -720,6 +729,10 @@ function initOptionsEvents(): void {
         const weathericon = this.value === 'disabled' || this.value === 'icon'
         hideElements({ weatherdesc, weathericon }, { isEvent: true })
         weather(undefined, { unhide: true })
+    })
+
+    onclickdown(paramId('i_show_unit'), (_, target) => {
+        weather(undefined, { show_unit: target.checked })
     })
 
     onclickdown(paramId('i_greethide'), (_, target) => {
@@ -928,6 +941,14 @@ function initOptionsEvents(): void {
         customFont(undefined, { weight: this.value })
     })
 
+    paramId('b_font-color').addEventListener('click', function (): void {
+        paramId('i_font-color').click()
+    })
+
+    paramId('i_font-color').addEventListener('input', function (): void {
+        customFont(undefined, { color: this.value })
+    })
+
     paramId('i_size').addEventListener('input', function (): void {
         customFont(undefined, { size: this.value })
     })
@@ -1008,14 +1029,14 @@ function initOptionsEvents(): void {
         synchronization(undefined, { down: true })
     })
 
-    // Settings managment
+    // Settings management
 
-    paramId('settings-managment').addEventListener('dragenter', () => {
-        paramId('settings-managment').classList.add('dragging-file')
+    paramId('settings-management').addEventListener('dragenter', () => {
+        paramId('settings-management').classList.add('dragging-file')
     })
 
     paramId('file-import').addEventListener('dragleave', () => {
-        paramId('settings-managment').classList.remove('dragging-file')
+        paramId('settings-management').classList.remove('dragging-file')
     })
 
     paramId('b_file-load').addEventListener('click', function (this): void {
@@ -1479,6 +1500,15 @@ async function importSettings(imported: Partial<Sync>): Promise<void> {
 
         storage.sync.clear()
         storage.sync.set(data)
+
+        if (imported?.backgrounds?.type === 'urls') {
+            const urls = parseUrlList(imported.backgrounds.urls ?? '')
+
+            if (urls.length > 0) {
+                storage.local.set({ backgroundUrls: buildBackgroundUrls(urls) })
+            }
+        }
+
         fadeOut()
     } catch (_) {
         // ...

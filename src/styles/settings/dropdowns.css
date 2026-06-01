@@ -62,15 +62,15 @@
 /* Dropdowns: Time & Date Options */
 
 #time_options.shown {
-    max-height: 920px;
+    max-height: 1102px;
 }
 
 #digital_options.shown {
-    max-height: 180px;
+    max-height: 330px;
 }
 
 #analog_options.shown {
-    max-height: 280px;
+    max-height: 330px;
 }
 
 #greetings_options.shown {
@@ -81,11 +81,15 @@
     max-height: 300px;
 }
 
-#ampm_label.shown {
+#d_ampm.shown {
     max-height: 60px;
 }
 
-#ampm_position.shown {
+.all #ampm_label.shown {
+    max-height: 60px;
+}
+
+.all #ampm_position.shown {
     max-height: 60px;
 }
 
@@ -108,7 +112,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-    max-height: 885px;
+    max-height: 945px;
 }
 
 #weather_provider.shown {
@@ -170,7 +174,7 @@
 /* Dropdowns: All settings */
 
 .all .as_visuals {
-    max-height: 285px;
+    max-height: 167px;
 }
 
 .all .as_provider.shown {
@@ -201,12 +205,16 @@
     max-height: 430px;
 }
 
+.all .as_worldclocks {
+    max-height: 361px;
+}
+
 .all .as_searchbar {
     max-height: 320px;
 }
 
 .all .as_weather {
-    max-height: 345px;
+    max-height: 405px;
 }
 
 .all .as_clocktype {
@@ -214,7 +222,7 @@
 }
 
 .all .as_fonts {
-    max-height: 350px;
+    max-height: 390px;
 }
 
 .all .as_page {

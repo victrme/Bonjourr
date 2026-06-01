@@ -36,6 +36,10 @@
     opacity: 0.66;
 }
 
+#weather:not([data-show-unit='true']) .temp-unit {
+    display: none;
+}
+
 #description {
     font-size: 1.5em;
     min-height: 1.5em;
@@ -44,6 +48,19 @@
 #current,
 #forecast {
     min-height: 1.2em;
+}
+
+#forecast {
+    display: none;
+}
+
+#forecast.shown {
+    display: inline;
+}
+
+#forecast:before {
+    content: '\a';
+    white-space: pre;
 }
 
 #tempContainer {
@@ -55,112 +72,14 @@
     column-gap: 0.5em;
 }
 
-#tempContainer p {
+#tempContainer .temp {
     font-size: 2.2em;
 }
 
-#weather-icon {
+.weather-icon {
     height: 3.3em;
     width: 3.3em;
     border: none;
     background-size: cover;
-}
-
-#weather-icon {
-    --day-clearsky: url('../../assets/interface/weather/day/clearsky.svg');
-    --day-fewclouds: url('../../assets/interface/weather/day/fewclouds.svg');
-    --day-brokenclouds: url('../../assets/interface/weather/day/brokenclouds.svg');
-    --day-overcastclouds: url('../../assets/interface/weather/day/overcastclouds.svg');
-    --day-sunnyrain: url('../../assets/interface/weather/day/sunnyrain.svg');
-    --day-lightrain: url('../../assets/interface/weather/day/lightrain.svg');
-    --day-rain: url('../../assets/interface/weather/day/rain.svg');
-    --day-snow: url('../../assets/interface/weather/day/snow.svg');
-    --day-mist: url('../../assets/interface/weather/day/mist.svg');
-    --day-thunderstorm: url('../../assets/interface/weather/day/thunderstorm.svg');
-    --night-clearsky: url('../../assets/interface/weather/night/clearsky.svg');
-    --night-fewclouds: url('../../assets/interface/weather/night/fewclouds.svg');
-    --night-brokenclouds: url('../../assets/interface/weather/night/brokenclouds.svg');
-    --night-overcastclouds: url('../../assets/interface/weather/night/overcastclouds.svg');
-    --night-lightrain: url('../../assets/interface/weather/night/lightrain.svg');
-    --night-rain: url('../../assets/interface/weather/night/rain.svg');
-    --night-snow: url('../../assets/interface/weather/night/snow.svg');
-    --night-mist: url('../../assets/interface/weather/night/mist.svg');
-    --night-thunderstorm: url('../../assets/interface/weather/night/thunderstorm.svg');
-}
-
-/* Clear clouds */
-#weather-icon[data-condition='clearsky'][data-daytime='day'] {
-    background-image: var(--day-clearsky);
-}
-#weather-icon[data-condition='clearsky'][data-daytime='night'] {
-    background-image: var(--night-clearsky);
-}
-
-/* Few clouds */
-#weather-icon[data-condition='fewclouds'][data-daytime='day'] {
-    background-image: var(--day-fewclouds);
-}
-#weather-icon[data-condition='fewclouds'][data-daytime='night'] {
-    background-image: var(--night-fewclouds);
-}
-
-/* Broken clouds */
-#weather-icon[data-condition='brokenclouds'][data-daytime='day'] {
-    background-image: var(--day-brokenclouds);
-}
-#weather-icon[data-condition='brokenclouds'][data-daytime='night'] {
-    background-image: var(--night-brokenclouds);
-}
-
-/* Overcast */
-#weather-icon[data-condition='overcastclouds'][data-daytime='day'] {
-    background-image: var(--day-overcastclouds);
-}
-#weather-icon[data-condition='overcastclouds'][data-daytime='night'] {
-    background-image: var(--night-overcastclouds);
-}
-
-/* Sunny rain */
-#weather-icon[data-condition='sunnyrain'][data-daytime='day'] {
-    background-image: var(--day-sunnyrain);
-}
-
-/* Light rain */
-#weather-icon[data-condition='lightrain'][data-daytime='day'] {
-    background-image: var(--day-lightrain);
-}
-#weather-icon[data-condition='lightrain'][data-daytime='night'] {
-    background-image: var(--night-lightrain);
-}
-
-/* Rain */
-#weather-icon[data-condition='rain'][data-daytime='day'] {
-    background-image: var(--day-rain);
-}
-#weather-icon[data-condition='rain'][data-daytime='night'] {
-    background-image: var(--night-rain);
-}
-
-/* Thunderstorm */
-#weather-icon[data-condition='thunderstorm'][data-daytime='day'] {
-    background-image: var(--day-thunderstorm);
-}
-#weather-icon[data-condition='thunderstorm'][data-daytime='night'] {
-    background-image: var(--night-thunderstorm);
-}
-
-/* Snow */
-#weather-icon[data-condition='snow'][data-daytime='day'] {
-    background-image: var(--day-snow);
-}
-#weather-icon[data-condition='snow'][data-daytime='night'] {
-    background-image: var(--night-snow);
-}
-
-/* Mist */
-#weather-icon[data-condition='mist'][data-daytime='day'] {
-    background-image: var(--day-mist);
-}
-#weather-icon[data-condition='mist'][data-daytime='night'] {
-    background-image: var(--night-mist);
+    filter: drop-shadow(1px 2px 12px rgb(0 0 0 / var(--text-shadow-alpha)));
 }

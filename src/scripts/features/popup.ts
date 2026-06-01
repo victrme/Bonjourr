@@ -84,8 +84,8 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate): void {
         return
     }
 
-    if (init.old && init.review === -1) {
-        const major = (s: string) => Number.parseInt(s.split('.')[0])
+    if (init.old) {
+        const major = (s: string) => Number.parseInt(s.split('.')[0]) // returns something like 22
         const isMajorUpdate = major(init.new) > major(init.old)
 
         const announceMajor = init.announce === 'major' && isMajorUpdate
@@ -104,11 +104,16 @@ export function interfacePopup(init?: PopupInit, event?: PopupUpdate): void {
         return
     }
 
-    const reviewCounter = parseInt(localStorage.reviewCounter ?? '0')
+    // careful: reviewCounter and init.review are not the same
+    const reviewCounter = getReviewCounter()
 
     if (reviewCounter > 30) {
         displayPopup('review')
-        return
+    }
+
+    // removes the review popup automatically after 200 tabs
+    if (reviewCounter > 200) {
+        closePopup()
     }
 
     localStorage.reviewCounter = reviewCounter + 1
@@ -176,4 +181,10 @@ function closePopup(): void {
     setTimeout(() => document.getElementById('credit-container')?.removeAttribute('style'), 600)
     document.getElementById('popup')?.classList.remove('shown')
     removePopupTrigger()
+
+    console.info("Popup closed.")
+}
+
+export function getReviewCounter(): number {
+    return parseInt(localStorage.reviewCounter ?? 0)
 }

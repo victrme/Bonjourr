@@ -64,7 +64,7 @@
     opacity: 1;
     color: var(--color-text);
     background-color: var(--color-dialog-input-bg);
-    outline: 3px solid rgba(var(--blue), 0.5);
+    outline: 3px solid rgb(var(--blue) / 0.5);
     outline-offset: -2px;
     transition: background-color 0.1s;
 }

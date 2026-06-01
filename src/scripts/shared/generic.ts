@@ -82,10 +82,10 @@ export function hexToHSL(hex: string): { h: number; s: number; l: number } {
 
 // used to figure out which font color to use on a specific background color
 
-export function getReadableTextColor(bgColor: { r: number; g: number; b: number }): 'white' | 'black' {
+export function getReadableTextColor(bgColor: { r: number; g: number; b: number }): 'white' | '#2b2b2b' {
     const brightness = Math.round((bgColor.r * 299 + bgColor.g * 587 + bgColor.b * 114) / 1000)
 
-    return brightness < 150 ? 'white' : 'black'
+    return brightness < 150 ? 'white' : '#2b2b2b'
 }
 
 function componentToHex(c: number): string {

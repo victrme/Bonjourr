@@ -34,11 +34,11 @@
 }
 
 [data-theme='dark'] #bookmarks-header {
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 5px 15px;
+    box-shadow: rgb(0 0 0 / 0.3) 0px 5px 15px;
 }
 
 [data-theme='light'] #bookmarks-header {
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 15px;
+    box-shadow: rgb(0 0 0 / 0.1) 0px 5px 15px;
 }
 
 #bookmarks-intro {
@@ -96,7 +96,7 @@
 
 .bookmarks-folder.selected {
     border-color: var(--color-blue);
-    background-color: rgba(var(--blue), 0.15);
+    background-color: rgb(var(--blue) / 0.15);
 }
 
 .bookmarks-folder.selected li {
@@ -157,7 +157,7 @@
 
 #bookmarks li.selected {
     border-color: var(--color-blue);
-    background-color: rgba(var(--blue), 0.25);
+    background-color: rgb(var(--blue) / 0.25);
 }
 
 #bookmarks li button {
