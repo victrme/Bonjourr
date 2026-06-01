@@ -78,7 +78,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         const daytime = now < sunrise || now > sunset + dusk ? 'night' : 'day'
 
         const iconName = `weather-${daytime}-${condition}`
-        
+
         const svg = document.querySelector<SVGSVGElement>('.weather-icon')
         const useEl = svg?.querySelector('use')
 
