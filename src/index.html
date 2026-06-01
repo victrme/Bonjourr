@@ -744,14 +744,25 @@
 
                 <a id="weather" class="wait init" rel="noreferrer">
                     <p id="description" data-hide="weatherdesc">
-                        <!-- prettier-ignore -->
-                        <span id="current"><span id="current-desc"></span><span id="current-temp"></span></span><span
-                            id="forecast"
-                        >forecast</span><span id="dotContainer"></span>
+                        <span id="current"><span id="current-desc"></span><span id="current-temp"><span
+                                    id="current-a"
+                                ></span><span class="temp" id="current-temp-a"><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span><span id="current-b"></span><span
+                                    class="temp"
+                                    id="current-temp-b"
+                                ><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span></span></span><span id="forecast"><span id="forecast-a"></span><span
+                                class="temp"
+                            ><span class="temp-value"></span><span class="temp-unit"></span></span><span
+                                id="forecast-b"
+                            ></span></span><span id="dotContainer"></span>
                     </p>
 
                     <div id="tempContainer" data-hide="weathericon">
                         <span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
+                        <span class="temp"><span class="temp-value"></span><span class="temp-unit"></span></span>
                     </div>
                 </a>
             </div>
@@ -896,11 +907,6 @@
         </aside>
 
         <div id="templates">
-            <!-- prettier-ignore -->
-            <template id="temp"><span class="temp"><span class="temp-value"></span><span
-                        class="temp-unit"
-                    ></span></span></template>
-
             <template id="bookmarks-dialog-template">
                 <dialog id="bookmarks">
                     <div id="bookmarks-header">

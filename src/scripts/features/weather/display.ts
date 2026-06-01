@@ -34,22 +34,35 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
             tempReport = tradThis('It is currently <temp1> and feels like <temp2>')
         }
 
-        const weatherIcon = tempContainer?.querySelector('#weather-icon')
         const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
 
-        if (currentDesc && currentTemp && dotContainer && weatherIcon) {
-            currentTemp.replaceChildren(
-                replaceTemp(tempReport, {
-                    temp1: getTempNode(actual, unit),
-                    temp2: getTempNode(feels, unit),
-                }),
+        const splitString = tempReport.split(/<temp\d+>/).filter(Boolean)
+
+        if (currentDesc && currentTemp && dotContainer && tempContainer) {
+            currentDesc.innerText = weatherReport + dot
+
+            currentTemp.querySelector<HTMLElement>('#current-a')?.replaceChildren(splitString[0])
+            currentTemp.querySelector<HTMLElement>('#current-temp-a .temp-value')?.replaceChildren(
+                actual.toString() + '°',
+            )
+            currentTemp.querySelector<HTMLElement>('#current-temp-a .temp-unit')?.replaceChildren(getUnitSymbol(unit))
+
+            // feels like
+            currentTemp.querySelector<HTMLElement>('#current-b')?.replaceChildren(
+                data.temperature === 'both' ? splitString[1] : '',
+            )
+            currentTemp.querySelector<HTMLElement>('#current-temp-b .temp-value')?.replaceChildren(
+                data.temperature === 'both' ? feels.toString() + '°' : '',
+            )
+            currentTemp.querySelector<HTMLElement>('#current-temp-b .temp-unit')?.replaceChildren(
+                data.temperature === 'both' ? getUnitSymbol(unit) : '',
             )
 
-            currentDesc.innerText = weatherReport + dot
             dotContainer.innerText = dot
 
-            tempContainer?.querySelector('.temp')?.remove()
-            weatherIcon.after(getTempNode(maintemp, unit))
+            // for icon temp
+            tempContainer.querySelector<HTMLElement>('.temp-value')?.replaceChildren(maintemp.toString() + '°')
+            tempContainer.querySelector<HTMLElement>('.temp-unit')?.replaceChildren(getUnitSymbol(unit))
         }
     }
 
@@ -73,7 +86,6 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         const forecastdom = document.getElementById('forecast')
         const day = date.getHours() > getSunsetHour() ? 'tomorrow' : 'today'
         let string = ''
-
         if (day === 'today') {
             string += tradThis('with a high of <temp1> today')
         }
@@ -81,12 +93,15 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
             string += tradThis('with a high of <temp1> tomorrow')
         }
 
+        const splitString = string.split('<temp1>')
+
         if (forecastdom) {
-            forecastdom.replaceChildren(
-                replaceTemp(string, {
-                    temp1: getTempNode(lastWeather.forecasted_high, unit),
-                }),
+            forecastdom.querySelector<HTMLElement>('#forecast-a')?.replaceChildren(splitString[0])
+            forecastdom.querySelector<HTMLElement>('.temp-value')?.replaceChildren(
+                lastWeather.forecasted_high.toString() + '°',
             )
+            forecastdom.querySelector<HTMLElement>('.temp-unit')?.replaceChildren(getUnitSymbol(unit))
+            forecastdom.querySelector<HTMLElement>('#forecast-b')?.replaceChildren(splitString[1])
         }
     }
 
@@ -135,46 +150,13 @@ export function handleForecastDisplay(forecast: string): void {
     const morningOrLateDay = date.getHours() < 12 || date.getHours() > getSunsetHour()
     const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'
 
-    if (isTimeForForecast && !document.getElementById('forecast')) {
-        const span = document.createElement('span')
-        span.id = 'forecast'
-        document.getElementById('current')?.appendChild(span)
-    }
-
-    if (!isTimeForForecast) {
-        document.querySelector('#forecast')?.remove()
-    }
-}
-
-function getTempNode(value: number, unit: string): Node {
-    unit = unit === 'imperial' ? 'F' : 'C'
-
-    const tpl = document.getElementById('temp') as HTMLTemplateElement
-
-    const node = tpl.content.cloneNode(true) as DocumentFragment
-
-    const valueEl = node.querySelector('.temp-value')
-    const unitEl = node.querySelector('.temp-unit')
-
-    if (valueEl) valueEl.textContent = `${value}°`
-    if (unitEl) unitEl.textContent = unit
-
-    return node
-}
-
-function replaceTemp(str: string, map: Record<string, Node>): DocumentFragment {
-    const frag = document.createDocumentFragment()
-
-    str.split(/(<temp\d+>)/g).forEach((part) => {
-        const match = part.match(/<temp(\d+)>/)
-
-        if (match) frag.append(map[`temp${match[1]}`])
-        else frag.append(part && document.createTextNode(part))
-    })
-
-    return frag
+    document.querySelector('#forecast')?.classList.toggle('shown', isTimeForForecast)
 }
 
 export function handleShowUnit(show_unit = false): void {
     document.querySelector('#weather')?.setAttribute('data-show-unit', String(show_unit))
+}
+
+function getUnitSymbol(unit: string): string {
+    return unit === 'imperial' ? 'F' : 'C'
 }

@@ -50,6 +50,14 @@
     min-height: 1.2em;
 }
 
+#forecast {
+    display: none;
+}
+
+#forecast.shown {
+    display: inline;
+}
+
 #forecast:before {
     content: '\a';
     white-space: pre;
