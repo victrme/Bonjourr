@@ -1,3 +1,38 @@
+## 22.2.0
+
+- New features:
+  - Change your font color with the new text color input
+  - Show temperature unit in weather description
+  - Open quick links faster with the `alt + number` keybind
+  - New language: 🇺🇿 Uzbek by [Uchkun Rakhimov](https://github.com/uchkunr)!
+- Improvements:
+  - Review notification now closes automatically after a while if it hasn't been interacted with
+  - Automatic weather unit assignment on install
+  - "Hide settings icon" and "12Hour-Time" options moved out of advanced features
+  - Open quick links settings from context menu
+  - Weather icon now has a drop shadow (linked to the text shadow setting)
+  - You can now add line breaks to quotes using `\n`
+  - Performance improvements (thanks @Nachtfrische!) #825
+  - New CSS variables & possibilites! (to be documented)
+- Bug fixes:
+  - Fixed broken am/pm positioning
+  - Fixed digital clock jittering when seconds are enabled
+  - Period at the end of weather description is more reliable
+  - Fixed invisble focus when tabbing to a range input
+  - Fixed Bonjourr crashing when opening folders with keyboard
+  - Fixed broken background URLs features after importing a JSON file that had them enabled
+  - Context menu now triggers on the edges of large windows
+  - Fixed date missing capitalisation in some languages
+  - Fixed space before comma when using "Day, month date" date format
+  - Fixed text in settings input looking like a placeholder
+- Localization updates (thank you!!):
+    - Portuguese by @Blackspirits
+    - Spanish by @Carbaz
+    - Italian by @antarcorrado
+    - Polish by @Zylvo
+    - Serbian by @rammba
+    - Vietnamese by @trmdi
+
 ## 22.1.0
 
 - New features:
