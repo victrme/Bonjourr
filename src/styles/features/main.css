@@ -36,6 +36,10 @@
     opacity: 0.66;
 }
 
+#weather:not([data-show-unit='true']) .temp-unit {
+    display: none;
+}
+
 #description {
     font-size: 1.5em;
     min-height: 1.5em;
@@ -44,6 +48,19 @@
 #current,
 #forecast {
     min-height: 1.2em;
+}
+
+#forecast {
+    display: none;
+}
+
+#forecast.shown {
+    display: inline;
+}
+
+#forecast:before {
+    content: '\a';
+    white-space: pre;
 }
 
 #tempContainer {
@@ -55,7 +72,7 @@
     column-gap: 0.5em;
 }
 
-#tempContainer p {
+#tempContainer .temp {
     font-size: 2.2em;
 }
 

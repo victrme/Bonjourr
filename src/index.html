@@ -743,19 +743,28 @@
                 </h2>
 
                 <a id="weather" class="wait init" rel="noreferrer">
-                    <div id="description" data-hide="weatherdesc">
-                        <p id="current">
-                            <span id="current-desc"></span>
-                            <span id="current-temp"></span>
-                        </p>
-                        <p id="forecast">forecast</p>
-                    </div>
+                    <p id="description" data-hide="weatherdesc">
+                        <span id="current"><span id="current-desc"></span><span id="current-temp"><span
+                                    id="current-a"
+                                ></span><span class="temp" id="current-temp-a"><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span><span id="current-b"></span><span
+                                    class="temp"
+                                    id="current-temp-b"
+                                ><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span></span></span><span id="forecast"><span id="forecast-a"></span><span
+                                class="temp"
+                            ><span class="temp-value"></span><span class="temp-unit"></span></span><span
+                                id="forecast-b"
+                            ></span></span><span id="dotContainer"></span>
+                    </p>
 
                     <div id="tempContainer" data-hide="weathericon">
                         <svg class="weather-icon" aria-hidden="true">
                             <use href="src/assets/interface/weather-sprites.svg#weather-day-overcastclouds"></use>
                         </svg>
-                        <p>00</p>
+                        <span class="temp"><span class="temp-value"></span><span class="temp-unit"></span></span>
                     </div>
                 </a>
             </div>

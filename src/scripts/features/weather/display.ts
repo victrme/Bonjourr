@@ -12,7 +12,9 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     const currentDesc = document.getElementById('current-desc')
     const currentTemp = document.getElementById('current-temp')
     const tempContainer = document.getElementById('tempContainer')
+    const dotContainer = document.getElementById('dotContainer')
     const weatherdom = document.getElementById('weather')
+    const unit = data.unit
     const dot = useSinograms ? '。' : '. '
     const date = userDate()
 
@@ -23,25 +25,44 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         let tempReport = ''
 
         if (data.temperature === 'actual') {
-            tempReport = tradThis('It is currently <temp1>°')
+            tempReport = tradThis('It is currently <temp1>')
         }
         if (data.temperature === 'feelslike') {
-            tempReport = tradThis('It currently feels like <temp2>°')
+            tempReport = tradThis('It currently feels like <temp2>')
         }
         if (data.temperature === 'both') {
-            tempReport = tradThis('It is currently <temp1>° and feels like <temp2>°')
+            tempReport = tradThis('It is currently <temp1> and feels like <temp2>')
         }
 
-        const iconText = tempContainer?.querySelector('p')
         const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
 
-        tempReport = tempReport.replace('<temp1>', actual.toString())
-        tempReport = tempReport.replace('<temp2>', feels.toString())
+        const splitString = tempReport.split(/<temp\d+>/).filter(Boolean)
 
-        if (currentDesc && currentTemp && iconText) {
-            currentDesc.textContent = weatherReport + dot
-            currentTemp.textContent = tempReport
-            iconText.textContent = `${maintemp}°`
+        if (currentDesc && currentTemp && dotContainer && tempContainer) {
+            currentDesc.innerText = weatherReport + dot
+
+            currentTemp.querySelector<HTMLElement>('#current-a')?.replaceChildren(splitString[0])
+            currentTemp.querySelector<HTMLElement>('#current-temp-a .temp-value')?.replaceChildren(
+                actual.toString() + '°',
+            )
+            currentTemp.querySelector<HTMLElement>('#current-temp-a .temp-unit')?.replaceChildren(getUnitSymbol(unit))
+
+            // feels like
+            currentTemp.querySelector<HTMLElement>('#current-b')?.replaceChildren(
+                data.temperature === 'both' ? splitString[1] : '',
+            )
+            currentTemp.querySelector<HTMLElement>('#current-temp-b .temp-value')?.replaceChildren(
+                data.temperature === 'both' ? feels.toString() + '°' : '',
+            )
+            currentTemp.querySelector<HTMLElement>('#current-temp-b .temp-unit')?.replaceChildren(
+                data.temperature === 'both' ? getUnitSymbol(unit) : '',
+            )
+
+            dotContainer.innerText = dot
+
+            // for icon temp
+            tempContainer.querySelector<HTMLElement>('.temp-value')?.replaceChildren(maintemp.toString() + '°')
+            tempContainer.querySelector<HTMLElement>('.temp-unit')?.replaceChildren(getUnitSymbol(unit))
         }
     }
 
@@ -71,19 +92,22 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
         const forecastdom = document.getElementById('forecast')
         const day = date.getHours() > getSunsetHour() ? 'tomorrow' : 'today'
         let string = ''
-
         if (day === 'today') {
-            string = tradThis('with a high of <temp1>° today')
+            string += tradThis('with a high of <temp1> today')
         }
         if (day === 'tomorrow') {
-            string = tradThis('with a high of <temp1>° tomorrow')
+            string += tradThis('with a high of <temp1> tomorrow')
         }
 
-        string = string.replace('<temp1>', lastWeather.forecasted_high.toString())
-        string += dot
+        const splitString = string.split('<temp1>')
 
         if (forecastdom) {
-            forecastdom.textContent = string
+            forecastdom.querySelector<HTMLElement>('#forecast-a')?.replaceChildren(splitString[0])
+            forecastdom.querySelector<HTMLElement>('.temp-value')?.replaceChildren(
+                lastWeather.forecasted_high.toString() + '°',
+            )
+            forecastdom.querySelector<HTMLElement>('.temp-unit')?.replaceChildren(getUnitSymbol(unit))
+            forecastdom.querySelector<HTMLElement>('#forecast-b')?.replaceChildren(splitString[1])
         }
     }
 
@@ -114,6 +138,7 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     handleMoreInfo()
     handleDescription()
     handleForecastData()
+    handleShowUnit(data.show_unit)
 
     if (weatherFirstStart) {
         weatherFirstStart = false
@@ -122,18 +147,22 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     }
 }
 
+// potential flaw: forecast timing is based on computer date instead of userDate()
 export function handleForecastDisplay(forecast: string): void {
+    // // forces forecast for debugging
+    // return
+
     const date = userDate()
     const morningOrLateDay = date.getHours() < 12 || date.getHours() > getSunsetHour()
     const isTimeForForecast = forecast === 'auto' ? morningOrLateDay : forecast === 'always'
 
-    if (isTimeForForecast && !document.getElementById('forecast')) {
-        const p = document.createElement('p')
-        p.id = 'forecast'
-        document.getElementById('description')?.appendChild(p)
-    }
+    document.querySelector('#forecast')?.classList.toggle('shown', isTimeForForecast)
+}
 
-    if (!isTimeForForecast) {
-        document.querySelector('#forecast')?.remove()
-    }
+export function handleShowUnit(show_unit = false): void {
+    document.querySelector('#weather')?.setAttribute('data-show-unit', String(show_unit))
+}
+
+function getUnitSymbol(unit: string): string {
+    return unit === 'imperial' ? 'F' : 'C'
 }

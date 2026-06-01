@@ -1,6 +1,6 @@
 import { getGeolocation, requestNewWeather, weatherCacheControl } from './request.ts'
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
-import { displayWeather } from './display.ts'
+import { displayWeather, handleShowUnit } from './display.ts'
 import { stringMaxSize } from '../../shared/generic.ts'
 import { networkForm } from '../../shared/form.ts'
 import { debounce } from '../../utils/debounce.ts'
@@ -29,6 +29,11 @@ export async function weatherUpdate(update: WeatherUpdate): Promise<void> {
         weather.unit = update.units
         lastWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
         unitForm.accept()
+    }
+
+    if (update.show_unit !== undefined) {
+        weather.show_unit = update.show_unit
+        handleShowUnit(update.show_unit)
     }
 
     if (isForecast(update.forecast)) {

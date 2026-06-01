@@ -112,7 +112,7 @@
 /* Dropdowns: Weather Options */
 
 #main_options.shown {
-    max-height: 885px;
+    max-height: 945px;
 }
 
 #weather_provider.shown {
@@ -214,7 +214,7 @@
 }
 
 .all .as_weather {
-    max-height: 345px;
+    max-height: 405px;
 }
 
 .all .as_clocktype {
