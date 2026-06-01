@@ -14,8 +14,10 @@ queueMicrotask(() => {
     document.addEventListener('close-folder', closeFolder)
 })
 
-export async function folderClick(event: MouseEvent | KeyboardEvent): Promise<void> {
-    const li = getLiFromEvent(event)
+export async function folderClick(event: MouseEvent | KeyboardEvent, li?: HTMLLIElement): Promise<void> {
+    if (!li) {
+        li = getLiFromEvent(event)
+    }
 
     let rightClick = false
     let ctrlClick = false
@@ -26,7 +28,7 @@ export async function folderClick(event: MouseEvent | KeyboardEvent): Promise<vo
         ctrlClick = event.button === 0 && (event.ctrlKey || event.metaKey)
         middleClick = event.button === 1
     } else if (event instanceof KeyboardEvent) {
-        if (event.key === 'Enter' || event.key === ' ') {
+        if (event.key === 'Enter' || event.key === ' ' || event.altKey) {
             event.preventDefault() // prevent scrolling when pressing Space
             folderClick(event)
         } else return

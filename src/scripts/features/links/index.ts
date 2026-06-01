@@ -132,6 +132,7 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     initGroups(sync, !!init)
     initRows(sync.linksrow, sync.linkstyle)
     initblocks(sync, local)
+    setOpenLinkWithKeyboardEvents()
 }
 
 // Initialisation
@@ -914,4 +915,34 @@ function getIconFromLinkElem(link: LinkElem): string {
 
 function isLinkStyle(s: string): s is Sync['linkstyle'] {
     return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
+}
+
+function setOpenLinkWithKeyboardEvents(): void {
+    document.addEventListener('keydown', (event: KeyboardEvent) => {
+        // avoid key combos
+        if (!event.altKey || event.ctrlKey || event.metaKey) return
+        let index: number | null = null
+
+        if (event.code.startsWith('Digit')) {
+            index = Number(event.code.replace('Digit', ''))
+        }
+
+        if (event.code.startsWith('Numpad')) {
+            index = Number(event.code.replace('Numpad', ''))
+        }
+
+        if (index === null || Number.isNaN(index)) return
+
+        const link = document.querySelectorAll('.link')[index - 1] as HTMLLIElement
+
+        if (!link) return
+        event.preventDefault()
+
+        // if folder
+        if (link.classList.contains('link-folder')) {
+            folderClick(event, link)
+        } else { // if link
+            link.querySelector('a')?.click()
+        }
+    })
 }
