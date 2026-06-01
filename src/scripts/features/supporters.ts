@@ -5,6 +5,7 @@ import { debounce } from '../utils/debounce.ts'
 import { storage } from '../storage.ts'
 
 import type { Sync } from '../../types/sync.ts'
+import { getReviewCounter } from './popup.ts'
 
 interface SupportersApi {
     date: string
@@ -61,11 +62,12 @@ function canShowSupporters(sync?: Sync): boolean {
     // return true;
 
     const hasSupportersDisabled = !sync?.supporters || !sync.supporters.enabled
-    const canGetReviewPopup = sync?.review !== -1
+    const isNewUser = (getReviewCounter() <= 45 || getReviewCounter() === 0) && sync?.review !== -1
+
     const closedMonth = sync?.supporters.closedMonth
     const currentMonth = new Date().getMonth() + 1
 
-    if (hasSupportersDisabled || canGetReviewPopup) {
+    if (hasSupportersDisabled || isNewUser) {
         return false
     } else {
         return currentMonth !== closedMonth
