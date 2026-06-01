@@ -74,7 +74,6 @@ export function openContextMenu(event: Event): void {
 
     const clickedOnWidgets = Object.values(eventLocation.widgets).some((v) => v)
     const menuWillOpen = !(ctrlRightClick || notPressingE) && clickedOnWidgets || eventLocation.interface
-    const showsAllSettings = (document.querySelector('#i_showall') as HTMLInputElement).checked
 
     if (!menuWillOpen) {
         return
