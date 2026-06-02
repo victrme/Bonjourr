@@ -1,4 +1,4 @@
-import { darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
+import { darkmode, favicon, pageControl, tabTitle, textShadow, altMode } from './features/others.ts'
 import { supportersNotifications } from './features/supporters.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { backgroundsInit } from './features/backgrounds/index.ts'
@@ -93,6 +93,7 @@ async function startup(): Promise<void> {
     pageControl({ width: sync.pagewidth, gap: sync.pagegap })
     operaExtensionExplainer(local.operaExplained)
     tabsTracking()
+    altMode()
 
     document.documentElement.dataset.system = SYSTEM_OS as string
     document.documentElement.dataset.browser = BROWSER as string

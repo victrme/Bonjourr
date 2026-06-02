@@ -183,6 +183,11 @@
     transition: transform 0.2s var(--in-out-bounce), opacity 0.1s var(--in-out-bounce), filter 0.06s;
 }
 
+/* [data-alt-mode="true"] .link:after {
+    content: '1';
+} */
+
+
 .link {
     width: var(--block-size);
     cursor: pointer;
@@ -202,6 +207,7 @@
     width: var(--icon-size);
     height: var(--icon-size);
     box-sizing: border-box;
+    position: relative;
 }
 
 .link a {
@@ -332,6 +338,44 @@
 
 #linkblocks.backgrounds .link-folder img {
     background-color: white;
+}
+
+#linkblocks {
+    counter-reset: links 0;
+}
+
+.link {
+    counter-increment: links;
+}
+
+
+
+.backgrounds .link > a > div, .backgrounds .link > div {
+    overflow: hidden;
+}
+
+[data-alt-mode='true'] .link:not(.no-alt) > a > div:before, [data-alt-mode='true'] .link:not(.no-alt) > div:before {
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-color: rgb(34, 34, 34);
+    opacity: .7;
+    z-index: 10;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(2em);
+    -webkit-backdrop-filter: blur(2em);
+}
+
+
+[data-alt-mode='true'] .link:not(.no-alt) > a > div:before, [data-alt-mode='true'] .link:not(.no-alt) > div:before {
+    content: counter(links);
 }
 
 /* Link styles */

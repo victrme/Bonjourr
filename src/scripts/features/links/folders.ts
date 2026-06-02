@@ -1,5 +1,5 @@
 import { getLiFromEvent, getLinksInFolder } from './helpers.ts'
-import { initblocks } from './index.ts'
+import { initblocks, limitAltableLinks } from './index.ts'
 
 import { transitioner } from '../../utils/transitioner.ts'
 import { tradThis } from '../../utils/translations.ts'

@@ -133,6 +133,7 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     initRows(sync.linksrow, sync.linkstyle)
     initblocks(sync, local)
     setOpenLinkWithKeyboardEvents()
+    limitAltableLinks()
 }
 
 // Initialisation
@@ -286,7 +287,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 
 function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyle']): HTMLLIElement {
     const li = getHTMLTemplate<HTMLLIElement>('link-elem-template', 'li')
-    const span = li.querySelector('span')
+    const span = li.querySelector('span.link-elem-title')
     const anchor = li.querySelector('a')
     const img = li.querySelector('img')
 
@@ -483,7 +484,9 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         return
     }
 
+    
     storage.sync.set(data)
+    limitAltableLinks()
 }
 
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
@@ -944,5 +947,13 @@ function setOpenLinkWithKeyboardEvents(): void {
         } else { // if link
             link.querySelector('a')?.click()
         }
+    })
+}
+
+export function limitAltableLinks(): void {
+    const links = document.querySelectorAll<HTMLElement>('#linkblocks .link')
+    console.log(links)
+    links.forEach((link, i) => {
+        link.classList.toggle('no-alt', i >= 9)
     })
 }
