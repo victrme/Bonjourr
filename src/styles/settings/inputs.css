@@ -172,8 +172,7 @@ aside .switch:after {
 }
 
 aside .switch:checked {
-    background-color: var(--color-green);
-    /* transition: background-color 0.1s; */
+    background-color: rgb(var(--color-green));
 }
 
 aside .switch:checked:after {
@@ -182,7 +181,7 @@ aside .switch:checked:after {
 
 @media only screen and (hover: hover) {
     aside .switch:checked:hover {
-        background-color: #22c34d;
+        background-color: color-mix(in srgb, rgb(var(--color-green)), black 10%);
     }
 }
 

@@ -210,7 +210,7 @@
 }
 #background-urls-editor .pce-line.good::before {
     opacity: 1;
-    border-color: var(--color-green);
+    border-color: rgb(var(--color-green));
     background-size: 13px 13px;
     background-image: url('../../assets/labels/check.svg');
 }

@@ -21,7 +21,7 @@
     background-size: 74%;
     background-repeat: no-repeat;
     background-position: right center;
-    transition: box-shadow 0.1s;
+    transition: box-shadow 0.15s, border 0.15s;
     cursor: pointer;
     box-shadow: rgb(100 100 111 / 0.2) 0px 7px 29px 0px;
 }
@@ -32,15 +32,23 @@
 
 #supporters-notif:hover:not(:has(#supporters-notif-close:hover)),
 #supporters-notif:focus {
-    border: 1px solid #64b2ff;
-    box-shadow: 0 0 5px #50a8ff50, 0 0 10px #50a8ff50, 0 0 20px #50a7ff50, 0 0 30px #50a8ff50;
-    outline: unset;
+  border: 1px solid color-mix(in srgb, rgb(var(--accent-color)) 85%, white);
+  box-shadow:
+    0 0 5px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent),
+    0 0 10px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent),
+    0 0 20px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent),
+    0 0 30px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent);
+  outline: unset;
 }
 
 [data-theme='dark'] #supporters-notif:hover:not(:has(#supporters-notif-close:hover)),
-#supporters-notif:focus {
-    border: 1px solid #50a7ff;
-    box-shadow: 0 0 5px #50a8ff53, 0 0 10px #50a7ff53, 0 0 20px #50a7ff53, 0 0 40px #50a8ff53;
+[data-theme='dark'] #supporters-notif:focus {
+  border: 1px solid color-mix(in srgb, rgb(var(--accent-color)) 85%, white);
+  box-shadow:
+    0 0 5px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent),
+    0 0 10px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent),
+    0 0 20px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent),
+    0 0 40px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent);
 }
 
 #supporters-notif-close {
@@ -339,13 +347,20 @@ html[data-supporters] #show-settings.shown:after {
 }
 
 #supporters-modal footer a:hover {
-    border: 1px solid #64b2ff;
-    box-shadow: 0 0 4px #50a8ff29, 0 0 5px #50a7ff29, 0 0 12px #50a7ff29, 0 0 19px #50a8ff29;
+    border: 1px solid color-mix(in srgb, rgb(var(--accent-color)) 85%, white);
+    box-shadow:
+        0 0 5px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent),
+        0 0 10px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent),
+        0 0 20px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent),
+        0 0 30px color-mix(in srgb, rgb(var(--accent-color)) 31%, transparent);
 }
 
 [data-theme='dark'] #supporters-modal footer a:hover {
-    border: 1px solid #50a7ff;
-    box-shadow: 0 0 4px #50a8ff53, 0 0 5px #50a7ff53, 0 0 10px #50a7ff53, 0 0 15px #50a8ff53;
+    box-shadow:
+    0 0 5px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent),
+    0 0 10px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent),
+    0 0 20px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent),
+    0 0 40px color-mix(in srgb, rgb(var(--accent-color)) 33%, transparent);
 }
 
 #supporters-modal footer a svg {

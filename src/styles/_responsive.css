@@ -262,7 +262,7 @@
     }
 
     aside .switch:checked:hover {
-        background-color: var(--color-green);
+        background-color: rgb(var(--color-green));
     }
 
     #settings .tooltip {

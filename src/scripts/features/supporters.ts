@@ -351,7 +351,7 @@ function initGlitter(): { start: () => void; stop: () => void } {
     }
 
     return {
-        start() {
+        start(): void {
             if (rafId !== null) {
                 return
             }
@@ -361,7 +361,7 @@ function initGlitter(): { start: () => void; stop: () => void } {
             globalThis.addEventListener('resize', snowfallDebounce)
             snowfall.animate()
         },
-        stop() {
+        stop(): void {
             if (rafId === null) {
                 return
             }
