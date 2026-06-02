@@ -198,7 +198,6 @@
     border-radius: calc(var(--clock-size) * 0.2);
     transform-origin: bottom center;
     background-color: white;
-    will-change: transform;
     left: 0;
     right: 0;
     margin: auto;
