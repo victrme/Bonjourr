@@ -183,11 +183,6 @@
     transition: transform 0.2s var(--in-out-bounce), opacity 0.1s var(--in-out-bounce), filter 0.06s;
 }
 
-/* [data-alt-mode="true"] .link:after {
-    content: '1';
-} */
-
-
 .link {
     width: var(--block-size);
     cursor: pointer;
@@ -348,13 +343,11 @@
     counter-increment: links;
 }
 
-
-
-.backgrounds .link > a > div, .backgrounds .link > div {
+.link-icon {
     overflow: hidden;
 }
 
-[data-alt-mode='true'] .link:not(.no-alt) > a > div:before, [data-alt-mode='true'] .link:not(.no-alt) > div:before {
+[data-alt-mode='true'] .link:not(.no-alt) .link-icon::before {
     position: absolute;
     pointer-events: none;
     top: 0;
@@ -362,20 +355,35 @@
     width: 100%;
     height: 100%;
 
-    background-color: rgb(34, 34, 34);
-    opacity: .7;
+    background-color: rgb(34 34 34 / 0.91);
+    font-family: var(--monospace-font-family);
+    font-weight: bold;
     z-index: 10;
 
     display: flex;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(2em);
-    -webkit-backdrop-filter: blur(2em);
 }
 
 
-[data-alt-mode='true'] .link:not(.no-alt) > a > div:before, [data-alt-mode='true'] .link:not(.no-alt) > div:before {
+[data-alt-mode='true'] .link:not(.no-alt) .link-icon::before {
     content: counter(links);
+}
+
+[data-alt-mode='true'] .small .link-icon::before {
+    font-size: 1.4em;
+}
+
+[data-alt-mode='true'] .medium .link-icon::before {
+    font-size: 1.5em;
+}
+
+[data-alt-mode='true'] .large .link-icon::before {
+    font-size: 2em;
+}
+
+[data-alt-mode='true'] .inline .link-icon::before {
+    font-size: 1.2em;
 }
 
 /* Link styles */

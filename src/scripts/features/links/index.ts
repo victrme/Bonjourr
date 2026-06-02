@@ -949,9 +949,10 @@ function setOpenLinkWithKeyboardEvents(): void {
     })
 }
 
+// no way to do this in CSS with the pinned groups :(
 export function limitAltableLinks(): void {
     const links = document.querySelectorAll<HTMLElement>('#linkblocks .link')
-    console.log(links)
+
     links.forEach((link, i) => {
         link.classList.toggle('no-alt', i >= 9)
     })
