@@ -1,5 +1,5 @@
 import { getLiFromEvent, getLinksInFolder } from './helpers.ts'
-import { initblocks, limitAltableLinks } from './index.ts'
+import { initblocks } from './index.ts'
 
 import { transitioner } from '../../utils/transitioner.ts'
 import { tradThis } from '../../utils/translations.ts'
@@ -120,6 +120,7 @@ async function closeFolder(): Promise<void> {
             group.classList.remove('hiding')
         }
     }
+
 }
 
 function openAllLinks(data: Sync, li: HTMLLIElement): void {

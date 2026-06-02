@@ -133,7 +133,6 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     initRows(sync.linksrow, sync.linkstyle)
     initblocks(sync, local)
     setOpenLinkWithKeyboardEvents()
-    limitAltableLinks()
 }
 
 // Initialisation
@@ -250,6 +249,7 @@ export function initblocks(sync: Sync, local?: Local): true {
 
     setRadius(sync.linkiconradius)
     displayInterface('links')
+    limitAltableLinks()
 
     return true
 }
@@ -486,7 +486,6 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
 
     
     storage.sync.set(data)
-    limitAltableLinks()
 }
 
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
