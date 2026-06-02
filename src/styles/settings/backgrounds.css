@@ -204,7 +204,7 @@
 }
 #background-urls-editor .pce-line.error::before {
     opacity: 1;
-    border-color: var(--color-red);
+    border-color: rgb(var(--danger-color));
     background-size: 11px 11px;
     background-image: url('../../assets/labels/close-red.svg');
 }

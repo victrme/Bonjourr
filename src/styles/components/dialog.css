@@ -49,7 +49,7 @@ dialog button:hover {
 dialog button.btn-red:focus-visible,
 dialog button.btn-red:hover {
     color: white;
-    background-color: var(--color-red);
+    background-color: rgb(var(--danger-color));
 }
 
 dialog option {
