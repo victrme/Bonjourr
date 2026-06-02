@@ -21,11 +21,11 @@ aside .param-textarea {
 aside .param-btn {
     height: 31px;
     padding: 0 1em;
-    color: var(--color-blue);
+    color: rgb(var(--accent-color));
     border: none;
     border-radius: 1em;
     white-space: nowrap;
-    background-color: rgb(var(--blue) / 0.15);
+    background-color: rgb(var(--accent-color) / 0.15);
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -40,7 +40,7 @@ aside .param-btn span {
 }
 
 aside .param-btn:hover {
-    background-color: rgb(var(--blue) / 0.25);
+    background-color: rgb(var(--accent-color) / 0.25);
 }
 
 aside .param-btn:hover.btn-red {
@@ -56,7 +56,7 @@ aside .param-btn:disabled {
 
 aside .inline-btn {
     border-radius: 1em;
-    color: var(--color-blue);
+    color: rgb(var(--accent-color));
     background-color: transparent;
 }
 
@@ -227,13 +227,13 @@ aside input[type='range']::-webkit-slider-runnable-track {
     border-radius: 0.5em;
     box-shadow: none;
     background:
-        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
         #efefef;
 }
 
 [data-theme='dark'] aside input[type='range']::-webkit-slider-runnable-track {
     background:
-        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
         #3d3c41;
 }
 
@@ -254,13 +254,13 @@ aside input[type='range']::-moz-range-track {
     border-radius: 0.5em;
     box-shadow: none;
     background:
-        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
         #efefef;
 }
 
 [data-theme='dark'] aside input[type='range']::-moz-range-track {
     background:
-        linear-gradient(var(--color-blue), var(--color-blue)) 0 / var(--sx) 100% no-repeat,
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
         #3d3c41;
 }
 
@@ -279,7 +279,7 @@ aside input[type='range']::-ms-thumb {
     width: 2em;
     height: 2em;
     border-radius: 1em;
-    background: var(--color-blue);
+    background: rgb(var(--accent-color));
     border: none;
     box-shadow: 0px 1px 4px 2px rgb(20 20 20 / 0.17);
     margin-top: 0;
@@ -299,7 +299,7 @@ aside input[type='range']::-ms-fill-lower {
     height: 1em;
     border-radius: 0.5em 0 0 0.5em;
     margin: 0;
-    background: var(--color-blue);
+    background: rgb(var(--accent-color));
     border: none;
     border-right-width: 0;
 }
@@ -382,7 +382,7 @@ label.input-file:active input[type='file'] {
 }
 
 label.input-file input[type='file'].dragover {
-    background-color: var(--color-blue);
+    background-color: rgb(var(--accent-color));
     transform: scale(1.02);
 }
 
@@ -440,8 +440,8 @@ aside form.valid.remove span::after {
 @media (hover: hover) {
     aside form.valid button:not(:disabled):hover,
     aside form.valid button:not(:disabled):focus-visible {
-        color: var(--color-blue);
-        background-color: rgb(var(--blue) / 0.15);
+        color: rgb(var(--accent-color));
+        background-color: rgb(var(--accent-color) / 0.15);
     }
 }
 

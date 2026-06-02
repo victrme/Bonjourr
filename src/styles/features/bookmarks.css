@@ -59,7 +59,7 @@
 
 #bmk_apply {
     color: white;
-    background-color: var(--color-blue);
+    background-color: rgb(var(--accent-color));
 }
 
 #bmk_apply:disabled {
@@ -94,8 +94,8 @@
 }
 
 .bookmarks-folder.selected {
-    border-color: var(--color-blue);
-    background-color: rgb(var(--blue) / 0.15);
+    border-color: rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.15);
 }
 
 .bookmarks-folder.selected li {
@@ -155,8 +155,8 @@
 }
 
 #bookmarks li.selected {
-    border-color: var(--color-blue);
-    background-color: rgb(var(--blue) / 0.25);
+    border-color: rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.25);
 }
 
 #bookmarks li button {

@@ -71,5 +71,5 @@
 }
 
 #error .error-buttons-close {
-    background-color: var(--color-blue);
+    background-color: rgb(var(--accent-color));
 }

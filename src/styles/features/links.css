@@ -157,8 +157,8 @@
 .link-title.selected,
 .link-title.selected.selected-group {
     opacity: 1;
-    outline: 2px solid var(--color-blue);
-    background-color: rgb(var(--blue) / 0.15);
+    outline: 2px solid rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.15);
 }
 
 .link-group.pinned .link-title,
@@ -273,7 +273,7 @@
 #linkblocks.medium .link.selected div,
 #linkblocks.small .link.selected div {
     box-shadow: 0px 5px 15px rgb(0 0 0 / 0.2);
-    outline: 0.3em solid var(--color-blue);
+    outline: 0.3em solid rgb(var(--accent-color));
 }
 
 #linkblocks.inline .link-folder.selected,
@@ -281,7 +281,7 @@
 #linkblocks.text .link-folder.selected,
 #linkblocks.text .link.selected a {
     border-radius: 0.5em;
-    outline: 0.2em solid var(--color-blue);
+    outline: 0.2em solid rgb(var(--accent-color));
     background-color: rgb(0 114 238 / 0.1333333333);
 }
 

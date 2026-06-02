@@ -97,7 +97,7 @@
 
 #supporters-notif #supporters-notif-button {
     border-radius: 100px;
-    background-color: rgb(var(--blue));
+    background-color: rgb(var(--accent-color));
     color: white;
     padding: 0.7em 0.9em;
     margin-top: 1em;
@@ -323,8 +323,8 @@ html[data-supporters] #show-settings.shown:after {
 
 #supporters-modal footer a {
     border-radius: 2em;
-    background-color: rgb(var(--blue));
-    border: 1px solid rgb(var(--blue));
+    background-color: rgb(var(--accent-color));
+    border: 1px solid rgb(var(--accent-color));
     color: white;
     padding: 0.45em 0.75em;
     text-decoration: none;

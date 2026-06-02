@@ -90,15 +90,15 @@
 .thumbnail:hover::after,
 .thumbnail:active::after,
 .thumbnail.selected::after {
-    border: 3px solid var(--color-blue);
+    border: 3px solid rgb(var(--accent-color));
 }
 
 .thumbnail:active::after {
-    background-color: rgb(var(--blue) / 0.4);
+    background-color: rgb(var(--accent-color) / 0.4);
 }
 
 .thumbnail.selected::after {
-    background-color: rgb(var(--blue) / 0.2);
+    background-color: rgb(var(--accent-color) / 0.2);
 }
 
 .thumbnail.loading img {
@@ -194,7 +194,7 @@
 }
 #background-urls-editor .pce-line.loading::before {
     opacity: 0.8;
-    border-color: var(--color-blue);
+    border-color: rgb(var(--accent-color));
     background-image: url('../../assets/labels/sync.svg');
 }
 #background-urls-editor .pce-line.warn::before {

@@ -42,7 +42,7 @@ dialog button:disabled:hover {
 dialog button:focus-visible,
 dialog button:hover {
     color: white;
-    background-color: var(--color-blue);
+    background-color: rgb(var(--accent-color));
     /* background-color: #2c7be5; */
 }
 

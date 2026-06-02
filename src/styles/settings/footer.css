@@ -23,7 +23,7 @@
 
 #settings-footer svg {
     height: 1.25em;
-    fill: var(--color-blue);
+    fill: rgb(var(--accent-color));
 }
 
 #settings-footer-links a {
