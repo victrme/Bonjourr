@@ -1,4 +1,4 @@
-Bonjourr is a modern alternative to extensions like Momentum and Tabliss, blending iOS-inspired design with powerful customization tools to create a calm, functional new tab page you'll actually enjoy opening.
+Bonjourr is a modern alternative to extensions like Momentum and Tabliss, blending iOS-inspired design with powerful customization tools to create a calm, functional new tab page experience you'll actually enjoy.
 
 🏆 Featured in Google Chrome's Favorites of 2023
 
