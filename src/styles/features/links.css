@@ -103,7 +103,6 @@
     justify-content: center;
     row-gap: var(--row-gap);
     column-gap: var(--column-gap);
-    min-height: var(--min-height);
     min-width: 6em;
     padding: 0;
     margin: 0;
@@ -113,6 +112,10 @@
     border-radius: var(--border-radius);
     z-index: 2;
     transition: opacity 0.05s var(--out-cubic);
+}
+
+.titles .link-list {
+    min-height: var(--min-height);
 }
 
 /* Link titles */
@@ -196,7 +199,7 @@
     transition-property: transform, box-shadow, border-color, background-color;
 }
 
-.link .link-icon {
+.link .link-icon, .link .link-index {
     margin: auto;
     flex-shrink: 0;
     width: var(--icon-size);
@@ -335,6 +338,8 @@
     background-color: white;
 }
 
+/* Alt mode for links */ 
+
 #linkblocks {
     counter-reset: links 0;
 }
@@ -343,46 +348,46 @@
     counter-increment: links;
 }
 
-.link-icon {
-    overflow: hidden;
-}
-
-[data-alt-mode='true'] .link:not(.no-alt) .link-index {
+.link:not(.no-alt) .link-icon::before {
+    content: counter(links);
+    border-radius: inherit;
     position: absolute;
-    pointer-events: none;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-
-    background-color: rgb(34 34 34 / 0.91);
-    font-family: var(--monospace-font-family);
-    font-weight: bold;
     z-index: 10;
-
+    
     display: flex;
     justify-content: center;
     align-items: center;
+    
+    background-color: rgb(34 34 34 / 0.85);
+    font-family: var(--monospace-font-family);
+
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .075s;
 }
 
-
-[data-alt-mode='true'] .link:not(.no-alt) .link-index {
-    content: counter(links);
+[data-alt-mode='true'] .link:not(.no-alt) .link-icon::before {
+    opacity: 1;
+    visibility: visible;
 }
 
-[data-alt-mode='true'] .small .link-index {
+.small .link-icon::before {
     font-size: 1.4em;
 }
 
-[data-alt-mode='true'] .medium .link-index {
+.medium .link-icon::before {
     font-size: 1.5em;
 }
 
-[data-alt-mode='true'] .large .link-index {
+.large .link-icon::before {
     font-size: 2em;
 }
 
-[data-alt-mode='true'] .inline .link-index {
+.inline .link-icon::before {
     font-size: 1.2em;
 }
 
