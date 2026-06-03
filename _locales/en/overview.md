@@ -2,31 +2,30 @@ Bonjourr is a modern alternative to extensions like Momentum and Tabliss, blendi
 
 🏆 Featured in Google Chrome's Favorites of 2023
 
-🌄 Beautiful by default
-- Dynamic 4K and video backgrounds that shift mood with the time of day
+🌄 Beautiful and minimalist by default
+- Dynamic 4K photos and video backgrounds that change according to the mood of the day
 - Clean, iOS-inspired interface
 - Smooth, fast and lightweight performance
 
-⚡️ Productivity tools
+⚡️ Powerful productivity tools when you need them
 - Manage your bookmarks through Quick Links
 - Search bar compatible with all search engines, including custom ones
-- Markdown notes and checklists
+- Markdown notes and checklists (to do)
 - Pomodoro focus timer
 - Weather forecast
 - Daily inspirational quotes
 
 🎨 Full customization
 - Granular control over backgrounds, bookmarks and layout
-- Analog clock with multiple styles
+- In-depth analog or digital clock customization
 - Custom fonts and CSS styling
 - Dark mode support
-- Flexible appearance options
 - Available in 43 languages
 
 🔒 Privacy first
-Bonjourr collects no data, requires no account, and requests minimal permissions. Backgrounds are made by humans and do not use generative AI. Fully open source and transparent.
+Bonjourr collects no data, requires no account or sign-in, and only requests minimal permissions. Backgrounds are made by humans and do not use generative AI. Fully open source and transparent.
 
 👨‍💻 Independently made
-Bonjourr is crafted by two independent developers who genuinely care about design, privacy and doing things well, not a company with a roadmap driven by ads or investors.
+Bonjourr is crafted by two independent developers who genuinely care about design, privacy and things well made, not by a company with a roadmap driven by ads or investors.
 
-If you're looking for a beautiful homepage or startpage, Bonjourr is built for you.
+Whether you're looking for a minimalist start page, a personalized homepage, or a productivity-focused new tab page, Bonjourr brings everything together beautifully.
