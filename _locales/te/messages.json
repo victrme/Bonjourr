@@ -1,10 +1,10 @@
 {
-    "extensionName": {
-        "message": "Bonjourr · సరళమైన ప్రారంభ పేజీ",
-        "description": "extension name"
-    },
-    "extensionDesc": {
-        "message": "Bonjourr: మీ బ్రౌజింగ్ మెరుగుపరచండి. అందమైన, స్వేచ్ఛగా మార్చగలిగే, తేలికైన ముంగిలి పేజీ.",
-        "description": "extension description"
-    }
+  "extensionName": {
+    "message": "Bonjourr · మినిమలిస్ట్ కొత్త ట్యాబ్",
+    "description": "extension name"
+  },
+  "extensionDesc": {
+    "message": "iOS నుండి ప్రేరణ పొందిన అందమైన మరియు అనుకూలీకరించదగిన కొత్త ట్యాబ్ పేజీ, ప్రశాంతమైన మరియు దృష్టి కేంద్రీకృత బ్రౌజింగ్ అనుభవం కోసం రూపొందించబడింది.",
+    "description": "extension description"
+  }
 }

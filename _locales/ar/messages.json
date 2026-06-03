@@ -1,10 +1,10 @@
 {
-    "extensionName": {
-        "message": "بونجور - صفحة البداية البسيطة",
-        "description": "اسم بونجور"
-    },
-    "extensionDesc": {
-        "message": "صفحة بداية جميلة وقابلة للتخصيص وخفيفة الوزن.",
-        "description": "وصف بونجور"
-    }
+  "extensionName": {
+    "message": "Bonjourr · علامة تبويب جديدة بتصميم بسيط",
+    "description": "extension name"
+  },
+  "extensionDesc": {
+    "message": "علامة تبويب جديدة جميلة وقابلة للتخصيص مستوحاة من iOS، مصممة لتجربة تصفح هادئة ومركّزة.",
+    "description": "extension description"
+  }
 }

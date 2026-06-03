@@ -1,10 +1,10 @@
 {
-    "extensionName": {
-        "message": "Bonjourr · Minimalist Bosh Sahifa",
-        "description": "Kengaytma nomi"
-    },
-    "extensionDesc": {
-        "message": "Bonjourr — chiroyli, sozlanuvchi va yengil bosh sahifa bilan veb-brauzerdan foydalanish tajribangizni yaxshilang.",
-        "description": "Kengaytma tavsifi"
-    }
+  "extensionName": {
+    "message": "Bonjourr · Minimalist Yangi Yorliq",
+    "description": "extension name"
+  },
+  "extensionDesc": {
+    "message": "iOS'dan ilhom olgan, sokin va diqqatli ko'rish tajribasi uchun mo'ljallangan chiroyli va moslashtiriluvchi yangi yorliq sahifasi.",
+    "description": "extension description"
+  }
 }
