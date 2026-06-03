@@ -147,6 +147,7 @@
     backdrop-filter: blur(1em);
     -webkit-backdrop-filter: blur(1em);
     /* box-shadow: 0 1px 5px rgb(0 0 0 / 0.2); */
+    color: rgb(var(--font-on-blur-color));
 }
 
 /* shape */
