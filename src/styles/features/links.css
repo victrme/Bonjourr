@@ -8,14 +8,14 @@
     display: none;
 }
 
-.select-all .link div,
+.select-all .link .link-icon,
 .select-all .link span {
     /* split div and span instead of just ".link" */
     /* to keep folder blur with filter */
     filter: grayscale(1) brightness(0.6);
 }
 
-.select-all .selected div,
+.select-all .selected .link-icon,
 .select-all .selected span {
     filter: none;
 }
@@ -80,8 +80,8 @@
     filter: brightness(0.8);
 }
 
-.link-folder:active div,
-.link-group.hiding .link-folder div {
+.link-folder:active .link-icon,
+.link-group.hiding .link-folder .link-icon {
     backdrop-filter: blur(1em) brightness(0.8);
     -webkit-backdrop-filter: blur(1em) brightness(0.8);
 }
@@ -189,14 +189,14 @@
     touch-action: none;
 }
 
-.link div,
+.link .link-icon,
 .link img {
     transition-duration: 0.05s;
     transition-timing-function: var(--out-cubic);
     transition-property: transform, box-shadow, border-color, background-color;
 }
 
-.link div {
+.link .link-icon {
     margin: auto;
     flex-shrink: 0;
     width: var(--icon-size);
@@ -242,13 +242,13 @@
     top: 3.5em;
 }
 
-.backgrounds .link div {
+.backgrounds .link .link-icon {
     background-color: white;
     border-color: white;
     box-shadow: 0 1px 5px rgb(0 0 0 / 0.2);
 }
 
-.backgrounds .link div:hover {
+.backgrounds .link .link-icon:hover {
     box-shadow: unset;
 }
 
@@ -266,13 +266,13 @@
     transition: max-height 0.3s 0.3s var(--out-cubic);
 }
 
-.link.removed div {
+.link.removed .link-icon {
     transform: scale(0.6);
 }
 
-#linkblocks.large .link.selected div,
-#linkblocks.medium .link.selected div,
-#linkblocks.small .link.selected div {
+#linkblocks.large .link.selected .link-icon,
+#linkblocks.medium .link.selected .link-icon,
+#linkblocks.small .link.selected .link-icon {
     box-shadow: 0px 5px 15px rgb(0 0 0 / 0.2);
     outline: 0.3em solid var(--color-blue);
 }
@@ -292,16 +292,16 @@
 }
 
 @media only screen and (hover: hover) {
-    #linkblocks.backgrounds .link:hover div {
+    #linkblocks.backgrounds .link:hover .link-icon {
         box-shadow: 0px 0.2em 1em #0003;
     }
 
-    .link:hover:not(.selected) div {
+    .link:hover:not(.selected) .link-icon {
         transform: scale(0.95);
     }
 }
 
-.link-folder > div {
+.link-folder .link-icon {
     display: grid;
     column-gap: 4px;
     height: var(--icon-size);
@@ -325,8 +325,8 @@
     -webkit-user-select: none;
 }
 
-#linkblocks .link-folder > div,
-#linkblocks.backgrounds .link-folder > div {
+#linkblocks .link-folder .link-icon,
+#linkblocks.backgrounds .link-folder .link-icon {
     background-color: #fff3;
     border-color: #fff4;
 }
@@ -347,7 +347,7 @@
     overflow: hidden;
 }
 
-[data-alt-mode='true'] .link:not(.no-alt) .link-icon::before {
+[data-alt-mode='true'] .link:not(.no-alt) .link-index {
     position: absolute;
     pointer-events: none;
     top: 0;
@@ -366,23 +366,23 @@
 }
 
 
-[data-alt-mode='true'] .link:not(.no-alt) .link-icon::before {
+[data-alt-mode='true'] .link:not(.no-alt) .link-index {
     content: counter(links);
 }
 
-[data-alt-mode='true'] .small .link-icon::before {
+[data-alt-mode='true'] .small .link-index {
     font-size: 1.4em;
 }
 
-[data-alt-mode='true'] .medium .link-icon::before {
+[data-alt-mode='true'] .medium .link-index {
     font-size: 1.5em;
 }
 
-[data-alt-mode='true'] .large .link-icon::before {
+[data-alt-mode='true'] .large .link-index {
     font-size: 2em;
 }
 
-[data-alt-mode='true'] .inline .link-icon::before {
+[data-alt-mode='true'] .inline .link-index {
     font-size: 1.2em;
 }
 
@@ -399,7 +399,7 @@
     --folder-padding: 2em;
 }
 
-.large .link div {
+.large .link .link-icon {
     padding: var(--link-padding);
     border-radius: var(--link-outer-radius);
 }
@@ -408,7 +408,7 @@
     border-radius: calc(var(--link-outer-radius) - var(--link-padding));
 }
 
-.large .link-folder div {
+.large .link-folder .link-icon {
     padding: 5px;
 }
 
@@ -433,7 +433,7 @@
     --folder-padding: 1.6em;
 }
 
-.medium .link div {
+.medium .link .link-icon {
     /* .77 because they're about 77% the size of large links */
     padding: calc(var(--link-padding) * 0.77);
     border-radius: calc(var(--link-outer-radius) * 0.77);
@@ -467,7 +467,7 @@
     width: var(--block-size);
 }
 
-.small .link div {
+.small .link .link-icon {
     width: var(--block-size);
     height: var(--block-size);
 
@@ -527,7 +527,7 @@
     justify-content: flex-start;
 }
 
-.inline .link-folder div {
+.inline .link-folder .link-icon {
     display: block;
     padding: 4px;
 }
@@ -553,7 +553,7 @@
     text-decoration: underline;
 }
 
-.inline .link:hover div {
+.inline .link:hover .link-icon {
     box-shadow: none;
     transform: none;
 }
@@ -566,7 +566,7 @@
     column-gap: 0.6em;
 }
 
-.inline .link div {
+.inline .link .link-icon {
     /* it's 43% the size of a big ass link icon */
     padding: calc(var(--link-padding) * 0.43);
     border-radius: calc(var(--link-outer-radius) * 0.43);
@@ -604,7 +604,7 @@
     text-decoration: underline;
 }
 
-.text .link div,
+.text .link .link-icon,
 .text .link img {
     display: none;
 }
@@ -622,8 +622,8 @@
 
 /* Folder styles for medium and small */
 
-.medium .link-folder div,
-.small .link-folder div {
+.medium .link-folder .link-icon,
+.small .link-folder .link-icon {
     position: relative;
     display: block;
 }
@@ -671,7 +671,7 @@
 /* Links drag and drop */
 
 .link.drop-target img,
-.link.drop-source div {
+.link.drop-source .link-icon {
     transform: scale(0.8);
 }
 
@@ -680,7 +680,7 @@
     transition: opacity 0.05s;
 }
 
-.link.drop-target div {
+.link.drop-target .link-icon {
     border-color: #fff4;
     background-color: #fff3;
 }
@@ -694,8 +694,8 @@
     transform: none;
 }
 
-.inline .link.drop-source div,
-.text .link.drop-source div {
+.inline .link.drop-source .link-icon,
+.text .link.drop-source .link-icon {
     opacity: 0;
 }
 
@@ -705,9 +705,9 @@
 }
 
 .inline .drop-target span,
-.inline .drop-target div,
+.inline .drop-target .link-icon,
 .text .drop-target span,
-.text .drop-target div {
+.text .drop-target .link-icon {
     opacity: 0.5;
 }
 
@@ -722,7 +722,7 @@
 }
 
 .in-drag a,
-.in-drag div {
+.in-drag .link-icon {
     user-select: none;
     pointer-events: none;
 }
