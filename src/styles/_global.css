@@ -42,7 +42,7 @@
     --color-param: 255 255 255;
     --color-settings: #f2f2f7;
     --color-areas: #f2f2f7;
-    --color-areas-text: var(--color-blue);
+    --color-areas-text: rgb(var(--accent-color));
     --color-input: #eaeaee;
     --color-input-outside: #e3e3ea;
     --color-focused: #dddde4;
@@ -161,7 +161,7 @@ body.tabbing input:focus-visible + .slider,
 body.tabbing #focus-toggle:focus,
 body.tabbing .pomodoro_mode:focus {
     outline-width: 2px;
-    outline-color: var(--color-blue);
+    outline-color: rgb(var(--accent-color));
     outline-style: dashed;
 }
 
@@ -245,7 +245,7 @@ input {
 
 dialog a,
 aside a {
-    color: var(--color-blue);
+    color: rgb(var(--accent-color));
     border-radius: 4px;
     text-decoration: none;
 }
