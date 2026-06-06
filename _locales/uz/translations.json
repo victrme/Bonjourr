@@ -1,12 +1,10 @@
 {
     "lang": "uz",
     "New tab": "Yangi yorliq",
-
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Bonjourr'dan mamnunmisiz? Sharh qoldiring yoki xayriya qiling, bu bizga katta yordam beradi! 😇",
     "Read the blog post": "Blog yozuvini o'qing",
     "Review": "Sharh",
     "Donate": "Xayriya",
-
     "Good morning": "Xayrli tong",
     "Good afternoon": "Xayrli kun",
     "Good evening": "Xayrli kech",
@@ -20,7 +18,6 @@
     "Default group": "Standart guruh",
     "Folder": "Papka",
     "Photo by <name>": "<name> surati",
-
     "Editing": "Tahrirlash",
     "No selection": "Tanlanmagan",
     "Grid position": "Katak joylashuvi",
@@ -31,14 +28,12 @@
     "Text alignment": "Matn tekislash",
     "Reset layout": "Tartibni tiklash",
     "Done": "Tayyor",
-
     "Title": "Sarlavha",
     "Link": "Havola",
     "Icon": "Belgi",
     "Website favicon": "Veb-sayt favikoni",
     "Local file": "Mahalliy fayl",
     "URL": "URL",
-
     "Add new link": "Yangi havola qo'shish",
     "Add new group": "Yangi guruh qo'shish",
     "Create new folder": "Yangi papka yaratish",
@@ -54,6 +49,7 @@
     "Edit quotes settings": "Iqtibos sozlamalarini tahrirlash",
     "Edit weather & greetings": "Ob-havo va tabriklarni tahrirlash",
     "Edit background settings": "Fon sozlamalarini tahrirlash",
+    "Edit layout settings": "Tartib sozlamalarini tahrirlash",
     "Edit time settings": "Vaqt sozlamalarini tahrirlash",
     "Add new quick link": "Yangi tezkor havola qo'shish",
     "Unlock current background": "Joriy fonni qulfdan chiqarish",
@@ -63,7 +59,6 @@
     "Sessions today": "Bugungi seanslar",
     "This week": "Shu hafta",
     "This month": "Shu oy",
-
     "Pomodoro timer": "Pomodoro taymer",
     "Pomodoro is a productivity tool to help you stay focused on your goals and work efficiently.": "Pomodoro — maqsadlaringizga e'tiboringizni qaratish va samarali ishlashga yordam beruvchi unumdorlik vositasi.",
     "Play sound on alarm": "Signal vaqtida ovoz chiqarish",
@@ -76,7 +71,6 @@
     "Focus": "Diqqat",
     "mins": "daq",
     "Time's up!": "Vaqt tugadi!",
-
     "Synchronized groups are automatically updated to match your browser bookmarks. Learn more on": "Sinxronlashtirilgan guruhlar brauzer xatcho'plarini mos ravishda avtomatik yangilanadi. Ko'proq ma'lumot:",
     "our documentation": "hujjatlarimiz",
     "Select group": "Guruh tanlash",
@@ -84,7 +78,6 @@
     "Most visited": "Ko'p tashrif buyurilgan",
     "Import selection": "Tanlovni import qilish",
     "(synced)": "(sinxronlangan)",
-
     "This January, Bonjourr is brought to you by our lovely supporters.": "Bu yanvar oyida Bonjourr sizga ajoyib qo'llab-quvvatlovchilarimiz tomonidan taqdim etiladi.",
     "This February, Bonjourr is brought to you by our lovely supporters.": "Bu fevral oyida Bonjourr sizga ajoyib qo'llab-quvvatlovchilarimiz tomonidan taqdim etiladi.",
     "This March, Bonjourr is brought to you by our lovely supporters.": "Bu mart oyida Bonjourr sizga ajoyib qo'llab-quvvatlovchilarimiz tomonidan taqdim etiladi.",
@@ -97,7 +90,6 @@
     "This October, Bonjourr is brought to you by our lovely supporters.": "Bu oktabr oyida Bonjourr sizga ajoyib qo'llab-quvvatlovchilarimiz tomonidan taqdim etiladi.",
     "This November, Bonjourr is brought to you by our lovely supporters.": "Bu noyabr oyida Bonjourr sizga ajoyib qo'llab-quvvatlovchilarimiz tomonidan taqdim etiladi.",
     "This December, Bonjourr is brought to you by our lovely supporters.": "Bu dekabr oyida Bonjourr sizga ajoyib qo'llab-quvvatlovchilarimiz tomonidan taqdim etiladi.",
-
     "Find out who they are": "Ular kimligini bilib oling",
     "Supporters like you make Bonjourr possible": "Sizga o'xshagan qo'llab-quvvatlovchilar Bonjourr'ni yaratadi",
     "Here are the wonderful people who supported us last month. Thanks to them, we can keep Bonjourr free, open source, and constantly evolving.": "Mana o'tgan oy bizni qo'llab-quvvatlagan ajoyib odamlar. Ular tufayli biz Bonjourr'ni bepul, ochiq manbali va doim rivojlanuvchi qilib saqlay olamiz.",
@@ -105,10 +97,8 @@
     "Our one-time supporters": "Bir martalik qo'llab-quvvatlovchilarimiz",
     "Join the community and get your name in Bonjourr.": "Jamoaga qo'shiling va ismingizni Bonjourr'ga kiriting.",
     "The supporters notification appears at the top of your settings to thank those who donate and support our work.": "Qo'llab-quvvatlovchilar bildirishi sozlamalarning yuqorisida, xayriya qiluvchi va ishimizni qo'llab-quvvatlaydiganlarga minnatdorchilik bildirish uchun paydo bo'ladi.",
-
     "Synchronized links require the user to accept permissions": "Sinxronlashtirilgan havolalar foydalanuvchidan ruxsat so'raydi",
     "Ask permission": "Ruxsat so'rash",
-
     "General": "Umumiy",
     "Show all settings": "Barcha sozlamalarni ko'rsatish",
     "Enabled": "Yoqilgan",
@@ -124,7 +114,6 @@
     "The icon and title that appear on your tab. You can put any emoji.": "Yorlig'ingizda paydo bo'ladigan belgi va sarlavha. Istalgan emojini qo'yishingiz mumkin.",
     "Hide settings icon": "Sozlamalar belgisini yashirish",
     "When this is enabled, clicking the bottom right corner will still open settings.": "Bu yoqilganda, o'ng pastki burchakni bosish sozlamalarni ochishda davom etadi.",
-
     "Background": "Fon",
     "Background type": "Fon turi",
     "Default": "Standart",
@@ -186,7 +175,6 @@
     "Horizontal stripes": "Gorizontal chizg'ichlar",
     "Diagonal stripes": "Diagonal chizg'ichlar",
     "Next background": "Keyingi fon",
-
     "Show all": "Hammasini ko'rsatish",
     "Unsplash collection": "Unsplash to'plami",
     "Tips on Unsplash collections": "Unsplash to'plamlari bo'yicha maslahatlar",
@@ -194,7 +182,6 @@
     "Blur intensity": "Loyqalik darajasi",
     "Brightness": "Yorqinlik",
     "Fade in": "Asta paydo bo'lish",
-
     "Quick Links": "Tezkor havolalar",
     "Tips on Quick Links": "Tezkor havolalar bo'yicha maslahatlar",
     "These are Bonjourr's bookmarks. Edit your Quick Links by right clicking the icon.": "Bu Bonjourr xatcho'plari. Belgini o'ng tugma bilan bosib Tezkor havolalarni tahrirlang.",
@@ -215,7 +202,6 @@
     "Text": "Matn",
     "Toggle link titles": "Havola sarlavhalarini almashtirish",
     "Toggle link backgrounds": "Havola fonlarini almashtirish",
-
     "Time & Date": "Vaqt va sana",
     "Analog clock": "Analog soat",
     "Clock face": "Soat yuzi",
@@ -254,7 +240,6 @@
     "Clock and date": "Soat va sana",
     "Clock only": "Faqat soat",
     "Date only": "Faqat sana",
-
     "Weather & Greetings": "Ob-havo va tabriklar",
     "Greeting": "Tabriklash",
     "Clock size": "Soat o'lchami",
@@ -281,8 +266,9 @@
     "No internet connection": "Internet ulanishi yo'q",
     "Cannot reach weather service": "Ob-havo xizmatiga ulab bo'lmayapti",
     "Temperature unit": "Birlik",
-    "Celsius": "Celsius",
-    "Fahrenheit": "Fahrenheit",
+    "Show temperature unit": "Harorat birligini ko'rsatish",
+    "Celsius": "Selsiy",
+    "Fahrenheit": "Farengeyt",
     "Forecast": "Bashorat",
     "Automatic": "Avtomatik",
     "Always show": "Doim ko'rsatish",
@@ -300,7 +286,6 @@
     "Description and icon": "Tavsif va belgi",
     "Description only": "Faqat tavsif",
     "Icon only": "Faqat belgi",
-
     "Notes": "Eslatmalar",
     "You can use Markdown and keyboard shortcuts in notes.": "Eslatmalarda Markdown va klaviatura yorliqlaridan foydalanishingiz mumkin.",
     "Edit this note": "Ushbu eslatmani tahrirlash",
@@ -311,7 +296,6 @@
     "Right": "O'ng",
     "Width": "Kenglik",
     "Notes shade": "Eslatmalar soyasi",
-
     "Search bar": "Qidiruv paneli",
     "Suggestions": "Takliflar",
     "Search engine": "Qidiruv tizimi",
@@ -331,7 +315,6 @@
     "Search": "Qidirish",
     "Opacity": "Shaffoflik",
     "Search bar shade": "Qidiruv paneli soyasi",
-
     "Quotes": "Iqtiboslar",
     "Use the default quote collections or import your own.": "Standart iqtibos to'plamlaridan foydalaning yoki o'zingiznikini import qiling.",
     "Always show author": "Muallifni doim ko'rsatish",
@@ -342,7 +325,6 @@
     "Fetch failed, please check console for more information": "Yuklash muvaffaqiyatsiz bo'ldi, ko'proq ma'lumot uchun konsolni tekshiring",
     "Author, Your quote.\nAuthor, Your second quote.": "Muallif, Iqtibosingiz.\nMuallif, Ikkinchi iqtibosingiz.",
     "Next quote": "Keyingi iqtibos",
-
     "Fonts": "Shriftlar",
     "Font family": "Shrift oilasi",
     "Cannot load this font": "Ushbu shriftni yuklab bo'lmadi",
@@ -351,7 +333,6 @@
     "Extra Light": "Qo'shimcha yengil",
     "Thin": "Ingichka",
     "Normal": "Oddiy",
-
     "Semi Bold": "Yarim qalin",
     "Bold": "Qalin",
     "Extra Bold": "Qo'shimcha qalin",
@@ -361,7 +342,6 @@
     "These fonts come from Fontsource.": "Bu shriftlar Fontsource'dan olingan.",
     "Preview fonts": "Shriftlarni ko'zdan kechirish",
     "Where can I preview these fonts": "Bu shriftlarni qayerda ko'zdan kechirishim mumkin",
-
     "Page layout": "Sahifa tartibi",
     "Tips on page grid layout": "Sahifa katak tartibi bo'yicha maslahatlar",
     "Customise how and where widgets appear.": "Vidjetlar qanday va qayerda paydo bo'lishini sozlang.",
@@ -375,14 +355,12 @@
     "Simple": "Oddiy",
     "Double": "Ikki tomonlama",
     "Triple": "Uch tomonlama",
-
     "Custom Style": "Maxsus uslub",
     "Tips on Custom styles": "Maxsus uslublar bo'yicha maslahatlar",
     "Make cool things happen with CSS.": "CSS bilan ajoyib narsalar yarating.",
     "Check out our": "Ko'rib chiqing:",
     "CSS snippets.": "CSS parchalarimiz.",
     "Type in your custom CSS": "Maxsus CSS'ingizni kiriting",
-
     "Notifications": "Bildirishnomalar",
     "Updates": "Yangilanishlar",
     "Major": "Katta",
@@ -390,7 +368,6 @@
     "Supporters": "Qo'llab-quvvatlovchilar",
     "What are supporters notifications?": "Qo'llab-quvvatlovchilar bildirishi nima?",
     "Supporters notifications appear monthly at the top of your settings as a thank you to people who donate and support our work.": "Qo'llab-quvvatlovchilar bildirishi oylik ravishda sozlamalaringiz yuqorisida, xayriya qiluvchi va ishimizni qo'llab-quvvatlaydiganlarga minnatdorchilik bildirish uchun paydo bo'ladi.",
-
     "Settings management": "Sozlamalarni boshqarish",
     "Tips on imports & exports": "Import va eksport bo'yicha maslahatlar",
     "Transfer your settings between multiple instances of Bonjourr.": "Sozlamalaringizni Bonjourr'ning bir nechta nusxalari o'rtasida o'tkazing.",
@@ -433,7 +410,6 @@
     "Are you sure?": "Ishonchingiz komilmi?",
     "I am sure": "Ha, ishonchim komil",
     "No, go back": "Yo'q, orqaga",
-
     "Bonjourr's website": "Bonjourr veb-sayti",
     "Join us on Bluesky": "Bluesky'da bizga qo'shiling",
     "Bonjourr's GitHub repository": "Bonjourr GitHub ombori",
@@ -442,5 +418,39 @@
     "by": "tomonidan",
     "Consider": "Ko'rib chiqing",
     "donating": "xayriya qilishni",
-    "if you love Bonjourr": "agar Bonjourr'ni yoqtirsangiz"
+    "if you love Bonjourr": "agar Bonjourr'ni yoqtirsangiz",
+    ". Bonjourr, or any homepage, should somewhat work!": ". Bonjourr yoki har qanday bosh sahifa biroz ishlashi kerak!",
+    "Add something": "Biror narsa qo'shing",
+    "Alarm tune": "Signal ohangi",
+    "Alarm volume": "Signal balandligi",
+    "Apple Watch": "Apple Watch",
+    "Auto": "Avtomatik",
+    "Background URLs": "Fon URL manzillari",
+    "Braun": "Braun",
+    "Cancel": "Bekor qilish",
+    "City": "Shahar",
+    "Close and access Bonjourr": "Bonjourr-ni yoping va kiring",
+    "Delete something": "Biror narsani o'chirish",
+    "Download settings": "Yuklab olish sozlamalari",
+    "Edit quick links settings": "Tez havolalar sozlamalarini tahrirlash",
+    "Edit your Quick Links by long-pressing the icon.": "Belgini uzoq bosib, Tezkor havolalaringizni tahrirlang.",
+    "File": "Fayl",
+    "Follow": "Kuzatish",
+    "folder": "papka",
+    "Get help": "Yordam oling",
+    "No file chosen": "Hech qanday fayl tanlanmagan",
+    "Ok so... this is embarassing 😅": "Mayli... bu sharmandali 😅",
+    "Opera does not allow extensions to modify its new tab. While there is no official statement, we believe this is because ads on their speed dial is a good revenue source for them.": "Opera kengaytmalarga yangi tabni o'zgartirishga ruxsat bermaydi. Rasmiy bayonot yo'q bo'lsa-da, biz buni tez terishdagi reklamalar ular uchun yaxshi daromad manbai ekanligiga ishonamiz.",
+    "Pause": "Pauza",
+    "Pick a Color": "Rangni tanlang",
+    "Remove Bonjourr and use Opera speed dial": "Bonjourr-ni olib tashlang va Opera tez terish xizmatidan foydalaning",
+    "Reset Bonjourr and reload": "Bonjourr-ni qayta o'rnating va qayta yuklang",
+    "Response is not valid JSON": "Javob noto‘g‘ri JSON",
+    "Synced links cannot be modified": "Sinxronlashtirilgan havolalarni o'zgartirib bo'lmaydi",
+    "this tutorial on our documentation": "bizning hujjatlarimiz bo'yicha ushbu qo'llanma",
+    "Tic-tac-toe": "Tic-tac-toe",
+    "URLs": "URL manzillari",
+    "Use a similar browser like Brave or Vivaldi": "Brave yoki Vivaldi kabi shunga o'xshash brauzerdan foydalaning",
+    "What to do from here?": "Bu yerdan nima qilish kerak?",
+    "Zoom": "Kattalashtirish"
 }
