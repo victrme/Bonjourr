@@ -4,19 +4,19 @@
   - Change your font color with the new text color input
   - Show temperature unit in weather description
   - Open quick links faster with the `alt + number` keybind
+  - Open Quick Links, Notes and Search bar settings from context menu
   - New language: 🇺🇿 Uzbek by [Uchkun Rakhimov](https://github.com/uchkunr)!
 - Improvements:
   - Review notification now closes automatically after a while if it hasn't been interacted with
   - Automatic weather unit assignment on install
   - "Hide settings icon" and "12Hour-Time" options moved out of advanced features
-  - Open quick links settings from context menu
   - Weather icon now has a drop shadow (linked to the text shadow setting)
   - You can now add line breaks to quotes using `\n`
-  - Performance improvements (thanks @Nachtfrische!) #825
-  - New CSS variables & possibilites! (to be documented)
+  - Performance improvements (thanks @Nachtfrische! #825)
+  - New CSS variables & possibilities! ([documented here](https://bonjourr.fr/docs/styles#colors-and-icons))
 - Bug fixes:
-  - Fixed broken am/pm positioning
-  - Fixed digital clock jittering when seconds are enabled
+  - Fixed broken AM/PM positioning
+  - Fixed digital clock jittering when seconds are enabled (thanks @trmdi! #815)
   - Period at the end of weather description is more reliable
   - Fixed invisble focus when tabbing to a range input
   - Fixed Bonjourr crashing when opening folders with keyboard
@@ -26,12 +26,12 @@
   - Fixed space before comma when using "Day, month date" date format
   - Fixed text in settings input looking like a placeholder
 - Localization updates (thank you!!):
-    - Portuguese by @Blackspirits
-    - Spanish by @Carbaz
-    - Italian by @antarcorrado
-    - Polish by @Zylvo
-    - Serbian by @rammba
-    - Vietnamese by @trmdi
+  - 🇵🇹 Portuguese by @Blackspirits 
+  - 🇪🇸 Spanish by @Carbaz
+  - 🇮🇹 Italian by @antarcorrado
+  - 🇵🇱 Polish by @Zylvo
+  - 🇷🇸 Serbian by @rammba
+  - 🇻🇳 Vietnamese by @trmdi
 
 ## 22.1.0
 
