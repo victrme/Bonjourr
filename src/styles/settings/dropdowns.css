@@ -81,10 +81,6 @@
     max-height: 300px;
 }
 
-#d_ampm.shown {
-    max-height: 60px;
-}
-
 .all #ampm_label.shown {
     max-height: 60px;
 }

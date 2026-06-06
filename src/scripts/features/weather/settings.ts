@@ -10,6 +10,7 @@ import { storage } from '../../storage.ts'
 import type { MeteoGeo, WeatherUpdate } from './index.ts'
 import type { LastWeather } from '../../../types/local.ts'
 import type { Weather } from '../../../types/sync.ts'
+import { toggleSettingsDropdown } from '../../settings.ts'
 
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')
@@ -45,8 +46,7 @@ export async function weatherUpdate(update: WeatherUpdate): Promise<void> {
     }
 
     if (isMoreinfo(update.moreinfo)) {
-        const providerdom = document.getElementById('weather_provider')
-        providerdom?.classList.toggle('shown', update.moreinfo === 'custom')
+        toggleSettingsDropdown('weather_provider', update.moreinfo === 'custom')
         weather.moreinfo = update.moreinfo
     }
 
