@@ -1,136 +1,275 @@
 <svg xmlns="http://www.w3.org/2000/svg">
+    <!-- those are mostly all from lucide.dev with classes and width/height removed-->
     <symbol
         id="contextmenu-time"
         viewBox="0 0 24 24"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
-        stroke-miterlimit="2"
     >
-        <g transform="translate(0)">
-            <path d="m9 7h2v5h5v2h-7z" fill-rule="nonzero" fill="currentColor" />
-            <path
-                d="m22 12c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-2 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"
-                fill="currentColor"
-            />
-        </g>
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 6v6H8" />
     </symbol>
 
     <symbol
         id="contextmenu-notes"
         viewBox="0 0 24 24"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
-        stroke-linejoin="round"
-        stroke-miterlimit="2"
         fill="none"
-        stroke-width="2" 
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
     >
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+        <path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path
+            d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"
+        />
     </symbol>
 
     <symbol
         id="contextmenu-weather"
-        viewBox="0 0 24 24"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
-        stroke-linejoin="round"
-        stroke-miterlimit="2"
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
     >
-        <g fill="currentColor" transform="translate(-0 -.00002)">
-            <path
-                d="m12 16c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"
-            />
-            <path
-                d="m11 0h2v4.062c-.328-.041-.661-.062-1-.062s-.672.021-1 .062zm-3.906 5.68-2.872-2.872-1.414 1.414 2.872 2.872c.411-.528.886-1.003 1.414-1.414zm-3.032 5.32h-4.062v2h4.062c-.041-.328-.062-.661-.062-1s.021-.672.062-1zm1.618 5.906-2.872 2.872 1.414 1.414 2.872-2.872c-.528-.411-1.003-.886-1.414-1.414zm5.32 3.032v4.062h2v-4.062c-.328.041-.661.062-1 .062s-.672-.021-1-.062zm5.906-1.618 2.872 2.872 1.414-1.414-2.872-2.872c-.411.528-.886 1.003-1.414 1.414zm3.032-5.32h4.062v-2h-4.062c.041.328.062.661.062 1s-.021.672-.062 1zm-1.618-5.906 2.872-2.872-1.414-1.414-2.872 2.872c.528.411 1.003.886 1.414 1.414z"
-            />
-        </g>
+        <path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/>
     </symbol>
+
 
     <symbol
         id="contextmenu-quotes"
         viewBox="0 0 24 24"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
-        stroke-miterlimit="2"
     >
-        <g fill-rule="nonzero" fill="currentColor" transform="translate(-.00001 0)">
-            <path d="m9.135 9h3l-2.135 5.608h-3z" />
-            <path d="m14.135 9h3l-2.135 5.608h-3z" />
-        </g>
+        <path
+            d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"
+        />
+        <path
+            d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"
+        />
     </symbol>
 
-    <symbol id="contextmenu-pomodoro" viewBox="0 0 24 24" fill="currentColor">
-        <path
-            d="M12,20A7,7 0 0,1 5,13A7,7 0 0,1 12,6A7,7 0 0,1 19,13A7,7 0 0,1 12,20M19.03,7.39L20.45,5.97C20,5.46 19.55,5 19.04,4.56L17.62,6C16.07,4.74 14.12,4 12,4A9,9 0 0,0 3,13A9,9 0 0,0 12,22C17,22 21,17.97 21,13C21,10.88 20.26,8.93 19.03,7.39M11,14H13V8H11M15,1H9V3H15V1Z"
-        />
+    <symbol
+        id="contextmenu-pomodoro"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <line x1="10" x2="14" y1="2" y2="2" />
+        <line x1="12" x2="15" y1="14" y2="11" />
+        <circle cx="12" cy="14" r="8" />
     </symbol>
 
     <symbol
         id="contextmenu-background"
         viewBox="0 0 24 24"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
-        stroke-miterlimit="2"
     >
-        <g transform="translate(0 -.00001)" fill="currentColor">
-            <path
-                d="m7 7c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm-1 3c0-.552.448-1 1-1s1 .448 1 1-.448 1-1 1-1-.448-1-1z"
-            />
-            <path
-                d="m3 3c-1.657 0-3 1.343-3 3v12c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-12c0-1.657-1.343-3-3-3zm18 2h-18c-.552 0-1 .448-1 1v12c0 .552.448 1 1 1h4.314l6.878-6.879c1.172-1.171 3.072-1.171 4.243 0l3.565 3.565v-9.686c0-.552-.448-1-1-1zm0 14h-10.858l5.465-5.464c.39-.391 1.023-.391 1.414 0l4.886 4.886c-.159.341-.505.578-.907.578z"
-            />
-        </g>
+        <path d="M12 17v4" />
+        <path d="M8 21h8" />
+        <path d="m9 17 6.1-6.1a2 2 0 0 1 2.81.01L22 15" />
+        <circle cx="8" cy="9" r="2" />
+        <rect x="2" y="3" width="20" height="14" rx="2" />
     </symbol>
 
     <symbol
         id="contextmenu-searchbar"
         viewBox="0 0 24 24"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
         stroke-linejoin="round"
-        stroke-miterlimit="2" fill="none"  stroke-width="2" stroke="currentColor"
     >
-        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+        <path d="m21 21-4.34-4.34" />
+        <circle cx="11" cy="11" r="8" />
     </symbol>
 
     <symbol
         id="contextmenu-links"
         viewBox="0 0 24 24"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
-        stroke-linejoin="round"
-        stroke-miterlimit="2"
-    >
-        <g fill-rule="nonzero" fill="currentColor">
-            <path
-                d="m14.828 12 1.415 1.414 2.828-2.828c1.562-1.562 1.562-4.095 0-5.657s-4.095-1.562-5.657 0l-2.828 2.828 1.414 1.415 2.828-2.829c.782-.781 2.048-.781 2.829 0s.781 2.047 0 2.829z"
-            />
-            <path
-                d="m12 14.829 1.414 1.414-2.828 2.828c-1.562 1.562-4.095 1.562-5.657 0s-1.562-4.095 0-5.657l2.828-2.828 1.415 1.414-2.829 2.829c-.781.781-.781 2.047 0 2.828s2.048.781 2.829 0z"
-            />
-            <path
-                d="m14.829 10.586c.39-.391.39-1.024 0-1.415-.391-.39-1.024-.39-1.415 0l-4.242 4.243c-.391.391-.391 1.024 0 1.414.39.391 1.023.391 1.414 0z"
-            />
-        </g>
-    </symbol>
-
-    <symbol
-        id="contextmenu-add-link"
-        viewBox="0 0 717 717"
-        clip-rule="evenodd"
-        fill-rule="evenodd"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
     >
-        <g fill="none" stroke="currentColor" stroke-width="50" transform="translate(-41.6667 -41.6667)">
-            <path
-                d="m400 733.333c183.333 0 333.333-150 333.333-333.333s-150-333.333-333.333-333.333-333.333 150-333.333 333.333 150 333.333 333.333 333.333z"
-            />
-            <path d="m266.667 400h266.666" />
-            <path d="m400 533.333v-266.666" />
-        </g>
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-add"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <circle cx="12" cy="12" r="10" />
+        <path d="M8 12h8" />
+        <path d="M12 8v8" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-delete"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M10 11v6" />
+        <path d="M14 11v6" />
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+        <path d="M3 6h18" />
+        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-refresh"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+        <path d="M21 3v5h-5" />
+        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+        <path d="M8 16H3v5" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-undo-2"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M9 14 4 9l5-5" />
+        <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-save"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+        <path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" />
+        <path d="M7 3v4a1 1 0 0 0 1 1h7" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-mute"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path
+            d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"
+        />
+        <line x1="22" x2="16" y1="9" y2="15" />
+        <line x1="16" x2="22" y1="9" y2="15" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-unmute"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path
+            d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"
+        />
+        <path d="M16 9a5 5 0 0 1 0 6" />
+        <path d="M19.364 18.364a9 9 0 0 0 0-12.728" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-background-download"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M12 15V3" />
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <path d="m7 10 5 5 5-5" />
+    </symbol>
+
+    <symbol id="contextmenu-background-downloading" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z" opacity=".25" />
+        <path
+            d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"
+        />
+    </symbol>
+
+    <symbol
+        id="contextmenu-locked"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-unlocked"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+    </symbol>
+
+    <symbol
+        id="contextmenu-background-refresh"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    >
+        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+        <path d="M21 3v5h-5" />
     </symbol>
 </svg>

@@ -12,6 +12,7 @@
   - "Hide settings icon" and "12Hour-Time" options moved out of advanced features
   - Weather icon now has a drop shadow (linked to the text shadow setting)
   - You can now add line breaks to quotes using `\n`
+  - Better context menu icons consistency
   - Performance improvements (thanks @Nachtfrische! #825)
   - New CSS variables & possibilities! ([documented here](https://bonjourr.fr/docs/styles#colors-and-icons))
 - Bug fixes:
