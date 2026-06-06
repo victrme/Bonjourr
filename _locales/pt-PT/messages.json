@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Novo Separador Minimalista",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Um novo separador bonito e personalizável inspirado no iOS, concebido para uma experiência de navegação calma e focada.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Novo Separador Minimalista",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Um novo separador bonito e personalizável inspirado no iOS, concebido para uma experiência de navegação calma e focada.",
+        "description": "extension description"
+    }
 }

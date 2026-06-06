@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · تب جدید مینیمالیستی",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "یک تب جدید زیبا و قابل شخصی‌سازی با الهام از iOS، طراحی‌شده برای تجربه‌ای آرام و متمرکز در مرورگر.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · تب جدید مینیمالیستی",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "یک تب جدید زیبا و قابل شخصی‌سازی با الهام از iOS، طراحی‌شده برای تجربه‌ای آرام و متمرکز در مرورگر.",
+        "description": "extension description"
+    }
 }

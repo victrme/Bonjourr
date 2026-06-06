@@ -182,7 +182,7 @@ function closePopup(): void {
     document.getElementById('popup')?.classList.remove('shown')
     removePopupTrigger()
 
-    console.info("Popup closed.")
+    console.info('Popup closed.')
 }
 
 export function getReviewCounter(): number {

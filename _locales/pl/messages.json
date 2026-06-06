@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Minimalistyczna Nowa Karta",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Piękna i konfigurowalna nowa karta inspirowana iOS, zaprojektowana dla spokojnego i skupionego przeglądania internetu.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Minimalistyczna Nowa Karta",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Piękna i konfigurowalna nowa karta inspirowana iOS, zaprojektowana dla spokojnego i skupionego przeglądania internetu.",
+        "description": "extension description"
+    }
 }

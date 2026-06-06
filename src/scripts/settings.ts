@@ -312,7 +312,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     toggleSettingsDropdown('worldclocks_options', data.clock.worldclocks)
     toggleSettingsDropdown('weather_provider', data.weather?.moreinfo === 'custom')
     toggleSettingsDropdown('searchbar_request', data.searchbar?.engine === 'custom')
-    
+
     // the events for these are in toggleWidgetInSettings()
     toggleSettingsDropdown('quicklinks_options', data.quicklinks)
     toggleSettingsDropdown('time_options', data.time)
@@ -1601,11 +1601,11 @@ async function toggleSettingsChangesButtons(action: string): Promise<void> {
 // doing it all at once is way too scary
 export function toggleSettingsDropdown(dropdownId: string, shown: boolean): void {
     const dropdown = document.getElementById(dropdownId)
-    
+
     if (!dropdown) {
-        console.error(`Couldn't find settings dropdown to toggle: #${dropdownId}` )
+        console.error(`Couldn't find settings dropdown to toggle: #${dropdownId}`)
         return
-    } 
+    }
 
     dropdown.classList.toggle('shown', shown)
 

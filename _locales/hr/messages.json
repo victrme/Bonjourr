@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Minimalistička Nova Kartica",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Lijepa i prilagodljiva nova kartica inspirirana iOS-om, dizajnirana za mirno i usredotočeno pregledavanje interneta.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Minimalistička Nova Kartica",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Lijepa i prilagodljiva nova kartica inspirirana iOS-om, dizajnirana za mirno i usredotočeno pregledavanje interneta.",
+        "description": "extension description"
+    }
 }

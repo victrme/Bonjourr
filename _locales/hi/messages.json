@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · मिनिमलिस्ट नया टैब",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "iOS से प्रेरित एक सुंदर और अनुकूलन योग्य नया टैब पेज, शांत और केंद्रित ब्राउज़िंग अनुभव के लिए।",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · मिनिमलिस्ट नया टैब",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "iOS से प्रेरित एक सुंदर और अनुकूलन योग्य नया टैब पेज, शांत और केंद्रित ब्राउज़िंग अनुभव के लिए।",
+        "description": "extension description"
+    }
 }

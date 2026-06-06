@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · 简洁新标签页",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "一款受 iOS 启发的美观、可定制新标签页，专为安静、专注的浏览体验而设计。",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · 简洁新标签页",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "一款受 iOS 启发的美观、可定制新标签页，专为安静、专注的浏览体验而设计。",
+        "description": "extension description"
+    }
 }

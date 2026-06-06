@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Minímalistískt Nýtt Flipi",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Fallegt og sérhannaðanlegt nýtt flipagluggi innblásið af iOS, hannað fyrir rólega og einbeittar vafraupplifun.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Minímalistískt Nýtt Flipi",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Fallegt og sérhannaðanlegt nýtt flipagluggi innblásið af iOS, hannað fyrir rólega og einbeittar vafraupplifun.",
+        "description": "extension description"
+    }
 }

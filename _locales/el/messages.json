@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Μινιμαλιστική Νέα Καρτέλα",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Μια όμορφη και προσαρμόσιμη νέα καρτέλα εμπνευσμένη από το iOS, σχεδιασμένη για ήρεμη και συγκεντρωμένη περιήγηση.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Μινιμαλιστική Νέα Καρτέλα",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Μια όμορφη και προσαρμόσιμη νέα καρτέλα εμπνευσμένη από το iOS, σχεδιασμένη για ήρεμη και συγκεντρωμένη περιήγηση.",
+        "description": "extension description"
+    }
 }

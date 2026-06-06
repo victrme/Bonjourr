@@ -75,7 +75,7 @@ export function openContextMenu(event: Event): void {
             quotes: !!target.closest(sectionMatching.quotes.section),
             pomodoro: !!target.closest(sectionMatching.pomodoro.section),
             searchbar: !!target.closest(sectionMatching.searchbar.section),
-            notes: !!target.closest(sectionMatching.notes.section)
+            notes: !!target.closest(sectionMatching.notes.section),
         },
         interface: target.matches('main#interface') || target.matches('body'),
     }

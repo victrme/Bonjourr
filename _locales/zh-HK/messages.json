@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · 簡約新分頁",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "一款受 iOS 啟發的美觀、可自訂新分頁，專為平靜、專注的瀏覽體驗而設計。",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · 簡約新分頁",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "一款受 iOS 啟發的美觀、可自訂新分頁，專為平靜、專注的瀏覽體驗而設計。",
+        "description": "extension description"
+    }
 }

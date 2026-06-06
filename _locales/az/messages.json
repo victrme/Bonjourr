@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Minimalist Yeni Sekme",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "iOS-dan ilhamlanmış, sakit və diqqətli səfər təcrübəsi üçün nəzərdə tutulmuş gözəl və fərdiləşdirilə bilən yeni sekme səhifəsi.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Minimalist Yeni Sekme",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "iOS-dan ilhamlanmış, sakit və diqqətli səfər təcrübəsi üçün nəzərdə tutulmuş gözəl və fərdiləşdirilə bilən yeni sekme səhifəsi.",
+        "description": "extension description"
+    }
 }

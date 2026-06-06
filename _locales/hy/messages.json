@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Մինիմալիստական Նոր Ներդիր",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Գեղեցիկ և հարմարեցվող նոր ներդիր՝ iOS-ից ոգեշնչված, նախագծված հանգիստ և կենտրոնացված զննարկման փորձի համար։",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Մինիմալիստական Նոր Ներդիր",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Գեղեցիկ և հարմարեցվող նոր ներդիր՝ iOS-ից ոգեշնչված, նախագծված հանգիստ և կենտրոնացված զննարկման փորձի համար։",
+        "description": "extension description"
+    }
 }

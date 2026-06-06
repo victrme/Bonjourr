@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · علامة تبويب جديدة بتصميم بسيط",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "علامة تبويب جديدة جميلة وقابلة للتخصيص مستوحاة من iOS، مصممة لتجربة تصفح هادئة ومركّزة.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · علامة تبويب جديدة بتصميم بسيط",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "علامة تبويب جديدة جميلة وقابلة للتخصيص مستوحاة من iOS، مصممة لتجربة تصفح هادئة ومركّزة.",
+        "description": "extension description"
+    }
 }

@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Nueva Pestaña Minimalista",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Una página de inicio bonita y personalizable inspirada en iOS, diseñada para una experiencia de navegación tranquila y enfocada.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Nueva Pestaña Minimalista",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Una página de inicio bonita y personalizable inspirada en iOS, diseñada para una experiencia de navegación tranquila y enfocada.",
+        "description": "extension description"
+    }
 }

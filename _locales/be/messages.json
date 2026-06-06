@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Мінімалістычная Новая Укладка",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "Прыгожая і наладжвальная новая ўкладка, натхнёная iOS, створаная для спакойнага і засяроджанага прагляду інтэрнэту.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Мінімалістычная Новая Укладка",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "Прыгожая і наладжвальная новая ўкладка, натхнёная iOS, створаная для спакойнага і засяроджанага прагляду інтэрнэту.",
+        "description": "extension description"
+    }
 }

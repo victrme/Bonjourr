@@ -1,10 +1,10 @@
 {
-  "extensionName": {
-    "message": "Bonjourr · Filă Nouă Minimalistă",
-    "description": "extension name"
-  },
-  "extensionDesc": {
-    "message": "O filă nouă frumoasă și personalizabilă inspirată din iOS, concepută pentru o experiență de navigare calmă și concentrată.",
-    "description": "extension description"
-  }
+    "extensionName": {
+        "message": "Bonjourr · Filă Nouă Minimalistă",
+        "description": "extension name"
+    },
+    "extensionDesc": {
+        "message": "O filă nouă frumoasă și personalizabilă inspirată din iOS, concepută pentru o experiență de navigare calmă și concentrată.",
+        "description": "extension description"
+    }
 }
