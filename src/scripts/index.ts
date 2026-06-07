@@ -1,4 +1,4 @@
-import { darkmode, favicon, pageControl, tabTitle, textShadow, altMode } from './features/others.ts'
+import { altMode, darkmode, favicon, pageControl, tabTitle, textShadow } from './features/others.ts'
 import { supportersNotifications } from './features/supporters.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { backgroundsInit } from './features/backgrounds/index.ts'

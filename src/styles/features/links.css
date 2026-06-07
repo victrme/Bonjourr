@@ -338,7 +338,7 @@
     background-color: white;
 }
 
-/* Alt mode for links */ 
+/* Alt mode for links */
 
 #linkblocks {
     counter-reset: links 0;
@@ -357,17 +357,17 @@
     width: 100%;
     height: 100%;
     z-index: 10;
-    
+
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     background-color: rgb(34 34 34 / 0.85);
     font-family: var(--monospace-font-family);
 
     opacity: 0;
     visibility: hidden;
-    transition: opacity .075s;
+    transition: opacity 0.075s;
 }
 
 [data-alt-mode='true'] .link:not(.no-alt) .link-icon::before {
