@@ -9,7 +9,7 @@
 }
 
 .select-all .link .link-icon,
-.select-all .link span {
+.select-all .link .link-elem-title {
     /* split div and span instead of just ".link" */
     /* to keep folder blur with filter */
     filter: grayscale(1) brightness(0.6);
@@ -225,7 +225,7 @@
     height: 100%;
 }
 
-.link span {
+.link .link-elem-title {
     display: none;
     width: 100%;
     padding-top: 0.4em;
@@ -235,11 +235,11 @@
     word-wrap: break-word;
 }
 
-.titles .link span {
+.titles .link .link-elem-title {
     display: block;
 }
 
-.titles.small .link span {
+.titles.small .link .link-elem-title {
     display: inline;
     width: unset;
     top: 3.5em;
@@ -397,10 +397,10 @@
 
 #linkblocks.large {
     --min-height: 5.2em;
-    --column-gap: 0.6em;
-    --row-gap: 1em;
+    --column-gap: 0.3em;
+    --row-gap: 1.3em;
     --icon-size: 4.8em;
-    --block-size: 6.5em;
+    --block-size: 6.8em;
     --folder-padding: 2em;
 }
 
@@ -431,10 +431,10 @@
 
 #linkblocks.medium {
     --min-height: 3.9em;
-    --column-gap: 0.6em;
+    --column-gap: 0.3em;
     --row-gap: 1em;
     --icon-size: 3.5em;
-    --block-size: 4.7em;
+    --block-size: 5em;
     --folder-padding: 1.6em;
 }
 
@@ -446,6 +446,11 @@
 
 .medium .link img {
     border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.77);
+}
+
+.medium .link .link-elem-title {
+    font-size: 0.95em;
+    letter-spacing: -0.03em;
 }
 
 /* Small */
@@ -506,11 +511,11 @@
     z-index: 1;
 }
 
-.small .link span:empty {
+.small .link .link-elem-title:empty {
     display: none;
 }
 
-.small .link:hover span {
+.small .link:hover .link-elem-title {
     opacity: 1;
     visibility: visible;
 }
@@ -545,7 +550,7 @@
     display: none;
 }
 
-.inline .link span {
+.inline .link .link-elem-title {
     padding: 0 0.2em;
     outline: 3px solid transparent;
 }
@@ -581,7 +586,7 @@
     border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.43);
 }
 
-.inline .link span {
+.inline .link .link-elem-title {
     display: block;
     max-width: 8.4em;
     font-size: 1.2em;
@@ -605,7 +610,7 @@
     width: auto;
 }
 
-.text .link:hover span {
+.text .link:hover .link-elem-title {
     text-decoration: underline;
 }
 
@@ -614,7 +619,7 @@
     display: none;
 }
 
-.text .link span {
+.text .link .link-elem-title {
     display: inline-block;
     width: 100%;
     max-width: 16em;
