@@ -121,28 +121,32 @@ export function textShadow(init?: number, event?: number): void {
 }
 
 export function altMode(): void {
-    const root = document.documentElement
-
-    const set = (value: boolean) => {
-        root.dataset.altMode = String(value)
-    }
-
     document.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (event.key === 'Alt') set(true)
+        if (event.key === 'Alt') {
+            document.documentElement.dataset.altMode = 'true'
+        }
     })
 
     document.addEventListener('keyup', (event: KeyboardEvent) => {
-        if (event.key === 'Alt') set(false)
+        if (event.key === 'Alt') {
+            document.documentElement.dataset.altMode = 'false'
+        }
     })
 
-    self.addEventListener('blur', () => set(false))
+    self.addEventListener('blur', () => {
+        document.documentElement.dataset.altMode = 'false'
+    })
 
     // in case the user clicks on another window whilst alting
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) set(false)
+        if (document.hidden) {
+            document.documentElement.dataset.altMode = 'false'
+        }
     })
 
-    document.addEventListener('contextmenu', () => set(false))
+    document.addEventListener('contextmenu', () => {
+        document.documentElement.dataset.altMode = 'false'
+    })
 }
 
 // Unfocus address bar on chromium

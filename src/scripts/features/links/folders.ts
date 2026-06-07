@@ -120,7 +120,6 @@ async function closeFolder(): Promise<void> {
             group.classList.remove('hiding')
         }
     }
-
 }
 
 function openAllLinks(data: Sync, li: HTMLLIElement): void {

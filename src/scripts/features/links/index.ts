@@ -125,6 +125,8 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
     domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
 
+    document.addEventListener('keydown', openLinksWithKeyboard)
+
     if (sync.linkgroups.synced.length > 0) {
         await initBookmarkSync(sync)
     }
@@ -132,7 +134,6 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     initGroups(sync, !!init)
     initRows(sync.linksrow, sync.linkstyle)
     initblocks(sync, local)
-    setOpenLinkWithKeyboardEvents()
 }
 
 // Initialisation
@@ -484,7 +485,6 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         return
     }
 
-    
     storage.sync.set(data)
 }
 
@@ -919,34 +919,29 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
     return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }
 
-function setOpenLinkWithKeyboardEvents(): void {
-    document.addEventListener('keydown', (event: KeyboardEvent) => {
-        // avoid key combos
-        if (!event.altKey || event.ctrlKey || event.metaKey) return
-        let index: number | null = null
+function openLinksWithKeyboard(event: KeyboardEvent): void {
+    const { altKey, ctrlKey, metaKey, code } = event
+    const isNotAltComboKey = !altKey || ctrlKey || metaKey
+    const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))
 
-        if (event.code.startsWith('Digit')) {
-            index = Number(event.code.replace('Digit', ''))
-        }
+    if (isNotAltComboKey || isNaN(codeNumber)) {
+        return
+    }
 
-        if (event.code.startsWith('Numpad')) {
-            index = Number(event.code.replace('Numpad', ''))
-        }
+    const links = document.querySelectorAll<HTMLLIElement>('.link')
+    const link = links[codeNumber - 1]
 
-        if (index === null || Number.isNaN(index)) return
+    if (!link) {
+        return
+    }
 
-        const link = document.querySelectorAll('.link')[index - 1] as HTMLLIElement
+    event.preventDefault()
 
-        if (!link) return
-        event.preventDefault()
-
-        // if folder
-        if (link.classList.contains('link-folder')) {
-            folderClick(event, link)
-        } else { // if link
-            link.querySelector('a')?.click()
-        }
-    })
+    if (link.classList.contains('link-folder')) {
+        folderClick(event, link)
+    } else {
+        link.querySelector('a')?.click()
+    }
 }
 
 // no way to do this in CSS with the pinned groups :(
