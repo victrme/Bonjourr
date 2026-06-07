@@ -1,6 +1,6 @@
 import { getGeolocation, requestNewWeather, weatherCacheControl } from './request.ts'
 import { onSettingsLoad } from '../../utils/onsettingsload.ts'
-import { displayWeather } from './display.ts'
+import { displayWeather, handleShowUnit } from './display.ts'
 import { stringMaxSize } from '../../shared/generic.ts'
 import { networkForm } from '../../shared/form.ts'
 import { debounce } from '../../utils/debounce.ts'
@@ -10,6 +10,7 @@ import { storage } from '../../storage.ts'
 import type { MeteoGeo, WeatherUpdate } from './index.ts'
 import type { LastWeather } from '../../../types/local.ts'
 import type { Weather } from '../../../types/sync.ts'
+import { toggleSettingsDropdown } from '../../settings.ts'
 
 const locationForm = networkForm('f_location')
 const unitForm = networkForm('f_units')
@@ -31,6 +32,11 @@ export async function weatherUpdate(update: WeatherUpdate): Promise<void> {
         unitForm.accept()
     }
 
+    if (update.show_unit !== undefined) {
+        weather.show_unit = update.show_unit
+        handleShowUnit(update.show_unit)
+    }
+
     if (isForecast(update.forecast)) {
         weather.forecast = update.forecast
     }
@@ -40,8 +46,7 @@ export async function weatherUpdate(update: WeatherUpdate): Promise<void> {
     }
 
     if (isMoreinfo(update.moreinfo)) {
-        const providerdom = document.getElementById('weather_provider')
-        providerdom?.classList.toggle('shown', update.moreinfo === 'custom')
+        toggleSettingsDropdown('weather_provider', update.moreinfo === 'custom')
         weather.moreinfo = update.moreinfo
     }
 

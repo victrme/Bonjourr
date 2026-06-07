@@ -10,8 +10,10 @@
         "test": "deno test --allow-read --allow-env --reporter=dot",
         "types": "deno check",
         "format": "deno fmt",
-        "app": "docker compose -f docker/compose.app.yaml up",
-        "archive": "docker compose -f docker/compose.archive.yaml up --build"
+        "app": "docker compose -f docker/compose.yaml up",
+        "archive": "deno task archive:build && deno task archive:run",
+        "archive:run": "docker run --rm -v ./release:/release bonjourr-archive",
+        "archive:build": "docker build -f docker/archive/Dockerfile -t bonjourr-archive ."
     },
     "imports": {
         "@happy-dom/global-registrator": "npm:@happy-dom/global-registrator@20.0.11",

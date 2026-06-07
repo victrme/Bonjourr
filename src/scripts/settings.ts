@@ -2,6 +2,7 @@ import { darkmode, favicon, tabTitle, textShadow } from './features/others.ts'
 import { initSupportersSettingsNotif, supportersNotifications } from './features/supporters.ts'
 import { customFont, fontIsAvailableInSubset, systemfont } from './features/fonts.ts'
 import { backgroundUpdate, initBackgroundOptions, toggleMuteStatus } from './features/backgrounds/index.ts'
+import { buildBackgroundUrls, parseUrlList } from './features/backgrounds/urls.ts'
 import { changeGroupTitle, initGroups } from './features/links/groups.ts'
 import { synchronization } from './features/synchronization/index.ts'
 import { interfacePopup } from './features/popup.ts'
@@ -223,6 +224,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_moreinfo', data.weather?.moreinfo || 'none')
     setInput('i_provider', data.weather?.provider ?? '')
     setInput('i_weight', data.font?.weight || '300')
+    setInput('i_font-color', data.font.color ?? '#ffffff')
     setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
     setInput('i_announce', data.announcements ?? 'major')
     setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
@@ -249,6 +251,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_seconds', data.clock?.seconds ?? false)
     setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
     setCheckbox('i_main', data.main)
+    setCheckbox('i_show_unit', data.weather.show_unit)
     setCheckbox('i_greethide', !data.hide?.greetings)
     setCheckbox('i_notes', data.notes?.on ?? false)
     setCheckbox('i_sb', data.searchbar?.on ?? false)
@@ -264,6 +267,7 @@ function initOptionsValues(data: Sync, local: Local): void {
 
     colorInput('solid-background', data.backgrounds.color)
     colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
+    colorInput('font-color', data.font.color)
 
     paramId('i_notes-shade')?.classList.toggle('on', (data.notes?.background ?? '#fff').includes('#000'))
     paramId('i_sb-shade')?.classList.toggle('on', (data.searchbar?.background ?? '#fff').includes('#000'))
@@ -297,22 +301,24 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_lang', data.lang || 'en')
 
     // Activate feature options
-    paramId('time_options')?.classList.toggle('shown', data.time)
-    paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
-    paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
-    paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
-    paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
-    paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
-    paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel)
-    paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
-    paramId('main_options')?.classList.toggle('shown', data.main)
-    paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
-    paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
-    paramId('pomodoro_options')?.classList.toggle('shown', data.pomodoro.on)
-    paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
-    paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
-    paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
-    paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
+    toggleSettingsDropdown('analog_options', data.clock.analog && data.showall)
+    toggleSettingsDropdown('greetings_options', !data.hide?.greetings)
+    toggleSettingsDropdown('greetingscustom_options', data.greetingsmode === 'custom')
+    toggleSettingsDropdown('digital_options', !data.clock.analog)
+    toggleSettingsDropdown('ampm_label', data.clock.ampm)
+    toggleSettingsDropdown('ampm_position', data.clock.ampmlabel && data.clock.ampm)
+    toggleSettingsDropdown('worldclocks_options', data.clock.worldclocks)
+    toggleSettingsDropdown('weather_provider', data.weather?.moreinfo === 'custom')
+    toggleSettingsDropdown('searchbar_request', data.searchbar?.engine === 'custom')
+
+    // the events for these are in toggleWidgetInSettings()
+    toggleSettingsDropdown('quicklinks_options', data.quicklinks)
+    toggleSettingsDropdown('time_options', data.time)
+    toggleSettingsDropdown('main_options', data.main)
+    toggleSettingsDropdown('pomodoro_options', data.pomodoro.on)
+    toggleSettingsDropdown('notes_options', data.notes?.on ?? false)
+    toggleSettingsDropdown('searchbar_options', data.searchbar?.on)
+    toggleSettingsDropdown('quotes_options', data.quotes?.on)
 
     // Link show title
     paramId('b_showtitles').classList.toggle('on', data?.linktitles ?? true)
@@ -345,7 +351,6 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_weatherhide', hideWeather)
 
     // Quotes option display
-    paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
     paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
     paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
 
@@ -599,7 +604,7 @@ function initOptionsEvents(): void {
     })
 
     onclickdown(paramId('i_worldclocks'), (_, target) => {
-        paramId('worldclocks_options')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('worldclocks_options', target.checked)
         clock(undefined, { worldclocks: target.checked })
     })
 
@@ -639,14 +644,18 @@ function initOptionsEvents(): void {
         clock(undefined, { ampm: target.checked })
 
         // shows/hides ampm_label option
-        paramId('ampm_label')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('ampm_label', target.checked)
+
+        // same for its position based on ampm_label AND 12h time toggle
+        const ampm_toggle = document.querySelector('#i_ampm-label') as HTMLInputElement
+        toggleSettingsDropdown('ampm_position', target.checked && ampm_toggle.checked)
     })
 
     onclickdown(paramId('i_ampm-label'), (_, target) => {
         clock(undefined, { ampmlabel: target.checked })
 
         // shows/hides ampm_position option
-        paramId('ampm_position')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('ampm_position', target.checked)
     })
 
     paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement): void {
@@ -712,8 +721,12 @@ function initOptionsEvents(): void {
         weather(undefined, { unhide: true })
     })
 
+    onclickdown(paramId('i_show_unit'), (_, target) => {
+        weather(undefined, { show_unit: target.checked })
+    })
+
     onclickdown(paramId('i_greethide'), (_, target) => {
-        document.getElementById('greetings_options')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('greetings_options', target.checked)
         hideElements({ greetings: !target.checked }, { isEvent: true })
     })
 
@@ -918,6 +931,14 @@ function initOptionsEvents(): void {
         customFont(undefined, { weight: this.value })
     })
 
+    paramId('b_font-color').addEventListener('click', function (): void {
+        paramId('i_font-color').click()
+    })
+
+    paramId('i_font-color').addEventListener('input', function (): void {
+        customFont(undefined, { color: this.value })
+    })
+
     paramId('i_size').addEventListener('input', function (): void {
         customFont(undefined, { size: this.value })
     })
@@ -983,14 +1004,14 @@ function initOptionsEvents(): void {
         synchronization(undefined, { down: true })
     })
 
-    // Settings managment
+    // Settings management
 
-    paramId('settings-managment').addEventListener('dragenter', () => {
-        paramId('settings-managment').classList.add('dragging-file')
+    paramId('settings-management').addEventListener('dragenter', () => {
+        paramId('settings-management').classList.add('dragging-file')
     })
 
     paramId('file-import').addEventListener('dragleave', () => {
-        paramId('settings-managment').classList.remove('dragging-file')
+        paramId('settings-management').classList.remove('dragging-file')
     })
 
     paramId('b_file-load').addEventListener('click', function (this): void {
@@ -1454,6 +1475,15 @@ async function importSettings(imported: Partial<Sync>): Promise<void> {
 
         storage.sync.clear()
         storage.sync.set(data)
+
+        if (imported?.backgrounds?.type === 'urls') {
+            const urls = parseUrlList(imported.backgrounds.urls ?? '')
+
+            if (urls.length > 0) {
+                storage.local.set({ backgroundUrls: buildBackgroundUrls(urls) })
+            }
+        }
+
         fadeOut()
     } catch (_) {
         // ...
@@ -1540,6 +1570,26 @@ async function toggleSettingsChangesButtons(action: string): Promise<void> {
         paramId('settings-changes-options')?.classList.add('hidden')
         paramId('settings-files-options')?.classList.remove('hidden')
     }
+}
+
+// this needs to be implemented little by little to replace the billion "paramId('smth')?.classList.toggle('shown', true)" stuff
+// doing it all at once is way too scary
+export function toggleSettingsDropdown(dropdownId: string, shown: boolean): void {
+    const dropdown = document.getElementById(dropdownId)
+
+    if (!dropdown) {
+        console.error(`Couldn't find settings dropdown to toggle: #${dropdownId}`)
+        return
+    }
+
+    dropdown.classList.toggle('shown', shown)
+
+    // makes inputs and selects non focusable when tabbing
+    dropdown.querySelectorAll('input, select').forEach((el) => {
+        if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
+            el.disabled = !shown
+        }
+    })
 }
 
 //	Helpers

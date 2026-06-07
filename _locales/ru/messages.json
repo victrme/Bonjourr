@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · домашняя страница",
-        "description": "имя расширения"
+        "message": "Bonjourr · Минималистичная Новая Вкладка",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Улучшите свой опыт просмотра веб-страниц с помощью Bonjourr, настраиваемой и легкой домашней страницы.",
-        "description": "описание расширения"
+        "message": "Красивая и настраиваемая новая вкладка, вдохновлённая iOS, созданная для спокойного и сосредоточенного просмотра интернета.",
+        "description": "extension description"
     }
 }

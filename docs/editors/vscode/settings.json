@@ -1,1 +1,15 @@
-{}
+{
+	"editor.formatOnSave": true,
+	"editor.formatOnPaste": true,
+	"git.confirmSync": false,
+	"editor.defaultFormatter": "denoland.vscode-deno",
+	"[typescript]": {
+		"editor.defaultFormatter": "denoland.vscode-deno"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "denoland.vscode-deno"
+	},
+	"json.schemaDownload.trustedDomains": {
+		"https://deno.land": true
+	}
+}

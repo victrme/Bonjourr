@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Pàgina d'inici minimalista",
-        "description": "nom de l'extensió"
+        "message": "Bonjourr · Nova Aba Minimalista",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Millora la teva navegació web amb Bonjourr, una pàgina d'inici bonica, personalitzable i lleugera.",
-        "description": "descripció de l'extensió"
+        "message": "Uma nova aba bonita e personalizável inspirada no iOS, pensada para uma experiência de navegação calma e focada.",
+        "description": "extension description"
     }
 }

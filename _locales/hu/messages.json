@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Minimalista kezdőlap",
-        "description": "Bővítmény neve"
+        "message": "Bonjourr · Minimalista Új Lap",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Hozzon ki többet webböngészési élményéből a Bonjourrral, egy gyönyörű és testreszabható igényű kezdőlappal.",
-        "description": "Bővítmény leírása"
+        "message": "Egy gyönyörű és testreszabható új lap iOS ihletésű dizájnnal, tervezve egy nyugodt és összpontosított böngészési élményhez.",
+        "description": "extension description"
     }
 }

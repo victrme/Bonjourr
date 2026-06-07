@@ -21,17 +21,17 @@
     --monospace-font-family: Consolas, Monaco, Ubuntu Mono, monospace;
     --font-weight-clock: 200;
     --font-weight: 400;
+    --font-color: 255 255 255;
+    --font-on-blur-color: 255 255 255;
     --font-size: 1em;
     --pomodoro-font-size: 14px;
     --clock-size: 6em;
     --greeting-size: 3em;
     --supporters-notif-height: -171px;
     --supporters-notif-background: 'https://images.unsplash.com/photo-1457269449834-928af64c684d?q=80&w=1074&auto=format&fit=crop';
-    --red: 230, 75, 67;
-    --blue: 41, 144, 255;
-    --color-red: #e64b43;
-    --color-green: #2ed058;
-    --color-blue: #2990ff;
+    --accent-color: 41 144 255; /* used to be --blue & --color-blue */
+    --danger-color: 230 75 67;
+    --color-green: 46 208 88;
     --color-orange: #fe9030;
     --border-radius: 25px; /* global border-radius value */
     --out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -39,10 +39,10 @@
 
 [data-theme='light'] {
     --color-text: #222222;
-    --color-param: 255, 255, 255;
+    --color-param: 255 255 255;
     --color-settings: #f2f2f7;
     --color-areas: #f2f2f7;
-    --color-areas-text: var(--color-blue);
+    --color-areas-text: rgb(var(--accent-color));
     --color-input: #eaeaee;
     --color-input-outside: #e3e3ea;
     --color-focused: #dddde4;
@@ -53,13 +53,13 @@
     --color-dialog-border: #3334;
     --color-dialog-highlight: #fff4;
     --color-dialog-input-text: #716f6d;
-    --color-dialog-input-bg: rgba(106, 104, 111, 0.12);
+    --color-dialog-input-bg: rgb(106 104 111 / 0.12);
 }
 
 [data-theme='dark'] {
     --color-text: #eeeeee;
     --color-light-text: #929294;
-    --color-param: 28, 28, 30;
+    --color-param: 28 28 30;
     --color-settings: #000000;
     --color-input: #39383d;
     --color-input-outside: #39383d;
@@ -72,7 +72,7 @@
     --color-dialog-border: #fff4;
     --color-dialog-highlight: #fff2;
     --color-dialog-input-text: #a4a7a8;
-    --color-dialog-input-bg: rgba(110, 107, 114, 0.25);
+    --color-dialog-input-bg: rgb(110 107 114 / 0.25);
 }
 
 [data-browser='edge'] .firefox-only,
@@ -100,7 +100,7 @@ input[type='checkbox'] {
 body {
     margin: 0;
     opacity: 1;
-    color: white;
+    color: rgb(var(--font-color));
     font-size: 1em;
     font-family: -apple-system, system-ui, Ubuntu, Roboto, 'Open Sans', 'Segoe UI', 'Helvetica Neue';
     text-align: center;
@@ -161,7 +161,7 @@ body.tabbing input:focus-visible + .slider,
 body.tabbing #focus-toggle:focus,
 body.tabbing .pomodoro_mode:focus {
     outline-width: 2px;
-    outline-color: var(--color-blue);
+    outline-color: rgb(var(--accent-color));
     outline-style: dashed;
 }
 
@@ -208,7 +208,7 @@ body.potato #linkblocks.in-folder #link-list {
 }
 
 body.potato #bookmarks::backdrop {
-    background-color: rgba(34, 34, 34, 0.5333333333);
+    background-color: rgb(34 34 34 / 0.5333333333);
 }
 
 [data-theme='dark'] body.potato #supporters-modal {
@@ -245,7 +245,7 @@ input {
 
 dialog a,
 aside a {
-    color: var(--color-blue);
+    color: rgb(var(--accent-color));
     border-radius: 4px;
     text-decoration: none;
 }

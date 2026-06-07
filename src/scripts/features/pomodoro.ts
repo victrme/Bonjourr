@@ -309,7 +309,6 @@ function startTimer(pomodoro: Pomodoro, fromButton?: boolean, time?: number): vo
 }
 
 function startCountdown(endtime: number): void {
-    // inserted as soon as possible
     insertTime(calculateSecondsLeft(endtime))
 
     countdown = setInterval(() => {
@@ -369,8 +368,9 @@ function insertTime(seconds: number, timerIsStarted = true): void {
     const secondsRemaining = seconds % 60
     const displayTime = `${minutes}:${secondsRemaining < 10 ? '0' : ''}${secondsRemaining}`
 
-    // inserts to dom
-    timerDom.textContent = displayTime
+    if (timerDom.textContent !== displayTime) {
+        timerDom.textContent = displayTime
+    }
 
     handleTabTitle(displayTime, timerIsStarted)
 }

@@ -242,6 +242,12 @@ Light and dark themes are handled via data attributes:
 - Consistent naming conventions
 - Logical grouping of related styles
 
+#### 5. Use of AI & vibe coding
+
+- AI is a tool, not a developer.
+- Contributors must understand and take responsibility for all submitted code.
+- No features should be built entirely through vibe coding.
+
 ### Naming Conventions
 
 #### ID Selectors

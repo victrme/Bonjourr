@@ -20,27 +20,16 @@ export function httpServer(port: number, baseUrl = 'release/online'): void {
     // Request handler
     // actual meat of the server
 
-    const serverHandler: Deno.ServeHandler<Deno.NetAddr> = async (request) => {
-        // Find resource
-
+    const serverHandler = async (request: Request): Promise<Response> => {
         const url = new URL(request.url)
         const filePath = baseUrl + (url.pathname === '/' ? '/index.html' : url.pathname)
-        const fileExists = await Deno.stat(filePath)
-
-        if (!fileExists) {
-            return new Response('Not Found', {
-                status: 404,
-            })
-        }
-
-        // Find content type
 
         const headers: HeadersInit = { 'cache-control': 'no-cache' }
         const fileExt = filePath.split('.').at(-1) ?? ''
         const contentType = contentTypeList[fileExt]
 
         if (contentType) {
-            headers.contentType = contentType
+            headers['content-type'] = contentType
         }
 
         // Read data
@@ -56,9 +45,9 @@ export function httpServer(port: number, baseUrl = 'release/online'): void {
     // Starts server
     // catches errors
 
-    Deno.serve({ port }, async (request, info) => {
+    Deno.serve({ port }, async (request) => {
         try {
-            return await serverHandler(request, info)
+            return await serverHandler(request)
         } catch (err) {
             if (err instanceof Deno.errors.NotFound) {
                 return new Response('Not Found', { status: 404 })

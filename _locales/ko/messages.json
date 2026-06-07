@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · 미니멀리스트 시작 페이지",
+        "message": "Bonjourr · 미니멀 새 탭",
         "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Bonjourr로 웹 브라우징 경험을 개선해 보세요. 멋지게 꾸밀 수 있는 가벼운 시작 페이지입니다.",
+        "message": "iOS에서 영감을 받은 아름답고 커스터마이즈 가능한 새 탭 페이지로, 차분하고 집중된 브라우징 경험을 위해 설계되었습니다.",
         "description": "extension description"
     }
 }

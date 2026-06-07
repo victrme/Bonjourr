@@ -126,7 +126,7 @@
     text-align: center;
     text-overflow: ellipsis;
     opacity: 0.7;
-    color: white;
+    color: var(--font-color);
     font-size: 1em;
     border-radius: 8px;
     border: 1px solid transparent;
@@ -157,8 +157,8 @@
 .link-title.selected,
 .link-title.selected.selected-group {
     opacity: 1;
-    outline: 2px solid var(--color-blue);
-    background-color: rgba(var(--blue), 0.15);
+    outline: 2px solid rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.15);
 }
 
 .link-group.pinned .link-title,
@@ -205,11 +205,15 @@
 }
 
 .link a {
-    color: white;
+    color: var(--font-color);
     cursor: pointer;
     text-decoration: none;
     transition: width 0.2s var(--out-cubic);
     -webkit-touch-callout: none;
+}
+
+.in-folder .link a {
+    color: rgb(var(--font-on-blur-color));
 }
 
 .link img {
@@ -240,7 +244,7 @@
 .backgrounds .link div {
     background-color: white;
     border-color: white;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.2);
 }
 
 .backgrounds .link div:hover {
@@ -268,8 +272,8 @@
 #linkblocks.large .link.selected div,
 #linkblocks.medium .link.selected div,
 #linkblocks.small .link.selected div {
-    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
-    outline: 0.3em solid var(--color-blue);
+    box-shadow: 0px 5px 15px rgb(0 0 0 / 0.2);
+    outline: 0.3em solid rgb(var(--accent-color));
 }
 
 #linkblocks.inline .link-folder.selected,
@@ -277,8 +281,8 @@
 #linkblocks.text .link-folder.selected,
 #linkblocks.text .link.selected a {
     border-radius: 0.5em;
-    outline: 0.2em solid var(--color-blue);
-    background-color: rgba(0, 114, 238, 0.1333333333);
+    outline: 0.2em solid rgb(var(--accent-color));
+    background-color: rgb(0 114 238 / 0.1333333333);
 }
 
 #linkblocks.inline .link.selected:hover span,
@@ -437,8 +441,8 @@
     max-height: 3.9em;
     text-shadow: none;
     border-radius: 0.3em;
-    background-color: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.075);
+    background-color: rgb(255 255 255 / 0.2);
+    border: 1px solid rgb(255 255 255 / 0.075);
     backdrop-filter: blur(1em);
     -webkit-backdrop-filter: blur(1em);
     transition: opacity 0.2s;

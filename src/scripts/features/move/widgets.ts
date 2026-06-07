@@ -1,4 +1,5 @@
 import { addOverlay, interfaceFade, removeOverlay, removeSelection, setAllAligns, setGridAreas } from './dom.ts'
+import { toggleSettingsDropdown } from '../../settings.ts'
 import { transitioner } from '../../utils/transitioner.ts'
 import { storage } from '../../storage.ts'
 import { weather } from '../weather/index.ts'
@@ -72,10 +73,9 @@ export function toggleWidgetInSettings(states: [WidgetName, boolean][]): void {
 
     for (const [widget, on] of states) {
         const input = document.getElementById(inputids[widget]) as HTMLInputElement
-        const option = document.getElementById(`${widget}_options`)
-
-        option?.classList.toggle('shown', on)
         input.checked = on
+
+        toggleSettingsDropdown(`${widget}_options`, on)
     }
 }
 

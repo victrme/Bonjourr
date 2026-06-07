@@ -75,7 +75,7 @@ dialog#contextmenu input:focus {
     opacity: 1;
     color: var(--color-text);
     background-color: var(--color-dialog-input-bg);
-    outline: 3px solid rgba(var(--blue), 0.5);
+    outline: 3px solid rgb(var(--accent-color) / 0.5);
     outline-offset: -2px;
     transition: background-color 0.1s;
 }
@@ -123,7 +123,6 @@ dialog#contextmenu button .iconContainer svg {
 }
 
 dialog#contextmenu button .iconContainer {
-    padding: 2px; /* other icons have natural padding in the svg file */
     box-sizing: border-box;
     display: flex;
     justify-content: center;

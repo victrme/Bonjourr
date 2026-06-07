@@ -13,6 +13,9 @@ let dusk = 60
 let userSetDate: Date
 
 export function userDate(timezone?: string): Date {
+    // // for promotion screenshots
+    // return new Date('2018-06-04, 09:41:00')
+
     const hasSetDate = !timezone && userSetDate
     const isAuto = !timezone || timezone === 'auto'
     let date = new Date()

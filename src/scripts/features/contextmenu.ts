@@ -15,6 +15,8 @@ interface EventLocation {
         main: boolean
         quotes: boolean
         pomodoro: boolean
+        searchbar: boolean
+        notes: boolean
     }
     interface: boolean
 }
@@ -41,6 +43,14 @@ const sectionMatching: Record<string, Section> = {
         section: '#pomodoro_container',
         scrollto: 'pomodoro_title',
     },
+    searchbar: {
+        section: '#sb_container',
+        scrollto: 'searchbar_title',
+    },
+    notes: {
+        section: '#notes_container',
+        scrollto: 'notes_title',
+    },
 }
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
@@ -64,8 +74,10 @@ export function openContextMenu(event: Event): void {
             main: !!target.closest(sectionMatching.main.section),
             quotes: !!target.closest(sectionMatching.quotes.section),
             pomodoro: !!target.closest(sectionMatching.pomodoro.section),
+            searchbar: !!target.closest(sectionMatching.searchbar.section),
+            notes: !!target.closest(sectionMatching.notes.section),
         },
-        interface: target.matches('main#interface'),
+        interface: target.matches('main#interface') || target.matches('body'),
     }
 
     const pointer = event as PointerEvent
@@ -124,9 +136,15 @@ export function openContextMenu(event: Event): void {
     if (eventLocation.interface) {
         populateDialogWithAction('openTheseSettings', 'background_title')
 
+        // to be added when new move elem is done
+        // if (showsAllSettings) {
+        //     populateDialogWithAction('openTheseSettings', 'layout_title')
+        // }
+
         // add new link button if quick links are enabled
         if (!document.querySelector('#linkblocks.hidden')) {
             populateDialogWithAction('add-new-link')
+            populateDialogWithAction('openTheseSettings', 'links_title')
         }
 
         showTheseElements('#background-actions')
@@ -223,8 +241,8 @@ queueMicrotask(() => {
             return
         }
 
-        // if right click inside interface, custom context menu
-        if (mainInterface?.contains(event.target as Node)) {
+        // if right click inside interface/body, custom context menu
+        if (mainInterface?.contains(event.target as Node) || event.target === document.body) {
             openContextMenu(event)
             return
         }

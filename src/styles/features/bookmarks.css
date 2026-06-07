@@ -34,11 +34,11 @@
 }
 
 [data-theme='dark'] #bookmarks-header {
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 5px 15px;
+    box-shadow: rgb(0 0 0 / 0.3) 0px 5px 15px;
 }
 
 [data-theme='light'] #bookmarks-header {
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 15px;
+    box-shadow: rgb(0 0 0 / 0.1) 0px 5px 15px;
 }
 
 #bookmarks-intro {
@@ -59,7 +59,7 @@
 
 #bmk_apply {
     color: white;
-    background-color: var(--color-blue);
+    background-color: rgb(var(--accent-color));
 }
 
 #bmk_apply:disabled {
@@ -76,7 +76,6 @@
     max-height: 60vh;
     overflow-y: auto;
     padding: 2em 2em 1em;
-    will-change: backdrop-filter;
 }
 
 .bookmarks-folder {
@@ -95,8 +94,8 @@
 }
 
 .bookmarks-folder.selected {
-    border-color: var(--color-blue);
-    background-color: rgba(var(--blue), 0.15);
+    border-color: rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.15);
 }
 
 .bookmarks-folder.selected li {
@@ -136,7 +135,6 @@
 #bookmarks h2 {
     margin: 0;
     font-size: 20px;
-    text-transform: capitalize;
 }
 
 #bookmarks ol {
@@ -156,8 +154,8 @@
 }
 
 #bookmarks li.selected {
-    border-color: var(--color-blue);
-    background-color: rgba(var(--blue), 0.25);
+    border-color: rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.25);
 }
 
 #bookmarks li button {

@@ -38,7 +38,11 @@ export function favicon(val?: string, isEvent?: true): void {
 export function tabTitle(val?: string, isEvent?: true): void {
     val ??= ''
 
-    document.title = stringMaxSize(val, 80) || tradThis('New tab')
+    const tabTitle = stringMaxSize(val, 80) || tradThis('New tab')
+
+    if (tabTitle !== document.title) {
+        document.title = tabTitle
+    }
 
     if (isEvent) {
         eventDebounce({ tabtitle: stringMaxSize(val, 80) })

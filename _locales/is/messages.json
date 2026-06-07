@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Einfaldur upphafssíða",
-        "description": "nafn viðbótar"
+        "message": "Bonjourr · Minímalistískt Nýtt Flipi",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Bættu vafraupplifun þína með Bonjourr, fallegri, sérsniðanlegri og léttri heimasíðu.",
-        "description": "lýsing viðbótar"
+        "message": "Fallegt og sérhannaðanlegt nýtt flipagluggi innblásið af iOS, hannað fyrir rólega og einbeittar vafraupplifun.",
+        "description": "extension description"
     }
 }

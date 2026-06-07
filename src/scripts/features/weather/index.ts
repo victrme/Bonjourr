@@ -21,6 +21,7 @@ export type WeatherUpdate = {
     moreinfo?: string
     provider?: string
     units?: string
+    show_unit?: boolean
     geol?: string
     city?: true
     temp?: string

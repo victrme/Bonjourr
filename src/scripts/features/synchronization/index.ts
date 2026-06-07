@@ -25,7 +25,6 @@ export function synchronization(init?: Local, update?: SyncUpdate): void {
     if (init) {
         onSettingsLoad(() => {
             toggleSyncSettingsOption(init)
-            setTimeout(() => handleStoragePersistence(init.syncType), 200)
         })
     }
 

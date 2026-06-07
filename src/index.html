@@ -85,127 +85,56 @@
 
                 <!-- <button type="submit" class="trn" id="edit-inputs">Submit from inputs</button> -->
                 <button type="submit" class="btn-red" id="edit-delete" formnovalidate>
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-                        />
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-delete"></use>
                     </svg>
 
                     <span class="trn">Delete something</span>
                 </button>
 
                 <button type="submit" id="edit-refresh">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                        />
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-refresh"></use>
                     </svg>
 
                     <span class="trn">Refresh icon</span>
                 </button>
 
                 <button type="submit" id="edit-add">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                        />
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-add"></use>
                     </svg>
 
                     <span class="trn">Add something</span>
                 </button>
 
                 <button type="submit" id="edit-pin">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                        />
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-locked"></use>
                     </svg>
 
                     <span class="trn">Pin group</span>
                 </button>
 
                 <button type="submit" id="edit-unpin">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-6"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
-                        />
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-unlocked"></use>
                     </svg>
 
                     <span class="trn">Unpin group</span>
                 </button>
 
                 <button type="submit" id="edit-unfolder">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
-                        />
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-undo-2"></use>
                     </svg>
 
                     <span class="trn">Remove from folder</span>
                 </button>
 
                 <button type="submit" id="edit-apply">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M3 3v18h18V6l-3-3H3ZM7.5 3v6h9V3M6 21v-9h12v9M14.25 5.25v1.5"
-                        />
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-save"></use>
                     </svg>
                     <span class="trn">Apply changes</span>
                 </button>
@@ -219,21 +148,8 @@
                     title="Open the time settings"
                     aria-label="Open the time settings"
                 >
-                    <svg
-                        clip-rule="evenodd"
-                        fill-rule="evenodd"
-                        fill="currentColor"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g transform="translate(0)">
-                            <path d="m9 7h2v5h5v2h-7z" fill-rule="nonzero" />
-                            <path
-                                d="m22 12c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10 10 4.477 10 10zm-2 0c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8z"
-                            />
-                        </g>
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-time"></use>
                     </svg>
                     <span class="trn">Edit time settings</span>
                 </button>
@@ -244,24 +160,9 @@
                     title="Open the weather settings"
                     aria-label="Open the weather settings"
                 >
-                    <svg
-                        clip-rule="evenodd"
-                        fill-rule="evenodd"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g fill="currentColor" transform="translate(-0 -.00002)">
-                            <path
-                                d="m12 16c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6z"
-                            />
-                            <path
-                                d="m11 0h2v4.062c-.328-.041-.661-.062-1-.062s-.672.021-1 .062zm-3.906 5.68-2.872-2.872-1.414 1.414 2.872 2.872c.411-.528.886-1.003 1.414-1.414zm-3.032 5.32h-4.062v2h4.062c-.041-.328-.062-.661-.062-1s.021-.672.062-1zm1.618 5.906-2.872 2.872 1.414 1.414 2.872-2.872c-.528-.411-1.003-.886-1.414-1.414zm5.32 3.032v4.062h2v-4.062c-.328.041-.661.062-1 .062s-.672-.021-1-.062zm5.906-1.618 2.872 2.872 1.414-1.414-2.872-2.872c-.411.528-.886 1.003-1.414 1.414zm3.032-5.32h4.062v-2h-4.062c.041.328.062.661.062 1s-.021.672-.062 1zm-1.618-5.906 2.872-2.872-1.414-1.414-2.872 2.872c.528.411 1.003.886 1.414 1.414z"
-                            />
-                        </g>
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-weather"></use>
                     </svg>
-
                     <span class="trn">Edit weather & greetings</span>
                 </button>
 
@@ -271,21 +172,9 @@
                     title="Open the quotes settings"
                     aria-label="Open the quotes settings"
                 >
-                    <svg
-                        clip-rule="evenodd"
-                        fill-rule="evenodd"
-                        fill="currentColor"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g fill-rule="nonzero" transform="translate(-.00001 0)">
-                            <path d="m9.135 9h3l-2.135 5.608h-3z" />
-                            <path d="m14.135 9h3l-2.135 5.608h-3z" />
-                        </g>
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-quotes"></use>
                     </svg>
-
                     <span class="trn">Edit quotes settings</span>
                 </button>
 
@@ -295,19 +184,9 @@
                     title="Open the pomodoro settings"
                     aria-label="Open the pomodoro settings"
                 >
-                    <svg
-                        class="w-64 h-64"
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
-                        id="mdi-timer-outline"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            d="M12,20A7,7 0 0,1 5,13A7,7 0 0,1 12,6A7,7 0 0,1 19,13A7,7 0 0,1 12,20M19.03,7.39L20.45,5.97C20,5.46 19.55,5 19.04,4.56L17.62,6C16.07,4.74 14.12,4 12,4A9,9 0 0,0 3,13A9,9 0 0,0 12,22C17,22 21,17.97 21,13C21,10.88 20.26,8.93 19.03,7.39M11,14H13V8H11M15,1H9V3H15V1Z"
-                        >
-                        </path>
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-pomodoro"></use>
                     </svg>
-
                     <span class="trn">Edit pomodoro settings</span>
                 </button>
 
@@ -317,49 +196,65 @@
                     title="Open the background settings"
                     aria-label="Open the background settings"
                 >
-                    <svg
-                        clip-rule="evenodd"
-                        fill="currentColor"
-                        fill-rule="evenodd"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g transform="translate(0 -.00001)">
-                            <path
-                                d="m7 7c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm-1 3c0-.552.448-1 1-1s1 .448 1 1-.448 1-1 1-1-.448-1-1z"
-                            />
-                            <path
-                                d="m3 3c-1.657 0-3 1.343-3 3v12c0 1.657 1.343 3 3 3h18c1.657 0 3-1.343 3-3v-12c0-1.657-1.343-3-3-3zm18 2h-18c-.552 0-1 .448-1 1v12c0 .552.448 1 1 1h4.314l6.878-6.879c1.172-1.171 3.072-1.171 4.243 0l3.565 3.565v-9.686c0-.552-.448-1-1-1zm0 14h-10.858l5.465-5.464c.39-.391 1.023-.391 1.414 0l4.886 4.886c-.159.341-.505.578-.907.578z"
-                            />
-                        </g>
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-background"></use>
                     </svg>
-
                     <span class="trn">Edit background settings</span>
                 </button>
 
+                <button
+                    data-action="openTheseSettings"
+                    data-attribute="notes_title"
+                    title="Open the notes settings"
+                    aria-label="Open the notes settings"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-notes"></use>
+                    </svg>
+                    <span class="trn">Edit notes settings</span>
+                </button>
+
+                <button
+                    data-action="openTheseSettings"
+                    data-attribute="searchbar_title"
+                    title="Open the search bar settings"
+                    aria-label="Open the search bar settings"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-searchbar"></use>
+                    </svg>
+                    <span class="trn">Edit search bar settings</span>
+                </button>
+
+                <!-- to be added when new move elem is done -->
+                <!-- <button
+                    data-action="openTheseSettings"
+                    data-attribute="layout_title"
+                    title="Open the layout settings"
+                    aria-label="Open the layout settings"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-layout"></use>
+                    </svg>
+
+                    <span class="trn">Edit layout settings</span>
+                </button> -->
+
+                <button
+                    data-action="openTheseSettings"
+                    data-attribute="links_title"
+                    title="Open the quick links settings"
+                    aria-label="Open the quick links settings"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-links"></use>
+                    </svg>
+                    <span class="trn">Edit quick links settings</span>
+                </button>
+
                 <button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
-                    <svg
-                        clip-rule="evenodd"
-                        fill="currentColor"
-                        fill-rule="evenodd"
-                        stroke-linejoin="round"
-                        stroke-miterlimit="2"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <g fill-rule="nonzero">
-                            <path
-                                d="m14.828 12 1.415 1.414 2.828-2.828c1.562-1.562 1.562-4.095 0-5.657s-4.095-1.562-5.657 0l-2.828 2.828 1.414 1.415 2.828-2.829c.782-.781 2.048-.781 2.829 0s.781 2.047 0 2.829z"
-                            />
-                            <path
-                                d="m12 14.829 1.414 1.414-2.828 2.828c-1.562 1.562-4.095 1.562-5.657 0s-1.562-4.095 0-5.657l2.828-2.828 1.415 1.414-2.829 2.829c-.781.781-.781 2.047 0 2.828s2.048.781 2.829 0z"
-                            />
-                            <path
-                                d="m14.829 10.586c.39-.391.39-1.024 0-1.415-.391-.39-1.024-.39-1.415 0l-4.242 4.243c-.391.391-.391 1.024 0 1.414.39.391 1.023.391 1.414 0z"
-                            />
-                        </g>
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-add"></use>
                     </svg>
                     <span class="trn">Add new quick link</span>
                 </button>
@@ -384,42 +279,16 @@
                         aria-label="Enable or disable background video sound"
                     >
                         <span id="interface-background-mute-icon" class="iconContainer">
-                            <svg
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                viewBox="0 0 22 19"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m17.25 9.75 2.25 2.25m0 0 2.25 2.25m-2.25-2.25 2.25-2.25m-2.25 2.25-2.25 2.25m-10.5-6 4.72-4.72c.141-.14.331-.219.53-.219.411 0 .75.338.75.749v15.88c0 .411-.339.749-.75.749-.199 0-.389-.079-.53-.219l-4.72-4.72h-2.24c-.88 0-1.704-.507-1.938-1.354-.214-.781-.323-1.586-.322-2.396 0-.83.112-1.633.322-2.396.234-.848 1.058-1.354 1.938-1.354z"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    transform="translate(-1.5 -2.56066)"
-                                />
+                            <svg class="contextmenu-icon" aria-hidden="true">
+                                <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-mute"></use>
                             </svg>
                         </span>
 
                         <span class="trn" id="interface-background-mute-string">Mute video background</span>
 
                         <span id="interface-background-unmute-icon" class="iconContainer">
-                            <svg
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                viewBox="0 0 22 19"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m19.114 5.636c1.687 1.687 2.636 3.978 2.636 6.364s-.949 4.677-2.636 6.364m-2.651-10.076c2.036 2.036 2.036 5.388 0 7.424m-9.713-7.462 4.72-4.72c.141-.14.331-.219.53-.219.411 0 .75.338.75.749v15.88c0 .411-.339.749-.75.749-.199 0-.389-.079-.53-.219l-4.72-4.72h-2.24c-.88 0-1.704-.507-1.938-1.354-.214-.781-.323-1.586-.322-2.396 0-.83.112-1.633.322-2.396.234-.848 1.058-1.354 1.938-1.354z"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    transform="translate(-1.5 -2.56066)"
-                                />
+                            <svg class="contextmenu-icon" aria-hidden="true">
+                                <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-unmute"></use>
                             </svg>
                         </span>
 
@@ -433,22 +302,11 @@
                         class="idle"
                     >
                         <span id="idle-download" class="iconContainer">
-                            <svg
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 14 14"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <g fill-rule="nonzero" fill="currentColor" transform="translate(-3.33333 -5.33333)">
-                                    <path
-                                        d="m9.167 6.167c0-.461.373-.834.833-.834s.833.373.833.834v5.964l2.703-2.702 1.178 1.179-4.714 4.714-4.714-4.714 1.179-1.179 2.702 2.702z"
-                                    />
-                                    <path
-                                        d="m3.333 13.667h1.667v3.333h10v-3.333h1.667v3.333c0 .921-.746 1.667-1.667 1.667h-10c-.92 0-1.667-.746-1.667-1.667z"
-                                    />
-                                </g>
+                            <svg class="contextmenu-icon" aria-hidden="true">
+                                <use
+                                    href="src/assets/interface/contextmenu-sprites.svg#contextmenu-background-download"
+                                >
+                                </use>
                             </svg>
                         </span>
 
@@ -477,38 +335,16 @@
                         aria-label="Lock the current background"
                     >
                         <span id="interface-background-pause-icon" class="iconContainer">
-                            <svg
-                                fill="currentColor"
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 18 21"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6s6 2.686 6 6zm-6-7c2.209 0 4 1.791 4 4v3h-8v-3c0-2.209 1.791-4 4-4zm6 9h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z"
-                                    transform="translate(-3 -1.5)"
-                                />
+                            <svg class="contextmenu-icon" aria-hidden="true">
+                                <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-locked"></use>
                             </svg>
                         </span>
 
                         <span class="trn" id="interface-background-pause-string">Lock current background</span>
 
                         <span id="interface-background-play-icon" class="iconContainer">
-                            <svg
-                                fill="currentColor"
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 18 21"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m18 10.5c1.657 0 3 1.343 3 3v6c0 1.657-1.343 3-3 3h-12c-1.657 0-3-1.343-3-3v-6c0-1.657 1.343-3 3-3v-3c0-3.314 2.686-6 6-6 3.145 0 5.725 2.42 5.979 5.5h-2.01c-.246-1.973-1.929-3.5-3.969-3.5-2.209 0-4 1.791-4 4v3zm0 2h-12c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h12c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1z"
-                                    transform="translate(-3 -1.5)"
-                                />
+                            <svg class="contextmenu-icon" aria-hidden="true">
+                                <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-unlocked"></use>
                             </svg>
                         </span>
 
@@ -522,20 +358,9 @@
                         aria-label="Change to another background"
                     >
                         <span class="iconContainer">
-                            <svg
-                                fill="currentColor"
-                                clip-rule="evenodd"
-                                fill-rule="evenodd"
-                                stroke-linejoin="round"
-                                stroke-miterlimit="2"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    d="m20.3 13.43c-.521-.162-1.084.13-1.25.65-.967 2.956-3.76 4.956-6.87 4.92-3.888.044-7.125-3.113-7.18-7 .055-3.887 3.292-7.044 7.18-7 1.697-.004 3.343.587 4.65 1.67l-2.17-.36c-.054-.009-.108-.013-.162-.013-.49 0-.911.359-.988.843-.009.054-.013.108-.013.162 0 .49.359.911.843.988l4.24.7h.17c.116 0 .231-.02.34-.06.037-.014.07-.034.1-.06.072-.027.139-.064.2-.11l.09-.11c0-.05.09-.09.13-.15s0-.1.05-.14c.028-.058.051-.118.07-.18l.75-4c.012-.063.018-.126.018-.19 0-.558-.46-1.018-1.018-1.018-.487 0-.909.35-1 .828l-.27 1.45c-1.674-1.45-3.815-2.25-6.03-2.25-4.985-.044-9.125 4.015-9.18 9 .055 4.985 4.195 9.044 9.18 9 3.999.061 7.593-2.514 8.82-6.32.027-.092.041-.188.041-.284 0-.451-.305-.849-.741-.966z"
-                                    fill-rule="nonzero"
-                                    transform="matrix(1.33257 0 0 1.33257 -3.99772 -3.98641)"
-                                />
+                            <svg class="contextmenu-icon" aria-hidden="true">
+                                <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-background-refresh">
+                                </use>
                             </svg>
                         </span>
                         <span class="trn">Next background</span>
@@ -565,11 +390,10 @@
                                 class="digital-mm-separator"
                             >:</span><span
                                 class="digital-ss"
-                            ></span><span
-                                class="digital-am"
-                            >am</span><span
-                                class="digital-pm"
-                            >pm</span>
+                            >
+                                <!-- prettier-ignore -->
+                            </span><span class="digital-ampm"><span class="digital-am">am</span><span class="digital-pm"
+                                >pm</span></span>
                         </h1>
 
                         <div class="analog" data-hide="clock">
@@ -589,8 +413,7 @@
                         <p class="clock-region">Paris</p>
 
                         <p class="clock-date" data-hide="date">
-                            <span class="clock-date-aa"></span>
-                            <span class="clock-date-aa-separator"></span>
+                            <span class="clock-date-aa"></span><span class="clock-date-aa-separator"></span>
                             <span class="clock-date-bb"></span>
                             <span class="clock-date-bb-separator"></span>
                             <span class="clock-date-cc"></span>
@@ -607,17 +430,28 @@
                 </h2>
 
                 <a id="weather" class="wait init" rel="noreferrer">
-                    <div id="description" data-hide="weatherdesc">
-                        <p id="current">
-                            <span id="current-desc"></span>
-                            <span id="current-temp"></span>
-                        </p>
-                        <p id="forecast">forecast</p>
-                    </div>
+                    <p id="description" data-hide="weatherdesc">
+                        <span id="current"><span id="current-desc"></span><span id="current-temp"><span
+                                    id="current-a"
+                                ></span><span class="temp" id="current-temp-a"><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span><span id="current-b"></span><span
+                                    class="temp"
+                                    id="current-temp-b"
+                                ><span class="temp-value"></span><span
+                                        class="temp-unit"
+                                    ></span></span></span></span><span id="forecast"><span id="forecast-a"></span><span
+                                class="temp"
+                            ><span class="temp-value"></span><span class="temp-unit"></span></span><span
+                                id="forecast-b"
+                            ></span></span><span id="dotContainer"></span>
+                    </p>
 
                     <div id="tempContainer" data-hide="weathericon">
-                        <span id="weather-icon" data-daytime="day" data-condition="fewclouds"></span>
-                        <p>00</p>
+                        <svg class="weather-icon" aria-hidden="true">
+                            <use href="src/assets/interface/weather-sprites.svg#weather-day-overcastclouds"></use>
+                        </svg>
+                        <span class="temp"><span class="temp-value"></span><span class="temp-unit"></span></span>
                     </div>
                 </a>
             </div>
@@ -641,12 +475,12 @@
                         <hr />
 
                         <button id="sb_submit" aria-label="Submit search" type="submit" disabled>
-                            <img
-                                src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDk1IDQ2NiAzODUgMzU2YTIwOSAyMDkgMCAwIDAtMTQtMjgzIDIwOSAyMDkgMCAwIDAtMjk4IDAgMjA5IDIwOSAwIDAgMCAwIDI5OCAyMTAgMjEwIDAgMCAwIDI4MyAxNGwxMTAgMTEwYTIwIDIwIDAgMSAwIDI5LTI5ek0xMDIgMzQyYTE2OSAxNjkgMCAwIDEgMC0yNDAgMTY5IDE2OSAwIDAgMSAyNDAgMCAxNjkgMTY5IDAgMCAxIDAgMjQwIDE2OSAxNjkgMCAwIDEtMjQwIDB6Ii8+PC9zdmc+"
-                                class="default-search-icon"
-                                draggable="false"
-                                alt=""
-                            />
+                            <svg class="default-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path
+                                    fill="currentColor"
+                                    d="M495 466 385 356a209 209 0 0 0-14-283 209 209 0 0 0-298 0 209 209 0 0 0 0 298 210 210 0 0 0 283 14l110 110a20 20 0 1 0 29-29zM102 342a169 169 0 0 1 0-240 169 169 0 0 1 240 0 169 169 0 0 1 0 240 169 169 0 0 1-240 0z"
+                                />
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -749,11 +583,12 @@
 
         <div id="show-settings" data-hide="settingsicon">
             <button aria-label="Toggle settings menu" title="Toggle settings menu">
-                <img
-                    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTkuNjYiIGhlaWdodD0iMTk5LjkzIiB2aWV3Qm94PSIwIDAgNTIuODMgNTIuOSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTI5LjczIDUyLjU3Yy0uMjYtLjItLjkzLTEuNDEtMS40OC0yLjcxLTEuMS0yLjU3LTEuNDItMi45My0yLjQyLTIuNjgtLjUxLjEzLS44OS42Ni0xLjY3IDIuMzYtMS4yIDIuNTktMS42IDMuMTEtMi40IDMuMTEtMS4xIDAtMS4zNS0uNTgtMS41MS0zLjQ4LS4xMy0yLjM4LS4yMy0yLjc4LS43My0zLjItLjMyLS4yNS0uNy0uNDYtLjg0LS40NnMtMS4yNS45NS0yLjQ2IDIuMTJjLTEuMjIgMS4xNi0yLjM4IDIuMTEtMi41OSAyLjExLS41MiAwLTEuMjUtLjg2LTEuMjUtMS40OSAwLS4yOC4zLTEuNTYuNjctMi44NCAxLjEyLTMuODQuNDYtNC4zMS0zLjQ3LTIuNTQtMi4xNS45OC0yLjYgMS4xLTMuMTYuODMtMS4wOC0uNDktLjg1LTEuNDUuOTMtMy45IDEuNzItMi4zNyAxLjkxLTMuMDcgMS0zLjY2LS41LS4zLTEuMDYtLjMzLTMuMi0uMTEtMi45LjI5LTMuMjcuMjItMy42LS42NC0uMzMtLjg5LjA1LTEuMzcgMi4yLTIuODMgMS4wNy0uNzIgMi4xNC0xLjUgMi4zOC0xLjc0IDEuMS0xLjEuMTYtMS45Ny0yLjk3LTIuNzhDLjM4IDI3LjMzLS4yOCAyNi44Mi4xIDI1LjcyYy4yMy0uNjQuNTMtLjc5IDIuOTctMS40MiAxLjUtLjQgMi45LS44NSAzLjEtMS4wMy43Ny0uNjMuNDYtMS41NC0uODQtMi40NC0yLjM1LTEuNjItMy44LTIuODUtMy44LTMuMjEgMC0uMi4yMi0uNjQuNS0uOTcuNDgtLjYuNS0uNiAzLjM1LS4zIDIuNTYuMjkgMi45LjI3IDMuMzQtLjEyLjI3LS4yNC40OC0uNjQuNDgtLjg5IDAtLjI0LS43LTEuNS0xLjU4LTIuOC0uODgtMS4yOS0xLjU5LTIuNTMtMS41OS0yLjc3IDAtLjQ4LjgtMS4zIDEuMjctMS4zLjE3IDAgMS40My41NiAyLjggMS4yNCAyLjIyIDEuMSAyLjU5IDEuMiAzLjE5LjkzLjg0LS4zOC44Ni0uOTYuMTMtMy44Mi0uNjgtMi42OC0uNjEtMy40Mi4zNi0zLjc2LjY4LS4yNC44Ny0uMTIgMi45MSAxLjkxIDEuMiAxLjIgMi4zNyAyLjE3IDIuNiAyLjE3Ljg4IDAgMS4yNi0uODkgMS41NC0zLjdDMjEuMTMuNTkgMjEuNCAwIDIyLjQ0IDBjLjY3IDAgMS4xNy43MSAyLjI0IDMuMjMgMS40OCAzLjQ2IDIuMzggMy41IDMuOTguMTRDMjkuOTUuNjUgMzAuMjYuMjcgMzEuMi4yN2MxIDAgMS4xOS40NiAxLjM4IDMuNTMuMDkgMS40NC4zIDIuNzguNDYgMi45OC42OC44MiAxLjYxLjQgMy43LTEuNjIgMS4xMi0xLjEgMi4xOC0xLjk4IDIuMzUtMS45OC4xNyAwIC41NC4xMi44Mi4yNy43LjM4LjY2IDEuMzktLjIgNC4yMy0uNjggMi4zLS42OCAyLjM4LS4yMSAyLjkuNjYuNzQgMS4wNi42OCAzLjY3LS41MyAyLjQzLTEuMTIgMy4wNC0xLjI1IDMuNTUtLjc0LjY0LjY0LjMgMS42NC0xLjMgMy44NC0xLjI4IDEuNzgtMS41NyAyLjM1LTEuNDQgMi44OC4yMy45LjkgMS4wOSAzLjE0Ljg2IDMuMjUtLjMyIDMuNTctLjI5IDQuMDUuNDQuMzguNi4zOS43Mi4wMyAxLjI3LS4yMi4zNC0xLjM1IDEuMjQtMi41MiAyLTEuMTYuNzctMi4xNyAxLjYtMi4yMyAxLjg1LS4yNS45Mi4yNiAxLjU5IDEuNDQgMS45IDMuOTMgMS4wMiA0LjcgMS4zMyA0Ljg2IDEuOTYuMyAxLjI0LS4yMiAxLjYzLTMuMDUgMi4yOC00LjEuOTItNC40OCAxLjkzLTEuNTQgMy45NSAzLjE1IDIuMTcgMy42MyAyLjg5IDIuNTkgMy44NC0uNDguNDMtLjc0LjQ1LTMuMzQuMTUtMi41NS0uMjgtMi44NS0uMjctMy4zLjE0LS4yOC4yNS0uNS42NS0uNS44OCAwIC4yNC43IDEuNDkgMS41OCAyLjc4Ljg3IDEuMjkgMS41OSAyLjU2IDEuNTkgMi44M3MtLjMxLjY5LS42OS45M2MtLjY3LjQ0LS43NC40Mi0zLjMtLjgzLTIuMy0xLjE0LTIuNjgtMS4yNS0zLjI4LS45OC0uODQuMzgtLjg3IDEuMDktLjEzIDMuNzQuNzEgMi41Ni42MiAzLjUtLjM2IDMuODQtLjcuMjUtLjg2LjE0LTIuODgtMS45MS0zLjEtMy4xNi0zLjctMi45My00LjE0IDEuNTItLjIxIDIuMS0uMzkgMi44NS0uNzQgMy4xMS0uNTguNDMtLjkzLjQyLTEuNTMtLjAxem0uNzUtMTAuMjNjMS4xMi0uMjkgMi43OC0uOTEgMy42OC0xLjM5YTIwLjE2IDIwLjE2IDAgMCAwIDYuMjMtNS44N2MxLjE2LTIuMzcgMi4yNC00LjMzIDIuMDItNi45bC03LjQzLS4wN2MtNi44Mi0uMDctNy40Ni0uMDMtNy44NS40LS43Ny44Ni03LjA4IDEyLjAxLTcuMDggMTIuNTEgMCAxLjU3IDYuMzQgMi4zNyAxMC40MyAxLjMyem0tOS43My05LjEzYzEuOTYtMy40IDMuNTMtNi4zOCAzLjUzLTYuNzUgMC0xLjAzLTYuOTEtMTIuODItNy41Ny0xMi45MS0uNzQtLjExLTMuNjggMy4wNS00LjggNS4xNmExNi45OCAxNi45OCAwIDAgMC0uMDIgMTUuNDZjMS4xMiAyLjEgNC4wOCA1LjMgNC44IDUuMi4zOS0uMDYgMS41LTEuNzYgNC4wNi02LjE2em0yMS4xOC0xMi4xM0ExNyAxNyAwIDAgMCAzMC4xIDEwLjQyYy0zLjUzLS44OS05LjgtLjAyLTEwIDEuMzgtLjA4LjUgNi4wNSAxMS40OCA3LjAzIDEyLjYxLjM4LjQzIDEuMDIuNDYgNy44NC40bDcuNDMtLjA3Yy4xOS0xLjI3LS4xLTIuNi0uNDgtMy42NnoiLz48L3N2Zz4="
-                    alt=""
-                    draggable="false"
-                />
+                <svg xmlns="http://www.w3.org/2000/svg" width="199.66" height="199.93" viewBox="0 0 52.83 52.9">
+                    <path
+                        fill="var(--icon-color, #fff)"
+                        d="M29.73 52.57c-.26-.2-.93-1.41-1.48-2.71-1.1-2.57-1.42-2.93-2.42-2.68-.51.13-.89.66-1.67 2.36-1.2 2.59-1.6 3.11-2.4 3.11-1.1 0-1.35-.58-1.51-3.48-.13-2.38-.23-2.78-.73-3.2-.32-.25-.7-.46-.84-.46s-1.25.95-2.46 2.12c-1.22 1.16-2.38 2.11-2.59 2.11-.52 0-1.25-.86-1.25-1.49 0-.28.3-1.56.67-2.84 1.12-3.84.46-4.31-3.47-2.54-2.15.98-2.6 1.1-3.16.83-1.08-.49-.85-1.45.93-3.9 1.72-2.37 1.91-3.07 1-3.66-.5-.3-1.06-.33-3.2-.11-2.9.29-3.27.22-3.6-.64-.33-.89.05-1.37 2.2-2.83 1.07-.72 2.14-1.5 2.38-1.74 1.1-1.1.16-1.97-2.97-2.78C.38 27.33-.28 26.82.1 25.72c.23-.64.53-.79 2.97-1.42 1.5-.4 2.9-.85 3.1-1.03.77-.63.46-1.54-.84-2.44-2.35-1.62-3.8-2.85-3.8-3.21 0-.2.22-.64.5-.97.48-.6.5-.6 3.35-.3 2.56.29 2.9.27 3.34-.12.27-.24.48-.64.48-.89 0-.24-.7-1.5-1.58-2.8-.88-1.29-1.59-2.53-1.59-2.77 0-.48.8-1.3 1.27-1.3.17 0 1.43.56 2.8 1.24 2.22 1.1 2.59 1.2 3.19.93.84-.38.86-.96.13-3.82-.68-2.68-.61-3.42.36-3.76.68-.24.87-.12 2.91 1.91 1.2 1.2 2.37 2.17 2.6 2.17.88 0 1.26-.89 1.54-3.7C21.13.59 21.4 0 22.44 0c.67 0 1.17.71 2.24 3.23 1.48 3.46 2.38 3.5 3.98.14C29.95.65 30.26.27 31.2.27c1 0 1.19.46 1.38 3.53.09 1.44.3 2.78.46 2.98.68.82 1.61.4 3.7-1.62 1.12-1.1 2.18-1.98 2.35-1.98.17 0 .54.12.82.27.7.38.66 1.39-.2 4.23-.68 2.3-.68 2.38-.21 2.9.66.74 1.06.68 3.67-.53 2.43-1.12 3.04-1.25 3.55-.74.64.64.3 1.64-1.3 3.84-1.28 1.78-1.57 2.35-1.44 2.88.23.9.9 1.09 3.14.86 3.25-.32 3.57-.29 4.05.44.38.6.39.72.03 1.27-.22.34-1.35 1.24-2.52 2-1.16.77-2.17 1.6-2.23 1.85-.25.92.26 1.59 1.44 1.9 3.93 1.02 4.7 1.33 4.86 1.96.3 1.24-.22 1.63-3.05 2.28-4.1.92-4.48 1.93-1.54 3.95 3.15 2.17 3.63 2.89 2.59 3.84-.48.43-.74.45-3.34.15-2.55-.28-2.85-.27-3.3.14-.28.25-.5.65-.5.88 0 .24.7 1.49 1.58 2.78.87 1.29 1.59 2.56 1.59 2.83s-.31.69-.69.93c-.67.44-.74.42-3.3-.83-2.3-1.14-2.68-1.25-3.28-.98-.84.38-.87 1.09-.13 3.74.71 2.56.62 3.5-.36 3.84-.7.25-.86.14-2.88-1.91-3.1-3.16-3.7-2.93-4.14 1.52-.21 2.1-.39 2.85-.74 3.11-.58.43-.93.42-1.53-.01zm.75-10.23c1.12-.29 2.78-.91 3.68-1.39a20.16 20.16 0 0 0 6.23-5.87c1.16-2.37 2.24-4.33 2.02-6.9l-7.43-.07c-6.82-.07-7.46-.03-7.85.4-.77.86-7.08 12.01-7.08 12.51 0 1.57 6.34 2.37 10.43 1.32zm-9.73-9.13c1.96-3.4 3.53-6.38 3.53-6.75 0-1.03-6.91-12.82-7.57-12.91-.74-.11-3.68 3.05-4.8 5.16a16.98 16.98 0 0 0-.02 15.46c1.12 2.1 4.08 5.3 4.8 5.2.39-.06 1.5-1.76 4.06-6.16zm21.18-12.13A17 17 0 0 0 30.1 10.42c-3.53-.89-9.8-.02-10 1.38-.08.5 6.05 11.48 7.03 12.61.38.43 1.02.46 7.84.4l7.43-.07c.19-1.27-.1-2.6-.48-3.66z"
+                    />
+                </svg>
             </button>
         </div>
 
@@ -827,9 +662,9 @@
                 <dialog id="bookmarks">
                     <div id="bookmarks-header">
                         <div id="bookmarks-intro">
+                            <!-- deno-fmt-ignore -->
                             <span class="trn">
-                                Synchronized groups are automatically updated to match your browser bookmarks. Learn
-                                more on
+                                Synchronized groups are automatically updated to match your browser bookmarks. Learn more on
                             </span>
 
                             <a class="trn" target="_blank" href="https://bonjourr.fr/docs/overview#link-groups"
@@ -1033,11 +868,11 @@
                     cursor: pointer;
                     height: 31px;
                     padding: 0 1em;
-                    color: var(--color-blue);
+                    color: rgb(var(--accent-color));
                     border: none;
                     border-radius: 1em;
                     white-space: nowrap;
-                    background-color: rgba(var(--blue), 0.25);
+                    background-color: rgb(var(--accent-color) / 0.25);
                     display: inline-flex;
                     justify-content: center;
                     align-items: center;
@@ -1045,7 +880,7 @@
                 }
 
                 .help-btn:hover {
-                    background-color: rgba(var(--blue), 0.35);
+                    background-color: rgb(var(--accent-color) / 0.35);
                 }
 
                 .help-btn[disabled] {
@@ -1055,8 +890,8 @@
                 }
 
                 .help-btn.danger:hover {
-                    color: var(--color-red);
-                    background-color: rgba(var(--red), 0.25);
+                    color: rgb(var(--danger-color));
+                    background-color: rgb(var(--danger-color) / 0.25);
                 }
             </style>
         </div>
