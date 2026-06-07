@@ -431,10 +431,10 @@
 
 #linkblocks.medium {
     --min-height: 3.9em;
-    --column-gap: 0.3em;
+    --column-gap: 0.2em;
     --row-gap: 1em;
     --icon-size: 3.5em;
-    --block-size: 5em;
+    --block-size: 5.1em;
     --folder-padding: 1.6em;
 }
 
