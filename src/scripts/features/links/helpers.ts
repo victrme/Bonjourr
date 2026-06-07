@@ -114,3 +114,15 @@ export function isLinkIconType(type: string): type is LinkIconType {
 export function isNumber(value: string): boolean {
     return !isNaN(parseFloat(value))
 }
+
+// to know if the user is writing in something
+export function isTypingTarget(target: EventTarget | null): boolean {
+    return (
+        target instanceof HTMLElement &&
+        (
+            target instanceof HTMLInputElement ||
+            target instanceof HTMLTextAreaElement ||
+            target.isContentEditable
+        )
+    )
+}

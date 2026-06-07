@@ -4,6 +4,7 @@
   - Change your font color with the new text color input
   - Show temperature unit in weather description
   - Open quick links faster with the `alt + number` keybind
+  - Add a new quick link with the `alt + N` keybind
   - Open Quick Links, Notes and Search bar settings from context menu
   - New language: 🇺🇿 Uzbek by [Uchkun Rakhimov](https://github.com/uchkunr)!
 - Improvements:

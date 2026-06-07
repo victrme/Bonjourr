@@ -1,3 +1,5 @@
+import { isTypingTarget } from './features/links/helpers.ts'
+
 let isMousingDownOnInput = false
 
 export function userActions(): void {
@@ -12,9 +14,11 @@ export function userActions(): void {
 // Main functions
 
 function keyboardUserActions(event: KeyboardEvent): void {
+    const { altKey, ctrlKey, metaKey, code, type } = event
+
     const domsuggestions = document.getElementById('sb-suggestions')
 
-    if (event.code === 'Escape') {
+    if (code === 'Escape') {
         if (domsuggestions?.classList.contains('shown')) {
             domsuggestions?.classList.remove('shown')
             return
@@ -46,9 +50,29 @@ function keyboardUserActions(event: KeyboardEvent): void {
         return
     }
 
-    if (event.code === 'Tab') {
+    if (code === 'Tab') {
         document.body.classList.toggle('tabbing', true)
         return
+    }
+
+    // alt + N keybind to add new link
+    if (type === 'keydown' && altKey && !ctrlKey && !metaKey && code === 'KeyN') {
+        if (isTypingTarget(event.target)) return
+
+        const linkList = document.querySelector('#linkblocks:not(.hidden) .link-list')
+        if (!linkList) return
+
+        const rect = linkList.getBoundingClientRect()
+
+        // dodgy implementation but way more efficient than adding event more complexity to populateDialogWithEditLink(), that thing will be rewritten in the future to make it bearable
+        linkList.dispatchEvent(
+            new MouseEvent('contextmenu', {
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.right,
+                clientY: rect.top + 15,
+            }),
+        )
     }
 }
 
