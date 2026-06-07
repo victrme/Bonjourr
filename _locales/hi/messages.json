@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · मिनिमलिस्ट स्टार्टपेज",
-        "description": "एक्सटेंशन नाम"
+        "message": "Bonjourr · मिनिमलिस्ट नया टैब",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Bonjourr के साथ अपने वेब ब्राउज़िंग अनुभव को बेहतर बनाएं, जो एक सुंदर, अनुकूलनीय और हल्का होमपेज है।",
-        "description": "एक्सटेंशन विवरण"
+        "message": "iOS से प्रेरित एक सुंदर और अनुकूलन योग्य नया टैब पेज, शांत और केंद्रित ब्राउज़िंग अनुभव के लिए।",
+        "description": "extension description"
     }
 }

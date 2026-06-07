@@ -144,8 +144,8 @@
 }
 
 #sb-suggestions li[aria-selected='true'] {
-    border-color: var(--color-blue);
-    background-color: rgb(var(--blue) / 0.3);
+    border-color: rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.3);
 }
 
 #sb-suggestions img {

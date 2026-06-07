@@ -14,8 +14,8 @@
 }
 
 .move-overlay.selected {
-    background-color: rgb(var(--blue) / 0.15);
-    outline-color: var(--color-blue);
+    background-color: rgb(var(--accent-color) / 0.15);
+    outline-color: rgb(var(--accent-color));
 }
 
 #move-overlay-time,
@@ -123,8 +123,8 @@
 .mover button.selected,
 .mover button.selected:hover,
 .mover button.selected:active {
-    outline: 2px solid var(--color-blue);
-    background-color: rgb(var(--blue) / 0.15);
+    outline: 2px solid rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.15);
 }
 
 button.grid-spanner {
@@ -136,14 +136,14 @@ button.grid-spanner {
 }
 
 button.grid-spanner:hover:not(:disabled) {
-    color: var(--color-blue);
-    background-color: rgb(var(--blue) / 0.15);
+    color: rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.15);
 }
 
 button.grid-spanner.selected:not(:disabled) {
-    color: var(--color-blue);
-    border-color: var(--color-blue);
-    background-color: rgb(var(--blue) / 0.25);
+    color: rgb(var(--accent-color));
+    border-color: rgb(var(--accent-color));
+    background-color: rgb(var(--accent-color) / 0.25);
 }
 
 #grid-selection {

@@ -15,6 +15,8 @@ interface EventLocation {
         main: boolean
         quotes: boolean
         pomodoro: boolean
+        searchbar: boolean
+        notes: boolean
     }
     interface: boolean
 }
@@ -41,6 +43,14 @@ const sectionMatching: Record<string, Section> = {
         section: '#pomodoro_container',
         scrollto: 'pomodoro_title',
     },
+    searchbar: {
+        section: '#sb_container',
+        scrollto: 'searchbar_title',
+    },
+    notes: {
+        section: '#notes_container',
+        scrollto: 'notes_title',
+    },
 }
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
@@ -64,6 +74,8 @@ export function openContextMenu(event: Event): void {
             main: !!target.closest(sectionMatching.main.section),
             quotes: !!target.closest(sectionMatching.quotes.section),
             pomodoro: !!target.closest(sectionMatching.pomodoro.section),
+            searchbar: !!target.closest(sectionMatching.searchbar.section),
+            notes: !!target.closest(sectionMatching.notes.section),
         },
         interface: target.matches('main#interface') || target.matches('body'),
     }

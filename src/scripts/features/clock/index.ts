@@ -13,6 +13,7 @@ import { startClock } from './clock.ts'
 
 import type { AnalogStyle, Sync } from '../../../types/sync.ts'
 import type { Greetings } from './greetings.ts'
+import { toggleSettingsDropdown } from '../../settings.ts'
 
 interface ClockUpdate {
     ampm?: boolean
@@ -91,8 +92,8 @@ async function clockUpdate(update: ClockUpdate): Promise<void> {
     const analogstyle = data.analogstyle ?? structuredClone(defaultAnalogStyle)
 
     if (update.analog !== undefined) {
-        document.getElementById('analog_options')?.classList.toggle('shown', update.analog)
-        document.getElementById('digital_options')?.classList.toggle('shown', !update.analog)
+        toggleSettingsDropdown('analog_options', update.analog)
+        toggleSettingsDropdown('digital_options', !update.analog)
     }
 
     if (isDateFormat(update.dateformat)) {
@@ -118,13 +119,12 @@ async function clockUpdate(update: ClockUpdate): Promise<void> {
     }
 
     if (update.greetingsmode !== undefined) {
-        const domoptions = document.getElementById('greetingscustom_options')
         const mode = update.greetingsmode as 'auto' | 'custom'
 
         data.greetingsmode = mode
         storage.sync.set({ greetingsmode: mode })
 
-        domoptions?.classList.toggle('shown', mode === 'custom')
+        toggleSettingsDropdown('greetingscustom_options', mode === 'custom')
         displayGreetings({ mode, name: data.greeting, custom: data.greetingscustom })
     }
 

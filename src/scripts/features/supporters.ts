@@ -5,6 +5,7 @@ import { debounce } from '../utils/debounce.ts'
 import { storage } from '../storage.ts'
 
 import type { Sync } from '../../types/sync.ts'
+import { getReviewCounter } from './popup.ts'
 
 interface SupportersApi {
     date: string
@@ -38,6 +39,7 @@ const monthBackgrounds = [
 ]
 
 let modalDataLoaded = false
+let glitterHandle: { start: () => void; stop: () => void } | null = null
 
 export function supportersNotifications(init?: Sync, update?: SupportersUpdate): void {
     if (update?.translate) {
@@ -57,15 +59,16 @@ export function supportersNotifications(init?: Sync, update?: SupportersUpdate):
 }
 
 function canShowSupporters(sync?: Sync): boolean {
-    // // forces supporters notificaion for debugging
-    // return true;
+    // // forces supporters notification for debugging
+    // return true
 
     const hasSupportersDisabled = !sync?.supporters || !sync.supporters.enabled
-    const canGetReviewPopup = sync?.review !== -1
+    const isNewUser = (getReviewCounter() <= 45 || getReviewCounter() === 0) && sync?.review !== -1
+
     const closedMonth = sync?.supporters.closedMonth
     const currentMonth = new Date().getMonth() + 1
 
-    if (hasSupportersDisabled || canGetReviewPopup) {
+    if (hasSupportersDisabled || isNewUser) {
         return false
     } else {
         return currentMonth !== closedMonth
@@ -179,16 +182,18 @@ function toggleSupportersModal(toggle: boolean): void {
         document.documentElement.dataset.supportersModal = ''
     } else {
         delete document.documentElement.dataset.supportersModal
+        glitterHandle?.stop()
     }
 }
 
 export async function loadModalData(): Promise<void> {
+    if (glitterHandle === null && !document.body.className.includes('potato')) {
+        glitterHandle = initGlitter()
+    }
+    glitterHandle?.start()
+
     if (modalDataLoaded) {
         return
-    }
-
-    if (!document.body.className.includes('potato')) {
-        initGlitter()
     }
 
     const currentMonth = new Date().getMonth() + 1
@@ -243,7 +248,7 @@ function tradTemplateString(doc: DocumentFragment, selector: string, text: strin
 }
 
 // glitter animation based off this: github.com/pweth/javascript-snow
-function initGlitter(): void {
+function initGlitter(): { start: () => void; stop: () => void } {
     interface Snowfall {
         canvas: HTMLCanvasElement
         context: CanvasRenderingContext2D
@@ -265,6 +270,7 @@ function initGlitter(): void {
 
     //@ts-expect-error: Type '{}' is missing properties from type Snowfall ...
     const snowfall: Snowfall = {}
+    let rafId: number | null = null
 
     snowfall.canvas = document.getElementById('glitter') as HTMLCanvasElement
     snowfall.context = snowfall.canvas.getContext('2d') as CanvasRenderingContext2D
@@ -335,18 +341,33 @@ function initGlitter(): void {
 
     const snowfallDebounce = debounce(snowfall.setup, 200)
 
-    globalThis.addEventListener('resize', snowfallDebounce)
-
     // Animation loop function
     snowfall.animate = () => {
-        requestAnimationFrame(snowfall.animate)
+        rafId = requestAnimationFrame(snowfall.animate)
         snowfall.context.clearRect(0, 0, snowfall.canvas.width, snowfall.canvas.height)
         for (const snowflake of snowfall.flakes) {
             snowflake.draw()
         }
     }
 
-    // Let it snow!
-    snowfall.setup()
-    snowfall.animate()
+    return {
+        start(): void {
+            if (rafId !== null) {
+                return
+            }
+
+            // Let it snow!
+            snowfall.setup()
+            globalThis.addEventListener('resize', snowfallDebounce)
+            snowfall.animate()
+        },
+        stop(): void {
+            if (rafId === null) {
+                return
+            }
+            cancelAnimationFrame(rafId)
+            rafId = null
+            globalThis.removeEventListener('resize', snowfallDebounce)
+        },
+    }
 }

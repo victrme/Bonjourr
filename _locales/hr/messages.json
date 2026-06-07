@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "Bonjourr · Minimalna početna stranica",
-        "description": "ime proširenja"
+        "message": "Bonjourr · Minimalistička Nova Kartica",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "Unaprijedite vaše iskustvo pregledavanja weba uz Bonjourr,  prilagodljivom i laganom početnom stranicom.",
-        "description": "opis proširenja"
+        "message": "Lijepa i prilagodljiva nova kartica inspirirana iOS-om, dizajnirana za mirno i usredotočeno pregledavanje interneta.",
+        "description": "extension description"
     }
 }

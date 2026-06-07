@@ -30,7 +30,6 @@ export async function folderClick(event: MouseEvent | KeyboardEvent, li?: HTMLLI
     } else if (event instanceof KeyboardEvent) {
         if (event.key === 'Enter' || event.key === ' ' || event.altKey) {
             event.preventDefault() // prevent scrolling when pressing Space
-            folderClick(event)
         } else return
     }
 

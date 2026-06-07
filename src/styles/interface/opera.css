@@ -22,7 +22,7 @@
 }
 
 #opera-explainer a {
-    color: var(--color-blue);
+    color: rgb(var(--accent-color));
     text-decoration: none;
 }
 

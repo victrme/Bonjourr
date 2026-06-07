@@ -81,10 +81,6 @@
     max-height: 300px;
 }
 
-#d_ampm.shown {
-    max-height: 60px;
-}
-
 .all #ampm_label.shown {
     max-height: 60px;
 }
@@ -222,7 +218,7 @@
 }
 
 .all .as_fonts {
-    max-height: 390px;
+    max-height: 410px;
 }
 
 .all .as_page {

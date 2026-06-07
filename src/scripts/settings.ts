@@ -303,23 +303,24 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_lang', data.lang || 'en')
 
     // Activate feature options
-    paramId('time_options')?.classList.toggle('shown', data.time)
-    paramId('analog_options')?.classList.toggle('shown', data.clock.analog && data.showall)
-    paramId('greetings_options')?.classList.toggle('shown', !data.hide?.greetings)
-    paramId('greetingscustom_options')?.classList.toggle('shown', data.greetingsmode === 'custom')
-    paramId('digital_options')?.classList.toggle('shown', !data.clock.analog)
-    paramId('d_ampm')?.classList.toggle('shown', true)
-    paramId('ampm_label')?.classList.toggle('shown', data.clock.ampm)
-    paramId('ampm_position')?.classList.toggle('shown', data.clock.ampmlabel && data.clock.ampm)
-    paramId('worldclocks_options')?.classList.toggle('shown', data.clock.worldclocks)
-    paramId('main_options')?.classList.toggle('shown', data.main)
-    paramId('weather_provider')?.classList.toggle('shown', data.weather?.moreinfo === 'custom')
-    paramId('quicklinks_options')?.classList.toggle('shown', data.quicklinks)
-    paramId('pomodoro_options')?.classList.toggle('shown', data.pomodoro.on)
-    paramId('notes_options')?.classList.toggle('shown', data.notes?.on)
-    paramId('searchbar_options')?.classList.toggle('shown', data.searchbar?.on)
-    paramId('searchbar_request')?.classList.toggle('shown', data.searchbar?.engine === 'custom')
-    paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
+    toggleSettingsDropdown('analog_options', data.clock.analog && data.showall)
+    toggleSettingsDropdown('greetings_options', !data.hide?.greetings)
+    toggleSettingsDropdown('greetingscustom_options', data.greetingsmode === 'custom')
+    toggleSettingsDropdown('digital_options', !data.clock.analog)
+    toggleSettingsDropdown('ampm_label', data.clock.ampm)
+    toggleSettingsDropdown('ampm_position', data.clock.ampmlabel && data.clock.ampm)
+    toggleSettingsDropdown('worldclocks_options', data.clock.worldclocks)
+    toggleSettingsDropdown('weather_provider', data.weather?.moreinfo === 'custom')
+    toggleSettingsDropdown('searchbar_request', data.searchbar?.engine === 'custom')
+
+    // the events for these are in toggleWidgetInSettings()
+    toggleSettingsDropdown('quicklinks_options', data.quicklinks)
+    toggleSettingsDropdown('time_options', data.time)
+    toggleSettingsDropdown('main_options', data.main)
+    toggleSettingsDropdown('pomodoro_options', data.pomodoro.on)
+    toggleSettingsDropdown('notes_options', data.notes?.on ?? false)
+    toggleSettingsDropdown('searchbar_options', data.searchbar?.on)
+    toggleSettingsDropdown('quotes_options', data.quotes?.on)
 
     // Page layout
     const gridLayoutButtons = domsettings.querySelectorAll<HTMLButtonElement>('#grid-layout button')
@@ -360,7 +361,6 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_weatherhide', hideWeather)
 
     // Quotes option display
-    paramId('quotes_options')?.classList.toggle('shown', data.quotes?.on)
     paramId('quotes_userlist')?.classList.toggle('shown', data.quotes?.type === 'user')
     paramId('quotes_url')?.classList.toggle('shown', data.quotes?.type === 'url')
 
@@ -614,7 +614,7 @@ function initOptionsEvents(): void {
     })
 
     onclickdown(paramId('i_worldclocks'), (_, target) => {
-        paramId('worldclocks_options')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('worldclocks_options', target.checked)
         clock(undefined, { worldclocks: target.checked })
     })
 
@@ -654,18 +654,18 @@ function initOptionsEvents(): void {
         clock(undefined, { ampm: target.checked })
 
         // shows/hides ampm_label option
-        paramId('ampm_label')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('ampm_label', target.checked)
 
         // same for its position based on ampm_label AND 12h time toggle
         const ampm_toggle = document.querySelector('#i_ampm-label') as HTMLInputElement
-        paramId('ampm_position')?.classList.toggle('shown', target.checked && ampm_toggle.checked)
+        toggleSettingsDropdown('ampm_position', target.checked && ampm_toggle.checked)
     })
 
     onclickdown(paramId('i_ampm-label'), (_, target) => {
         clock(undefined, { ampmlabel: target.checked })
 
         // shows/hides ampm_position option
-        paramId('ampm_position')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('ampm_position', target.checked)
     })
 
     paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement): void {
@@ -736,7 +736,7 @@ function initOptionsEvents(): void {
     })
 
     onclickdown(paramId('i_greethide'), (_, target) => {
-        document.getElementById('greetings_options')?.classList.toggle('shown', target.checked)
+        toggleSettingsDropdown('greetings_options', target.checked)
         hideElements({ greetings: !target.checked }, { isEvent: true })
     })
 
@@ -1595,6 +1595,26 @@ async function toggleSettingsChangesButtons(action: string): Promise<void> {
         paramId('settings-changes-options')?.classList.add('hidden')
         paramId('settings-files-options')?.classList.remove('hidden')
     }
+}
+
+// this needs to be implemented little by little to replace the billion "paramId('smth')?.classList.toggle('shown', true)" stuff
+// doing it all at once is way too scary
+export function toggleSettingsDropdown(dropdownId: string, shown: boolean): void {
+    const dropdown = document.getElementById(dropdownId)
+
+    if (!dropdown) {
+        console.error(`Couldn't find settings dropdown to toggle: #${dropdownId}`)
+        return
+    }
+
+    dropdown.classList.toggle('shown', shown)
+
+    // makes inputs and selects non focusable when tabbing
+    dropdown.querySelectorAll('input, select').forEach((el) => {
+        if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
+            el.disabled = !shown
+        }
+    })
 }
 
 //	Helpers

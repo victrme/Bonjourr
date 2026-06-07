@@ -10,6 +10,7 @@ import { parse } from '../utils/parse.ts'
 import type { SearchEngines } from '../../types/shared.ts'
 import type { Searchbar } from '../../types/sync.ts'
 import { networkForm } from '../shared/form.ts'
+import { toggleSettingsDropdown } from '../settings.ts'
 
 type SearchbarUpdate = {
     engine?: string
@@ -104,7 +105,7 @@ async function updateSearchbar({
     }
 
     if (isValidEngine(engine)) {
-        document.getElementById('searchbar_request')?.classList.toggle('shown', engine === 'custom')
+        toggleSettingsDropdown('searchbar_request', engine === 'custom')
         searchbar.engine = engine
         setEngine(engine)
     }

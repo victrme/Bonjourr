@@ -1,10 +1,10 @@
 {
     "extensionName": {
-        "message": "בונז'ור · דף בית מינימליסטי",
-        "description": "שם התוסף"
+        "message": "Bonjourr · לשונית חדשה מינימליסטית",
+        "description": "extension name"
     },
     "extensionDesc": {
-        "message": "שפרו את חוויית הגלישה שלכם באינטרנט עם בונז'ור, דף בית יפהפה וקל משקל הניתן להתאמה אישית",
-        "description": "תיאור התוסף"
+        "message": "לשונית חדשה יפה וניתנת להתאמה אישית, בהשראת iOS, המיועדת לחוויית גלישה רגועה וממוקדת.",
+        "description": "extension description"
     }
 }
