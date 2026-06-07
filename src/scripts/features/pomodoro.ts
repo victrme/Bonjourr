@@ -41,9 +41,9 @@ const focusButton = document.getElementById('pmdr-focus') as HTMLInputElement
 // to communicate with other tabs
 const broadcast = new BroadcastChannel('bonjourr_pomodoro') as BroadcastChannel
 
-let countdown: number
-let timeModeTimeout: number
-let tabTitleTimeout: number
+let countdown: ReturnType<typeof setTimeout>
+let timeModeTimeout: ReturnType<typeof setTimeout>
+let tabTitleTimeout: ReturnType<typeof setTimeout>
 const timeBeforeReset = 10000 // time before the timer resets after the end
 const alarmAudio: HTMLAudioElement = new Audio()
 

@@ -32,7 +32,7 @@ let ids: string[] = []
 let initids: string[] = []
 let coords: Coords[] = []
 let dragContainers: NodeListOf<HTMLElement>
-let dragChangeParentTimeout = 0
+let dragChangeParentTimeout: ReturnType<typeof setTimeout>
 let dragAnimationFrame = 0
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement

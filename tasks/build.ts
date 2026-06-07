@@ -255,7 +255,7 @@ function locales(platform: Platform): void {
 
 async function watchTasks(path: string, platformName: string, callback: (filename: string) => void): Promise<void> {
     const watcher = Deno.watchFs(path)
-    let debounce = 0
+    let debounce: ReturnType<typeof setTimeout> | undefined = undefined
 
     for await (const event of watcher) {
         if (event.paths.length === 0) {

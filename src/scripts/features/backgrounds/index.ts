@@ -58,7 +58,7 @@ interface BackgroundUpdate {
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
 const fadeinPreviewDebounce = debounce(previewFadein, 200)
-let fadeinTimeout = 0
+let fadeinTimeout: ReturnType<typeof setTimeout>
 
 const formBackgroundUserColl = networkForm('f_background-user-coll')
 const formBackgroundUserSearch = networkForm('f_background-user-search')

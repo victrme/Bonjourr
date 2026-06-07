@@ -9,8 +9,7 @@ type Transitioner = {
 }
 
 export function transitioner(): Transitioner {
-    //
-    let waitTimeout: number
+    let waitTimeout: ReturnType<typeof setTimeout>
 
     const steps: {
         first?: Func

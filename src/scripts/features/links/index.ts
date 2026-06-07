@@ -105,7 +105,7 @@ type LinksInit = {
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
-let selectallTimer = 0
+let selectallTimer: ReturnType<typeof setTimeout>
 
 export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise<void> {
     if (event) {

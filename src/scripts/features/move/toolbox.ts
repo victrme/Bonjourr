@@ -8,7 +8,7 @@ import type { Widgets } from '../../../types/shared.ts'
 import { onclickdown } from 'clickdown/mod'
 
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
-let resetTimeout: number
+let resetTimeout: ReturnType<typeof setTimeout>
 let firstPos = { x: 0, y: 0 }
 let moverPos = { x: 0, y: 0 }
 

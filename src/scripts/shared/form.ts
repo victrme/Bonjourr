@@ -11,7 +11,7 @@ export function networkForm(targetId: string): NetworkFormReturn {
     let form: HTMLFormElement
     let button: HTMLButtonElement
     let message: HTMLSpanElement
-    let loadTimeout = 0
+    let loadTimeout: ReturnType<typeof setTimeout>
 
     onSettingsLoad((): void => {
         form = document.getElementById(targetId) as HTMLFormElement

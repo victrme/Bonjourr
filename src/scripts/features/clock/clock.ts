@@ -14,7 +14,7 @@ export interface ClockStartOptions {
     greetings: Greetings
 }
 
-let clockInterval: number
+let clockInterval: ReturnType<typeof setTimeout>
 let clockVisibilityListener: (() => void) | null = null
 
 export function startClock(options: ClockStartOptions): void {
