@@ -125,6 +125,8 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
     domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
 
+    document.addEventListener('keydown', openLinksWithKeyboard)
+
     if (sync.linkgroups.synced.length > 0) {
         await initBookmarkSync(sync)
     }
@@ -248,6 +250,7 @@ export function initblocks(sync: Sync, local?: Local): true {
 
     setRadius(sync.linkiconradius)
     displayInterface('links')
+    limitAltableLinks()
 
     return true
 }
@@ -285,7 +288,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
 
 function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyle']): HTMLLIElement {
     const li = getHTMLTemplate<HTMLLIElement>('link-elem-template', 'li')
-    const span = li.querySelector('span')
+    const span = li.querySelector('span.link-elem-title')
     const anchor = li.querySelector('a')
     const img = li.querySelector('img')
 
@@ -914,4 +917,38 @@ function getIconFromLinkElem(link: LinkElem): string {
 
 function isLinkStyle(s: string): s is Sync['linkstyle'] {
     return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
+}
+
+function openLinksWithKeyboard(event: KeyboardEvent): void {
+    const { altKey, ctrlKey, metaKey, code } = event
+    const isNotAltComboKey = !altKey || ctrlKey || metaKey
+    const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))
+
+    if (isNotAltComboKey || isNaN(codeNumber)) {
+        return
+    }
+
+    const links = document.querySelectorAll<HTMLLIElement>('.link')
+    const link = links[codeNumber - 1]
+
+    if (!link) {
+        return
+    }
+
+    event.preventDefault()
+
+    if (link.classList.contains('link-folder')) {
+        folderClick(event, link)
+    } else {
+        link.querySelector('a')?.click()
+    }
+}
+
+// no way to do this in CSS with the pinned groups :(
+export function limitAltableLinks(): void {
+    const links = document.querySelectorAll<HTMLElement>('#linkblocks .link')
+
+    links.forEach((link, i) => {
+        link.classList.toggle('no-alt', i >= 9)
+    })
 }
