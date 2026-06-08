@@ -291,7 +291,7 @@
 
 @media only screen and (hover: hover) {
     #linkblocks.backgrounds .link a:hover div {
-        box-shadow: 0px 0.2em 1em rgba(0, 0, 0, 0.4);
+        box-shadow: 0px 0.2em 1em rgb(0 0 0 / 0.4);
     }
 
     .link:not(.selected) a:hover div, .link.selected :hover div {
