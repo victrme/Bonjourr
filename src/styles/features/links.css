@@ -73,8 +73,8 @@
 }
 
 /* Overengineered brightness because filter disables backdrop with .link-folder */
-.link-elem:active,
-.link-folder:active img,
+.link-elem a:active,
+.link-folder a:active img,
 .link-group.hiding .link-elem,
 .link-group.hiding .link-folder img {
     filter: brightness(0.8);
@@ -182,7 +182,6 @@
 .link {
     transition: transform 0.2s var(--in-out-bounce), opacity 0.1s var(--in-out-bounce), filter 0.06s;
     width: var(--block-size);
-    cursor: pointer;
     touch-action: none;
 }
 
@@ -192,8 +191,8 @@
     transition-timing-function: var(--out-cubic);
     transition-property: transform, box-shadow, border-color, background-color;
 
-    /* helps with scaling artifacts */
-    will-change: transform;
+    /* might help with scaling artifacts */
+    /* will-change: transform; */
 }
 
 .link div {
@@ -291,15 +290,13 @@
 }
 
 @media only screen and (hover: hover) {
-    #linkblocks.backgrounds .link:hover div {
+    #linkblocks.backgrounds .link a:hover div {
         box-shadow: 0px 0.2em 1em rgba(0, 0, 0, 0.4);
     }
 
-    .link:hover:not(.selected) div, .link.selected div {
+    .link:not(.selected) a:hover div, .link.selected :hover div {
         transform: translateY(-2px) scale(1.05);
     }
-
-     
 }
 
 .link-folder > div {
