@@ -294,7 +294,7 @@
         box-shadow: 0px 0.2em 1em rgb(0 0 0 / 0.4);
     }
 
-    .link:not(.selected) a:hover div, .link.selected :hover div {
+    .link:not(.selected) a:hover div, .link.selected a div {
         transform: translateY(-2px) scale(1.05);
     }
 }
