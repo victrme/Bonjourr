@@ -1,5 +1,5 @@
 import { EXTENSION, IS_MOBILE, PLATFORM } from '../../defaults.ts'
-import { isValidEngine, isValidUrl } from './searchbar.ts'
+import { isDistantUrl, isLocalIp, isValidEngine, safeURL } from './searchbar.ts'
 import { getSocket } from './suggestions.ts'
 import { tradThis } from '../../utils/translations.ts'
 
@@ -12,8 +12,10 @@ export function submitSearch(e: Event): void {
     const domsearchbar = document.querySelector<HTMLInputElement>('#searchbar')
     const canUseDefault = !IS_MOBILE && (PLATFORM === 'chrome' || PLATFORM === 'firefox')
     const newtab = domcontainer?.dataset.newtab === 'true'
-    const socket = getSocket()
+    const openTarget = newtab ? '_blank' : '_self'
     const val = domsearchbar?.value
+    const socket = getSocket()
+
     let engine = domcontainer?.dataset.engine ?? 'default'
 
     if (!val) {
@@ -24,24 +26,32 @@ export function submitSearch(e: Event): void {
         socket.close()
     }
 
-    if (canUseDefault && engine === 'default') {
-        ;(EXTENSION as typeof chrome)?.search.query({
-            disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
-            text: val,
-        })
+    engine = engine.replace('default', 'google')
+    const hasProtocol = val.startsWith('http://') || val.startsWith('https://')
+    const domainUrl = hasProtocol ? val : `http://${val}`
+    const url = safeURL(domainUrl)
+
+    if (url && isLocalIp(url)) {
+        globalThis.open(url, openTarget)
         return
     }
 
-    engine = engine.replace('default', 'google')
+    if (url && isDistantUrl(url)) {
+        globalThis.open(
+            domainUrl.replace('http', 'https'),
+            openTarget,
+        )
+        return
+    }
 
-    const hasProtocol = val.startsWith('http://') || val.startsWith('https://')
-    const domainUrl = hasProtocol ? val : `https://${val}`
-    const searchUrl = createSearchUrl(val, engine)
-    const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
-    const target = newtab ? '_blank' : '_self'
-
-    globalThis.open(url, target)
-    return
+    if (EXTENSION && canUseDefault && engine === 'default') {
+        EXTENSION.search.query({
+            disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
+            text: val,
+        })
+    } else {
+        globalThis.open(createSearchUrl(val, engine), openTarget)
+    }
 }
 
 function createSearchUrl(val: string, engine: string): string {
@@ -79,7 +89,3 @@ function createSearchUrl(val: string, engine: string): string {
 
     return result
 }
-
-const _topLevelDomains =
-    'com,org,de,br,ru,uk,net,jp,it,fr,nl,pl,in,au,ca,cz,es,ch,be,co,eu,ua,ar,hu,at,ro,gr,tr,se,za,kr,mx,vn,id,info,cl,dk,ir,fi,nz,shop,sk,io,tw,il,online,no,pt,ai,рф,store,ie,cn,by,app,site,pro,xyz,lt,rs,us,my,me,pk,hr,kz,si,bg,biz,sg,ee,pe,ae,cc,top,world,lv,th,club,hk,live,tv,ng,ph,vip,ma,dev,sa,cat,uy,tech,blog,ke'
-        .split(',')

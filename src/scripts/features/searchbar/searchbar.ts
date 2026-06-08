@@ -24,7 +24,6 @@ type SearchbarUpdate = {
 }
 
 const customEngineForm = networkForm('f_sbrequest')
-const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
 const domcontainer = document.querySelector<HTMLElement>('#sb_container')
 const domsearchbar = document.querySelector<HTMLInputElement>('#searchbar')
 
@@ -106,7 +105,7 @@ async function updateSearchbar(update: SearchbarUpdate): Promise<void> {
         const formdata = new FormData(form)
         const value = formdata.get('sbrequest')?.toString() ?? ''
         const noQueryPlaceholder = !value.includes('%s') && value.length > 0
-        const badCustomDomain = !value.match(domainPattern)
+        const badCustomDomain = safeURL(value) === undefined
 
         if (badCustomDomain) {
             customEngineForm.warn(tradThis('URL seems wrong'))
@@ -133,9 +132,6 @@ function handleUserInput(e: Event): void {
     const domsuggestions = document.querySelector<HTMLElement>('#sb-suggestions')
 
     const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
-    const hasProtocol = value.startsWith('http://') || value.startsWith('https://')
-    const withProtocol = hasProtocol ? value : `https://${value}`
-    const startsTypingProtocol = 'https://'.startsWith(value) || 'http://'.startsWith(value)
     const socket = getSocket()
 
     // Button display toggle
@@ -151,7 +147,11 @@ function handleUserInput(e: Event): void {
         return
     }
 
-    if (startsTypingProtocol || isValidUrl(withProtocol)) {
+    const isHttp = value.startsWith('http://') || value.startsWith('https://')
+    const valueURL = safeURL(isHttp ? value : `http://${value}`)
+    const isValidUrl = valueURL && (isDistantUrl(valueURL) || isLocalIp(valueURL))
+
+    if (startAsHttpUrl(value) || isValidUrl) {
         domsuggestions?.classList.remove('shown')
         return
     }
@@ -240,16 +240,43 @@ function setBackground(value = '#fff2'): void {
  * Helpers
  */
 
+const topLevelDomains =
+    'com,org,de,br,ru,uk,net,jp,it,fr,nl,pl,in,au,ca,cz,es,ch,be,co,eu,ua,ar,hu,at,ro,gr,tr,se,za,kr,mx,vn,id,info,cl,dk,ir,fi,nz,shop,sk,io,tw,il,online,no,pt,ai,рф,store,ie,cn,by,app,site,pro,xyz,lt,rs,us,my,me,pk,hr,kz,si,bg,biz,sg,ee,pe,ae,cc,top,world,lv,th,club,hk,live,tv,ng,ph,vip,ma,dev,sa,cat,uy,tech,blog,ke,ovh'
+        .split(',')
+
 export function isValidEngine(str = ''): str is SearchEngines {
     return SEARCHBAR_ENGINES.includes(str as SearchEngines)
 }
 
-export function isValidUrl(string: string): boolean {
+export function safeURL(s: string): URL | undefined {
     try {
-        const basicURL = !!new URL(string)
-        const regexMatch = domainPattern.test(string)
-        return basicURL && regexMatch
-    } catch (_) {
-        return false
+        const url = new URL(s)
+        const hasSpaces = url.hostname.includes('%20')
+
+        if (hasSpaces) {
+            throw 'URL contructor allows spaces, not me'
+        }
+
+        return url
+    } catch (_) { //
     }
+}
+
+function startAsHttpUrl(string: string): boolean {
+    return 'https://'.startsWith(string) ||
+        'localhost'.startsWith(string) ||
+        '192.168.'.startsWith(string) ||
+        'http://'.startsWith(string) ||
+        '::1'.startsWith(string)
+}
+
+export function isLocalIp({ hostname }: URL): boolean {
+    return hostname.includes('192.168.') ||
+        hostname.startsWith('127.0.0.1') ||
+        hostname.startsWith('localhost')
+}
+
+export function isDistantUrl({ host }: URL): boolean {
+    const tld = host.split('.').at(-1) ?? ''
+    return topLevelDomains.includes(tld)
 }
