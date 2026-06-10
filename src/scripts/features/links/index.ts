@@ -922,7 +922,7 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
 
 function openLinksWithKeyboard(event: KeyboardEvent): void {
     if (isTypingTarget(event.target)) return
-    
+
     const { altKey, ctrlKey, metaKey, code } = event
     const isNotAltComboKey = !altKey || ctrlKey || metaKey
     const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))
