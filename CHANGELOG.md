@@ -29,11 +29,12 @@
   - Fixed text in settings input looking like a placeholder
 - Localization updates (thank you!!):
   - 🇵🇹 Portuguese by @Blackspirits 
-  - 🇪🇸 Spanish by @Carbaz
+  - 🇪🇸 Spanish by @Carbaz & @palacios22c
   - 🇮🇹 Italian by @antarcorrado
   - 🇵🇱 Polish by @Zylvo
   - 🇷🇸 Serbian by @rammba
   - 🇻🇳 Vietnamese by @trmdi
+  - 🇧🇾 Belarusian by @The518thGuy 
 
 ## 22.1.0
 
