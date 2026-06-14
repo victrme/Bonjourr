@@ -38,7 +38,7 @@ You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
 
 ## 👋 Get in touch
 
-Follow us [on Bluesky](https://bsky.app/profile/bonjourr.fr) or check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) :)
+Follow us [on Bluesky](https://bsky.app/profile/bonjourr.fr) or check out [our Discord server](https://discord.com/invite/CCAR9J4qVg) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) :)
 
 <br>
 
