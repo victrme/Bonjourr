@@ -590,6 +590,10 @@
     font-size: smaller;
 }
 
+.clock-date-secondary:empty {
+	display: none;
+}
+
 .clock-date-secondary::after {
     content: '\200b';
 }
