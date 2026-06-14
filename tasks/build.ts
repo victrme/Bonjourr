@@ -110,9 +110,8 @@ function html(platform: Platform): void {
 
     let html = indexdata
 
-    if (platform !== 'edge') {
-        html = html.replace('<!-- default icon -->', favicon)
-    }
+    html = html.replace('<!-- default icon -->', favicon)
+
     if (platform === 'online') {
         html = html.replace('<!-- icon -->', icon)
     }
