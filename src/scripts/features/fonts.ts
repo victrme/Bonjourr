@@ -224,7 +224,7 @@ async function getNewFont(font: Font, newfamily: string): Promise<Font | undefin
     return
 }
 
-function displayFont({ family, size, weight, system, color }: Font): void {
+function displayFont({ family, size, weight, system, color = '#ffffff' }: Font): void {
     // Weight: default bonjourr lowers font weight on clock (because we like it)
     const clockWeight = Number.parseInt(weight) > 100
         ? systemfont.weights[systemfont.weights.indexOf(weight) - 1]
