@@ -1,4 +1,4 @@
-const VERSION = '22.0.1'
+const VERSION = '22.2.1'
 
 buildPlatforms()
 archiveSource()
