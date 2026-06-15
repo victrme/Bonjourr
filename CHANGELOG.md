@@ -1,3 +1,8 @@
+## 22.2.1
+
+- fixes font color crash (#863)
+- fixes unusable layout toolbox (#862)
+
 ## 22.2.0
 
 - New features:
