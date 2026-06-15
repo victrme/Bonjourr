@@ -253,7 +253,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_seconds', data.clock?.seconds ?? false)
     setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
     setCheckbox('i_main', data.main)
-    setCheckbox('i_show_unit', data.weather.show_unit)
+    setCheckbox('i_show_unit', data.weather.show_unit ?? false)
     setCheckbox('i_greethide', !data.hide?.greetings)
     setCheckbox('i_notes', data.notes?.on ?? false)
     setCheckbox('i_sb', data.searchbar?.on ?? false)

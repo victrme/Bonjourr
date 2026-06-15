@@ -11,6 +11,10 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
         if (minor < 1) {
             data = filter.addAlarmsToPomodoro(data)
         }
+
+        if (minor < 2) {
+            data = filter.addColorToFont(data)
+        }
     }
 
     if (major <= 21) {
