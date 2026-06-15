@@ -61,7 +61,9 @@ let eventLocation: EventLocation
 export function openContextMenu(event: Event): void {
     const selection = globalThis.getSelection() // imperfect selected text detection to allow for OS context menu
 
-    if (selection && !selection.isCollapsed) {
+    const notesAreSelected = document.querySelector('#notes_container div[data-selected]')
+
+    if (selection?.toString() || notesAreSelected) {
         return
     }
 
