@@ -11,6 +11,16 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function addShowUnitToWeather(data: Import): Import {
+    if (!data.weather) {
+        data.weather = SYNC_DEFAULT.weather
+    }
+
+    data.weather.show_unit = data.weather.show_unit ?? SYNC_DEFAULT.weather.show_unit
+
+    return data
+}
+
 export function addColorToFont(data: Import): Import {
     if (!data.font) {
         data.font = SYNC_DEFAULT.font
