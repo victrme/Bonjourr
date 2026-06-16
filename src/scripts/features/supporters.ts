@@ -231,8 +231,10 @@ export async function loadModalData(): Promise<void> {
             modal?.classList.add('loaded')
         }
     } catch (_error) {
-        if (main) {
-            main.innerHTML = `<i>An error occured or we might be offline!</i>`
+        const mainError = main?.querySelector('.error')
+
+        if (mainError) {
+            mainError.textContent = `An error occured or we might be offline!`
         }
     }
 

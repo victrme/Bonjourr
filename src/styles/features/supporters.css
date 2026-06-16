@@ -311,6 +311,14 @@ html[data-supporters] #show-settings.shown:after {
     margin-left: 5px;
 }
 
+#supporters-modal main .error {
+    font-style: italic;
+}
+
+#supporters-modal main .error:empty {
+    display: none;
+}
+
 #supporters-modal footer {
     padding: 1em 3em;
     width: 100%;
