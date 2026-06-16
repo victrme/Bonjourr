@@ -111,7 +111,8 @@ aside button {
 aside input,
 aside select {
     height: 31px;
-    width: 155px;
+    max-width: 155px;
+    width: 100%;
     padding-inline: 13px;
     overflow: hidden;
     text-overflow: ellipsis;
