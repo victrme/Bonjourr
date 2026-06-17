@@ -615,7 +615,7 @@
     width: auto;
 }
 
-.text .link:hover .link-elem-title, .text .link:hover .link-folder-title {
+.text .link:hover .link-elem-title {
     text-decoration: underline;
 }
 
@@ -624,7 +624,7 @@
     display: none;
 }
 
-.text .link .link-elem-title, .text .link .link-folder-title {
+.text .link .link-elem-title {
     display: inline-block;
     width: 100%;
     max-width: 16em;
@@ -635,9 +635,6 @@
     border-radius: 8px;
 }
 
-.text .link .link-folder-title {
-    padding-top: 0.4em;
-}
 
 /* Folder styles for medium and small */
 
