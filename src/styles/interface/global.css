@@ -49,3 +49,11 @@
 #pomodoro_container {
     place-self: center;
 }
+
+.layout-text-left {
+    text-align: left;
+}
+
+.layout-text-right {
+    text-align: right;
+}

@@ -25,16 +25,16 @@
     text-decoration: none;
 }
 
-.text-left #link-mini,
-.text-left .link-list {
+.layout-text-left #link-mini,
+.layout-text-left .link-list {
     justify-content: start;
 }
 
-.text-left #link-mini {
+.layout-text-left #link-mini {
     text-align: left;
 }
 
-.text-left .link-group {
+.layout-text-left .link-group {
     align-items: start;
 }
 

@@ -300,3 +300,21 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
         gap: 0;
     }
 }
+
+/* Move layout */
+
+#pomodoro_container.layout-text-left #pmdr_timer,
+#pomodoro_container.layout-text-left #bottomControls,
+#pomodoro_container.layout-text-right #pmdr_timer,
+#pomodoro_container.layout-text-right #bottomControls {
+    /* to match #pmdr_modes */
+    padding-inline: 11px;
+}
+
+#pomodoro_container.layout-text-left #bottomControls {
+    justify-content: flex-start;
+}
+
+#pomodoro_container.layout-text-right #bottomControls {
+    justify-content: flex-end;
+}
