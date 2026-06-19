@@ -232,6 +232,7 @@
     max-height: 3.6em;
     /* overflow: hidden; */
     word-wrap: break-word;
+    text-align: center;
 }
 
 .titles .link .link-elem-title {

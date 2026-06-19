@@ -30,7 +30,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     max-width: 45em;
     min-width: 20em;
     cursor: initial;
-    text-shadow: var(--text-shadow-interface);;
+    text-shadow: var(--text-shadow-interface);
 }
 
 #pomodoro_container.clone {
