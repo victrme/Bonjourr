@@ -230,7 +230,7 @@
     padding-top: 0.4em;
     line-height: 1.2em;
     max-height: 3.6em;
-    overflow: hidden;
+    /* overflow: hidden; */
     word-wrap: break-word;
 }
 
@@ -802,6 +802,11 @@
 
 #link-mini.in-drag .add-group {
     visibility: hidden;
+}
+
+#link-mini button:not(.selected-group) {
+    text-shadow: var(--text-shadow-interface);
+    overflow: visible; /* otherwise shadow has borders */ 
 }
 
 .link-group.in-folder + #link-mini {

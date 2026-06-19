@@ -1,3 +1,10 @@
+## 22.2.2
+
+- Fixed pomodoro widget not alignable using layout toolbox's text alignment
+- Fixed some quick links styling issues
+- Adjusted some text-shadows on #interface
+- Fixed a minor styling issue with selects in the settings
+
 ## 22.2.1
 
 - fixes font color crash (#863)
