@@ -34,6 +34,96 @@ const customEngineForm = networkForm('f_sbrequest')
 
 let socket: WebSocket | undefined
 const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
+const COMMON_TLDS = new Set([
+    'ac',
+    'ad',
+    'ae',
+    'af',
+    'ag',
+    'ai',
+    'al',
+    'am',
+    'app',
+    'ar',
+    'at',
+    'au',
+    'be',
+    'bg',
+    'biz',
+    'br',
+    'ca',
+    'cc',
+    'ch',
+    'cl',
+    'cloud',
+    'club',
+    'cn',
+    'co',
+    'com',
+    'cz',
+    'de',
+    'dev',
+    'dk',
+    'edu',
+    'ee',
+    'es',
+    'eu',
+    'fi',
+    'fm',
+    'fr',
+    'gg',
+    'gov',
+    'gr',
+    'hk',
+    'hr',
+    'hu',
+    'id',
+    'ie',
+    'il',
+    'in',
+    'info',
+    'io',
+    'is',
+    'it',
+    'jp',
+    'kr',
+    'li',
+    'lt',
+    'lu',
+    'lv',
+    'me',
+    'mil',
+    'mx',
+    'net',
+    'nl',
+    'no',
+    'nz',
+    'online',
+    'org',
+    'pl',
+    'pro',
+    'pt',
+    'ro',
+    'rs',
+    'ru',
+    'se',
+    'sg',
+    'shop',
+    'site',
+    'sk',
+    'space',
+    'store',
+    'tech',
+    'to',
+    'tr',
+    'tv',
+    'tw',
+    'ua',
+    'uk',
+    'us',
+    'vn',
+    'xyz',
+])
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -168,11 +258,72 @@ async function updateSearchbar({
 //	Search Submission
 //
 
-function isValidUrl(string: string): boolean {
+function cleanHostname(hostname: string): string {
+    return hostname.toLowerCase().replace(/\.$/, '')
+}
+
+function isLocalHostname(hostname: string): boolean {
+    const clean = cleanHostname(hostname)
+
+    if (clean === 'localhost') {
+        return true
+    }
+
+    const parts = clean.split('.')
+    if (parts.length !== 4 || parts.some((part) => !/^\d+$/.test(part))) {
+        return false
+    }
+
+    const octets = parts.map(Number)
+    if (octets.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
+        return false
+    }
+
+    const [first, second] = octets
+    return first === 10 ||
+        first === 127 ||
+        (first === 172 && second >= 16 && second <= 31) ||
+        (first === 192 && second === 168)
+}
+
+function getInputHostname(value: string): string {
+    const withoutProtocol = value.replace(/^https?:\/\//i, '')
+    const host = withoutProtocol.split(/[/?#]/)[0]?.split('@').pop() ?? ''
+    const hostname = host.startsWith('[') ? host : host.split(':')[0] ?? ''
+    return cleanHostname(hostname)
+}
+
+function hasCommonTld(hostname: string): boolean {
+    const labels = cleanHostname(hostname).split('.')
+    const tld = labels[labels.length - 1] ?? ''
+    const validLabels = labels.every((label) =>
+        /^[a-z0-9-]+$/.test(label) && !label.startsWith('-') && !label.endsWith('-')
+    )
+    return validLabels && COMMON_TLDS.has(tld)
+}
+
+function hasProtocol(value: string): boolean {
+    return value.startsWith('http://') || value.startsWith('https://')
+}
+
+function createDomainUrl(value: string): string {
+    if (hasProtocol(value)) {
+        return value
+    }
+
+    const secureUrl = `https://${value}`
+
+    return isLocalHostname(getInputHostname(secureUrl)) ? `http://${value}` : secureUrl
+}
+
+export function isValidUrl(string: string, hadProtocol = true): boolean {
     try {
-        const basicURL = !!new URL(string)
+        const url = new URL(string)
+        const basicURL = !!url
         const regexMatch = domainPattern.test(string)
-        return basicURL && regexMatch
+        const localHostname = isLocalHostname(getInputHostname(string))
+        const allowedTld = hadProtocol || hasCommonTld(url.hostname)
+        return basicURL && (localHostname || (regexMatch && allowedTld))
     } catch (_) {
         return false
     }
@@ -238,10 +389,10 @@ function submitSearch(e: Event): void {
 
     engine = engine.replace('default', 'google')
 
-    const hasProtocol = val.startsWith('http://') || val.startsWith('https://')
-    const domainUrl = hasProtocol ? val : `https://${val}`
+    const hadProtocol = hasProtocol(val)
+    const domainUrl = createDomainUrl(val)
     const searchUrl = createSearchUrl(val, engine)
-    const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
+    const url = isValidUrl(domainUrl, hadProtocol) ? domainUrl : searchUrl
     const target = newtab ? '_blank' : '_self'
 
     globalThis.open(url, target)
@@ -445,8 +596,6 @@ function suggestions(results: Suggestions): void {
 
 function handleUserInput(e: Event): void {
     const value = ((e as InputEvent).target as HTMLInputElement).value ?? ''
-    const hasProtocol = value.startsWith('http://') || value.startsWith('https://')
-    const withProtocol = hasProtocol ? value : `https://${value}`
     const startsTypingProtocol = 'https://'.startsWith(value) || 'http://'.startsWith(value)
 
     // Button display toggle
@@ -462,7 +611,7 @@ function handleUserInput(e: Event): void {
         return
     }
 
-    if (startsTypingProtocol || isValidUrl(withProtocol)) {
+    if (startsTypingProtocol || isValidUrl(createDomainUrl(value), hasProtocol(value))) {
         domsuggestions?.classList.remove('shown')
         return
     }
