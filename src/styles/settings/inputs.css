@@ -232,6 +232,13 @@ aside input[type='range']::-webkit-slider-runnable-track {
         #efefef;
 }
 
+html:dir(rtl) aside input[type='range']::-webkit-slider-runnable-track {
+    background:
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color)))
+        right / var(--sx) 100% no-repeat,
+        #efefef;
+}
+
 [data-theme='dark'] aside input[type='range']::-webkit-slider-runnable-track {
     background:
         linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
@@ -334,6 +341,7 @@ aside .color-button button {
             rgb(var(--input-color)) 85%,
             black
         );
+    direction: ltr;
 }
 
 aside .inputWithSuffix {

@@ -24,6 +24,7 @@
     user-select: none;
     isolation: isolate;
     white-space: pre;
+    direction: ltr;
 }
 
 [data-system='mac'] .prism-code-editor {
@@ -46,6 +47,7 @@
     pointer-events: auto;
     user-select: auto;
     -webkit-user-select: auto;
+    direction: ltr;
 }
 
 .prism-code-editor textarea::placeholder {
