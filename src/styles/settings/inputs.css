@@ -266,6 +266,13 @@ aside input[type='range']::-moz-range-track {
         #efefef;
 }
 
+html:dir(rtl) aside input[type='range']::-moz-range-track {
+    background:
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color)))
+        right / var(--sx) 100% no-repeat,
+        #efefef;
+}
+
 [data-theme='dark'] aside input[type='range']::-moz-range-track {
     background:
         linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
