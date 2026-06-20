@@ -1,5 +1,6 @@
 ## 22.2.2
 
+- Fixed broken settings and context menu for RTL (right to left) languages
 - Fixed pomodoro widget not alignable using layout toolbox's text alignment
 - Fixed some quick links styling issues
 - Adjusted some text-shadows on #interface

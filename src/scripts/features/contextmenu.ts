@@ -207,7 +207,7 @@ export function positionContextMenu(event: Event): void {
     }
 
     if (rightToLeft) {
-        x *= -1
+        x = x - innerWidth + w
     }
 
     domdialog.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`
