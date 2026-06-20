@@ -16,6 +16,7 @@ import { notes } from './features/notes.ts'
 import { clock } from './features/clock/index.ts'
 import './features/contextmenu.ts'
 
+import { altModeIsDisabled } from './features/links/helpers.ts'
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { operaExtensionExplainer } from './startup/opera.ts'
@@ -93,7 +94,10 @@ async function startup(): Promise<void> {
     pageControl({ width: sync.pagewidth, gap: sync.pagegap })
     operaExtensionExplainer(local.operaExplained)
     tabsTracking()
-    altMode()
+
+    if (!altModeIsDisabled()) {
+        altMode()
+    }
 
     document.documentElement.dataset.system = SYSTEM_OS as string
     document.documentElement.dataset.browser = BROWSER as string
