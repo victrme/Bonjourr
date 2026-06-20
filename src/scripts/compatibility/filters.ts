@@ -11,6 +11,19 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function switchLanguageCodesToUnderscore(data: Import): Import {
+    if (!data.lang) {
+        data.lang = SYNC_DEFAULT.lang
+    }
+
+    if (data.lang === 'zh-CN') {
+        data.lang = data.lang.replace("-", "_")
+    }
+
+
+    return data
+}
+
 export function addShowUnitToWeather(data: Import): Import {
     if (!data.weather) {
         data.weather = SYNC_DEFAULT.weather

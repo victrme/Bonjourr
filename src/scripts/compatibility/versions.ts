@@ -16,6 +16,13 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
             data = filter.addColorToFont(data)
             data = filter.addShowUnitToWeather(data)
         }
+
+        if (minor < 3) {
+            data = filter.switchLanguageCodesToUnderscore(data)
+        }
+
+        console.log(data)
+        // return
     }
 
     if (major <= 21) {

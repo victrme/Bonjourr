@@ -22,6 +22,7 @@ export async function setTranslationCache(language: string, local?: Local): Prom
         trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
         storage.local.set({ translations: trns })
     }
+    console.log(lang)
 
     currentTrnsLang = lang
 }
@@ -80,6 +81,7 @@ export async function toggleTraduction(lang: string): Promise<void> {
 }
 
 export function getLang(): string {
+    console.info({currentTrnsLang})
     return currentTrnsLang
 }
 

@@ -1217,6 +1217,7 @@ function translateAriaLabels(): void {
 
 async function switchLangs(nextLang: Langs): Promise<void> {
     await toggleTraduction(nextLang)
+    console.log(nextLang)
 
     storage.sync.set({ lang: nextLang })
     storage.local.remove('quotesCache')

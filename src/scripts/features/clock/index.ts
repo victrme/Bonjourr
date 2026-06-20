@@ -54,7 +54,7 @@ const defaultAnalogStyle: AnalogStyle = {
     background: '#fff2',
 }
 
-const sinogramRegex = /zh-CN|zh-HK|ja/
+const sinogramRegex = /zh_CN|zh-HK|ja/
 const defaultTimezones = ['Europe/Paris', 'America/Sao_Paulo', 'America/Los_Angeles', 'Asia/Tokyo', 'Asia/Kolkata']
 const defaultRegions = ['Paris', 'New York', 'Tokyo', 'Lisbon', 'Los Angeles']
 
