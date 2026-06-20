@@ -313,6 +313,7 @@ html[data-supporters] #show-settings.shown:after {
     padding: 0;
     margin: auto;
     line-height: 1.3em;
+    direction: ltr;
 }
 
 #supporters-modal main ul li {

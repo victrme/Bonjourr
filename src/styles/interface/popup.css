@@ -12,7 +12,7 @@
     left: 28px;
     gap: 0.6em;
     opacity: 0;
-    z-index: 1;
+    z-index: 2;
     transition: opacity 0.2s;
 }
 
@@ -110,6 +110,11 @@
 
 #popup_close:hover ~ #popup_icon {
     opacity: 0;
+}
+
+.move-edit ~ #popup {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /*
