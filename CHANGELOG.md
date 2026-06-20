@@ -3,6 +3,7 @@
 - Fixed broken settings and context menu for RTL (right to left) languages
 - Fixed pomodoro widget not alignable using layout toolbox's text alignment
 - Fixed some quick links styling issues
+- Fixed digital world clocks overlapping when large font size + am/pm
 - Adjusted some text-shadows on #interface
 - Fixed a minor styling issue with selects in the settings
 
