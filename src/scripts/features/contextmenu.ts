@@ -4,8 +4,9 @@ import { transitioner } from '../utils/transitioner.ts'
 import { debounce } from '../utils/debounce.ts'
 import { onclickdown } from 'clickdown/mod'
 import { backgroundUpdate, toggleMuteStatus } from './backgrounds/index.ts'
+import { quotes } from './quotes.ts'
+import { turnRefreshButton } from '../shared/dom.ts'
 import { storage } from '../storage.ts'
-
 import type { Backgrounds } from '../../types/sync.ts'
 
 interface EventLocation {
@@ -120,6 +121,10 @@ export function openContextMenu(event: Event): void {
 
     if (eventLocation.widgets.pomodoro) {
         showTheseElements('#pomodoro-info')
+    }
+
+    if (eventLocation.widgets.quotes) {
+        showTheseElements('#b_interface-quotes-refresh')
     }
 
     if (clickedOnWidgets) {
@@ -276,11 +281,7 @@ queueMicrotask(() => {
     // for when needing to close context menu from elsewhere
     document.addEventListener('close-edit', closeContextMenu)
 
-    // these are "open x settings" inside context menu
-    const openSettingsButtons = domdialog.querySelectorAll<HTMLButtonElement>(`[data-action="openTheseSettings"]`)
-    openSettingsButtons?.forEach((btn) => {
-        btn?.addEventListener('click', openSettingsButtonEvent)
-    })
+    handleContextMenuEvents()
 
     const addNewLinkButton = domdialog.querySelector<HTMLButtonElement>(`[data-action="add-new-link"]`)
     addNewLinkButton?.addEventListener('click', (event) => populateDialogWithEditLink(event, domdialog, true))
@@ -326,6 +327,21 @@ export function closeContextMenu(): void {
         // stops multi-selection mode for quick links
         document.dispatchEvent(new Event('remove-select-all'))
     }
+}
+
+function handleContextMenuEvents(): void {
+    // these are "open x settings" inside context menu
+    const openSettingsButtons = domdialog.querySelectorAll<HTMLButtonElement>(`[data-action="openTheseSettings"]`)
+    openSettingsButtons?.forEach((btn) => {
+        btn?.addEventListener('click', openSettingsButtonEvent)
+    })
+
+    onclickdown(document.getElementById('b_interface-quotes-refresh'), (event) => {
+        quotes(undefined, { refresh: true })
+        turnRefreshButton(event, true)
+    })
+
+    // for backgrounds buttons, see handleBackgroundActions()
 }
 
 export function handleBackgroundActions(backgrounds: Backgrounds): void {
