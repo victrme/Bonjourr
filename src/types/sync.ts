@@ -1,6 +1,7 @@
 import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
 
 export interface Sync {
+    advanced: Advanced
     showall: boolean
     quicklinks: boolean
     time: boolean
@@ -233,4 +234,8 @@ export interface Pomodoro {
         endedAt: string
         duration: number
     }[]
+}
+
+export interface Advanced {
+    altMode: boolean
 }

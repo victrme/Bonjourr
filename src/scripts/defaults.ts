@@ -95,6 +95,9 @@ export const SYNC_DEFAULT: Sync = {
         browser: PLATFORM,
         version: CURRENT_VERSION,
     },
+    advanced: {
+        altMode: true,
+    },
     showall: false,
     lang: DEFAULT_LANG,
     dark: 'system',

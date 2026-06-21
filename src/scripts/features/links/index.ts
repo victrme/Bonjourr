@@ -13,7 +13,6 @@ import {
     isElem,
     isLink,
     isTypingTarget,
-    altModeIsDisabled
 } from './helpers.ts'
 
 import { randomString, stringMaxSize } from '../../shared/generic.ts'
@@ -127,7 +126,9 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
     domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
 
-    document.addEventListener('keydown', openLinksWithKeyboard)
+    document.addEventListener('keydown', (event) => {
+        openLinksWithKeyboard(init.sync, event)
+    })
 
     if (sync.linkgroups.synced.length > 0) {
         await initBookmarkSync(sync)
@@ -921,8 +922,8 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
     return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }
 
-function openLinksWithKeyboard(event: KeyboardEvent): void {
-    if (isTypingTarget(event.target) || altModeIsDisabled()) return
+function openLinksWithKeyboard(data: Sync, event: KeyboardEvent): void {
+    if (isTypingTarget(event.target) || !data.advanced.altMode) return
 
     const { altKey, ctrlKey, metaKey, code } = event
     const isNotAltComboKey = !altKey || ctrlKey || metaKey

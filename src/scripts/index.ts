@@ -16,7 +16,6 @@ import { notes } from './features/notes.ts'
 import { clock } from './features/clock/index.ts'
 import './features/contextmenu.ts'
 
-import { altModeIsDisabled } from './features/links/helpers.ts'
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { operaExtensionExplainer } from './startup/opera.ts'
@@ -95,7 +94,7 @@ async function startup(): Promise<void> {
     operaExtensionExplainer(local.operaExplained)
     tabsTracking()
 
-    if (!altModeIsDisabled()) {
+    if (sync.advanced.altMode) {
         altMode()
     }
 

@@ -126,9 +126,3 @@ export function isTypingTarget(target: EventTarget | null): boolean {
         )
     )
 }
-
-// disabling alt mode through the console with:
-// localStorage.setItem('disableAltMode', true)
-export function altModeIsDisabled(): boolean {
-    return localStorage.getItem('disableAltMode') === 'true'
-}
