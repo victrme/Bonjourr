@@ -4,7 +4,7 @@
     right: 0;
     padding-right: 20px;
     padding-bottom: 20px;
-    z-index: 3;
+    z-index: 4;
     transition: opacity 0.1s var(--out-cubic);
 }
 
