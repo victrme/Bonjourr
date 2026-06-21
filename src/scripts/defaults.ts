@@ -97,6 +97,7 @@ export const SYNC_DEFAULT: Sync = {
     },
     advanced: {
         altMode: true,
+        escKey: true
     },
     showall: false,
     lang: DEFAULT_LANG,

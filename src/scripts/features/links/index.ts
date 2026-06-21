@@ -24,7 +24,7 @@ import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
 import type { Local } from '../../../types/local.ts'
-import type { Sync } from '../../../types/sync.ts'
+import type { Advanced, Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
     title: string
@@ -922,8 +922,8 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
     return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }
 
-function openLinksWithKeyboard(data: Sync, event: KeyboardEvent): void {
-    if (isTypingTarget(event.target) || !data.advanced.altMode) return
+function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
+    if (isTypingTarget(event.target) || !advanced.altMode) return
 
     const { altKey, ctrlKey, metaKey, code } = event
     const isNotAltComboKey = !altKey || ctrlKey || metaKey

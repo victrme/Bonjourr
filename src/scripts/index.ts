@@ -110,7 +110,7 @@ async function startup(): Promise<void> {
 
         supportersNotifications(sync)
         setPotatoComputerMode()
-        userActions()
+        userActions(sync.advanced)
 
         interfacePopup({
             announce: sync.announcements,
