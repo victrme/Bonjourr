@@ -127,7 +127,7 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
 
     document.addEventListener('keydown', (event) => {
-        openLinksWithKeyboard(init.sync, event)
+        openLinksWithKeyboard(init.sync.advanced, event)
     })
 
     if (sync.linkgroups.synced.length > 0) {
