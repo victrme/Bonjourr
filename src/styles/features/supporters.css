@@ -26,6 +26,18 @@
     box-shadow: rgb(100 100 111 / 0.2) 0px 7px 29px 0px;
 }
 
+html:dir(rtl) #supporters-notif {
+    background-image:
+        linear-gradient(
+            to right,
+            rgb(var(--color-param) / 0) 0%,
+            rgb(var(--color-param) / 0.9) 55%,
+            rgb(var(--color-param)) 100%
+        ),
+        var(--background);
+    background-position: left center;
+}
+
 [data-theme='dark'] #supporters-notif {
     border-color: #363636;
 }
@@ -68,6 +80,11 @@
     justify-content: center;
     align-items: center;
     transition: background-color 0.1s;
+}
+
+html:dir(rtl) #supporters-notif-close {
+    right: unset;
+    left: 20px;
 }
 
 #supporters-notif-close:hover {
@@ -296,6 +313,7 @@ html[data-supporters] #show-settings.shown:after {
     padding: 0;
     margin: auto;
     line-height: 1.3em;
+    direction: ltr;
 }
 
 #supporters-modal main ul li {

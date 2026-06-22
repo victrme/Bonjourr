@@ -25,16 +25,16 @@
     text-decoration: none;
 }
 
-.text-left #link-mini,
-.text-left .link-list {
+.layout-text-left #link-mini,
+.layout-text-left .link-list {
     justify-content: start;
 }
 
-.text-left #link-mini {
+.layout-text-left #link-mini {
     text-align: left;
 }
 
-.text-left .link-group {
+.layout-text-left .link-group {
     align-items: start;
 }
 
@@ -230,8 +230,9 @@
     padding-top: 0.4em;
     line-height: 1.2em;
     max-height: 3.6em;
-    overflow: hidden;
+    /* overflow: hidden; */
     word-wrap: break-word;
+    text-align: center;
 }
 
 .titles .link .link-elem-title {
@@ -615,7 +616,7 @@
     width: auto;
 }
 
-.text .link:hover .link-elem-title, .text .link:hover .link-folder-title {
+.text .link:hover .link-elem-title {
     text-decoration: underline;
 }
 
@@ -624,7 +625,7 @@
     display: none;
 }
 
-.text .link .link-elem-title, .text .link .link-folder-title {
+.text .link .link-elem-title {
     display: inline-block;
     width: 100%;
     max-width: 16em;
@@ -635,9 +636,6 @@
     border-radius: 8px;
 }
 
-.text .link .link-folder-title {
-    padding-top: 0.4em;
-}
 
 /* Folder styles for medium and small */
 
@@ -805,6 +803,11 @@
 
 #link-mini.in-drag .add-group {
     visibility: hidden;
+}
+
+#link-mini button:not(.selected-group) {
+    text-shadow: var(--text-shadow-interface);
+    overflow: visible; /* otherwise shadow has borders */ 
 }
 
 .link-group.in-folder + #link-mini {

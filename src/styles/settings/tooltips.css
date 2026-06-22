@@ -21,6 +21,10 @@ aside h2 {
     scroll-margin-top: 20px;
 }
 
+html:dir(rtl) .settings-title {
+    place-items: initial;
+}
+
 .settings-title .tooltiptext {
     grid-column: 1 / 3;
 }
