@@ -46,6 +46,7 @@ export const langList = {
     ko: '한국어',
     ja: '日本語',
     mr: 'Marathi',
+    mt: 'Malti'
 }
 
 // uses basic latin characters if not included

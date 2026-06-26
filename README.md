@@ -130,9 +130,10 @@ If you feel like we've earned it and you want to support independant open source
 - **🇰🇷 Korean translation** · Kim JeongHyeon · [GitHub](https://github.com/kimtibber)
 - **🇹🇼 Taigi (Hanji)** · GHSRobert Ciang · [GitHub](https://github.com/GJRobert)
 - **🇮🇳 Telugu translation** · Hajiaga Sadikhov · [GitHub](https://github.com/Hajiaga-Sadikhov)
-- **🇮🇮🇸 Icelandic translation** · JonGretar · [GitHub](https://github.com/JonGretar)
+- **🇮🇸 Icelandic translation** · JonGretar · [GitHub](https://github.com/JonGretar)
 - **🇮🇳 Hindi translation** · Shriyash Patil · [GitHub](https://github.com/Shriyash-24)
 - **🇮🇳 Marathi translation** · AKDB · [GitHub](https://github.com/akdbtas)
+- **🇲🇹 Maltese translation** · Lucas Fenech Beaumont · [GitHub](https://github.com/lucasfenech18)
 
 ## 👨‍💻 On pull requests
 
