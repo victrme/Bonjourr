@@ -234,10 +234,6 @@ export const SYNC_DEFAULT: Sync = {
         selection: 'single',
         layouts: {},
     },
-    advanced: {
-        altMode: true,
-        escKey: true,
-    },
 }
 
 export const LOCAL_DEFAULT: Local = {
