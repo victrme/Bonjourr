@@ -45,6 +45,7 @@ export const langList = {
     'nan-Hant-TW': '臺灣台語（漢羅）',
     ko: '한국어',
     ja: '日本語',
+    mr: 'Marathi',
 }
 
 // uses basic latin characters if not included
