@@ -128,6 +128,7 @@ If you feel like we've earned it and you want to support independant open source
 - **🇺🇿 Uzbek translation** · Uchkun Rakhimov · [GitHub](https://github.com/uchkunr)
 - **🇧🇾 Belarusian translation** · Eduard Račkoŭski · [GitHub](https://github.com/The518thGuy)
 - **🇰🇷 Korean translation** · Kim JeongHyeon · [GitHub](https://github.com/kimtibber)
+- **🇮🇳 Marathi translation** · AKDB · [GitHub](https://github.com/akdbtas)
 
 ## 👨‍💻 On pull requests
 
