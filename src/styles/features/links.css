@@ -636,7 +636,6 @@
     border-radius: 8px;
 }
 
-
 /* Folder styles for medium and small */
 
 .medium .link-folder .link-icon,
@@ -807,7 +806,7 @@
 
 #link-mini button:not(.selected-group) {
     text-shadow: var(--text-shadow-interface);
-    overflow: visible; /* otherwise shadow has borders */ 
+    overflow: visible; /* otherwise shadow has borders */
 }
 
 .link-group.in-folder + #link-mini {

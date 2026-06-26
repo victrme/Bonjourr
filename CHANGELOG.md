@@ -1,5 +1,9 @@
-## 22.2.2
+## 22.3.0
 
+- Added advanced settings toggleable directly from JSON:
+    - `altMode` to disable the Alt Mode
+    - `escKey` to disable the escape key toggling settings
+- Apply settings management's JSON with `cmd/ctrl + enter` keybind
 - Fixed broken settings and context menu for RTL (right to left) languages
 - Fixed pomodoro widget not alignable using layout toolbox's text alignment
 - Fixed some quick links styling issues

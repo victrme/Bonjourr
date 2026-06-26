@@ -16,6 +16,10 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
             data = filter.addColorToFont(data)
             data = filter.addShowUnitToWeather(data)
         }
+
+        if (minor < 3) {
+            data = filter.addAdvancedOptions(data)
+        }
     }
 
     if (major <= 21) {

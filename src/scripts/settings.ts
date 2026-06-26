@@ -1076,6 +1076,14 @@ function initOptionsEvents(): void {
         importSettings(parse<Partial<Sync>>(val) ?? {})
     })
 
+    // applies settings-data when cmd/ctrl + enter
+    paramId('settings-data').addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+            event.preventDefault()
+            paramId('b_settings-apply').click()
+        }
+    })
+
     onclickdown(paramId('b_reset-first'), () => {
         resetSettings('first')
     })

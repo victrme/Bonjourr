@@ -8,7 +8,7 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '22.2.2'
+export const CURRENT_VERSION = '22.3.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
@@ -94,6 +94,10 @@ export const SYNC_DEFAULT: Sync = {
     about: {
         browser: PLATFORM,
         version: CURRENT_VERSION,
+    },
+    advanced: {
+        altMode: true,
+        escKey: true,
     },
     showall: false,
     lang: DEFAULT_LANG,

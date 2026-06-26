@@ -93,7 +93,10 @@ async function startup(): Promise<void> {
     pageControl({ width: sync.pagewidth, gap: sync.pagegap })
     operaExtensionExplainer(local.operaExplained)
     tabsTracking()
-    altMode()
+
+    if (sync.advanced.altMode) {
+        altMode()
+    }
 
     document.documentElement.dataset.system = SYSTEM_OS as string
     document.documentElement.dataset.browser = BROWSER as string
@@ -107,7 +110,7 @@ async function startup(): Promise<void> {
 
         supportersNotifications(sync)
         setPotatoComputerMode()
-        userActions()
+        userActions(sync.advanced)
 
         interfacePopup({
             announce: sync.announcements,
