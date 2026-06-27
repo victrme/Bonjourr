@@ -1,5 +1,5 @@
-import '../init.test.ts'
 import { assertEquals } from '@std/assert'
+import '../init.ts'
 
 import { initBookmarkSync, syncBookmarks } from '../../src/scripts/features/links/bookmarks.ts'
 import { SYNC_DEFAULT } from '../../src/scripts/defaults.ts'

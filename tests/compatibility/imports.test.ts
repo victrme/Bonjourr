@@ -1,10 +1,10 @@
-import './init.test.ts'
+import { assert } from '@std/assert'
+import '../init.ts'
 
 // Import script after test init, document needs to be loaded first
-import { SYNC_DEFAULT } from '../src/scripts/defaults.ts'
-import { filterData } from '../src/scripts/compatibility/apply.ts'
-import { assert } from '@std/assert'
-import type { Link } from '../src/types/shared.ts'
+import { SYNC_DEFAULT } from '../../src/scripts/defaults.ts'
+import { filterData } from '../../src/scripts/compatibility/apply.ts'
+import type { Link } from '../../src/types/shared.ts'
 
 const defaults = structuredClone(SYNC_DEFAULT)
 
@@ -34,7 +34,7 @@ Deno.test('Current version small import', () => {
 })
 
 Deno.test('1.10.0', async (t) => {
-    const text = Deno.readTextFileSync('./tests/configs/10.0.0.json')
+    const text = Deno.readTextFileSync('./tests/compatibility/configs/10.0.0.json')
     const old = JSON.parse(text)
     const res = filterData('import', defaults, old)
 
@@ -104,7 +104,7 @@ Deno.test('1.10.0', async (t) => {
 })
 
 Deno.test('20.4.2', async (t) => {
-    const text = Deno.readTextFileSync('./tests/configs/20.4.2.json')
+    const text = Deno.readTextFileSync('./tests/compatibility/configs/20.4.2.json')
     const old = JSON.parse(text)
     const res = filterData('import', defaults, old)
 
@@ -140,7 +140,7 @@ Deno.test('20.4.2', async (t) => {
 })
 
 Deno.test('20.4.2-default', async (t) => {
-    const text = Deno.readTextFileSync('./tests/configs/20.4.2-default.json')
+    const text = Deno.readTextFileSync('./tests/compatibility/configs/20.4.2-default.json')
     const old = JSON.parse(text)
     const res = filterData('import', defaults, old)
 
