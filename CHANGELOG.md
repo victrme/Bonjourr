@@ -10,6 +10,9 @@
 - Fixed digital world clocks overlapping when large font size + am/pm
 - Adjusted some text-shadows on #interface
 - Fixed a minor styling issue with selects in the settings
+- Firefox bookmarks separators are now ignored (#753)
+- New language: 🇮🇳 Marathi by @akdbtas 
+- New language: 🇲🇹 Maltese by @lucasfenech18
 
 ## 22.2.1
 

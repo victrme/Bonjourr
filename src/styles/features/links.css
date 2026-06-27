@@ -233,10 +233,13 @@
     /* overflow: hidden; */
     word-wrap: break-word;
     text-align: center;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
 }
 
 .titles .link .link-elem-title {
-    display: block;
+    display: -webkit-box;
 }
 
 .titles .link .link-elem-title:empty {
