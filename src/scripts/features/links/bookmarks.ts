@@ -14,7 +14,7 @@ import { storage } from '../../storage.ts'
 import type { Link, LinkElem } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-type Treenode = browser.bookmarks.BookmarkTreeNode
+export type Treenode = browser.bookmarks.BookmarkTreeNode
 
 type BookmarksFolder = {
     title: string

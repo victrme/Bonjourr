@@ -1,52 +1,17 @@
 import './init.test.ts'
 
+import { initBookmarkSync, syncBookmarks } from '../src/scripts/features/links/bookmarks.ts'
+import { SYNC_DEFAULT } from '../src/scripts/defaults.ts'
 import { assertEquals } from '@std/assert'
+import type { Treenode } from '../src/scripts/features/links/bookmarks.ts'
+
+type SyncedLinks = ReturnType<typeof syncBookmarks>
 
 document.body.innerHTML = `
     <main id="interface"></main>
     <dialog id="contextmenu"></dialog>
     <div id="linkblocks"></div>
 `
-
-const { SYNC_DEFAULT } = await import('../src/scripts/defaults.ts')
-const { initBookmarkSync, syncBookmarks } = await import('../src/scripts/features/links/bookmarks.ts')
-
-const toolbarTitle = 'Bookmarks Toolbar'
-
-type Bookmark = browser.bookmarks.BookmarkTreeNode
-type SyncedLinks = ReturnType<typeof syncBookmarks>
-
-function setBookmarks(bookmarks: Bookmark[]): void {
-    globalThis.startupBookmarks = [
-        {
-            id: 'root',
-            title: '',
-            children: [
-                {
-                    id: 'toolbar',
-                    title: toolbarTitle,
-                    children: bookmarks,
-                },
-            ],
-        },
-    ]
-    globalThis.startupTopsites = []
-}
-
-async function syncToolbar(bookmarks: Bookmark[]): Promise<SyncedLinks> {
-    setBookmarks(bookmarks)
-    await initBookmarkSync(structuredClone(SYNC_DEFAULT))
-
-    return syncBookmarks(toolbarTitle)
-}
-
-function linkUrls(links: SyncedLinks): string[] {
-    return links.flatMap((link) => link.folder ? [] : [link.url])
-}
-
-function linkTitles(links: SyncedLinks): string[] {
-    return links.flatMap((link) => link.folder ? [] : [link.title])
-}
 
 Deno.test({
     name: 'Bookmark sync ignores Firefox separators',
@@ -82,3 +47,34 @@ Deno.test({
         assertEquals(linkUrls(links), ['https://example.com/'])
     },
 })
+
+/*
+ * Functions
+ */
+
+function setBookmarks(bookmarks: Treenode[]): void {
+    globalThis.startupBookmarks = [{
+        id: 'root',
+        title: '',
+        children: [{
+            id: 'toolbar',
+            title: 'Bookmarks Toolbar',
+            children: bookmarks,
+        }],
+    }]
+    globalThis.startupTopsites = []
+}
+
+async function syncToolbar(bookmarks: Treenode[]): Promise<SyncedLinks> {
+    setBookmarks(bookmarks)
+    await initBookmarkSync(structuredClone(SYNC_DEFAULT))
+    return syncBookmarks('Bookmarks Toolbar')
+}
+
+function linkUrls(links: SyncedLinks): string[] {
+    return links.flatMap((link) => link.folder ? [] : [link.url])
+}
+
+function linkTitles(links: SyncedLinks): string[] {
+    return links.flatMap((link) => link.folder ? [] : [link.title])
+}
