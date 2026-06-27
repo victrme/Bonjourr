@@ -19,17 +19,10 @@ export function setAlign(id: Widgets, align?: MoveAlign): void {
     if (elem) {
         elem.style.placeSelf = box
 
-        if (id === 'quicklinks') {
-            document.getElementById('linkblocks')?.classList.remove('text-left', 'text-right')
+        elem.classList.remove('layout-text-left', 'layout-text-right')
 
-            if (text === 'left') {
-                document.getElementById('linkblocks')?.classList.add('text-left')
-            }
-            if (text === 'right') {
-                document.getElementById('linkblocks')?.classList.add('text-right')
-            }
-        } else {
-            elem.style.textAlign = text || ''
+        if (text) {
+            elem.classList.add(`layout-text-${text}`)
         }
     }
 }

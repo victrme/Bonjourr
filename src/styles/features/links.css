@@ -9,7 +9,7 @@
 }
 
 .select-all .link .link-icon,
-.select-all .link span {
+.select-all .link .link-elem-title {
     /* split div and span instead of just ".link" */
     /* to keep folder blur with filter */
     filter: grayscale(1) brightness(0.6);
@@ -25,16 +25,16 @@
     text-decoration: none;
 }
 
-.text-left #link-mini,
-.text-left .link-list {
+.layout-text-left #link-mini,
+.layout-text-left .link-list {
     justify-content: start;
 }
 
-.text-left #link-mini {
+.layout-text-left #link-mini {
     text-align: left;
 }
 
-.text-left .link-group {
+.layout-text-left .link-group {
     align-items: start;
 }
 
@@ -73,8 +73,8 @@
 }
 
 /* Overengineered brightness because filter disables backdrop with .link-folder */
-.link-elem:active,
-.link-folder:active img,
+.link-elem a:active,
+.link-folder a:active img,
 .link-group.hiding .link-elem,
 .link-group.hiding .link-folder img {
     filter: brightness(0.8);
@@ -184,19 +184,18 @@
 
 .link {
     transition: transform 0.2s var(--in-out-bounce), opacity 0.1s var(--in-out-bounce), filter 0.06s;
-}
-
-.link {
     width: var(--block-size);
-    cursor: pointer;
     touch-action: none;
 }
 
 .link .link-icon,
 .link img {
-    transition-duration: 0.05s;
+    transition-duration: 0.2s;
     transition-timing-function: var(--out-cubic);
     transition-property: transform, box-shadow, border-color, background-color;
+
+    /* might help with scaling artifacts */
+    /* will-change: transform; */
 }
 
 .link .link-icon, .link .link-index {
@@ -225,21 +224,26 @@
     height: 100%;
 }
 
-.link span {
+.link .link-elem-title {
     display: none;
     width: 100%;
     padding-top: 0.4em;
     line-height: 1.2em;
     max-height: 3.6em;
-    overflow: hidden;
+    /* overflow: hidden; */
     word-wrap: break-word;
+    text-align: center;
 }
 
-.titles .link span {
+.titles .link .link-elem-title {
     display: block;
 }
 
-.titles.small .link span {
+.titles .link .link-elem-title:empty {
+    display: none;
+}
+
+.titles.small .link .link-elem-title {
     display: inline;
     width: unset;
     top: 3.5em;
@@ -295,12 +299,14 @@
 }
 
 @media only screen and (hover: hover) {
-    #linkblocks.backgrounds .link:hover .link-icon {
-        box-shadow: 0px 0.2em 1em #0003;
+    #linkblocks.backgrounds .link a:hover .link-icon {
+        box-shadow: 0px 0.2em 1em rgb(0 0 0 / 0.4);
     }
 
-    .link:hover:not(.selected) .link-icon {
-        transform: scale(0.95);
+    .link:not(.selected) a:hover .link-icon,
+    .link-folder:not(.selected) .link-icon:hover,
+    .link.selected .link-icon {
+        transform: translateY(-2px) scale(1.05);
     }
 }
 
@@ -397,10 +403,10 @@
 
 #linkblocks.large {
     --min-height: 5.2em;
-    --column-gap: 0.6em;
-    --row-gap: 1em;
+    --column-gap: 0.3em;
+    --row-gap: 1.3em;
     --icon-size: 4.8em;
-    --block-size: 6.5em;
+    --block-size: 6.8em;
     --folder-padding: 2em;
 }
 
@@ -431,10 +437,10 @@
 
 #linkblocks.medium {
     --min-height: 3.9em;
-    --column-gap: 0.6em;
+    --column-gap: 0.2em;
     --row-gap: 1em;
     --icon-size: 3.5em;
-    --block-size: 4.7em;
+    --block-size: 5.1em;
     --folder-padding: 1.6em;
 }
 
@@ -446,6 +452,11 @@
 
 .medium .link img {
     border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.77);
+}
+
+.medium .link .link-elem-title {
+    font-size: 0.95em;
+    letter-spacing: -0.03em;
 }
 
 /* Small */
@@ -506,11 +517,11 @@
     z-index: 1;
 }
 
-.small .link span:empty {
+.small .link .link-elem-title:empty {
     display: none;
 }
 
-.small .link:hover span {
+.small .link:hover .link-elem-title {
     opacity: 1;
     visibility: visible;
 }
@@ -545,7 +556,7 @@
     display: none;
 }
 
-.inline .link span {
+.inline .link .link-elem-title {
     padding: 0 0.2em;
     outline: 3px solid transparent;
 }
@@ -581,7 +592,7 @@
     border-radius: calc((var(--link-outer-radius) - var(--link-padding)) * 0.43);
 }
 
-.inline .link span {
+.inline .link .link-elem-title {
     display: block;
     max-width: 8.4em;
     font-size: 1.2em;
@@ -605,7 +616,7 @@
     width: auto;
 }
 
-.text .link:hover span {
+.text .link:hover .link-elem-title {
     text-decoration: underline;
 }
 
@@ -614,7 +625,7 @@
     display: none;
 }
 
-.text .link span {
+.text .link .link-elem-title {
     display: inline-block;
     width: 100%;
     max-width: 16em;
@@ -791,6 +802,11 @@
 
 #link-mini.in-drag .add-group {
     visibility: hidden;
+}
+
+#link-mini button:not(.selected-group) {
+    text-shadow: var(--text-shadow-interface);
+    overflow: visible; /* otherwise shadow has borders */
 }
 
 .link-group.in-folder + #link-mini {

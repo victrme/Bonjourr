@@ -234,7 +234,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
     }
 
     if (isBackgroundTexture(update.texture)) {
-        data.backgrounds.texture = { type: update.texture }
+        data.backgrounds.texture.type = update.texture
         storage.sync.set({ backgrounds: data.backgrounds })
         handleBackgroundOptions(data.backgrounds)
         applyTexture(data.backgrounds.texture)

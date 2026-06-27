@@ -253,7 +253,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_seconds', data.clock?.seconds ?? false)
     setCheckbox('i_worldclocks', data.clock?.worldclocks ?? false)
     setCheckbox('i_main', data.main)
-    setCheckbox('i_show_unit', data.weather.show_unit)
+    setCheckbox('i_show_unit', data.weather.show_unit ?? false)
     setCheckbox('i_greethide', !data.hide?.greetings)
     setCheckbox('i_notes', data.notes?.on ?? false)
     setCheckbox('i_sb', data.searchbar?.on ?? false)
@@ -1074,6 +1074,14 @@ function initOptionsEvents(): void {
     onclickdown(paramId('b_settings-apply'), () => {
         const val = paramId('settings-data').value
         importSettings(parse<Partial<Sync>>(val) ?? {})
+    })
+
+    // applies settings-data when cmd/ctrl + enter
+    paramId('settings-data').addEventListener('keydown', (event) => {
+        if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+            event.preventDefault()
+            paramId('b_settings-apply').click()
+        }
     })
 
     onclickdown(paramId('b_reset-first'), () => {

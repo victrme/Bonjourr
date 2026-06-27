@@ -14,7 +14,7 @@ import { storage } from '../../storage.ts'
 import type { Link, LinkElem } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-type Treenode = browser.bookmarks.BookmarkTreeNode
+export type Treenode = browser.bookmarks.BookmarkTreeNode
 
 type BookmarksFolder = {
     title: string
@@ -352,6 +352,10 @@ function bookmarkTreeToFolderList(treenode: Treenode, data: Sync): BookmarksFold
                 continue
             }
 
+            if (isFirefoxSeparator(child)) {
+                continue
+            }
+
             if (!folders[treenode.title]) {
                 folders[treenode.title] = {
                     title: treenode.title,
@@ -393,4 +397,23 @@ function bookmarkTreeToFolderList(treenode: Treenode, data: Sync): BookmarksFold
     }
 
     return Object.values(folders)
+}
+
+function isFirefoxSeparator(bookmark: Treenode): boolean {
+    if (bookmark.title.trim() !== '') {
+        return false
+    }
+
+    const rawUrl = (bookmark.url ?? '').trim()
+
+    if (rawUrl.toLowerCase().startsWith('data:')) {
+        return true
+    }
+
+    try {
+        // Firefox normalizes its `data:` separator placeholder to `https://data/`.
+        return new URL(rawUrl).hostname.toLowerCase() === 'data'
+    } catch (_error) {
+        return false
+    }
 }

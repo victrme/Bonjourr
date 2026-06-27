@@ -1,9 +1,28 @@
+## 22.3.0
+
+- Added advanced settings toggleable directly from JSON:
+    - `altMode` to disable the Alt Mode
+    - `escKey` to disable the escape key toggling settings
+- Apply settings management's JSON with `cmd/ctrl + enter` keybind
+- Fixed broken settings and context menu for RTL (right to left) languages
+- Fixed pomodoro widget not alignable using layout toolbox's text alignment
+- Fixed some quick links styling issues
+- Fixed digital world clocks overlapping when large font size + am/pm
+- Adjusted some text-shadows on #interface
+- Fixed a minor styling issue with selects in the settings
+
+## 22.2.1
+
+- fixes font color crash (#863)
+- fixes unusable layout toolbox (#862)
+
 ## 22.2.0
 
 - New features:
   - Change your font color with the new text color input
   - Show temperature unit in weather description
   - Open quick links faster with the `alt + number` keybind
+  - Add a new quick link with the `alt + N` keybind
   - Open Quick Links, Notes and Search bar settings from context menu
   - New language: 🇺🇿 Uzbek by [Uchkun Rakhimov](https://github.com/uchkunr)!
 - Improvements:
@@ -15,6 +34,8 @@
   - Better context menu icons consistency
   - Performance improvements (thanks @Nachtfrische! #825)
   - New CSS variables & possibilities! ([documented here](https://bonjourr.fr/docs/styles#colors-and-icons))
+  - New settings footer design
+  - Emoji as favicon is back on Edge (#700)
 - Bug fixes:
   - Fixed broken AM/PM positioning
   - Fixed digital clock jittering when seconds are enabled (thanks @trmdi! #815)
@@ -28,11 +49,12 @@
   - Fixed text in settings input looking like a placeholder
 - Localization updates (thank you!!):
   - 🇵🇹 Portuguese by @Blackspirits 
-  - 🇪🇸 Spanish by @Carbaz
+  - 🇪🇸 Spanish by @Carbaz & @palacios22c
   - 🇮🇹 Italian by @antarcorrado
   - 🇵🇱 Polish by @Zylvo
   - 🇷🇸 Serbian by @rammba
   - 🇻🇳 Vietnamese by @trmdi
+  - 🇧🇾 Belarusian by @The518thGuy 
 
 ## 22.1.0
 

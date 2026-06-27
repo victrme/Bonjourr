@@ -35,6 +35,11 @@
     gap: 4em;
 }
 
+/* gap scales dynamically depending on clock size/am-pm */
+#time-container:has(h1[data-ampm-label]) {
+    column-gap: calc(var(--clock-size) * 6);
+}
+
 .digital {
     position: relative;
     margin: 0;
@@ -498,6 +503,7 @@
     height: 1em;
     line-height: 1em;
     text-align: center;
+    text-shadow: initial;
 }
 
 #time[data-face='swiss'] .analog-face,
@@ -588,6 +594,10 @@
 .clock-date-secondary {
     display: block;
     font-size: smaller;
+}
+
+.clock-date-secondary:empty {
+    display: none;
 }
 
 .clock-date-secondary::after {

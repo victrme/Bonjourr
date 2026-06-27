@@ -267,6 +267,20 @@
                 <div><span class="trn">This month</span>: <span id="poms-month">0</span></div>
             </div>
 
+            <button
+                id="b_interface-quotes-refresh"
+                class="refresh-btn"
+                title="Switch to the next quote"
+                aria-label="Switch to the next quote"
+            >
+                <span class="iconContainer">
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-background-refresh"></use>
+                    </svg>
+                </span>
+                <span class="trn">Next quote</span>
+            </button>
+
             <div id="background-actions">
                 <hr />
                 <a id="download-background"></a>
@@ -755,7 +769,7 @@
                         <img alt="" draggable="false" />
                     </div>
 
-                    <span class="link-folder-title"></span>
+                    <span class="link-elem-title"></span>
                 </li>
             </template>
 
@@ -797,6 +811,8 @@
                                     <ul></ul>
                                 </div>
                             </section>
+
+                            <span class="error"></span>
                         </main>
 
                         <footer>

@@ -30,6 +30,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     max-width: 45em;
     min-width: 20em;
     cursor: initial;
+    text-shadow: var(--text-shadow-interface);
 }
 
 #pomodoro_container.clone {
@@ -218,6 +219,7 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     background: rgb(255 255 255 / 0.1);
     border: 1px solid #fff1;
     transition: backdrop-filter 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+    text-shadow: initial;
 }
 
 #focus-toggle:hover {
@@ -299,4 +301,22 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     #pmdr_modes {
         gap: 0;
     }
+}
+
+/* Move layout */
+
+#pomodoro_container.layout-text-left #pmdr_timer,
+#pomodoro_container.layout-text-left #bottomControls,
+#pomodoro_container.layout-text-right #pmdr_timer,
+#pomodoro_container.layout-text-right #bottomControls {
+    /* to match #pmdr_modes */
+    padding-inline: 11px;
+}
+
+#pomodoro_container.layout-text-left #bottomControls {
+    justify-content: flex-start;
+}
+
+#pomodoro_container.layout-text-right #bottomControls {
+    justify-content: flex-end;
 }

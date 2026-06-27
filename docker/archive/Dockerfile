@@ -6,6 +6,7 @@ COPY src src
 COPY tasks tasks
 COPY deno.json .
 COPY deno.lock .
+COPY docs/BUILD.md README.md
 
 RUN apk add --no-cache zip
 

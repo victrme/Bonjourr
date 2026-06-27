@@ -11,7 +11,7 @@
     font-size: var(--font-size);
     font-family: var(--font-family);
     font-weight: var(--font-weight);
-    text-shadow: 1px 2px 6px rgb(0 0 0 / var(--text-shadow-alpha));
+    text-shadow: var(--text-shadow-interface);
     grid-template-areas: var(--grid);
     transition: opacity var(--load-time-transition), transform 0.33s;
 }
@@ -48,4 +48,12 @@
 #quotes_container,
 #pomodoro_container {
     place-self: center;
+}
+
+.layout-text-left {
+    text-align: left;
+}
+
+.layout-text-right {
+    text-align: right;
 }

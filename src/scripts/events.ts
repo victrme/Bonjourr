@@ -1,20 +1,32 @@
+import type { Advanced } from '../types/sync.ts'
+
+import { isTypingTarget } from './features/links/helpers.ts'
+
 let isMousingDownOnInput = false
 
-export function userActions(): void {
+export function userActions(advanced: Advanced): void {
     document.body.addEventListener('mousedown', detectTargetAsInputs)
     document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
     document.addEventListener('click', clickUserActions)
-    document.addEventListener('keydown', keyboardUserActions)
-    document.addEventListener('keyup', keyboardUserActions)
+
+    document.addEventListener('keydown', (event) => {
+        keyboardUserActions(advanced, event)
+    })
+
+    document.addEventListener('keyup', (event) => {
+        keyboardUserActions(advanced, event)
+    })
 }
 
 // Main functions
 
-function keyboardUserActions(event: KeyboardEvent): void {
+function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
+    const { altKey, ctrlKey, metaKey, code, type } = event
+
     const domsuggestions = document.getElementById('sb-suggestions')
 
-    if (event.code === 'Escape') {
+    if (code === 'Escape') {
         if (domsuggestions?.classList.contains('shown')) {
             domsuggestions?.classList.remove('shown')
             return
@@ -26,7 +38,7 @@ function keyboardUserActions(event: KeyboardEvent): void {
         if (open.contextmenu) {
             document.dispatchEvent(new Event('close-edit'))
         } //
-        else if (open.settings && keyup) {
+        else if (advanced.escKey && open.settings && keyup) {
             document.dispatchEvent(new CustomEvent('toggle-settings'))
         } //
         else if (open.selectall) {
@@ -35,7 +47,7 @@ function keyboardUserActions(event: KeyboardEvent): void {
         else if (open.folder) {
             document.dispatchEvent(new Event('close-folder'))
         } //
-        else if (keyup) {
+        else if (advanced.escKey && keyup) {
             // condition to avoid conflicts with esc key on supporters modal
             // likely to be improved
             if (document.documentElement.dataset.supportersModal === undefined) {
@@ -46,9 +58,29 @@ function keyboardUserActions(event: KeyboardEvent): void {
         return
     }
 
-    if (event.code === 'Tab') {
+    if (code === 'Tab') {
         document.body.classList.toggle('tabbing', true)
         return
+    }
+
+    // alt + N keybind to add new link
+    if (type === 'keydown' && altKey && !ctrlKey && !metaKey && code === 'KeyN') {
+        if (isTypingTarget(event.target)) return
+
+        const linkList = document.querySelector('#linkblocks:not(.hidden) .link-list')
+        if (!linkList) return
+
+        const rect = linkList.getBoundingClientRect()
+
+        // dodgy implementation but way more efficient than adding event more complexity to populateDialogWithEditLink(), that thing will be rewritten in the future to make it bearable
+        linkList.dispatchEvent(
+            new MouseEvent('contextmenu', {
+                bubbles: true,
+                cancelable: true,
+                clientX: rect.right,
+                clientY: rect.top + 15,
+            }),
+        )
     }
 }
 

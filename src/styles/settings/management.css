@@ -33,6 +33,7 @@
     color: var(--color-text);
     background-color: var(--color-areas);
     transition: min-height 0.1s ease;
+    direction: ltr;
 }
 
 [data-system='mac'] #settings-data {

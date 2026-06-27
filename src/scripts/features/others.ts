@@ -4,6 +4,7 @@ import { stringMaxSize } from '../shared/generic.ts'
 import { eventDebounce } from '../utils/debounce.ts'
 import { tradThis } from '../utils/translations.ts'
 import { storage } from '../storage.ts'
+import { isTypingTarget } from './links/helpers.ts'
 
 export function favicon(val?: string, isEvent?: true): void {
     function createFavicon(emoji?: string): void {
@@ -16,10 +17,6 @@ export function favicon(val?: string, isEvent?: true): void {
         if (domfavicon) {
             domfavicon.href = emoji ? svgdata : defaulticon
         }
-    }
-
-    if (BROWSER === 'edge') {
-        return
     }
 
     if (isEvent) {
@@ -122,7 +119,7 @@ export function textShadow(init?: number, event?: number): void {
 
 export function altMode(): void {
     document.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (event.key === 'Alt') {
+        if (event.key === 'Alt' && !isTypingTarget(event.target)) {
             document.documentElement.dataset.altMode = 'true'
         }
     })

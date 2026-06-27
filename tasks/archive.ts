@@ -1,4 +1,4 @@
-const VERSION = '22.0.1'
+const VERSION = '22.3.0'
 
 buildPlatforms()
 archiveSource()
@@ -18,7 +18,7 @@ function buildPlatforms(): void {
 function archiveSource(): void {
     const files = ['_locales', 'docker', 'src', 'tasks', 'deno.json', 'deno.lock', 'README.md']
     const outfile = `./release/bonjourr-source-${VERSION}.zip`
-    const args = ['-r', outfile, ...files]
+    const args = ['-r', outfile, ...files, '-x', '*.DS_Store']
 
     console.log('Archiving source')
 
@@ -26,7 +26,7 @@ function archiveSource(): void {
 }
 
 function archivePlatform(name: string): void {
-    const args = ['-r', `../bonjourr-${name}-${VERSION}.zip`, '.']
+    const args = ['-r', `../bonjourr-${name}-${VERSION}.zip`, '.', '-x', '*.DS_Store']
     const cwd = `./release/${name}`
 
     console.log(`Archiving ${name}`)

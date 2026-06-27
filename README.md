@@ -38,7 +38,7 @@ You can also [try it online 🌎](https://online.bonjourr.fr) before installing.
 
 ## 👋 Get in touch
 
-Follow us [on Bluesky](https://bsky.app/profile/bonjourr.fr) or check out [our Telegram group](https://t.me/BonjourrStartpage) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) :)
+Follow us [on Bluesky](https://bsky.app/profile/bonjourr.fr) or check out [our Discord server](https://discord.com/invite/CCAR9J4qVg) where we discuss ideas, features and bug reports. You can also [send us an email](mailto:bonjourr.app@protonmail.com) :)
 
 <br>
 
@@ -128,6 +128,12 @@ If you feel like we've earned it and you want to support independant open source
 - **🇺🇿 Uzbek translation** · Uchkun Rakhimov · [GitHub](https://github.com/uchkunr)
 - **🇧🇾 Belarusian translation** · Eduard Račkoŭski · [GitHub](https://github.com/The518thGuy)
 - **🇰🇷 Korean translation** · Kim JeongHyeon · [GitHub](https://github.com/kimtibber)
+- **🇹🇼 Taigi (Hanji)** · GHSRobert Ciang · [GitHub](https://github.com/GJRobert)
+- **🇮🇳 Telugu translation** · Hajiaga Sadikhov · [GitHub](https://github.com/Hajiaga-Sadikhov)
+- **🇮🇸 Icelandic translation** · JonGretar · [GitHub](https://github.com/JonGretar)
+- **🇮🇳 Hindi translation** · Shriyash Patil · [GitHub](https://github.com/Shriyash-24)
+- **🇮🇳 Marathi translation** · AKDB · [GitHub](https://github.com/akdbtas)
+- **🇲🇹 Maltese translation** · Lucas Fenech Beaumont · [GitHub](https://github.com/lucasfenech18)
 
 ## 👨‍💻 On pull requests
 

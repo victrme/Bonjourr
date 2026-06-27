@@ -11,6 +11,36 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function addAdvancedOptions(data: Import): Import {
+    if (!data.advanced) {
+        data.advanced = SYNC_DEFAULT.advanced
+    }
+
+    data.advanced = data.advanced ?? SYNC_DEFAULT.advanced
+
+    return data
+}
+
+export function addShowUnitToWeather(data: Import): Import {
+    if (!data.weather) {
+        data.weather = SYNC_DEFAULT.weather
+    }
+
+    data.weather.show_unit = data.weather.show_unit ?? SYNC_DEFAULT.weather.show_unit
+
+    return data
+}
+
+export function addColorToFont(data: Import): Import {
+    if (!data.font) {
+        data.font = SYNC_DEFAULT.font
+    }
+
+    data.font.color = data.font.color ?? SYNC_DEFAULT.font.color
+
+    return data
+}
+
 /**
  * converts old link data to new typing (Bonjourr 22 with icon options)
  */

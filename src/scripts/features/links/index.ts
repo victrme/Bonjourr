@@ -12,6 +12,7 @@ import {
     getLinksInGroup,
     isElem,
     isLink,
+    isTypingTarget,
 } from './helpers.ts'
 
 import { randomString, stringMaxSize } from '../../shared/generic.ts'
@@ -23,7 +24,7 @@ import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
 import type { Local } from '../../../types/local.ts'
-import type { Sync } from '../../../types/sync.ts'
+import type { Advanced, Sync } from '../../../types/sync.ts'
 
 type AddLinks = {
     title: string
@@ -125,7 +126,9 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
     domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
 
-    document.addEventListener('keydown', openLinksWithKeyboard)
+    document.addEventListener('keydown', (event) => {
+        openLinksWithKeyboard(init.sync.advanced, event)
+    })
 
     if (sync.linkgroups.synced.length > 0) {
         await initBookmarkSync(sync)
@@ -919,7 +922,9 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
     return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }
 
-function openLinksWithKeyboard(event: KeyboardEvent): void {
+function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
+    if (isTypingTarget(event.target) || !advanced.altMode) return
+
     const { altKey, ctrlKey, metaKey, code } = event
     const isNotAltComboKey = !altKey || ctrlKey || metaKey
     const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))

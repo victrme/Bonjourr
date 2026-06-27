@@ -31,6 +31,7 @@ aside .param-btn {
     align-items: center;
     gap: 5px;
     cursor: pointer;
+    transition: background-color 0.05s;
 }
 
 aside .param-btn img,
@@ -110,7 +111,8 @@ aside button {
 aside input,
 aside select {
     height: 31px;
-    width: 155px;
+    max-width: 155px;
+    width: 100%;
     padding-inline: 13px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -230,6 +232,12 @@ aside input[type='range']::-webkit-slider-runnable-track {
         #efefef;
 }
 
+html:dir(rtl) aside input[type='range']::-webkit-slider-runnable-track {
+    background:
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) right / var(--sx) 100% no-repeat,
+        #efefef;
+}
+
 [data-theme='dark'] aside input[type='range']::-webkit-slider-runnable-track {
     background:
         linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
@@ -254,6 +262,12 @@ aside input[type='range']::-moz-range-track {
     box-shadow: none;
     background:
         linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) 0 / var(--sx) 100% no-repeat,
+        #efefef;
+}
+
+html:dir(rtl) aside input[type='range']::-moz-range-track {
+    background:
+        linear-gradient(rgb(var(--accent-color)), rgb(var(--accent-color))) right / var(--sx) 100% no-repeat,
         #efefef;
 }
 
@@ -332,6 +346,7 @@ aside .color-button button {
             rgb(var(--input-color)) 85%,
             black
         );
+    direction: ltr;
 }
 
 aside .inputWithSuffix {

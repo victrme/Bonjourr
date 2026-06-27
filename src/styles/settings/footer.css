@@ -1,8 +1,17 @@
 #settings-footer {
     width: 75%;
     font-size: 14px;
-    margin: 50px auto 100px;
+    margin: 50px auto 50px;
     color: var(--color-light-text);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5em;
+}
+
+@media screen and (max-width: 600px) {
+    #settings-footer {
+        margin: 50px auto 120px;
+    }
 }
 
 @supports (-webkit-touch-callout: none) {
@@ -11,26 +20,54 @@
     }
 }
 
-#settings-footer > div:first-child {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-#settings-footer > div:nth-child(2) {
-    margin: 1.5em 0;
-}
-
 #settings-footer svg {
-    height: 1.25em;
-    fill: rgb(var(--accent-color));
+    color: var(--accent-color);
+    display: block;
+    width: 1.35em;
+    height: 1.35em;
 }
 
-#settings-footer-links a {
-    margin: 0 6px;
+#settings-footer-links {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
 }
 
 #settings-footer-links a:hover {
     text-decoration: none;
-    opacity: 0.8;
+    color: color-mix(in srgb, rgb(var(--accent-color)), white 20%);
+}
+
+#settings-footer #bonjourr-version {
+    text-align: center;
+    font-size: 0.9em;
+}
+
+#donate {
+    display: flex;
+    justify-content: center;
+}
+
+#donate a {
+    padding: 1.25em;
+}
+
+#donate a:hover {
+    text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    #donate a {
+        background-color: rgb(var(--accent-color) / 0.22);
+    }
+
+    #donate a:hover {
+        background-color: rgb(var(--accent-color) / 0.3);
+        color: color-mix(in srgb, rgb(var(--accent-color)), white 20%);
+    }
+}
+
+#made-in {
+    text-align: center;
+    line-height: 1.7em;
 }
