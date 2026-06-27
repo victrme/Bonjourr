@@ -242,10 +242,33 @@ function locales(platform: Platform): void {
 
         ensureDirSync(output)
 
-        Deno.copyFileSync(`_locales/${lang}/translations.json`, `${output}/translations.json`)
+        Deno.copyFileSync(
+            `_locales/${lang}/translations.json`,
+            `${output}/translations.json`,
+        )
 
         if (platform !== 'online') {
-            Deno.copyFileSync(`_locales/${lang}/messages.json`, `${output}/messages.json`)
+            Deno.copyFileSync(
+                `_locales/${lang}/messages.json`,
+                `${output}/messages.json`,
+            )
+        }
+
+        /**
+         * #873
+         * Duplicates language variant _locales with underscores
+         * because the Chrome Web Stores does not use the correct ISO standard for language codes
+         */
+        if (platform === 'chrome' && lang.includes('-')) {
+            const undercoredLang = lang.replaceAll('-', '_')
+            const output = `release/${platform}/_locales/${undercoredLang}`
+
+            ensureDirSync(output)
+
+            Deno.copyFileSync(
+                `_locales/${lang}/messages.json`,
+                `${output}/messages.json`,
+            )
         }
     }
 }
