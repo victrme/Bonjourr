@@ -1,5 +1,6 @@
 import { EXTENSION, IS_MOBILE, PLATFORM } from '../../defaults.ts'
-import { isDistantUrl, isLocalIp, isValidEngine, safeURL } from './searchbar.ts'
+import { isDistantUrl, isLocalIp, safeURL } from './url.ts'
+import { isValidEngine } from './searchbar.ts'
 import { getSocket } from './suggestions.ts'
 import { tradThis } from '../../utils/translations.ts'
 
