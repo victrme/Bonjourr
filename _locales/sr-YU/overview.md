@@ -30,4 +30,6 @@ alatima za prilagođavanje kako bi stvorio miran i funkcionalan novi tab koji ć
 🔒 Privatnost na prvom mestu Bonjourr ne prikuplja nikakve podatke, ne zahteva nalog i traži samo neophodne dozvole.
 Pozadine izrađuju ljudi i ne koriste generativnu veštačku inteligenciju. Potpuno otvorenog koda i transparentan.
 
-👨‍💻 Nezavisno razvijen Bonjourr stvaraju dva nezavisna programera kojima su dizajn, p
+👨‍💻 Nezavisno razvijen Bonjourr stvaraju dva nezavisna programera kojima su dizajn, privatnost i dobro obavljen posao iskreno važni — ne kompanija čiji je plan rada određen oglašivačima ili investitorima.
+
+Ako tražiš lep početni ekran ili novi tab, Bonjourr je napravljen za tebe.

@@ -1,4 +1,4 @@
-Bonjourr — Momentum va Tabliss kabi kengaytmalarga zamonaviy muqobil bo'lib, iOS'dan ilhomlanган dizaynni kuchli sozlash
+Bonjourr — Momentum va Tabliss kabi kengaytmalarga zamonaviy muqobil bo'lib, iOS'dan ilhomlangan dizaynni kuchli sozlash
 vositalari bilan birlashtiradi va chindan ham ochishdan zavq oladigan tinch hamda funksional yangi yorliq yaratadi.
 
 🏆 2023-yilda Google Chrome'ning sevimlilariga kiritildi
@@ -6,7 +6,7 @@ vositalari bilan birlashtiradi va chindan ham ochishdan zavq oladigan tinch hamd
 🌄 Standart holda chiroyli
 
 - Kun vaqtiga qarab kayfiyatni o'zgartiradigan dinamik 4K va video orqa fonlar
-- iOS'dan ilhomlanган toza interfeys
+- iOS'dan ilhomlangan toza interfeys
 - Yengil va silliq ishlash
 
 ⚡️ Unumdorlik vositalari

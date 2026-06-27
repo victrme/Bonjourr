@@ -28,7 +28,7 @@ yaradır.
 - Çevik görünüş seçimləri
 - 43 dildə mövcuddur
 
-🔒 Gizlilik hər şeydən önce Bonjourr heç bir məlumat toplamır, hesab tələb etmir və yalnız lazımi icazələr istəyir. Arxa
+🔒 Gizlilik hər şeydən əvvəl Bonjourr heç bir məlumat toplamır, hesab tələb etmir və yalnız lazımi icazələr istəyir. Arxa
 planlar insanlar tərəfindən yaradılır və generativ süni intellektdən istifadə etmir. Tamamilə açıq mənbəli və şəffafdır.
 
 👨‍💻 Müstəqil hazırlanmışdır Bonjourr dizayna, gizliliyə və yaxşı işə həqiqətən əhəmiyyət verən iki müstəqil tərtibatçı
