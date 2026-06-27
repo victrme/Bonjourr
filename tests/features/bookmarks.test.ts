@@ -1,9 +1,9 @@
-import './init.test.ts'
-
-import { initBookmarkSync, syncBookmarks } from '../src/scripts/features/links/bookmarks.ts'
-import { SYNC_DEFAULT } from '../src/scripts/defaults.ts'
+import '../init.test.ts'
 import { assertEquals } from '@std/assert'
-import type { Treenode } from '../src/scripts/features/links/bookmarks.ts'
+
+import { initBookmarkSync, syncBookmarks } from '../../src/scripts/features/links/bookmarks.ts'
+import { SYNC_DEFAULT } from '../../src/scripts/defaults.ts'
+import type { Treenode } from '../../src/scripts/features/links/bookmarks.ts'
 
 type SyncedLinks = ReturnType<typeof syncBookmarks>
 
