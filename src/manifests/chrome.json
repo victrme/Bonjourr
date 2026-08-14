@@ -9,6 +9,12 @@
     "icons": {
         "128": "src/assets/favicons/favicon-128x128.png"
     },
+    "web_accessible_resources": [
+        {
+            "resources": ["index.html"],
+            "matches": ["<all_urls>"]
+        }
+    ],
     "chrome_url_overrides": {
         "newtab": "index.html"
     },
