@@ -37,6 +37,7 @@
             "tests",
             "_locales"
         ],
+        "exclude": ["src/assets/effects"],
         "rules": {
             "tags": [
                 "recommended"
@@ -67,7 +68,7 @@
             "tests",
             "_locales"
         ],
-        "exclude": ["**/overview.md"]
+        "exclude": ["**/overview.md", "src/assets/effects"]
     },
     "compilerOptions": {
         "strict": true,

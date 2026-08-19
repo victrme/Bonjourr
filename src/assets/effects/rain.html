@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cozy Rain</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    /* Transparent -- this iframe is an overlay layered on top of
+       Bonjourr's actual background (photo/video/color), not a standalone
+       night scene, so the real background shows through underneath the
+       rain streaks/ripples/vignette. (Used to be an opaque night-sky
+       gradient painted here; the rain layer's own vignette and ground
+       sheen still give it mood without needing that gradient.) */
+    background: transparent;
+    overflow: hidden;
+    font-family: system-ui, sans-serif;
+  }
+  #rain { display: block; width: 100vw; height: 100vh; }
+</style>
+</head>
+<body>
+<canvas id="rain"></canvas>
+
+<!-- <!> Loaded as an external file, not inline, because Manifest V3's
+     extension-page CSP (script-src 'self') blocks inline <script> tags
+     even for a page the extension ships itself. -->
+<script src="rain.js"></script>
+</body>
+</html>

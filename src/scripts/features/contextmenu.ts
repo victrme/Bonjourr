@@ -366,19 +366,21 @@ export function handleBackgroundActions(backgrounds: Backgrounds): void {
 
 export function initBackgroundActionsEvents(): void {
     onclickdown(document.getElementById('b_interface-background-pause'), () => {
-        toggleBackgroundPause()
+        toggleBackgroundPause().catch((err) => console.error('Bonjourr: failed to toggle background pause', err))
     })
 
     onclickdown(document.getElementById('b_interface-background-refresh'), (event) => {
-        backgroundUpdate({ refresh: event })
+        backgroundUpdate({ refresh: event }).catch((err) =>
+            console.error('Bonjourr: failed to refresh background', err)
+        )
     })
 
     onclickdown(document.getElementById('b_interface-background-download'), () => {
-        downloadImage()
+        downloadImage().catch((err) => console.error('Bonjourr: failed to download background', err))
     })
 
     onclickdown(document.getElementById('b_interface-background-mute'), () => {
-        toggleMuteVideo()
+        toggleMuteVideo().catch((err) => console.error('Bonjourr: failed to toggle video mute', err))
     })
 }
 
@@ -395,7 +397,7 @@ async function toggleMuteVideo(): Promise<void> {
     muteContextButton?.classList.toggle('muted', !lastMuteStatus)
 
     toggleMuteStatus(!lastMuteStatus)
-    backgroundUpdate({ mute: !lastMuteStatus })
+    await backgroundUpdate({ mute: !lastMuteStatus })
 }
 
 async function toggleBackgroundPause(): Promise<void> {
@@ -410,10 +412,10 @@ async function toggleBackgroundPause(): Promise<void> {
     }
 
     if (paused) {
-        backgroundUpdate({ freq: last })
+        await backgroundUpdate({ freq: last })
     } else {
         localStorage.lastBackgroundFreq = sync.backgrounds.frequency
-        backgroundUpdate({ freq: 'pause' })
+        await backgroundUpdate({ freq: 'pause' })
     }
 }
 

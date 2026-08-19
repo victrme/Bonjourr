@@ -35,6 +35,7 @@ export interface Sync {
         night: string
     }
     notes?: Notes
+    scribble?: Scribble
     hide?: Hide
     dark: 'auto' | 'system' | 'enable' | 'disable'
     dateformat: 'auto' | 'eu' | 'us' | 'cn'
@@ -74,6 +75,13 @@ export interface Hide {
 
 export interface Backgrounds {
     type: 'files' | 'urls' | 'images' | 'videos' | 'color'
+    /** Which animated "effect" overlay (if any) to layer on top of the
+     *  actual background above, independent of `type`. Each non-'none'
+     *  value ships as a self-contained html+js pair under
+     *  `src/assets/effects/` and is rendered via a sandboxed, non-interactive,
+     *  transparent iframe -- see `applyEffectBackground` in
+     *  `backgrounds/index.ts`. */
+    effect: 'none' | 'firefly' | 'rain'
     frequency: Frequency
     fadein: number
     bright: number
@@ -172,6 +180,22 @@ export interface Notes {
     width?: number
     background?: string
     opacity?: number
+}
+
+/**
+ * A small floating, draggable scribble pad -- separate from `Notes`.
+ * `text` (markdown) lives here because it's small; the freehand
+ * drawing strokes and on-screen position are bulkier/per-device and
+ * live in `Local` (`scribbleDrawing`, `scribblePosition`) instead.
+ *
+ * Markdown text and the doodle canvas are always both visible, stacked
+ * on top of each other -- `draw` just decides which layer currently
+ * receives pointer input (typing vs. scribbling), not which is shown.
+ */
+export interface Scribble {
+    on: boolean
+    draw: boolean
+    text?: string
 }
 
 export interface Quotes {

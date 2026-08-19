@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Firefly</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      /* Transparent -- this iframe is an overlay layered on top of
+         Bonjourr's actual background (photo/video/color), not a
+         standalone scene, so the real background shows through. */
+      background: transparent;
+      overflow: hidden;
+    }
+
+    #firefly-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="firefly-canvas"></canvas>
+
+  <!-- <!> Loaded as an external file, not inline, because Manifest V3's
+       extension-page CSP (script-src 'self') blocks inline <script> tags
+       even for a page the extension ships itself. -->
+  <script src="firefly.js"></script>
+</body>
+</html>

@@ -56,6 +56,64 @@
     padding-block: 5px;
 }
 
+.upload-error {
+    display: none;
+    margin-top: 5px;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgb(var(--danger-color));
+    background-color: rgb(var(--danger-color) / 0.12);
+    border: 1px solid rgb(var(--danger-color) / 0.4);
+    border-radius: 8px;
+}
+
+.upload-error.shown {
+    display: block;
+}
+
+/* Shown while addLocalBackgrounds() is compressing/decoding a batch, so a
+   large or multi-file upload reads as "working" instead of "hung". */
+.upload-progress {
+    display: none;
+    margin-top: 5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: var(--color-input);
+}
+
+.upload-progress.shown {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#local-upload-progress-bar {
+    position: relative;
+    flex-shrink: 0;
+    width: 80px;
+    height: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: rgb(var(--accent-color) / 0.2);
+}
+
+#local-upload-progress-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: var(--upload-progress-percent, 0%);
+    background-color: rgb(var(--accent-color));
+    border-radius: 4px;
+    transition: width 0.2s ease;
+}
+
+#local-upload-progress-text {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--color-areas-text);
+}
+
 .thumbnail {
     position: relative;
     height: calc(230px / var(--thumbnails-columns));
@@ -213,4 +271,25 @@
     border-color: rgb(var(--color-green));
     background-size: 13px 13px;
     background-image: url('../../assets/labels/check.svg');
+}
+
+/* Background effect overlay (fireflies/rain, layered on top of the real
+   background -- see backgrounds/index.ts) -- a small button-group picker
+   instead of a plain <select>, since there are only two effects (plus
+   "None") and this is meant to feel like a fun little feature to pick
+   between, not just another dropdown buried in the list. Lives inside the
+   Texture overlay section in settings.html since both are optional layers
+   on top of the actual background. */
+#effect-buttons {
+    gap: 0.5em;
+    flex-wrap: wrap;
+}
+
+.effect-button {
+    flex: 1 1 auto;
+}
+
+.effect-button.selected {
+    color: white;
+    background-color: rgb(var(--accent-color));
 }

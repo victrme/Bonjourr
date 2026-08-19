@@ -279,6 +279,13 @@
 
         <div class="wrapper" id="thumbnails-container"></div>
 
+        <div id="local-upload-progress" class="upload-progress" role="status" aria-live="polite">
+            <div id="local-upload-progress-bar"></div>
+            <span id="local-upload-progress-text"></span>
+        </div>
+
+        <div id="local-upload-error" class="upload-error" role="alert"></div>
+
         <div id="background-local-actions" class="wrapper">
             <div>
                 <button
@@ -564,6 +571,24 @@
                 <label for="i_texture-size" class="trn">Texture density</label>
                 <input id="i_texture-size" name="texture-size" class="range" type="range" />
             </div>
+        </div>
+
+        <hr />
+
+        <div class="wrapper">
+            <p class="trn">Effect</p>
+        </div>
+
+        <div id="effect-buttons" class="wrapper">
+            <button class="effect-button param-btn" data-effect="none" type="button">
+                <span class="trn">None</span>
+            </button>
+            <button class="effect-button param-btn" data-effect="firefly" type="button">
+                <span class="trn">Fireflies</span>
+            </button>
+            <button class="effect-button param-btn" data-effect="rain" type="button">
+                <span class="trn">Cozy rain</span>
+            </button>
         </div>
     </div>
 </div>
@@ -1375,6 +1400,24 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="settings-title" id="scribble_title">
+    <h2 id="lbl-scribble" class="trn">Scribble pad</h2>
+
+    <button class="tooltip ttscribble" title="Tips on Scribble pad" aria-label="Tips Scribble pad">?</button>
+
+    <p class="tooltiptext dropdown ttscribble">
+        <span
+            class="trn">A tiny floating window you can drag anywhere on the page. Write markdown or doodle -- it remembers where you left it.</span>
+    </p>
+</div>
+
+<div class="param" id="scribble_param">
+    <div class="activate_scribble wrapper">
+        <label for="i_scribble" class="trn">Enable</label>
+        <input id="i_scribble" class="switch" type="checkbox" />
     </div>
 </div>
 

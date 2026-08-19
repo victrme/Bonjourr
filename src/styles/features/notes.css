@@ -43,6 +43,21 @@
     -webkit-backdrop-filter: blur(2em);
 }
 
+/* Potato mode: same reasoning as the search bar -- --notes-background is
+   only ~10% opaque and depends on the blur behind it for legibility. */
+body.potato #pocket-editor {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgb(0 0 0 / 0.55);
+}
+
+/* .opaque means the user picked a near-white custom notes color, which
+   also switches the text to dark (#222) above -- keep that combination
+   working by falling back to a light color here instead of the dark one. */
+body.potato #notes_container.opaque #pocket-editor {
+    background-color: rgb(255 255 255 / 0.85);
+}
+
 #pocket-editor [data-selected] {
     color: #fff;
     background-color: rgb(255 255 255 / 0.1333333333);

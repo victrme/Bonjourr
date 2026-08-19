@@ -40,6 +40,7 @@
 @import './features/main.css';
 @import './features/searchbar.css';
 @import './features/notes.css';
+@import './features/scribble.css';
 @import './features/links.css';
 @import './features/quotes.css';
 @import './features/pomodoro.css';

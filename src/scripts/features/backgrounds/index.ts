@@ -5,6 +5,7 @@ import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
 import {
     addLocalBackgrounds,
+    getCurrentVideo,
     initFilesSettingsOptions,
     lastUsedBackgroundFiles,
     localFilesCacheControl,
@@ -38,6 +39,7 @@ interface CollectionSetReturn {
 interface BackgroundUpdate {
     freq?: string
     type?: string
+    effect?: string
     blur?: string
     blurenter?: true
     color?: string
@@ -91,9 +93,17 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
     handleBackgroundActions(sync.backgrounds)
     document.getElementById('background-wrapper')?.setAttribute('data-type', sync.backgrounds.type)
 
+    // <!> The fireflies/rain effect is a layer on top of whatever the real
+    // <!> background type is (photo, video, color...), not a type of its
+    // <!> own -- `applyEffectBackground` mounts or tears down its iframe
+    // <!> purely based on `effect`, independent of the switch below.
+    applyEffectBackground(sync.backgrounds.effect)
+
     switch (sync.backgrounds.type) {
         case 'files': {
-            localFilesCacheControl(sync.backgrounds, local)
+            localFilesCacheControl(sync.backgrounds, local).catch((err) =>
+                console.error('Bonjourr: local background init failed', err)
+            )
             break
         }
         case 'urls': {
@@ -101,18 +111,37 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
             break
         }
         case 'color': {
-            applyBackground(sync.backgrounds.color)
+            applyBackground(sync.backgrounds.color).catch((err) =>
+                console.error('Bonjourr: background init failed', err)
+            )
             break
         }
         default: {
-            backgroundCacheControl(sync.backgrounds, local)
+            backgroundCacheControl(sync.backgrounds, local).catch((err) =>
+                console.error('Bonjourr: background init failed', err)
+            )
         }
     }
 }
 
 // 	Storage update
 
+// <!> `backgroundUpdate` is called fire-and-forget from ~20 call sites
+// <!> across settings.ts and contextmenu.ts (every background-related
+// <!> settings input, plus the context menu's pause/download/mute
+// <!> buttons) -- none of them await or catch it. It also does real I/O
+// <!> that can fail (file uploads, network image fetches, cache reads).
+// <!> Catching at this single choke point is far more reliable than
+// <!> hunting down and fixing every call site individually.
 export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> {
+    try {
+        await backgroundUpdateUnsafe(update)
+    } catch (err) {
+        console.error('Bonjourr: failed to update background', err)
+    }
+}
+
+async function backgroundUpdateUnsafe(update: BackgroundUpdate): Promise<void> {
     const data = await storage.sync.get('backgrounds')
     const local = await storage.local.get()
 
@@ -146,6 +175,13 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
         createProviderSelect(data.backgrounds)
         handleBackgroundOptions(data.backgrounds)
         backgroundsInit(data, local)
+        return
+    }
+
+    if (isBackgroundEffect(update.effect)) {
+        data.backgrounds.effect = update.effect
+        storage.sync.set({ backgrounds: data.backgrounds })
+        applyEffectBackground(data.backgrounds.effect)
         return
     }
 
@@ -622,14 +658,67 @@ function setCollection(backgrounds: Backgrounds, local: Local): CollectionSetRet
 
 // 	Apply to DOM
 
-export function applyBackground(media?: string | Background, res?: BackgroundSize, fast?: 'fast'): void {
+const IMAGE_DECODE_TIMEOUT_MS = 8000
+const VIDEO_PRELOAD_TIMEOUT_MS = 8000
+
+/**
+ * Waits for `img` to be fully decoded (off-main-thread) before resolving.
+ *
+ * <!> The `load`/`error` fallback listeners are attached *before* `src` is
+ * <!> set and before `decode()` is awaited. Attaching them only inside a
+ * <!> `.catch()` risks missing an event that already fired while `decode()`
+ * <!> was pending, which would silently hang the caller forever. A timeout
+ * <!> guarantees this never blocks a background swap indefinitely.
+ */
+async function decodeImage(img: HTMLImageElement, src: string): Promise<void> {
+    const loaded = new Promise<void>((resolve) => {
+        img.addEventListener('load', () => resolve(), { once: true })
+        img.addEventListener('error', () => resolve(), { once: true })
+    })
+
+    img.src = src
+
+    const timeout = new Promise<void>((resolve) => setTimeout(resolve, IMAGE_DECODE_TIMEOUT_MS))
+
+    try {
+        await Promise.race([img.decode(), timeout])
+    } catch (_err) {
+        await Promise.race([loaded, timeout])
+    }
+}
+
+// <!> `createImageItem`/`createVideoItem` background/video elements are
+// <!> backed by `URL.createObjectURL()` blobs (see `mediaFromFiles` in
+// <!> local.ts) that are never freed by themselves -- each one keeps its
+// <!> underlying image/video bytes alive in memory until explicitly
+// <!> revoked. Tagging the element with the URL it owns lets every removal
+// <!> site below revoke it at the exact moment the element is discarded,
+// <!> instead of leaking a blob on every single background switch.
+function revokeElementBlobUrl(el: Element | null | undefined): void {
+    const url = (el as HTMLElement | null)?.dataset?.blobSrc
+    if (url?.startsWith('blob:')) {
+        URL.revokeObjectURL(url)
+    }
+}
+
+export async function applyBackground(media?: string | Background, res?: BackgroundSize, fast?: 'fast'): Promise<void> {
     const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
     let resolution = res ? res : detectBackgroundSize()
     let item: HTMLElement
 
     if (typeof media === 'string') {
-        mediaWrapper?.childNodes.forEach((node) => node.remove())
+        mediaWrapper?.childNodes.forEach((node) => {
+            revokeElementBlobUrl(node as Element)
+            node.remove()
+        })
         document.documentElement.style.setProperty('--solid-background', media)
+        // <!> createImageItem/createVideoItem unhide #background-wrapper as a
+        // <!> side effect once their media is ready. Solid colors have no such
+        // <!> async step, so without this the wrapper stays hidden (opacity 0,
+        // <!> pure black) whenever it wasn't already visible when the user
+        // <!> switches to (or starts on) a solid-color background -- eg. a
+        // <!> fresh install, or switching away from a still-loading image/video.
+        document.getElementById('background-wrapper')?.classList.remove('hidden')
         return
     }
 
@@ -641,18 +730,29 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
         return
     }
 
+    let src: string
+
     if (media.format === 'image') {
         // disables blur compression for animated gifs (flawed since some gifs aren't animated)
         resolution = media.mimetype === 'image/gif' ? 'full' : resolution
-        const src = media.urls[resolution]
-        item = createImageItem(src, media)
+        src = media.urls[resolution]
+        // <!> This awaits full off-main-thread decode (img.decode()) before
+        // <!> the element ever touches the DOM. Setting `background-image`
+        // <!> synchronously and revealing it on the `load` event (bytes
+        // <!> arrived) used to force a main-thread JPEG/WebP decode at the
+        // <!> first paint, which is what caused the freeze.
+        item = await createImageItem(src, media)
     } else {
         const fade = 4000 //ms
-        const src = media.urls[resolution]
+        src = media.urls[resolution]
         item = createVideoItem(src, media, fade)
     }
 
     item.dataset.res = resolution
+    item.dataset.blobSrc = src
+    // <!> The crossfade below only starts once `item` is fully decoded
+    // <!> (image path) and already in the DOM, so the old background never
+    // <!> fades out ahead of the new one being ready to show.
     mediaWrapper.prepend(item)
 
     if (mediaWrapper?.childElementCount > 1) {
@@ -660,39 +760,41 @@ export function applyBackground(media?: string | Background, res?: BackgroundSiz
         const notHiding = children.filter((child) => !child.className.includes('hiding'))
         const lastVisible = notHiding.at(-1)
 
+        // <!> Capture the specific outgoing element now rather than
+        // <!> re-querying `lastElementChild` when the timeout fires. If
+        // <!> another background gets applied before this timeout runs,
+        // <!> "the last child" at that point could be a totally different,
+        // <!> freshly-added element, and this would remove that instead.
+        const outgoing = mediaWrapper?.lastElementChild
+
         if (fast) {
             document.body.classList.remove('init')
-            setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 200)
+            setTimeout(() => {
+                revokeElementBlobUrl(outgoing)
+                outgoing?.remove()
+            }, 200)
         } else {
             lastVisible?.classList.add('hiding')
-            setTimeout(() => mediaWrapper?.lastElementChild?.remove(), 1200)
+            setTimeout(() => {
+                revokeElementBlobUrl(outgoing)
+                outgoing?.remove()
+            }, 1200)
         }
     }
 }
 
-function createImageItem(src: string, media: BackgroundImage, callback?: () => void): HTMLDivElement {
+async function createImageItem(src: string, media: BackgroundImage): Promise<HTMLDivElement> {
     const backgroundsWrapper = document.getElementById('background-wrapper')
     const div = document.createElement('div')
     const img = new Image()
 
-    img.addEventListener('load', () => {
-        const isSmall = img.width <= 256 && img.height <= 256
-        const isPng = !!media.mimetype?.includes('png')
+    await decodeImage(img, src)
 
-        div?.classList.toggle('pixelated', isPng && isSmall)
-        backgroundsWrapper?.classList.remove('hidden')
-        applyThemeColor(media, img)
-        updateCredits(media)
-
-        if (callback) {
-            callback()
-        }
-    })
-
-    img.src = src
-    img.remove()
+    const isSmall = img.width <= 256 && img.height <= 256
+    const isPng = !!media.mimetype?.includes('png')
 
     div.classList.add('background-image')
+    div.classList.toggle('pixelated', isPng && isSmall)
     div.style.backgroundImage = `url(${src})`
 
     if (media?.file?.position) {
@@ -702,6 +804,12 @@ function createImageItem(src: string, media: BackgroundImage, callback?: () => v
         div.style.backgroundPositionX = x
         div.style.backgroundPositionY = y
     }
+
+    backgroundsWrapper?.classList.remove('hidden')
+    applyThemeColor(media, img)
+    updateCredits(media)
+
+    img.remove()
 
     return div
 }
@@ -740,26 +848,44 @@ function preloadBackground(media: Background | undefined, res?: BackgroundSize):
         const img = document.createElement('img')
         img.fetchPriority = 'low'
 
-        return new Promise((resolve) => {
-            img.addEventListener('load', () => {
+        // <!> Preloading used to only wait for `load` (bytes fetched), so
+        // <!> decode still happened on the main thread later when the
+        // <!> image was actually applied. `img.decode()` fetches *and*
+        // <!> decodes off-main-thread, pre-warming the decode cache so the
+        // <!> later `createImageItem` call for this same `src` is instant.
+        return decodeImage(img, src)
+            .finally(() => {
                 localStorage.removeItem('backgroundPreloading')
                 img.remove()
-                resolve(true)
             })
-
-            img.src = src
-        })
+            .then(() => true)
     }
 
     if (media.format === 'video') {
         const video = document.createElement('video')
 
         return new Promise((resolve) => {
-            video.addEventListener('canplaythrough', () => {
+            const done = (): void => {
                 localStorage.removeItem('backgroundPreloading')
                 video.remove()
                 resolve(true)
-            })
+            }
+
+            // <!> No timeout/error handling here meant a video that fails to
+            // <!> buffer (bad codec, network hiccup) left `backgroundPreloading`
+            // <!> stuck at 'true' in localStorage forever, which the rest of
+            // <!> the background logic reads to decide whether to skip work.
+            const timeoutId = setTimeout(done, VIDEO_PRELOAD_TIMEOUT_MS)
+
+            video.addEventListener('canplaythrough', () => {
+                clearTimeout(timeoutId)
+                done()
+            }, { once: true })
+
+            video.addEventListener('error', () => {
+                clearTimeout(timeoutId)
+                done()
+            }, { once: true })
 
             // Wait the for applied video to continue buffering
             setTimeout(() => video.src = src, 600)
@@ -767,20 +893,114 @@ function preloadBackground(media: Background | undefined, res?: BackgroundSize):
     }
 }
 
+// 	Effect overlays ("fun lil effects": firefly, cozy rain)
+//
+// <!> These are a transparent layer drawn *on top of* whatever the real
+// <!> background type is (photo, video, or color) -- not a background type
+// <!> of their own. `applyEffectBackground` is called unconditionally from
+// <!> both `backgroundsInit` and the `effect` branch of `backgroundUpdate`,
+// <!> independent of `backgrounds.type`, and decides for itself whether to
+// <!> mount or tear down the iframe based on `effect` alone. Deliberately
+// <!> NOT routed through `applyBackground`'s crossfade/cache machinery --
+// <!> there's no `Background` item, collection, or resolution to fetch,
+// <!> cache-control, or preload here, just "which (if any) of the bundled
+// <!> animations is currently mounted."
+
+function applyEffectBackground(effect: Backgrounds['effect']): void {
+    const wrapper = document.getElementById('background-wrapper')
+    const iframe = document.getElementById('background-effect') as HTMLIFrameElement | null
+
+    if (!wrapper || !iframe) {
+        return
+    }
+
+    wrapper.dataset.effect = effect
+
+    // <!> These are full-viewport canvas animations -- exactly the kind of
+    // <!> CPU/GPU cost potato mode exists to avoid. CSS hides the iframe
+    // <!> under `body.potato` (see background.css), but skip mounting it
+    // <!> here too, so a potato-mode device never even starts the
+    // <!> animation loop in the first place.
+    const shouldMount = effect !== 'none' && !document.body.classList.contains('potato')
+
+    if (!shouldMount) {
+        // <!> Clearing `src` (not just hiding the element) is what actually
+        // <!> stops the iframe's own requestAnimationFrame loop and frees
+        // <!> its canvas -- an animation left running invisibly behind a
+        // <!> "None" selection or under potato mode would keep spending
+        // <!> CPU forever.
+        if (iframe.dataset.mounted) {
+            iframe.removeAttribute('src')
+            delete iframe.dataset.mounted
+        }
+        return
+    }
+
+    // Only reassign `src` (which restarts the animation from scratch) if
+    // the effect actually changed -- `applyEffectBackground` gets called
+    // again on things like a settings re-render, and there's no reason to
+    // reset an already-running scene just because of that.
+    if (iframe.dataset.mounted !== effect) {
+        iframe.dataset.mounted = effect
+        iframe.src = `src/assets/effects/${effect}.html`
+    }
+}
+
 export function removeBackgrounds(): void {
     const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
-    setTimeout(() => document.querySelector('#background-media div')?.classList.add('hiding'))
-    setTimeout(() => mediaWrapper.firstChild?.remove(), 2000)
+    // <!> Capture the element to remove right now instead of re-querying
+    // <!> "the first child" 2 seconds later. Without this, calling
+    // <!> `removeBackgrounds()` (e.g. switching to an empty "Local files"
+    // <!> list) and then applying a new background within that 2s window
+    // <!> meant this stale timeout fired *after* the new background had
+    // <!> already been prepended, and deleted that instead -- the
+    // <!> wallpaper you just picked would flash and then silently vanish.
+    const outgoing = mediaWrapper?.firstElementChild
+
+    if (!outgoing) {
+        return
+    }
+
+    setTimeout(() => outgoing.classList.add('hiding'))
+    setTimeout(() => {
+        revokeElementBlobUrl(outgoing)
+        outgoing.remove()
+        // <!> Nothing else calls `setCurrentVideo()` after this (there's no
+        // <!> next background to replace it), so without this the previous
+        // <!> video's 'visibilitychange' listener -- and both its <video>
+        // <!> elements -- would stay reachable from `document` forever, even
+        // <!> though the container above was just removed from the page.
+        getCurrentVideo()?.unbindVisibilityListener()
+    }, 2000)
 }
+
+// <!> Tracked in memory (rather than re-read from storage) so the
+// <!> `no-bg-filter` toggle below always uses the value actually on
+// <!> screen right now. Storage writes for blur/bright are debounced by
+// <!> 600ms (see `propertiesUpdateDebounce`), so reading "the other"
+// <!> value back from storage.sync could return a stale figure if both
+// <!> sliders are moved within that window.
+let currentBlur: number | undefined
+let currentBright: number | undefined
 
 function applyFilters({ blur, bright, fadein }: Partial<Backgrounds>): void {
     if (blur !== undefined) {
+        currentBlur = blur
         document.documentElement.style.setProperty('--blur', `${blur}px`)
         document.body.classList.toggle('blurred', blur >= 15)
     }
 
     if (bright !== undefined) {
+        currentBright = bright
         document.documentElement.style.setProperty('--brightness', `${bright}`)
+    }
+
+    // <!> `filter: blur(0px) brightness(1)` still forces a GPU filter pass
+    // <!> on a full-viewport element every frame, even though it's a no-op
+    // <!> visually. When both values are at their defaults, drop `filter`
+    // <!> entirely via the `no-bg-filter` body class instead.
+    if (currentBlur !== undefined && currentBright !== undefined) {
+        document.body.classList.toggle('no-bg-filter', currentBlur === 0 && currentBright === 1)
     }
 
     if (fadein !== undefined) {
@@ -828,6 +1048,18 @@ function handleBackgroundOptions(backgrounds: Backgrounds): void {
     document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
     document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
     document.getElementById('background-video-sound-options')?.classList.toggle('shown', withVideos)
+
+    // <!> The Effect buttons live inside the Texture overlay section now
+    // <!> (settings.html's `.as_texture` -- an "as"/Show all settings
+    // <!> block), not a type-gated section of their own, so there's no
+    // <!> `.shown` toggle to do here. Only the selected-button state needs
+    // <!> syncing, and it needs to happen unconditionally (this runs from a
+    // <!> different init path than settings.ts's own `setEffectButtons` --
+    // <!> opening the settings panel fresh -- so it needs its own copy
+    // <!> rather than importing across modules).
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.effect-button')) {
+        button.classList.toggle('selected', button.dataset.effect === backgrounds.effect)
+    }
 
     handleTextureOptions(backgrounds)
     handleProviderOptions(backgrounds)
@@ -1084,6 +1316,9 @@ export function toggleMuteStatus(muted = true): void {
 
 function isBackgroundType(str = ''): str is Sync['backgrounds']['type'] {
     return ['files', 'urls', 'images', 'videos', 'color'].includes(str)
+}
+function isBackgroundEffect(str = ''): str is Sync['backgrounds']['effect'] {
+    return ['none', 'firefly', 'rain'].includes(str)
 }
 function isBackgroundTexture(str = ''): str is Sync['backgrounds']['texture']['type'] {
     return [

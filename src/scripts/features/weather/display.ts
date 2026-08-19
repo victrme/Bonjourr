@@ -147,6 +147,37 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
     }
 }
 
+/**
+ * Shown when there's no cached weather to fall back to and the first
+ * request fails (offline, provider down, geolocation denied with no
+ * default city reachable, etc). Without this, `#weather` keeps its
+ * initial `.wait` class (opacity: 0) forever -- an invisible gap in the
+ * layout with no indication anything went wrong. This makes the failure
+ * visible and un-stuck instead.
+ */
+export function displayWeatherUnavailable(): void {
+    const weatherdom = document.getElementById('weather')
+    const currentDesc = document.getElementById('current-desc')
+    const tempContainer = document.getElementById('tempContainer')
+    const dotContainer = document.getElementById('dotContainer')
+    const forecastdom = document.getElementById('forecast')
+
+    if (currentDesc) {
+        currentDesc.innerText = tradThis('Weather unavailable')
+    }
+
+    tempContainer?.replaceChildren()
+    dotContainer?.replaceChildren()
+    forecastdom?.classList.remove('shown')
+    weatherdom?.removeAttribute('href')
+
+    if (weatherFirstStart) {
+        weatherFirstStart = false
+        weatherdom?.classList.remove('wait')
+        setTimeout(() => weatherdom?.classList.remove('init'), 900)
+    }
+}
+
 // potential flaw: forecast timing is based on computer date instead of userDate()
 export function handleForecastDisplay(forecast: string): void {
     // // forces forecast for debugging

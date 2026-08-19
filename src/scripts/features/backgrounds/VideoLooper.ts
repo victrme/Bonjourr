@@ -84,14 +84,28 @@ export class VideoLooper {
             this.video1.remove()
             this.video2.remove()
             this.container.remove()
-
-            if (this.listener) {
-                document.removeEventListener(
-                    'visibilitychange',
-                    this.listener,
-                )
-            }
+            this.unbindVisibilityListener()
         }, this.fadetime)
+    }
+
+    /**
+     * Detaches the `document`-level 'visibilitychange' listener without
+     * touching opacity or the DOM. Call this (instead of `remove()`) when
+     * another piece of code already owns this instance's container removal
+     * / crossfade timing -- eg. replacing the active video background,
+     * where `applyBackground()`'s own crossfade handles fading out and
+     * detaching the old container. Without unbinding this, the listener
+     * (and everything it closes over: both <video> elements and their
+     * blob-backed src) stays reachable from `document` forever, even after
+     * the container itself is long gone from the page.
+     */
+    public unbindVisibilityListener(): void {
+        if (this.listener) {
+            document.removeEventListener(
+                'visibilitychange',
+                this.listener,
+            )
+        }
     }
 
     public getContainer(): HTMLElement {

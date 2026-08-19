@@ -220,6 +220,9 @@ function assets(platform: Platform): void {
     copyDir(`${source}/interface`, `${target}/interface`)
     copyDir(`${source}/labels`, `${target}/labels`)
     copyDir(`${source}/sounds`, `${target}/sounds`)
+    // Background "effects" (firefly/rain) -- self-contained html+js pairs
+    // loaded via <iframe src>, not bundled by esbuild.
+    copyDir(`${source}/effects`, `${target}/effects`)
 }
 
 function manifests(platform: Platform): void {

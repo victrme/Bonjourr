@@ -56,6 +56,47 @@
     display: none;
 }
 
+/* <!> The effect iframe is a transparent overlay layered on top of
+   whatever the real background is (photo, video, or solid color) -- it's
+   shown whenever `effect` isn't 'none', regardless of `data-type`. Its own
+   document (src/assets/effects/*.html) has a transparent body so the real
+   background shows through underneath it. */
+#background-effect {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    /* A background must never intercept clicks meant for the interface
+       above it -- same rule every other background type already follows. */
+    pointer-events: none;
+    /* <!> Deliberately no `filter: blur(var(--blur)) brightness(var(--brightness))`
+       here, unlike every other background type. That filter exists to dim/soften a
+       busy *photo* so foreground text stays legible -- applied to a small, fine-detail
+       animation (individual fireflies, thin rain streaks) it was blurring and dimming
+       the effect down to practically nothing at Bonjourr's own defaults (15px blur,
+       0.8 brightness). Each effect already ships with its own dark, legible-by-design
+       palette, so it doesn't need the photo-legibility treatment -- it needs to
+       actually be visible, which was the reported bug. */
+    will-change: opacity;
+}
+
+#background-wrapper:not([data-effect='none']) #background-effect {
+    display: block;
+}
+
+/* Effects are full-viewport canvas animations -- exactly the CPU/GPU cost
+   potato mode exists to avoid. `applyEffectBackground` (backgrounds/index.ts)
+   already skips mounting the iframe under `body.potato`; this is the visual
+   half of that. No flat-color fallback needed here (unlike an early version
+   of this feature) -- the real background underneath is untouched by potato
+   mode and still renders normally, the overlay just doesn't mount. */
+body.potato #background-effect {
+    display: none;
+}
+
 #background-media .video-looper,
 #background-media .background-image {
     object-fit: cover;
@@ -63,6 +104,17 @@
     background-position: center;
     transform: scale(1.1);
     filter: blur(var(--blur)) brightness(var(--brightness));
+    /* Promote the compositing layer upfront instead of letting the browser
+       create it on demand during the first paint, which is expensive. */
+    will-change: transform, opacity;
+}
+
+/* blur(0px) brightness(1) is still a real GPU filter pass on a
+   full-viewport element every frame even though it's a visual no-op --
+   skip `filter` entirely when both values are at their defaults. */
+body.no-bg-filter #background-media .video-looper,
+body.no-bg-filter #background-media .background-image {
+    filter: none;
 }
 
 #background-media [data-res='small'] {
@@ -79,6 +131,16 @@
     opacity: 0;
 }
 
+/* Potato mode (low-end / software-rendered GPU): drop the 1.1x scale
+   overdraw and shorten the crossfade so low-end devices aren't paying
+   for a slow, full-viewport opacity transition on every background change. */
+body.potato #background-media .video-looper,
+body.potato #background-media .background-image {
+    transform: none;
+    transition: opacity 300ms;
+    will-change: opacity;
+}
+
 [data-browser='safari'] #background-media .video-looper,
 [data-browser='safari'] #background-media .background-image {
     transform: scale(1.1) translateX(0px) translate3d(0, 0, 0);
@@ -86,6 +148,21 @@
 
 body.init #background-media .video-looper,
 body.init #background-media .background-image {
+    transition: none;
+}
+
+/* <!> The very first background reveal (new tab, before the interface has
+   even finished its own first paint -- `body.init` is only removed once
+   clock/links/fonts/etc all report ready, ~333ms minimum) has nothing to
+   protect from flicker: there is no previous wallpaper on screen to
+   crossfade from. Fading #background-wrapper in over `--fade-in` (400ms by
+   default) here is pure added latency between "image is decoded and ready"
+   and "pixels are actually visible" -- it's what reads as "gently drawing
+   in" after a beat of black. Skip the transition entirely for this one
+   reveal; every later background change (switching wallpapers, frequency
+   rotation) still gets the normal crossfade since `body.init` is long gone
+   by then. */
+body.init #background-wrapper {
     transition: none;
 }
 
@@ -123,13 +200,13 @@ body.init #background-media .background-image {
     opacity: var(--texture-opacity);
     background-image:
         repeating-linear-gradient(
-            45deg,
-            var(--texture-color) 25%,
-            transparent 25%,
-            transparent 75%,
-            var(--texture-color) 75%,
-            var(--texture-color)
-        ),
+        45deg,
+        var(--texture-color) 25%,
+        transparent 25%,
+        transparent 75%,
+        var(--texture-color) 75%,
+        var(--texture-color)
+    ),
         repeating-linear-gradient(
         45deg,
         var(--texture-color) 25%,
@@ -146,13 +223,13 @@ body.init #background-media .background-image {
     opacity: var(--texture-opacity);
     background-image:
         linear-gradient(
-            30deg,
-            var(--texture-color) 12%,
-            transparent 12.5%,
-            transparent 87%,
-            var(--texture-color) 87.5%,
-            var(--texture-color)
-        ),
+        30deg,
+        var(--texture-color) 12%,
+        transparent 12.5%,
+        transparent 87%,
+        var(--texture-color) 87.5%,
+        var(--texture-color)
+    ),
         linear-gradient(
         150deg,
         var(--texture-color) 12%,

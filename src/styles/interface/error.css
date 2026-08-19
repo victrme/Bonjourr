@@ -21,6 +21,14 @@
     z-index: 1;
 }
 
+/* Potato mode: text is always white here too, so bump opacity of the
+   same dark base color instead of relying on blur for contrast. */
+body.potato #error {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgb(0 0 0 / 0.75);
+}
+
 #error pre {
     width: calc(100% - 32px);
     overflow: hidden;

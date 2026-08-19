@@ -58,7 +58,7 @@ const setBackground = (value = '#fff2') => {
 
 export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
     if (update) {
-        updateSearchbar(update)
+        updateSearchbar(update).catch((err) => console.error('Bonjourr: failed to update searchbar', err))
         return
     }
 

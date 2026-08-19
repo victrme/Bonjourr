@@ -13,6 +13,7 @@ import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { pomodoro } from './features/pomodoro.ts'
 import { notes } from './features/notes.ts'
+import { scribble } from './features/scribble.ts'
 import { clock } from './features/clock/index.ts'
 import './features/contextmenu.ts'
 
@@ -31,8 +32,19 @@ import { storage } from './storage.ts'
 
 import { BROWSER, CURRENT_VERSION, LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT, SYSTEM_OS } from './defaults.ts'
 
+// <!> `startup()` is async: a synchronous try/catch around a fire-and-forget
+// <!> call to it only catches an error thrown before its first `await`
+// <!> (practically never, since `await storage.init()` is its first line).
+// <!> Everything after that -- which is nearly the entire startup
+// <!> sequence -- was rejecting as a fully unhandled promise rejection
+// <!> instead of hitting this catch, leaving the page silently
+// <!> half-initialized on any failure. `.catch()` is what actually
+// <!> observes an async function's rejection.
+startup().catch((err) => {
+    console.error('Bonjourr: startup failed', err)
+})
+
 try {
-    startup()
     serviceWorker()
     onlineAndMobile()
 } catch (_) {
@@ -83,6 +95,7 @@ async function startup(): Promise<void> {
     quotes({ sync, local })
     pomodoro(sync.pomodoro)
     notes(sync.notes)
+    scribble(sync.scribble)
     moveElements(sync.move)
     customCss(sync.css)
     hideElements(sync.hide)
@@ -109,7 +122,18 @@ async function startup(): Promise<void> {
         document.body.classList.remove('init')
 
         supportersNotifications(sync)
-        setPotatoComputerMode()
+
+        // <!> Defense in depth: `setPotatoComputerMode` reads WebGL debug
+        // <!> info that can be unavailable/blocklisted in ways we can't
+        // <!> fully predict across browsers. A throw here must never skip
+        // <!> `userActions`/`interfacePopup` below, which wire up core
+        // <!> interface listeners.
+        try {
+            setPotatoComputerMode()
+        } catch (err) {
+            console.error('Bonjourr: potato mode detection failed', err)
+        }
+
         userActions(sync.advanced)
 
         interfacePopup({

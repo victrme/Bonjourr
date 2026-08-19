@@ -14,6 +14,7 @@ import { searchbar } from './features/searchbar.ts'
 import { weather } from './features/weather/index.ts'
 import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
+import { scribble } from './features/scribble.ts'
 import { clock } from './features/clock/index.ts'
 import { pomodoro, setModeGlider } from './features/pomodoro.ts'
 import { togglePomodoroFocus } from './features/pomodoro.ts'
@@ -181,6 +182,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_icon_radius', data.linkiconradius || 1.1)
     setInput('i_linkstyle', data.linkstyle || 'default')
     setInput('i_type', data.backgrounds.type || 'images')
+    setEffectButtons(data.backgrounds?.effect || 'none')
     setInput('i_freq', data.backgrounds?.frequency || 'hour')
     setInput('i_dark', data.dark || 'system')
     setInput('i_favicon', data.favicon ?? '')
@@ -258,6 +260,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_show_unit', data.weather.show_unit ?? false)
     setCheckbox('i_greethide', !data.hide?.greetings)
     setCheckbox('i_notes', data.notes?.on ?? false)
+    setCheckbox('i_scribble', data.scribble?.on ?? false)
     setCheckbox('i_sb', data.searchbar?.on ?? false)
     setCheckbox('i_quotes', data.quotes?.on ?? false)
     setCheckbox('i_pomodoro', data.pomodoro?.on ?? false)
@@ -430,7 +433,7 @@ function initOptionsEvents(): void {
     })
 
     paramId('i_lang').addEventListener('change', function (): void {
-        switchLangs(this.value as Langs)
+        switchLangs(this.value as Langs).catch((err) => console.error('Bonjourr: failed to switch language', err))
     })
 
     paramId('i_favicon').addEventListener('input', function (this: HTMLInputElement): void {
@@ -522,6 +525,14 @@ function initOptionsEvents(): void {
     paramId('i_type').addEventListener('change', function (this: HTMLInputElement): void {
         backgroundUpdate({ type: this.value })
     })
+
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.effect-button')) {
+        button.addEventListener('click', function (this: HTMLButtonElement): void {
+            const effect = this.dataset.effect ?? 'firefly'
+            setEffectButtons(effect)
+            backgroundUpdate({ effect })
+        })
+    }
 
     paramId('b_solid-background').addEventListener('click', function (): void {
         paramId('i_solid-background').click()
@@ -807,6 +818,12 @@ function initOptionsEvents(): void {
         notes(undefined, { background: true })
     })
 
+    // Scribble pad
+
+    onclickdown(paramId('i_scribble'), (_, target) => {
+        scribble(undefined, { toggle: target.checked })
+    })
+
     onclickdown(paramId('i_notes-shade'), () => {
         notes(undefined, { background: true })
     })
@@ -1049,7 +1066,7 @@ function initOptionsEvents(): void {
     })
 
     paramId('b_file-save').addEventListener('click', () => {
-        saveImportFile()
+        saveImportFile().catch((err) => console.error('Bonjourr: failed to save settings file', err))
     })
 
     paramId('file-import').addEventListener('change', function (this): void {
@@ -1061,24 +1078,34 @@ function initOptionsEvents(): void {
     })
 
     paramId('settings-data').addEventListener('input', (event) => {
-        toggleSettingsChangesButtons(event.type)
+        toggleSettingsChangesButtons(event.type).catch((err) =>
+            console.error('Bonjourr: settings panel update failed', err)
+        )
     })
 
     paramId('settings-data').addEventListener('focus', (event) => {
-        toggleSettingsChangesButtons(event.type)
+        toggleSettingsChangesButtons(event.type).catch((err) =>
+            console.error('Bonjourr: settings panel update failed', err)
+        )
     })
 
     paramId('settings-data').addEventListener('blur', (event) => {
-        toggleSettingsChangesButtons(event.type)
+        toggleSettingsChangesButtons(event.type).catch((err) =>
+            console.error('Bonjourr: settings panel update failed', err)
+        )
     })
 
     onclickdown(paramId('b_settings-cancel'), () => {
-        toggleSettingsChangesButtons('cancel')
+        toggleSettingsChangesButtons('cancel').catch((err) =>
+            console.error('Bonjourr: settings panel update failed', err)
+        )
     })
 
     onclickdown(paramId('b_settings-apply'), () => {
         const val = paramId('settings-data').value
-        importSettings(parse<Partial<Sync>>(val) ?? {})
+        importSettings(parse<Partial<Sync>>(val) ?? {}).catch((err) =>
+            console.error('Bonjourr: failed to apply settings', err)
+        )
     })
 
     // applies settings-data when cmd/ctrl + enter
@@ -1537,8 +1564,8 @@ async function importSettings(imported: Partial<Sync>): Promise<void> {
         }
 
         fadeOut()
-    } catch (_) {
-        // ...
+    } catch (err) {
+        console.error('Bonjourr: failed to import settings', err)
     }
 }
 
@@ -1658,6 +1685,16 @@ function setCheckbox(id: string, cat: boolean): void {
 function setInput(id: string, val: string | number): void {
     const input = paramId(id) as HTMLInputElement
     input.value = typeof val === 'string' ? val : val?.toString()
+}
+
+// Background "Effects" picker is a small button group (see #effect-buttons
+// in settings.html), not a <select> -- "selected" is a class toggle across
+// all of them, keyed by the `data-effect` each button carries, rather than
+// a single element's `.value`.
+function setEffectButtons(effect: string): void {
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.effect-button')) {
+        button.classList.toggle('selected', button.dataset.effect === effect)
+    }
 }
 
 function setFormInput(id: string, defaults: string, value?: string): void {

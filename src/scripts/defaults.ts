@@ -133,6 +133,7 @@ export const SYNC_DEFAULT: Sync = {
     },
     backgrounds: {
         type: 'images',
+        effect: 'none',
         fadein: 600,
         blur: 15,
         bright: 0.8,
@@ -186,6 +187,11 @@ export const SYNC_DEFAULT: Sync = {
         width: 40,
         opacity: 0.1,
         align: 'left',
+    },
+    scribble: {
+        on: false,
+        draw: false,
+        text: '',
     },
     searchbar: {
         on: false,
@@ -248,4 +254,7 @@ export const LOCAL_DEFAULT: Local = {
     backgroundCompressFiles: true,
     backgroundLastChange: '',
     lastWeather: undefined,
+    scribblePosition: undefined,
+    scribbleSize: undefined,
+    scribbleDrawing: '',
 }

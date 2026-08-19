@@ -20,7 +20,7 @@ const container = document.getElementById('notes_container')
 
 export function notes(init?: Notes, event?: NotesEvent): void {
     if (event) {
-        updateNotes(event)
+        updateNotes(event).catch((err) => console.error('Bonjourr: failed to update notes', err))
         return
     }
 
@@ -73,7 +73,7 @@ function initNotes(init: Notes): void {
     init.text = init.text ?? translateNotesText()
 
     new PocketEditor('#notes_container', { text: init.text, id: 'pocket-editor' }).oninput((content) => {
-        updateNotes({ text: content })
+        updateNotes({ text: content }).catch((err) => console.error('Bonjourr: failed to update notes', err))
     })
 }
 

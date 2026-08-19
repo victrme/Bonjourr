@@ -147,6 +147,31 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     box-shadow: inset -10px -8px 0px -11px rgb(255 255 255 / 0.4), inset 0px -9px 0px -8px rgb(255 255 255 / 0.4);
 }
 
+/* Potato mode: the pomodoro widget stacks several backdrop-filters and a
+   drop-shadow filter (.glass, .glass::after, .glider, #focus-toggle,
+   #focus-toggle::after) on top of each other -- each one is its own
+   expensive compositing pass. Drop them all and fall back to a single
+   flat, still-legible dark panel (text here is --font-on-blur-color,
+   always white). */
+body.potato .glass,
+body.potato .glider,
+body.potato #pmdr_modes .pomodoro_mode.active,
+body.potato #focus-toggle,
+body.potato #focus-toggle:hover {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgb(0 0 0 / 0.4);
+}
+
+body.potato .glass::after,
+body.potato #focus-toggle::after {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    filter: none;
+    background: transparent;
+    box-shadow: none;
+}
+
 #pmdr_modes .pomodoro_mode {
     background: transparent;
     border-radius: 10em;

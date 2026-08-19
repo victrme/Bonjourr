@@ -50,6 +50,26 @@
     -webkit-backdrop-filter: blur(2em);
 }
 
+/* Potato mode: --searchbar-background is only ~10% opaque, tuned to work
+   together with the blur behind it. Without blur that reads as nearly
+   invisible over a busy wallpaper, so fall back to a much more opaque
+   dark tint instead -- text here is always white (--font-on-blur-color),
+   so this has to stay dark regardless of the light/dark theme. */
+body.potato #searchbar-wrapper,
+body.potato #sb-suggestions {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgb(0 0 0 / 0.55);
+}
+
+/* .opaque means the user picked a near-white custom searchbar color,
+   which also switches the text dark (#333) above -- keep that working
+   with a light fallback instead of the dark one. */
+body.potato #sb_container.opaque #searchbar-wrapper,
+body.potato #sb_container.opaque #sb-suggestions {
+    background-color: rgb(255 255 255 / 0.85);
+}
+
 #searchbar {
     width: 100%;
     height: 2.5em;

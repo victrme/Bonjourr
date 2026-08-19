@@ -239,7 +239,15 @@ async function localGet(keys?: string | string[]): Promise<Local> {
         case 'webext-sync':
         case 'webext-local': {
             const data = await chrome.storage.local.get(keys) as unknown as Local
-            return data
+
+            // <!> Unlike `syncGet`, this used to return chrome.storage's raw
+            // <!> contents with no default-merging. On a fresh profile (or
+            // <!> any key that hasn't been explicitly saved yet), fields
+            // <!> like `backgroundFiles` come back `undefined` instead of
+            // <!> their default, which made background code throw ("Cannot
+            // <!> convert undefined or null to object") the very first time
+            // <!> a user tried to upload a wallpaper.
+            return verifyDataAsLocal(data)
         }
 
         default: {

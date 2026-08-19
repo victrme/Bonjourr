@@ -1,4 +1,4 @@
-import { displayWeather, handleForecastDisplay } from './display.ts'
+import { displayWeather, displayWeatherUnavailable, handleForecastDisplay } from './display.ts'
 import { getLang, tradThis } from '../../utils/translations.ts'
 import { handleGeolOption } from './settings.ts'
 import { getSunsetHour } from './index.ts'
@@ -14,7 +14,7 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
     handleForecastDisplay(data.forecast)
 
     if (!lastWeather) {
-        firstStartWeather(data)
+        await firstStartWeather(data)
         return
     }
 
@@ -23,17 +23,29 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
     const isAnHourLater = now > last + 3600000
 
     if (navigator.onLine && isAnHourLater) {
-        const newWeather = await requestNewWeather(data, lastWeather)
+        try {
+            const newWeather = await requestNewWeather(data, lastWeather)
 
-        if (newWeather) {
-            storage.local.set({ lastWeather: newWeather })
-            displayWeather(data, newWeather)
-            return
+            if (newWeather) {
+                storage.local.set({ lastWeather: newWeather })
+                displayWeather(data, newWeather)
+                return
+            }
+        } catch (err) {
+            // <!> A transient failure here (offline, provider down, bad
+            // <!> response) used to throw all the way out of this function
+            // <!> uncaught, which also skipped the `displayWeather(data,
+            // <!> lastWeather)` fallback below -- the widget just silently
+            // <!> stopped updating. Falling back to the last known-good
+            // <!> weather is strictly better than showing nothing.
+            console.warn('Bonjourr: failed to refresh weather, showing cached data', err)
         }
     }
 
     displayWeather(data, lastWeather)
 }
+
+const WEATHER_FETCH_TIMEOUT_MS = 10000
 
 export async function requestNewWeather(data: Weather, lastWeather?: LastWeather): Promise<LastWeather | undefined> {
     if (!navigator.onLine) {
@@ -59,7 +71,23 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
         url.searchParams.set('query', q)
     }
 
-    const response = await fetch(url)
+    // <!> Plain `fetch()` has no timeout: on a hung connection (captive
+    // <!> portal, a dead VPN route, a firewall that drops packets instead
+    // <!> of rejecting them) this would await forever. That's worse than a
+    // <!> clean network error -- it never reaches the catch block in
+    // <!> `firstStartWeather`/`weatherCacheControl` at all, so the "show
+    // <!> cached data" and "show unavailable" fallbacks never fire either.
+    // <!> Confirmed live: in this sandbox, a request with no lat/lon/query
+    // <!> hangs indefinitely rather than erroring.
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), WEATHER_FETCH_TIMEOUT_MS)
+
+    let response: Response
+    try {
+        response = await fetch(url, { signal: controller.signal })
+    } finally {
+        clearTimeout(timeoutId)
+    }
 
     if (response.status !== 200) {
         throw new Error('Cannot get weather')
@@ -122,17 +150,30 @@ export async function requestNewWeather(data: Weather, lastWeather?: LastWeather
 }
 
 async function firstStartWeather(data: Weather): Promise<void> {
-    const currentWeather = await requestNewWeather(data)
+    try {
+        const currentWeather = await requestNewWeather(data)
 
-    if (currentWeather) {
-        data.city = currentWeather.approximation?.city ?? tradThis('City')
+        if (currentWeather) {
+            data.city = currentWeather.approximation?.city ?? tradThis('City')
 
-        storage.sync.set({ weather: data })
-        storage.local.set({ lastWeather: currentWeather })
+            storage.sync.set({ weather: data })
+            storage.local.set({ lastWeather: currentWeather })
 
-        displayWeather(data, currentWeather)
-        setTimeout(() => handleGeolOption(data), 400)
+            displayWeather(data, currentWeather)
+            setTimeout(() => handleGeolOption(data), 400)
+            return
+        }
+    } catch (err) {
+        // request.ts's `throw new Error('Cannot get weather')` on a bad
+        // response (and any network failure) lands here.
+        console.warn('Bonjourr: initial weather request failed', err)
     }
+
+    // <!> With no cached weather yet (first run) and a failed/offline
+    // <!> request, there is nothing to fall back to. Previously this left
+    // <!> #weather stuck at `opacity: 0` (the `.wait` class) forever --
+    // <!> an invisible gap with zero indication anything went wrong.
+    displayWeatherUnavailable()
 }
 
 export async function getGeolocation(type: Weather['geolocation']): Promise<Coords | undefined> {

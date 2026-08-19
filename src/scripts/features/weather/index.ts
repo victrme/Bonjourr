@@ -47,7 +47,9 @@ export function weather(init?: WeatherInit, update?: WeatherUpdate): void {
     const canShowWeather = !(weatherHidden || mainHidden)
 
     if (canShowWeather) {
-        weatherCacheControl(init.sync.weather, init.lastWeather)
+        weatherCacheControl(init.sync.weather, init.lastWeather).catch((err) => {
+            console.error('Bonjourr: weather init failed', err)
+        })
     }
 
     onSettingsLoad(() => {
@@ -58,9 +60,13 @@ export function weather(init?: WeatherInit, update?: WeatherUpdate): void {
         clearInterval(pollingInterval)
 
         pollingInterval = setInterval(async () => {
-            const sync = await storage.sync.get(['weather', 'hide', 'main'])
-            const local = await storage.local.get('lastWeather')
-            weatherCacheControl(sync.weather, local.lastWeather)
+            try {
+                const sync = await storage.sync.get(['weather', 'hide', 'main'])
+                const local = await storage.local.get('lastWeather')
+                await weatherCacheControl(sync.weather, local.lastWeather)
+            } catch (err) {
+                console.error('Bonjourr: weather polling failed', err)
+            }
         }, 1200000) // 20min
     })
 }

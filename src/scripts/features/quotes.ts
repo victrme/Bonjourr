@@ -32,7 +32,17 @@ const quotesUrlForm = networkForm('f_qturl')
 
 export async function quotes(init?: QuotesInit, update?: QuotesUpdate): Promise<void> {
     if (update) {
-        updateQuotes(update)
+        // <!> Every caller of `quotes(undefined, update)` (settings.ts,
+        // <!> contextmenu.ts) fires this without awaiting or catching it.
+        // <!> `updateQuotes` does network fetches internally (via
+        // <!> `updateQuotesData` -> `fetchQuotes`), so without this the
+        // <!> whole chain could reject as an unhandled promise rejection on
+        // <!> any transient network failure.
+        try {
+            await updateQuotes(update)
+        } catch (err) {
+            console.error('Bonjourr: failed to update quotes', err)
+        }
         return
     }
 
@@ -111,7 +121,7 @@ async function updateQuotes({ author, frequency, type, userlist, url, refresh }:
     }
 
     if (updateData) {
-        updateQuotesData(data)
+        await updateQuotesData(data)
     }
 
     storage.sync.set({ quotes: data.quotes })

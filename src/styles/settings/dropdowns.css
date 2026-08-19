@@ -181,8 +181,12 @@
     max-height: 60px;
 }
 
+/* <!> 245px was enough for just the texture picker + its own sub-options;
+   the Effect buttons (None/Fireflies/Cozy rain) now live inside this same
+   section (see settings.html), so the budget needs room for their
+   hr + label + button row too. */
 .all .as_texture {
-    max-height: 245px;
+    max-height: 345px;
 }
 
 .all .as_fadein {

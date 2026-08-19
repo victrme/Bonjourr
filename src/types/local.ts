@@ -30,6 +30,12 @@ export interface Local {
     // Online
     syncStorage?: Sync
 
+    // Scribble pad (device-local: window position/size + drawing strokes,
+    // separate from `Notes`/`sync.notes` and from `sync.scribble`'s text)
+    scribblePosition?: { x: number; y: number }
+    scribbleSize?: { width: number; height: number }
+    scribbleDrawing?: string
+
     // Links
     [key: `x-icon-${string}`]: string
 }

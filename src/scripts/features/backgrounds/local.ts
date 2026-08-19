@@ -30,6 +30,14 @@ type LocalFileOption =
 let thumbnailVisibilityObserver: IntersectionObserver
 let thumbnailSelectionObserver: MutationObserver
 let currentVideoLooper: VideoLooper
+let uploadErrorTimeout: ReturnType<typeof setTimeout>
+
+// A single absurdly large file (a multi-GB video export, an uncompressed
+// TIFF, etc) won't just be slow to compress -- decoding it can exhaust tab
+// memory and hang or crash the page outright, with the upload UI frozen the
+// whole time and no way out. Better to reject it up front with a clear
+// reason than let the browser find out the hard way.
+const MAX_UPLOAD_SIZE_BYTES = 300 * 1024 * 1024 // 300 MB
 
 // Update
 
@@ -37,16 +45,37 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
     try {
         const thumbnailsContainer = document.getElementById('thumbnails-container')
         const filesData: Record<string, LocalFileData> = {}
-        const newids: string[] = []
-        let thumbnail: HTMLElement | undefined
+        const invalidFiles: string[] = []
+        const failedFiles: string[] = []
+        const oversizedFiles: string[] = []
+
+        // <!> `entries` pairs each accepted file with its id up front.
+        // <!> Previously `newids` (deduplicated) and `filelist` (not
+        // <!> deduplicated) were walked with the same index in step 2, so
+        // <!> a duplicate anywhere in the batch shifted every id after it
+        // <!> and silently saved files under the wrong id.
+        const entries: { file: File; id: string }[] = []
 
         if (filelist.length === 0) {
             return
         }
 
-        // 1. Add empty thumbnails
+        // 1. Validate file types & add empty thumbnails
 
         for (const file of filelist) {
+            const isImage = file.type.startsWith('image/')
+            const isVideo = file.type.startsWith('video/')
+
+            if (!isImage && !isVideo) {
+                invalidFiles.push(file.name || 'unnamed file')
+                continue
+            }
+
+            if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+                oversizedFiles.push(file.name || 'unnamed file')
+                continue
+            }
+
             const infosString = file.size.toString() + file.name + file.lastModified.toString()
             const hashString = hashcode(infosString).toString()
 
@@ -54,111 +83,153 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
                 continue
             }
 
-            newids.push(hashString)
+            entries.push({ file, id: hashString })
 
-            thumbnail = createThumbnail(hashString)
+            const thumbnail = createThumbnail(hashString)
             thumbnailsContainer?.appendChild(thumbnail)
             thumbnailSelectionObserver?.observe(thumbnail, { attributes: true })
         }
 
         if (thumbnailsContainer) {
-            const idsAmount = Object.keys(local.backgroundFiles).length + newids.length
+            const idsAmount = Object.keys(local.backgroundFiles).length + entries.length
             const columnsAmount = Math.min(idsAmount, 5).toString()
             thumbnailsContainer.style.setProperty('--thumbnails-columns', columnsAmount)
         }
 
         // 2. Compress files for background & thumbnail use
+        //
+        // <!> Each file is isolated in its own try/catch: one corrupt,
+        // <!> oversized, or otherwise unprocessable file no longer kills
+        // <!> the entire upload batch and leaves every other thumbnail
+        // <!> stuck in the loading state forever.
 
-        for (let i = 0; i < newids.length; i++) {
-            const file = filelist[i]
-            const id = newids[i]
-            const format = file.type.includes('video') ? 'video' : 'image'
+        showUploadProgress(entries.length)
 
-            // 2a. This finds a reasonable resolution for compression
+        let processedCount = 0
 
-            const isLandscape = globalThis.screen.orientation.type === 'landscape-primary'
-            const long = isLandscape ? globalThis.screen.width : globalThis.screen.height
-            const short = isLandscape ? globalThis.screen.height : globalThis.screen.width
-            const density = Math.min(2, globalThis.devicePixelRatio)
-            const ratio = Math.min(1.8, long / short)
-            const averagePixelHeight = short * ratio * density
+        for (const { file, id } of entries) {
+            try {
+                const format = file.type.includes('video') ? 'video' : 'image'
 
-            const isGif = file.type.includes('image/gif')
-            const isImage = file.type.includes('image/')
-            const isVideo = file.type.includes('video/')
-            const isThumbnailSize = file.size < 80000 // 80 kb
-            const isResonablySized = file.size < 300000 // 300 kb
+                // 2a. This finds a reasonable resolution for compression
 
-            let full: Blob = file
-            let small: Blob = file
+                const isLandscape = globalThis.screen.orientation.type === 'landscape-primary'
+                const long = isLandscape ? globalThis.screen.width : globalThis.screen.height
+                const short = isLandscape ? globalThis.screen.height : globalThis.screen.width
+                const density = Math.min(2, globalThis.devicePixelRatio)
+                const ratio = Math.min(1.8, long / short)
+                const averagePixelHeight = short * ratio * density
 
-            if (isImage) {
-                if (!isThumbnailSize) {
-                    const objectUrl = URL.createObjectURL(file)
-                    const dimensions = await imageDimensions(objectUrl)
-                    const width = dimensions.width
-                    const height = dimensions.height
-                    const isHighRes = averagePixelHeight * 2 < width + height
-                    const isCompressible = !isGif && !isResonablySized && isHighRes
+                const isGif = file.type.includes('image/gif')
+                const isImage = file.type.includes('image/')
+                const isVideo = file.type.includes('video/')
+                const isThumbnailSize = file.size < 80000 // 80 kb
+                const isResonablySized = file.size < 300000 // 300 kb
 
-                    if (isCompressible) {
-                        full = await compressAsBlob(objectUrl, { size: averagePixelHeight, q: 0.8 })
+                let full: Blob = file
+                let small: Blob = file
+
+                if (isImage) {
+                    if (!isThumbnailSize) {
+                        const objectUrl = URL.createObjectURL(file)
+
+                        try {
+                            const dimensions = await imageDimensions(objectUrl)
+                            const width = dimensions.width
+                            const height = dimensions.height
+                            const isHighRes = averagePixelHeight * 2 < width + height
+                            const isCompressible = !isGif && !isResonablySized && isHighRes
+
+                            if (isCompressible) {
+                                full = await compressAsBlob(objectUrl, { size: averagePixelHeight, q: 0.8 })
+                            }
+
+                            small = await compressAsBlob(objectUrl, { size: 360, q: 0.4 })
+                        } finally {
+                            URL.revokeObjectURL(objectUrl)
+                        }
                     }
-
-                    small = await compressAsBlob(objectUrl, { size: 360, q: 0.4 })
                 }
-            }
 
-            if (isVideo) {
-                const thumb = await generateImageFromVideo(file)
-                if (thumb) small = await compressAsBlob(thumb, { size: 360, q: 0.3 })
-            }
-
-            local.backgroundFiles[id] = {
-                format: 'image',
-                lastUsed: new Date().toString(),
-            }
-
-            if (format === 'video') {
-                local.backgroundFiles[id].format = 'video'
-                local.backgroundFiles[id].video = {
-                    playbackRate: 1,
-                    fade: 1,
-                    zoom: 1,
+                if (isVideo) {
+                    const thumb = await generateImageFromVideo(file)
+                    if (thumb) small = await compressAsBlob(thumb, { size: 360, q: 0.3 })
                 }
-            } else {
-                local.backgroundFiles[id].format = 'image'
-                local.backgroundFiles[id].position = {
-                    size: 'cover',
-                    x: '50%',
-                    y: '50%',
+
+                local.backgroundFiles[id] = {
+                    format: 'image',
+                    lastUsed: new Date().toString(),
                 }
+
+                if (format === 'video') {
+                    local.backgroundFiles[id].format = 'video'
+                    local.backgroundFiles[id].video = {
+                        playbackRate: 1,
+                        fade: 1,
+                        zoom: 1,
+                    }
+                } else {
+                    local.backgroundFiles[id].format = 'image'
+                    local.backgroundFiles[id].position = {
+                        size: 'cover',
+                        x: '50%',
+                        y: '50%',
+                    }
+                }
+
+                filesData[id] = {
+                    full,
+                    small,
+                }
+
+                await saveFileToCache(id, filesData[id])
+                addThumbnailImage(id, local, filesData[id])
+
+                storage.local.set({ backgroundFiles: local.backgroundFiles })
+            } catch (err) {
+                console.error(`Bonjourr: failed to add background "${file.name}"`, err)
+                failedFiles.push(file.name || 'unnamed file')
+
+                delete local.backgroundFiles[id]
+                delete filesData[id]
+
+                document.getElementById(id)?.remove()
+            } finally {
+                processedCount += 1
+                updateUploadProgress(processedCount, entries.length)
             }
-
-            filesData[id] = {
-                full,
-                small,
-            }
-
-            await saveFileToCache(id, filesData[id])
-            addThumbnailImage(id, local, filesData[id])
-
-            storage.local.set({ backgroundFiles: local.backgroundFiles })
         }
 
-        // 3. Apply background
+        hideUploadProgress()
 
-        if (newids.length > 0) {
-            const id = newids[0]
-            const media = await mediaFromFiles(id, local, filesData[id])
+        // 3. Apply background (first file that actually made it through)
+
+        const appliedId = entries.find(({ id }) => filesData[id])?.id
+
+        if (appliedId) {
+            const media = await mediaFromFiles(appliedId, local, filesData[appliedId])
 
             applyBackground(media)
             unselectAll()
 
-            thumbnail?.classList.add('selected')
+            document.getElementById(appliedId)?.classList.add('selected')
         }
 
-        // 4. Allow same file to be uploaded
+        // 4. Surface anything that went wrong instead of failing silently
+
+        const maxSizeMb = Math.round(MAX_UPLOAD_SIZE_BYTES / (1024 * 1024))
+
+        if (invalidFiles.length > 0 || failedFiles.length > 0 || oversizedFiles.length > 0) {
+            const messages = [
+                ...invalidFiles.map((name) => `"${name}" is not a supported image or video`),
+                ...oversizedFiles.map((name) => `"${name}" is larger than the ${maxSizeMb}MB upload limit`),
+                ...failedFiles.map((name) => `"${name}" could not be processed`),
+            ]
+
+            showUploadErrors(messages)
+        }
+
+        // 5. Allow same file to be uploaded
 
         const uploadInput = document.querySelector<HTMLInputElement>('#i_background-upload')
 
@@ -166,9 +237,58 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
             uploadInput.value = ''
         }
     } catch (e) {
-        console.info(e)
+        console.error('Bonjourr: uploading backgrounds failed', e)
+        showUploadErrors(['Something went wrong while uploading your file(s). Please try again.'])
+    } finally {
+        hideUploadProgress()
+    }
+}
+
+function showUploadProgress(total: number): void {
+    const container = document.getElementById('local-upload-progress')
+    const bar = document.getElementById('local-upload-progress-bar')
+    const text = document.getElementById('local-upload-progress-text')
+
+    if (total === 0 || !container) {
         return
     }
+
+    bar?.style.setProperty('--upload-progress-percent', '0%')
+    if (text) {
+        text.textContent = total === 1 ? 'Processing file…' : `Processing 0 of ${total} files…`
+    }
+
+    container.classList.add('shown')
+}
+
+function updateUploadProgress(done: number, total: number): void {
+    const bar = document.getElementById('local-upload-progress-bar')
+    const text = document.getElementById('local-upload-progress-text')
+    const percent = total > 0 ? Math.round((done / total) * 100) : 0
+
+    bar?.style.setProperty('--upload-progress-percent', `${percent}%`)
+    if (text) {
+        text.textContent = total === 1 ? 'Processing file…' : `Processing ${done} of ${total} files…`
+    }
+}
+
+function hideUploadProgress(): void {
+    document.getElementById('local-upload-progress')?.classList.remove('shown')
+}
+
+function showUploadErrors(messages: string[]): void {
+    const banner = document.getElementById('local-upload-error')
+
+    if (!banner) {
+        console.warn('Bonjourr upload errors:', messages)
+        return
+    }
+
+    banner.textContent = messages.join(' · ')
+    banner.classList.add('shown')
+
+    clearTimeout(uploadErrorTimeout)
+    uploadErrorTimeout = setTimeout(() => banner.classList.remove('shown'), 6000)
 }
 
 async function removeLocalBackgrounds(): Promise<void> {
@@ -592,7 +712,15 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
     if (isLeftClick) {
         const local = await storage.local.get()
         const metadata = local.backgroundFiles[id]
-        const image = await mediaFromFiles(id, local)
+
+        let image: Background | undefined
+
+        try {
+            image = await mediaFromFiles(id, local)
+        } catch (err) {
+            // Cache entry may have been evicted since the thumbnail was rendered
+            console.error(`Bonjourr: could not load background "${id}" from cache`, err)
+        }
 
         if (!metadata || !image) {
             console.warn('metadata: ', metadata)
@@ -691,6 +819,18 @@ function getSelection(): string[] {
 // Video
 
 export function setCurrentVideo(src: string, fade: number, playback: number): VideoLooper {
+    // <!> VideoLooper's constructor binds a `document`-level 'visibilitychange'
+    // <!> listener that's only ever unbound by calling `.remove()` or
+    // <!> `.unbindVisibilityListener()`. Without this, replacing the active
+    // <!> video background (every video-background swap, and again on every
+    // <!> "frequency" rotation) just orphaned the old VideoLooper -- its
+    // <!> listener, both <video> elements, and their blob-backed src stayed
+    // <!> reachable from `document` forever, compounding with every swap.
+    // <!> Only the listener is unbound here (not the full `.remove()`,
+    // <!> which would also force the old container's opacity to 0
+    // <!> immediately) because `applyBackground()`'s crossfade in index.ts
+    // <!> already owns fading out and detaching the outgoing container.
+    currentVideoLooper?.unbindVisibilityListener()
     currentVideoLooper = new VideoLooper(src, fade, playback)
     return currentVideoLooper
 }
@@ -699,16 +839,45 @@ export function getCurrentVideo(): VideoLooper | undefined {
     return currentVideoLooper
 }
 
+const VIDEO_LOAD_TIMEOUT_MS = 15000
+
 async function getLoadedVideo(blob: Blob): Promise<HTMLVideoElement> {
     const video = document.createElement('video')
-
     const url = URL.createObjectURL(blob)
-    video.src = url
 
-    await new Promise((r) => {
-        video.addEventListener('loadeddata', () => r(true))
-        video.load()
-    })
+    video.src = url
+    video.muted = true
+
+    try {
+        await new Promise<void>((resolve, reject) => {
+            // <!> Without a timeout and an `error` listener, a corrupt file
+            // <!> or an unsupported codec means `loadeddata` never fires and
+            // <!> this promise (and the whole upload) hangs forever.
+            const timeoutId = setTimeout(() => {
+                reject(new Error('Video took too long to load (it may be corrupt or use an unsupported codec)'))
+            }, VIDEO_LOAD_TIMEOUT_MS)
+
+            video.addEventListener('loadeddata', () => {
+                clearTimeout(timeoutId)
+                resolve()
+            }, { once: true })
+
+            video.addEventListener('error', () => {
+                clearTimeout(timeoutId)
+                reject(
+                    new Error(
+                        video.error?.message || 'Video failed to load (it may be corrupt or use an unsupported codec)',
+                    ),
+                )
+            }, { once: true })
+
+            video.load()
+        })
+    } catch (err) {
+        URL.revokeObjectURL(url)
+        video.remove()
+        throw err
+    }
 
     URL.revokeObjectURL(url)
 
@@ -721,6 +890,7 @@ async function generateImageFromVideo(file: File): Promise<Blob | null> {
     const ctx = canvas.getContext('2d')
 
     if (!ctx) {
+        video.remove()
         throw new Error('Canvas context failed for ' + file.name)
     }
 
@@ -729,18 +899,26 @@ async function generateImageFromVideo(file: File): Promise<Blob | null> {
 
     document.body.append(video)
     video.style.display = 'none'
-    video.play()
-    video.pause()
 
-    const blob = await new Promise<Blob>((resolve, reject) => {
-        const toBlobCallback: BlobCallback = (blob) => blob ? resolve(blob) : reject(true)
+    // <!> Waiting on a `seeked` event guarantees the browser has actually
+    // <!> decoded the frame at that timestamp before we draw it. The old
+    // <!> arbitrary 300ms timeout produced black thumbnails whenever decode
+    // <!> took longer than that (slow devices, big videos).
+    await new Promise<void>((resolve) => {
+        const seekTarget = Math.min(0.1, (video.duration || 0.2) / 2) || 0.1
+        const fallbackTimeout = setTimeout(resolve, 2000) // safety net, never hang
 
-        // <!> 300ms is completely arbitrary,
-        // <!> videos taking more than that to load will show a black thumbnail
-        setTimeout(() => {
-            ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
-            ctx.canvas.toBlob(toBlobCallback, 'image/jpeg', 0.8)
-        }, 300)
+        video.addEventListener('seeked', () => {
+            clearTimeout(fallbackTimeout)
+            resolve()
+        }, { once: true })
+
+        video.currentTime = seekTarget
+    })
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+        ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+        ctx.canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.8)
     })
 
     video.remove()
@@ -764,18 +942,57 @@ export async function localFilesCacheControl(backgrounds: Backgrounds, local: Lo
 
     needNew ??= needsChange(freq, lastUsed)
 
+    let pickedId: string | undefined
+    let markLastUsed = false
+
     if (ids.length > 1 && needNew) {
-        ids.shift()
-
-        const rand = Math.floor(Math.random() * ids.length)
-        const id = ids[rand]
-
-        applyBackground(await mediaFromFiles(id, local))
-        local.backgroundFiles[id].lastUsed = new Date().toString()
-        storage.local.set(local)
+        const candidates = ids.slice(1)
+        const rand = Math.floor(Math.random() * candidates.length)
+        pickedId = candidates[rand]
+        markLastUsed = true
     } else {
-        applyBackground(await mediaFromFiles(ids[0], local))
+        pickedId = ids[0]
     }
+
+    // <!> `mediaFromFiles` reads from CacheStorage, which the browser is
+    // <!> free to evict at any time (storage pressure, private browsing,
+    // <!> the user clearing site data, etc). Previously a thrown error here
+    // <!> propagated straight out of `localFilesCacheControl` and the
+    // <!> background just silently failed to apply with zero feedback.
+    // <!> Now we drop the stale id and fall back through the rest of the
+    // <!> known files before giving up.
+    const remainingOrder = [pickedId, ...ids.filter((id) => id !== pickedId)]
+    let staleEntryFound = false
+
+    for (const id of remainingOrder) {
+        try {
+            const media = await mediaFromFiles(id, local)
+            applyBackground(media)
+
+            if (markLastUsed && id === pickedId) {
+                local.backgroundFiles[id].lastUsed = new Date().toString()
+            }
+
+            if (staleEntryFound) {
+                storage.local.set({ backgroundFiles: local.backgroundFiles })
+            } else if (markLastUsed) {
+                storage.local.set(local)
+            }
+
+            return
+        } catch (err) {
+            console.error(
+                `Bonjourr: background file "${id}" could not be loaded from cache, it may have been evicted. Skipping it.`,
+                err,
+            )
+            delete local.backgroundFiles[id]
+            staleEntryFound = true
+        }
+    }
+
+    // Every known file failed to load: the cache is likely gone entirely
+    storage.local.set({ backgroundFiles: local.backgroundFiles })
+    removeBackgrounds()
 }
 
 //  Storage
@@ -802,8 +1019,15 @@ async function saveFileToCache(id: string, filedata: LocalFileData): Promise<voi
 export async function getFileFromCache(id: string): Promise<LocalFileData> {
     const cache = await getCache('local-files')
 
-    const full = await (await cache?.match(`http://127.0.0.1:8888/${id}/full`))?.blob()
-    const small = await (await cache?.match(`http://127.0.0.1:8888/${id}/small`))?.blob()
+    // <!> These two reads are independent -- there's no reason to pay for
+    // <!> two sequential match()+blob() round trips (this is on the hot
+    // <!> path of every single background application, including the very
+    // <!> first paint on a new tab) when CacheStorage handles them fine in
+    // <!> parallel.
+    const [full, small] = await Promise.all([
+        cache?.match(`http://127.0.0.1:8888/${id}/full`).then((res) => res?.blob()),
+        cache?.match(`http://127.0.0.1:8888/${id}/small`).then((res) => res?.blob()),
+    ])
 
     if (!full || !small) {
         throw new Error(`${id} is undefined`)

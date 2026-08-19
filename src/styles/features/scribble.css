@@ -1,0 +1,273 @@
+/* <!> Standalone floating "mini window" widget, entirely separate from
+   the `Notes` widget (#notes_container / notes.css) -- own container, own
+   z-index, own positioning. It lives outside #interface so it can float
+   freely at an arbitrary screen position regardless of the grid layout. */
+
+#scribble_container {
+    position: fixed;
+    top: 120px;
+    left: 40px;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    /* <!> Default size only -- once the user drags a resize handle,
+       `applySize()` (scribble.ts) pins concrete inline `width`/`height` px
+       values here and persists them to `Local.scribbleSize`, same pattern
+       as position. `#scribble_stage` below fills whatever's left via flex,
+       so it never needs its own fixed size. */
+    width: 260px;
+    height: 268px;
+    min-width: 200px;
+    min-height: 160px;
+    overflow: hidden;
+    border-radius: 1em;
+    box-shadow: rgb(0 0 0 / 0.24) 0px 3px 8px;
+    border: 1px solid rgb(255 255 255 / 0.075);
+    /* <!> Deliberately its own value, not a read of `--notes-background` --
+       that variable is only ever written by `notes.ts`, and reading it here
+       would silently couple this widget's look to Notes' own background
+       settings. Fully separate widget, fully separate styling. */
+    background-color: rgb(255 255 255 / 0.1);
+    backdrop-filter: blur(2em);
+    -webkit-backdrop-filter: blur(2em);
+    transition: box-shadow 0.2s, transform 0.1s;
+}
+
+#scribble_container.hidden {
+    display: none;
+}
+
+#scribble_container.dragging {
+    box-shadow: rgb(0 0 0 / 0.4) 0px 6px 16px;
+    transform: scale(1.01);
+}
+
+#scribble_container.resizing {
+    box-shadow: rgb(0 0 0 / 0.4) 0px 6px 16px;
+}
+
+/* <!> Eight invisible strips/corners along the inside edge of the
+   container -- "resize cursors at the edges", a real draggable-window
+   feel instead of the single browser-native bottom-right `resize: both`
+   handle. Kept fully inside the box (no negative offsets) so they aren't
+   clipped by the container's own `overflow: hidden` / rounded corners. */
+.scribble_resize {
+    position: absolute;
+    touch-action: none;
+}
+
+.scribble_resize[data-dir='n'] {
+    top: 0;
+    left: 10px;
+    right: 10px;
+    height: 6px;
+    cursor: ns-resize;
+}
+
+.scribble_resize[data-dir='s'] {
+    bottom: 0;
+    left: 10px;
+    right: 10px;
+    height: 6px;
+    cursor: ns-resize;
+}
+
+.scribble_resize[data-dir='e'] {
+    top: 10px;
+    bottom: 10px;
+    right: 0;
+    width: 6px;
+    cursor: ew-resize;
+}
+
+.scribble_resize[data-dir='w'] {
+    top: 10px;
+    bottom: 10px;
+    left: 0;
+    width: 6px;
+    cursor: ew-resize;
+}
+
+.scribble_resize[data-dir='ne'] {
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    cursor: nesw-resize;
+}
+
+.scribble_resize[data-dir='nw'] {
+    top: 0;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
+}
+
+.scribble_resize[data-dir='se'] {
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    cursor: nwse-resize;
+}
+
+.scribble_resize[data-dir='sw'] {
+    bottom: 0;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    cursor: nesw-resize;
+}
+
+body.potato #scribble_container {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgb(0 0 0 / 0.55);
+}
+
+#scribble_handle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+    padding: 0.5em 0.6em;
+    cursor: grab;
+    touch-action: none;
+    color: rgb(var(--font-on-blur-color));
+    border-bottom: 1px solid rgb(255 255 255 / 0.075);
+    user-select: none;
+}
+
+#scribble_container.dragging #scribble_handle {
+    cursor: grabbing;
+}
+
+#scribble_handle-actions {
+    display: flex;
+    gap: 0.25em;
+}
+
+#scribble_pencil,
+#scribble_clear,
+#scribble_close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8em;
+    height: 1.8em;
+    padding: 0;
+    font-size: 0.85em;
+    line-height: 1;
+    color: rgb(var(--font-on-blur-color));
+    background: none;
+    border: none;
+    border-radius: 0.5em;
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+#scribble_pencil:hover,
+#scribble_clear:hover,
+#scribble_close:hover {
+    opacity: 1;
+    background-color: rgb(255 255 255 / 0.1333333333);
+}
+
+/* <!> "Pressed" pencil = doodle mode is on. Unclicked (the normal,
+   default state) is plain markdown editing -- clean, rendered text, no
+   ink layer capturing input. Press it to doodle; press again to go back
+   to typing. Both layers stay visible and stacked the whole time (see
+   `#scribble_stage` below) -- this only ever changes who receives
+   pointer input, never what's shown. */
+#scribble_pencil.selected {
+    opacity: 1;
+    color: #0d0b14;
+    background-color: rgb(var(--font-on-blur-color));
+}
+
+/* <!> Text and doodle are one combined surface, not two separate
+   views -- both children always rendered, stacked via grid so ink can sit
+   on top of (and overlap) the markdown underneath. Only `pointer-events`
+   toggles by mode, deciding whether a click types or draws; nothing here
+   ever hides either layer. */
+#scribble_stage {
+    display: grid;
+    grid-template-areas: 'stage';
+    width: 100%;
+    /* Fills whatever's left of the container's (resizable) height once the
+       handle bar takes its own natural height -- see `#scribble_container`. */
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+#scribble_write,
+#scribble_draw {
+    grid-area: stage;
+    width: 100%;
+    height: 100%;
+}
+
+#scribble_write {
+    min-width: 0;
+    overflow-y: auto;
+    pointer-events: auto;
+    /* Scrollable without a visible scrollbar -- wheel/trackpad/touch drag
+       still scroll normally, the track+thumb just never paints. */
+    scrollbar-width: none;
+}
+
+#scribble_write::-webkit-scrollbar {
+    display: none;
+}
+
+#scribble_container.draw-mode #scribble_write {
+    pointer-events: none;
+}
+
+/* <!> `pocket-editor`'s own stylesheet styles its mounted editable element
+   by attribute (`[data-pocket-editor] { background-color: var(--pe-color-background) }`,
+   an opaque white, with dark text) -- an ID selector on the *wrapper*
+   (`#scribble_write`) doesn't beat that, since the editable node the
+   library actually paints is the child carrying `id="scribble-pocket-editor"`
+   (the `id` option passed to `new PocketEditor(...)`). Same reasoning as
+   notes.css targeting `#pocket-editor` rather than `#notes_container`. */
+#scribble-pocket-editor {
+    min-height: 100%;
+    padding: 1em;
+    color: rgb(var(--font-on-blur-color));
+    background-color: transparent;
+    font-size: 1em;
+    text-align: initial;
+    text-shadow: none;
+    line-height: 1.5em;
+}
+
+#scribble-pocket-editor:empty:after {
+    content: attr(placeholder);
+    opacity: 0.5;
+}
+
+#scribble-pocket-editor [data-selected] {
+    color: #fff;
+    background-color: rgb(255 255 255 / 0.1333333333);
+}
+
+#scribble-pocket-editor ul {
+    margin: 0;
+    padding-left: 1.4em;
+}
+
+#scribble-pocket-editor li {
+    list-style: inherit;
+}
+
+#scribble_draw {
+    pointer-events: none;
+    touch-action: none;
+}
+
+#scribble_container.draw-mode #scribble_draw {
+    pointer-events: auto;
+    cursor: crosshair;
+}
