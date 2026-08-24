@@ -30,8 +30,9 @@ The only Bonjourr core touchpoints are:
 
 1. One import and startup call in `src/scripts/index.ts`.
 2. The add-on stylesheet imports in `src/styles/style.css`.
+3. A narrow status-endpoint permission in the Chrome, Edge, and Firefox manifests.
 
-The settings section is inserted through Bonjourr's existing settings-load callback. No core settings types, defaults, compatibility filters, translations, manifests, or HTML templates are changed.
+The settings section is inserted through Bonjourr's existing settings-load callback. No core settings types, defaults, compatibility filters, translations, or HTML templates are changed.
 
 To bring in future Bonjourr updates:
 
@@ -41,7 +42,7 @@ git fetch upstream
 git merge upstream/master
 ```
 
-Most updates should merge without touching the add-on. If either core touchpoint conflicts, keep the homelab import, the `homelabAddon()` call, and both add-on CSS imports after resolving the upstream file.
+Most updates should merge without touching the add-on. If a core touchpoint conflicts, keep the homelab import, the `homelabAddon()` call, both add-on CSS imports, and the narrow status-endpoint manifest permission after resolving the upstream file.
 
 ## Build and load in Edge
 
@@ -123,7 +124,13 @@ When `updates.available` is greater than zero, Bonjourr renders a separate infor
 
 ## CORS and permissions
 
-The fork does not request broad host permissions. The status server must permit the extension request with a CORS response header such as:
+The fork requests only the status endpoint it is built to use:
+
+```text
+http://status.homelab.home.arpa/*
+```
+
+This narrow manifest permission allows the extension page to make the cross-origin request. The status server must also permit it with a CORS response header such as:
 
 ```http
 Access-Control-Allow-Origin: *
@@ -131,6 +138,8 @@ Content-Type: application/json
 ```
 
 Only use `*` for a sanitized, read-only health summary that contains no secrets. The client always sends requests with credentials omitted, disables HTTP caching, sends no referrer, and applies a short timeout.
+
+After changing the manifest permission, rebuild the extension and reload it from the browser's extensions page. Do not broaden the permission to all HTTP or HTTPS sites.
 
 Keep detailed logs, service credentials, container controls, raw update data, and restart actions in Homepage, WUD, or the watchdog. The glance endpoint should expose only the minimum state needed for the new tab summary.
 

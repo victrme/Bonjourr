@@ -22,6 +22,9 @@
     "permissions": [
         "storage"
     ],
+    "host_permissions": [
+        "http://status.homelab.home.arpa/*"
+    ],
     "optional_permissions": [
         "bookmarks",
         "topSites",
