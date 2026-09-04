@@ -1,5 +1,4 @@
 import { applyUrls, getUrlsAsCollection, initUrlsEditor, urlsCacheControl } from './urls.ts'
-import { handleBackgroundActions, initBackgroundActionsEvents } from '../contextmenu.ts'
 import { toggleCredits, updateCredits } from './credits.ts'
 import { TEXTURE_RANGES } from './textures.ts'
 import { PROVIDERS } from './providers.ts'
@@ -62,6 +61,14 @@ let fadeinTimeout: ReturnType<typeof setTimeout>
 
 const formBackgroundUserColl = networkForm('f_background-user-coll')
 const formBackgroundUserSearch = networkForm('f_background-user-search')
+
+function handleBackgroundActions(backgrounds: Backgrounds): void {
+    void import('../contextmenu.ts').then((module) => module.handleBackgroundActions(backgrounds))
+}
+
+function initBackgroundActionsEvents(): void {
+    void import('../contextmenu.ts').then((module) => module.initBackgroundActionsEvents())
+}
 
 export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
     if (init) {
@@ -289,7 +296,9 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
         local.backgroundCollections[collectionName] = []
         data.backgrounds.queries[collectionName] = query
-        storage.sync.set({ backgrounds: data.backgrounds })
+        await storage.sync.update('backgrounds', (backgrounds) => {
+            backgrounds.queries[collectionName] = query
+        })
 
         // 2. Handle empty query
 
@@ -315,22 +324,12 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 }
 
 export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<Backgrounds>): Promise<void> {
-    const data = await storage.sync.get('backgrounds')
-
-    if (blur !== undefined) {
-        data.backgrounds.blur = blur
-    }
-    if (bright !== undefined) {
-        data.backgrounds.bright = bright
-    }
-    if (fadein !== undefined) {
-        data.backgrounds.fadein = fadein
-    }
-    if (texture !== undefined) {
-        data.backgrounds.texture = texture
-    }
-
-    storage.sync.set({ backgrounds: data.backgrounds })
+    await storage.sync.update('backgrounds', (backgrounds) => {
+        if (blur !== undefined) backgrounds.blur = blur
+        if (bright !== undefined) backgrounds.bright = bright
+        if (fadein !== undefined) backgrounds.fadein = fadein
+        if (texture !== undefined) backgrounds.texture = texture
+    })
 }
 
 async function solidUpdate(value: string): Promise<void> {

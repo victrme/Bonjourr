@@ -22,12 +22,14 @@ interface Storage {
     sync: {
         get: (key?: string | string[]) => Promise<Sync>
         set: (val: Partial<Sync>) => Promise<void>
+        update: <Key extends keyof Sync>(key: Key, update: (value: Sync[Key]) => void | Promise<void>) => Promise<void>
         remove: (key: string) => void
         clear: () => Promise<void>
     }
     local: {
         get: (key?: keyof Local | (keyof Local)[]) => Promise<Local>
-        set: (val: Partial<Local>) => void
+        set: (val: Partial<Local>) => Promise<void>
+        update: <Key extends keyof Local>(key: Key, fn: (value: Local[Key]) => void | Promise<void>) => Promise<void>
         remove: (key: keyof Local) => void
         clear: () => void
     }
@@ -44,12 +46,14 @@ export const storage: Storage = {
     sync: {
         get: syncGet,
         set: syncSet,
+        update: syncUpdate,
         remove: syncRemove,
         clear: syncClear,
     },
     local: {
         get: localGet,
         set: localSet,
+        update: localUpdate,
         remove: localRemove,
         clear: localClear,
     },
@@ -57,6 +61,9 @@ export const storage: Storage = {
     clearall: clearall,
     type: storageTypeFn(),
 }
+
+let syncUpdateQueue = Promise.resolve()
+let localUpdateQueue = Promise.resolve()
 
 //	Storage type
 
@@ -78,6 +85,7 @@ function storageTypeFn(): StorageTypeReturn {
             return 'webext-local'
         }
 
+        type = 'webext-sync'
         return type
     }
 
@@ -120,12 +128,12 @@ async function syncGet(key?: string | string[]): Promise<Sync> {
     }
 }
 
-async function syncSet(keyval: Record<string, unknown>, fn = () => {}): Promise<void> {
+async function syncSet(keyval: Record<string, unknown>): Promise<void> {
     // console.log('sync set', JSON.stringify(keyval))
 
     switch (storage.type.get()) {
         case 'webext-sync': {
-            chrome.storage.sync.set(keyval, fn)
+            await chrome.storage.sync.set(keyval)
             return
         }
 
@@ -136,7 +144,7 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}): Promise<
                 ...keyval,
             }
 
-            chrome.storage.local.set({ syncStorage: data }, fn)
+            await chrome.storage.local.set({ syncStorage: data })
             return
         }
 
@@ -158,6 +166,19 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}): Promise<
 
         default:
     }
+}
+
+function syncUpdate<Key extends keyof Sync>(
+    key: Key,
+    update: (value: Sync[Key]) => void | Promise<void>,
+): Promise<void> {
+    const operation = syncUpdateQueue.then(async () => {
+        const data = await syncGet(key as string)
+        await update(data[key])
+        await syncSet({ [key]: data[key] })
+    })
+    syncUpdateQueue = operation.catch(() => {})
+    return operation
 }
 
 async function syncRemove(key: string): Promise<void> {
@@ -211,13 +232,13 @@ async function syncClear(): Promise<void> {
 
 //	Local data
 
-function localSet(value: Record<string, unknown>): void {
+async function localSet(value: Record<string, unknown>): Promise<void> {
     // console.log('local set', JSON.stringify(value))
 
     switch (storage.type.get()) {
         case 'webext-sync':
         case 'webext-local': {
-            chrome.storage.local.set(value)
+            await chrome.storage.local.set(value)
             return
         }
 
@@ -232,6 +253,19 @@ function localSet(value: Record<string, unknown>): void {
             return
         }
     }
+}
+
+function localUpdate<Key extends keyof Local>(
+    key: Key,
+    update: (value: Local[Key]) => void | Promise<void>,
+): Promise<void> {
+    const operation = localUpdateQueue.then(async () => {
+        const data = await localGet(key as string)
+        await update(data[key])
+        await localSet({ [key]: data[key] })
+    })
+    localUpdateQueue = operation.catch(() => {})
+    return operation
 }
 
 async function localGet(keys?: string | string[]): Promise<Local> {
