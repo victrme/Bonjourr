@@ -175,6 +175,7 @@
 }
 
 /* removes blue glow on touch on Android devices */
+a,
 button,
 select,
 input,
