@@ -50,6 +50,7 @@ export const langList = {
     hi: 'Hindi',
     mr: 'Marathi',
     te: 'తెలుగు',
+    bn: 'বাংলা',
 
     // Southeast Asia
     id: 'Bahasa Indonesia',
