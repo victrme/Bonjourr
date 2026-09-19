@@ -134,6 +134,7 @@ If you feel like we've earned it and you want to support independant open source
 - **🇮🇳 Hindi translation** · Shriyash Patil · [GitHub](https://github.com/Shriyash-24)
 - **🇮🇳 Marathi translation** · AKDB · [GitHub](https://github.com/akdbtas)
 - **🇲🇹 Maltese translation** · Lucas Fenech Beaumont · [GitHub](https://github.com/lucasfenech18)
+- **🇧🇩 Bengali translation** · flameydev · [GitHub](https://github.com/flameydev)
 
 ## 👨‍💻 On pull requests
 
