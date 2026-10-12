@@ -17,6 +17,7 @@ import { daylightPeriod, needsChange, userDate } from '../../shared/time.ts'
 import { networkForm } from '../../shared/form.ts'
 import { rgbToHex } from '../../shared/generic.ts'
 import { debounce } from '../../utils/debounce.ts'
+import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
 import type { Background, BackgroundImage, BackgroundVideo, Frequency } from '../../../types/shared.ts'
@@ -41,6 +42,8 @@ interface BackgroundUpdate {
     blur?: string
     blurenter?: true
     color?: string
+    colordark?: string
+    colordarkmode?: boolean
     query?: SubmitEvent
     files?: FileList | null
     bright?: string
@@ -57,6 +60,7 @@ interface BackgroundUpdate {
 
 const propertiesUpdateDebounce = debounce(filtersUpdate, 600)
 const colorUpdateDebounce = debounce(solidUpdate, 600)
+const colorDarkUpdateDebounce = debounce(solidDarkUpdate, 600)
 const fadeinPreviewDebounce = debounce(previewFadein, 200)
 let fadeinTimeout: ReturnType<typeof setTimeout>
 
@@ -102,6 +106,7 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
         }
         case 'color': {
             applyBackground(sync.backgrounds.color)
+            applySolidDarkBackground(sync.backgrounds.colordark)
             break
         }
         default: {
@@ -197,6 +202,27 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
         colorInput('solid-background', update.color)
         applyBackground(update.color)
         colorUpdateDebounce(update.color)
+    }
+
+    if (update.colordarkmode !== undefined) {
+        colorDarkUpdateDebounce.cancel()
+        data.backgrounds.colordark = update.colordarkmode ? data.backgrounds.color : undefined
+        storage.sync.set({ backgrounds: data.backgrounds })
+
+        const darkInput = document.querySelector<HTMLInputElement>('#i_solid-background-dark')
+        if (darkInput) {
+            darkInput.value = data.backgrounds.color
+        }
+
+        colorInput('solid-background-dark', data.backgrounds.color)
+        applySolidDarkBackground(data.backgrounds.colordark)
+        handleBackgroundOptions(data.backgrounds)
+    }
+
+    if (update.colordark) {
+        colorInput('solid-background-dark', update.colordark)
+        applySolidDarkBackground(update.colordark)
+        colorDarkUpdateDebounce(update.colordark)
     }
 
     if (update.urlsapply) {
@@ -336,6 +362,12 @@ export async function filtersUpdate({ blur, bright, fadein, texture }: Partial<B
 async function solidUpdate(value: string): Promise<void> {
     const data = await storage.sync.get('backgrounds')
     data.backgrounds.color = value
+    storage.sync.set({ backgrounds: data.backgrounds })
+}
+
+async function solidDarkUpdate(value: string): Promise<void> {
+    const data = await storage.sync.get('backgrounds')
+    data.backgrounds.colordark = value
     storage.sync.set({ backgrounds: data.backgrounds })
 }
 
@@ -622,6 +654,14 @@ function setCollection(backgrounds: Backgrounds, local: Local): CollectionSetRet
 
 // 	Apply to DOM
 
+function applySolidDarkBackground(color?: string): void {
+    if (color) {
+        document.documentElement.style.setProperty('--solid-background-dark', color)
+    } else {
+        document.documentElement.style.removeProperty('--solid-background-dark')
+    }
+}
+
 export function applyBackground(media?: string | Background, res?: BackgroundSize, fast?: 'fast'): void {
     const mediaWrapper = document.getElementById('background-media') as HTMLDivElement
     let resolution = res ? res : detectBackgroundSize()
@@ -820,6 +860,7 @@ export function initBackgroundOptions(sync: Sync, local: Local): void {
 function handleBackgroundOptions(backgrounds: Backgrounds): void {
     const type = backgrounds.type
     const withVideos = type === 'videos' || type === 'files' || type === 'urls'
+    const hasColorDark = backgrounds.colordark !== undefined
 
     document.getElementById('local_options')?.classList.toggle('shown', type === 'files')
     document.getElementById('solid_options')?.classList.toggle('shown', type === 'color')
@@ -828,6 +869,12 @@ function handleBackgroundOptions(backgrounds: Backgrounds): void {
     document.getElementById('background-freq-option')?.classList.toggle('shown', type !== 'color')
     document.getElementById('background-filters-options')?.classList.toggle('shown', type !== 'color')
     document.getElementById('background-video-sound-options')?.classList.toggle('shown', withVideos)
+    document.getElementById('solid-dark-option')?.classList.toggle('shown', hasColorDark)
+
+    const solidLabel = document.getElementById('solid-background-label')
+    if (solidLabel) {
+        solidLabel.textContent = tradThis(hasColorDark ? 'Background color (light)' : 'Background color')
+    }
 
     handleTextureOptions(backgrounds)
     handleProviderOptions(backgrounds)

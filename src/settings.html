@@ -443,11 +443,33 @@
         <hr />
 
         <div class="wrapper">
-            <label for="i_solid-background" class="trn">Background color</label>
+            <label id="solid-background-label" for="i_solid-background" class="trn">Background color</label>
 
             <div id="solid-background" class="color-button">
                 <input type="color" id="i_solid-background" name="solid-background" tabindex="-1" />
                 <button id="b_solid-background" class="trn">Pick a Color</button>
+            </div>
+        </div>
+
+        <div class="as as_solid_dark dropdown">
+            <hr />
+
+            <div class="wrapper">
+                <label for="i_solid-background-darkmode" class="trn">Separate dark mode color</label>
+                <input id="i_solid-background-darkmode" class="switch" type="checkbox" />
+            </div>
+
+            <div id="solid-dark-option" class="dropdown">
+                <hr />
+
+                <div class="wrapper">
+                    <label for="i_solid-background-dark" class="trn">Background color (dark)</label>
+
+                    <div id="solid-background-dark" class="color-button">
+                        <input type="color" id="i_solid-background-dark" name="solid-background-dark" tabindex="-1" />
+                        <button id="b_solid-background-dark" class="trn">Pick a Color</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
