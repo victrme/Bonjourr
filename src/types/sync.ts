@@ -79,6 +79,7 @@ export interface Backgrounds {
     bright: number
     blur: number
     color: string
+    colordark?: string
     urls: string
     images: string
     videos: string
