@@ -6,7 +6,6 @@ let isMousingDownOnInput = false
 
 export function userActions(advanced: Advanced): void {
     document.body.addEventListener('mousedown', detectTargetAsInputs)
-    document.getElementById('b_editmove')?.addEventListener('click', closeSettingsOnMoveOpen)
 
     document.addEventListener('click', clickUserActions)
 
@@ -184,15 +183,4 @@ function detectTargetAsInputs(event: Event): void {
     const path = event.composedPath() as Element[]
     const tagName = path[0]?.tagName ?? ''
     isMousingDownOnInput = ['TEXTAREA', 'INPUT'].includes(tagName)
-}
-
-function closeSettingsOnMoveOpen(): void {
-    setTimeout(() => {
-        const elementmover = document.getElementById('element-mover')
-        const moverHasOpened = elementmover?.classList.contains('hidden') === false
-
-        if (moverHasOpened) {
-            document.dispatchEvent(new CustomEvent('toggle-settings'))
-        }
-    }, 20)
 }

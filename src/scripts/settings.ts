@@ -16,7 +16,7 @@ import { quotes } from './features/quotes.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock/index.ts'
 import { pomodoro, setModeGlider } from './features/pomodoro.ts'
-import { togglePomodoroFocus } from './features/pomodoro.ts'
+import { freeLayout } from './features/free-layout/index.ts'
 import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton, webkitRangeTrackColor } from './shared/dom.ts'
@@ -801,6 +801,7 @@ function initOptionsEvents(): void {
 
     paramId('i_noteswidth').addEventListener('input', function (this: HTMLInputElement): void {
         notes(undefined, { width: this.value })
+        freeLayout(undefined, { width: { widget: 'notes', em: Number.parseFloat(this.value) } })
     })
 
     paramId('i_notes-opacity').addEventListener('input', function (this: HTMLInputElement): void {
@@ -832,6 +833,7 @@ function initOptionsEvents(): void {
 
     paramId('i_sbwidth').addEventListener('input', function (this: HTMLInputElement): void {
         searchbar(undefined, { width: this.value })
+        freeLayout(undefined, { width: { widget: 'searchbar', em: Number.parseFloat(this.value) } })
     })
 
     paramId('f_sbrequest').addEventListener('submit', function (this, event: SubmitEvent): void {
@@ -965,15 +967,11 @@ function initOptionsEvents(): void {
     // Page layout
 
     onclickdown(paramId('b_editmove'), () => {
-        togglePomodoroFocus(false)
-
-        moveElements(undefined, {
-            toggle: !document.getElementById('interface')?.classList.contains('move-edit'),
-        })
+        freeLayout(undefined, { edit: true })
     })
 
     paramId('i_pagecolumns').addEventListener('change', function (): void {
-        moveElements(undefined, { layout: this.value, toggle: true })
+        moveElements(undefined, { layout: this.value })
     })
 
     paramId('i_pagewidth').addEventListener('input', function (): void {
@@ -983,13 +981,6 @@ function initOptionsEvents(): void {
     paramId('i_pagegap').addEventListener('input', function (): void {
         pageControl({ gap: Number.parseFloat(this.value) }, true)
     })
-
-    paramId('i_pagewidth').addEventListener('touchstart', () => moveElements(undefined, { overlay: true }), {
-        passive: true,
-    })
-    paramId('i_pagewidth').addEventListener('mousedown', () => moveElements(undefined, { overlay: true }))
-    paramId('i_pagewidth').addEventListener('touchend', () => moveElements(undefined, { overlay: false }))
-    paramId('i_pagewidth').addEventListener('mouseup', () => moveElements(undefined, { overlay: false }))
 
     // Updates
 
