@@ -4,6 +4,7 @@ import { synchronization } from './features/synchronization/index.ts'
 import { backgroundsInit } from './features/backgrounds/index.ts'
 import { interfacePopup } from './features/popup.ts'
 import { moveElements } from './features/move/index.ts'
+import { freeLayout } from './features/free-layout/index.ts'
 import { hideElements } from './features/hide.ts'
 import { customFont } from './features/fonts.ts'
 import { quickLinks } from './features/links/index.ts'
@@ -16,7 +17,7 @@ import { notes } from './features/notes.ts'
 import { clock } from './features/clock/index.ts'
 import './features/contextmenu.ts'
 
-import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
+import { beforeInterfaceDisplay, displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
 import { operaExtensionExplainer } from './startup/opera.ts'
 import { setPotatoComputerMode } from './startup/potato.ts'
@@ -68,6 +69,7 @@ async function startup(): Promise<void> {
 
     await setTranslationCache(sync.lang, local)
 
+    beforeInterfaceDisplay(() => freeLayout(sync.freeLayout))
     displayInterface(undefined, sync)
     traduction(null, sync.lang)
     userDate(sync.clock.timezone)
@@ -119,4 +121,7 @@ async function startup(): Promise<void> {
             old: oldVersion,
         })
     })
+
+    // Cached widgets can finish synchronously, before visibility and page settings are applied.
+    displayInterface('startup')
 }
