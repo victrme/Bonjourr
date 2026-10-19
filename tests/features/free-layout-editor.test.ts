@@ -123,7 +123,7 @@ Deno.test({
             cancel()
             assertEquals((await storage.sync.get()).freeLayout, before)
         })
-        await test.step('Link resize notifications grow and shrink the tile back to its chosen minimum', async () => {
+        await test.step('Link growth shrinks back to automatic and keyboard-chosen minimums', async () => {
             const links = widget('quicklinks')
             const minimum = Number(links.style.getPropertyValue('--tile-rows'))
             links.innerHTML = '<div class="link-group"></div><div id="link-mini"></div>'
@@ -143,6 +143,28 @@ Deno.test({
             contentResizes.forEach((notify) => notify())
             await flush()
             assertEquals(Number(links.style.getPropertyValue('--tile-rows')), minimum)
+            height = 900
+            contentResizes.forEach((notify) => notify())
+            await flush()
+            open()
+            const requestedRows = Number(links.style.getPropertyValue('--tile-rows')) - 1
+            const cloneNode = links.cloneNode
+            links.cloneNode = (deep?: boolean): Node => {
+                const clone = cloneNode.call(links, deep) as HTMLElement
+                clone.getBoundingClientRect = () => new DOMRect(0, 0, 120, height + 60)
+                return clone
+            }
+            try {
+                document.querySelector('[data-widget="quicklinks"] [data-handle="s"]')!
+                    .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }))
+            } finally {
+                links.cloneNode = cloneNode
+            }
+            await save()
+            height = 40
+            contentResizes.forEach((notify) => notify())
+            await flush()
+            assertEquals(Number(links.style.getPropertyValue('--tile-rows')), requestedRows)
         })
         await test.step('Existing width settings persist; mobile fallback preserves the desktop layout', async () => {
             widget('notes').classList.remove('hidden')

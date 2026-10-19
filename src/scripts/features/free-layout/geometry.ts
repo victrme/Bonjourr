@@ -217,10 +217,10 @@ export function arrangeRows(
 export function arrangeWidgets(
     widgets: FreeLayout['widgets'],
     viewport: Viewport,
-    visible?: readonly Widgets[],
+    visible: readonly Widgets[],
     active?: Widgets,
 ): FreeLayout['widgets'] {
-    const ids = (visible ?? FREE_WIDGETS).filter((id) => widgets[id])
+    const ids = visible.filter((id) => widgets[id])
     const positions = new Map<Widgets, GridPosition>()
     for (const id of ids) positions.set(id, rectToGrid(widgets[id]!, viewport))
     const activePosition = active ? positions.get(active) : undefined

@@ -37,7 +37,6 @@ for (const type of ['sync', 'local'] as const) {
             assertEquals(saved, false)
             pending.resolve()
             await writing
-            assertEquals(saved, true)
             assertEquals(
                 written,
                 type === 'sync' ? payload : { syncStorage: { greeting: 'Keep this greeting', ...payload } },

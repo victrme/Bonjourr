@@ -39,7 +39,6 @@ export function createAlignmentControls(change: (value: TextAlignment) => void):
         buttons.setAttribute('role', 'group')
         buttons.setAttribute('aria-label', label)
         for (const [index, button] of Array.from(buttons.querySelectorAll<HTMLButtonElement>('button')).entries()) {
-            button.type = 'button'
             button.title = tradThis(['Left', 'Center', 'Right'][index])
             button.setAttribute('aria-label', button.title)
             button.addEventListener('click', () => change(button.dataset.align as TextAlignment))

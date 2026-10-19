@@ -91,7 +91,7 @@ function updateFreeLayout(event: FreeLayoutEvent): void {
         const layout = draft ?? saved
         const { widget: id, em } = event.width
         const rect = layout?.widgets[id]
-        const element = widget(id)
+        const element = elements[id]
         if (!layout?.enabled || !rect || !element || !Number.isFinite(em) || em <= 0) return
         rebase(layout)
         const width = em * Number.parseFloat(getComputedStyle(element).fontSize)
@@ -149,7 +149,7 @@ function initFreeLayout(value?: FreeLayout): void {
         }
     })
     for (const id of FREE_WIDGETS) {
-        const element = widget(id)
+        const element = elements[id]
         if (element) observer.observe(element, { attributes: true, attributeFilter: ['class'] })
     }
 
@@ -157,14 +157,14 @@ function initFreeLayout(value?: FreeLayout): void {
     const observeFlow = (): void => {
         resizer.disconnect()
         for (const id of FREE_WIDGETS) {
-            const element = widget(id)
+            const element = elements[id]
             if (!element) continue
             resizer.observe(element)
             for (const child of element.children) resizer.observe(child)
         }
         scheduleContentFit()
     }
-    const links = widget('quicklinks')
+    const links = elements['quicklinks']
     if (links) new MutationObserver(observeFlow).observe(links, { childList: true, subtree: true, characterData: true })
     observeFlow()
 }
@@ -176,10 +176,6 @@ function viewport(): Viewport {
 function isNarrow(): boolean {
     // Match the upstream mobile breakpoint without overwriting the saved desktop layout.
     return viewport().width <= 600
-}
-
-function widget(id: Widgets): HTMLElement | null {
-    return elements[id]
 }
 
 function visible(element: HTMLElement): boolean {
@@ -277,9 +273,10 @@ function syncWidgets(layout: FreeLayout): boolean {
         } else if (nativeInitialized && !nativeVisible.includes(id)) {
             // Re-enabling follows upstream insertion rather than reviving an obsolete hidden position.
             const current = rectToGrid(rect, layout.viewport)
-            layout.widgets[id] = clampRect(
-                gridToRect({ ...current, column: position.column, row: position.row }, layout.viewport, rect),
+            layout.widgets[id] = gridToRect(
+                { ...current, column: position.column, row: position.row },
                 layout.viewport,
+                rect,
             )
         } else if (previous) {
             const current = rectToGrid(rect, layout.viewport)
@@ -340,7 +337,6 @@ function measureNativeWidgets(layout: FreeLayout, ids: Widgets[], excluded: Widg
     const root = document.documentElement
     const grid = root.style.getPropertyValue('--grid')
     const gridPriority = root.style.getPropertyPriority('--grid')
-    const hidden = excluded.map((id) => widget(id)!.classList.contains('hidden'))
     const measured: FreeLayout['widgets'] = {}
     try {
         for (const id of ids) applyContentAlignment(id)
@@ -350,13 +346,13 @@ function measureNativeWidgets(layout: FreeLayout, ids: Widgets[], excluded: Widg
             let previous = grid
             for (const id of excluded) {
                 previous = removeGridWidget(previous, id, 'single')
-                widget(id)!.classList.add('hidden')
+                elements[id]!.classList.add('hidden')
             }
             root.style.setProperty('--grid', previous)
         }
         const bounds = container.getBoundingClientRect()
         for (const id of ids) {
-            const element = widget(id)!
+            const element = elements[id]!
             const rect = element.getBoundingClientRect()
             measured[id] = initialRect({
                 // Exclude the settings translation and scrolling, retaining the centred page margin.
@@ -379,7 +375,7 @@ function measureNativeWidgets(layout: FreeLayout, ids: Widgets[], excluded: Widg
         if (excluded.length) {
             if (grid) root.style.setProperty('--grid', grid, gridPriority)
             else root.style.removeProperty('--grid')
-            excluded.forEach((id, index) => widget(id)!.classList.toggle('hidden', hidden[index]))
+            for (const id of excluded) elements[id]!.classList.remove('hidden')
         }
         container.classList.toggle('free-layout', enabled)
         if (enabled) {
@@ -393,7 +389,7 @@ function measureNativeWidgets(layout: FreeLayout, ids: Widgets[], excluded: Widg
 
 function visibleWidgets(): Widgets[] {
     return FREE_WIDGETS.filter((id) => {
-        const element = widget(id)
+        const element = elements[id]
         return element && visible(element)
     })
 }
@@ -405,9 +401,9 @@ function fitContent(widgets: FreeLayout['widgets']): FreeLayout['widgets'] {
         if (!rect) continue
         let next: FreeLayoutRect
         if (id === 'quicklinks') {
-            next = fitLinksRect(rect, linksContentHeight(widget(id)!), viewport())
+            next = fitLinksRect(rect, linksContentHeight(elements[id]!), viewport())
         } else {
-            const sizer = contentSizer(widget(id)!, viewport())
+            const sizer = contentSizer(elements[id]!, viewport())
             try {
                 next = changeRect(rect, 'se', 0, 0, viewport(), sizer.measure(rect.width))
             } finally {
@@ -440,11 +436,11 @@ function scheduleContentFit(): void {
 
 function render(animate = false): void {
     if (!container) return
-    const elements = Array.from(
+    const tiles = Array.from(
         container.querySelectorAll<HTMLElement>(':scope > [data-free-layout], :scope > .free-layout-overlay'),
     )
-        .filter((element) => !active || (element !== widget(active.id) && element !== overlays.get(active.id)))
-    const previous = animate ? measureTiles(elements) : new Map<HTMLElement, DOMRect>()
+        .filter((element) => !active || (element !== elements[active.id] && element !== overlays.get(active.id)))
+    const previous = animate ? measureTiles(tiles) : new Map<HTMLElement, DOMRect>()
     const layout = draft ?? saved
     const enabled = layout?.enabled === true && !isNarrow()
     container.classList.toggle('free-layout', enabled)
@@ -478,7 +474,7 @@ function render(animate = false): void {
     for (const overlay of overlays.values()) overlay.hidden = true
 
     for (const id of FREE_WIDGETS) {
-        const element = widget(id)
+        const element = elements[id]
         if (!element) continue
         const rect = layout?.widgets[id]
         applyContentAlignment(id, enabled ? rect?.textAlign : undefined)
@@ -571,7 +567,7 @@ function pointerDown(event: PointerEvent, id: Widgets): void {
     if (!rect) return
     event.preventDefault()
     event.stopPropagation()
-    const bounds = widget(id)?.getBoundingClientRect()
+    const bounds = elements[id]?.getBoundingClientRect()
     const parent = container?.getBoundingClientRect()
     const origin = bounds?.width && parent
         ? {
@@ -582,7 +578,7 @@ function pointerDown(event: PointerEvent, id: Widgets): void {
             height: bounds.height,
         }
         : { ...rect }
-    stopTileMotion(widget(id))
+    stopTileMotion(elements[id])
     stopTileMotion(overlays.get(id))
     active = {
         id,
@@ -594,10 +590,10 @@ function pointerDown(event: PointerEvent, id: Widgets): void {
         raw: origin,
         visible: visibleWidgets(),
         before: structuredClone(draft.widgets),
-        sizer: handle === 'move' ? undefined : contentSizer(widget(id)!, viewport()),
+        sizer: handle === 'move' ? undefined : contentSizer(elements[id]!, viewport()),
     }
     overlays.get(id)?.setPointerCapture(event.pointerId)
-    overlays.get(id)?.classList.add('active', 'selected')
+    overlays.get(id)?.classList.add('active')
     render()
 }
 
@@ -614,53 +610,39 @@ function flushPointer(paint = true): void {
     if (!draft || !active || !pendingPointer) return
     const point = pendingPointer
     pendingPointer = undefined
-    let resized = changeRect(
-        active.before[active.id]!,
-        active.handle,
-        point.x - active.x,
-        point.y - active.y,
-        viewport(),
-    )
-    if (active.id === 'quicklinks' && /[ns]/.test(active.handle)) {
-        resized.minRows = rectToGrid(resized, viewport()).rows
-    }
-    const raw = continuousRect(active.origin, active.handle, point.x - active.x, point.y - active.y, viewport())
-    const minimum = active.sizer?.measure(raw.width)
+    const dx = point.x - active.x
+    const dy = point.y - active.y
+    const requested = changeRect(active.before[active.id]!, active.handle, dx, dy, viewport())
+    let resized = requested
+    let raw = continuousRect(active.origin, active.handle, dx, dy, viewport())
     if (active.sizer) {
-        const minRows = resized.minRows
         resized = changeRect(
             active.before[active.id]!,
             active.handle,
-            point.x - active.x,
-            point.y - active.y,
+            dx,
+            dy,
             viewport(),
-            active.sizer.measure(resized.width),
+            active.sizer.measure(requested.width),
         )
-        if (minRows !== undefined) resized.minRows = minRows
+        raw = continuousRect(active.origin, active.handle, dx, dy, viewport(), active.sizer.measure(raw.width))
+    }
+    if (active.id === 'quicklinks' && /[ns]/.test(active.handle)) {
+        resized.minRows = rectToGrid(requested, viewport()).rows
     }
     const candidate = { ...active.before, [active.id]: resized }
     const current = draft.widgets[active.id]
-    const requested = candidate[active.id]!
-    active.raw = continuousRect(
-        active.origin,
-        active.handle,
-        point.x - active.x,
-        point.y - active.y,
-        viewport(),
-        minimum,
-    )
+    active.raw = raw
     if (
         current &&
         ['x', 'y', 'width', 'height', 'minRows'].every((key) =>
-            current[key as keyof FreeLayoutRect] === requested[key as keyof FreeLayoutRect]
+            current[key as keyof FreeLayoutRect] === resized[key as keyof FreeLayoutRect]
         )
     ) {
         if (paint) {
-            const element = widget(active.id)
+            const element = elements[active.id]
             const overlay = overlays.get(active.id)
             if (element) setFloating(element, active.raw)
             if (overlay) setFloating(overlay, active.raw)
-            scheduleContentFit()
         }
         return
     }
@@ -703,16 +685,17 @@ function handleKey(event: KeyboardEvent, id: Widgets): void {
         ? step * grid.columnStep
         : 0
     const dy = event.key === 'ArrowUp' ? -step * grid.rowStep : event.key === 'ArrowDown' ? step * grid.rowStep : 0
-    let resized = changeRect(rect, handle, dx, dy, viewport())
+    const requested = changeRect(rect, handle, dx, dy, viewport())
+    let resized = requested
     if (handle !== 'move') {
-        const sizer = contentSizer(widget(id)!, viewport())
+        const sizer = contentSizer(elements[id]!, viewport())
         try {
-            resized = changeRect(rect, handle, dx, dy, viewport(), sizer.measure(resized.width))
+            resized = changeRect(rect, handle, dx, dy, viewport(), sizer.measure(requested.width))
         } finally {
             sizer.remove()
         }
     }
-    if (id === 'quicklinks' && /[ns]/.test(handle)) resized.minRows = rectToGrid(resized, viewport()).rows
+    if (id === 'quicklinks' && /[ns]/.test(handle)) resized.minRows = rectToGrid(requested, viewport()).rows
     const candidate = { ...draft.widgets, [id]: resized }
     draft.widgets = arrangeWidgets(candidate, viewport(), visibleWidgets(), id)
     render(true)

@@ -35,7 +35,6 @@ export function moveToolbar(toolbar: HTMLElement): void {
     toolbar.addEventListener('pointercancel', stop)
     toolbar.addEventListener('lostpointercapture', stop)
     globalThis.addEventListener('blur', stop)
-    globalThis.addEventListener('resize', () => keepToolbarVisible(toolbar))
 }
 
 export function stopTileMotion(element: HTMLElement | null | undefined): void {
