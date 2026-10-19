@@ -9,18 +9,7 @@ import type { Widgets } from '../../../types/shared.ts'
 
 type UpdateMove = {
     widget?: [Widgets, boolean]
-    span?: 'col' | 'row'
-    reset?: true
-    toggle?: boolean
-    box?: string
-    text?: string
     layout?: string
-    select?: string
-    overlay?: boolean
-    grid?: {
-        x?: string
-        y?: string
-    }
 }
 
 export function moveElements(init?: Move, event?: UpdateMove): void {
@@ -35,7 +24,7 @@ export function moveElements(init?: Move, event?: UpdateMove): void {
     }
 }
 
-export async function updateMoveElement(event: UpdateMove): Promise<void> {
+async function updateMoveElement(event: UpdateMove): Promise<void> {
     const data = await storage.sync.get()
     if (!data.move) data.move = structuredClone(SYNC_DEFAULT.move)
     if (event.layout) layoutChange(data, event.layout)

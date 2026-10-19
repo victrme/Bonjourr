@@ -1,11 +1,7 @@
 import { elements, gridStringify } from './helpers.ts'
-import { moveElements } from './index.ts'
-import { onclickdown } from 'clickdown/mod'
 
 import type { MoveAlign, MoveLayout } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'
-
-const dominterface = document.querySelector<HTMLElement>('#interface')
 
 export function setGridAreas(grid: MoveLayout['grid'] | string): void {
     const property = typeof grid === 'string' ? grid : gridStringify(grid)
@@ -31,41 +27,6 @@ export function setAllAligns(items: MoveLayout['items']): void {
     for (const [widget, align] of Object.entries(items)) {
         setAlign(widget as Widgets, align)
     }
-}
-
-export function addOverlay(id: Widgets): void {
-    const button = document.createElement('button')
-    button.id = `move-overlay-${id}`
-    button.className = 'move-overlay'
-    dominterface?.appendChild(button)
-
-    onclickdown(button, () => {
-        moveElements(undefined, { select: id })
-    })
-}
-
-export function removeOverlay(id?: Widgets): void {
-    if (id) {
-        document.querySelector(`#move-overlay-${id}`)?.remove()
-    } else {
-        for (const overlay of document.querySelectorAll('.move-overlay')) {
-            overlay.remove()
-        }
-    }
-}
-
-export function removeSelection(): void {
-    const toolbox = document.getElementById('element-mover')
-    const elements = document.querySelectorAll<HTMLElement>(
-        '.move-overlay, #grid-mover button, .grid-spanner, #element-mover button',
-    )
-
-    for (const elem of elements) {
-        elem.classList.remove('selected')
-        elem.removeAttribute('disabled')
-    }
-
-    toolbox?.classList.remove('active')
 }
 
 export function interfaceFade(fade: 'in' | 'out'): void {
