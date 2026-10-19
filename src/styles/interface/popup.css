@@ -112,11 +112,6 @@
     opacity: 0;
 }
 
-.move-edit ~ #popup {
-    opacity: 0;
-    pointer-events: none;
-}
-
 /*
  *	Review
  */
