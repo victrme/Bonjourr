@@ -34,7 +34,8 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
             tempReport = tradThis('It is currently <temp1> and feels like <temp2>')
         }
 
-        const weatherReport = lastWeather.description[0].toUpperCase() + lastWeather.description.slice(1)
+        const description = tradThis(lastWeather.description)
+        const weatherReport = description[0].toUpperCase() + description.slice(1)
 
         const splitString = tempReport.split(/<temp\d+>/).filter(Boolean)
 
