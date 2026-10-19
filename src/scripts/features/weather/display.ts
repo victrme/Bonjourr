@@ -34,7 +34,9 @@ export function displayWeather(data: Weather, lastWeather: LastWeather): void {
             tempReport = tradThis('It is currently <temp1> and feels like <temp2>')
         }
 
-        const description = tradThis(lastWeather.description)
+        // Preserve descriptions that the provider has already localized.
+        const isEnglishDescription = /^https?:\/\/[^/]+\/en(?:[-_][a-z]{2})?\//i.test(lastWeather.link)
+        const description = isEnglishDescription ? tradThis(lastWeather.description) : lastWeather.description
         const weatherReport = description[0].toUpperCase() + description.slice(1)
 
         const splitString = tempReport.split(/<temp\d+>/).filter(Boolean)

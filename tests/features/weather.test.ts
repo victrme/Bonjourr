@@ -32,7 +32,7 @@ const cached: LastWeather = {
     icon_id: 'overcastclouds',
     description: 'Cloudy',
     timestamp: Date.now(),
-    link: '',
+    link: 'https://www.foreca.com/en/100745044/Istanbul',
 }
 
 storage.type.init()
@@ -108,8 +108,57 @@ Deno.test({
         await useLocale('fr')
 
         try {
-            displayWeather(weather, { ...cached, description: 'Ciel couvert' })
+            displayWeather(weather, {
+                ...cached,
+                description: 'Ciel couvert',
+                link: 'https://www.foreca.com/fr/102988507/Paris',
+            })
             assertEquals(document.getElementById('current-desc')?.textContent, 'Ciel couvert. ')
+        } finally {
+            await toggleTraduction('en')
+        }
+    },
+})
+
+Deno.test({
+    name: 'Dutch provider text is not confused with an English weather key',
+    sanitizeOps: false,
+    sanitizeResources: false,
+    fn: async () => {
+        await useLocale('nl')
+
+        try {
+            displayWeather(weather, {
+                ...cached,
+                description: 'Mist',
+                link: 'https://www.foreca.com/nl/102753464/Haarlem',
+            })
+            assertEquals(document.getElementById('current-desc')?.textContent, 'Mist. ')
+
+            displayWeather(weather, { ...cached, description: 'Mist' })
+            assertEquals(document.getElementById('current-desc')?.textContent, 'Nevel. ')
+
+            displayWeather(weather, { ...cached, description: 'Cloudy' })
+            assertEquals(document.getElementById('current-desc')?.textContent, 'Bewolkt. ')
+        } finally {
+            await toggleTraduction('en')
+        }
+    },
+})
+
+Deno.test({
+    name: 'English provider fallbacks use French and German weather translations',
+    sanitizeOps: false,
+    sanitizeResources: false,
+    fn: async () => {
+        try {
+            await useLocale('fr')
+            displayWeather(weather, { ...cached, description: 'Heavy rain' })
+            assertEquals(document.getElementById('current-desc')?.textContent, 'Forte pluie. ')
+
+            await useLocale('de')
+            displayWeather(weather, cached)
+            assertEquals(document.getElementById('current-desc')?.textContent, 'Bewölkt. ')
         } finally {
             await toggleTraduction('en')
         }
