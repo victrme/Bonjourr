@@ -2,7 +2,6 @@ import { populateDialogWithEditLink } from './links/edit.ts'
 import { IS_MOBILE, SYSTEM_OS } from '../defaults.ts'
 import { transitioner } from '../utils/transitioner.ts'
 import { debounce } from '../utils/debounce.ts'
-import { onclickdown } from 'clickdown/mod'
 import { backgroundUpdate, toggleMuteStatus } from './backgrounds/index.ts'
 import { quotes } from './quotes.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
@@ -339,7 +338,7 @@ function handleContextMenuEvents(): void {
         btn?.addEventListener('click', openSettingsButtonEvent)
     })
 
-    onclickdown(document.getElementById('b_interface-quotes-refresh'), (event) => {
+    document.getElementById('b_interface-quotes-refresh')?.addEventListener('click', (event) => {
         quotes(undefined, { refresh: true })
         turnRefreshButton(event, true)
     })
@@ -365,19 +364,19 @@ export function handleBackgroundActions(backgrounds: Backgrounds): void {
 }
 
 export function initBackgroundActionsEvents(): void {
-    onclickdown(document.getElementById('b_interface-background-pause'), () => {
+    document.getElementById('b_interface-background-pause')?.addEventListener('click', () => {
         toggleBackgroundPause()
     })
 
-    onclickdown(document.getElementById('b_interface-background-refresh'), (event) => {
+    document.getElementById('b_interface-background-refresh')?.addEventListener('click', (event) => {
         backgroundUpdate({ refresh: event })
     })
 
-    onclickdown(document.getElementById('b_interface-background-download'), () => {
+    document.getElementById('b_interface-background-download')?.addEventListener('click', () => {
         downloadImage()
     })
 
-    onclickdown(document.getElementById('b_interface-background-mute'), () => {
+    document.getElementById('b_interface-background-mute')?.addEventListener('click', () => {
         toggleMuteVideo()
     })
 }

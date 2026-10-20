@@ -118,7 +118,7 @@ This internal function processes partial changes from the settings menu.
 
 The settings module acts as a declarative controller that connects HTML inputs to feature functions.
 
-Settings are wired using standard DOM events or the `onclickdown` utility. The convention is to pass `undefined` as the
+Settings are wired using standard DOM events. The convention is to pass `undefined` as the
 first argument to signify a live update.
 
 ```typescript
@@ -134,8 +134,8 @@ paramId('i_feature-property').addEventListener('input', function () {
 | :----------------------- | :------------ | :----------------------------- |
 | Sliders / Ranges     | `input`       | `{ property: this.value }`     |
 | Dropdowns / Selects  | `change`      | `{ property: this.value }`     |
-| Checkboxes / Toggles | `onclickdown` | `{ property: target.checked }` |
-| Action Buttons       | `onclickdown` | `{ trigger: true }`            |
+| Checkboxes / Toggles | `click`       | `{ property: this.checked }`   |
+| Action Buttons       | `click`       | `{ trigger: true }`            |
 
 ### Feature Best Practices
 

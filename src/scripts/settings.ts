@@ -27,7 +27,6 @@ import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
 import { loadCallbacks } from './utils/onsettingsload.ts'
 import { getLangForSite } from './utils/translations.ts'
-import { onclickdown } from 'clickdown/mod'
 import { filterData } from './compatibility/apply.ts'
 import { stringify } from './utils/stringify.ts'
 import { debounce } from './utils/debounce.ts'
@@ -412,7 +411,7 @@ function initOptionsValues(data: Sync, local: Local): void {
 }
 
 function initOptionsEvents(): void {
-    onclickdown(paramId('b_accept-permissions'), async () => {
+    paramId('b_accept-permissions').addEventListener('click', async () => {
         await getPermissions('topSites', 'bookmarks')
 
         const sync = await storage.sync.get()
@@ -425,8 +424,8 @@ function initOptionsEvents(): void {
 
     // General
 
-    onclickdown(paramId('i_showall'), (_, target) => {
-        showall(target.checked, true)
+    paramId('i_showall').addEventListener('click', function (): void {
+        showall(this.checked, true)
     })
 
     paramId('i_lang').addEventListener('change', function (): void {
@@ -453,14 +452,14 @@ function initOptionsEvents(): void {
         darkmode(this.value as 'auto' | 'system' | 'enable' | 'disable', true)
     })
 
-    onclickdown(paramId('i_settingshide'), (_, target) => {
-        hideElements({ settingsicon: target.checked }, { isEvent: true })
+    paramId('i_settingshide').addEventListener('click', function (): void {
+        hideElements({ settingsicon: this.checked }, { isEvent: true })
     })
 
     // Quick links
 
-    onclickdown(paramId('i_quicklinks'), (_, target) => {
-        moveElements(undefined, { widget: ['quicklinks', target.checked] })
+    paramId('i_quicklinks').addEventListener('click', function (): void {
+        moveElements(undefined, { widget: ['quicklinks', this.checked] })
     })
 
     paramId('f_addlink').addEventListener('submit', function (this, event: SubmitEvent): void {
@@ -480,27 +479,27 @@ function initOptionsEvents(): void {
         this.classList.remove('valid')
     })
 
-    onclickdown(paramId('i_linkgroups'), (_, target) => {
-        quickLinks(undefined, { groups: target.checked })
+    paramId('i_linkgroups').addEventListener('click', function (): void {
+        quickLinks(undefined, { groups: this.checked })
     })
 
-    onclickdown(paramId('i_linknewtab'), (_, target) => {
-        quickLinks(undefined, { newtab: target.checked })
+    paramId('i_linknewtab').addEventListener('click', function (): void {
+        quickLinks(undefined, { newtab: this.checked })
     })
 
     paramId('i_linkstyle').addEventListener('change', function (this): void {
         quickLinks(undefined, { styles: { style: this.value } })
     })
 
-    onclickdown(paramId('b_showtitles'), (_, target) => {
+    paramId('b_showtitles').addEventListener('click', function (): void {
         quickLinks(undefined, {
-            styles: { titles: !target.classList.contains('on') },
+            styles: { titles: !this.classList.contains('on') },
         })
     })
 
-    onclickdown(paramId('b_showbackgrounds'), (_, target) => {
+    paramId('b_showbackgrounds').addEventListener('click', function (): void {
         quickLinks(undefined, {
-            styles: { backgrounds: !target.classList.contains('on') },
+            styles: { backgrounds: !this.classList.contains('on') },
         })
     })
 
@@ -512,7 +511,7 @@ function initOptionsEvents(): void {
         quickLinks(undefined, { iconradius: this.value })
     })
 
-    onclickdown(paramId('b_importbookmarks'), async () => {
+    paramId('b_importbookmarks').addEventListener('click', async () => {
         await getPermissions('topSites', 'bookmarks')
         linksImport()
     })
@@ -549,7 +548,7 @@ function initOptionsEvents(): void {
         backgroundUpdate({ freq: this.value })
     })
 
-    onclickdown(paramId('i_refresh'), (event) => {
+    paramId('i_refresh').addEventListener('click', (event) => {
         backgroundUpdate({ refresh: event })
     })
 
@@ -557,13 +556,13 @@ function initOptionsEvents(): void {
         backgroundUpdate({ files: this.files })
     })
 
-    onclickdown(paramId('b_background-urls'), () => {
+    paramId('b_background-urls').addEventListener('click', () => {
         backgroundUpdate({ urlsapply: true })
     })
 
-    onclickdown(paramId('i_background-mute-videos'), (_, target) => {
-        toggleMuteStatus(target.checked)
-        backgroundUpdate({ mute: target.checked })
+    paramId('i_background-mute-videos').addEventListener('click', function (): void {
+        toggleMuteStatus(this.checked)
+        backgroundUpdate({ mute: this.checked })
     })
 
     // Background filters
@@ -606,21 +605,21 @@ function initOptionsEvents(): void {
 
     // Time and date
 
-    onclickdown(paramId('i_time'), (_, target) => {
-        moveElements(undefined, { widget: ['time', target.checked] })
+    paramId('i_time').addEventListener('click', function (): void {
+        moveElements(undefined, { widget: ['time', this.checked] })
     })
 
-    onclickdown(paramId('i_analog'), (_, target) => {
-        clock(undefined, { analog: target.checked })
+    paramId('i_analog').addEventListener('click', function (): void {
+        clock(undefined, { analog: this.checked })
     })
 
-    onclickdown(paramId('i_seconds'), (_, target) => {
-        clock(undefined, { seconds: target.checked })
+    paramId('i_seconds').addEventListener('click', function (): void {
+        clock(undefined, { seconds: this.checked })
     })
 
-    onclickdown(paramId('i_worldclocks'), (_, target) => {
-        toggleSettingsDropdown('worldclocks_options', target.checked)
-        clock(undefined, { worldclocks: target.checked })
+    paramId('i_worldclocks').addEventListener('click', function (): void {
+        toggleSettingsDropdown('worldclocks_options', this.checked)
+        clock(undefined, { worldclocks: this.checked })
     })
 
     paramId('i_clockface').addEventListener('change', function (this: HTMLInputElement): void {
@@ -655,22 +654,22 @@ function initOptionsEvents(): void {
         clock(undefined, { size: Number.parseFloat(this.value) })
     })
 
-    onclickdown(paramId('i_ampm'), (_, target) => {
-        clock(undefined, { ampm: target.checked })
+    paramId('i_ampm').addEventListener('click', function (): void {
+        clock(undefined, { ampm: this.checked })
 
         // shows/hides ampm_label option
-        toggleSettingsDropdown('ampm_label', target.checked)
+        toggleSettingsDropdown('ampm_label', this.checked)
 
         // same for its position based on ampm_label AND 12h time toggle
         const ampm_toggle = document.querySelector('#i_ampm-label') as HTMLInputElement
-        toggleSettingsDropdown('ampm_position', target.checked && ampm_toggle.checked)
+        toggleSettingsDropdown('ampm_position', this.checked && ampm_toggle.checked)
     })
 
-    onclickdown(paramId('i_ampm-label'), (_, target) => {
-        clock(undefined, { ampmlabel: target.checked })
+    paramId('i_ampm-label').addEventListener('click', function (): void {
+        clock(undefined, { ampmlabel: this.checked })
 
         // shows/hides ampm_position option
-        toggleSettingsDropdown('ampm_position', target.checked)
+        toggleSettingsDropdown('ampm_position', this.checked)
     })
 
     paramId('i_ampm_position').addEventListener('change', function (this: HTMLInputElement): void {
@@ -691,8 +690,8 @@ function initOptionsEvents(): void {
 
     // Weather
 
-    onclickdown(paramId('i_main'), (_, target) => {
-        moveElements(undefined, { widget: ['main', target.checked] })
+    paramId('i_main').addEventListener('click', function (): void {
+        moveElements(undefined, { widget: ['main', this.checked] })
     })
 
     paramId('i_geol').addEventListener('change', function (this: HTMLInputElement): void {
@@ -736,13 +735,13 @@ function initOptionsEvents(): void {
         weather(undefined, { unhide: true })
     })
 
-    onclickdown(paramId('i_show_unit'), (_, target) => {
-        weather(undefined, { show_unit: target.checked })
+    paramId('i_show_unit').addEventListener('click', function (): void {
+        weather(undefined, { show_unit: this.checked })
     })
 
-    onclickdown(paramId('i_greethide'), (_, target) => {
-        toggleSettingsDropdown('greetings_options', target.checked)
-        hideElements({ greetings: !target.checked }, { isEvent: true })
+    paramId('i_greethide').addEventListener('click', function (): void {
+        toggleSettingsDropdown('greetings_options', this.checked)
+        hideElements({ greetings: !this.checked }, { isEvent: true })
     })
 
     // Greetings
@@ -791,8 +790,8 @@ function initOptionsEvents(): void {
 
     // Notes
 
-    onclickdown(paramId('i_notes'), (_, target) => {
-        moveElements(undefined, { widget: ['notes', target.checked] })
+    paramId('i_notes').addEventListener('click', function (): void {
+        moveElements(undefined, { widget: ['notes', this.checked] })
     })
 
     paramId('i_notesalign').addEventListener('change', function (this: HTMLInputElement): void {
@@ -807,14 +806,14 @@ function initOptionsEvents(): void {
         notes(undefined, { background: true })
     })
 
-    onclickdown(paramId('i_notes-shade'), () => {
+    paramId('i_notes-shade').addEventListener('click', () => {
         notes(undefined, { background: true })
     })
 
     // Searchbar
 
-    onclickdown(paramId('i_sb'), (_, target) => {
-        moveElements(undefined, { widget: ['searchbar', target.checked] })
+    paramId('i_sb').addEventListener('click', function (): void {
+        moveElements(undefined, { widget: ['searchbar', this.checked] })
         getPermissions('search')
     })
 
@@ -839,12 +838,12 @@ function initOptionsEvents(): void {
         event.preventDefault()
     })
 
-    onclickdown(paramId('i_sbnewtab'), (_, target) => {
-        searchbar(undefined, { newtab: target.checked })
+    paramId('i_sbnewtab').addEventListener('click', function (): void {
+        searchbar(undefined, { newtab: this.checked })
     })
 
-    onclickdown(paramId('i_sbsuggestions'), (_, target) => {
-        searchbar(undefined, { suggestions: target.checked })
+    paramId('i_sbsuggestions').addEventListener('click', function (): void {
+        searchbar(undefined, { suggestions: this.checked })
     })
 
     paramId('i_sbplaceholder').addEventListener('keyup', function (): void {
@@ -857,8 +856,8 @@ function initOptionsEvents(): void {
 
     // Quotes
 
-    onclickdown(paramId('i_quotes'), (_, target) => {
-        moveElements(undefined, { widget: ['quotes', target.checked] })
+    paramId('i_quotes').addEventListener('click', function (): void {
+        moveElements(undefined, { widget: ['quotes', this.checked] })
     })
 
     paramId('i_qtfreq').addEventListener('change', function (): void {
@@ -869,14 +868,14 @@ function initOptionsEvents(): void {
         quotes(undefined, { type: this.value })
     })
 
-    onclickdown(paramId('i_qtrefresh'), (event, target) => {
-        inputThrottle(target)
+    paramId('i_qtrefresh').addEventListener('click', function (event): void {
+        inputThrottle(this)
         turnRefreshButton(event, true)
         quotes(undefined, { refresh: true })
     })
 
-    onclickdown(paramId('i_qtauthor'), (_, target) => {
-        quotes(undefined, { author: target.checked })
+    paramId('i_qtauthor').addEventListener('click', function (): void {
+        quotes(undefined, { author: this.checked })
     })
 
     paramId('i_qtlist').addEventListener('change', function (): void {
@@ -891,8 +890,8 @@ function initOptionsEvents(): void {
 
     // Pomodoro
 
-    onclickdown(paramId('i_pomodoro'), (_, target) => {
-        moveElements(undefined, { widget: ['pomodoro', target.checked] })
+    paramId('i_pomodoro').addEventListener('click', function (): void {
+        moveElements(undefined, { widget: ['pomodoro', this.checked] })
 
         const glider = document.querySelector('#pomodoro_container .glider') as HTMLDivElement
         if (glider.style.width === '0px') {
@@ -903,11 +902,11 @@ function initOptionsEvents(): void {
         }
     })
 
-    onclickdown(paramId('i_pmdr_sound'), (_, target) => {
-        pomodoro(undefined, { sound: target.checked })
+    paramId('i_pmdr_sound').addEventListener('click', function (): void {
+        pomodoro(undefined, { sound: this.checked })
     })
 
-    onclickdown(paramId('i_pmdr_listen'), () => {
+    paramId('i_pmdr_listen').addEventListener('click', () => {
         pomodoro(undefined, { listen: true })
     })
 
@@ -964,7 +963,7 @@ function initOptionsEvents(): void {
 
     // Page layout
 
-    onclickdown(paramId('b_editmove'), () => {
+    paramId('b_editmove').addEventListener('click', () => {
         togglePomodoroFocus(false)
 
         moveElements(undefined, {
@@ -997,8 +996,8 @@ function initOptionsEvents(): void {
         interfacePopup(undefined, { announcements: this.checked })
     })
 
-    onclickdown(paramId('i_supporters_notif'), (_, target) => {
-        supportersNotifications(undefined, { enabled: target.checked })
+    paramId('i_supporters_notif').addEventListener('click', function (): void {
+        supportersNotifications(undefined, { enabled: this.checked })
     })
 
     // Sync
@@ -1017,20 +1016,20 @@ function initOptionsEvents(): void {
         synchronization(undefined, { url: paramId('i_urlsync').value })
     })
 
-    onclickdown(paramId('b_storage-persist'), async () => {
+    paramId('b_storage-persist').addEventListener('click', async () => {
         const persists = await navigator.storage.persist()
         synchronization(undefined, { firefoxPersist: persists })
     })
 
-    onclickdown(paramId('b_gistup'), () => {
+    paramId('b_gistup').addEventListener('click', () => {
         synchronization(undefined, { up: true })
     })
 
-    onclickdown(paramId('b_gistdown'), () => {
+    paramId('b_gistdown').addEventListener('click', () => {
         synchronization(undefined, { down: true })
     })
 
-    onclickdown(paramId('b_urldown'), () => {
+    paramId('b_urldown').addEventListener('click', () => {
         synchronization(undefined, { down: true })
     })
 
@@ -1072,11 +1071,11 @@ function initOptionsEvents(): void {
         toggleSettingsChangesButtons(event.type)
     })
 
-    onclickdown(paramId('b_settings-cancel'), () => {
+    paramId('b_settings-cancel').addEventListener('click', () => {
         toggleSettingsChangesButtons('cancel')
     })
 
-    onclickdown(paramId('b_settings-apply'), () => {
+    paramId('b_settings-apply').addEventListener('click', () => {
         const val = paramId('settings-data').value
         importSettings(parse<Partial<Sync>>(val) ?? {})
     })
@@ -1089,15 +1088,15 @@ function initOptionsEvents(): void {
         }
     })
 
-    onclickdown(paramId('b_reset-first'), () => {
+    paramId('b_reset-first').addEventListener('click', () => {
         resetSettings('first')
     })
 
-    onclickdown(paramId('b_reset-apply'), () => {
+    paramId('b_reset-apply').addEventListener('click', () => {
         resetSettings('yes')
     })
 
-    onclickdown(paramId('b_reset-cancel'), () => {
+    paramId('b_reset-cancel').addEventListener('click', () => {
         resetSettings('no')
     })
 
@@ -1132,7 +1131,7 @@ function initOptionsEvents(): void {
     const tooltips = document.querySelectorAll<HTMLElement>('.tooltip')
 
     for (const tooltip of tooltips) {
-        onclickdown(tooltip, () => {
+        tooltip.addEventListener('click', () => {
             const classes = [...tooltip.classList]
             const ttclass = classes.filter((cl) => cl.startsWith('tt'))[0]
             const tttext = document.querySelector(`.tooltiptext.${ttclass}`)
@@ -1144,7 +1143,7 @@ function initOptionsEvents(): void {
     const splitRangeButtons = document.querySelectorAll<HTMLButtonElement>('.split-range button')
 
     for (const button of splitRangeButtons) {
-        onclickdown(button, () => {
+        button.addEventListener('click', () => {
             button.classList.toggle('on')
         })
     }

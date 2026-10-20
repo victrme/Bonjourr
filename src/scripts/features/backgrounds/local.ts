@@ -2,7 +2,6 @@ import { applyBackground, removeBackgrounds } from './index.ts'
 import { compressAsBlob, imageDimensions } from '../../shared/compress.ts'
 import { webkitRangeTrackColor } from '../../shared/dom.ts'
 import { needsChange } from '../../shared/time.ts'
-import { onclickdown } from 'clickdown/mod'
 import { VideoLooper } from './VideoLooper.ts'
 import { IS_MOBILE } from '../../defaults.ts'
 import { getCache } from '../../shared/cache.ts'
@@ -298,8 +297,8 @@ export function initFilesSettingsOptions(local: Local): void {
         handleFilesSettingsOptions(newlocal)
     })
 
-    onclickdown(document.getElementById('b_thumbnail-remove'), removeLocalBackgrounds)
-    onclickdown(document.getElementById('b_thumbnail-options'), toggleFileOptions)
+    document.getElementById('b_thumbnail-remove')?.addEventListener('click', removeLocalBackgrounds)
+    document.getElementById('b_thumbnail-options')?.addEventListener('click', toggleFileOptions)
     document.getElementById('b_thumbnail-zoom')?.addEventListener('click', handleGridView)
     document.getElementById('i_background-size')?.addEventListener('input', fileOptionsEvent)
     document.getElementById('i_background-vertical')?.addEventListener('input', fileOptionsEvent)
