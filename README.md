@@ -101,7 +101,7 @@ If you feel like we've earned it and you want to support independant open source
 
 - **🇸🇪 Swedish translation** · [Benjamin Horn](https://benjaminhorn.io/) · [GitHub](https://github.com/beije)
 - **🇳🇱 Dutch translation** · [Osman Temiz](https://www.reddit.com/user/manllac)
-- **🇵🇱 Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92) & [Jakub Mikuło](https://github.com/jmikulo)
+- **🇵🇱 Polish translation** · [Mateusz K](https://www.reddit.com/user/DiVine92), [Jakub Mikuło](https://github.com/jmikulo) & [Arek Nurzyński](https://github.com/arklanq)
 - **🇷🇺 Russian translation** · [OemDef](https://www.reddit.com/user/OemDef)
 - **🇨🇳 Simplified Chinese translation** · Shuhuai Cao · [GitHub](https://github.com/csh980717)
 - **🇧🇷 Brazilian Portuguese translation** · [Adilson Santos](http://adilsonsantos.pages.dev) · [Github](https://github.com/adilsonfsantos)
