@@ -11,18 +11,39 @@ export async function setTranslationCache(language: string, local?: Local): Prom
 
     if (lang === 'en') {
         storage.local.remove('translations')
+        storage.local.remove('translationsRevision')
         trns = undefined
+        currentTrnsLang = lang
         return
     }
 
-    const cachedLang = local?.translations?.lang
-    const useCache = local && cachedLang === lang
+    const revision = globalThis.TRANSLATIONS_REVISION
+    const cachedTranslations = local?.translations
+    const useCache = revision && local?.translationsRevision === revision && cachedTranslations?.lang === lang
 
     if (useCache) {
-        trns = local.translations
+        trns = cachedTranslations
     } else {
-        trns = await (await fetch(`../../_locales/${lang}/translations.json`)).json()
-        storage.local.set({ translations: trns })
+        try {
+            // A content revision also avoids stale translation files in the web app's service worker cache.
+            const path = `../../_locales/${lang}/translations.json` + (revision ? `?v=${revision}` : '')
+            const response = await fetch(path)
+
+            if (!response.ok) {
+                throw new Error(`Cannot get translations: ${lang}`)
+            }
+
+            trns = await response.json()
+            storage.local.set({ translations: trns, translationsRevision: revision })
+        } catch (error) {
+            console.warn(`Could not load ${lang} translations`, error)
+
+            if (cachedTranslations?.lang !== lang) {
+                throw error
+            }
+
+            trns = cachedTranslations
+        }
     }
 
     currentTrnsLang = lang

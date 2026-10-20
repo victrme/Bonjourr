@@ -196,6 +196,7 @@ declare global {
         local?: Local
     }
     var ENV: 'PROD' | 'DEV' | 'TEST'
+    var TRANSLATIONS_REVISION: string | undefined
 }
 
 // https://github.com/lukewarlow/user-agent-data-types

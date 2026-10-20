@@ -7,6 +7,8 @@ import { storage } from '../../src/scripts/storage.ts'
 import type { LastWeather, Translations } from '../../src/types/local.ts'
 
 document.body.innerHTML = `
+    <dialog id="contextmenu"></dialog>
+    <button id="b_interface-quotes-refresh"></button>
     <a id="weather">
         <span id="current-desc"></span>
         <span id="current-temp">
@@ -52,6 +54,33 @@ Deno.test({
 
             await toggleTraduction('en')
             displayWeather(weather, cached)
+            assertEquals(document.getElementById('current-desc')?.textContent, 'Cloudy. ')
+        } finally {
+            await toggleTraduction('en')
+        }
+    },
+})
+
+Deno.test({
+    name: 'English regional provider URLs are translated while unknown source languages are preserved',
+    sanitizeOps: false,
+    sanitizeResources: false,
+    fn: async () => {
+        await useLocale('tr')
+
+        try {
+            for (
+                const link of [
+                    'https://www.foreca.com/en/100745044/Istanbul',
+                    'https://www.accuweather.com/en-us/tr/istanbul/318251/current-weather/318251',
+                    'https://www.accuweather.com/en_GB/tr/istanbul/318251/current-weather/318251',
+                ]
+            ) {
+                displayWeather(weather, { ...cached, link })
+                assertEquals(document.getElementById('current-desc')?.textContent, 'Bulutlu. ')
+            }
+
+            displayWeather(weather, { ...cached, link: '' })
             assertEquals(document.getElementById('current-desc')?.textContent, 'Cloudy. ')
         } finally {
             await toggleTraduction('en')
@@ -183,5 +212,12 @@ Deno.test('Every locale contains the English reference keys', () => {
 async function useLocale(language: string): Promise<void> {
     const local = structuredClone(LOCAL_DEFAULT)
     local.translations = JSON.parse(Deno.readTextFileSync(`_locales/${language}/translations.json`))
-    await setTranslationCache(language, local)
+    const originalFetch = globalThis.fetch
+    globalThis.fetch = () => Promise.resolve(Response.json(local.translations))
+
+    try {
+        await setTranslationCache(language, local)
+    } finally {
+        globalThis.fetch = originalFetch
+    }
 }
