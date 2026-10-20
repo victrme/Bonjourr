@@ -246,7 +246,7 @@ Light and dark themes are handled via data attributes:
 
 - AI is a tool, not a developer.
 - Contributors must understand and take responsibility for all submitted code.
-- No features should be built entirely through vibe coding.
+- No features should be built entirely through vibe coding. Huge vibe coded rewrites of features are very unlikely to be merged.
 
 ### Naming Conventions
 
