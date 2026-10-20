@@ -8,7 +8,6 @@ import { settingsNotifications } from '../../utils/notifications.ts'
 import { getPermissions } from '../../utils/permissions.ts'
 import { randomString } from '../../shared/generic.ts'
 import { bundleLinks } from '../../utils/bundlelinks.ts'
-import { onclickdown } from 'clickdown/mod'
 import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem } from '../../../types/shared.ts'
@@ -96,8 +95,8 @@ function createBookmarksDialog(): void {
         const applybutton = bookmarksdom.querySelector<HTMLButtonElement>('#bmk_apply')
 
         bookmarksdom?.addEventListener('click', closeDialog)
-        onclickdown(applybutton, importSelectedBookmarks)
-        onclickdown(closebutton, closeDialog)
+        applybutton?.addEventListener('click', importSelectedBookmarks)
+        closebutton?.addEventListener('click', closeDialog)
 
         document.body.appendChild(bookmarksdom)
     }
@@ -115,8 +114,8 @@ function createBookmarksDialog(): void {
 
         h2.textContent = list.title
 
-        onclickdown(selectButton, () => toggleFolderSelect(folder))
-        onclickdown(syncButton, () => toggleFolderSync(folder))
+        selectButton?.addEventListener('click', () => toggleFolderSelect(folder))
+        syncButton?.addEventListener('click', () => toggleFolderSync(folder))
 
         folder.classList.toggle('used', list.used)
         folder.dataset.title = list.title
@@ -151,8 +150,8 @@ function createBookmarksDialog(): void {
                 .slice(0, -1)
                 .replace('/', '')
 
-            onclickdown(liButton, () => li.classList.toggle('selected'))
-            onclickdown(liButton, handleApplyButtonText)
+            liButton.addEventListener('click', () => li.classList.toggle('selected'))
+            liButton.addEventListener('click', handleApplyButtonText)
 
             if (bookmark.used) {
                 liButton.setAttribute('disabled', '')

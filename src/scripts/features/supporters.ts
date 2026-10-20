@@ -1,6 +1,5 @@
 import { tradThis } from '../utils/translations.ts'
 import { onSettingsLoad } from '../utils/onsettingsload.ts'
-import { onclickdown } from 'clickdown/mod'
 import { debounce } from '../utils/debounce.ts'
 import { storage } from '../storage.ts'
 
@@ -90,7 +89,7 @@ export function initSupportersSettingsNotif(sync: Sync): void {
 
     setNotifStrings()
 
-    onclickdown(settingsNotifContent, (e) => {
+    settingsNotifContent?.addEventListener('click', (e) => {
         const isLeftClick = e instanceof PointerEvent && e.button === 0
 
         if (isLeftClick) {
@@ -99,7 +98,7 @@ export function initSupportersSettingsNotif(sync: Sync): void {
         }
     })
 
-    onclickdown(notifClose, () => {
+    notifClose?.addEventListener('click', () => {
         delete document.documentElement.dataset.supporters
         settingsNotifs?.classList.remove('shown')
         updateSupportersOption({ closed: true })

@@ -5,7 +5,6 @@ import { tradThis } from '../../utils/translations.ts'
 
 import type { Move, MoveAlign } from '../../../types/sync.ts'
 import type { Widgets } from '../../../types/shared.ts'
-import { onclickdown } from 'clickdown/mod'
 
 const moverdom = document.querySelector<HTMLElement>('#element-mover')
 let resetTimeout: ReturnType<typeof setTimeout>
@@ -23,29 +22,29 @@ export function toolboxEvents(): void {
     const closeBtn = document.querySelector<HTMLElement>('#close-mover')
 
     for (const [key, element] of elementEntries) {
-        onclickdown(element, () => updateMoveElement({ select: key }), { propagate: false })
+        element?.addEventListener('click', () => updateMoveElement({ select: key }))
     }
 
     for (const button of moverBtns) {
-        onclickdown(button, () => {
+        button.addEventListener('click', () => {
             updateMoveElement({ grid: { x: button.dataset.col, y: button.dataset.row } })
         })
     }
 
     for (const button of boxAlignBtns) {
-        onclickdown(button, () => {
+        button.addEventListener('click', () => {
             updateMoveElement({ box: button.dataset.align })
         })
     }
 
     for (const button of textAlignBtns) {
-        onclickdown(button, () => {
+        button.addEventListener('click', () => {
             updateMoveElement({ text: button.dataset.align })
         })
     }
 
-    onclickdown(spanColsBtn, () => updateMoveElement({ span: 'col' }))
-    onclickdown(spanRowsBtn, () => updateMoveElement({ span: 'row' }))
+    spanColsBtn?.addEventListener('click', () => updateMoveElement({ span: 'col' }))
+    spanRowsBtn?.addEventListener('click', () => updateMoveElement({ span: 'row' }))
     closeBtn?.addEventListener('click', () => updateMoveElement({ toggle: false }))
     resetBtn?.addEventListener('click', () => updateMoveElement({ reset: true }))
 
