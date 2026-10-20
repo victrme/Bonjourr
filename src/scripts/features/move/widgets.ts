@@ -1,4 +1,4 @@
-import { addOverlay, interfaceFade, removeOverlay, removeSelection, setAllAligns, setGridAreas } from './dom.ts'
+import { interfaceFade, setAllAligns, setGridAreas } from './dom.ts'
 import { toggleSettingsDropdown } from '../../settings.ts'
 import { transitioner } from '../../utils/transitioner.ts'
 import { storage } from '../../storage.ts'
@@ -8,7 +8,6 @@ import {
     getLayout,
     gridParse,
     gridStringify,
-    isEditing,
     removeGridWidget,
     updateWidgetsStorage,
 } from './helpers.ts'
@@ -42,13 +41,6 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]): void {
         setGridAreas(layout.grid)
         setAllAligns(layout.items)
         toggleWidgetOnInterface([[id, on]])
-        removeSelection()
-
-        // add/remove widget overlay only when editing move
-        if (isEditing()) {
-            on ? addOverlay(id) : removeOverlay(id)
-        }
-
         // Apply weather if re-enabled
         if (id === 'main' && on === true) {
             storage.local.get('lastWeather').then((local) => {

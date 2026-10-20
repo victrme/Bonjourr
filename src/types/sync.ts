@@ -48,6 +48,7 @@ export interface Sync {
     pomodoro: Pomodoro
     font: Font
     move: Move
+    freeLayout?: FreeLayout
     about: {
         browser: string
         version: string
@@ -191,6 +192,24 @@ export interface Move {
         double?: MoveLayout
         triple?: MoveLayout
     }
+}
+
+export type TextAlignment = 'left' | 'center' | 'right'
+
+export interface FreeLayoutRect {
+    x: number
+    y: number
+    width: number
+    height: number
+    minRows?: number
+    textAlign?: TextAlignment
+}
+
+export interface FreeLayout {
+    enabled: boolean
+    mode?: 'grid'
+    viewport: { width: number; height: number }
+    widgets: Partial<Record<Widgets, FreeLayoutRect>>
 }
 
 export interface MoveLayout {

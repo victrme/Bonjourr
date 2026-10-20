@@ -50,10 +50,6 @@
         --folder-padding: 1.5em;
     }
 
-    #element-mover {
-        font-size: 12px;
-    }
-
     #interface {
         padding-bottom: 77px;
         display: flex;
@@ -279,5 +275,36 @@ label {
         height: 25px;
         min-width: 25px;
         font-size: 15px;
+    }
+}
+
+/* Free layout keeps the original surfaces with larger touch targets on coarse pointers. */
+@media (pointer: coarse) {
+    .free-layout-overlay .free-layout-nw,
+    .free-layout-overlay .free-layout-ne,
+    .free-layout-overlay .free-layout-se,
+    .free-layout-overlay .free-layout-sw {
+        width: 36px;
+        height: 36px;
+    }
+
+    .free-layout-n,
+    .free-layout-s {
+        height: 24px;
+    }
+
+    .free-layout-e,
+    .free-layout-w {
+        width: 24px;
+    }
+
+    .free-layout-overlay .free-layout-se::after {
+        opacity: 0.65;
+    }
+}
+
+@media (max-width: 600px) {
+    .as_page {
+        display: none;
     }
 }

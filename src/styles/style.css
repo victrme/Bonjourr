@@ -44,6 +44,7 @@
 @import './features/quotes.css';
 @import './features/pomodoro.css';
 @import './features/grid.css';
+@import './features/free-layout.css';
 @import './features/editlink.css';
 @import './features/contextmenu.css';
 @import './features/bookmarks.css';

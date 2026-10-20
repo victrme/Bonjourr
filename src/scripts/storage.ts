@@ -125,7 +125,8 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}): Promise<
 
     switch (storage.type.get()) {
         case 'webext-sync': {
-            chrome.storage.sync.set(keyval, fn)
+            await chrome.storage.sync.set(keyval)
+            fn()
             return
         }
 
@@ -136,7 +137,8 @@ async function syncSet(keyval: Record<string, unknown>, fn = () => {}): Promise<
                 ...keyval,
             }
 
-            chrome.storage.local.set({ syncStorage: data }, fn)
+            await chrome.storage.local.set({ syncStorage: data })
+            fn()
             return
         }
 

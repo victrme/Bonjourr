@@ -453,5 +453,6 @@
     "URLs": "عناوين URL",
     "Use a similar browser like Brave or Vivaldi": "استخدم متصفحًا مشابهًا مثل Brave أو Vivaldi",
     "What to do from here?": "ماذا تفعل من هنا؟",
-    "Zoom": "تكبير"
+    "Zoom": "تكبير",
+    "Could not save. Your previous layout is unchanged.": "تعذّر الحفظ. لم يتغير تخطيطك السابق."
 }

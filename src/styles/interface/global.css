@@ -27,19 +27,6 @@
     transform: translateX(-100px);
 }
 
-.move-edit #main,
-.move-edit #time,
-.move-edit #linkblocks,
-.move-edit #sb_container,
-.move-edit #notes_container,
-.move-edit #quotes_container,
-.move-edit #pomodoro_container {
-    z-index: 3;
-    cursor: pointer;
-    user-select: none;
-    pointer-events: none;
-}
-
 #main,
 #time,
 #linkblocks,

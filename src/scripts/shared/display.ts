@@ -1,10 +1,15 @@
 import type { Sync } from '../../types/sync.ts'
 
-type InterfaceWidgetName = 'clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro'
+type InterfaceWidgetName = 'clock' | 'links' | 'fonts' | 'quotes' | 'pomodoro' | 'startup'
 
-const features: InterfaceWidgetName[] = ['clock', 'links']
+const features: InterfaceWidgetName[] = ['clock', 'links', 'startup']
 let interfaceDisplayCallback = () => undefined
+let beforeDisplayCallback: () => void = () => undefined
 let loadtime = performance.now()
+
+export function beforeInterfaceDisplay(callback: () => void): void {
+    beforeDisplayCallback = callback
+}
 
 export function onInterfaceDisplay(callback: () => undefined): void {
     if (callback) {
@@ -46,6 +51,7 @@ export function displayInterface(ready?: InterfaceWidgetName, data?: Sync): void
     loadtime = Math.min(performance.now() - loadtime, 333)
     loadtime = loadtime > 33 ? loadtime : 0
     document.documentElement.style.setProperty('--load-time-transition', `${loadtime}ms`)
+    beforeDisplayCallback()
     document.body.classList.remove('loading')
 
     const delay = Math.max(333, loadtime)

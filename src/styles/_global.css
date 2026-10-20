@@ -195,7 +195,6 @@ body.init #show-settings button {
 
 body.potato #bookmarks,
 body.potato #bookmarks::backdrop,
-body.potato #element-mover,
 body.potato .move-overlay {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -220,8 +219,7 @@ body.potato #bookmarks::backdrop {
 }
 
 body.potato #editlink,
-body.potato #bookmarks,
-body.potato #element-mover {
+body.potato #bookmarks {
     background-color: rgb(var(--color-param));
 }
 
