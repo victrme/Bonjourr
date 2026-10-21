@@ -1,5 +1,8 @@
+import { registerThumbnailCapture } from './thumbnail-capture.ts'
+
 if (globalThis.chrome) {
     if (chrome.storage) {
+        registerThumbnailCapture()
         chrome.action.onClicked.addListener(createNewTab)
         chrome.runtime.onInstalled.addListener(handleInstalled)
         chrome.runtime.setUninstallURL('https://bonjourr.fr/goodbye')

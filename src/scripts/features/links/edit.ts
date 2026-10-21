@@ -8,6 +8,7 @@ import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
 import type { LinkIconType } from '../../../types/shared.ts'
+import type { ThumbnailSource } from '../../shared/thumbnails.ts'
 
 interface EditStates {
     group: string
@@ -38,6 +39,9 @@ const domiconfilelabel = document.getElementById('e-icon-file-label') as HTMLSpa
 const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
+const domthumbnailtype = document.getElementById('e-thumbnail-type') as HTMLSelectElement
+const domthumbnailurl = document.getElementById('e-thumbnail-url') as HTMLInputElement
+const domthumbnailfile = document.getElementById('e-thumbnail-file') as HTMLInputElement
 
 let inputToFocus: HTMLInputElement
 let buttonToSubmit: HTMLButtonElement
@@ -54,6 +58,10 @@ export async function populateDialogWithEditLink(
     newLinkFromGlobal?: boolean,
 ): Promise<void> {
     domeditlink = domdialog
+    domthumbnailurl.disabled = true
+    domthumbnailfile.disabled = true
+    const thumbnailStatus = document.getElementById('thumbnail-edit-status')
+    if (thumbnailStatus) thumbnailStatus.textContent = ''
 
     const path = getComposedPath(event.target)
     const classNames = path.map((element) => element.className ?? '')
@@ -155,6 +163,19 @@ export async function populateDialogWithEditLink(
             }
 
             toggleIconType(link.icon ? link.icon.type : 'auto')
+            domthumbnailtype.value = link.thumbnail?.type ?? 'none'
+            domthumbnailurl.value = link.thumbnail?.type === 'url' ? link.thumbnail.value ?? '' : ''
+            domthumbnailfile.value = ''
+            const fileLabel = document.getElementById('e-thumbnail-file-label')
+            if (fileLabel) {
+                fileLabel.textContent = link.thumbnail?.type === 'file'
+                    ? link.thumbnail.value ?? tradThis('No file chosen')
+                    : tradThis('No file chosen')
+            }
+            if (data.linkstyle === 'thumbnails') {
+                document.getElementById('edit-thumbnail')?.classList.add('on')
+                toggleThumbnailType()
+            }
         }
     }
 
@@ -285,7 +306,21 @@ function toggleEditInputs(): string[] {
 queueMicrotask(() => {
     document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
     domicontype?.addEventListener('change', toggleIconType)
+    domthumbnailtype?.addEventListener('change', toggleThumbnailType)
+    domthumbnailfile?.addEventListener('change', () => {
+        const label = document.getElementById('e-thumbnail-file-label')
+        if (label) label.textContent = domthumbnailfile.files?.[0]?.name ?? tradThis('No file chosen')
+    })
 })
+
+function toggleThumbnailType(): void {
+    const type = domthumbnailtype.value
+    document.getElementById('edit-thumbnail-file')?.classList.toggle('on', type === 'file')
+    document.getElementById('edit-thumbnail-url')?.classList.toggle('on', type === 'url')
+    document.getElementById('edit-thumbnail-refresh')?.classList.toggle('on', ['capture', 'url'].includes(type))
+    domthumbnailurl.disabled = type !== 'url'
+    domthumbnailfile.disabled = type !== 'file'
+}
 
 /**
  * HTML has peculiar (and limiting) ways of figuring out which button to submit to on enter
@@ -471,6 +506,22 @@ function applyLinkChanges(_origin: 'inputs' | 'button'): void {
     let iconValue: string | undefined = undefined
     const iconUrl = domiconurl.value
     const iconFile = domiconfile.files?.[0]
+    const thumbnailType = domthumbnailtype.value
+    let thumbnail: ThumbnailSource | null | undefined
+    if (document.getElementById('edit-thumbnail')?.classList.contains('on')) {
+        thumbnail = null
+        if (thumbnailType === 'capture' || thumbnailType === 'url' || thumbnailType === 'file') {
+            thumbnail = {
+                type: thumbnailType,
+                value: thumbnailType === 'url'
+                    ? domthumbnailurl.value
+                    : thumbnailType === 'file'
+                    ? domthumbnailfile.files?.[0]?.name ??
+                        document.getElementById('e-thumbnail-file-label')?.textContent ?? undefined
+                    : undefined,
+            }
+        }
+    }
 
     if (isLinkIconType(domicontype.value)) {
         iconType = domicontype.value
@@ -502,6 +553,8 @@ function applyLinkChanges(_origin: 'inputs' | 'button'): void {
                 value: iconValue,
             },
             file: iconFile,
+            thumbnail,
+            thumbnailFile: domthumbnailfile.files?.[0],
         },
     })
 

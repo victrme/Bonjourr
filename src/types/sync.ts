@@ -10,7 +10,7 @@ export interface Sync {
     pagewidth: number
     linksrow: number
     linkiconradius: number
-    linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text'
+    linkstyle: 'large' | 'medium' | 'small' | 'inline' | 'text' | 'thumbnails'
     linknewtab: boolean
     linktitles: boolean
     linkbackgrounds: boolean

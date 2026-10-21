@@ -81,6 +81,32 @@
                     />
                 </label>
 
+                <label id="edit-thumbnail">
+                    <span class="trn">Preview</span>
+                    <select id="e-thumbnail-type">
+                        <option value="none" class="trn">Website favicon</option>
+                        <option value="capture" class="trn">Local screenshot</option>
+                        <option value="file" class="trn">Local file</option>
+                        <option value="url" class="trn">Image URL</option>
+                    </select>
+                </label>
+                <label id="edit-thumbnail-file">
+                    <span class="trn">File</span>
+                    <input id="e-thumbnail-file" type="file" accept="image/png, image/jpeg, image/webp" />
+                    <span id="e-thumbnail-file-label" class="trn">No file chosen</span>
+                </label>
+                <label id="edit-thumbnail-url">
+                    <span class="trn">URL</span>
+                    <input
+                        id="e-thumbnail-url"
+                        type="url"
+                        maxlength="7500"
+                        placeholder="https://example.com/preview.jpg"
+                    />
+                </label>
+                <button type="button" id="edit-thumbnail-refresh" class="trn">Refresh thumbnail</button>
+                <p id="thumbnail-edit-status" role="status" aria-live="polite"></p>
+
                 <hr />
 
                 <!-- <button type="submit" class="trn" id="edit-inputs">Submit from inputs</button> -->

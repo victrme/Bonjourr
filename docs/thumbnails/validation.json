@@ -1,0 +1,135 @@
+{
+  "date": "2026-10-21",
+  "environment": "Linux Docker, Xvfb, Openbox, isolated profiles, synthetic loopback fixture, test-only mandatory host grant; permission prompt not exercised",
+  "results": [
+    {
+      "browser": "chrome",
+      "measurements": {
+        "width": 512,
+        "height": 320,
+        "bytes": 6995,
+        "type": "image/jpeg",
+        "top": [
+          251,
+          0,
+          201,
+          255
+        ],
+        "center": [
+          22,
+          160,
+          134,
+          255
+        ]
+      },
+      "localOptOutDenied": true,
+      "layout": {
+        "width": 113.75,
+        "height": 71.09375,
+        "naturalWidth": 512,
+        "naturalHeight": 320
+      },
+      "cachedReload": true,
+      "changedLinkRejected": true,
+      "failedRefreshPreservedImage": true,
+      "cancelledCaptureDiscarded": true,
+      "fileOverride": true,
+      "urlOverride": true,
+      "cacheClear": true,
+      "restoredStyles": [
+        "text",
+        "medium",
+        "thumbnails"
+      ],
+      "disabledCaptureDenied": true,
+      "temporaryWindowsRemaining": 0,
+      "version": "Chrome/156.0.8078.47"
+    },
+    {
+      "browser": "edge",
+      "measurements": {
+        "width": 512,
+        "height": 320,
+        "bytes": 7064,
+        "type": "image/jpeg",
+        "top": [
+          251,
+          0,
+          201,
+          255
+        ],
+        "center": [
+          22,
+          160,
+          134,
+          255
+        ]
+      },
+      "localOptOutDenied": true,
+      "layout": {
+        "width": 113.75,
+        "height": 71.09375,
+        "naturalWidth": 512,
+        "naturalHeight": 320
+      },
+      "cachedReload": true,
+      "changedLinkRejected": true,
+      "failedRefreshPreservedImage": true,
+      "cancelledCaptureDiscarded": true,
+      "fileOverride": true,
+      "urlOverride": true,
+      "cacheClear": true,
+      "restoredStyles": [
+        "text",
+        "medium",
+        "thumbnails"
+      ],
+      "disabledCaptureDenied": true,
+      "temporaryWindowsRemaining": 0,
+      "version": "Edg/155.0.4283.62"
+    },
+    {
+      "browser": "firefox",
+      "measurements": {
+        "width": 512,
+        "height": 320,
+        "bytes": 8438,
+        "type": "image/jpeg",
+        "top": [
+          240,
+          1,
+          217,
+          255
+        ],
+        "center": [
+          22,
+          160,
+          134,
+          255
+        ]
+      },
+      "localOptOutDenied": true,
+      "layout": {
+        "width": 113.83334350585938,
+        "height": 71.15000915527344,
+        "naturalWidth": 512,
+        "naturalHeight": 320
+      },
+      "cachedReload": true,
+      "changedLinkRejected": true,
+      "failedRefreshPreservedImage": true,
+      "cancelledCaptureDiscarded": true,
+      "fileOverride": true,
+      "urlOverride": true,
+      "cacheClear": true,
+      "restoredStyles": [
+        "text",
+        "medium",
+        "thumbnails"
+      ],
+      "disabledCaptureDenied": true,
+      "temporaryWindowsRemaining": 0,
+      "version": "158.0.1"
+    }
+  ]
+}

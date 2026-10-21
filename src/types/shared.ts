@@ -1,6 +1,7 @@
 import type { BackgroundFile, Local } from './local.ts'
 import type { langList } from '../scripts/langs.ts'
 import type { Sync } from './sync.ts'
+import type { ThumbnailSource } from '../scripts/shared/thumbnails.ts'
 
 export type Langs = keyof typeof langList
 export type Link = LinkFolder | LinkElem
@@ -82,6 +83,7 @@ export interface LinkElem {
     title: string
     url: string
     icon?: LinkIcon
+    thumbnail?: ThumbnailSource
 }
 
 export interface LinkIcon {

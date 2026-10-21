@@ -406,6 +406,77 @@
 
 /* Link styles */
 
+/* Thumbnails */
+
+#linkblocks.thumbnails {
+    --min-height: 6.5em;
+    --column-gap: 1em;
+    --row-gap: 1.2em;
+    --icon-size: 10em;
+    --block-size: 10em;
+    --folder-padding: 1em;
+}
+
+.thumbnails .link .link-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 10em;
+    height: 6.25em;
+    padding: 0;
+    overflow: hidden;
+    border-radius: min(var(--link-outer-radius), 1em);
+    background-color: #fff3;
+}
+
+.thumbnails .link-elem img {
+    width: 2.5em;
+    height: 2.5em;
+    object-fit: contain;
+}
+
+.thumbnails .link-elem img[data-thumbnail='true'] {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.thumbnails .link-folder .link-icon {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4em;
+    padding: 0.5em;
+}
+
+.thumbnails .link-folder img {
+    object-fit: contain;
+    max-height: 2.3em;
+}
+
+#linkblocks.thumbnails .link.selected .link-icon {
+    outline: 0.2em solid rgb(var(--accent-color));
+}
+
+.thumbnails .link[aria-busy='true'] .link-icon {
+    opacity: 0.6;
+}
+
+.thumbnail-help,
+#thumbnail-edit-status {
+    font-size: 0.85em;
+    line-height: 1.4;
+    opacity: 0.85;
+}
+
+#thumbnail-edit-status:empty,
+#thumbnail-status:empty {
+    display: none;
+}
+
+#thumbnail-edit-status {
+    margin: 0.5em;
+}
+
 /* Large */
 
 #linkblocks.large {

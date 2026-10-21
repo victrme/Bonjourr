@@ -2,6 +2,9 @@ import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggle
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { storeIconFile } from './fileicons.ts'
+import { displayThumbnail, initThumbnailSettings, saveThumbnailSource, thumbnailStatus } from './thumbnails.ts'
+import { removeThumbnail } from '../../shared/thumbnails.ts'
+import type { ThumbnailSource } from '../../shared/thumbnails.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
@@ -38,6 +41,8 @@ type UpdateLink = {
     title: string
     icon?: LinkIcon
     file?: File
+    thumbnail?: ThumbnailSource | null
+    thumbnailFile?: File
 }
 
 type AddGroups = {
@@ -105,7 +110,7 @@ type LinksInit = {
 }
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-let initIconList: [HTMLImageElement, string][] = []
+let initIconList: [HTMLImageElement, string, LinkElem?][] = []
 let selectallTimer: ReturnType<typeof setTimeout>
 
 export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise<void> {
@@ -119,6 +124,7 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     }
 
     const { sync, local } = init
+    initThumbnailSettings()
 
     // set class before appendBlock, cannot be moved
     domlinkblocks.classList.add(sync.linkstyle ?? 'large')
@@ -304,7 +310,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
     span.textContent = createTitle(link)
 
     if (style !== 'text') {
-        initIconList.push([img, getIconFromLinkElem(link)])
+        initIconList.push([img, getIconFromLinkElem(link), style === 'thumbnails' ? link : undefined])
     }
 
     if (openInNewtab) {
@@ -315,7 +321,11 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 }
 
 function createIcons(local: Local): void {
-    for (const [img, url] of initIconList) {
+    for (const [img, url, link] of initIconList) {
+        if (link) {
+            displayThumbnail(img, link, url.startsWith('link') ? local[`x-icon-${url}`] ?? '' : url)
+            continue
+        }
         if (url.startsWith('link')) {
             img.src = local[`x-icon-${url}`] ?? ''
         } else {
@@ -327,7 +337,7 @@ function createIcons(local: Local): void {
         // naturalWidth is needed here because complete doesn't tell the whole story
         // it only says if it's finished loading or not, even an error code will say "complete"
         const incomplete = initIconList.filter(
-            ([img]) => !img.complete || img.naturalWidth === 0,
+            ([img, _, link]) => !link && (!img.complete || img.naturalWidth === 0),
         )
 
         // if images still haven't loaded after 400ms
@@ -362,6 +372,7 @@ function createIcons(local: Local): void {
 
 function initRows(row: number, style: string): void {
     const sizes = {
+        thumbnails: { width: 10, gap: 1 },
         large: { width: 4.8, gap: 2.3 },
         medium: { width: 3.5, gap: 2 },
         small: { width: 2.5, gap: 2 },
@@ -453,7 +464,12 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         data = moveOutFolder(update.moveOutFolder, data)
     }
     if (update.updateLink) {
-        data = updateLink(update.updateLink, data)
+        try {
+            data = await updateLink(update.updateLink, data)
+        } catch (error) {
+            thumbnailStatus(error instanceof Error ? error.message : 'Could not save thumbnail')
+            return
+        }
     }
     if (update.deleteLinks) {
         data = deleteLinks(update.deleteLinks, data)
@@ -488,7 +504,17 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         return
     }
 
-    storage.sync.set(data)
+    await storage.sync.set(data)
+    if (update.updateLink && data.linkstyle === 'thumbnails') {
+        const id = update.updateLink.id
+        const saved = (await storage.sync.get(id))[id] as LinkElem
+        const image = document.querySelector<HTMLImageElement>(`#${id} img`)
+        if (image && saved) {
+            const local = await storage.local.get()
+            const fallback = saved.icon?.type === 'file' ? local[`x-icon-${id}`] ?? '' : getIconFromLinkElem(saved)
+            displayThumbnail(image, saved, fallback)
+        }
+    }
 }
 
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
@@ -574,12 +600,24 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
     ]
 }
 
-function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Sync {
+async function updateLink(
+    { id, title, icon, url, file, thumbnail, thumbnailFile }: UpdateLink,
+    data: Sync,
+): Promise<Sync> {
     const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
     const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
     const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
 
     const link = data[id] as Link
+
+    if (isElem(link) && thumbnail !== undefined) {
+        await saveThumbnailSource(
+            { ...link, url: url === undefined ? link.url : stringMaxSize(url, 512) },
+            thumbnail,
+            thumbnailFile,
+        )
+        link.thumbnail = thumbnail ?? undefined
+    }
 
     if (titledom && title !== undefined) {
         link.title = stringMaxSize(title, 64)
@@ -595,7 +633,7 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
             icondom.src = 'src/assets/interface/loading.svg'
 
             img.onload = () => {
-                icondom.src = img.src
+                if (data.linkstyle !== 'thumbnails') icondom.src = img.src
             }
 
             if (icon.type === 'auto') {
@@ -630,7 +668,7 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
                     url = id
 
                     storeIconFile(id, file).then((uri) => {
-                        img.src = uri
+                        if (data.linkstyle !== 'thumbnails') img.src = uri
                     })
                 }
             }
@@ -716,6 +754,7 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 
         if (link.folder) {
             for (const child of getLinksInFolder(data, link._id)) {
+                removeThumbnail(child._id).catch(() => {})
                 delete data[child._id]
             }
         }
@@ -727,6 +766,7 @@ function deleteLinks(ids: string[], data: Sync): Sync {
         }
 
         delete data[id]
+        removeThumbnail(id).catch(() => {})
     }
 
     storage.sync.clear()
@@ -802,19 +842,15 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
     const { backgrounds } = styles
 
     if (styles.style && isLinkStyle(style)) {
-        const wasText = domlinkblocks?.className.includes('text')
-
-        domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
+        domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text', 'thumbnails')
         domlinkblocks.classList.add(style)
 
         data.linkstyle = style
         storage.sync.set({ linkstyle: style })
 
         // remove from DOM to re-draw icons
-        if (wasText) {
-            for (const el of document.querySelectorAll('#link-list li') ?? []) {
-                el.remove()
-            }
+        for (const el of document.querySelectorAll('.link-list li') ?? []) {
+            el.remove()
         }
 
         initRows(data.linksrow, style)
@@ -919,7 +955,7 @@ function getIconFromLinkElem(link: LinkElem): string {
 }
 
 function isLinkStyle(s: string): s is Sync['linkstyle'] {
-    return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
+    return ['large', 'medium', 'small', 'inline', 'text', 'thumbnails'].includes(s)
 }
 
 function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
