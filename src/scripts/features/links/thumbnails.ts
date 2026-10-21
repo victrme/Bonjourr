@@ -1,6 +1,7 @@
 import { EXTENSION } from '../../defaults.ts'
 import { storage } from '../../storage.ts'
 import { tradThis } from '../../utils/translations.ts'
+import { thumbnailMessages } from './thumbnail-messages.ts'
 import {
     readThumbnail,
     removeThumbnail,
@@ -16,10 +17,12 @@ const attempts = new Set<string>()
 const imageUrls = new WeakMap<HTMLImageElement, string>()
 let settingsInitialized = false
 
-export function thumbnailStatus(message: string): void {
+export function thumbnailStatus(message: string, fallback = 'Could not create thumbnail'): void {
+    const key = thumbnailMessages.some((key) => key === message) ? message : fallback
+    if (key !== message) console.warn(message)
     for (const id of ['thumbnail-status', 'thumbnail-edit-status']) {
         const status = document.getElementById(id)
-        if (status) status.textContent = tradThis(message)
+        if (status) status.textContent = tradThis(key)
     }
 }
 

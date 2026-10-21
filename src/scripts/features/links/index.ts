@@ -467,7 +467,10 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         try {
             data = await updateLink(update.updateLink, data)
         } catch (error) {
-            thumbnailStatus(error instanceof Error ? error.message : 'Could not save thumbnail')
+            thumbnailStatus(
+                error instanceof Error ? error.message : 'Could not save thumbnail',
+                'Could not save thumbnail',
+            )
             return
         }
     }

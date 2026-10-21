@@ -38,7 +38,9 @@ during cache clearing, file/URL overrides, style changes, and closing every temp
 
 The integration copies received a test-only mandatory host grant. The shipped manifests still request optional
 access at runtime; the actual permission dialog and native desktop focus behavior were not exercised.
-The project checks passed: format, types, lint, 22 tests (20 additional steps), and all four builds.
+The project checks passed: format, types, lint, 24 tests (69 test steps), and all four builds. The thumbnail
+labels, warning, statuses, and actionable errors are translated in all 46 supported locales. Locale coverage,
+refreshing older translation caches, and switching the warning/status language are covered by tests.
 
 [Measurements](thumbnails/validation.json) contain synthetic image checks and browser versions. The
 [sample image](thumbnails/sample.jpg) and interface screenshot below contain only the synthetic fixture and
