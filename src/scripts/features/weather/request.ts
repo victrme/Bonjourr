@@ -23,13 +23,17 @@ export async function weatherCacheControl(data: Weather, lastWeather?: LastWeath
     const isAnHourLater = now > last + 3600000
 
     if (navigator.onLine && isAnHourLater) {
+        // cached weather first, so the network update can't reflow the interface
+        displayWeather(data, lastWeather)
+
         const newWeather = await requestNewWeather(data, lastWeather)
 
         if (newWeather) {
             storage.local.set({ lastWeather: newWeather })
             displayWeather(data, newWeather)
-            return
         }
+
+        return
     }
 
     displayWeather(data, lastWeather)
