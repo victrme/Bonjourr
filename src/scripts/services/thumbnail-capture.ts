@@ -22,7 +22,7 @@ export function registerThumbnailCapture(): void {
             reply({ error: 'Invalid thumbnail request' })
             return
         }
-        enqueueCapture(message.id, message.url).then(
+        enqueueCapture(message.id, message.url, sender.tab).then(
             () => reply({ ok: true }),
             (error: Error) => reply({ error: error.message }),
         )
@@ -30,13 +30,13 @@ export function registerThumbnailCapture(): void {
     })
 }
 
-export function enqueueCapture(id: string, url: string): Promise<void> {
+export function enqueueCapture(id: string, url: string, sourceTab?: chrome.tabs.Tab): Promise<void> {
     const generation = queueGeneration
     const key = JSON.stringify([id, url, generation])
     const existing = pending.get(key)
     if (existing) return existing
     if (pending.size >= 20) return Promise.reject(new Error('The thumbnail queue is full. Try again later.'))
-    const job = queue.then(() => captureThumbnail(id, url, generation))
+    const job = queue.then(() => captureThumbnail(id, url, generation, sourceTab))
     pending.set(key, job)
     queue = job.catch(() => {}).then(() => {
         pending.delete(key)
@@ -58,12 +58,26 @@ async function captureLink(id: string, url: string): Promise<LinkElem> {
     return link
 }
 
-async function captureThumbnail(id: string, url: string, generation: number): Promise<void> {
+async function captureThumbnail(
+    id: string,
+    url: string,
+    generation: number,
+    sourceTab?: chrome.tabs.Tab,
+): Promise<void> {
     await captureLink(id, url)
     if (generation !== queueGeneration) throw new Error('Thumbnail capture was cancelled')
-    const previousWindow = await api.windows.getLastFocused()
+    const original = sourceTab ?? (await api.tabs.query({ active: true, lastFocusedWindow: true }))[0]
+    if (original?.id === undefined || original.windowId === undefined) {
+        throw new Error('The capture tab changed before the request started')
+    }
+    const previousWindow = await api.windows.get(original.windowId)
     let windowId: number | undefined
     try {
+        const selected = (await api.tabs.query({ windowId: original.windowId, active: true }))[0]
+        if (!previousWindow.focused || selected?.id !== original.id) {
+            throw new Error('The capture tab changed before opening the website')
+        }
+        // A popup may ignore the minimized state on Windows. Use a regular window without requesting focus.
         const window = await api.windows.create({ url, state: 'minimized', type: 'normal' })
         windowId = window?.id
         const tabId = window?.tabs?.[0]?.id
@@ -74,53 +88,92 @@ async function captureThumbnail(id: string, url: string, generation: number): Pr
         let loadedUrl = ''
         while (Date.now() < deadline) {
             if (generation !== queueGeneration) throw new Error('Thumbnail capture was cancelled')
-            const tab = await api.tabs.get(tabId)
-            if (tab.status !== 'complete' || tab.url !== loadedUrl) {
+            const current = await api.tabs.get(tabId)
+            if (current.status !== 'complete' || current.url !== loadedUrl) {
                 loadedAt = 0
-                loadedUrl = tab.url ?? ''
+                loadedUrl = current.url ?? ''
             }
-            if (tab.status === 'complete' && !loadedAt) loadedAt = Date.now()
-            if (loadedAt && Date.now() - loadedAt >= 2000) break
+            if (current.status === 'complete' && !loadedAt) loadedAt = Date.now()
+            if (loadedAt && Date.now() - loadedAt >= 3000) break
             await new Promise((resolve) => setTimeout(resolve, 250))
         }
         if (!loadedAt || Date.now() >= deadline) throw new Error('The website took too long to load')
         thumbnailWebsiteUrl(loadedUrl)
-        await api.windows.update(windowId, { state: 'normal', focused: true, width: 1024, height: 768 })
+        await captureLink(id, url)
+        const previous = await api.windows.get(original.windowId)
+        const selectedBeforeRestore = (await api.tabs.query({ windowId: original.windowId, active: true }))[0]
+        // Do not restore a capture window over another application or a tab the user selected while loading.
+        if (!previous.focused || selectedBeforeRestore?.id !== original.id) {
+            throw new Error('The capture tab changed while the website was loading')
+        }
+        if (generation !== queueGeneration) throw new Error('Thumbnail capture was cancelled')
+        // Keep the loaded viewport: resizing during restoration can stall readback on complex websites.
+        await api.windows.update(windowId, {
+            state: 'normal',
+            focused: false,
+        })
+        // On Windows, focused:false can deactivate both windows during restoration.
+        const focusedAfterRestore = (await api.windows.getAll()).find((window) => window.focused)
+        if (!focusedAfterRestore || focusedAfterRestore.id === windowId) {
+            await api.windows.update(original.windowId, { focused: true })
+        }
+        // Restoring can briefly activate the native window even with focused:false. Allow it to paint once.
         await new Promise((resolve) => setTimeout(resolve, 500))
+        if ((await api.windows.get(windowId)).state !== 'normal') throw new Error('Cannot restore capture window')
+        // A restored page may reload or redirect when it becomes visible. Wait in the background for it to settle.
+        const renderDeadline = Date.now() + 10000
+        let readyAt = 0
+        let readyUrl = loadedUrl
+        while (Date.now() < renderDeadline) {
+            if (generation !== queueGeneration) throw new Error('Thumbnail capture was cancelled')
+            const current = await api.tabs.get(tabId)
+            if (current.status !== 'complete' || current.url !== readyUrl) {
+                readyAt = 0
+                readyUrl = current.url ?? ''
+            }
+            if (current.status === 'complete' && !readyAt) readyAt = Date.now()
+            if (readyAt && Date.now() - readyAt >= 500) break
+            await new Promise((resolve) => setTimeout(resolve, 100))
+        }
+        if (!readyAt || Date.now() >= renderDeadline) throw new Error('The website took too long to load')
+        thumbnailWebsiteUrl(readyUrl)
         const before = (await api.tabs.query({ windowId, active: true }))[0]
-        if (before?.id !== tabId || before.url !== loadedUrl || before.status !== 'complete') {
-            throw new Error('The capture tab changed')
+        if (before?.id !== tabId || before.url !== readyUrl || before.status !== 'complete') {
+            throw new Error('The capture tab changed before taking the screenshot')
         }
-        let captureTimer: ReturnType<typeof setTimeout> | undefined
-        let image: string
-        try {
-            image = await Promise.race([
-                api.tabs.captureVisibleTab(windowId, { format: 'png' }),
-                new Promise<never>((_, reject) => {
-                    captureTimer = setTimeout(
-                        () => reject(new Error('The browser did not return a screenshot in time')),
-                        10000,
-                    )
-                }),
-            ])
-        } finally {
-            clearTimeout(captureTimer)
-        }
+        const image = await captureVisibleWindow(windowId)
         const after = (await api.tabs.query({ windowId, active: true }))[0]
-        if (after?.id !== tabId || after.url !== loadedUrl || after.status !== 'complete') {
-            throw new Error('The capture tab changed')
+        if (after?.id !== tabId || after.url !== readyUrl || after.status !== 'complete') {
+            throw new Error('The capture tab changed while taking the screenshot')
         }
         const blob = await resizeThumbnail(await (await fetch(image)).blob())
         const link = await captureLink(id, url)
         if (generation !== queueGeneration) throw new Error('Thumbnail capture was cancelled')
         await writeThumbnail({ id, url, source: thumbnailSourceKey(link.thumbnail!), image: blob, updated: Date.now() })
+        await api.runtime.sendMessage({ type: 'bonjourr-thumbnail-updated', id, url }).catch(() => {})
     } finally {
         if (windowId !== undefined) {
             const current = await api.windows.get(windowId).catch(() => undefined)
-            await api.windows.remove(windowId).catch(() => {})
-            if (current?.focused && previousWindow?.id !== undefined) {
-                await api.windows.update(previousWindow.id, { focused: true }).catch(() => {})
+            const previous = await api.windows.get(original.windowId).catch(() => undefined)
+            // Transfer focus before closing an active capture window. Leave other applications/windows alone.
+            if (current?.focused && previous && previous.state !== 'minimized') {
+                await api.windows.update(original.windowId, { focused: true }).catch(() => {})
             }
+            await api.windows.remove(windowId).catch(() => {})
         }
+    }
+}
+
+async function captureVisibleWindow(windowId: number): Promise<string> {
+    let timer: ReturnType<typeof setTimeout> | undefined
+    try {
+        return await Promise.race([
+            api.tabs.captureVisibleTab(windowId, { format: 'png' }),
+            new Promise<never>((_, reject) => {
+                timer = setTimeout(() => reject(new Error('The browser did not return a screenshot in time')), 10000)
+            }),
+        ])
+    } finally {
+        clearTimeout(timer)
     }
 }

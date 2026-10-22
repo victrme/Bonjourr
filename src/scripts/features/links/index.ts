@@ -2,8 +2,9 @@ import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggle
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { storeIconFile } from './fileicons.ts'
-import { displayThumbnail, initThumbnailSettings, saveThumbnailSource, thumbnailStatus } from './thumbnails.ts'
-import { removeThumbnail } from '../../shared/thumbnails.ts'
+import { displayThumbnail, initThumbnailSettings, thumbnailsEnabled, thumbnailStatus } from './thumbnails.ts'
+import { removeThumbnail, thumbnailWebsiteUrl } from '../../shared/thumbnails.ts'
+import { migrateLegacyThumbnailIcons } from './thumbnail-compatibility.ts'
 import type { ThumbnailSource } from '../../shared/thumbnails.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
@@ -42,7 +43,6 @@ type UpdateLink = {
     icon?: LinkIcon
     file?: File
     thumbnail?: ThumbnailSource | null
-    thumbnailFile?: File
 }
 
 type AddGroups = {
@@ -124,7 +124,17 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     }
 
     const { sync, local } = init
-    initThumbnailSettings()
+    // Migrate the layout from earlier test builds; the switch now controls thumbnails.
+    if (sync.linkstyle === 'thumbnails') {
+        sync.linkstyle = 'medium'
+        await storage.sync.set({ linkstyle: 'medium' })
+    }
+    await migrateLegacyThumbnailIcons(sync)
+    await initThumbnailSettings()
+    document.addEventListener('thumbnail-display-changed', async () => {
+        const data = await storage.sync.get()
+        redrawLinks(data)
+    })
 
     // set class before appendBlock, cannot be moved
     domlinkblocks.classList.add(sync.linkstyle ?? 'large')
@@ -141,7 +151,6 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     }
 
     initGroups(sync, !!init)
-    initRows(sync.linksrow, sync.linkstyle)
     initblocks(sync, local)
 }
 
@@ -257,6 +266,7 @@ export function initblocks(sync: Sync, local?: Local): true {
         })
     }
 
+    initRows(sync.linksrow, sync.linkstyle)
     setRadius(sync.linkiconradius)
     displayInterface('links')
     limitAltableLinks()
@@ -308,9 +318,11 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
     li.id = link._id
     anchor.href = stringMaxSize(link.url, 512)
     span.textContent = createTitle(link)
+    const screenshot = thumbnailsEnabled() && link.thumbnail?.type === 'capture'
+    if (screenshot) li.dataset.thumbnailSource = 'capture'
 
     if (style !== 'text') {
-        initIconList.push([img, getIconFromLinkElem(link), style === 'thumbnails' ? link : undefined])
+        initIconList.push([img, getIconFromLinkElem(link), screenshot ? link : undefined])
     }
 
     if (openInNewtab) {
@@ -372,7 +384,6 @@ function createIcons(local: Local): void {
 
 function initRows(row: number, style: string): void {
     const sizes = {
-        thumbnails: { width: 10, gap: 1 },
         large: { width: 4.8, gap: 2.3 },
         medium: { width: 3.5, gap: 2 },
         small: { width: 2.5, gap: 2 },
@@ -381,7 +392,12 @@ function initRows(row: number, style: string): void {
     }
 
     if (style in sizes) {
-        const { width, gap } = sizes[style as keyof typeof sizes]
+        let { width, gap } = sizes[style as keyof typeof sizes]
+        if (
+            thumbnailsEnabled() && style !== 'text' && domlinkblocks.querySelector('[data-thumbnail-source="capture"]')
+        ) {
+            width = style === 'large' ? 10 : style === 'medium' ? 8 : style === 'small' ? 6 : 13
+        }
         document.documentElement.style.setProperty('--links-width', `${Math.ceil((width + gap) * row)}em`)
     }
 }
@@ -464,15 +480,15 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         data = moveOutFolder(update.moveOutFolder, data)
     }
     if (update.updateLink) {
-        try {
-            data = await updateLink(update.updateLink, data)
-        } catch (error) {
-            thumbnailStatus(
-                error instanceof Error ? error.message : 'Could not save thumbnail',
-                'Could not save thumbnail',
-            )
-            return
+        if (update.updateLink.thumbnail?.type === 'capture') {
+            try {
+                thumbnailWebsiteUrl(update.updateLink.url ?? (data[update.updateLink.id] as LinkElem).url)
+            } catch (_) {
+                thumbnailStatus('Could not save thumbnail')
+                return
+            }
         }
+        data = updateLink(update.updateLink, data)
     }
     if (update.deleteLinks) {
         data = deleteLinks(update.deleteLinks, data)
@@ -508,16 +524,20 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
     }
 
     await storage.sync.set(data)
-    if (update.updateLink && data.linkstyle === 'thumbnails') {
+    if (
+        update.updateLink && thumbnailsEnabled() && data.linkstyle !== 'text' &&
+        update.updateLink.thumbnail?.type === 'capture'
+    ) {
         const id = update.updateLink.id
         const saved = (await storage.sync.get(id))[id] as LinkElem
         const image = document.querySelector<HTMLImageElement>(`#${id} img`)
         if (image && saved) {
             const local = await storage.local.get()
             const fallback = saved.icon?.type === 'file' ? local[`x-icon-${id}`] ?? '' : getIconFromLinkElem(saved)
-            displayThumbnail(image, saved, fallback)
+            displayThumbnail(image, saved, fallback, update.updateLink.thumbnail?.type === 'capture')
         }
     }
+    if (update.updateLink) initRows(data.linksrow, data.linkstyle)
 }
 
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
@@ -603,24 +623,15 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
     ]
 }
 
-async function updateLink(
-    { id, title, icon, url, file, thumbnail, thumbnailFile }: UpdateLink,
+function updateLink(
+    { id, title, icon, url, file, thumbnail }: UpdateLink,
     data: Sync,
-): Promise<Sync> {
+): Sync {
     const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
     const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
     const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
 
     const link = data[id] as Link
-
-    if (isElem(link) && thumbnail !== undefined) {
-        await saveThumbnailSource(
-            { ...link, url: url === undefined ? link.url : stringMaxSize(url, 512) },
-            thumbnail,
-            thumbnailFile,
-        )
-        link.thumbnail = thumbnail ?? undefined
-    }
 
     if (titledom && title !== undefined) {
         link.title = stringMaxSize(title, 64)
@@ -630,13 +641,15 @@ async function updateLink(
     if (isElem(link)) {
         if (icondom && icon) {
             const img = document.createElement('img')
-            const currentSrc = icondom.src
+            const currentSrc = icondom.dataset.thumbnail === 'true'
+                ? icondom.dataset.fallback ?? icondom.src
+                : icondom.src
             let url = getDefaultIcon(link.url)
 
             icondom.src = 'src/assets/interface/loading.svg'
 
             img.onload = () => {
-                if (data.linkstyle !== 'thumbnails') icondom.src = img.src
+                if (icondom.closest('li')?.dataset.thumbnailSource !== 'capture') icondom.src = img.src
             }
 
             if (icon.type === 'auto') {
@@ -671,7 +684,7 @@ async function updateLink(
                     url = id
 
                     storeIconFile(id, file).then((uri) => {
-                        if (data.linkstyle !== 'thumbnails') img.src = uri
+                        img.src = uri
                     })
                 }
             }
@@ -683,6 +696,17 @@ async function updateLink(
             link.url = stringMaxSize(url, 512)
             urldom.href = link.url
             titledom.textContent = createTitle(link)
+        }
+    }
+
+    if (isElem(link) && thumbnail !== undefined) {
+        const hadThumbnail = !!link.thumbnail
+        link.thumbnail = thumbnail ?? undefined
+        if (thumbnail === null) {
+            if (hadThumbnail) removeThumbnail(id).catch(console.warn)
+            icondom?.removeAttribute('data-thumbnail')
+            icondom?.removeAttribute('data-thumbnail-key')
+            icondom?.closest('li')?.removeAttribute('data-thumbnail-source')
         }
     }
 
@@ -845,19 +869,13 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
     const { backgrounds } = styles
 
     if (styles.style && isLinkStyle(style)) {
-        domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text', 'thumbnails')
+        domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
         domlinkblocks.classList.add(style)
 
         data.linkstyle = style
         storage.sync.set({ linkstyle: style })
 
-        // remove from DOM to re-draw icons
-        for (const el of document.querySelectorAll('.link-list li') ?? []) {
-            el.remove()
-        }
-
-        initRows(data.linksrow, style)
-        initblocks(data)
+        redrawLinks(data)
     }
 
     if (typeof titles === 'boolean') {
@@ -875,6 +893,13 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
         document.getElementById('b_showbackgrounds')?.classList?.toggle('on', backgrounds)
         domlinkblocks.classList.toggle('backgrounds', backgrounds)
     }
+}
+
+function redrawLinks(data: Sync): void {
+    for (const el of document.querySelectorAll('.link-list li')) {
+        el.remove()
+    }
+    initblocks(data)
 }
 
 function setRadius(radius: string | number): void {
@@ -958,7 +983,7 @@ function getIconFromLinkElem(link: LinkElem): string {
 }
 
 function isLinkStyle(s: string): s is Sync['linkstyle'] {
-    return ['large', 'medium', 'small', 'inline', 'text', 'thumbnails'].includes(s)
+    return ['large', 'medium', 'small', 'inline', 'text'].includes(s)
 }
 
 function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {

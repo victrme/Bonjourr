@@ -20,7 +20,7 @@ Bonjourr is a modern alternative to extensions like Momentum and Tabliss, blendi
 - In-depth analog or digital clock customization
 - Custom fonts and CSS styling
 - Dark mode support
-- Available in 43 languages
+- Available in 46 languages
 
 🔒 Privacy first
 Bonjourr collects no data, requires no account or sign-in, and only requests minimal permissions. Backgrounds are made by humans and do not use generative AI. Fully open source and transparent.

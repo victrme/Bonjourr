@@ -1,60 +1,99 @@
 # Local website thumbnails
 
-This draft adds a **Thumbnails** Quick Links style. Existing links initially show their icons. In the link editor,
-choose **Local screenshot**, **Local file**, or **Image URL**, then apply the change. **Refresh thumbnail** updates
-the saved screenshot or downloads the image again. Files must be chosen again to replace them.
+The **Thumbnail** switch in Quick Links settings controls thumbnail display and local capture on this device.
+Click the **?** next to it to expand the capture explanation and **Clear thumbnail cache** button.
+The block uses the standard 0.3-second dropdown transition with a measured height that follows text wrapping.
+Cache-clear feedback appears beside the button inside the explanation. Other errors appear below the setting and in the link editor. Messages disappear after five seconds with a short fade.
+The **Style** selector keeps the existing Large, Medium, Small, Inline and Text choices. Thumbnail cards follow
+the selected size; Text remains text-only. Existing links initially show their icons. In the link editor,
+use **Icon → Thumbnail → Apply changes** to request a new local screenshot, even if a cached screenshot exists.
+Website favicon, URL and Local file retain Bonjourr's original icon loading, file conversion and storage.
+They do not use the screenshot cache, image fetch/resize pipeline, upload limits or screenshot error messages.
+Their normal icon dimensions are retained while Thumbnail is enabled. Only links whose source is Thumbnail
+use preview cards. Choosing an ordinary icon removes the screenshot source for that link. Disabling Thumbnail
+returns to the ordinary icon layout without deleting cached thumbnails or changing the selected Style. Enabling
+it again displays cached images without capturing websites. The old Thumbnails style migrates to Medium.
+File and URL thumbnail sources saved by older local test builds migrate to ordinary icons using their stored
+URL or cached image. Migration does not download anything. Existing ordinary icons and capture sources are left intact.
 
-Local screenshot capture is disabled by default. Enable **Local thumbnail capture** in Quick Links settings to
+Local screenshot capture is disabled by default. Enable **Thumbnail** in Quick Links settings to
 request optional access to all websites. Chrome and Edge declare this through `optional_host_permissions`;
 Firefox uses host patterns in `optional_permissions` to retain the existing Firefox 109 manifest minimum.
 The declaration of a minimum version does not establish that this feature has been tested on that version.
+Rejecting the permission request leaves the switch off. Clicking it again requests permission again from that
+new user gesture. Disabling the switch removes active host access. Browsers may silently restore a permission
+that the user already granted earlier.
 
-The background script serializes capture requests and deduplicates requests for the same link and URL. It checks
-the saved source and permission before opening a temporary, muted window. After loading settles, it focuses
-the window briefly and captures its active tab with `tabs.captureVisibleTab`. It checks tab
-identity and URL before and after capture, resizes the image, and closes its own window in `finally`.
-The window is visible during capture. After capture it returns focus to the previous browser window if the
-capture window still has focus. Unfocused capture intermittently stalled in the Chromium integration runs;
-this implementation does not promise invisible capture. Native Windows/macOS behavior still needs acceptance testing.
+Capture uses a temporary regular browser window. The background script serializes
+capture requests and deduplicates requests for the same link and URL. It checks the saved source, permission,
+and requesting tab before opening the website in a minimized window. After loading settles for three seconds,
+it checks the saved link and requesting tab again. If the user selected another tab or left the original window,
+capture stops before restoring the temporary window.
+
+The script restores the window with `focused: false`, preserving the browser-selected size and position. Changing
+the viewport during restoration could leave screenshot readback pending on complex pages such as `x.com`.
+Native Windows
+restoration can briefly activate the temporary window or deactivate both windows. The script returns focus to
+the original window immediately if no browser window or only the capture window is focused. It does not replace
+another focused browser window. After 500 ms for painting, it allows a reload or redirect triggered by restoration
+to settle in the background, then verifies the active capture tab and URL, captures
+with `tabs.captureVisibleTab`, and resizes the image. Cleanup closes only the temporary window; if that window
+still owns focus, it transfers focus before closing it. The original Bonjourr tab is never replaced by a website.
+
+This is an experimental window flow, not an invisible capture API. A temporary window can briefly appear or
+activate. The settings warning describes this behavior in all supported languages. A failed or interrupted capture keeps the previous image.
 
 Images are 512 × 320 JPEGs stored in a separate IndexedDB database. They are not put in synced settings,
 exports, or a screenshot service. The cache holds at most 100 images or 8 MiB, evicting the oldest writes.
 Each image is tied to its link ID, website URL, and source. Failed refreshes preserve the previous image.
 Deleting a link removes its image; **Clear thumbnail cache** and resetting settings remove cached images.
-Missing screenshots are generated on demand while the thumbnail style is shown and capture is enabled.
-There is no periodic refresh or background crawling of all saved links.
+Opening a new tab, changing link styles, or enabling capture loads existing cached images. Clearing the cache
+removes images and cancels pending captures. None of these actions starts a new capture or opens websites.
+A screenshot is requested only by **Apply changes** in the link editor,
+with capture enabled. Failed attempts are not retried on each new tab. A successful capture notifies other open
+Bonjourr tabs to reload the locally cached image. There is no periodic refresh or background crawling of saved links.
 
 Screenshots use the browser's regular session and may contain signed-in information. Private-tab capture is
-rejected. Image files and URLs also work in the online build; URL downloads depend on CORS or granted host
-access and omit credentials. If an image URL cannot be downloaded, save the image as a local file instead.
+rejected. The online build retains its ordinary favicon, file and URL icon functionality.
 Local screenshot capture is unavailable in the online build.
+
+## Appearance
+
+Thumbnail links keep landscape cards even without a cached screenshot. Their fallback icon retains its native
+size. With Toggle link backgrounds enabled, fallback cards use frosted glass inside the Bonjourr frame.
+Disabling backgrounds removes the frame and glass. Ordinary links retain their standard dimensions.
 
 ## Validation
 
-On 2026-10-21 the extension builds passed integration checks in Chrome 156.0.8078.47, Edge 155.0.4283.62,
-and Firefox 158.0.1 on Linux with Docker, Xvfb and Openbox. Checks covered local opt-out, capture and decoded
-image markers, cached reload, changed-link rejection, preservation of the previous image on failure, cancellation
-during cache clearing, file/URL overrides, style changes, and closing every temporary window.
+The current implementation passed 29 tests with 93 test steps, formatting, and type checks. Builds completed
+for Chrome, Edge, Firefox, and online. The regression suite includes clearing the cache during a pending refresh;
+an obsolete display operation cannot restore the deleted thumbnail or overwrite a newer operation's status.
 
-The integration copies received a test-only mandatory host grant. The shipped manifests still request optional
-access at runtime; the actual permission dialog and native desktop focus behavior were not exercised.
-The project checks passed: format, types, lint, 24 tests (69 test steps), and all four builds. The thumbnail
-labels, warning, statuses, and actionable errors are translated in all 46 supported locales. Locale coverage,
-refreshing older translation caches, and switching the warning/status language are covered by tests.
+Linux Docker integration passed in Chrome 156.0.8078.47, Edge 155.0.4283.62, and Firefox 158.0.1. Tests cover
+capture and decoded image pixels, refresh through Apply changes, cached reload, cancellation, ordinary favicon,
+file and URL compatibility, all five styles, opt-out, and temporary-window cleanup. Focus changed transiently
+in each browser and returned to the original window. Fully invisible capture is not established.
 
-[Measurements](thumbnails/validation.json) contain synthetic image checks and browser versions. The
-[sample image](thumbnails/sample.jpg) and interface screenshot below contain only the synthetic fixture and
-default Bonjourr interface, without personal browser profiles, logs, account names, or local filesystem paths.
+Integration used isolated profiles and synthetic loopback pages. Test copies received a mandatory host grant;
+shipped manifests retain optional access. Actual permission dialogs were not exercised.
 
-![Bonjourr thumbnail style using a synthetic website](thumbnails/interface.png)
+WebKit 26.5 checks passed in a persistent Linux profile using the online build with a private test hook to enable
+cached thumbnail display. Checks cover card dimensions, backgrounds, frames, help animation, cache clearing,
+status dismissal, and JPEG conversion. An ephemeral profile failed to write Blob images to IndexedDB with
+`Error preparing Blob/File data to be stored in object store`; the persistent profile passed. External weather,
+quotes, and background requests were deliberately blocked and produced recorded load errors.
+These checks do not validate Safari extension APIs, permissions, or native window/focus behavior.
 
-Run `deno task format`, `deno task types`, `deno lint`, `deno task test`, and `deno task build`.
+Native Windows testing confirmed that capture can briefly affect focus. Native macOS behavior, Safari extension
+compatibility, and older browser versions remain unverified. The Firefox 109 manifest minimum has not been
+validated for this feature. Authenticated sites, CAPTCHA, and continuously navigating pages require separate checks.
 
-For each extension build, verify permission denial/grant/revocation, missing-image capture, manual refresh,
-tab closure, changed URLs, failed refresh retaining the previous image, file and URL overrides, cache clearing,
-and returning to the original link styles. Observe window visibility, focus, and cleanup on native desktops.
-Authenticated websites, CAPTCHA, long-running applications, and extension-store review need separate checks.
+[Current measurements](thumbnails/validation.json) include browser results and build hashes. The screenshot uses
+synthetic data in an isolated profile.
+
+![Thumbnail setting and Icon selector](thumbnails/interface.png)
+
+Run `deno task format`, `deno task types`, `deno task test`, and `deno task build`.
 
 API references: [captureVisibleTab](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/captureVisibleTab),
-[optional host permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/optional_host_permissions),
-[Firefox optional permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/optional_permissions).
+[optional host permissions](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/optional_host_permissions).

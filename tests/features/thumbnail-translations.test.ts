@@ -34,10 +34,10 @@ Deno.test('Thumbnail translations refresh incomplete caches and follow language 
     try {
         await test.step('An older cache missing new messages is refreshed', async () => {
             const translations = { ...dictionaries.fr }
-            delete translations[thumbnailMessages[23]]
+            delete translations.Thumbnail
             await setTranslationCache('fr', { ...LOCAL_DEFAULT, translations }, thumbnailMessages)
             assertEquals(fetches, 1)
-            assertEquals(tradThis('Could not create thumbnail'), dictionaries.fr['Could not create thumbnail'])
+            assertEquals(tradThis('Could not save thumbnail'), dictionaries.fr['Could not save thumbnail'])
             assertEquals(cached.translations, dictionaries.fr)
         })
 
@@ -46,22 +46,33 @@ Deno.test('Thumbnail translations refresh incomplete caches and follow language 
             assertEquals(fetches, 1)
         })
 
-        await test.step('The warning and current status change language without a reload', async () => {
+        await test.step('The warning, status and shared Thumbnail labels change language without a reload', async () => {
             const help = document.createElement('p')
             const status = document.createElement('p')
+            const captureLabel = document.createElement('label')
+            const captureOption = document.createElement('option')
+            captureLabel.className = 'trn'
+            captureOption.className = 'trn'
+            captureLabel.textContent = tradThis('Thumbnail')
+            captureOption.textContent = tradThis('Thumbnail')
             help.className = 'thumbnail-help trn'
             status.className = 'trn'
-            help.textContent = tradThis(thumbnailMessages[14])
+            const warning = thumbnailMessages.find((message) => message.startsWith('Capture opens'))!
+            help.textContent = tradThis(warning)
             status.textContent = tradThis('Thumbnail cache cleared')
-            document.body.replaceChildren(help, status)
+            document.body.replaceChildren(help, status, captureLabel, captureOption)
 
             await toggleTraduction('de')
-            assertEquals(help.textContent, dictionaries.de[thumbnailMessages[14]])
+            assertEquals(help.textContent, dictionaries.de[warning])
             assertEquals(status.textContent, dictionaries.de['Thumbnail cache cleared'])
+            assertEquals(captureLabel.textContent, dictionaries.de.Thumbnail)
+            assertEquals(captureOption.textContent, dictionaries.de.Thumbnail)
 
             await toggleTraduction('en')
-            assertEquals(help.textContent, thumbnailMessages[14])
+            assertEquals(help.textContent, warning)
             assertEquals(status.textContent, 'Thumbnail cache cleared')
+            assertEquals(captureLabel.textContent, 'Thumbnail')
+            assertEquals(captureOption.textContent, 'Thumbnail')
         })
     } finally {
         globalThis.fetch = originalFetch

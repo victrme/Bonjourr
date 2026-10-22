@@ -1,4 +1,5 @@
 export interface ThumbnailSource {
+    // File/URL values are read only to migrate data from earlier local test builds.
     type: 'capture' | 'file' | 'url'
     value?: string
 }

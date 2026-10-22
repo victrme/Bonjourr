@@ -391,7 +391,11 @@ async function init(): Promise<AllStorage> {
 //	Clear all data
 
 async function clearall(): Promise<void> {
-    await removeThumbnail()
+    try {
+        await removeThumbnail()
+    } catch (error) {
+        console.warn('Could not clear thumbnail cache during reset', error)
+    }
     sessionStorage.clear()
 
     Object.keys(localStorage).forEach((key) => {

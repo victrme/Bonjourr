@@ -1,39 +1,100 @@
 import { EXTENSION } from '../../defaults.ts'
 import { storage } from '../../storage.ts'
 import { tradThis } from '../../utils/translations.ts'
-import { thumbnailMessages } from './thumbnail-messages.ts'
-import {
-    readThumbnail,
-    removeThumbnail,
-    resizeThumbnail,
-    thumbnailSourceKey,
-    thumbnailWebsiteUrl,
-    writeThumbnail,
-} from '../../shared/thumbnails.ts'
-import type { ThumbnailSource } from '../../shared/thumbnails.ts'
+import type { thumbnailMessages } from './thumbnail-messages.ts'
+import { readThumbnail, removeThumbnail, thumbnailSourceKey } from '../../shared/thumbnails.ts'
 import type { LinkElem } from '../../../types/shared.ts'
 
-const attempts = new Set<string>()
 const imageUrls = new WeakMap<HTMLImageElement, string>()
+const imageUpdates = new WeakMap<HTMLImageElement, object>()
 let settingsInitialized = false
+let displayEnabled = false
+let stateRevision = 0
 
-export function thumbnailStatus(message: string, fallback = 'Could not create thumbnail'): void {
-    const key = thumbnailMessages.some((key) => key === message) ? message : fallback
-    if (key !== message) console.warn(message)
-    for (const id of ['thumbnail-status', 'thumbnail-edit-status']) {
+export function thumbnailsEnabled(): boolean {
+    return displayEnabled
+}
+
+function setThumbnailDisplay(enabled: boolean): void {
+    const changed = displayEnabled !== enabled
+    displayEnabled = enabled
+    const toggle = document.getElementById('i_thumbnail-capture') as HTMLInputElement | null
+    if (toggle) toggle.checked = enabled
+    document.getElementById('linkblocks')?.classList.toggle('thumbnails', enabled)
+    if (changed) document.dispatchEvent(new Event('thumbnail-display-changed'))
+}
+
+async function refreshThumbnailSettings(): Promise<void> {
+    if (!EXTENSION) return
+    const revision = ++stateRevision
+    const [local, granted] = await Promise.all([
+        EXTENSION.storage.local.get('thumbnailCaptureEnabled'),
+        EXTENSION.permissions.contains({ origins: ['<all_urls>'] }),
+    ])
+    if (revision !== stateRevision) return
+    const enabled = !!local.thumbnailCaptureEnabled && granted && !EXTENSION.extension.inIncognitoContext
+    const toggle = document.getElementById('i_thumbnail-capture') as HTMLInputElement | null
+    if (toggle) toggle.checked = enabled
+    setThumbnailDisplay(enabled)
+}
+
+export function thumbnailStatus(message: typeof thumbnailMessages[number] | '', cache = false): void {
+    const ids = cache ? ['thumbnail-cache-status'] : ['thumbnail-status', 'thumbnail-edit-status']
+    for (const id of ids) {
         const status = document.getElementById(id)
-        if (status) status.textContent = tradThis(key)
+        if (!status) continue
+        status.classList.remove('thumbnail-status-fade')
+        status.textContent = message ? tradThis(message) : ''
+        if (!message) continue
+        // Restart the display time when another result replaces the previous message.
+        void status.offsetWidth
+        status.classList.add('thumbnail-status-fade')
+        status.onanimationend = (event) => {
+            if (event.target !== status || event.animationName !== 'thumbnail-status-fade') return
+            status.textContent = ''
+            status.classList.remove('thumbnail-status-fade')
+        }
     }
 }
 
-export function initThumbnailSettings(): void {
+export async function initThumbnailSettings(): Promise<void> {
     if (settingsInitialized) return
     settingsInitialized = true
+    EXTENSION?.runtime.onMessage.addListener((message, sender) => {
+        if (sender.id === EXTENSION?.runtime.id && message?.type === 'bonjourr-thumbnail-updated') {
+            refreshVisibleThumbnails()
+        }
+    })
     const help = document.getElementById('thumbnail-capture-help')
     if (help) {
         help.textContent = tradThis(
             'Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.',
         )
+    }
+    const helpContent = document.getElementById('thumbnail-help-content')
+    if (helpContent) {
+        // A numeric height preserves the dropdown transition without clipping longer translations.
+        new ResizeObserver(() => {
+            document.getElementById('thumbnail-help')?.style.setProperty(
+                '--thumbnail-help-height',
+                `${helpContent.offsetHeight}px`,
+            )
+        }).observe(helpContent)
+    }
+    const settings = document.getElementById('thumbnail-settings')
+    const helpPanel = document.getElementById('thumbnail-help')
+    if (settings && helpPanel && helpContent) {
+        // Reserve the full help height so its animation does not restart the parent dropdown transitions.
+        const observer = new ResizeObserver(() => {
+            const height = settings.getBoundingClientRect().height - helpPanel.getBoundingClientRect().height +
+                helpContent.getBoundingClientRect().height
+            document.getElementById('quicklinks_options')?.style.setProperty(
+                '--thumbnail-settings-height',
+                `${Math.round(height)}px`,
+            )
+        })
+        observer.observe(settings)
+        observer.observe(helpContent)
     }
     new MutationObserver((records) => {
         for (const record of records) {
@@ -50,83 +111,75 @@ export function initThumbnailSettings(): void {
         }
     }).observe(document.getElementById('linkblocks')!, { childList: true, subtree: true })
     const toggle = document.getElementById('i_thumbnail-capture') as HTMLInputElement | null
-    const option = document.querySelector<HTMLOptionElement>('#e-thumbnail-type option[value="capture"]')
+    const option = document.querySelector<HTMLOptionElement>('#e-icon-type option[value="capture"]')
     const canCapture = !!EXTENSION && !EXTENSION.extension.inIncognitoContext
     if (option) option.disabled = !canCapture
     if (toggle) {
-        toggle.disabled = !canCapture
-        if (canCapture) {
-            Promise.all([
-                EXTENSION!.storage.local.get('thumbnailCaptureEnabled'),
-                EXTENSION!.permissions.contains({ origins: ['<all_urls>'] }),
-            ]).then(([local, granted]) => {
-                toggle.checked = !!local.thumbnailCaptureEnabled && granted
-            })
-                .catch(() => {
-                    toggle.checked = false
-                })
-        }
+        toggle.disabled = true
         toggle.addEventListener('change', () => {
             if (!EXTENSION) return
+            thumbnailStatus('')
             // Request synchronously from the user gesture, before awaiting storage or any other API.
             const permission = toggle.checked
                 ? EXTENSION.permissions.request({ origins: ['<all_urls>'] })
                 : Promise.resolve(false)
             toggle.disabled = true
             permission.then(async (granted) => {
-                toggle.checked = granted
                 await EXTENSION!.storage.local.set({ thumbnailCaptureEnabled: granted })
-                if (!granted) await EXTENSION!.permissions.remove({ origins: ['<all_urls>'] })
-                attempts.clear()
-                thumbnailStatus(granted ? 'Local thumbnail capture enabled' : 'Local thumbnail capture disabled')
-                if (granted) refreshVisibleThumbnails()
-            }).catch(() => {
+                if (!granted) {
+                    setThumbnailDisplay(false)
+                    await sendThumbnailMessage({ type: 'bonjourr-thumbnail-cancel' })
+                    await EXTENSION!.permissions.remove({ origins: ['<all_urls>'] })
+                }
+                await refreshThumbnailSettings()
+            }).catch(async () => {
                 toggle.checked = false
+                setThumbnailDisplay(false)
+                await EXTENSION!.storage.local.set({ thumbnailCaptureEnabled: false })
                 thumbnailStatus('Could not enable local thumbnail capture')
             }).finally(() => {
                 toggle.disabled = false
             })
         })
     }
+    EXTENSION?.storage.onChanged.addListener((changes, area) => {
+        if (area === 'local' && changes.thumbnailCaptureEnabled) {
+            refreshThumbnailSettings().catch(() => setThumbnailDisplay(false))
+        }
+    })
+    EXTENSION?.permissions.onRemoved.addListener(() => {
+        refreshThumbnailSettings().catch(() => setThumbnailDisplay(false))
+    })
+    EXTENSION?.permissions.onAdded.addListener(() => {
+        refreshThumbnailSettings().catch(() => setThumbnailDisplay(false))
+    })
     document.getElementById('b_thumbnail-clear')?.addEventListener('click', async () => {
+        thumbnailStatus('', true)
         try {
             if (EXTENSION) await sendThumbnailMessage({ type: 'bonjourr-thumbnail-cancel' })
             await removeThumbnail()
-            attempts.clear()
-            refreshVisibleThumbnails(false)
-            thumbnailStatus('Thumbnail cache cleared')
+            refreshVisibleThumbnails()
+            thumbnailStatus('Thumbnail cache cleared', true)
         } catch (_) {
-            thumbnailStatus('Could not clear thumbnail cache')
+            thumbnailStatus('Could not clear thumbnail cache', true)
         }
     })
-    document.getElementById('edit-thumbnail-refresh')?.addEventListener('click', async () => {
-        const button = document.getElementById('edit-thumbnail-refresh') as HTMLButtonElement
-        const id = document.querySelector<HTMLLIElement>('.link-elem.selected')?.id
-        if (!id) return
-        button.disabled = true
-        button.setAttribute('aria-busy', 'true')
-        try {
-            const link = (await storage.sync.get(id))[id] as LinkElem
-            if (!link?.thumbnail) throw new Error('Apply the thumbnail source before refreshing')
-            await refreshThumbnail(link)
-            refreshVisibleThumbnails(false)
-            thumbnailStatus('Thumbnail saved locally')
-        } catch (error) {
-            thumbnailStatus(error instanceof Error ? error.message : 'Could not create thumbnail')
-        } finally {
-            button.disabled = false
-            button.removeAttribute('aria-busy')
-        }
-    })
+    try {
+        if (canCapture) await refreshThumbnailSettings()
+    } catch (_) {
+        setThumbnailDisplay(false)
+    } finally {
+        if (toggle) toggle.disabled = !canCapture
+    }
 }
 
-function refreshVisibleThumbnails(captureMissing = true): void {
+function refreshVisibleThumbnails(): void {
     storage.sync.get().then((sync) => {
-        if (sync.linkstyle !== 'thumbnails') return
+        if (!displayEnabled || sync.linkstyle === 'text') return
         for (const image of document.querySelectorAll<HTMLImageElement>('.link-elem img')) {
             const id = image.closest('li')?.id ?? ''
             const link = sync[id] as LinkElem | undefined
-            if (link) displayThumbnail(image, link, image.dataset.fallback ?? '', captureMissing)
+            if (link?.thumbnail?.type === 'capture') displayThumbnail(image, link, image.dataset.fallback ?? '')
         }
     })
 }
@@ -135,8 +188,10 @@ export async function displayThumbnail(
     image: HTMLImageElement,
     link: LinkElem,
     fallback: string,
-    captureMissing = true,
+    refreshCapture = false,
 ): Promise<void> {
+    const update = {}
+    imageUpdates.set(image, update)
     const previous = imageUrls.get(image)
     if (previous) URL.revokeObjectURL(previous)
     imageUrls.delete(image)
@@ -145,21 +200,31 @@ export async function displayThumbnail(
     image.dataset.thumbnailKey = ''
     image.src = fallback
     image.closest('li')?.removeAttribute('aria-busy')
+    image.closest('li')?.removeAttribute('data-thumbnail-source')
     const source = link.thumbnail
-    if (!source) return
+    if (source?.type !== 'capture') return
+    image.closest('li')?.setAttribute('data-thumbnail-source', 'capture')
     const key = JSON.stringify([link._id, link.url, thumbnailSourceKey(source)])
     image.dataset.thumbnailKey = key
+    let blob: Blob | undefined
     try {
-        let blob = await readThumbnail(link._id, link.url, source)
-        if (!blob && captureMissing && source.type === 'capture' && EXTENSION && !attempts.has(key)) {
+        blob = await readThumbnail(link._id, link.url, source)
+        if (refreshCapture && source.type === 'capture' && EXTENSION) {
             const local = await EXTENSION.storage.local.get('thumbnailCaptureEnabled')
+            if (imageUpdates.get(image) !== update || !image.isConnected) return
             if (!local.thumbnailCaptureEnabled || EXTENSION.extension.inIncognitoContext) return
-            attempts.add(key)
             image.closest('li')?.setAttribute('aria-busy', 'true')
             await refreshThumbnail(link)
             blob = await readThumbnail(link._id, link.url, source)
         }
-        if (blob && image.isConnected && image.dataset.thumbnailKey === key) {
+    } catch (error) {
+        if (imageUpdates.get(image) === update && image.isConnected && image.dataset.thumbnailKey === key) {
+            console.warn('Thumbnail capture failed', error)
+            thumbnailStatus('Could not create thumbnail. The previous image or favicon is kept.')
+        }
+    } finally {
+        const current = imageUpdates.get(image) === update && image.isConnected && image.dataset.thumbnailKey === key
+        if (blob && current) {
             const previous = imageUrls.get(image)
             if (previous) URL.revokeObjectURL(previous)
             const url = URL.createObjectURL(blob)
@@ -167,73 +232,18 @@ export async function displayThumbnail(
             image.src = url
             image.dataset.thumbnail = 'true'
         }
-    } catch (_) {
-        thumbnailStatus('Could not create thumbnail. The previous image or favicon is kept.')
-    } finally {
-        image.closest('li')?.removeAttribute('aria-busy')
+        if (current) image.closest('li')?.removeAttribute('aria-busy')
     }
-}
-
-export async function saveThumbnailSource(
-    link: LinkElem,
-    source: ThumbnailSource | null,
-    file?: File,
-    refresh = false,
-): Promise<void> {
-    if (!source) {
-        await removeThumbnail(link._id)
-        return
-    }
-    if (source.type === 'capture') {
-        thumbnailWebsiteUrl(link.url)
-        return
-    }
-    if (source.type === 'file' && !file) {
-        if (!await readThumbnail(link._id, link.url, source)) throw new Error('Choose a thumbnail image file')
-        return
-    }
-    let image: Blob
-    if (source.type === 'url') {
-        if (!refresh && await readThumbnail(link._id, link.url, source)) return
-        const response = await fetch(thumbnailWebsiteUrl(source.value ?? ''), {
-            credentials: 'omit',
-            referrerPolicy: 'no-referrer',
-            signal: AbortSignal.timeout(15000),
-        })
-        if (!response.ok) throw new Error('Could not load thumbnail URL. Try a local file instead.')
-        image = await response.blob()
-    } else {
-        image = file!
-    }
-    if (!image.type.startsWith('image/') || image.size > 8 * 1024 * 1024) {
-        throw new Error('Choose an image smaller than 8 MB')
-    }
-    await writeThumbnail({
-        id: link._id,
-        url: link.url,
-        source: thumbnailSourceKey(source),
-        image: await resizeThumbnail(image),
-        updated: Date.now(),
-    })
 }
 
 async function refreshThumbnail(link: LinkElem): Promise<void> {
-    if (link.thumbnail?.type === 'capture') {
-        if (!EXTENSION || EXTENSION.extension.inIncognitoContext) {
-            throw new Error('Local capture is available in regular extension tabs only')
-        }
-        const message = {
-            type: 'bonjourr-thumbnail-capture',
-            id: link._id,
-            url: link.url,
-        }
-        const response = await sendThumbnailMessage(message)
-        if (!response?.ok) throw new Error(response?.error ?? 'Could not create thumbnail')
-    } else if (link.thumbnail?.type === 'url') {
-        await saveThumbnailSource(link, link.thumbnail, undefined, true)
-    } else {
-        throw new Error('Choose a new file to replace this thumbnail')
+    const message = {
+        type: 'bonjourr-thumbnail-capture',
+        id: link._id,
+        url: link.url,
     }
+    const response = await sendThumbnailMessage(message)
+    if (!response?.ok) throw new Error(response?.error ?? 'Thumbnail capture failed')
 }
 
 async function sendThumbnailMessage(
