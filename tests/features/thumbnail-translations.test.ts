@@ -37,7 +37,10 @@ Deno.test('Thumbnail translations refresh incomplete caches and follow language 
             delete translations.Thumbnail
             await setTranslationCache('fr', { ...LOCAL_DEFAULT, translations }, thumbnailMessages)
             assertEquals(fetches, 1)
-            assertEquals(tradThis('Could not save thumbnail'), dictionaries.fr['Could not save thumbnail'])
+            assertEquals(
+                tradThis('Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.'),
+                dictionaries.fr['Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.'],
+            )
             assertEquals(cached.translations, dictionaries.fr)
         })
 

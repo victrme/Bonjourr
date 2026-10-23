@@ -146,7 +146,7 @@ Deno.test('Thumbnail switch controls display and retries optional permission aft
         })
         await test.step('Repeated storage failures still show the error and unlock the switch', async () => {
             storageFails = true
-            await change(true, 'Could not enable local thumbnail capture')
+            await change(true, 'Could not change the thumbnail capture setting')
             assertEquals(failedWrites, 2)
             assertEquals(toggle.checked, false)
             assertEquals(thumbnailsEnabled(), false)

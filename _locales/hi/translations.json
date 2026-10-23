@@ -458,9 +458,9 @@
     "Thumbnail": "थंबनेल",
     "Clear thumbnail cache": "थंबनेल कैश साफ़ करें",
     "Thumbnail cache cleared": "थंबनेल कैश साफ़ किया गया",
-    "Could not enable local thumbnail capture": "स्थानीय थंबनेल कैप्चर चालू नहीं किया जा सका",
+    "Could not change the thumbnail capture setting": "थंबनेल कैप्चर की सेटिंग बदली नहीं जा सकी",
     "Could not clear thumbnail cache": "थंबनेल कैश साफ़ नहीं किया जा सका",
     "Could not create thumbnail. The previous image or favicon is kept.": "थंबनेल नहीं बनाया जा सका। पिछली छवि या वेबसाइट का आइकन बना रहेगा।",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "कैप्चर के दौरान वेबसाइटों की अस्थायी विंडो खुलती हैं और कुछ समय के लिए फ़ोकस उन पर जा सकता है। इसके लिए सभी वेबसाइटों तक पहुँच चाहिए। छवियाँ इस डिवाइस पर रहती हैं और उनमें लॉग इन किए गए खातों की सामग्री हो सकती है। लिंक संपादित करते समय थंबनेल का स्रोत चुनें।",
-    "Could not save thumbnail": "थंबनेल सहेजा नहीं जा सका"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "कैप्चर के दौरान वेबसाइटों की अस्थायी विंडो खुलती हैं और कुछ समय के लिए फ़ोकस उन पर जा सकता है। इसके लिए सभी वेबसाइटों तक पहुँच चाहिए। छवियाँ इस डिवाइस पर रहती हैं और उनमें लॉग इन किए गए खातों की सामग्री हो सकती है। लिंक संपादित करते समय «आइकन» में «थंबनेल» चुनें, फिर «बदलाव लागू करें» पर क्लिक करें।",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "इस पते का स्क्रीनशॉट नहीं लिया जा सकता। एम्बेड किए गए लॉगिन विवरण के बिना HTTP या HTTPS URL का उपयोग करें।"
 }

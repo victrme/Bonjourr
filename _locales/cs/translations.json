@@ -458,9 +458,9 @@
     "Thumbnail": "Náhled",
     "Clear thumbnail cache": "Vymazat mezipaměť náhledů",
     "Thumbnail cache cleared": "Mezipaměť náhledů vymazána",
-    "Could not enable local thumbnail capture": "Místní pořizování náhledů se nepodařilo zapnout",
+    "Could not change the thumbnail capture setting": "Nastavení pořizování náhledů se nepodařilo změnit",
     "Could not clear thumbnail cache": "Mezipaměť náhledů se nepodařilo vymazat",
     "Could not create thumbnail. The previous image or favicon is kept.": "Náhled se nepodařilo vytvořit. Předchozí obrázek nebo ikona webu zůstává zachována.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Pořizování snímků otevírá dočasná okna webů a může krátce převzít zaměření. Vyžaduje přístup ke všem webům. Obrázky zůstávají na tomto zařízení a mohou obsahovat údaje z přihlášených relací. Při úpravě odkazu zvolte zdroj náhledu.",
-    "Could not save thumbnail": "Náhled se nepodařilo uložit"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Pořizování snímků otevírá dočasná okna webů a může na chvíli přepnout fokus na tato okna. Vyžaduje přístup ke všem webům. Obrázky zůstávají na tomto zařízení a mohou obsahovat údaje z přihlášených relací. Při úpravě odkazu vyberte možnost „Náhled“ v poli „Ikona“ a klikněte na „Aplikovat změny“.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Tuto adresu nelze zachytit. Použijte adresu HTTP nebo HTTPS bez vložených přihlašovacích údajů."
 }

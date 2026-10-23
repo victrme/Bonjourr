@@ -68,7 +68,7 @@ export async function initThumbnailSettings(): Promise<void> {
     const help = document.getElementById('thumbnail-capture-help')
     if (help) {
         help.textContent = tradThis(
-            'Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.',
+            'Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.',
         )
     }
     const helpContent = document.getElementById('thumbnail-help-content')
@@ -137,7 +137,7 @@ export async function initThumbnailSettings(): Promise<void> {
                 setThumbnailDisplay(false)
                 // Storage may also be unavailable during recovery; still show the original failure.
                 await EXTENSION!.storage.local.set({ thumbnailCaptureEnabled: false }).catch(() => {})
-                thumbnailStatus('Could not enable local thumbnail capture')
+                thumbnailStatus('Could not change the thumbnail capture setting')
             }).finally(() => {
                 toggle.disabled = false
             })

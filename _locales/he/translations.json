@@ -458,9 +458,9 @@
     "Thumbnail": "תמונה ממוזערת",
     "Clear thumbnail cache": "ניקוי מטמון התמונות הממוזערות",
     "Thumbnail cache cleared": "מטמון התמונות הממוזערות נוקה",
-    "Could not enable local thumbnail capture": "לא ניתן להפעיל צילום מקומי של תמונות ממוזערות",
+    "Could not change the thumbnail capture setting": "לא ניתן לשנות את הגדרת צילום התמונות הממוזערות",
     "Could not clear thumbnail cache": "לא ניתן לנקות את מטמון התמונות הממוזערות",
     "Could not create thumbnail. The previous image or favicon is kept.": "לא ניתן ליצור תמונה ממוזערת. התמונה הקודמת או סמל האתר נשמרים.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "הצילום פותח חלונות זמניים של אתרי אינטרנט ועשוי להעביר אליהם את המיקוד לזמן קצר. נדרשת גישה לכל האתרים. התמונות נשארות במכשיר זה ועשויות להכיל מידע מהפעלות שבהן בוצעה כניסה לחשבון. יש לבחור מקור לתמונה הממוזערת בעת עריכת קישור.",
-    "Could not save thumbnail": "לא ניתן לשמור תמונה ממוזערת"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "הצילום פותח חלונות זמניים של אתרי אינטרנט ועשוי להעביר אליהם את המיקוד לזמן קצר. נדרשת גישה לכל האתרים. התמונות נשארות במכשיר זה ועשויות להכיל מידע מהפעלות שבהן בוצעה כניסה לחשבון. בעת עריכת קישור, יש לבחור «תמונה ממוזערת» תחת «סמל» ולאחר מכן ללחוץ על «החל שינויים».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "לא ניתן לצלם את הכתובת הזו. יש להשתמש בכתובת HTTP או HTTPS ללא פרטי התחברות מוטמעים."
 }

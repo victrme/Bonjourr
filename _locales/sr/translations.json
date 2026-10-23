@@ -458,9 +458,9 @@
     "Thumbnail": "Сличица",
     "Clear thumbnail cache": "Очисти кеш сличица",
     "Thumbnail cache cleared": "Кеш сличица је очишћен",
-    "Could not enable local thumbnail capture": "Није могуће укључити локално снимање сличица",
+    "Could not change the thumbnail capture setting": "Није могуће променити подешавање снимања сличица",
     "Could not clear thumbnail cache": "Није могуће очистити кеш сличица",
     "Could not create thumbnail. The previous image or favicon is kept.": "Није могуће направити сличицу. Задржава се претходна слика или икона сајта.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Снимање отвара привремене прозоре сајтова и може накратко преузети фокус. Захтева приступ свим сајтовима. Слике остају на овом уређају и могу садржати податке из пријављених сесија. Изаберите извор сличице при уређивању везе.",
-    "Could not save thumbnail": "Није могуће сачувати сличицу"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Снимање отвара привремене прозоре сајтова и може накратко преузети фокус. Захтева приступ свим сајтовима. Слике остају на овом уређају и могу садржати податке из пријављених сесија. При уређивању везе изаберите „Сличица” у пољу „Иконица”, а затим кликните на „Примени измене”.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Није могуће снимити ову адресу. Користите HTTP или HTTPS адресу без уграђених података за пријаву."
 }

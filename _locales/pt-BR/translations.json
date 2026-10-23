@@ -458,9 +458,9 @@
     "Thumbnail": "Miniatura",
     "Clear thumbnail cache": "Limpar cache de miniaturas",
     "Thumbnail cache cleared": "Cache de miniaturas limpo",
-    "Could not enable local thumbnail capture": "Não foi possível ativar a captura local de miniaturas",
+    "Could not change the thumbnail capture setting": "Não foi possível alterar a configuração de captura de miniaturas",
     "Could not clear thumbnail cache": "Não foi possível limpar o cache de miniaturas",
     "Could not create thumbnail. The previous image or favicon is kept.": "Não foi possível criar a miniatura. A imagem anterior ou o ícone do site é mantido.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "A captura abre janelas temporárias dos sites e pode tirar o foco por um instante. Ela exige acesso a todos os sites. As imagens ficam neste dispositivo e podem conter informações de sessões conectadas. Escolha uma fonte de miniatura ao editar um link.",
-    "Could not save thumbnail": "Não foi possível salvar a miniatura"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "A captura abre janelas temporárias dos sites e pode tirar o foco por um instante. Ela exige acesso a todos os sites. As imagens ficam neste dispositivo e podem conter informações de sessões conectadas. Ao editar um link, selecione «Miniatura» em «Ícone» e clique em «Aplicar mudanças».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Não é possível capturar este endereço. Use uma URL HTTP ou HTTPS sem credenciais incorporadas."
 }

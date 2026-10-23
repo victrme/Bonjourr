@@ -458,9 +458,9 @@
     "Thumbnail": "Náhľad",
     "Clear thumbnail cache": "Vymazať vyrovnávaciu pamäť náhľadov",
     "Thumbnail cache cleared": "Vyrovnávacia pamäť náhľadov bola vymazaná",
-    "Could not enable local thumbnail capture": "Nepodarilo sa zapnúť lokálne vytváranie náhľadov",
+    "Could not change the thumbnail capture setting": "Nepodarilo sa zmeniť nastavenie vytvárania náhľadov",
     "Could not clear thumbnail cache": "Nepodarilo sa vymazať vyrovnávaciu pamäť náhľadov",
     "Could not create thumbnail. The previous image or favicon is kept.": "Nepodarilo sa vytvoriť náhľad. Predchádzajúci obrázok alebo ikona webu zostáva zachovaná.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Vytváranie snímok otvára dočasné okná webov a môže nakrátko prevziať zameranie. Vyžaduje prístup ku všetkým webom. Obrázky zostávajú na tomto zariadení a môžu obsahovať údaje z prihlásených relácií. Pri úprave odkazu vyberte zdroj náhľadu.",
-    "Could not save thumbnail": "Nepodarilo sa uložiť náhľad"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Vytváranie snímok otvára dočasné okná webov a môže na chvíľu presunúť fokus do týchto okien. Vyžaduje prístup ku všetkým webom. Obrázky zostávajú na tomto zariadení a môžu obsahovať údaje z prihlásených relácií. Pri úprave odkazu vyberte možnosť „Náhľad“ v poli „Ikona“ a kliknite na „Uložiť zmeny“.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Z tejto adresy nie je možné vytvoriť snímku. Použite adresu HTTP alebo HTTPS bez vložených prihlasovacích údajov."
 }

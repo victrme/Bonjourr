@@ -484,7 +484,7 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
             try {
                 thumbnailWebsiteUrl(update.updateLink.url ?? (data[update.updateLink.id] as LinkElem).url)
             } catch (_) {
-                thumbnailStatus('Could not save thumbnail')
+                thumbnailStatus('Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.')
                 return
             }
         }

@@ -458,9 +458,9 @@
     "Thumbnail": "Vorschaubild",
     "Clear thumbnail cache": "Vorschaubild-Cache leeren",
     "Thumbnail cache cleared": "Vorschaubild-Cache geleert",
-    "Could not enable local thumbnail capture": "Lokale Vorschaubildaufnahme konnte nicht aktiviert werden",
+    "Could not change the thumbnail capture setting": "Die Einstellung für die Vorschaubildaufnahme konnte nicht geändert werden",
     "Could not clear thumbnail cache": "Vorschaubild-Cache konnte nicht geleert werden",
     "Could not create thumbnail. The previous image or favicon is kept.": "Vorschaubild konnte nicht erstellt werden. Das bisherige Bild oder Website-Symbol bleibt erhalten.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Bei der Aufnahme werden vorübergehend Website-Fenster geöffnet, die kurz den Fokus erhalten können. Dafür ist Zugriff auf alle Websites erforderlich. Die Bilder bleiben auf diesem Gerät und können Inhalte angemeldeter Sitzungen enthalten. Wählen Sie beim Bearbeiten eines Links eine Quelle für das Vorschaubild.",
-    "Could not save thumbnail": "Vorschaubild konnte nicht gespeichert werden"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Bei der Aufnahme werden vorübergehend Website-Fenster geöffnet, die kurz den Fokus erhalten können. Dafür ist Zugriff auf alle Websites erforderlich. Die Bilder bleiben auf diesem Gerät und können Inhalte angemeldeter Sitzungen enthalten. Wählen Sie beim Bearbeiten eines Links unter „Symbol“ die Option „Vorschaubild“ und klicken Sie dann auf „Änderungen übernehmen“.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Diese Adresse kann nicht aufgenommen werden. Verwenden Sie eine HTTP- oder HTTPS-URL ohne eingebettete Zugangsdaten."
 }

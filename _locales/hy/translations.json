@@ -458,9 +458,9 @@
     "Thumbnail": "Մանրապատկեր",
     "Clear thumbnail cache": "Մաքրել մանրապատկերների պահոցը",
     "Thumbnail cache cleared": "Մանրապատկերների պահոցը մաքրված է",
-    "Could not enable local thumbnail capture": "Չհաջողվեց միացնել մանրապատկերների տեղային նկարահանումը",
+    "Could not change the thumbnail capture setting": "Չհաջողվեց փոխել մանրապատկերների նկարահանման կարգավորումը",
     "Could not clear thumbnail cache": "Չհաջողվեց մաքրել մանրապատկերների պահոցը",
     "Could not create thumbnail. The previous image or favicon is kept.": "Չհաջողվեց ստեղծել մանրապատկերը։ Նախորդ պատկերը կամ կայքի պատկերակը պահպանվում է։",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Նկարահանումը բացում է կայքերի ժամանակավոր պատուհաններ և կարող է կարճ ժամանակով տեղափոխել ֆոկուսը։ Այն պահանջում է մուտք դեպի բոլոր կայքերը։ Պատկերները մնում են այս սարքում և կարող են պարունակել մուտք գործած հաշիվների տվյալներ։ Հղումը խմբագրելիս ընտրեք մանրապատկերի աղբյուրը։",
-    "Could not save thumbnail": "Չհաջողվեց պահպանել մանրապատկերը"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Նկարահանումը բացում է կայքերի ժամանակավոր պատուհաններ և կարող է կարճ ժամանակով տեղափոխել ֆոկուսը։ Այն պահանջում է մուտք դեպի բոլոր կայքերը։ Պատկերները մնում են այս սարքում և կարող են պարունակել մուտք գործած հաշիվների տվյալներ։ Հղումը խմբագրելիս «Պատկերակ» դաշտում ընտրեք «Մանրապատկեր», ապա սեղմեք «Կիրառել փոփոխությունները»։",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Հնարավոր չէ նկարահանել այս հասցեն։ Օգտագործեք HTTP կամ HTTPS հասցե՝ առանց ներկառուցված մուտքանունի և գաղտնաբառի։"
 }

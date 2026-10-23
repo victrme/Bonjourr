@@ -458,9 +458,9 @@
     "Thumbnail": "Pikkukuva",
     "Clear thumbnail cache": "Tyhjennä pikkukuvavälimuisti",
     "Thumbnail cache cleared": "Pikkukuvavälimuisti tyhjennetty",
-    "Could not enable local thumbnail capture": "Paikallista pikkukuvien kaappausta ei voitu ottaa käyttöön",
+    "Could not change the thumbnail capture setting": "Pikkukuvien kaappausasetusta ei voitu muuttaa",
     "Could not clear thumbnail cache": "Pikkukuvavälimuistia ei voitu tyhjentää",
     "Could not create thumbnail. The previous image or favicon is kept.": "Pikkukuvaa ei voitu luoda. Edellinen kuva tai sivuston kuvake säilytetään.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Kaappaus avaa väliaikaisia sivustoikkunoita, jotka voivat hetkeksi saada kohdistuksen. Se edellyttää pääsyä kaikille verkkosivustoille. Kuvat säilyvät tällä laitteella ja voivat sisältää kirjautuneiden istuntojen tietoja. Valitse pikkukuvan lähde linkkiä muokatessasi.",
-    "Could not save thumbnail": "Pikkukuvaa ei voitu tallentaa"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Kaappaus avaa väliaikaisia sivustoikkunoita, jotka voivat hetkeksi saada kohdistuksen. Se edellyttää pääsyä kaikille verkkosivustoille. Kuvat säilyvät tällä laitteella ja voivat sisältää kirjautuneiden istuntojen tietoja. Kun muokkaat linkkiä, valitse ”Pikkukuva” kohdasta ”Kuvake” ja napsauta sitten ”Ota muutokset käyttöön”.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Tästä osoitteesta ei voi ottaa kuvakaappausta. Käytä HTTP- tai HTTPS-osoitetta, johon ei ole sisällytetty kirjautumistietoja."
 }

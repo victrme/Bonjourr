@@ -458,9 +458,9 @@
     "Thumbnail": "Kichik rasm",
     "Clear thumbnail cache": "Kichik rasmlar keshini tozalash",
     "Thumbnail cache cleared": "Kichik rasmlar keshi tozalandi",
-    "Could not enable local thumbnail capture": "Kichik rasmlarni mahalliy olishni yoqib bo‘lmadi",
+    "Could not change the thumbnail capture setting": "Kichik rasmlarni olish sozlamasini o‘zgartirib bo‘lmadi",
     "Could not clear thumbnail cache": "Kichik rasmlar keshini tozalab bo‘lmadi",
     "Could not create thumbnail. The previous image or favicon is kept.": "Kichik rasm yaratib bo‘lmadi. Oldingi rasm yoki sayt belgisi saqlanadi.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Tasvir olish saytlarning vaqtinchalik oynalarini ochadi va qisqa vaqtga fokusni olishi mumkin. Buning uchun barcha saytlarga kirish talab etiladi. Rasmlar shu qurilmada qoladi va hisobga kirilgan seanslardagi ma’lumotlarni o‘z ichiga olishi mumkin. Havolani tahrirlashda kichik rasm manbasini tanlang.",
-    "Could not save thumbnail": "Kichik rasmni saqlab bo‘lmadi"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Tasvir olish saytlarning vaqtinchalik oynalarini ochadi va qisqa vaqtga fokusni olishi mumkin. Buning uchun barcha saytlarga kirish talab etiladi. Rasmlar shu qurilmada qoladi va hisobga kirilgan seanslardagi ma’lumotlarni o‘z ichiga olishi mumkin. Havolani tahrirlashda «Belgi» bo‘limida «Kichik rasm» ni tanlang, so‘ng «O'zgarishlarni qo'llash» ni bosing.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Bu manzilning ekran tasvirini olib bo‘lmaydi. Ichiga kirish ma’lumotlari kiritilmagan HTTP yoki HTTPS URL manzilidan foydalaning."
 }

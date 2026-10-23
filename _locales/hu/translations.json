@@ -458,9 +458,9 @@
     "Thumbnail": "Bélyegkép",
     "Clear thumbnail cache": "Bélyegkép-gyorsítótár törlése",
     "Thumbnail cache cleared": "A bélyegkép-gyorsítótár törölve",
-    "Could not enable local thumbnail capture": "Nem sikerült bekapcsolni a helyi bélyegképrögzítést",
+    "Could not change the thumbnail capture setting": "Nem sikerült módosítani a bélyegképrögzítés beállítását",
     "Could not clear thumbnail cache": "Nem sikerült törölni a bélyegkép-gyorsítótárat",
     "Could not create thumbnail. The previous image or favicon is kept.": "Nem sikerült létrehozni a bélyegképet. A korábbi kép vagy a webhely ikonja megmarad.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "A rögzítés ideiglenes webhelyablakokat nyit meg, és rövid időre átveheti a fókuszt. Az összes webhelyhez való hozzáférést igényli. A képek ezen az eszközön maradnak, és bejelentkezett munkamenetek adatait is tartalmazhatják. A hivatkozás szerkesztésekor válassza ki a bélyegkép forrását.",
-    "Could not save thumbnail": "Nem sikerült menteni a bélyegképet"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "A rögzítés ideiglenes webhelyablakokat nyit meg, és rövid időre átveheti a fókuszt. Az összes webhelyhez való hozzáférést igényli. A képek ezen az eszközön maradnak, és bejelentkezett munkamenetek adatait is tartalmazhatják. A hivatkozás szerkesztésekor válassza a „Bélyegkép” lehetőséget a „Ikon” mezőben, majd kattintson a „Módosítások alkalmazása” gombra.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Erről a címről nem készíthető képernyőkép. Használjon HTTP- vagy HTTPS-címet beágyazott bejelentkezési adatok nélkül."
 }

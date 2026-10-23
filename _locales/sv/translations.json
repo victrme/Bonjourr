@@ -458,9 +458,9 @@
     "Thumbnail": "Miniatyrbild",
     "Clear thumbnail cache": "Rensa miniatyrbildscache",
     "Thumbnail cache cleared": "Miniatyrbildscachen har rensats",
-    "Could not enable local thumbnail capture": "Kunde inte aktivera lokal miniatyrbildstagning",
+    "Could not change the thumbnail capture setting": "Kunde inte ändra inställningen för lokal skärmbildstagning för miniatyrbilder",
     "Could not clear thumbnail cache": "Kunde inte rensa miniatyrbildscachen",
     "Could not create thumbnail. The previous image or favicon is kept.": "Kunde inte skapa miniatyrbilden. Den tidigare bilden eller webbplatsikonen behålls.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Bildtagning öppnar tillfälliga webbplatsfönster och kan kort ta fokus. Den kräver åtkomst till alla webbplatser. Bilderna stannar på den här enheten och kan innehålla information från inloggade sessioner. Välj en källa för miniatyrbilden när du redigerar en länk.",
-    "Could not save thumbnail": "Kunde inte spara miniatyrbilden"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Bildtagning öppnar tillfälliga webbplatsfönster och kan kort ta fokus. Den kräver åtkomst till alla webbplatser. Bilderna stannar på den här enheten och kan innehålla information från inloggade sessioner. När du redigerar en länk väljer du ”Miniatyrbild” under ”Ikon” och klickar sedan på ”Applicera förändringar”.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Det går inte att ta en skärmbild av den här adressen. Använd en HTTP- eller HTTPS-adress utan inbäddade inloggningsuppgifter."
 }

@@ -458,9 +458,9 @@
     "Thumbnail": "Miniatură",
     "Clear thumbnail cache": "Golește memoria cache a miniaturilor",
     "Thumbnail cache cleared": "Memoria cache a miniaturilor a fost golită",
-    "Could not enable local thumbnail capture": "Nu s-a putut activa capturarea locală a miniaturilor",
+    "Could not change the thumbnail capture setting": "Nu s-a putut modifica setarea de capturare a miniaturilor",
     "Could not clear thumbnail cache": "Nu s-a putut goli memoria cache a miniaturilor",
     "Could not create thumbnail. The previous image or favicon is kept.": "Nu s-a putut crea miniatura. Se păstrează imaginea anterioară sau pictograma site-ului.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Capturarea deschide ferestre temporare ale site-urilor și poate prelua focalizarea pentru scurt timp. Necesită acces la toate site-urile. Imaginile rămân pe acest dispozitiv și pot conține informații din sesiuni autentificate. Alege o sursă pentru miniatură când editezi un link.",
-    "Could not save thumbnail": "Nu s-a putut salva miniatura"
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Capturarea deschide ferestre temporare ale site-urilor și poate prelua focalizarea pentru scurt timp. Necesită acces la toate site-urile. Imaginile rămân pe acest dispozitiv și pot conține informații din sesiuni autentificate. Când editezi un link, selectează „Miniatură” în câmpul „Pictogramă”, apoi apasă „Aplicare schimbări”.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Nu se poate captura această adresă. Folosește o adresă HTTP sau HTTPS fără date de autentificare încorporate."
 }
