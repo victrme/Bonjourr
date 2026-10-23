@@ -453,5 +453,14 @@
     "URLs": "網址",
     "Use a similar browser like Brave or Vivaldi": "使用類似的瀏覽器，例如 Brave 或 Vivaldi",
     "What to do from here?": "從這裡開始做什麼？",
-    "Zoom": "飛漲"
+    "Zoom": "飛漲",
+
+    "Thumbnail": "縮圖",
+    "Clear thumbnail cache": "清除縮圖快取",
+    "Thumbnail cache cleared": "已清除縮圖快取",
+    "Could not change the thumbnail capture setting": "無法變更縮圖擷取設定",
+    "Could not clear thumbnail cache": "無法清除縮圖快取",
+    "Could not create thumbnail. The previous image or favicon is kept.": "無法建立縮圖。將保留先前的圖片或網站圖示。",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "擷取時會開啟網站的臨時視窗，並可能短暫取得焦點。此功能需要存取所有網站的權限。圖片會留在此裝置上，並可能包含已登入帳戶的資料。編輯連結時，請在「圖標」中選擇「縮圖」，然後按「應用變更」。",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "無法擷取此網址。請使用不含內嵌登入資料的 HTTP 或 HTTPS 網址。"
 }

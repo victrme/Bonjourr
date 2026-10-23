@@ -453,5 +453,14 @@
     "URLs": "URLలు",
     "Use a similar browser like Brave or Vivaldi": "బ్రేవ్ లేదా వివాల్డి వంటి సారూప్య బ్రౌజర్‌ని ఉపయోగించండి",
     "What to do from here?": "ఇక్కడ నుండి ఏమి చేయాలి?",
-    "Zoom": "జూమ్ చేయండి"
+    "Zoom": "జూమ్ చేయండి",
+
+    "Thumbnail": "సూక్ష్మచిత్రం",
+    "Clear thumbnail cache": "సూక్ష్మచిత్రాల కాష్‌ను ఖాళీ చేయి",
+    "Thumbnail cache cleared": "సూక్ష్మచిత్రాల కాష్ ఖాళీ చేయబడింది",
+    "Could not change the thumbnail capture setting": "సూక్ష్మచిత్ర సంగ్రహణ సెట్టింగ్‌ను మార్చలేకపోయాం",
+    "Could not clear thumbnail cache": "సూక్ష్మచిత్రాల కాష్‌ను ఖాళీ చేయలేకపోయాం",
+    "Could not create thumbnail. The previous image or favicon is kept.": "సూక్ష్మచిత్రాన్ని సృష్టించలేకపోయాం. మునుపటి చిత్రం లేదా వెబ్‌సైట్ చిహ్నం అలాగే ఉంటుంది.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "సంగ్రహణ సమయంలో వెబ్‌సైట్ల తాత్కాలిక విండోలు తెరుచుకుంటాయి, కొద్దిసేపు ఫోకస్ వాటికి మారవచ్చు. దీనికి అన్ని వెబ్‌సైట్లకు ప్రాప్యత అవసరం. చిత్రాలు ఈ పరికరంలోనే ఉంటాయి, వాటిలో లాగిన్ చేసిన ఖాతాల సమాచారం ఉండవచ్చు. లింక్‌ను సవరించేటప్పుడు «చిహ్నం» కింద «సూక్ష్మచిత్రం» ఎంచుకుని, «మార్పులను అమలు చేయి» క్లిక్ చేయండి.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "ఈ చిరునామాకు స్క్రీన్‌షాట్ తీయలేము. పొందుపరిచిన లాగిన్ వివరాలు లేని HTTP లేదా HTTPS URLను ఉపయోగించండి."
 }

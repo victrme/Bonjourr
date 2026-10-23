@@ -1,7 +1,6 @@
 # 🧑‍✈️ Bonjourr checklist
 
-A list of every behavior possible on Bonjourr, to check if everything is working before an update. Automated testing
-takes too long to implement, but we can at least do it manually !
+A manual checklist to use before an update, alongside the automated checks run with `deno task test`.
 
 ## General
 
@@ -72,6 +71,21 @@ takes too long to implement, but we can at least do it manually !
   - Inline, text
 - Toggle link titles
 - Toggle link backgrounds
+
+### Thumbnail
+
+See [Thumbnail documentation](../docs/THUMBNAILS.md) for expected behavior and platform limitations.
+
+- Enable Thumbnail: grant access, deny access, and retry after denying
+- Revoke website access and check that capture fails without losing the previous image
+- Select Icon → Thumbnail → Apply changes and verify that the image updates
+- Open a new Bonjourr tab and change link styles: cached images appear without opening websites
+- Disable and re-enable Thumbnail: cached images are retained
+- Clear thumbnail cache, including during a capture: images are removed and pending captures are cancelled
+- Check fallback icons, corner radius, titles, and link backgrounds with and without a cached image
+- Check that Website favicon, URL, and Local file icons still work as before
+- Expand and collapse the help text; check animation, inline cache feedback, and timed message dismissal
+- Check capture window visibility and focus restoration on each supported desktop platform
 
 ## Clock and date
 

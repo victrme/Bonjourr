@@ -6,7 +6,11 @@ import type { Local, Translations } from '../../types/local.ts'
 let trns: Translations | undefined
 let currentTrnsLang = 'en'
 
-export async function setTranslationCache(language: string, local?: Local): Promise<void> {
+export async function setTranslationCache(
+    language: string,
+    local?: Local,
+    requiredKeys: readonly string[] = [],
+): Promise<void> {
     const lang = countryCodeToLanguageCode(language)
 
     if (lang === 'en') {
@@ -16,7 +20,8 @@ export async function setTranslationCache(language: string, local?: Local): Prom
     }
 
     const cachedLang = local?.translations?.lang
-    const useCache = local && cachedLang === lang
+    const useCache = local && cachedLang === lang &&
+        requiredKeys.every((key) => typeof local.translations?.[key] === 'string')
 
     if (useCache) {
         trns = local.translations

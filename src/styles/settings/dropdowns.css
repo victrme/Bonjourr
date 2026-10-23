@@ -190,7 +190,11 @@
 }
 
 .all .as_link {
-    max-height: 360px;
+    max-height: calc(360px + var(--thumbnail-settings-height, 0px));
+}
+
+.all #quicklinks_options.shown {
+    max-height: calc(465px + var(--thumbnail-settings-height, 0px));
 }
 
 .all .as_collection {

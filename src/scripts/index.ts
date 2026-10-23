@@ -7,6 +7,7 @@ import { moveElements } from './features/move/index.ts'
 import { hideElements } from './features/hide.ts'
 import { customFont } from './features/fonts.ts'
 import { quickLinks } from './features/links/index.ts'
+import { thumbnailMessages } from './features/links/thumbnail-messages.ts'
 import { searchbar } from './features/searchbar.ts'
 import { customCss } from './features/css.ts'
 import { weather } from './features/weather/index.ts'
@@ -66,7 +67,7 @@ async function startup(): Promise<void> {
         await storage.sync.set(sync)
     }
 
-    await setTranslationCache(sync.lang, local)
+    await setTranslationCache(sync.lang, local, thumbnailMessages)
 
     displayInterface(undefined, sync)
     traduction(null, sync.lang)

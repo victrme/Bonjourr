@@ -453,5 +453,14 @@
     "URLs": "URL-er",
     "Use a similar browser like Brave or Vivaldi": "Bruk en lignende nettleser som Brave eller Vivaldi",
     "What to do from here?": "Hva skal jeg gjøre herfra?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatyrbilde",
+    "Clear thumbnail cache": "Tøm hurtigbuffer for miniatyrbilder",
+    "Thumbnail cache cleared": "Hurtigbufferen for miniatyrbilder er tømt",
+    "Could not change the thumbnail capture setting": "Kunne ikke endre innstillingen for skjermbildefangst for miniatyrbilder",
+    "Could not clear thumbnail cache": "Kunne ikke tømme hurtigbufferen for miniatyrbilder",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Kunne ikke lage miniatyrbildet. Det forrige bildet eller nettstedsikonet beholdes.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Opptak åpner midlertidige nettstedvinduer og kan ta fokus et øyeblikk. Det krever tilgang til alle nettsteder. Bildene blir på denne enheten og kan inneholde informasjon fra innloggede økter. Når du redigerer en lenke, velger du «Miniatyrbilde» under «Ikon» og klikker deretter på «Bruk endringer».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Kan ikke ta et skjermbilde av denne adressen. Bruk en HTTP- eller HTTPS-adresse uten innebygde påloggingsopplysninger."
 }

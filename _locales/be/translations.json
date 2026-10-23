@@ -453,5 +453,14 @@
     "URLs": "URL-адрасы",
     "Use a similar browser like Brave or Vivaldi": "Выкарыстоўвайце аналагічны браўзер — напрыклад, Brave або Vivaldi",
     "What to do from here?": "Што з гэтым можна зрабіць?",
-    "Zoom": "Маштаб"
+    "Zoom": "Маштаб",
+
+    "Thumbnail": "Мініяцюра",
+    "Clear thumbnail cache": "Ачысціць кэш мініяцюр",
+    "Thumbnail cache cleared": "Кэш мініяцюр ачышчаны",
+    "Could not change the thumbnail capture setting": "Не ўдалося змяніць наладу стварэння мініяцюр",
+    "Could not clear thumbnail cache": "Не ўдалося ачысціць кэш мініяцюр",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Не ўдалося стварыць мініяцюру. Захавана папярэдняя выява або значок сайта.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Падчас стварэння здымкаў адкрываюцца часовыя вокны сайтаў, якія могуць ненадоўга перахопліваць фокус. Патрэбны доступ да ўсіх сайтаў. Выявы застаюцца на гэтай прыладзе і могуць змяшчаць даныя карыстальніка, які ўвайшоў ва ўліковы запіс. Пры рэдагаванні спасылкі выберыце «Мініяцюра» у полі «Значок», затым націсніце «Ужыць змены».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Немагчыма зрабіць здымак гэтага адраса. Выкарыстоўвайце адрас HTTP або HTTPS без убудаваных даных для ўваходу."
 }

@@ -2,12 +2,14 @@ import { getLink, getSelectedIds, isLinkIconType } from './helpers.ts'
 import { closeContextMenu, positionContextMenu } from '../contextmenu.ts'
 import { togglePinGroup } from './groups.ts'
 import { quickLinks } from './index.ts'
+import { thumbnailsEnabled } from './thumbnails.ts'
 
 import { getComposedPath } from '../../shared/dom.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
 
-import type { LinkIconType } from '../../../types/shared.ts'
+import type { LinkIcon, LinkIconType } from '../../../types/shared.ts'
+import type { ThumbnailSource } from '../../shared/thumbnails.ts'
 
 interface EditStates {
     group: string
@@ -39,6 +41,8 @@ const domiconfile = document.getElementById('e-icon-file') as HTMLInputElement
 const domicontype = document.getElementById('e-icon-type') as HTMLInputElement
 const domiconurl = document.getElementById('e-icon-url') as HTMLInputElement
 
+let thumbnailLayout = false
+
 let inputToFocus: HTMLInputElement
 let buttonToSubmit: HTMLButtonElement
 
@@ -54,6 +58,9 @@ export async function populateDialogWithEditLink(
     newLinkFromGlobal?: boolean,
 ): Promise<void> {
     domeditlink = domdialog
+    thumbnailLayout = false
+    const thumbnailStatus = document.getElementById('thumbnail-edit-status')
+    if (thumbnailStatus) thumbnailStatus.textContent = ''
 
     const path = getComposedPath(event.target)
     const classNames = path.map((element) => element.className ?? '')
@@ -141,10 +148,13 @@ export async function populateDialogWithEditLink(
         if (link && !link.folder) {
             domurl.value = link.url ?? ''
 
-            const iconType = link.icon?.type ?? 'auto'
-            const iconValue = link.icon?.value ?? ''
+            thumbnailLayout = thumbnailsEnabled()
+            const currentThumbnail = link.thumbnail?.type === 'capture' ? link.thumbnail : undefined
+            const iconType = currentThumbnail?.type ?? link.icon?.type ?? 'auto'
+            const iconValue = currentThumbnail?.value ?? link.icon?.value ?? ''
 
             domiconurl.value = ''
+            domiconfile.value = ''
             domiconfilelabel.textContent = tradThis('No file chosen')
 
             if (iconType === 'url' && iconValue) {
@@ -154,7 +164,9 @@ export async function populateDialogWithEditLink(
                 domiconfilelabel.textContent = iconValue
             }
 
-            toggleIconType(link.icon ? link.icon.type : 'auto')
+            const captureOption = domicontype.querySelector<HTMLOptionElement>('option[value="capture"]')
+            if (captureOption) captureOption.hidden = !thumbnailLayout
+            toggleIconType(iconType)
         }
     }
 
@@ -285,6 +297,9 @@ function toggleEditInputs(): string[] {
 queueMicrotask(() => {
     document.getElementById('editlink-form')?.addEventListener('submit', submitChanges)
     domicontype?.addEventListener('change', toggleIconType)
+    domiconfile?.addEventListener('change', () => {
+        domiconfilelabel.textContent = domiconfile.files?.[0]?.name ?? tradThis('No file chosen')
+    })
 })
 
 /**
@@ -471,9 +486,14 @@ function applyLinkChanges(_origin: 'inputs' | 'button'): void {
     let iconValue: string | undefined = undefined
     const iconUrl = domiconurl.value
     const iconFile = domiconfile.files?.[0]
+    const selectedType = domicontype.value
+    let icon: LinkIcon | undefined
+    // Only the new option uses screenshot storage. Standard icon choices keep their original pipeline.
+    const editsThumbnail = selectedType === 'capture'
+    const thumbnail: ThumbnailSource | null = editsThumbnail ? { type: 'capture' } : null
 
-    if (isLinkIconType(domicontype.value)) {
-        iconType = domicontype.value
+    if (!editsThumbnail && isLinkIconType(selectedType)) {
+        iconType = selectedType
         iconValue = undefined
 
         if (iconType === 'url') {
@@ -488,6 +508,7 @@ function applyLinkChanges(_origin: 'inputs' | 'button'): void {
             iconType = 'file'
             iconValue = undefined
         }
+        icon = { type: iconType, value: iconValue }
     }
 
     // Step: Send data to link update
@@ -497,11 +518,9 @@ function applyLinkChanges(_origin: 'inputs' | 'button'): void {
             id: id,
             title: document.querySelector<HTMLInputElement>('#e-title')?.value ?? '',
             url: document.querySelector<HTMLInputElement>('#e-url')?.value,
-            icon: {
-                type: iconType,
-                value: iconValue,
-            },
-            file: iconFile,
+            icon,
+            file: editsThumbnail ? undefined : iconFile,
+            thumbnail,
         },
     })
 

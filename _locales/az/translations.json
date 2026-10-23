@@ -453,5 +453,14 @@
     "URLs": "URL-lər",
     "Use a similar browser like Brave or Vivaldi": "Brave və ya Vivaldi kimi oxşar brauzerdən istifadə edin",
     "What to do from here?": "Buradan nə etməli?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatür",
+    "Clear thumbnail cache": "Miniatür keşini təmizlə",
+    "Thumbnail cache cleared": "Miniatür keşi təmizləndi",
+    "Could not change the thumbnail capture setting": "Miniatür çəkilişi parametrini dəyişmək mümkün olmadı",
+    "Could not clear thumbnail cache": "Miniatür keşini təmizləmək mümkün olmadı",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Miniatürü yaratmaq mümkün olmadı. Əvvəlki şəkil və ya sayt nişanı saxlanılır.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Çəkiliş saytların müvəqqəti pəncərələrini açır və qısa müddətə fokusu özünə keçirə bilər. Bunun üçün bütün saytlara giriş tələb olunur. Şəkillər bu cihazda qalır və hesaba daxil olduğunuz sessiyaların məlumatlarını ehtiva edə bilər. Keçidi redaktə edərkən «İkon» bölməsində «Miniatür» seçin, sonra «Dəyişiklikləri tətbiq et» düyməsinə basın.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Bu ünvanın görüntüsünü çəkmək mümkün deyil. Daxilində giriş məlumatları olmayan HTTP və ya HTTPS ünvanından istifadə edin."
 }

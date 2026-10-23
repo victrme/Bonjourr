@@ -453,5 +453,14 @@
     "URLs": "URL's",
     "Use a similar browser like Brave or Vivaldi": "Gebruik een vergelijkbare browser zoals Brave of Vivaldi",
     "What to do from here?": "Wat te doen vanaf hier?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatuur",
+    "Clear thumbnail cache": "Miniatuurcache wissen",
+    "Thumbnail cache cleared": "Miniatuurcache gewist",
+    "Could not change the thumbnail capture setting": "De instelling voor het vastleggen van miniaturen kon niet worden gewijzigd",
+    "Could not clear thumbnail cache": "Miniatuurcache kon niet worden gewist",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Miniatuur kon niet worden gemaakt. De vorige afbeelding of het websitepictogram blijft behouden.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Bij het vastleggen worden tijdelijke websitevensters geopend die kort de focus kunnen overnemen. Hiervoor is toegang tot alle websites nodig. Afbeeldingen blijven op dit apparaat en kunnen informatie uit aangemelde sessies bevatten. Selecteer bij het bewerken van een link «Miniatuur» onder «Icoon» en klik vervolgens op «Wijzigingen toepassen».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Dit adres kan niet worden vastgelegd. Gebruik een HTTP- of HTTPS-URL zonder ingesloten aanmeldgegevens."
 }

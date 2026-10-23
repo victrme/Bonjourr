@@ -453,5 +453,14 @@
     "URLs": "网址",
     "Use a similar browser like Brave or Vivaldi": "使用类似的浏览器，例如 Brave 或 Vivaldi",
     "What to do from here?": "从这里开始做什么？",
-    "Zoom": "飞涨"
+    "Zoom": "飞涨",
+
+    "Thumbnail": "缩略图",
+    "Clear thumbnail cache": "清空缩略图缓存",
+    "Thumbnail cache cleared": "缩略图缓存已清空",
+    "Could not change the thumbnail capture setting": "无法更改缩略图截取设置",
+    "Could not clear thumbnail cache": "无法清空缩略图缓存",
+    "Could not create thumbnail. The previous image or favicon is kept.": "无法创建缩略图。将保留之前的图片或网站图标。",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "截取时会打开网站的临时窗口，并可能短暂获得焦点。此功能需要访问所有网站的权限。图片保存在此设备上，可能包含已登录账户的信息。编辑链接时，请在“图标”中选择“缩略图”，然后点击“保存更改”。",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "无法截取此地址。请使用不含嵌入式登录凭据的 HTTP 或 HTTPS URL。"
 }

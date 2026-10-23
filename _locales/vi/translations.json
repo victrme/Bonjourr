@@ -453,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Sử dụng trình duyệt tương tự như Brave hoặc Vivaldi",
     "What to do from here?": "Phải làm gì từ đây?",
-    "Zoom": "Phóng"
+    "Zoom": "Phóng",
+
+    "Thumbnail": "Ảnh thu nhỏ",
+    "Clear thumbnail cache": "Xóa bộ nhớ đệm ảnh thu nhỏ",
+    "Thumbnail cache cleared": "Đã xóa bộ nhớ đệm ảnh thu nhỏ",
+    "Could not change the thumbnail capture setting": "Không thể thay đổi cài đặt chụp ảnh thu nhỏ",
+    "Could not clear thumbnail cache": "Không thể xóa bộ nhớ đệm ảnh thu nhỏ",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Không thể tạo ảnh thu nhỏ. Ảnh trước đó hoặc biểu tượng trang web vẫn được giữ lại.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Tính năng chụp sẽ mở các cửa sổ trang web tạm thời và có thể chuyển tiêu điểm trong chốc lát. Tính năng này cần quyền truy cập tất cả trang web. Hình ảnh được lưu trên thiết bị này và có thể chứa thông tin từ các phiên đã đăng nhập. Khi chỉnh sửa liên kết, chọn «Ảnh thu nhỏ» trong «Biểu tượng», rồi nhấn «Áp dụng thay đổi».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Không thể chụp địa chỉ này. Hãy dùng URL HTTP hoặc HTTPS không chứa thông tin đăng nhập."
 }

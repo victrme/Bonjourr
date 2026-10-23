@@ -179,10 +179,14 @@ function scripts(platform: Platform, env: Env): void {
         'src/scripts/services/help-mode.js',
         `release/${platform}/src/scripts/help-mode.js`,
     )
-    Deno.copyFileSync(
-        'src/scripts/services/service-worker.js',
-        `release/${platform}/src/scripts/service-worker.js`,
-    )
+    buildSync({
+        entryPoints: ['src/scripts/services/service-worker.js'],
+        outfile: `release/${platform}/src/scripts/service-worker.js`,
+        format: 'iife',
+        target: 'esnext',
+        bundle: true,
+        minify: false,
+    })
 
     if (platform !== 'online') {
         Deno.copyFileSync(

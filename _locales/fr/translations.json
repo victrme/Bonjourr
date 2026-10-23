@@ -453,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Utilisez un navigateur similaire comme Brave ou Vivaldi",
     "What to do from here?": "Que faire à partir d'ici ?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniature",
+    "Clear thumbnail cache": "Vider le cache des miniatures",
+    "Thumbnail cache cleared": "Cache des miniatures vidé",
+    "Could not change the thumbnail capture setting": "Impossible de modifier le réglage de capture des miniatures",
+    "Could not clear thumbnail cache": "Impossible de vider le cache des miniatures",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Impossible de créer la miniature. L’image précédente ou l’icône du site est conservée.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "La capture ouvre des fenêtres temporaires de sites web et peut brièvement prendre le focus. Elle nécessite l’accès à tous les sites web. Les images restent sur cet appareil et peuvent contenir des informations de votre session connectée. Lors de la modification d’un lien, sélectionnez « Miniature » dans « Icône », puis cliquez sur « Enregistrer ».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Impossible de capturer cette adresse. Utilisez une URL HTTP ou HTTPS sans identifiants intégrés."
 }

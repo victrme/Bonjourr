@@ -453,5 +453,14 @@
     "URLs": "URL-адреси",
     "Use a similar browser like Brave or Vivaldi": "Використовуйте подібний браузер, наприклад Brave або Vivaldi",
     "What to do from here?": "Що далі робити?",
-    "Zoom": "Збільшити"
+    "Zoom": "Збільшити",
+
+    "Thumbnail": "Мініатюра",
+    "Clear thumbnail cache": "Очистити кеш мініатюр",
+    "Thumbnail cache cleared": "Кеш мініатюр очищено",
+    "Could not change the thumbnail capture setting": "Не вдалося змінити налаштування створення мініатюр",
+    "Could not clear thumbnail cache": "Не вдалося очистити кеш мініатюр",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Не вдалося створити мініатюру. Збережено попереднє зображення або значок сайту.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Під час створення знімків відкриваються тимчасові вікна сайтів, які можуть ненадовго перехоплювати фокус. Потрібен доступ до всіх сайтів. Зображення залишаються на цьому пристрої та можуть містити дані авторизованого користувача. Під час редагування посилання виберіть «Мініатюра» у полі «Іконка», потім натисніть «Зберегти зміни».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Не вдалося зробити знімок для цієї адреси. Використовуйте URL з HTTP або HTTPS без вбудованих даних для входу."
 }

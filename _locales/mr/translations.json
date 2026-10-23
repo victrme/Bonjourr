@@ -480,5 +480,14 @@
     "URLs": "URLs",
     "Use a similar browser like Brave or Vivaldi": "Brave किंवा Vivaldi सारखा ब्राउझर वापरा",
     "What to do from here?": "आता पुढे काय करायचे?",
-    "Zoom": "झूम करा"
+    "Zoom": "झूम करा",
+
+    "Thumbnail": "लघुप्रतिमा",
+    "Clear thumbnail cache": "लघुप्रतिमांचा कॅशे साफ करा",
+    "Thumbnail cache cleared": "लघुप्रतिमांचा कॅशे साफ केला",
+    "Could not change the thumbnail capture setting": "लघुप्रतिमा कॅप्चरची सेटिंग बदलता आली नाही",
+    "Could not clear thumbnail cache": "लघुप्रतिमांचा कॅशे साफ करता आला नाही",
+    "Could not create thumbnail. The previous image or favicon is kept.": "लघुप्रतिमा तयार करता आली नाही. आधीची प्रतिमा किंवा वेबसाइटचे चिन्ह कायम राहील.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "कॅप्चर करताना वेबसाइटच्या तात्पुरत्या विंडो उघडतात आणि काही क्षणांसाठी त्यांच्याकडे फोकस जाऊ शकतो. यासाठी सर्व वेबसाइटवर प्रवेश आवश्यक आहे. प्रतिमा या डिव्हाइसवर राहतात आणि त्यात लॉग इन केलेल्या खात्यांची माहिती असू शकते. दुवा संपादित करताना «आयकॉन» मध्ये «लघुप्रतिमा» निवडा आणि नंतर «बदल लागू करा» वर क्लिक करा.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "या पत्त्याचा स्क्रीनशॉट घेता येत नाही. अंतर्भूत लॉगिन तपशील नसलेला HTTP किंवा HTTPS URL वापरा."
 }

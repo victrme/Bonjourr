@@ -406,6 +406,68 @@
 
 /* Link styles */
 
+.ttthumbnail.shown {
+    max-height: var(--thumbnail-help-height, 0px);
+}
+
+#thumbnail-settings {
+    display: flow-root;
+}
+
+#thumbnail-help-content {
+    padding-bottom: 8px;
+}
+
+#thumbnail-capture-help {
+    margin: 0;
+}
+
+#thumbnail-cache-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+#b_thumbnail-clear {
+    flex-shrink: 0;
+}
+
+#thumbnail-cache-status {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.thumbnail-status-fade {
+    animation: thumbnail-status-fade 5.3s forwards;
+}
+
+@keyframes thumbnail-status-fade {
+    0%, 94.34% {
+        opacity: 0.85;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.thumbnail-help,
+#thumbnail-edit-status {
+    font-size: 0.85em;
+    line-height: 1.4;
+    opacity: 0.85;
+}
+
+#thumbnail-edit-status:empty,
+#thumbnail-cache-status:empty,
+#thumbnail-status:empty {
+    display: none;
+}
+
+#thumbnail-edit-status {
+    margin: 0.5em;
+}
+
 /* Large */
 
 #linkblocks.large {
@@ -824,4 +886,91 @@
 .with-groups #link-mini,
 .in-folder #link-mini {
     display: block;
+}
+
+/* Thumbnail display is independent of the link size. Text remains text-only. */
+
+#linkblocks.thumbnails.large {
+    --thumbnail-width: 10em;
+    --thumbnail-frame: var(--link-padding);
+    --thumbnail-fallback-size: calc(var(--icon-size) - var(--link-padding) * 2);
+}
+
+#linkblocks.thumbnails.medium {
+    --thumbnail-width: 8em;
+    --thumbnail-frame: calc(var(--link-padding) * 0.77);
+    --thumbnail-fallback-size: calc(var(--icon-size) - var(--link-padding) * 1.54);
+}
+
+#linkblocks.thumbnails.small {
+    --thumbnail-width: 6em;
+    --thumbnail-frame: calc(var(--link-padding) * 0.57);
+    --thumbnail-fallback-size: calc(var(--block-size) - var(--link-padding) * 1.14);
+}
+
+#linkblocks.thumbnails.inline {
+    --thumbnail-width: 4em;
+    --thumbnail-frame: calc(var(--link-padding) * 0.43);
+    --thumbnail-fallback-size: calc(var(--icon-size) - var(--link-padding) * 0.86);
+}
+
+#linkblocks.thumbnails:not(.text) .link-elem[data-thumbnail-source='capture'] {
+    width: var(--thumbnail-width);
+}
+
+#linkblocks.thumbnails.large .link-elem[data-thumbnail-source='capture'],
+#linkblocks.thumbnails.medium .link-elem[data-thumbnail-source='capture'] {
+    width: calc(var(--thumbnail-width) + var(--block-size) - var(--icon-size));
+}
+
+#linkblocks.thumbnails:not(.text) .link-elem[data-thumbnail-source='capture'] .link-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--thumbnail-width);
+    height: calc(var(--thumbnail-width) * 0.625);
+    overflow: hidden;
+}
+
+#linkblocks.thumbnails:not(.text) .link-elem[data-thumbnail-source='capture'] img[data-thumbnail='true'] {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#linkblocks.thumbnails.small .link-elem[data-thumbnail-source='capture'] .link-elem-title {
+    top: calc(var(--thumbnail-width) * 0.625 + 0.5em);
+}
+
+#linkblocks.thumbnails .link-elem[data-thumbnail-source='capture'].selected .link-icon {
+    outline: 0.2em solid rgb(var(--accent-color));
+}
+
+#linkblocks.thumbnails .link[aria-busy='true'] .link-icon {
+    opacity: 0.6;
+}
+
+#linkblocks.thumbnails:not(.text) .link-elem[data-thumbnail-source='capture'] img:not([data-thumbnail='true']) {
+    width: var(--thumbnail-fallback-size);
+    height: var(--thumbnail-fallback-size);
+    object-fit: contain;
+}
+
+#linkblocks.thumbnails.backgrounds:not(.text)
+    .link-elem[data-thumbnail-source='capture']
+    .link-icon:has(img:not([data-thumbnail='true'])) {
+    background-color: rgb(0 0 0 / 0.18);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 0 0 var(--thumbnail-frame) white, 0 1px 5px rgb(0 0 0 / 0.2);
+}
+
+@media only screen and (hover: hover) {
+    #linkblocks.thumbnails.backgrounds:not(.text)
+        .link-elem[data-thumbnail-source='capture']
+        a:hover
+        .link-icon:has(img:not([data-thumbnail='true'])) {
+        background-color: rgb(255 255 255 / 0.12);
+        box-shadow: inset 0 0 0 var(--thumbnail-frame) white, 0 0.2em 1em rgb(0 0 0 / 0.4);
+    }
 }

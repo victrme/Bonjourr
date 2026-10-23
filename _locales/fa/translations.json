@@ -453,5 +453,14 @@
     "URLs": "URL ها",
     "Use a similar browser like Brave or Vivaldi": "از مرورگر مشابهی مانند Brave یا Vivaldi استفاده کنید",
     "What to do from here?": "از اینجا چه باید کرد؟",
-    "Zoom": "بزرگنمایی ضربه بزنید؛"
+    "Zoom": "بزرگنمایی ضربه بزنید؛",
+
+    "Thumbnail": "تصویر بندانگشتی",
+    "Clear thumbnail cache": "پاک‌کردن حافظهٔ نهان تصاویر بندانگشتی",
+    "Thumbnail cache cleared": "حافظهٔ نهان تصاویر بندانگشتی پاک شد",
+    "Could not change the thumbnail capture setting": "تغییر تنظیم ثبت تصاویر بندانگشتی ممکن نشد",
+    "Could not clear thumbnail cache": "پاک‌کردن حافظهٔ نهان تصاویر بندانگشتی ممکن نشد",
+    "Could not create thumbnail. The previous image or favicon is kept.": "ایجاد تصویر بندانگشتی ممکن نشد. تصویر قبلی یا نماد وب‌سایت حفظ می‌شود.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "ثبت تصویر، پنجره‌های موقتی وب‌سایت‌ها را باز می‌کند و ممکن است برای لحظه‌ای تمرکز را به آن‌ها منتقل کند. این کار به دسترسی به همهٔ وب‌سایت‌ها نیاز دارد. تصاویر روی همین دستگاه می‌مانند و ممکن است حاوی اطلاعات نشست‌هایی باشند که در آن‌ها وارد حساب شده‌اید. هنگام ویرایش پیوند، «تصویر بندانگشتی» را در بخش «آیکون» انتخاب کنید و سپس روی «اعمال تغییرات» بزنید.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "ثبت تصویر از این نشانی ممکن نیست. از نشانی HTTP یا HTTPS بدون اطلاعات ورود تعبیه‌شده استفاده کنید."
 }

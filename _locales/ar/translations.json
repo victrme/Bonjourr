@@ -453,5 +453,14 @@
     "URLs": "عناوين URL",
     "Use a similar browser like Brave or Vivaldi": "استخدم متصفحًا مشابهًا مثل Brave أو Vivaldi",
     "What to do from here?": "ماذا تفعل من هنا؟",
-    "Zoom": "تكبير"
+    "Zoom": "تكبير",
+
+    "Thumbnail": "صورة مصغّرة",
+    "Clear thumbnail cache": "مسح ذاكرة الصور المصغّرة المؤقتة",
+    "Thumbnail cache cleared": "تم مسح ذاكرة الصور المصغّرة المؤقتة",
+    "Could not change the thumbnail capture setting": "تعذّر تغيير إعداد التقاط الصور المصغّرة",
+    "Could not clear thumbnail cache": "تعذّر مسح ذاكرة الصور المصغّرة المؤقتة",
+    "Could not create thumbnail. The previous image or favicon is kept.": "تعذّر إنشاء الصورة المصغّرة. تم الاحتفاظ بالصورة السابقة أو أيقونة الموقع.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "يفتح الالتقاط نوافذ مؤقتة للمواقع وقد ينقل التركيز إليها لفترة وجيزة. يتطلب الوصول إلى جميع المواقع. تبقى الصور على هذا الجهاز وقد تتضمن محتوى من جلسات مسجّل الدخول فيها. عند تعديل رابط، اختر «صورة مصغّرة» ضمن «الأيقونة»، ثم اضغط على «تطبيق التغييرات».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "لا يمكن التقاط هذا العنوان. استخدم عنوان HTTP أو HTTPS من دون بيانات اعتماد مضمّنة."
 }

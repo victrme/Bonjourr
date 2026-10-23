@@ -63,7 +63,7 @@ Words that happen to be spelled identically in English and the target language (
 
 ### All keys must be present
 
-Every key from `_locales/en/translations.json` must exist in every locale file, even if the translation is the same as English. Missing or extra keys cause a runtime error.
+Keep every locale's keys aligned with `_locales/en/translations.json`, even when a translation is the same as English. Missing translations fall back to the English key; extra keys do not cause a runtime error. The automated thumbnail tests check coverage of thumbnail messages across locales.
 
 ---
 
@@ -80,4 +80,4 @@ Free-form Markdown shown on extension store listings. Translate the full content
 7. `👨‍💻` independently made paragraph (inline)
 8. Closing paragraph
 
-The language count ("available in 43 languages") must stay accurate.
+Keep the language count accurate by checking the supported locale directories in `_locales`, rather than copying an outdated count from another overview.

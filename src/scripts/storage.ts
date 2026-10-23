@@ -1,6 +1,7 @@
 import { LOCAL_DEFAULT, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
 import { deepEqual } from './dependencies/deepequal.ts'
 import { parse } from './utils/parse.ts'
+import { removeThumbnail } from './shared/thumbnails.ts'
 
 import type { Local } from '../types/local.ts'
 import type { Sync } from '../types/sync.ts'
@@ -390,6 +391,11 @@ async function init(): Promise<AllStorage> {
 //	Clear all data
 
 async function clearall(): Promise<void> {
+    try {
+        await removeThumbnail()
+    } catch (error) {
+        console.warn('Could not clear thumbnail cache during reset', error)
+    }
     sessionStorage.clear()
 
     Object.keys(localStorage).forEach((key) => {

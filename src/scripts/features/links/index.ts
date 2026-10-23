@@ -2,6 +2,10 @@ import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggle
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { storeIconFile } from './fileicons.ts'
+import { displayThumbnail, initThumbnailSettings, thumbnailsEnabled, thumbnailStatus } from './thumbnails.ts'
+import { removeThumbnail, thumbnailWebsiteUrl } from '../../shared/thumbnails.ts'
+import { migrateLegacyThumbnailIcons } from './thumbnail-compatibility.ts'
+import type { ThumbnailSource } from '../../shared/thumbnails.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
@@ -38,6 +42,7 @@ type UpdateLink = {
     title: string
     icon?: LinkIcon
     file?: File
+    thumbnail?: ThumbnailSource | null
 }
 
 type AddGroups = {
@@ -105,7 +110,7 @@ type LinksInit = {
 }
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-let initIconList: [HTMLImageElement, string][] = []
+let initIconList: [HTMLImageElement, string, LinkElem?][] = []
 let selectallTimer: ReturnType<typeof setTimeout>
 
 export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise<void> {
@@ -119,6 +124,17 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     }
 
     const { sync, local } = init
+    // Migrate the layout from earlier test builds; the switch now controls thumbnails.
+    if (sync.linkstyle === 'thumbnails') {
+        sync.linkstyle = 'medium'
+        await storage.sync.set({ linkstyle: 'medium' })
+    }
+    await migrateLegacyThumbnailIcons(sync)
+    await initThumbnailSettings()
+    document.addEventListener('thumbnail-display-changed', async () => {
+        const data = await storage.sync.get()
+        redrawLinks(data)
+    })
 
     // set class before appendBlock, cannot be moved
     domlinkblocks.classList.add(sync.linkstyle ?? 'large')
@@ -135,7 +151,6 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     }
 
     initGroups(sync, !!init)
-    initRows(sync.linksrow, sync.linkstyle)
     initblocks(sync, local)
 }
 
@@ -251,6 +266,7 @@ export function initblocks(sync: Sync, local?: Local): true {
         })
     }
 
+    initRows(sync.linksrow, sync.linkstyle)
     setRadius(sync.linkiconradius)
     displayInterface('links')
     limitAltableLinks()
@@ -302,9 +318,11 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
     li.id = link._id
     anchor.href = stringMaxSize(link.url, 512)
     span.textContent = createTitle(link)
+    const screenshot = thumbnailsEnabled() && link.thumbnail?.type === 'capture'
+    if (screenshot) li.dataset.thumbnailSource = 'capture'
 
     if (style !== 'text') {
-        initIconList.push([img, getIconFromLinkElem(link)])
+        initIconList.push([img, getIconFromLinkElem(link), screenshot ? link : undefined])
     }
 
     if (openInNewtab) {
@@ -315,7 +333,11 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 }
 
 function createIcons(local: Local): void {
-    for (const [img, url] of initIconList) {
+    for (const [img, url, link] of initIconList) {
+        if (link) {
+            displayThumbnail(img, link, url.startsWith('link') ? local[`x-icon-${url}`] ?? '' : url)
+            continue
+        }
         if (url.startsWith('link')) {
             img.src = local[`x-icon-${url}`] ?? ''
         } else {
@@ -327,7 +349,7 @@ function createIcons(local: Local): void {
         // naturalWidth is needed here because complete doesn't tell the whole story
         // it only says if it's finished loading or not, even an error code will say "complete"
         const incomplete = initIconList.filter(
-            ([img]) => !img.complete || img.naturalWidth === 0,
+            ([img, _, link]) => !link && (!img.complete || img.naturalWidth === 0),
         )
 
         // if images still haven't loaded after 400ms
@@ -370,7 +392,12 @@ function initRows(row: number, style: string): void {
     }
 
     if (style in sizes) {
-        const { width, gap } = sizes[style as keyof typeof sizes]
+        let { width, gap } = sizes[style as keyof typeof sizes]
+        if (
+            thumbnailsEnabled() && style !== 'text' && domlinkblocks.querySelector('[data-thumbnail-source="capture"]')
+        ) {
+            width = style === 'large' ? 10 : style === 'medium' ? 8 : style === 'small' ? 6 : 13
+        }
         document.documentElement.style.setProperty('--links-width', `${Math.ceil((width + gap) * row)}em`)
     }
 }
@@ -453,6 +480,14 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         data = moveOutFolder(update.moveOutFolder, data)
     }
     if (update.updateLink) {
+        if (update.updateLink.thumbnail?.type === 'capture') {
+            try {
+                thumbnailWebsiteUrl(update.updateLink.url ?? (data[update.updateLink.id] as LinkElem).url)
+            } catch (_) {
+                thumbnailStatus('Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.')
+                return
+            }
+        }
         data = updateLink(update.updateLink, data)
     }
     if (update.deleteLinks) {
@@ -488,7 +523,21 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
         return
     }
 
-    storage.sync.set(data)
+    await storage.sync.set(data)
+    if (
+        update.updateLink && thumbnailsEnabled() && data.linkstyle !== 'text' &&
+        update.updateLink.thumbnail?.type === 'capture'
+    ) {
+        const id = update.updateLink.id
+        const saved = (await storage.sync.get(id))[id] as LinkElem
+        const image = document.querySelector<HTMLImageElement>(`#${id} img`)
+        if (image && saved) {
+            const local = await storage.local.get()
+            const fallback = saved.icon?.type === 'file' ? local[`x-icon-${id}`] ?? '' : getIconFromLinkElem(saved)
+            displayThumbnail(image, saved, fallback, update.updateLink.thumbnail?.type === 'capture')
+        }
+    }
+    if (update.updateLink) initRows(data.linksrow, data.linkstyle)
 }
 
 function linkSubmission(args: SubmitLink | SubmitFolder, data: Sync): Sync {
@@ -574,7 +623,10 @@ function addLinkFolder(ids: string[], title?: string, group?: string): LinkFolde
     ]
 }
 
-function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Sync {
+function updateLink(
+    { id, title, icon, url, file, thumbnail }: UpdateLink,
+    data: Sync,
+): Sync {
     const titledom = document.querySelector<HTMLSpanElement>(`#${id} span`)
     const icondom = document.querySelector<HTMLImageElement>(`#${id} img`)
     const urldom = document.querySelector<HTMLAnchorElement>(`#${id} a`)
@@ -589,13 +641,15 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
     if (isElem(link)) {
         if (icondom && icon) {
             const img = document.createElement('img')
-            const currentSrc = icondom.src
+            const currentSrc = icondom.dataset.thumbnail === 'true'
+                ? icondom.dataset.fallback ?? icondom.src
+                : icondom.src
             let url = getDefaultIcon(link.url)
 
             icondom.src = 'src/assets/interface/loading.svg'
 
             img.onload = () => {
-                icondom.src = img.src
+                if (icondom.closest('li')?.dataset.thumbnailSource !== 'capture') icondom.src = img.src
             }
 
             if (icon.type === 'auto') {
@@ -642,6 +696,17 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
             link.url = stringMaxSize(url, 512)
             urldom.href = link.url
             titledom.textContent = createTitle(link)
+        }
+    }
+
+    if (isElem(link) && thumbnail !== undefined) {
+        const hadThumbnail = !!link.thumbnail
+        link.thumbnail = thumbnail ?? undefined
+        if (thumbnail === null) {
+            if (hadThumbnail) removeThumbnail(id).catch(console.warn)
+            icondom?.removeAttribute('data-thumbnail')
+            icondom?.removeAttribute('data-thumbnail-key')
+            icondom?.closest('li')?.removeAttribute('data-thumbnail-source')
         }
     }
 
@@ -716,6 +781,7 @@ function deleteLinks(ids: string[], data: Sync): Sync {
 
         if (link.folder) {
             for (const child of getLinksInFolder(data, link._id)) {
+                removeThumbnail(child._id).catch(() => {})
                 delete data[child._id]
             }
         }
@@ -727,6 +793,7 @@ function deleteLinks(ids: string[], data: Sync): Sync {
         }
 
         delete data[id]
+        removeThumbnail(id).catch(() => {})
     }
 
     storage.sync.clear()
@@ -802,23 +869,13 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
     const { backgrounds } = styles
 
     if (styles.style && isLinkStyle(style)) {
-        const wasText = domlinkblocks?.className.includes('text')
-
         domlinkblocks.classList.remove('large', 'medium', 'small', 'inline', 'text')
         domlinkblocks.classList.add(style)
 
         data.linkstyle = style
         storage.sync.set({ linkstyle: style })
 
-        // remove from DOM to re-draw icons
-        if (wasText) {
-            for (const el of document.querySelectorAll('#link-list li') ?? []) {
-                el.remove()
-            }
-        }
-
-        initRows(data.linksrow, style)
-        initblocks(data)
+        redrawLinks(data)
     }
 
     if (typeof titles === 'boolean') {
@@ -836,6 +893,13 @@ async function setLinkStyle(styles: { style?: string; titles?: boolean; backgrou
         document.getElementById('b_showbackgrounds')?.classList?.toggle('on', backgrounds)
         domlinkblocks.classList.toggle('backgrounds', backgrounds)
     }
+}
+
+function redrawLinks(data: Sync): void {
+    for (const el of document.querySelectorAll('.link-list li')) {
+        el.remove()
+    }
+    initblocks(data)
 }
 
 function setRadius(radius: string | number): void {

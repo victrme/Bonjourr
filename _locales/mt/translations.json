@@ -480,5 +480,14 @@
     "URLs": "URLs",
     "Use a similar browser like Brave or Vivaldi": "Uża browser simili bħal Brave jew Vivaldi",
     "What to do from here?": "X'fadali nagħmel minn hawn?",
-    "Zoom": "Żoom"
+    "Zoom": "Żoom",
+
+    "Thumbnail": "Minjatura",
+    "Clear thumbnail cache": "Ħassar il-cache tal-minjaturi",
+    "Thumbnail cache cleared": "Il-cache tal-minjaturi tħassar",
+    "Could not change the thumbnail capture setting": "Ma setax jinbidel l-issettjar tal-qbid tal-minjaturi",
+    "Could not clear thumbnail cache": "Ma setax jitħassar il-cache tal-minjaturi",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Ma setgħetx tinħoloq il-minjatura. Tinżamm l-immaġni ta’ qabel jew l-ikona tas-sit.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Il-qbid jiftaħ twieqi temporanji tas-siti web u jista’ jieħu l-fokus għal ftit ħin. Jeħtieġ aċċess għas-siti web kollha. L-immaġnijiet jibqgħu fuq dan l-apparat u jistgħu jinkludu informazzjoni minn sessjonijiet illoggjati. Meta teditja link, agħżel «Minjatura» taħt «Ikona», imbagħad ikklikkja «Applika l-bidliet».",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Ma tistax tinqabad immaġni minn dan l-indirizz. Uża URL HTTP jew HTTPS mingħajr kredenzjali inkorporati."
 }

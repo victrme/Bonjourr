@@ -284,5 +284,6 @@ Light and dark themes are handled via data attributes:
 
 ### Browser Support
 
-- Modern browsers (Chrome 90+, Firefox 88+, Safari 14+)
+- Browser requirements are defined by the platform manifests; a declared minimum version is not evidence that every feature has been tested on it.
+- See [Thumbnail documentation](THUMBNAILS.md#validation) for the tested browsers and remaining platform limitations of local capture. Safari extension compatibility remains unverified for this feature.
 - No polyfills or shims for older browser support

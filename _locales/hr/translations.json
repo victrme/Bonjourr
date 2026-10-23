@@ -453,5 +453,14 @@
     "URLs": "URL-ovi",
     "Use a similar browser like Brave or Vivaldi": "Koristite sličan preglednik kao što je Brave ili Vivaldi",
     "What to do from here?": "Što učiniti odavde?",
-    "Zoom": "Zum"
+    "Zoom": "Zum",
+
+    "Thumbnail": "Minijatura",
+    "Clear thumbnail cache": "Očisti predmemoriju minijatura",
+    "Thumbnail cache cleared": "Predmemorija minijatura je očišćena",
+    "Could not change the thumbnail capture setting": "Nije moguće promijeniti postavku snimanja minijatura",
+    "Could not clear thumbnail cache": "Nije moguće očistiti predmemoriju minijatura",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Nije moguće izraditi minijaturu. Zadržava se prethodna slika ili ikona web-mjesta.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. When editing a link, select Thumbnail under Icon, then apply changes.": "Snimanje otvara privremene prozore web-mjesta i može nakratko preuzeti fokus. Zahtijeva pristup svim web-mjestima. Slike ostaju na ovom uređaju i mogu sadržavati podatke iz prijavljenih sesija. Pri uređivanju poveznice odaberite „Minijatura” u polju „Ikona”, a zatim kliknite „Primijeni promjene”.",
+    "Cannot capture this address. Use an HTTP or HTTPS URL without embedded credentials.": "Nije moguće snimiti ovu adresu. Upotrijebite HTTP ili HTTPS adresu bez ugrađenih vjerodajnica."
 }
