@@ -479,16 +479,16 @@ async function fetchNewBackgrounds(backgrounds: Backgrounds): Promise<Record<str
     const base = 'https://services.bonjourr.fr/backgrounds'
     const path = `/${provider}/${type}/${category}`
 
-    const density = Math.max(2, globalThis.devicePixelRatio)
+    const density = globalThis.devicePixelRatio * 1.25
     const ratio = globalThis.screen.width / globalThis.screen.height
-    let height = globalThis.screen.height * density
-    let width = globalThis.screen.width * density
+    let height = Math.round(globalThis.screen.height * density)
+    let width = Math.round(globalThis.screen.width * density)
 
     if (ratio >= 2) {
-        width = height * 2
+        height = Math.round(width / 2)
     }
     if (ratio <= 0.5) {
-        height = width * 2
+        width = Math.round(height / 2)
     }
 
     const screen = `?h=${height}&w=${width}`
