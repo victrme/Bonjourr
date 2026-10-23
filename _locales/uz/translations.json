@@ -1,13 +1,5 @@
 {
     "lang": "uz",
-    "Thumbnail": "Kichik rasm",
-    "Clear thumbnail cache": "Kichik rasmlar keshini tozalash",
-    "Thumbnail cache cleared": "Kichik rasmlar keshi tozalandi",
-    "Could not enable local thumbnail capture": "Kichik rasmlarni mahalliy olishni yoqib bo‘lmadi",
-    "Could not clear thumbnail cache": "Kichik rasmlar keshini tozalab bo‘lmadi",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Kichik rasm yaratib bo‘lmadi. Oldingi rasm yoki sayt belgisi saqlanadi.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Tasvir olish saytlarning vaqtinchalik oynalarini ochadi va qisqa vaqtga fokusni olishi mumkin. Buning uchun barcha saytlarga kirish talab etiladi. Rasmlar shu qurilmada qoladi va hisobga kirilgan seanslardagi ma’lumotlarni o‘z ichiga olishi mumkin. Havolani tahrirlashda kichik rasm manbasini tanlang.",
-    "Could not save thumbnail": "Kichik rasmni saqlab bo‘lmadi",
     "Edit notes settings": "Yozuvlar sozlamalarini tahrirlash",
     "Edit search bar settings": "Qidiruv paneli sozlamalarini tahrirlash",
     "New tab": "Yangi yorliq",
@@ -461,5 +453,14 @@
     "URLs": "URL manzillari",
     "Use a similar browser like Brave or Vivaldi": "Brave yoki Vivaldi kabi shunga o'xshash brauzerdan foydalaning",
     "What to do from here?": "Bu yerdan nima qilish kerak?",
-    "Zoom": "Kattalashtirish"
+    "Zoom": "Kattalashtirish",
+
+    "Thumbnail": "Kichik rasm",
+    "Clear thumbnail cache": "Kichik rasmlar keshini tozalash",
+    "Thumbnail cache cleared": "Kichik rasmlar keshi tozalandi",
+    "Could not enable local thumbnail capture": "Kichik rasmlarni mahalliy olishni yoqib bo‘lmadi",
+    "Could not clear thumbnail cache": "Kichik rasmlar keshini tozalab bo‘lmadi",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Kichik rasm yaratib bo‘lmadi. Oldingi rasm yoki sayt belgisi saqlanadi.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Tasvir olish saytlarning vaqtinchalik oynalarini ochadi va qisqa vaqtga fokusni olishi mumkin. Buning uchun barcha saytlarga kirish talab etiladi. Rasmlar shu qurilmada qoladi va hisobga kirilgan seanslardagi ma’lumotlarni o‘z ichiga olishi mumkin. Havolani tahrirlashda kichik rasm manbasini tanlang.",
+    "Could not save thumbnail": "Kichik rasmni saqlab bo‘lmadi"
 }

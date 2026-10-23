@@ -1,13 +1,5 @@
 {
     "lang": "tr",
-    "Thumbnail": "Küçük resim",
-    "Clear thumbnail cache": "Küçük resim önbelleğini temizle",
-    "Thumbnail cache cleared": "Küçük resim önbelleği temizlendi",
-    "Could not enable local thumbnail capture": "Yerel küçük resim yakalama etkinleştirilemedi",
-    "Could not clear thumbnail cache": "Küçük resim önbelleği temizlenemedi",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Küçük resim oluşturulamadı. Önceki görsel veya site simgesi korunur.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Yakalama işlemi geçici web sitesi pencereleri açar ve kısa süreliğine odağı alabilir. Tüm web sitelerine erişim gerektirir. Görseller bu cihazda kalır ve oturum açılmış hesaplara ait içerikler barındırabilir. Bir bağlantıyı düzenlerken küçük resim kaynağını seçin.",
-    "Could not save thumbnail": "Küçük resim kaydedilemedi",
     "Edit notes settings": "Notlar ayarlarını düzenle",
     "Edit search bar settings": "Arama çubuğu ayarlarını düzenle",
     "New tab": "Yeni Sekme",
@@ -461,5 +453,14 @@
     "URLs": "URL'ler",
     "Use a similar browser like Brave or Vivaldi": "Brave veya Vivaldi gibi benzer bir tarayıcı kullanın",
     "What to do from here?": "Buradan ne yapmalı?",
-    "Zoom": "Yakınlaştır"
+    "Zoom": "Yakınlaştır",
+
+    "Thumbnail": "Küçük resim",
+    "Clear thumbnail cache": "Küçük resim önbelleğini temizle",
+    "Thumbnail cache cleared": "Küçük resim önbelleği temizlendi",
+    "Could not enable local thumbnail capture": "Yerel küçük resim yakalama etkinleştirilemedi",
+    "Could not clear thumbnail cache": "Küçük resim önbelleği temizlenemedi",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Küçük resim oluşturulamadı. Önceki görsel veya site simgesi korunur.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Yakalama işlemi geçici web sitesi pencereleri açar ve kısa süreliğine odağı alabilir. Tüm web sitelerine erişim gerektirir. Görseller bu cihazda kalır ve oturum açılmış hesaplara ait içerikler barındırabilir. Bir bağlantıyı düzenlerken küçük resim kaynağını seçin.",
+    "Could not save thumbnail": "Küçük resim kaydedilemedi"
 }

@@ -1,13 +1,5 @@
 {
     "lang": "ro",
-    "Thumbnail": "Miniatură",
-    "Clear thumbnail cache": "Golește memoria cache a miniaturilor",
-    "Thumbnail cache cleared": "Memoria cache a miniaturilor a fost golită",
-    "Could not enable local thumbnail capture": "Nu s-a putut activa capturarea locală a miniaturilor",
-    "Could not clear thumbnail cache": "Nu s-a putut goli memoria cache a miniaturilor",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Nu s-a putut crea miniatura. Se păstrează imaginea anterioară sau pictograma site-ului.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Capturarea deschide ferestre temporare ale site-urilor și poate prelua focalizarea pentru scurt timp. Necesită acces la toate site-urile. Imaginile rămân pe acest dispozitiv și pot conține informații din sesiuni autentificate. Alege o sursă pentru miniatură când editezi un link.",
-    "Could not save thumbnail": "Nu s-a putut salva miniatura",
     "Edit notes settings": "Editează setările notițelor",
     "Edit search bar settings": "Editează setările barei de căutare",
     "New tab": "Filă nouă",
@@ -461,5 +453,14 @@
     "URLs": "URL-uri",
     "Use a similar browser like Brave or Vivaldi": "Utilizați un browser similar, cum ar fi Brave sau Vivaldi",
     "What to do from here?": "Ce să faci de aici?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatură",
+    "Clear thumbnail cache": "Golește memoria cache a miniaturilor",
+    "Thumbnail cache cleared": "Memoria cache a miniaturilor a fost golită",
+    "Could not enable local thumbnail capture": "Nu s-a putut activa capturarea locală a miniaturilor",
+    "Could not clear thumbnail cache": "Nu s-a putut goli memoria cache a miniaturilor",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Nu s-a putut crea miniatura. Se păstrează imaginea anterioară sau pictograma site-ului.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Capturarea deschide ferestre temporare ale site-urilor și poate prelua focalizarea pentru scurt timp. Necesită acces la toate site-urile. Imaginile rămân pe acest dispozitiv și pot conține informații din sesiuni autentificate. Alege o sursă pentru miniatură când editezi un link.",
+    "Could not save thumbnail": "Nu s-a putut salva miniatura"
 }

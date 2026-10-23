@@ -1,13 +1,5 @@
 {
     "lang": "fi",
-    "Thumbnail": "Pikkukuva",
-    "Clear thumbnail cache": "Tyhjennä pikkukuvavälimuisti",
-    "Thumbnail cache cleared": "Pikkukuvavälimuisti tyhjennetty",
-    "Could not enable local thumbnail capture": "Paikallista pikkukuvien kaappausta ei voitu ottaa käyttöön",
-    "Could not clear thumbnail cache": "Pikkukuvavälimuistia ei voitu tyhjentää",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Pikkukuvaa ei voitu luoda. Edellinen kuva tai sivuston kuvake säilytetään.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Kaappaus avaa väliaikaisia sivustoikkunoita, jotka voivat hetkeksi saada kohdistuksen. Se edellyttää pääsyä kaikille verkkosivustoille. Kuvat säilyvät tällä laitteella ja voivat sisältää kirjautuneiden istuntojen tietoja. Valitse pikkukuvan lähde linkkiä muokatessasi.",
-    "Could not save thumbnail": "Pikkukuvaa ei voitu tallentaa",
     "Edit notes settings": "Muokkaa muistiinpanojen asetuksia",
     "Edit search bar settings": "Muokkaa hakupalkin asetuksia",
     "New tab": "Uusi välilehti",
@@ -461,5 +453,14 @@
     "URLs": "URL-osoitteet",
     "Use a similar browser like Brave or Vivaldi": "Käytä samanlaista selainta, kuten Brave tai Vivaldi",
     "What to do from here?": "Mitä tehdä täältä?",
-    "Zoom": "Zoomaa"
+    "Zoom": "Zoomaa",
+
+    "Thumbnail": "Pikkukuva",
+    "Clear thumbnail cache": "Tyhjennä pikkukuvavälimuisti",
+    "Thumbnail cache cleared": "Pikkukuvavälimuisti tyhjennetty",
+    "Could not enable local thumbnail capture": "Paikallista pikkukuvien kaappausta ei voitu ottaa käyttöön",
+    "Could not clear thumbnail cache": "Pikkukuvavälimuistia ei voitu tyhjentää",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Pikkukuvaa ei voitu luoda. Edellinen kuva tai sivuston kuvake säilytetään.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Kaappaus avaa väliaikaisia sivustoikkunoita, jotka voivat hetkeksi saada kohdistuksen. Se edellyttää pääsyä kaikille verkkosivustoille. Kuvat säilyvät tällä laitteella ja voivat sisältää kirjautuneiden istuntojen tietoja. Valitse pikkukuvan lähde linkkiä muokatessasi.",
+    "Could not save thumbnail": "Pikkukuvaa ei voitu tallentaa"
 }

@@ -1,13 +1,5 @@
 {
     "lang": "cs",
-    "Thumbnail": "Náhled",
-    "Clear thumbnail cache": "Vymazat mezipaměť náhledů",
-    "Thumbnail cache cleared": "Mezipaměť náhledů vymazána",
-    "Could not enable local thumbnail capture": "Místní pořizování náhledů se nepodařilo zapnout",
-    "Could not clear thumbnail cache": "Mezipaměť náhledů se nepodařilo vymazat",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Náhled se nepodařilo vytvořit. Předchozí obrázek nebo ikona webu zůstává zachována.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Pořizování snímků otevírá dočasná okna webů a může krátce převzít zaměření. Vyžaduje přístup ke všem webům. Obrázky zůstávají na tomto zařízení a mohou obsahovat údaje z přihlášených relací. Při úpravě odkazu zvolte zdroj náhledu.",
-    "Could not save thumbnail": "Náhled se nepodařilo uložit",
     "Edit notes settings": "Upravit nastavení poznámek",
     "Edit search bar settings": "Upravit nastavení vyhledávacího pole",
     "New tab": "Nová karta",
@@ -461,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Použijte podobný prohlížeč jako Brave nebo Vivaldi",
     "What to do from here?": "Co dělat odtud?",
-    "Zoom": "Přiblížení"
+    "Zoom": "Přiblížení",
+
+    "Thumbnail": "Náhled",
+    "Clear thumbnail cache": "Vymazat mezipaměť náhledů",
+    "Thumbnail cache cleared": "Mezipaměť náhledů vymazána",
+    "Could not enable local thumbnail capture": "Místní pořizování náhledů se nepodařilo zapnout",
+    "Could not clear thumbnail cache": "Mezipaměť náhledů se nepodařilo vymazat",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Náhled se nepodařilo vytvořit. Předchozí obrázek nebo ikona webu zůstává zachována.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Pořizování snímků otevírá dočasná okna webů a může krátce převzít zaměření. Vyžaduje přístup ke všem webům. Obrázky zůstávají na tomto zařízení a mohou obsahovat údaje z přihlášených relací. Při úpravě odkazu zvolte zdroj náhledu.",
+    "Could not save thumbnail": "Náhled se nepodařilo uložit"
 }

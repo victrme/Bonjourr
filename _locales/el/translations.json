@@ -1,13 +1,5 @@
 {
     "lang": "el",
-    "Thumbnail": "Μικρογραφία",
-    "Clear thumbnail cache": "Εκκαθάριση προσωρινής μνήμης μικρογραφιών",
-    "Thumbnail cache cleared": "Η προσωρινή μνήμη μικρογραφιών εκκαθαρίστηκε",
-    "Could not enable local thumbnail capture": "Δεν ήταν δυνατή η ενεργοποίηση της τοπικής λήψης μικρογραφιών",
-    "Could not clear thumbnail cache": "Δεν ήταν δυνατή η εκκαθάριση της προσωρινής μνήμης μικρογραφιών",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Δεν ήταν δυνατή η δημιουργία μικρογραφίας. Διατηρείται η προηγούμενη εικόνα ή το εικονίδιο του ιστοτόπου.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Η λήψη ανοίγει προσωρινά παράθυρα ιστοτόπων και ενδέχεται να πάρει για λίγο την εστίαση. Απαιτεί πρόσβαση σε όλους τους ιστοτόπους. Οι εικόνες παραμένουν σε αυτήν τη συσκευή και μπορεί να περιέχουν δεδομένα συνδεδεμένων λογαριασμών. Επιλέξτε πηγή μικρογραφίας κατά την επεξεργασία ενός συνδέσμου.",
-    "Could not save thumbnail": "Δεν ήταν δυνατή η αποθήκευση μικρογραφίας",
     "Edit notes settings": "Επεξεργασία ρυθμίσεων σημειώσεων",
     "Edit search bar settings": "Επεξεργασία ρυθμίσεων γραμμής αναζήτησης",
     "New tab": "Νέα καρτέλα",
@@ -461,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Χρησιμοποιήστε ένα παρόμοιο πρόγραμμα περιήγησης όπως το Brave ή το Vivaldi",
     "What to do from here?": "Τι να κάνετε από εδώ;",
-    "Zoom": "Ανίπταμαι διαγωνίως"
+    "Zoom": "Ανίπταμαι διαγωνίως",
+
+    "Thumbnail": "Μικρογραφία",
+    "Clear thumbnail cache": "Εκκαθάριση προσωρινής μνήμης μικρογραφιών",
+    "Thumbnail cache cleared": "Η προσωρινή μνήμη μικρογραφιών εκκαθαρίστηκε",
+    "Could not enable local thumbnail capture": "Δεν ήταν δυνατή η ενεργοποίηση της τοπικής λήψης μικρογραφιών",
+    "Could not clear thumbnail cache": "Δεν ήταν δυνατή η εκκαθάριση της προσωρινής μνήμης μικρογραφιών",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Δεν ήταν δυνατή η δημιουργία μικρογραφίας. Διατηρείται η προηγούμενη εικόνα ή το εικονίδιο του ιστοτόπου.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Η λήψη ανοίγει προσωρινά παράθυρα ιστοτόπων και ενδέχεται να πάρει για λίγο την εστίαση. Απαιτεί πρόσβαση σε όλους τους ιστοτόπους. Οι εικόνες παραμένουν σε αυτήν τη συσκευή και μπορεί να περιέχουν δεδομένα συνδεδεμένων λογαριασμών. Επιλέξτε πηγή μικρογραφίας κατά την επεξεργασία ενός συνδέσμου.",
+    "Could not save thumbnail": "Δεν ήταν δυνατή η αποθήκευση μικρογραφίας"
 }

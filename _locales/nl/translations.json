@@ -1,13 +1,5 @@
 {
     "lang": "nl",
-    "Thumbnail": "Miniatuur",
-    "Clear thumbnail cache": "Miniatuurcache wissen",
-    "Thumbnail cache cleared": "Miniatuurcache gewist",
-    "Could not enable local thumbnail capture": "Lokale miniatuuropname kon niet worden ingeschakeld",
-    "Could not clear thumbnail cache": "Miniatuurcache kon niet worden gewist",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Miniatuur kon niet worden gemaakt. De vorige afbeelding of het websitepictogram blijft behouden.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Bij het vastleggen worden tijdelijke websitevensters geopend die kort de focus kunnen overnemen. Hiervoor is toegang tot alle websites nodig. Afbeeldingen blijven op dit apparaat en kunnen informatie uit aangemelde sessies bevatten. Kies bij het bewerken van een link een bron voor de miniatuur.",
-    "Could not save thumbnail": "Miniatuur kon niet worden opgeslagen",
     "Edit notes settings": "Bewerk notitie-instellingen",
     "Edit search bar settings": "Bewerk zoekbalkinstellingen",
     "New tab": "Nieuw tabblad",
@@ -461,5 +453,14 @@
     "URLs": "URL's",
     "Use a similar browser like Brave or Vivaldi": "Gebruik een vergelijkbare browser zoals Brave of Vivaldi",
     "What to do from here?": "Wat te doen vanaf hier?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatuur",
+    "Clear thumbnail cache": "Miniatuurcache wissen",
+    "Thumbnail cache cleared": "Miniatuurcache gewist",
+    "Could not enable local thumbnail capture": "Lokale miniatuuropname kon niet worden ingeschakeld",
+    "Could not clear thumbnail cache": "Miniatuurcache kon niet worden gewist",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Miniatuur kon niet worden gemaakt. De vorige afbeelding of het websitepictogram blijft behouden.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Bij het vastleggen worden tijdelijke websitevensters geopend die kort de focus kunnen overnemen. Hiervoor is toegang tot alle websites nodig. Afbeeldingen blijven op dit apparaat en kunnen informatie uit aangemelde sessies bevatten. Kies bij het bewerken van een link een bron voor de miniatuur.",
+    "Could not save thumbnail": "Miniatuur kon niet worden opgeslagen"
 }

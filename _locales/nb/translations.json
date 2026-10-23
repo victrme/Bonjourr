@@ -1,13 +1,5 @@
 {
     "lang": "nb",
-    "Thumbnail": "Miniatyrbilde",
-    "Clear thumbnail cache": "Tøm hurtigbuffer for miniatyrbilder",
-    "Thumbnail cache cleared": "Hurtigbufferen for miniatyrbilder er tømt",
-    "Could not enable local thumbnail capture": "Kunne ikke aktivere lokalt opptak av miniatyrbilder",
-    "Could not clear thumbnail cache": "Kunne ikke tømme hurtigbufferen for miniatyrbilder",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Kunne ikke lage miniatyrbildet. Det forrige bildet eller nettstedsikonet beholdes.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Opptak åpner midlertidige nettstedvinduer og kan ta fokus et øyeblikk. Det krever tilgang til alle nettsteder. Bildene blir på denne enheten og kan inneholde informasjon fra innloggede økter. Velg en kilde til miniatyrbildet når du redigerer en lenke.",
-    "Could not save thumbnail": "Kunne ikke lagre miniatyrbildet",
     "Edit notes settings": "Rediger notatinnstillinger",
     "Edit search bar settings": "Rediger søkefeltinnstillinger",
     "New tab": "Ny fane",
@@ -461,5 +453,14 @@
     "URLs": "URL-er",
     "Use a similar browser like Brave or Vivaldi": "Bruk en lignende nettleser som Brave eller Vivaldi",
     "What to do from here?": "Hva skal jeg gjøre herfra?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatyrbilde",
+    "Clear thumbnail cache": "Tøm hurtigbuffer for miniatyrbilder",
+    "Thumbnail cache cleared": "Hurtigbufferen for miniatyrbilder er tømt",
+    "Could not enable local thumbnail capture": "Kunne ikke aktivere lokalt opptak av miniatyrbilder",
+    "Could not clear thumbnail cache": "Kunne ikke tømme hurtigbufferen for miniatyrbilder",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Kunne ikke lage miniatyrbildet. Det forrige bildet eller nettstedsikonet beholdes.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Opptak åpner midlertidige nettstedvinduer og kan ta fokus et øyeblikk. Det krever tilgang til alle nettsteder. Bildene blir på denne enheten og kan inneholde informasjon fra innloggede økter. Velg en kilde til miniatyrbildet når du redigerer en lenke.",
+    "Could not save thumbnail": "Kunne ikke lagre miniatyrbildet"
 }

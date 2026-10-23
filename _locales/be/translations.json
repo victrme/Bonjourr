@@ -1,13 +1,5 @@
 {
     "lang": "be",
-    "Thumbnail": "Мініяцюра",
-    "Clear thumbnail cache": "Ачысціць кэш мініяцюр",
-    "Thumbnail cache cleared": "Кэш мініяцюр ачышчаны",
-    "Could not enable local thumbnail capture": "Не ўдалося ўключыць лакальныя здымкі сайтаў",
-    "Could not clear thumbnail cache": "Не ўдалося ачысціць кэш мініяцюр",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Не ўдалося стварыць мініяцюру. Захавана папярэдняя выява або значок сайта.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Падчас стварэння здымкаў адкрываюцца часовыя вокны сайтаў, якія могуць ненадоўга перахопліваць фокус. Патрэбны доступ да ўсіх сайтаў. Выявы застаюцца на гэтай прыладзе і могуць змяшчаць даныя карыстальніка, які ўвайшоў ва ўліковы запіс. Выберыце крыніцу мініяцюры пры рэдагаванні спасылкі.",
-    "Could not save thumbnail": "Не ўдалося захаваць мініяцюру",
     "Edit notes settings": "Рэдагаваць налады нататак",
     "Edit search bar settings": "Рэдагаваць налады радка пошуку",
     "New tab": "Новая картка",
@@ -461,5 +453,14 @@
     "URLs": "URL-адрасы",
     "Use a similar browser like Brave or Vivaldi": "Выкарыстоўвайце аналагічны браўзер — напрыклад, Brave або Vivaldi",
     "What to do from here?": "Што з гэтым можна зрабіць?",
-    "Zoom": "Маштаб"
+    "Zoom": "Маштаб",
+
+    "Thumbnail": "Мініяцюра",
+    "Clear thumbnail cache": "Ачысціць кэш мініяцюр",
+    "Thumbnail cache cleared": "Кэш мініяцюр ачышчаны",
+    "Could not enable local thumbnail capture": "Не ўдалося ўключыць лакальныя здымкі сайтаў",
+    "Could not clear thumbnail cache": "Не ўдалося ачысціць кэш мініяцюр",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Не ўдалося стварыць мініяцюру. Захавана папярэдняя выява або значок сайта.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Падчас стварэння здымкаў адкрываюцца часовыя вокны сайтаў, якія могуць ненадоўга перахопліваць фокус. Патрэбны доступ да ўсіх сайтаў. Выявы застаюцца на гэтай прыладзе і могуць змяшчаць даныя карыстальніка, які ўвайшоў ва ўліковы запіс. Выберыце крыніцу мініяцюры пры рэдагаванні спасылкі.",
+    "Could not save thumbnail": "Не ўдалося захаваць мініяцюру"
 }

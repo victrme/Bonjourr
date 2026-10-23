@@ -1,13 +1,5 @@
 {
     "lang": "sk",
-    "Thumbnail": "Náhľad",
-    "Clear thumbnail cache": "Vymazať vyrovnávaciu pamäť náhľadov",
-    "Thumbnail cache cleared": "Vyrovnávacia pamäť náhľadov bola vymazaná",
-    "Could not enable local thumbnail capture": "Nepodarilo sa zapnúť lokálne vytváranie náhľadov",
-    "Could not clear thumbnail cache": "Nepodarilo sa vymazať vyrovnávaciu pamäť náhľadov",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Nepodarilo sa vytvoriť náhľad. Predchádzajúci obrázok alebo ikona webu zostáva zachovaná.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Vytváranie snímok otvára dočasné okná webov a môže nakrátko prevziať zameranie. Vyžaduje prístup ku všetkým webom. Obrázky zostávajú na tomto zariadení a môžu obsahovať údaje z prihlásených relácií. Pri úprave odkazu vyberte zdroj náhľadu.",
-    "Could not save thumbnail": "Nepodarilo sa uložiť náhľad",
     "Edit notes settings": "Upraviť nastavenia poznámok",
     "Edit search bar settings": "Upraviť nastavenia vyhľadávacieho poľa",
     "New tab": "Nová karta",
@@ -461,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Použite podobný prehliadač ako Brave alebo Vivaldi",
     "What to do from here?": "Čo robiť odtiaľto?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Náhľad",
+    "Clear thumbnail cache": "Vymazať vyrovnávaciu pamäť náhľadov",
+    "Thumbnail cache cleared": "Vyrovnávacia pamäť náhľadov bola vymazaná",
+    "Could not enable local thumbnail capture": "Nepodarilo sa zapnúť lokálne vytváranie náhľadov",
+    "Could not clear thumbnail cache": "Nepodarilo sa vymazať vyrovnávaciu pamäť náhľadov",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Nepodarilo sa vytvoriť náhľad. Predchádzajúci obrázok alebo ikona webu zostáva zachovaná.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Vytváranie snímok otvára dočasné okná webov a môže nakrátko prevziať zameranie. Vyžaduje prístup ku všetkým webom. Obrázky zostávajú na tomto zariadení a môžu obsahovať údaje z prihlásených relácií. Pri úprave odkazu vyberte zdroj náhľadu.",
+    "Could not save thumbnail": "Nepodarilo sa uložiť náhľad"
 }

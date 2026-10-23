@@ -1,13 +1,5 @@
 {
     "lang": "pl",
-    "Thumbnail": "Miniatura",
-    "Clear thumbnail cache": "Wyczyść pamięć podręczną miniatur",
-    "Thumbnail cache cleared": "Pamięć podręczna miniatur została wyczyszczona",
-    "Could not enable local thumbnail capture": "Nie udało się włączyć lokalnego przechwytywania miniatur",
-    "Could not clear thumbnail cache": "Nie udało się wyczyścić pamięci podręcznej miniatur",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Nie udało się utworzyć miniatury. Poprzedni obraz lub ikona witryny zostają zachowane.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Przechwytywanie otwiera tymczasowe okna witryn i może na krótko przejąć fokus. Wymaga dostępu do wszystkich witryn. Obrazy pozostają na tym urządzeniu i mogą zawierać dane z zalogowanych sesji. Wybierz źródło miniatury podczas edytowania łącza.",
-    "Could not save thumbnail": "Nie udało się zapisać miniatury",
     "New tab": "Nowa karta",
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Lubisz Bonjourr? Rozważ wystawienie recenzji lub przekazanie darowizny – to bardzo nam pomoże! 😇",
     "Read the blog post": "Przeczytaj wpis na blogu",
@@ -461,5 +453,14 @@
     "URLs": "Adresy URL",
     "Use a similar browser like Brave or Vivaldi": "Użyj podobnej przeglądarki, takiej jak Brave lub Vivaldi",
     "What to do from here?": "Co teraz zrobić?",
-    "Zoom": "Powiększenie"
+    "Zoom": "Powiększenie",
+
+    "Thumbnail": "Miniatura",
+    "Clear thumbnail cache": "Wyczyść pamięć podręczną miniatur",
+    "Thumbnail cache cleared": "Pamięć podręczna miniatur została wyczyszczona",
+    "Could not enable local thumbnail capture": "Nie udało się włączyć lokalnego przechwytywania miniatur",
+    "Could not clear thumbnail cache": "Nie udało się wyczyścić pamięci podręcznej miniatur",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Nie udało się utworzyć miniatury. Poprzedni obraz lub ikona witryny zostają zachowane.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Przechwytywanie otwiera tymczasowe okna witryn i może na krótko przejąć fokus. Wymaga dostępu do wszystkich witryn. Obrazy pozostają na tym urządzeniu i mogą zawierać dane z zalogowanych sesji. Wybierz źródło miniatury podczas edytowania łącza.",
+    "Could not save thumbnail": "Nie udało się zapisać miniatury"
 }

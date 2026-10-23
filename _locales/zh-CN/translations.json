@@ -1,13 +1,5 @@
 {
     "lang": "zh-CN",
-    "Thumbnail": "缩略图",
-    "Clear thumbnail cache": "清空缩略图缓存",
-    "Thumbnail cache cleared": "缩略图缓存已清空",
-    "Could not enable local thumbnail capture": "无法启用本地缩略图截取",
-    "Could not clear thumbnail cache": "无法清空缩略图缓存",
-    "Could not create thumbnail. The previous image or favicon is kept.": "无法创建缩略图。将保留之前的图片或网站图标。",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "截取时会打开网站的临时窗口，并可能短暂获得焦点。此功能需要访问所有网站的权限。图片保存在此设备上，可能包含已登录账户的信息。编辑链接时，请选择缩略图来源。",
-    "Could not save thumbnail": "无法保存缩略图",
     "Edit notes settings": "编辑笔记设置",
     "Edit search bar settings": "编辑搜索栏设置",
     "New tab": "新标签页",
@@ -461,5 +453,14 @@
     "URLs": "网址",
     "Use a similar browser like Brave or Vivaldi": "使用类似的浏览器，例如 Brave 或 Vivaldi",
     "What to do from here?": "从这里开始做什么？",
-    "Zoom": "飞涨"
+    "Zoom": "飞涨",
+
+    "Thumbnail": "缩略图",
+    "Clear thumbnail cache": "清空缩略图缓存",
+    "Thumbnail cache cleared": "缩略图缓存已清空",
+    "Could not enable local thumbnail capture": "无法启用本地缩略图截取",
+    "Could not clear thumbnail cache": "无法清空缩略图缓存",
+    "Could not create thumbnail. The previous image or favicon is kept.": "无法创建缩略图。将保留之前的图片或网站图标。",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "截取时会打开网站的临时窗口，并可能短暂获得焦点。此功能需要访问所有网站的权限。图片保存在此设备上，可能包含已登录账户的信息。编辑链接时，请选择缩略图来源。",
+    "Could not save thumbnail": "无法保存缩略图"
 }

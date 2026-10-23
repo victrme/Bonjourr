@@ -1,13 +1,5 @@
 {
     "lang": "es",
-    "Thumbnail": "Miniatura",
-    "Clear thumbnail cache": "Vaciar caché de miniaturas",
-    "Thumbnail cache cleared": "Caché de miniaturas vaciada",
-    "Could not enable local thumbnail capture": "No se pudo activar la captura local de miniaturas",
-    "Could not clear thumbnail cache": "No se pudo vaciar la caché de miniaturas",
-    "Could not create thumbnail. The previous image or favicon is kept.": "No se pudo crear la miniatura. Se conserva la imagen anterior o el icono del sitio.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "La captura abre ventanas temporales de sitios web y puede llevarse el foco brevemente. Requiere acceso a todos los sitios web. Las imágenes permanecen en este dispositivo y pueden contener información de sesiones iniciadas. Elige una fuente para la miniatura al editar un enlace.",
-    "Could not save thumbnail": "No se pudo guardar la miniatura",
     "New tab": "Nueva Pestaña",
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "¿Te encanta usar Bonjourr? Considera darnos una reseña o hacer una donación, ¡eso nos ayudaría mucho! 😇",
     "Read the blog post": "Leer la entrada del blog",
@@ -461,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Utilice un navegador similar como Brave o Vivaldi",
     "What to do from here?": "¿Qué hacer desde aquí?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatura",
+    "Clear thumbnail cache": "Vaciar caché de miniaturas",
+    "Thumbnail cache cleared": "Caché de miniaturas vaciada",
+    "Could not enable local thumbnail capture": "No se pudo activar la captura local de miniaturas",
+    "Could not clear thumbnail cache": "No se pudo vaciar la caché de miniaturas",
+    "Could not create thumbnail. The previous image or favicon is kept.": "No se pudo crear la miniatura. Se conserva la imagen anterior o el icono del sitio.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "La captura abre ventanas temporales de sitios web y puede llevarse el foco brevemente. Requiere acceso a todos los sitios web. Las imágenes permanecen en este dispositivo y pueden contener información de sesiones iniciadas. Elige una fuente para la miniatura al editar un enlace.",
+    "Could not save thumbnail": "No se pudo guardar la miniatura"
 }

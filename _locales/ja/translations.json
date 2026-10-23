@@ -1,13 +1,5 @@
 {
     "lang": "jp",
-    "Thumbnail": "サムネイル",
-    "Clear thumbnail cache": "サムネイルのキャッシュを消去",
-    "Thumbnail cache cleared": "サムネイルのキャッシュを消去しました",
-    "Could not enable local thumbnail capture": "ローカルでのサムネイル撮影を有効にできませんでした",
-    "Could not clear thumbnail cache": "サムネイルのキャッシュを消去できませんでした",
-    "Could not create thumbnail. The previous image or favicon is kept.": "サムネイルを作成できませんでした。以前の画像またはサイトアイコンを引き続き使用します。",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "撮影時はウェブサイトの一時ウィンドウが開き、短時間フォーカスが移ることがあります。すべてのウェブサイトへのアクセス権限が必要です。画像はこの端末に保存され、ログイン中のアカウントの情報が含まれる場合があります。リンクの編集時にサムネイルの取得元を選択してください。",
-    "Could not save thumbnail": "サムネイルを保存できませんでした",
     "Edit notes settings": "メモの設定を編集",
     "Edit search bar settings": "検索バーの設定を編集",
     "New tab": "新しいタブ",
@@ -461,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Brave や Vivaldi などの同様のブラウザを使用してください",
     "What to do from here?": "ここから何をすればいいでしょうか？",
-    "Zoom": "ズーム"
+    "Zoom": "ズーム",
+
+    "Thumbnail": "サムネイル",
+    "Clear thumbnail cache": "サムネイルのキャッシュを消去",
+    "Thumbnail cache cleared": "サムネイルのキャッシュを消去しました",
+    "Could not enable local thumbnail capture": "ローカルでのサムネイル撮影を有効にできませんでした",
+    "Could not clear thumbnail cache": "サムネイルのキャッシュを消去できませんでした",
+    "Could not create thumbnail. The previous image or favicon is kept.": "サムネイルを作成できませんでした。以前の画像またはサイトアイコンを引き続き使用します。",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "撮影時はウェブサイトの一時ウィンドウが開き、短時間フォーカスが移ることがあります。すべてのウェブサイトへのアクセス権限が必要です。画像はこの端末に保存され、ログイン中のアカウントの情報が含まれる場合があります。リンクの編集時にサムネイルの取得元を選択してください。",
+    "Could not save thumbnail": "サムネイルを保存できませんでした"
 }

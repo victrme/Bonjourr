@@ -1,13 +1,5 @@
 {
     "lang": "id",
-    "Thumbnail": "Gambar mini",
-    "Clear thumbnail cache": "Hapus cache gambar mini",
-    "Thumbnail cache cleared": "Cache gambar mini dihapus",
-    "Could not enable local thumbnail capture": "Tidak dapat mengaktifkan pengambilan gambar mini lokal",
-    "Could not clear thumbnail cache": "Tidak dapat menghapus cache gambar mini",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Tidak dapat membuat gambar mini. Gambar sebelumnya atau ikon situs tetap digunakan.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Pengambilan gambar membuka jendela situs sementara dan dapat mengambil fokus sesaat. Fitur ini memerlukan akses ke semua situs. Gambar tetap berada di perangkat ini dan mungkin memuat informasi dari sesi yang sudah masuk ke akun. Pilih sumber gambar mini saat mengedit tautan.",
-    "Could not save thumbnail": "Tidak dapat menyimpan gambar mini",
     "New tab": "Tab baru",
 
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Suka menggunakan Bonjourr? Pertimbangkan untuk memberi kami ulasan atau donasi, itu akan sangat membantu! 😇",
@@ -488,5 +480,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Gunakan browser serupa seperti Brave atau Vivaldi",
     "What to do from here?": "Apa yang harus dilakukan selanjutnya?",
-    "Zoom": "Perbesar"
+    "Zoom": "Perbesar",
+
+    "Thumbnail": "Gambar mini",
+    "Clear thumbnail cache": "Hapus cache gambar mini",
+    "Thumbnail cache cleared": "Cache gambar mini dihapus",
+    "Could not enable local thumbnail capture": "Tidak dapat mengaktifkan pengambilan gambar mini lokal",
+    "Could not clear thumbnail cache": "Tidak dapat menghapus cache gambar mini",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Tidak dapat membuat gambar mini. Gambar sebelumnya atau ikon situs tetap digunakan.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Pengambilan gambar membuka jendela situs sementara dan dapat mengambil fokus sesaat. Fitur ini memerlukan akses ke semua situs. Gambar tetap berada di perangkat ini dan mungkin memuat informasi dari sesi yang sudah masuk ke akun. Pilih sumber gambar mini saat mengedit tautan.",
+    "Could not save thumbnail": "Tidak dapat menyimpan gambar mini"
 }

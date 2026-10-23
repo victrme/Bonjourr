@@ -1,13 +1,5 @@
 {
     "lang": "az",
-    "Thumbnail": "Miniatür",
-    "Clear thumbnail cache": "Miniatür keşini təmizlə",
-    "Thumbnail cache cleared": "Miniatür keşi təmizləndi",
-    "Could not enable local thumbnail capture": "Miniatürlərin yerli çəkilişini aktivləşdirmək mümkün olmadı",
-    "Could not clear thumbnail cache": "Miniatür keşini təmizləmək mümkün olmadı",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Miniatürü yaratmaq mümkün olmadı. Əvvəlki şəkil və ya sayt nişanı saxlanılır.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Çəkiliş saytların müvəqqəti pəncərələrini açır və qısa müddətə fokusu özünə keçirə bilər. Bunun üçün bütün saytlara giriş tələb olunur. Şəkillər bu cihazda qalır və hesaba daxil olduğunuz sessiyaların məlumatlarını ehtiva edə bilər. Keçidi redaktə edərkən miniatür mənbəyini seçin.",
-    "Could not save thumbnail": "Miniatürü saxlamaq mümkün olmadı",
     "Edit notes settings": "Qeydlərin parametrlərini redaktə et",
     "Edit search bar settings": "Axtarış çubuğu parametrlərini redaktə et",
     "New tab": "Yeni tab",
@@ -461,5 +453,14 @@
     "URLs": "URL-lər",
     "Use a similar browser like Brave or Vivaldi": "Brave və ya Vivaldi kimi oxşar brauzerdən istifadə edin",
     "What to do from here?": "Buradan nə etməli?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatür",
+    "Clear thumbnail cache": "Miniatür keşini təmizlə",
+    "Thumbnail cache cleared": "Miniatür keşi təmizləndi",
+    "Could not enable local thumbnail capture": "Miniatürlərin yerli çəkilişini aktivləşdirmək mümkün olmadı",
+    "Could not clear thumbnail cache": "Miniatür keşini təmizləmək mümkün olmadı",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Miniatürü yaratmaq mümkün olmadı. Əvvəlki şəkil və ya sayt nişanı saxlanılır.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Çəkiliş saytların müvəqqəti pəncərələrini açır və qısa müddətə fokusu özünə keçirə bilər. Bunun üçün bütün saytlara giriş tələb olunur. Şəkillər bu cihazda qalır və hesaba daxil olduğunuz sessiyaların məlumatlarını ehtiva edə bilər. Keçidi redaktə edərkən miniatür mənbəyini seçin.",
+    "Could not save thumbnail": "Miniatürü saxlamaq mümkün olmadı"
 }

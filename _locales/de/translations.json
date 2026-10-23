@@ -1,13 +1,5 @@
 {
     "lang": "de",
-    "Thumbnail": "Vorschaubild",
-    "Clear thumbnail cache": "Vorschaubild-Cache leeren",
-    "Thumbnail cache cleared": "Vorschaubild-Cache geleert",
-    "Could not enable local thumbnail capture": "Lokale Vorschaubildaufnahme konnte nicht aktiviert werden",
-    "Could not clear thumbnail cache": "Vorschaubild-Cache konnte nicht geleert werden",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Vorschaubild konnte nicht erstellt werden. Das bisherige Bild oder Website-Symbol bleibt erhalten.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Bei der Aufnahme werden vorübergehend Website-Fenster geöffnet, die kurz den Fokus erhalten können. Dafür ist Zugriff auf alle Websites erforderlich. Die Bilder bleiben auf diesem Gerät und können Inhalte angemeldeter Sitzungen enthalten. Wählen Sie beim Bearbeiten eines Links eine Quelle für das Vorschaubild.",
-    "Could not save thumbnail": "Vorschaubild konnte nicht gespeichert werden",
     "New tab": "Neuer Tab",
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Benutzen Sie Bonjourr gerne? Vielleicht können Sie uns eine Bewertung geben oder eine Spende hinterlassen, das würde uns sehr helfen! 😇",
     "Read the blog post": "Blog-Eintrag lesen",
@@ -461,5 +453,14 @@
     "URLs": "URLs",
     "Use a similar browser like Brave or Vivaldi": "Verwenden Sie einen ähnlichen Browser wie Brave oder Vivaldi",
     "What to do from here?": "Was tun von hier aus?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Vorschaubild",
+    "Clear thumbnail cache": "Vorschaubild-Cache leeren",
+    "Thumbnail cache cleared": "Vorschaubild-Cache geleert",
+    "Could not enable local thumbnail capture": "Lokale Vorschaubildaufnahme konnte nicht aktiviert werden",
+    "Could not clear thumbnail cache": "Vorschaubild-Cache konnte nicht geleert werden",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Vorschaubild konnte nicht erstellt werden. Das bisherige Bild oder Website-Symbol bleibt erhalten.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Bei der Aufnahme werden vorübergehend Website-Fenster geöffnet, die kurz den Fokus erhalten können. Dafür ist Zugriff auf alle Websites erforderlich. Die Bilder bleiben auf diesem Gerät und können Inhalte angemeldeter Sitzungen enthalten. Wählen Sie beim Bearbeiten eines Links eine Quelle für das Vorschaubild.",
+    "Could not save thumbnail": "Vorschaubild konnte nicht gespeichert werden"
 }

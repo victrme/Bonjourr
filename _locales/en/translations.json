@@ -1,13 +1,5 @@
 {
     "lang": "en",
-    "Thumbnail": "Thumbnail",
-    "Clear thumbnail cache": "Clear thumbnail cache",
-    "Thumbnail cache cleared": "Thumbnail cache cleared",
-    "Could not enable local thumbnail capture": "Could not enable local thumbnail capture",
-    "Could not clear thumbnail cache": "Could not clear thumbnail cache",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Could not create thumbnail. The previous image or favicon is kept.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.",
-    "Could not save thumbnail": "Could not save thumbnail",
     "New tab": "New tab",
 
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇",
@@ -488,5 +480,14 @@
     "URLs": "URLs",
     "Use a similar browser like Brave or Vivaldi": "Use a similar browser like Brave or Vivaldi",
     "What to do from here?": "What to do from here?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Thumbnail",
+    "Clear thumbnail cache": "Clear thumbnail cache",
+    "Thumbnail cache cleared": "Thumbnail cache cleared",
+    "Could not enable local thumbnail capture": "Could not enable local thumbnail capture",
+    "Could not clear thumbnail cache": "Could not clear thumbnail cache",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Could not create thumbnail. The previous image or favicon is kept.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.",
+    "Could not save thumbnail": "Could not save thumbnail"
 }

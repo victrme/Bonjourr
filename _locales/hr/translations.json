@@ -1,13 +1,5 @@
 {
     "lang": "cr",
-    "Thumbnail": "Minijatura",
-    "Clear thumbnail cache": "Očisti predmemoriju minijatura",
-    "Thumbnail cache cleared": "Predmemorija minijatura je očišćena",
-    "Could not enable local thumbnail capture": "Nije moguće uključiti lokalno snimanje minijatura",
-    "Could not clear thumbnail cache": "Nije moguće očistiti predmemoriju minijatura",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Nije moguće izraditi minijaturu. Zadržava se prethodna slika ili ikona web-mjesta.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Snimanje otvara privremene prozore web-mjesta i može nakratko preuzeti fokus. Zahtijeva pristup svim web-mjestima. Slike ostaju na ovom uređaju i mogu sadržavati podatke iz prijavljenih sesija. Odaberite izvor minijature pri uređivanju poveznice.",
-    "Could not save thumbnail": "Nije moguće spremiti minijaturu",
     "Edit notes settings": "Uredi postavke bilješki",
     "Edit search bar settings": "Uredi postavke trake za pretraživanje",
     "New tab": "Nova kartica",
@@ -461,5 +453,14 @@
     "URLs": "URL-ovi",
     "Use a similar browser like Brave or Vivaldi": "Koristite sličan preglednik kao što je Brave ili Vivaldi",
     "What to do from here?": "Što učiniti odavde?",
-    "Zoom": "Zum"
+    "Zoom": "Zum",
+
+    "Thumbnail": "Minijatura",
+    "Clear thumbnail cache": "Očisti predmemoriju minijatura",
+    "Thumbnail cache cleared": "Predmemorija minijatura je očišćena",
+    "Could not enable local thumbnail capture": "Nije moguće uključiti lokalno snimanje minijatura",
+    "Could not clear thumbnail cache": "Nije moguće očistiti predmemoriju minijatura",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Nije moguće izraditi minijaturu. Zadržava se prethodna slika ili ikona web-mjesta.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Snimanje otvara privremene prozore web-mjesta i može nakratko preuzeti fokus. Zahtijeva pristup svim web-mjestima. Slike ostaju na ovom uređaju i mogu sadržavati podatke iz prijavljenih sesija. Odaberite izvor minijature pri uređivanju poveznice.",
+    "Could not save thumbnail": "Nije moguće spremiti minijaturu"
 }

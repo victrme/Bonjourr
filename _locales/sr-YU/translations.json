@@ -1,13 +1,5 @@
 {
     "lang": "sr-YU",
-    "Thumbnail": "Sličica",
-    "Clear thumbnail cache": "Očisti keš sličica",
-    "Thumbnail cache cleared": "Keš sličica je očišćen",
-    "Could not enable local thumbnail capture": "Nije moguće uključiti lokalno snimanje sličica",
-    "Could not clear thumbnail cache": "Nije moguće očistiti keš sličica",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Nije moguće napraviti sličicu. Zadržava se prethodna slika ili ikona sajta.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Snimanje otvara privremene prozore sajtova i može nakratko preuzeti fokus. Zahteva pristup svim sajtovima. Slike ostaju na ovom uređaju i mogu sadržati podatke iz prijavljenih sesija. Izaberite izvor sličice pri uređivanju veze.",
-    "Could not save thumbnail": "Nije moguće sačuvati sličicu",
     "Edit notes settings": "Уреди подешавања бележака",
     "Edit search bar settings": "Уреди подешавања траке за претрагу",
     "New tab": "Nova kartica",
@@ -461,5 +453,14 @@
     "URLs": "УРЛ адресе",
     "Use a similar browser like Brave or Vivaldi": "Користите сличан претраживач као што је Браве или Вивалди",
     "What to do from here?": "Шта да се ради одавде?",
-    "Zoom": "Зоом"
+    "Zoom": "Зоом",
+
+    "Thumbnail": "Sličica",
+    "Clear thumbnail cache": "Očisti keš sličica",
+    "Thumbnail cache cleared": "Keš sličica je očišćen",
+    "Could not enable local thumbnail capture": "Nije moguće uključiti lokalno snimanje sličica",
+    "Could not clear thumbnail cache": "Nije moguće očistiti keš sličica",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Nije moguće napraviti sličicu. Zadržava se prethodna slika ili ikona sajta.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Snimanje otvara privremene prozore sajtova i može nakratko preuzeti fokus. Zahteva pristup svim sajtovima. Slike ostaju na ovom uređaju i mogu sadržati podatke iz prijavljenih sesija. Izaberite izvor sličice pri uređivanju veze.",
+    "Could not save thumbnail": "Nije moguće sačuvati sličicu"
 }

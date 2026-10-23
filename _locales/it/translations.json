@@ -1,13 +1,5 @@
 {
     "lang": "it",
-    "Thumbnail": "Miniatura",
-    "Clear thumbnail cache": "Svuota cache delle miniature",
-    "Thumbnail cache cleared": "Cache delle miniature svuotata",
-    "Could not enable local thumbnail capture": "Impossibile attivare l’acquisizione locale delle miniature",
-    "Could not clear thumbnail cache": "Impossibile svuotare la cache delle miniature",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Impossibile creare la miniatura. L’immagine precedente o l’icona del sito viene mantenuta.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "L’acquisizione apre finestre temporanee dei siti web e può portarle brevemente in primo piano. Richiede l’accesso a tutti i siti web. Le immagini rimangono su questo dispositivo e possono contenere dati di sessioni con accesso effettuato. Scegli una fonte per la miniatura quando modifichi un collegamento.",
-    "Could not save thumbnail": "Impossibile salvare la miniatura",
     "New tab": "Nuova scheda",
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Ti piace usare Bonjourr? Considera di darci una recensione o di fare una donazione, sarebbe di grande aiuto! ?",
     "Read the blog post": "Leggi il post del blog",
@@ -461,5 +453,14 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Utilizza un browser simile come Brave o Vivaldi",
     "What to do from here?": "Cosa fare da qui?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+
+    "Thumbnail": "Miniatura",
+    "Clear thumbnail cache": "Svuota cache delle miniature",
+    "Thumbnail cache cleared": "Cache delle miniature svuotata",
+    "Could not enable local thumbnail capture": "Impossibile attivare l’acquisizione locale delle miniature",
+    "Could not clear thumbnail cache": "Impossibile svuotare la cache delle miniature",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Impossibile creare la miniatura. L’immagine precedente o l’icona del sito viene mantenuta.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "L’acquisizione apre finestre temporanee dei siti web e può portarle brevemente in primo piano. Richiede l’accesso a tutti i siti web. Le immagini rimangono su questo dispositivo e possono contenere dati di sessioni con accesso effettuato. Scegli una fonte per la miniatura quando modifichi un collegamento.",
+    "Could not save thumbnail": "Impossibile salvare la miniatura"
 }

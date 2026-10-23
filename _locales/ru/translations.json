@@ -1,13 +1,5 @@
 {
     "lang": "ru",
-    "Thumbnail": "Миниатюра",
-    "Clear thumbnail cache": "Очистить кэш миниатюр",
-    "Thumbnail cache cleared": "Кэш миниатюр очищен",
-    "Could not enable local thumbnail capture": "Не удалось включить локальные снимки сайтов",
-    "Could not clear thumbnail cache": "Не удалось очистить кэш миниатюр",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Не удалось создать миниатюру. Сохранено прежнее изображение или значок сайта.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "При создании снимков открываются временные окна сайтов, которые могут кратковременно перехватывать фокус. Требуется доступ ко всем сайтам. Изображения хранятся на этом устройстве и могут содержать данные авторизованного пользователя. Выберите источник миниатюры при редактировании ссылки.",
-    "Could not save thumbnail": "Не удалось сохранить миниатюру",
     "New tab": "Новая вкладка",
     "Love using Bonjourr? Consider giving us a review or donating, that would help a lot! 😇": "Нравится Bonjourr? Подумайте о том, чтобы оставить отзыв или сделать нам пожертвование, это очень поможет! 😇",
     "Read the blog post": "Прочитать статью в блоге",
@@ -461,5 +453,14 @@
     "URLs": "URL-адреса",
     "Use a similar browser like Brave or Vivaldi": "Используйте аналогичный браузер — например, Brave или Vivaldi.",
     "What to do from here?": "Что делать дальше?",
-    "Zoom": "Масштаб"
+    "Zoom": "Масштаб",
+
+    "Thumbnail": "Миниатюра",
+    "Clear thumbnail cache": "Очистить кэш миниатюр",
+    "Thumbnail cache cleared": "Кэш миниатюр очищен",
+    "Could not enable local thumbnail capture": "Не удалось включить локальные снимки сайтов",
+    "Could not clear thumbnail cache": "Не удалось очистить кэш миниатюр",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Не удалось создать миниатюру. Сохранено прежнее изображение или значок сайта.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "При создании снимков открываются временные окна сайтов, которые могут кратковременно перехватывать фокус. Требуется доступ ко всем сайтам. Изображения хранятся на этом устройстве и могут содержать данные авторизованного пользователя. Выберите источник миниатюры при редактировании ссылки.",
+    "Could not save thumbnail": "Не удалось сохранить миниатюру"
 }

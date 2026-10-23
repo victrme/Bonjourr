@@ -135,7 +135,8 @@ export async function initThumbnailSettings(): Promise<void> {
             }).catch(async () => {
                 toggle.checked = false
                 setThumbnailDisplay(false)
-                await EXTENSION!.storage.local.set({ thumbnailCaptureEnabled: false })
+                // Storage may also be unavailable during recovery; still show the original failure.
+                await EXTENSION!.storage.local.set({ thumbnailCaptureEnabled: false }).catch(() => {})
                 thumbnailStatus('Could not enable local thumbnail capture')
             }).finally(() => {
                 toggle.disabled = false
@@ -159,6 +160,10 @@ export async function initThumbnailSettings(): Promise<void> {
             if (EXTENSION) await sendThumbnailMessage({ type: 'bonjourr-thumbnail-cancel' })
             await removeThumbnail()
             refreshVisibleThumbnails()
+            // Other Bonjourr tabs may still display object URLs for the deleted images.
+            if (EXTENSION) {
+                await sendThumbnailMessage({ type: 'bonjourr-thumbnail-updated' }).catch(() => {})
+            }
             thumbnailStatus('Thumbnail cache cleared', true)
         } catch (_) {
             thumbnailStatus('Could not clear thumbnail cache', true)

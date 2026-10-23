@@ -1,13 +1,5 @@
 {
     "lang": "sr",
-    "Thumbnail": "Сличица",
-    "Clear thumbnail cache": "Очисти кеш сличица",
-    "Thumbnail cache cleared": "Кеш сличица је очишћен",
-    "Could not enable local thumbnail capture": "Није могуће укључити локално снимање сличица",
-    "Could not clear thumbnail cache": "Није могуће очистити кеш сличица",
-    "Could not create thumbnail. The previous image or favicon is kept.": "Није могуће направити сличицу. Задржава се претходна слика или икона сајта.",
-    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Снимање отвара привремене прозоре сајтова и може накратко преузети фокус. Захтева приступ свим сајтовима. Слике остају на овом уређају и могу садржати податке из пријављених сесија. Изаберите извор сличице при уређивању везе.",
-    "Could not save thumbnail": "Није могуће сачувати сличицу",
     "Edit notes settings": "Уреди подешавања бележака",
     "Edit search bar settings": "Уреди подешавања траке за претрагу",
     "New tab": "Нова картица",
@@ -461,5 +453,14 @@
     "URLs": "УРЛ адресе",
     "Use a similar browser like Brave or Vivaldi": "Користите сличан претраживач као што је Браве или Вивалди",
     "What to do from here?": "Шта да се ради одавде?",
-    "Zoom": "Зоом"
+    "Zoom": "Зоом",
+
+    "Thumbnail": "Сличица",
+    "Clear thumbnail cache": "Очисти кеш сличица",
+    "Thumbnail cache cleared": "Кеш сличица је очишћен",
+    "Could not enable local thumbnail capture": "Није могуће укључити локално снимање сличица",
+    "Could not clear thumbnail cache": "Није могуће очистити кеш сличица",
+    "Could not create thumbnail. The previous image or favicon is kept.": "Није могуће направити сличицу. Задржава се претходна слика или икона сајта.",
+    "Capture opens temporary website windows and may briefly take focus. It requires access to all websites. Images stay on this device and may contain signed-in content. Choose a thumbnail source when editing a link.": "Снимање отвара привремене прозоре сајтова и може накратко преузети фокус. Захтева приступ свим сајтовима. Слике остају на овом уређају и могу садржати податке из пријављених сесија. Изаберите извор сличице при уређивању везе.",
+    "Could not save thumbnail": "Није могуће сачувати сличицу"
 }
