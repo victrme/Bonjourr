@@ -686,8 +686,10 @@ function moveToFolder({ target, source }: MoveToFolder, data: Sync): Sync {
     const isTargetFolder = (data[target] as LinkFolder)?.folder === true
 
     if (isSourceElem && isTargetFolder) {
+        const oldParent = String((data[source] as LinkElem).parent)
         ;(data[source] as LinkElem).parent = target
         ;(data[source] as LinkElem).order = Date.now()
+        data = removeEmptyFolders(data, [oldParent])
         initblocks(data)
     }
 
@@ -699,20 +701,57 @@ function moveOutFolder({ ids, group }: { ids: string[]; group: string }, data: S
     const linksInGroup = getLinksInGroup(data, group)
     const maxOrder = linksInGroup.length > 0 ? Math.max(...linksInGroup.map((link) => link.order)) : -1
 
+    const oldParents = ids.map((id) => String((data[id] as Link).parent))
+
     // Update each link's parent and order
     ids.forEach((id, index) => {
         ;(data[id] as Link).parent = group
         ;(data[id] as Link).order = maxOrder + index + 1
     })
 
-    const correctdata = correctLinksOrder(data)
+    const correctdata = correctLinksOrder(removeEmptyFolders(data, oldParents))
     initblocks(correctdata)
     return correctdata
 }
 
+// Empty folders must not exist: deletes the ones that just lost their last link
+function removeEmptyFolders(data: Sync, folderIds: string[]): Sync {
+    for (const folderId of new Set(folderIds)) {
+        const folder = data[folderId]
+
+        if (!(isLink(folder) && folder.folder)) {
+            continue
+        }
+
+        if (getLinksInFolder(data, folderId).length > 0) {
+            continue
+        }
+
+        const openGroup = document.querySelector<HTMLElement>(`.link-group[data-folder="${folderId}"]`)
+
+        delete data[folderId]
+        animateLinksRemove([folderId])
+        storage.sync.clear() // sync.set only adds keys, so the deleted folder is dropped by rewriting everything
+
+        // Folder is gone: leave its view so the next initblocks renders the tab
+        if (openGroup) {
+            openGroup.dataset.folder = ''
+            openGroup.classList.remove('in-folder')
+        }
+    }
+
+    return data
+}
+
 function deleteLinks(ids: string[], data: Sync): Sync {
+    const parents: string[] = []
+
     for (const id of ids) {
         const link = data[id] as Link
+
+        if (link.parent !== undefined) {
+            parents.push(String(link.parent))
+        }
 
         if (link.folder) {
             for (const child of getLinksInFolder(data, link._id)) {
@@ -729,9 +768,16 @@ function deleteLinks(ids: string[], data: Sync): Sync {
         delete data[id]
     }
 
+    const wasInFolder = document.querySelector('.link-group.in-folder') !== null
+
     storage.sync.clear()
-    const correctdata = correctLinksOrder(data)
+    const correctdata = correctLinksOrder(removeEmptyFolders(data, parents))
     animateLinksRemove(ids)
+
+    if (wasInFolder && document.querySelector('.link-group.in-folder') === null) {
+        initblocks(correctdata) // folder was dissolved, show the tab
+    }
+
     return correctdata
 }
 
@@ -745,12 +791,14 @@ function moveLinks(ids: string[], data: Sync): Sync {
 }
 
 function moveToGroup({ ids, target }: MoveToGroup, data: Sync): Sync {
+    const oldParents = ids.map((id) => String((data[id] as Link).parent))
+
     for (const id of ids) {
         ;(data[id] as Link).parent = target
         ;(data[id] as Link).order = Date.now()
     }
 
-    const correctdata = correctLinksOrder(data)
+    const correctdata = correctLinksOrder(removeEmptyFolders(data, oldParents))
 
     initblocks(correctdata)
     return correctdata
