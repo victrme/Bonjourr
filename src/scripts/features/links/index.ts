@@ -86,6 +86,7 @@ type LinksUpdate = {
     deleteGroup?: string
     deleteLinks?: string[]
     refreshIcons?: string[]
+    quickLinkShortcut?: Advanced['quickLinkShortcut']
     groupTitle?: { old: string; new: string }
     styles?: { style?: string; titles?: boolean; backgrounds?: boolean }
 }
@@ -107,6 +108,7 @@ type LinksInit = {
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer: ReturnType<typeof setTimeout>
+let quickLinkShortcut: Advanced['quickLinkShortcut'] = 'alt'
 
 export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise<void> {
     if (event) {
@@ -119,6 +121,7 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     }
 
     const { sync, local } = init
+    quickLinkShortcut = sync.advanced.quickLinkShortcut ?? 'alt'
 
     // set class before appendBlock, cannot be moved
     domlinkblocks.classList.add(sync.linkstyle ?? 'large')
@@ -469,6 +472,10 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
     }
     if (update.newtab !== undefined) {
         data = setOpenInNewTab(update.newtab, data)
+    }
+    if (update.quickLinkShortcut !== undefined) {
+        quickLinkShortcut = update.quickLinkShortcut
+        data.advanced.quickLinkShortcut = update.quickLinkShortcut
     }
     if (update.refreshIcons) {
         data = refreshIcons(update.refreshIcons, data)
@@ -923,13 +930,19 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
 }
 
 function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
-    if (isTypingTarget(event.target) || !advanced.altMode) return
+    if (isTypingTarget(event.target)) return
 
-    const { altKey, ctrlKey, metaKey, code } = event
-    const isNotAltComboKey = !altKey || ctrlKey || metaKey
+    const { altKey, ctrlKey, metaKey, shiftKey, code } = event
+    const matchesShortcut = quickLinkShortcut === 'alt'
+        ? advanced.altMode && altKey && !ctrlKey && !metaKey && !shiftKey
+        : quickLinkShortcut === 'ctrl-alt'
+        ? ctrlKey && altKey && !metaKey && !shiftKey
+        : quickLinkShortcut === 'shift'
+        ? shiftKey && !altKey && !ctrlKey && !metaKey
+        : false
     const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))
 
-    if (isNotAltComboKey || isNaN(codeNumber)) {
+    if (!matchesShortcut || isNaN(codeNumber)) {
         return
     }
 

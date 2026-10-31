@@ -250,6 +250,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_quicklinks', data.quicklinks)
     setCheckbox('i_linkgroups', data?.linkgroups?.on)
     setCheckbox('i_linknewtab', data.linknewtab)
+    setInput('i_linkshortcut', data.advanced.quickLinkShortcut ?? 'alt')
     setCheckbox('i_time', data.time)
     setCheckbox('i_analog', data.clock?.analog ?? false)
     setCheckbox('i_seconds', data.clock?.seconds ?? false)
@@ -486,6 +487,10 @@ function initOptionsEvents(): void {
 
     onclickdown(paramId('i_linknewtab'), (_, target) => {
         quickLinks(undefined, { newtab: target.checked })
+    })
+
+    paramId('i_linkshortcut').addEventListener('change', function (this: HTMLSelectElement): void {
+        quickLinks(undefined, { quickLinkShortcut: this.value as Sync['advanced']['quickLinkShortcut'] })
     })
 
     paramId('i_linkstyle').addEventListener('change', function (this): void {

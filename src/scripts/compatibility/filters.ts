@@ -17,6 +17,7 @@ export function addAdvancedOptions(data: Import): Import {
     }
 
     data.advanced = data.advanced ?? SYNC_DEFAULT.advanced
+    data.advanced.quickLinkShortcut = data.advanced.quickLinkShortcut ?? SYNC_DEFAULT.advanced.quickLinkShortcut
 
     return data
 }

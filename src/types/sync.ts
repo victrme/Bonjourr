@@ -238,6 +238,9 @@ export interface Pomodoro {
 
 export interface Advanced {
     altMode: boolean
+    quickLinkShortcut: QuickLinkShortcut
     // disables escape key to toggle settings
     escKey: boolean
 }
+
+export type QuickLinkShortcut = 'alt' | 'ctrl-alt' | 'shift' | 'disabled'
