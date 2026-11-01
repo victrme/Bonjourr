@@ -105,7 +105,9 @@ export function backgroundsInit(sync: Sync, local: Local, init?: true): void {
             break
         }
         default: {
-            backgroundCacheControl(sync.backgrounds, local)
+            backgroundCacheControl(sync.backgrounds, local).then(() => {
+                preloadNextDaylightPeriod(sync.backgrounds, local)
+            })
         }
     }
 }
@@ -724,6 +726,28 @@ function createVideoItem(src: string, media: BackgroundVideo, duration: number):
     backgroundsWrapper?.classList.remove('hidden')
 
     return container
+}
+
+function preloadNextDaylightPeriod(backgrounds: Backgrounds, local: Local): void {
+    const collectionName = backgrounds.images
+    const isDaylight = backgrounds.type === 'images' && collectionName.includes('daylight')
+
+    if (!isDaylight || backgrounds.frequency === 'pause') {
+        return
+    }
+
+    const periods = ['night', 'noon', 'day', 'evening']
+    const current = daylightPeriod(userDate().getTime())
+    const next = periods[(periods.indexOf(current) + 1) % periods.length]
+    const list = local.backgroundCollections[`${collectionName}-${next}`] ?? []
+
+    for (const media of list.slice(0, 2)) {
+        if (media.format === 'image') {
+            const img = new Image()
+            img.fetchPriority = 'low'
+            img.src = media.urls[detectBackgroundSize()]
+        }
+    }
 }
 
 function preloadBackground(media: Background | undefined, res?: BackgroundSize): void | Promise<unknown> {
