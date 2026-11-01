@@ -23,6 +23,7 @@ import { transitioner } from '../../utils/transitioner.ts'
 import { SYNC_DEFAULT } from '../../defaults.ts'
 import { tradThis } from '../../utils/translations.ts'
 import { storage } from '../../storage.ts'
+import { quotes } from '../quotes.ts'
 
 import {
     addGridWidget,
@@ -221,6 +222,8 @@ function layoutChange(data: Sync, column: string): void {
         return
     }
 
+    const quotesWereEnabled = data.quotes.on
+
     // Only update selection if coming from user
     if (column === 'single' || column === 'double' || column === 'triple') {
         data.move.selection = column
@@ -258,6 +261,12 @@ function layoutChange(data: Sync, column: string): void {
 
         toggleWidgetInSettings(list)
         toggleWidgetOnInterface(list)
+
+        if (!quotesWereEnabled && newdata.quotes.on) {
+            storage.local.get(['quotesCache', 'userQuoteSelection']).then((local) => {
+                quotes({ sync: newdata, local })
+            })
+        }
 
         if (widget) {
             gridButtons(widget)

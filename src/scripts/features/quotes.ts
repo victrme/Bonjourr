@@ -36,7 +36,7 @@ export async function quotes(init?: QuotesInit, update?: QuotesUpdate): Promise<
         return
     }
 
-    if (!init) {
+    if (!init || !init.sync.quotes.on) {
         return
     }
 

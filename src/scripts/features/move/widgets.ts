@@ -3,6 +3,7 @@ import { toggleSettingsDropdown } from '../../settings.ts'
 import { transitioner } from '../../utils/transitioner.ts'
 import { storage } from '../../storage.ts'
 import { weather } from '../weather/index.ts'
+import { quotes } from '../quotes.ts'
 import {
     addGridWidget,
     getLayout,
@@ -53,6 +54,12 @@ export function toggleWidget(data: Sync, widget: [Widgets, boolean]): void {
         if (id === 'main' && on === true) {
             storage.local.get('lastWeather').then((local) => {
                 weather({ sync: newdata, lastWeather: local.lastWeather })
+            })
+        }
+
+        if (id === 'quotes' && on === true) {
+            storage.local.get(['quotesCache', 'userQuoteSelection']).then((local) => {
+                quotes({ sync: newdata, local })
             })
         }
     })
