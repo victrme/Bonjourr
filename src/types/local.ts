@@ -10,6 +10,7 @@ export interface Local {
     userQuoteSelection: number
     quotesCache: Quote[]
     translations?: Translations
+    translationsRevision?: string
     lastWeather?: LastWeather
     operaExplained?: true
 

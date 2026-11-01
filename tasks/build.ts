@@ -1,6 +1,7 @@
 import { ensureDirSync, existsSync } from '@std/fs'
 import { buildSync } from 'esbuild'
 import { httpServer } from './serve.ts'
+import { hashcode } from '../src/scripts/utils/hash.ts'
 
 type Platform = 'chrome' | 'firefox' | 'edge' | 'online'
 type Env = 'dev' | 'prod' | 'test'
@@ -64,6 +65,7 @@ function builder(platform: Platform, env: Env): void {
 function watcher(platform: Platform): void {
     watchTasks('_locales', platform, (_filename) => {
         locales(platform)
+        scripts(platform, 'dev')
     })
 
     watchTasks('src', platform, (filename) => {
@@ -155,6 +157,13 @@ function styles(platform: Platform, env: Env): void {
 
 function scripts(platform: Platform, env: Env): void {
     try {
+        const translations = Array.from(Deno.readDirSync('_locales'))
+            .filter((entry) => entry.isDirectory)
+            .map((entry) => entry.name)
+            .sort()
+            .map((lang) => [lang, JSON.parse(Deno.readTextFileSync(`_locales/${lang}/translations.json`))])
+        const translationsRevision = hashcode(JSON.stringify(translations))
+
         buildSync({
             entryPoints: ['src/scripts/index.ts'],
             outfile: `release/${platform}/src/scripts/main.js`,
@@ -165,6 +174,7 @@ function scripts(platform: Platform, env: Env): void {
             sourcemap: env === 'dev',
             define: {
                 ENV: `"${env.toUpperCase()}"`,
+                'globalThis.TRANSLATIONS_REVISION': JSON.stringify(translationsRevision),
             },
         })
     } catch (err) {

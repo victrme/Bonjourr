@@ -241,6 +241,7 @@ export const LOCAL_DEFAULT: Local = {
     gistToken: '',
     userQuoteSelection: 0,
     translations: undefined,
+    translationsRevision: undefined,
     quotesCache: [],
     backgroundUrls: {},
     backgroundFiles: {},
