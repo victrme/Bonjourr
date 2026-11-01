@@ -1,5 +1,6 @@
 import { BROWSER, PLATFORM } from '../defaults.ts'
 import { storage } from '../storage.ts'
+import { getLang, traduction } from '../utils/translations.ts'
 
 export function operaExtensionExplainer(explained?: true): void {
     if (explained || BROWSER !== 'opera' || PLATFORM !== 'chrome') {
@@ -11,6 +12,7 @@ export function operaExtensionExplainer(explained?: true): void {
     const dialog = doc.getElementById('opera-explainer') as HTMLDialogElement
     const button = doc.getElementById('b_opera-explained')
 
+    traduction(dialog, getLang())
     document.body.classList.add('loading')
     document.body.appendChild(dialog)
     dialog.showModal()
