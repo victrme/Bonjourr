@@ -93,6 +93,10 @@ body.init #background-media .background-image {
     background-color: var(--solid-background);
 }
 
+[data-theme='dark'] #background-color {
+    background-color: var(--solid-background-dark, var(--solid-background));
+}
+
 #background-texture {
     background-position: center center;
 }
