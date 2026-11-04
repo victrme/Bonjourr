@@ -75,7 +75,7 @@
 #time.seconds .digital-ss {
     display: inline-block;
     width: var(--seconds-width);
-    font-variant-numeric: tabular-nums;
+    /* font-variant-numeric: tabular-nums; */
 }
 
 /*

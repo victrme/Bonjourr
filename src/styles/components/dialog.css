@@ -1,5 +1,6 @@
 dialog {
     color: var(--color-text);
+    font-family: var(--font-family);
     background-color: var(--color-dialog);
     border: 1px solid var(--color-dialog-border);
     border-radius: 14px;

@@ -10,6 +10,7 @@ aside {
     padding: 0 21px;
     background-color: var(--color-settings);
     color: var(--color-text);
+    font-family: var(--font-family);
     font-size: 15px;
     font-weight: 400;
     text-shadow: none;
