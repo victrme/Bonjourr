@@ -15,7 +15,21 @@ export const API_DOMAIN = 'https://services.bonjourr.fr'
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
 // attributes an ID to this tab to keep track of them
-export const TAB_ID = crypto.randomUUID()
+
+
+function getUUID() {
+  // Use native randomUUID if available (HTTPS or 127.0.0.1)
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  // Fallback for insecure contexts (like 0.0.0.0 accessed via LAN IP)
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+export const TAB_ID = getUUID();
+
 export const tabsBc = new BroadcastChannel('bonjourr_tabs')
 
 export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
