@@ -123,13 +123,13 @@ body.init #background-media .background-image {
     opacity: var(--texture-opacity);
     background-image:
         repeating-linear-gradient(
-            45deg,
-            var(--texture-color) 25%,
-            transparent 25%,
-            transparent 75%,
-            var(--texture-color) 75%,
-            var(--texture-color)
-        ),
+        45deg,
+        var(--texture-color) 25%,
+        transparent 25%,
+        transparent 75%,
+        var(--texture-color) 75%,
+        var(--texture-color)
+    ),
         repeating-linear-gradient(
         45deg,
         var(--texture-color) 25%,
@@ -146,13 +146,13 @@ body.init #background-media .background-image {
     opacity: var(--texture-opacity);
     background-image:
         linear-gradient(
-            30deg,
-            var(--texture-color) 12%,
-            transparent 12.5%,
-            transparent 87%,
-            var(--texture-color) 87.5%,
-            var(--texture-color)
-        ),
+        30deg,
+        var(--texture-color) 12%,
+        transparent 12.5%,
+        transparent 87%,
+        var(--texture-color) 87.5%,
+        var(--texture-color)
+    ),
         linear-gradient(
         150deg,
         var(--texture-color) 12%,

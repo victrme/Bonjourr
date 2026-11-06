@@ -648,6 +648,65 @@
             <input id="i_linkgroups" class="switch" type="checkbox" />
         </div>
 
+        <div id="linkgroups_options" class="dropdown">
+            <hr />
+
+            <div class="wrapper">
+                <label for="i_linkgroups_mode" class="trn">Display mode</label>
+                <div>
+                    <select id="i_linkgroups_mode">
+                        <option value="single" class="trn">Standard</option>
+                        <option value="all" class="trn">All groups simultaneously</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="linkgroups_all_options" class="dropdown shown">
+                <hr />
+
+                <div class="wrapper">
+                    <label for="i_linkgroups_layout" class="trn">Layout</label>
+                    <div>
+                        <select id="i_linkgroups_layout">
+                            <option value="horizontal" class="trn">Horizontal</option>
+                            <option value="vertical" class="trn">Vertical</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="wrapper">
+                    <label for="i_linkgroups_columns" class="trn">Group columns</label>
+                    <div>
+                        <select id="i_linkgroups_columns">
+                            <option value="auto" class="trn">Auto</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="wrapper">
+                    <label for="i_linkgroups_hide_empty" class="trn">Hide empty groups</label>
+                    <input id="i_linkgroups_hide_empty" class="switch" type="checkbox" />
+                </div>
+            </div>
+
+            <div class="not-firefox not-safari not-online">
+                <hr />
+
+                <div class="wrapper">
+                    <label for="i_linkgroups_tabgroups" class="trn">Sync Chrome tab groups</label>
+                    <input id="i_linkgroups_tabgroups" class="switch" type="checkbox" />
+                </div>
+            </div>
+        </div>
+
         <div class="as as_link dropdown">
             <p class="tooltiptext dropdown">
                 <span class="trn"

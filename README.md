@@ -13,7 +13,7 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 - 🔎 Search bar (compatible with all search engines)
 - 🕰 Analog clock with multiple clock faces
 - 🌤 Weather
-- 🔗 Quick Links
+- 🔗 Quick Links & Tab Groups (simultaneous multi-group display & Chrome tab groups sync)
 - ⏱️ Pomodoro
 - 👋 Greets you by your name
 - 🌘 Dark mode
@@ -22,6 +22,14 @@ While it aims to look and feel minimal, it still brings you lots of options to c
 - 📝 Custom fonts
 - 🔒 Privacy focused & no generative AI
 - 🌎 Multilanguage
+
+### 📑 Simultaneous Tab & Link Groups Display
+
+Bonjourr supports displaying all your link groups and open Chrome tab groups simultaneously in a unified view:
+- **Simultaneous Multi-Group View:** See all groups side-by-side in sleek frosted-glass cards, without switching between tabs.
+- **Chrome Tab Groups Sync:** Real-time synchronization with native Chrome tab groups (`chrome.tabGroups`), custom colors, and direct tab switching on click.
+- **Flexible Layout & Columns:** Choose horizontal or vertical arrangements, configure column density per group (Auto, 3–6), or hide empty groups.
+- **Centered Flow:** Group cards are symmetrically centered on screen with an unobtrusive, compact add-group button.
 
 <br>
 

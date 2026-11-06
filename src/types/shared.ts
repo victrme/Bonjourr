@@ -82,6 +82,8 @@ export interface LinkElem {
     title: string
     url: string
     icon?: LinkIcon
+    tabId?: number
+    windowId?: number
 }
 
 export interface LinkIcon {

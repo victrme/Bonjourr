@@ -232,6 +232,9 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_size', data.font?.size || (IS_MOBILE ? '11' : '14'))
 
     setInput('i_synctype', local.syncType ?? (PLATFORM === 'online' ? 'off' : 'browser'))
+    setInput('i_linkgroups_mode', (data.linkgroups?.showAll ?? true) ? 'all' : 'single')
+    setInput('i_linkgroups_layout', data.linkgroups?.layout || 'horizontal')
+    setInput('i_linkgroups_columns', data.linkgroups?.columns || 'auto')
     setInput('i_pmdr_volume', data.pomodoro?.volume ?? 0.7)
     setInput('i_pmdr_alarms', data.pomodoro?.alarm ?? 'marimba')
     setInput('i_pmdr_break', data.pomodoro?.timeFor.break / 60)
@@ -249,6 +252,8 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_background-mute-videos', data.backgrounds.mute ?? true)
     setCheckbox('i_quicklinks', data.quicklinks)
     setCheckbox('i_linkgroups', data?.linkgroups?.on)
+    setCheckbox('i_linkgroups_hide_empty', data.linkgroups?.hideEmpty ?? false)
+    setCheckbox('i_linkgroups_tabgroups', data.linkgroups?.syncTabGroups ?? true)
     setCheckbox('i_linknewtab', data.linknewtab)
     setCheckbox('i_time', data.time)
     setCheckbox('i_analog', data.clock?.analog ?? false)
@@ -320,6 +325,11 @@ function initOptionsValues(data: Sync, local: Local): void {
 
     // the events for these are in toggleWidgetInSettings()
     toggleSettingsDropdown('quicklinks_options', data.quicklinks)
+    toggleSettingsDropdown('linkgroups_options', data.linkgroups?.on ?? false)
+    toggleSettingsDropdown(
+        'linkgroups_all_options',
+        (data.linkgroups?.on ?? false) && (data.linkgroups?.showAll ?? true),
+    )
     toggleSettingsDropdown('time_options', data.time)
     toggleSettingsDropdown('main_options', data.main)
     toggleSettingsDropdown('pomodoro_options', data.pomodoro.on)
@@ -482,6 +492,39 @@ function initOptionsEvents(): void {
 
     onclickdown(paramId('i_linkgroups'), (_, target) => {
         quickLinks(undefined, { groups: target.checked })
+        toggleSettingsDropdown('linkgroups_options', target.checked)
+        const modeSelect = paramId('i_linkgroups_mode') as HTMLSelectElement | null
+        const isAll = (modeSelect?.value ?? 'all') === 'all'
+        toggleSettingsDropdown('linkgroups_all_options', target.checked && isAll)
+    })
+
+    paramId('i_linkgroups_mode')?.addEventListener('change', function (this): void {
+        const isAll = (this as HTMLSelectElement).value === 'all'
+        quickLinks(undefined, { showAll: isAll })
+        toggleSettingsDropdown('linkgroups_all_options', isAll)
+    })
+
+    paramId('i_linkgroups_layout')?.addEventListener('change', function (this): void {
+        quickLinks(undefined, { layout: (this as HTMLSelectElement).value as 'horizontal' | 'vertical' })
+    })
+
+    paramId('i_linkgroups_columns')?.addEventListener('change', function (this): void {
+        quickLinks(undefined, { columns: (this as HTMLSelectElement).value as 'auto' | '3' | '4' | '5' | '6' })
+    })
+
+    onclickdown(paramId('i_linkgroups_hide_empty'), (_, target) => {
+        quickLinks(undefined, { hideEmpty: target.checked })
+    })
+
+    onclickdown(paramId('i_linkgroups_tabgroups'), async (_, target) => {
+        if (target.checked) {
+            const granted = await getPermissions('tabGroups', 'tabs')
+            if (!granted) {
+                target.checked = false
+                return
+            }
+        }
+        quickLinks(undefined, { syncTabGroups: target.checked })
     })
 
     onclickdown(paramId('i_linknewtab'), (_, target) => {
