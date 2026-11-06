@@ -20,6 +20,8 @@ type SearchbarUpdate = {
     placeholder?: string
     request?: true
     background?: true
+    voice?: boolean
+    voiceLang?: string
 }
 
 type Suggestions = {
@@ -39,9 +41,15 @@ const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListEle
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
 const domsearchbar = document.getElementById('searchbar') as HTMLInputElement | undefined
 const dombuttons = document.getElementById('sb-buttons') as HTMLDivElement | undefined
+const domvoice = document.getElementById('sb_voice') as HTMLButtonElement | undefined
 const emptyButton = document.getElementById('sb_empty')
 
 const display = (shown = false) => domcontainer?.classList.toggle('hidden', !shown)
+const setVoice = (value = false) => {
+    domcontainer?.setAttribute('data-voice', value.toString())
+    domvoice?.classList.toggle('hidden', !value)
+}
+const setVoiceLang = (value = 'auto') => domcontainer?.setAttribute('data-voicelang', value)
 const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine', value)
 const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
@@ -71,7 +79,10 @@ export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
         setPlaceholder(init?.placeholder)
         setSuggestions(init?.suggestions)
         setBackground(init?.background)
+        setVoice(init?.voice)
+        setVoiceLang(init?.voiceLang)
 
+        domvoice?.addEventListener('click', toggleVoiceSearch)
         dombuttons?.addEventListener('click', focusSearchbar)
         emptyButton?.addEventListener('click', removeInputText)
         domcontainer?.addEventListener('submit', submitSearch)
@@ -84,6 +95,8 @@ export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
         })
 
         document.addEventListener('keydown', searchbarShortcut)
+        document.addEventListener('keydown', voiceShortcut)
+        document.addEventListener('visibilitychange', onVisibilityChange)
     } catch (_) {
         //...
     }
@@ -97,6 +110,8 @@ async function updateSearchbar({
     request,
     suggestions,
     width,
+    voice,
+    voiceLang,
 }: SearchbarUpdate): Promise<void> {
     const { searchbar } = await storage.sync.get('searchbar')
 
@@ -133,6 +148,16 @@ async function updateSearchbar({
     if (background) {
         searchbar.background = hexColorFromSplitRange('sb-background-range')
         setBackground(searchbar.background)
+    }
+
+    if (voice !== undefined) {
+        searchbar.voice = voice
+        setVoice(voice)
+    }
+
+    if (voiceLang !== undefined) {
+        searchbar.voiceLang = voiceLang
+        setVoiceLang(voiceLang)
     }
 
     if (request) {
@@ -214,6 +239,10 @@ function createSearchUrl(val: string, engine: string): string {
 
 function submitSearch(e: Event): void {
     e.preventDefault()
+
+    if (isListening) {
+        stopVoiceSearch()
+    }
 
     const canUseDefault = !IS_MOBILE && (PLATFORM === 'chrome' || PLATFORM === 'firefox')
     const newtab = domcontainer?.dataset.newtab === 'true'
@@ -489,6 +518,10 @@ function toggleInputButton(enabled: boolean): void {
 }
 
 function removeInputText(): void {
+    if (isListening) {
+        abortVoiceSearch()
+    }
+
     if (domsearchbar) {
         domsearchbar.focus()
         domsearchbar.value = ''
@@ -515,4 +548,278 @@ function searchbarShortcut(event: KeyboardEvent): void {
 
 function isValidEngine(str = ''): str is SearchEngines {
     return SEARCHBAR_ENGINES.includes(str as SearchEngines)
+}
+
+//
+//	Voice Search (Web Speech API)
+//
+
+interface SpeechRecognitionResultItem {
+    transcript: string
+    confidence: number
+}
+
+interface SpeechRecognitionResultLike {
+    isFinal: boolean
+    length: number
+    [index: number]: SpeechRecognitionResultItem
+}
+
+interface SpeechRecognitionEventLike extends Event {
+    resultIndex: number
+    results: {
+        length: number
+        [index: number]: SpeechRecognitionResultLike
+    }
+}
+
+interface SpeechRecognitionErrorEventLike extends Event {
+    error: string
+    message?: string
+}
+
+interface SpeechRecognitionInstance extends EventTarget {
+    continuous: boolean
+    interimResults: boolean
+    lang: string
+    start(): void
+    stop(): void
+    abort(): void
+    onstart: ((event: Event) => void) | null
+    onresult: ((event: SpeechRecognitionEventLike) => void) | null
+    onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null
+    onend: ((event: Event) => void) | null
+}
+
+type SpeechRecognitionClass = new () => SpeechRecognitionInstance
+
+let activeRecognition: SpeechRecognitionInstance | undefined
+let isListening = false
+let voiceTimeoutId: ReturnType<typeof setTimeout> | undefined
+let errorTimeoutId: ReturnType<typeof setTimeout> | undefined
+let initialSearchValue = ''
+let originalPlaceholder = ''
+
+function getSpeechRecognition(): SpeechRecognitionClass | undefined {
+    const globalObj = globalThis as unknown as {
+        SpeechRecognition?: SpeechRecognitionClass
+        webkitSpeechRecognition?: SpeechRecognitionClass
+    }
+    return globalObj.SpeechRecognition || globalObj.webkitSpeechRecognition
+}
+
+function getVoiceLanguage(): string {
+    const configured = domcontainer?.dataset.voicelang
+    if (configured && configured !== 'auto') {
+        return configured
+    }
+    return navigator.language || getLang() || 'en-US'
+}
+
+function setVoiceState(state: 'idle' | 'requesting' | 'listening' | 'processing' | 'error'): void {
+    if (!domvoice) {
+        return
+    }
+
+    domvoice.classList.remove('listening', 'requesting', 'processing', 'error')
+
+    if (state === 'idle') {
+        domvoice.setAttribute('aria-label', tradThis('Voice search'))
+        domvoice.setAttribute('title', tradThis('Voice search'))
+    } else if (state === 'listening') {
+        domvoice.classList.add('listening')
+        domvoice.setAttribute('aria-label', tradThis('Listening... Click to stop'))
+        domvoice.setAttribute('title', tradThis('Listening... Click to stop'))
+    } else if (state === 'requesting') {
+        domvoice.classList.add('requesting')
+    } else if (state === 'processing') {
+        domvoice.classList.add('processing')
+    } else if (state === 'error') {
+        domvoice.classList.add('error')
+        clearTimeout(errorTimeoutId)
+        errorTimeoutId = setTimeout(() => {
+            domvoice?.classList.remove('error')
+            domvoice?.setAttribute('aria-label', tradThis('Voice search'))
+            domvoice?.setAttribute('title', tradThis('Voice search'))
+        }, 2000)
+    }
+}
+
+async function checkOrRequestMicrophonePermission(): Promise<boolean> {
+    try {
+        if (navigator.permissions && navigator.permissions.query) {
+            try {
+                const status = await navigator.permissions.query({ name: 'microphone' as PermissionName })
+                if (status.state === 'granted') {
+                    return true
+                }
+            } catch (_) {
+                // Ignore query error on unsupported platforms
+            }
+        }
+
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+            stream.getTracks().forEach((track) => track.stop())
+            return true
+        }
+
+        return true
+    } catch (_) {
+        return false
+    }
+}
+
+function restorePlaceholder(): void {
+    if (domsearchbar) {
+        domsearchbar.setAttribute('placeholder', originalPlaceholder)
+    }
+}
+
+export async function startVoiceSearch(): Promise<void> {
+    const SpeechRecognition = getSpeechRecognition()
+    if (!SpeechRecognition) {
+        setVoiceState('error')
+        return
+    }
+
+    if (isListening) {
+        stopVoiceSearch()
+        return
+    }
+
+    setVoiceState('requesting')
+
+    const hasPermission = await checkOrRequestMicrophonePermission()
+    if (!hasPermission) {
+        setVoiceState('error')
+        return
+    }
+
+    try {
+        const recognition = new SpeechRecognition()
+        activeRecognition = recognition
+
+        recognition.continuous = false
+        recognition.interimResults = true
+        recognition.lang = getVoiceLanguage()
+
+        initialSearchValue = domsearchbar?.value ?? ''
+        originalPlaceholder = domsearchbar?.getAttribute('placeholder') ?? ''
+
+        recognition.onstart = () => {
+            isListening = true
+            setVoiceState('listening')
+            if (domsearchbar) {
+                domsearchbar.setAttribute('placeholder', tradThis('Listening...'))
+            }
+
+            clearTimeout(voiceTimeoutId)
+            voiceTimeoutId = setTimeout(() => {
+                if (isListening) {
+                    stopVoiceSearch()
+                }
+            }, 15000)
+        }
+
+        recognition.onresult = (event: SpeechRecognitionEventLike) => {
+            let transcript = ''
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0]?.transcript ?? ''
+            }
+
+            if (domsearchbar && transcript) {
+                const val = initialSearchValue ? `${initialSearchValue.trim()} ${transcript.trimStart()}` : transcript
+                domsearchbar.value = val
+                toggleInputButton(val.length > 0)
+                domsearchbar.dispatchEvent(new Event('input', { bubbles: true }))
+            }
+        }
+
+        recognition.onerror = () => {
+            clearTimeout(voiceTimeoutId)
+            isListening = false
+            setVoiceState('error')
+            restorePlaceholder()
+        }
+
+        recognition.onend = () => {
+            clearTimeout(voiceTimeoutId)
+            const wasListening = isListening
+            isListening = false
+            activeRecognition = undefined
+
+            if (wasListening) {
+                setVoiceState('idle')
+            }
+            restorePlaceholder()
+
+            if (domsearchbar) {
+                domsearchbar.focus()
+                const len = domsearchbar.value.length
+                domsearchbar.setSelectionRange(len, len)
+                toggleInputButton(len > 0)
+            }
+        }
+
+        recognition.start()
+    } catch (_) {
+        clearTimeout(voiceTimeoutId)
+        isListening = false
+        activeRecognition = undefined
+        setVoiceState('error')
+        restorePlaceholder()
+    }
+}
+
+export function stopVoiceSearch(): void {
+    clearTimeout(voiceTimeoutId)
+    if (activeRecognition) {
+        try {
+            setVoiceState('processing')
+            activeRecognition.stop()
+        } catch (_) {
+            activeRecognition.abort()
+        }
+    }
+}
+
+export function abortVoiceSearch(): void {
+    clearTimeout(voiceTimeoutId)
+    if (activeRecognition) {
+        try {
+            activeRecognition.abort()
+        } catch (_) {
+            // ignore
+        }
+    }
+    isListening = false
+    activeRecognition = undefined
+    if (domsearchbar) {
+        domsearchbar.value = initialSearchValue
+        toggleInputButton(initialSearchValue.length > 0)
+    }
+    setVoiceState('idle')
+    restorePlaceholder()
+}
+
+function toggleVoiceSearch(): void {
+    if (isListening) {
+        stopVoiceSearch()
+    } else {
+        startVoiceSearch()
+    }
+}
+
+function voiceShortcut(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && isListening) {
+        abortVoiceSearch()
+        event.preventDefault()
+    }
+}
+
+function onVisibilityChange(): void {
+    if (document.hidden && isListening) {
+        abortVoiceSearch()
+    }
 }

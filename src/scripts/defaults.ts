@@ -195,6 +195,8 @@ export const SYNC_DEFAULT: Sync = {
         engine: 'default',
         request: '',
         placeholder: '',
+        voice: false,
+        voiceLang: 'auto',
     },
     quotes: {
         on: false,
