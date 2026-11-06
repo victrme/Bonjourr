@@ -9,7 +9,9 @@ import { storage } from '../../storage.ts'
 
 import type { LinkGroups, Sync } from '../../../types/sync.ts'
 
-const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
+function getDomLinkblocks(): HTMLDivElement | null {
+    return document.getElementById('linkblocks') as HTMLDivElement
+}
 
 export function initGroups(data: Sync, init?: true): void {
     if (!init) {
@@ -66,7 +68,7 @@ function createGroups(linkgroups: LinkGroups): void {
         document.querySelector('#link-mini div')?.appendChild(button)
     }
 
-    domlinkblocks?.classList.toggle('with-groups', linkgroups.on)
+    getDomLinkblocks()?.classList.toggle('with-groups', linkgroups.on)
 }
 
 function changeGroup(event: Event): void {
@@ -91,7 +93,7 @@ function changeGroup(event: Event): void {
 
     const transition = transitioner()
 
-    if (!!domlinkblocks.dataset.folderid || button.classList.contains('selected-group')) {
+    if (!!getDomLinkblocks()?.dataset.folderid || button.classList.contains('selected-group')) {
         return
     }
 
@@ -115,20 +117,22 @@ function changeGroup(event: Event): void {
     }
 
     function hideCurrentGroup(): void {
-        domlinkblocks.classList.remove('in-folder')
-        domlinkblocks.classList.add('hiding')
+        getDomLinkblocks()?.classList.remove('in-folder')
+        getDomLinkblocks()?.classList.add('hiding')
     }
 
     function showNewGroup(): void {
-        domlinkblocks.classList.remove('hiding')
+        getDomLinkblocks()?.classList.remove('hiding')
     }
 }
 
 // Updates
 
 export function toggleGroups(on: boolean, data: Sync): Sync {
-    domlinkblocks?.classList.toggle('with-groups', on)
+    getDomLinkblocks()?.classList.toggle('with-groups', on)
     data.linkgroups.on = on
+    initblocks(data)
+    initGroups(data)
     return data
 }
 
@@ -235,4 +239,46 @@ export async function togglePinGroup(group: string, action: 'pin' | 'unpin'): Pr
 
     initblocks(data)
     initGroups(data)
+}
+
+export function toggleGroupMode(showAll: boolean, data: Sync): Sync {
+    data.linkgroups.showAll = showAll
+    getDomLinkblocks()?.classList.toggle('show-all', showAll)
+    initblocks(data)
+    initGroups(data)
+    return data
+}
+
+export function changeGroupLayout(layout: 'horizontal' | 'vertical', data: Sync): Sync {
+    data.linkgroups.layout = layout
+    getDomLinkblocks()?.classList.toggle('layout-vertical', layout === 'vertical')
+    initblocks(data)
+    return data
+}
+
+export function changeGroupColumns(columns: 'auto' | '3' | '4' | '5' | '6', data: Sync): Sync {
+    data.linkgroups.columns = columns
+    initblocks(data)
+    return data
+}
+
+export function toggleHideEmpty(hideEmpty: boolean, data: Sync): Sync {
+    data.linkgroups.hideEmpty = hideEmpty
+    initblocks(data)
+    return data
+}
+
+export async function toggleSyncTabGroups(syncTabGroups: boolean, data: Sync): Promise<Sync> {
+    data.linkgroups.syncTabGroups = syncTabGroups
+    if (syncTabGroups) {
+        const { initTabGroupsSync } = await import('./tabgroups.ts')
+        await initTabGroupsSync(data, async () => {
+            const current = await storage.sync.get()
+            initblocks(current)
+            initGroups(current)
+        })
+    }
+    initblocks(data)
+    initGroups(data)
+    return data
 }

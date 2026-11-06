@@ -1,5 +1,18 @@
-import { addGroup, changeGroupTitle, deleteGroup, initGroups, moveGroups, toggleGroups } from './groups.ts'
+import {
+    addGroup,
+    changeGroupColumns,
+    changeGroupLayout,
+    changeGroupTitle,
+    deleteGroup,
+    initGroups,
+    moveGroups,
+    toggleGroupMode,
+    toggleGroups,
+    toggleHideEmpty,
+    toggleSyncTabGroups,
+} from './groups.ts'
 import { initBookmarkSync, syncBookmarks } from './bookmarks.ts'
+import { focusChromeTab, getTabGroupLinks, initTabGroupsSync, isTabGroup } from './tabgroups.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { storeIconFile } from './fileicons.ts'
 import { folderClick } from './folders.ts'
@@ -73,6 +86,11 @@ type LinksUpdate = {
     row?: string
     newtab?: boolean
     groups?: boolean
+    showAll?: boolean
+    layout?: 'horizontal' | 'vertical'
+    columns?: 'auto' | '3' | '4' | '5' | '6'
+    hideEmpty?: boolean
+    syncTabGroups?: boolean
     addLinks?: AddLinks
     addGroups?: AddGroups
     addFolder?: { ids: string[]; group?: string }
@@ -104,7 +122,30 @@ type LinksInit = {
     local: Local
 }
 
-const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
+function getDomLinkblocks(): HTMLDivElement {
+    return document.getElementById('linkblocks') as HTMLDivElement
+}
+
+const domlinkblocks = {
+    get classList() {
+        return getDomLinkblocks()?.classList
+    },
+    get className() {
+        return getDomLinkblocks()?.className ?? ''
+    },
+    prepend(...nodes: (Node | string)[]) {
+        getDomLinkblocks()?.prepend(...nodes)
+    },
+    appendChild<T extends Node>(node: T): T {
+        return getDomLinkblocks()?.appendChild(node) as T
+    },
+    querySelector<E extends Element = Element>(selectors: string): E | null {
+        return getDomLinkblocks()?.querySelector<E>(selectors)
+    },
+    querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E> {
+        return getDomLinkblocks()?.querySelectorAll<E>(selectors) ?? ([] as unknown as NodeListOf<E>)
+    },
+} as unknown as HTMLDivElement
 let initIconList: [HTMLImageElement, string][] = []
 let selectallTimer: ReturnType<typeof setTimeout>
 
@@ -125,6 +166,9 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     domlinkblocks.classList.toggle('titles', sync.linktitles)
     domlinkblocks.classList.toggle('backgrounds', sync.linkbackgrounds)
     domlinkblocks.classList.toggle('hidden', !sync.quicklinks)
+    const isShowAll = (sync.linkgroups.on ?? false) && (sync.linkgroups.showAll ?? true)
+    domlinkblocks.classList.toggle('show-all', isShowAll)
+    domlinkblocks.classList.toggle('layout-vertical', sync.linkgroups.layout === 'vertical')
 
     document.addEventListener('keydown', (event) => {
         openLinksWithKeyboard(init.sync.advanced, event)
@@ -132,6 +176,14 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
 
     if (sync.linkgroups.synced.length > 0) {
         await initBookmarkSync(sync)
+    }
+
+    if (sync.linkgroups.syncTabGroups ?? true) {
+        await initTabGroupsSync(sync, async () => {
+            const current = await storage.sync.get()
+            initblocks(current)
+            initGroups(current)
+        })
     }
 
     initGroups(sync, !!init)
@@ -143,21 +195,47 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
 
 export function initblocks(sync: Sync, local?: Local): true {
     const allLinks = Object.values(sync).filter((val) => isLink(val)) as Link[]
-    const { pinned, synced, selected } = sync.linkgroups
+    const {
+        pinned,
+        synced,
+        selected,
+        showAll,
+        hideEmpty,
+        layout,
+        columns,
+        groupColors,
+        syncTabGroups,
+    } = sync.linkgroups
     const activeGroups: LinkGroups = []
 
-    for (const group of [...pinned, selected]) {
+    const isShowAll = (sync.linkgroups.on ?? false) && (showAll ?? true)
+    domlinkblocks.classList.toggle('show-all', isShowAll)
+    domlinkblocks.classList.toggle('layout-vertical', layout === 'vertical')
+
+    const groupList = isShowAll ? sync.linkgroups.groups : [...pinned, selected]
+
+    for (const group of groupList) {
         const div = document.querySelector<HTMLDivElement>(`.link-group[data-group="${group}"]`)
         const folder = div?.dataset.folder
         const lis: HTMLLIElement[] = []
-        const links = folder ? getLinksInFolder(sync, folder) : getLinksInGroup(sync, group)
+        let links = folder ? getLinksInFolder(sync, folder) : getLinksInGroup(sync, group)
+
+        if (synced?.includes(group)) {
+            links = syncBookmarks(group)
+        } else if (syncTabGroups && isTabGroup(group)) {
+            links = getTabGroupLinks(group) || links
+        }
+
+        if (isShowAll && hideEmpty && links.length === 0) {
+            continue
+        }
 
         activeGroups.push({
             lis,
             div,
             links,
             title: group,
-            pinned: group !== selected,
+            pinned: isShowAll ? false : group !== selected,
             synced: synced?.includes(group),
         })
     }
@@ -192,10 +270,6 @@ export function initblocks(sync: Sync, local?: Local): true {
             throw new Error('Template not found')
         }
 
-        if (group.synced) {
-            group.links = syncBookmarks(group.title)
-        }
-
         for (const link of group.links) {
             let li = group.lis.find((li) => li.id === link._id)
 
@@ -213,7 +287,7 @@ export function initblocks(sync: Sync, local?: Local): true {
 
             li.addEventListener('keyup', openContextMenu)
 
-            if (!group.synced) {
+            if (!group.synced && !isTabGroup(group.title)) {
                 li.addEventListener('click', selectAll)
                 li.addEventListener('pointerdown', selectAll)
                 li.addEventListener('pointerdown', startDrag)
@@ -229,6 +303,32 @@ export function initblocks(sync: Sync, local?: Local): true {
         linkgroup.dataset.group = group.title
         linkgroup.classList.toggle('pinned', group.pinned)
         linkgroup.classList.toggle('synced', group.synced)
+        linkgroup.classList.toggle('is-empty', group.links.length === 0)
+
+        if (group.links.length === 0) {
+            linklist.setAttribute('data-empty-text', tradThis('Empty group'))
+        } else {
+            linklist.removeAttribute('data-empty-text')
+        }
+
+        const color = groupColors?.[group.title]
+        if (color) {
+            linkgroup.dataset.color = color
+            linkgroup.style.setProperty('--group-color', color)
+        } else {
+            delete linkgroup.dataset.color
+            linkgroup.style.removeProperty('--group-color')
+        }
+
+        if (isShowAll) {
+            const cols = columns && columns !== 'auto'
+                ? Number(columns)
+                : (group.links.length >= 10 ? 5 : (group.links.length >= 5 ? 3 : Math.max(group.links.length, 2)))
+            linkgroup.style.setProperty('--group-columns', String(cols))
+        } else {
+            linkgroup.style.removeProperty('--group-columns')
+        }
+
         linklist.appendChild(fragment)
         domlinkblocks.prepend(linkgroup)
 
@@ -240,6 +340,28 @@ export function initblocks(sync: Sync, local?: Local): true {
 
         if (group.title === 'default') {
             linktitle.textContent = tradThis('Default group')
+        }
+    }
+
+    const oldAddButtons = document.querySelectorAll<HTMLButtonElement>('.add-group-btn, .add-group-card')
+    for (const btn of oldAddButtons) {
+        btn.remove()
+    }
+
+    if (isShowAll) {
+        const addGroupBtn = document.createElement('button')
+        addGroupBtn.className = 'add-group-btn add-group'
+        addGroupBtn.title = tradThis('Add new group')
+        addGroupBtn.setAttribute('aria-label', tradThis('Add new group'))
+        addGroupBtn.textContent = '+'
+        addGroupBtn.addEventListener('click', (e) => openContextMenu(e))
+
+        const allGroupDivs = domlinkblocks.querySelectorAll<HTMLDivElement>('.link-group')
+        const lastGroup = allGroupDivs[allGroupDivs.length - 1]
+        if (lastGroup) {
+            lastGroup.appendChild(addGroupBtn)
+        } else {
+            domlinkblocks.appendChild(addGroupBtn)
         }
     }
 
@@ -309,6 +431,13 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 
     if (openInNewtab) {
         anchor.target = '_blank'
+    }
+
+    if (link.tabId) {
+        anchor.addEventListener('click', (event) => {
+            event.preventDefault()
+            focusChromeTab(link.tabId!, link.windowId)
+        })
     }
 
     return li
@@ -466,6 +595,21 @@ export async function linksUpdate(update: LinksUpdate): Promise<void> {
     }
     if (update.groups !== undefined) {
         data = toggleGroups(update.groups, data)
+    }
+    if (update.showAll !== undefined) {
+        data = toggleGroupMode(update.showAll, data)
+    }
+    if (update.layout) {
+        data = changeGroupLayout(update.layout, data)
+    }
+    if (update.columns) {
+        data = changeGroupColumns(update.columns, data)
+    }
+    if (update.hideEmpty !== undefined) {
+        data = toggleHideEmpty(update.hideEmpty, data)
+    }
+    if (update.syncTabGroups !== undefined) {
+        data = await toggleSyncTabGroups(update.syncTabGroups, data)
     }
     if (update.newtab !== undefined) {
         data = setOpenInNewTab(update.newtab, data)

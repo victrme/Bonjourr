@@ -342,10 +342,10 @@ aside .color-button button {
     background-color: rgb(var(--input-color));
     border: 1px solid
         color-mix(
-            in srgb,
-            rgb(var(--input-color)) 85%,
-            black
-        );
+        in srgb,
+        rgb(var(--input-color)) 85%,
+        black
+    );
     direction: ltr;
 }
 

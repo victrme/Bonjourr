@@ -316,6 +316,12 @@ export function validateLinkGroups(current: Import): Import {
     current.linkgroups.groups = groups.map((val) => (val ? val : 'default'))
     current.linkgroups.pinned = pinned.map((val) => (val ? val : 'default'))
     current.linkgroups.synced = synced.map((val) => (val ? val : 'default'))
+    current.linkgroups.showAll = current.linkgroups.showAll ?? true
+    current.linkgroups.layout = current.linkgroups.layout ?? 'horizontal'
+    current.linkgroups.columns = current.linkgroups.columns ?? 'auto'
+    current.linkgroups.hideEmpty = current.linkgroups.hideEmpty ?? false
+    current.linkgroups.syncTabGroups = current.linkgroups.syncTabGroups ?? true
+    current.linkgroups.groupColors = current.linkgroups.groupColors ?? {}
 
     for (const link of links) {
         if (!link?.parent) {

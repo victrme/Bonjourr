@@ -61,6 +61,12 @@ export interface LinkGroups {
     groups: string[]
     pinned: string[]
     synced: string[]
+    showAll?: boolean
+    layout?: 'horizontal' | 'vertical'
+    columns?: 'auto' | '3' | '4' | '5' | '6'
+    hideEmpty?: boolean
+    syncTabGroups?: boolean
+    groupColors?: Record<string, string>
 }
 
 export interface Hide {

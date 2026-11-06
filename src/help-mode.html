@@ -207,179 +207,179 @@
         </div>
 
         <style>
-            #help-mode {
-                font-family: system-ui;
-                color: #ccc;
-                background-color: black;
-                position: relative;
-                z-index: 2;
-                display: none;
-                padding: 0 20px;
+        #help-mode {
+            font-family: system-ui;
+            color: #ccc;
+            background-color: black;
+            position: relative;
+            z-index: 2;
+            display: none;
+            padding: 0 20px;
+        }
+
+        #help-mode.shown {
+            display: flow-root;
+        }
+
+        #help-mode #content {
+            max-width: 600px;
+            margin: 4em auto;
+        }
+
+        #help-mode a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        #help-mode h1,
+        #help-mode h2,
+        #help-mode h3,
+        #help-mode h4 {
+            color: white;
+        }
+
+        #help-mode h1 {
+            text-align: center;
+        }
+
+        #help-mode h2 {
+            margin-top: 2em;
+            margin-bottom: 0.5em;
+        }
+
+        #help-mode p {
+            margin-top: 0.5em;
+            margin: 0.75rem 0;
+            color: #d1d5db;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        #help-mode .hidden {
+            display: none;
+        }
+
+        #help-mode .important {
+            color: red;
+        }
+
+        #help-mode pre {
+            width: 100%;
+            border: none;
+            resize: vertical;
+            font-family: var(--monospace-font-family);
+            font-size: 0.8rem;
+            background-color: rgb(53, 53, 57);
+            border-radius: 10px;
+            margin: 6px 0;
+            padding: 15px 21px;
+            max-width: 100%;
+            height: 12em;
+            min-height: 12em;
+            box-sizing: border-box;
+            text-wrap: wrap;
+            overflow: auto;
+            word-break: break-all;
+            color: #e5e7eb;
+        }
+
+        #help-mode details {
+            background: #1c1c1e;
+            border: 1px solid #2a2a2d;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            transition: all 0.15s ease-in-out;
+            color: #e5e7eb;
+        }
+
+        #help-mode details[open] {
+            background: #1e1e21;
+            border-color: #2d2d30;
+        }
+
+        #help-mode summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #help-mode summary h3 {
+            margin-block: 10px;
+        }
+
+        #help-mode summary h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f3f4f6;
+        }
+
+        #help-mode summary small {
+            font-weight: 400;
+            color: #9ca3af;
+        }
+
+        #help-mode summary::after {
+            content: '▸';
+            font-size: 1.2rem;
+            color: #9ca3af;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        #help-mode details[open] summary::after {
+            transform: rotate(90deg);
+            color: #f3f4f6;
+        }
+
+        /* server statuses */
+
+        #server-status ul {
+            list-style: none;
+        }
+
+        #server-status ul li {
+            position: relative;
+        }
+
+        #server-status ul li:before {
+            content: '';
+            position: absolute;
+            width: 0.35rem;
+            height: 0.35rem;
+            top: 50%;
+            transform: translateY(-50%);
+            left: -0.85em;
+            border-radius: 9999px;
+            animation: pulse 2s ease infinite;
+            background-color: #ff8000;
+            box-shadow: 0 0 5px #ffb366;
+        }
+
+        #server-status ul li.statusUp:before {
+            background-color: #00ff00;
+            box-shadow: 0 0 5px #00ff00;
+        }
+
+        #server-status ul li.statusDown:before {
+            background-color: #ff0000;
+            box-shadow: 0 0 5px #ff4d4d;
+        }
+
+        @keyframes pulse {
+            0%,
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(-50%);
             }
 
-            #help-mode.shown {
-                display: flow-root;
+            50% {
+                opacity: 0.4;
+                transform: scale(1.2) translateY(-50%);
             }
-
-            #help-mode #content {
-                max-width: 600px;
-                margin: 4em auto;
-            }
-
-            #help-mode a {
-                color: white;
-                text-decoration: underline;
-            }
-
-            #help-mode h1,
-            #help-mode h2,
-            #help-mode h3,
-            #help-mode h4 {
-                color: white;
-            }
-
-            #help-mode h1 {
-                text-align: center;
-            }
-
-            #help-mode h2 {
-                margin-top: 2em;
-                margin-bottom: 0.5em;
-            }
-
-            #help-mode p {
-                margin-top: 0.5em;
-                margin: 0.75rem 0;
-                color: #d1d5db;
-                font-size: 0.95rem;
-                line-height: 1.4;
-            }
-
-            #help-mode .hidden {
-                display: none;
-            }
-
-            #help-mode .important {
-                color: red;
-            }
-
-            #help-mode pre {
-                width: 100%;
-                border: none;
-                resize: vertical;
-                font-family: var(--monospace-font-family);
-                font-size: 0.8rem;
-                background-color: rgb(53, 53, 57);
-                border-radius: 10px;
-                margin: 6px 0;
-                padding: 15px 21px;
-                max-width: 100%;
-                height: 12em;
-                min-height: 12em;
-                box-sizing: border-box;
-                text-wrap: wrap;
-                overflow: auto;
-                word-break: break-all;
-                color: #e5e7eb;
-            }
-
-            #help-mode details {
-                background: #1c1c1e;
-                border: 1px solid #2a2a2d;
-                border-radius: 0.75rem;
-                padding: 1rem;
-                margin: 1rem 0;
-                transition: all 0.15s ease-in-out;
-                color: #e5e7eb;
-            }
-
-            #help-mode details[open] {
-                background: #1e1e21;
-                border-color: #2d2d30;
-            }
-
-            #help-mode summary {
-                cursor: pointer;
-                list-style: none;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-            #help-mode summary h3 {
-                margin-block: 10px;
-            }
-
-            #help-mode summary h4 {
-                margin: 0;
-                font-size: 1rem;
-                font-weight: 600;
-                color: #f3f4f6;
-            }
-
-            #help-mode summary small {
-                font-weight: 400;
-                color: #9ca3af;
-            }
-
-            #help-mode summary::after {
-                content: '▸';
-                font-size: 1.2rem;
-                color: #9ca3af;
-                transition: transform 0.2s ease, color 0.2s ease;
-            }
-
-            #help-mode details[open] summary::after {
-                transform: rotate(90deg);
-                color: #f3f4f6;
-            }
-
-            /* server statuses */
-
-            #server-status ul {
-                list-style: none;
-            }
-
-            #server-status ul li {
-                position: relative;
-            }
-
-            #server-status ul li:before {
-                content: '';
-                position: absolute;
-                width: 0.35rem;
-                height: 0.35rem;
-                top: 50%;
-                transform: translateY(-50%);
-                left: -0.85em;
-                border-radius: 9999px;
-                animation: pulse 2s ease infinite;
-                background-color: #ff8000;
-                box-shadow: 0 0 5px #ffb366;
-            }
-
-            #server-status ul li.statusUp:before {
-                background-color: #00ff00;
-                box-shadow: 0 0 5px #00ff00;
-            }
-
-            #server-status ul li.statusDown:before {
-                background-color: #ff0000;
-                box-shadow: 0 0 5px #ff4d4d;
-            }
-
-            @keyframes pulse {
-                0%,
-                to {
-                    opacity: 1;
-                    transform: scale(1) translateY(-50%);
-                }
-
-                50% {
-                    opacity: 0.4;
-                    transform: scale(1.2) translateY(-50%);
-                }
-            }
+        }
         </style>
     </div>
 </template>
