@@ -291,3 +291,22 @@ Deno.test({
         assertEquals(lastGroup.contains(addBtn), true)
     },
 })
+
+Deno.test({
+    name: 'Disabling quicklinks correctly hides linkblocks even when showAll and linkgroups are enabled',
+    sanitizeOps: false,
+    sanitizeResources: false,
+    fn: () => {
+        setupDOM()
+        const data = createMockSync()
+        data.linkgroups.showAll = true
+        data.linkgroups.on = true
+        data.quicklinks = false
+
+        const local = {} as any
+        initblocks(data, local)
+
+        const linkblocks = document.getElementById('linkblocks')!
+        assertEquals(linkblocks.classList.contains('hidden'), true)
+    },
+})

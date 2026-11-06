@@ -4,8 +4,10 @@
     --in-out-bounce: cubic-bezier(0.68, -0.2, 0.265, 1.2);
 }
 
-#linkblocks.hidden {
-    display: none;
+#linkblocks.hidden,
+#linkblocks.show-all.hidden,
+#linkblocks.show-all.layout-vertical.hidden {
+    display: none !important;
 }
 
 .select-all .link .link-icon,
@@ -834,7 +836,7 @@
     display: none !important;
 }
 
-#linkblocks.show-all {
+#linkblocks.show-all:not(.hidden) {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -848,7 +850,7 @@
     position: relative;
 }
 
-#linkblocks.show-all.layout-vertical {
+#linkblocks.show-all.layout-vertical:not(.hidden) {
     flex-direction: column;
     align-items: center;
     gap: 2em;

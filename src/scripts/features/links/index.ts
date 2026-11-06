@@ -209,6 +209,7 @@ export function initblocks(sync: Sync, local?: Local): true {
     const activeGroups: LinkGroups = []
 
     const isShowAll = (sync.linkgroups.on ?? false) && (showAll ?? true)
+    domlinkblocks.classList.toggle('hidden', sync.quicklinks === false)
     domlinkblocks.classList.toggle('show-all', isShowAll)
     domlinkblocks.classList.toggle('layout-vertical', layout === 'vertical')
 
