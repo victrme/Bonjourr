@@ -51,10 +51,13 @@
 }
 
 #searchbar {
+    flex: 1 1 auto;
     width: 100%;
+    min-width: 0;
     height: 2.5em;
     color: rgb(var(--font-on-blur-color));
     padding-inline-start: 1em;
+    padding-inline-end: 0.5em;
     font-size: 1.3em;
     font-family: inherit;
     font-weight: inherit;
@@ -70,14 +73,16 @@
 }
 
 #sb-buttons {
-    display: flex;
+    display: none;
+    align-items: center;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.1s, visibility 0.1s;
+    transition: opacity 0.15s, visibility 0.15s;
     transition-behavior: allow-discrete;
 }
 
 #sb-buttons.shown {
+    display: flex;
     opacity: 1;
     visibility: visible;
 }
@@ -89,6 +94,87 @@
     border-radius: 0.5em;
     background-color: transparent;
     transition: opacity 0.2s;
+}
+
+#sb_voice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(var(--font-on-blur-color));
+    font-size: inherit;
+    padding: 0.35em 0.8em;
+    margin-inline-end: 0.4em;
+    border-radius: 0.5em;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.2s, color 0.2s, transform 0.2s;
+}
+
+#sb_voice.hidden {
+    display: none;
+}
+
+#sb_voice:hover {
+    opacity: 1;
+    filter: brightness(1.15);
+}
+
+#sb_voice:active {
+    opacity: 0.6;
+    transform: scale(0.95);
+}
+
+#sb_voice .mic-icon {
+    width: 1.45em;
+    height: 1.45em;
+}
+
+#sb_voice.listening {
+    color: #ff4757;
+    animation: sb-voice-pulse 1.3s ease-in-out infinite;
+}
+
+#sb_voice.requesting,
+#sb_voice.processing {
+    opacity: 0.7;
+    animation: sb-voice-pulse 0.8s ease-in-out infinite;
+}
+
+#sb_voice.error {
+    color: #ffa502;
+    animation: sb-voice-shake 0.4s ease-in-out;
+}
+
+@keyframes sb-voice-pulse {
+    0% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px rgba(255, 71, 87, 0.4));
+    }
+    50% {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.8));
+    }
+    100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 2px rgba(255, 71, 87, 0.4));
+    }
+}
+
+@keyframes sb-voice-shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    20%,
+    60% {
+        transform: translateX(-4px);
+    }
+    40%,
+    80% {
+        transform: translateX(4px);
+    }
 }
 
 #sb-buttons button:hover {

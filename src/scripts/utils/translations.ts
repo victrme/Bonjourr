@@ -16,7 +16,8 @@ export async function setTranslationCache(language: string, local?: Local): Prom
     }
 
     const cachedLang = local?.translations?.lang
-    const useCache = local && cachedLang === lang
+    const hasVoiceKey = !!local?.translations?.['Voice search']
+    const useCache = local && cachedLang === lang && hasVoiceKey
 
     if (useCache) {
         trns = local.translations

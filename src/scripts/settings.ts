@@ -207,6 +207,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_sb-opacity', opacityFromHex(data.searchbar?.background ?? '#fff2'))
     setInput('i_sbwidth', data.searchbar?.width ?? 30)
     setInput('i_sbrequest', data.searchbar?.request || '')
+    setInput('i_sbvoicelang', data.searchbar?.voiceLang || 'auto')
     setInput('i_qtfreq', data.quotes?.frequency || 'day')
     setInput('i_qttype', data.quotes?.type || 'classic')
     setInput('i_qtlist', userQuotes ?? '')
@@ -271,6 +272,8 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_ampm-label', data.clock?.ampmlabel ?? false)
     setCheckbox('i_sbsuggestions', data.searchbar?.suggestions ?? true)
     setCheckbox('i_sbnewtab', data.searchbar?.newtab ?? false)
+    setCheckbox('i_sbvoice', data.searchbar?.voice ?? false)
+    toggleSettingsDropdown('searchbar_voice_options', data.searchbar?.voice ?? false)
     setCheckbox('i_qtauthor', data.quotes?.author ?? false)
 
     // this one's weird because it was a select made into a checkbox
@@ -888,6 +891,15 @@ function initOptionsEvents(): void {
 
     onclickdown(paramId('i_sbsuggestions'), (_, target) => {
         searchbar(undefined, { suggestions: target.checked })
+    })
+
+    onclickdown(paramId('i_sbvoice'), (_, target) => {
+        searchbar(undefined, { voice: target.checked })
+        toggleSettingsDropdown('searchbar_voice_options', target.checked)
+    })
+
+    document.getElementById('i_sbvoicelang')?.addEventListener('change', function (this: HTMLElement): void {
+        searchbar(undefined, { voiceLang: (this as HTMLSelectElement).value })
     })
 
     paramId('i_sbplaceholder').addEventListener('keyup', function (): void {

@@ -330,6 +330,13 @@
 
     "Search bar": "Search bar",
     "Suggestions": "Suggestions",
+    "Voice search": "Voice search",
+    "Voice language": "Voice language",
+    "Listening...": "Listening...",
+    "Listening... Click to stop": "Listening... Click to stop",
+    "Microphone access denied": "Microphone access denied",
+    "Voice search network error": "Voice search network error",
+    "Voice search is not supported in this browser": "Voice search is not supported in this browser",
     "Search engine": "Search engine",
     "Change the endpoint of the search bar.": "Change the endpoint of the search bar.",
     "google": "google",
