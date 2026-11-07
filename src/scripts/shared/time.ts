@@ -10,21 +10,19 @@ let sunrise = 420
 let sunset = 1320
 let dusk = 60
 
-let userSetDate: Date
+let userTimezone = 'auto'
 
 export function userDate(timezone?: string): Date {
     // // for promotion screenshots
     // return new Date('2018-06-04, 09:41:00')
 
-    const hasSetDate = !timezone && userSetDate
-    const isAuto = !timezone || timezone === 'auto'
-    let date = new Date()
-
-    if (hasSetDate) {
-        return userSetDate
+    if (!timezone) {
+        timezone = userTimezone
     }
 
-    if (isAuto) {
+    let date = new Date()
+
+    if (timezone === 'auto') {
         return date
     }
 
@@ -58,8 +56,8 @@ export function userDate(timezone?: string): Date {
     return date
 }
 
-export function setUserDate(timezone: string): void {
-    userSetDate = userDate(timezone)
+export function setUserTimezone(timezone: string): void {
+    userTimezone = timezone || 'auto'
 }
 
 export function daylightPeriod(time?: number): 'night' | 'noon' | 'evening' | 'day' {

@@ -1,4 +1,4 @@
-import { setUserDate, userDate } from '../../shared/time.ts'
+import { setUserTimezone, userDate } from '../../shared/time.ts'
 import { displayGreetings } from './greetings.ts'
 import { clockDate } from './date.ts'
 import { fixunits } from './helpers.ts'
@@ -39,9 +39,10 @@ export function startClock(options: ClockStartOptions): void {
         clocks.push({ region: '', timezone: clock.timezone })
     }
 
-    // <!> First timezone becomes global timezone
-    // <!> for everything in Bonjourr !
-    setUserDate(clocks[0].timezone)
+    // <!> Global timezone for everything in Bonjourr !
+    // <!> World clocks hide the "Time zone" option, use the computer's time
+    const hasWorldClocks = !!clocks[0].region
+    setUserTimezone(hasWorldClocks ? 'auto' : clock.timezone)
 
     start(true)
     clearInterval(clockInterval)
