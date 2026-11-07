@@ -103,7 +103,7 @@ body {
     opacity: 1;
     color: rgb(var(--font-color));
     font-size: 1em;
-    /* font-family: -apple-system, BlinkMacSystemFont, system-ui, Ubuntu, Roboto, 'Helvetica Neue', 'Open Sans', 'Segoe UI', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; */
+    font-family: var(--font-family);
     text-align: center;
     overflow-x: hidden;
     overflow-y: overlay;
