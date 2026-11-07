@@ -194,7 +194,6 @@ html[data-supporters] #show-settings.shown:after {
 #supporters-modal {
     all: unset;
     display: block; /* temp */
-    font-family: var(--font-family);
     width: 100%;
     max-width: 700px;
     box-sizing: border-box;
