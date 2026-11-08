@@ -14,7 +14,7 @@ export async function getPermissions(...args: string[]): Promise<boolean> {
 
         default: {
             return chrome.permissions.request({
-                permissions: [...args as chrome.runtime.ManifestPermissions[]],
+                permissions: [...args as chrome.runtime.ManifestPermission[]],
             }) ?? false
         }
     }

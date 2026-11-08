@@ -1,17 +1,43 @@
 {
-  "language_servers": [
-    "deno",
-    "!biome",
-    "!typescript-language-server",
-    "!vscode-html-language-server",
-    "!vscode-css-language-server"
-  ],
-  "languages": {
-    "JSON": {
-      "language_servers": ["json-language-server"],
-      "formatter": "prettier",
-      "tab_size": 4,
-    },
-  },
-  "formatter": "language_server",
+    "formatter": "language_server",
+    "tab_size": 4,
+    "languages": {
+        "JavaScript": {
+            "language_servers": [
+                "deno",
+                "!vtsls",
+                "!typescript-language-server",
+                "!biome"
+            ],
+            "formatter": "language_server",
+            "tab_size": 4
+        },
+        "TypeScript": {
+            "language_servers": [
+                "deno",
+                "!vtsls",
+                "!typescript-language-server",
+                "!biome"
+            ],
+            "formatter": "language_server",
+            "tab_size": 4
+        },
+        "HTML": {
+            "language_servers": [
+                "!vscode-html-language-server"
+            ]
+        },
+        "CSS": {
+            "language_servers": [
+                "!vscode-css-language-server"
+            ]
+        },
+        "JSON": {
+            "language_servers": [
+                "json-language-server"
+            ],
+            "formatter": "prettier",
+            "tab_size": 4
+        }
+    }
 }
