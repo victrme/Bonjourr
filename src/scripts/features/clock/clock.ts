@@ -43,6 +43,8 @@ export function startClock(options: ClockStartOptions): void {
     // <!> for everything in Bonjourr !
     setUserDate(clocks[0].timezone)
 
+    const displayedDays: string[] = []
+
     start(true)
     clearInterval(clockInterval)
 
@@ -69,7 +71,8 @@ export function startClock(options: ClockStartOptions): void {
             const domclock = getClock(index)
             const domregion = domclock.querySelector<HTMLElement>('.clock-region')
             const date = userDate(timezone)
-            const isNextHour = date.getMinutes() === 0
+            const day = date.toDateString()
+            const isNewDay = displayedDays[index] !== day
 
             if (clock.analog) {
                 analog(domclock, clock, timezone)
@@ -77,8 +80,9 @@ export function startClock(options: ClockStartOptions): void {
                 digital(domclock, clock, timezone)
             }
 
-            if (isNextHour || firstStart) {
+            if (isNewDay || firstStart) {
                 clockDate(domclock, date, dateformat, timezone)
+                displayedDays[index] = day
             }
 
             if (domregion) {
