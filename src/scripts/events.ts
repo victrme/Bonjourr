@@ -1,6 +1,7 @@
 import type { Advanced } from '../types/sync.ts'
 
 import { isTypingTarget } from './features/links/helpers.ts'
+import { isAltModeShortcut } from './features/alt-mode.ts'
 
 let isMousingDownOnInput = false
 
@@ -22,7 +23,7 @@ export function userActions(advanced: Advanced): void {
 // Main functions
 
 function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
-    const { altKey, ctrlKey, metaKey, shiftKey, code, type } = event
+    const { ctrlKey, metaKey, shiftKey, code, type } = event
 
     const domsuggestions = document.getElementById('sb-suggestions')
 
@@ -64,7 +65,7 @@ function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
     }
 
     // alt + N keybind to add new link
-    if (type === 'keydown' && altKey && !ctrlKey && !metaKey && code === 'KeyN') {
+    if (type === 'keydown' && isAltModeShortcut(advanced, event) && !ctrlKey && !metaKey && code === 'KeyN') {
         if (isTypingTarget(event.target)) return
 
         const linkList = document.querySelector('#linkblocks:not(.hidden) .link-list')
@@ -84,7 +85,9 @@ function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
     }
 
     // import settings file with cmd/ctrl + shift + option + i
-    if (advanced.altMode && type === 'keydown' && shiftKey && altKey && (ctrlKey || metaKey) && code === 'KeyI') {
+    if (
+        type === 'keydown' && isAltModeShortcut(advanced, event) && shiftKey && (ctrlKey || metaKey) && code === 'KeyI'
+    ) {
         const fileImportInput = document.getElementById('file-import') as HTMLInputElement
 
         if (fileImportInput) {

@@ -8,7 +8,7 @@ export async function getPermissions(...args: string[]): Promise<boolean> {
 
         case 'firefox': {
             return await browser.permissions.request({
-                permissions: [...args as browser._manifest.OptionalPermission[]],
+                permissions: [...args as chrome.runtime.ManifestPermission[]],
             })
         }
 

@@ -15,6 +15,9 @@ queueMicrotask(() => {
 })
 
 export async function folderClick(event: MouseEvent | KeyboardEvent, li?: HTMLLIElement): Promise<void> {
+    // An explicit folder comes from an already validated numeric shortcut.
+    const isKeyboardShortcut = event instanceof KeyboardEvent && li !== undefined
+
     if (!li) {
         li = getLiFromEvent(event)
     }
@@ -28,7 +31,7 @@ export async function folderClick(event: MouseEvent | KeyboardEvent, li?: HTMLLI
         ctrlClick = event.button === 0 && (event.ctrlKey || event.metaKey)
         middleClick = event.button === 1
     } else if (event instanceof KeyboardEvent) {
-        if (event.key === 'Enter' || event.key === ' ' || event.altKey) {
+        if (isKeyboardShortcut || event.key === 'Enter' || event.key === ' ') {
             event.preventDefault() // prevent scrolling when pressing Space
         } else return
     }

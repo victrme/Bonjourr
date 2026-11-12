@@ -12,11 +12,8 @@ import type { Sync } from '../../types/sync.ts'
 type Import = Partial<Sync>
 
 export function addAdvancedOptions(data: Import): Import {
-    if (!data.advanced) {
-        data.advanced = SYNC_DEFAULT.advanced
-    }
-
     data.advanced = data.advanced ?? SYNC_DEFAULT.advanced
+    data.advanced.altModeShortcut = data.advanced.altModeShortcut ?? SYNC_DEFAULT.advanced.altModeShortcut
 
     return data
 }
