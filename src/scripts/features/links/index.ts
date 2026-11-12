@@ -902,7 +902,6 @@ function setRows(row: string): void {
 export function validateLink(title: string, url: string, parent?: string): LinkElem {
     const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
     const sanitizedUrl = stringMaxSize(url, 4096)
-    console.log(url)
 
     const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
     const noProtocol = !startsWithEither(['https://', 'http://'])
