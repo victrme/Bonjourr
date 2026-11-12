@@ -223,9 +223,11 @@ export async function loadModalData(): Promise<void> {
 
             for (const supporter of supporters) {
                 const parent = supporter.monthly ? monthly : once
-                const li = `<li>${supporter.name}</li>`
 
-                parent?.insertAdjacentHTML('beforeend', li)
+                const li = document.createElement('li')
+                li.textContent = supporter.name
+
+                parent?.appendChild(li)
             }
 
             modal?.classList.add('loaded')
