@@ -58,7 +58,7 @@ const setBackground = (value = '#fff2') => {
 
 export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
     setDefaultPlaceholder(init)
-    
+
     if (update) {
         updateSearchbar(update)
         return
