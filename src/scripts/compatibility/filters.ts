@@ -1,6 +1,6 @@
 import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers.ts'
 import { countryCodeToLanguageCode } from '../utils/translations.ts'
-import { SYNC_DEFAULT } from '../defaults.ts'
+import { SEARCHBAR_ENGINES, SYNC_DEFAULT } from '../defaults.ts'
 import { oldJSONToCSV } from '../features/quotes.ts'
 import { randomString } from '../shared/generic.ts'
 import { bundleLinks } from '../utils/bundlelinks.ts'
@@ -142,11 +142,13 @@ export function hideArrayToObject(data: Import): Import {
 
 export function booleanSearchbarToObject(data: Import): Import {
     if (typeof data.searchbar === 'boolean') {
+        const engine = (data.searchbar_engine as string | undefined)?.replace('s_', '') || 'google'
+
         data.searchbar = {
             ...SYNC_DEFAULT.searchbar,
             on: data.searchbar as boolean,
             newtab: data.searchbar_newtab as boolean,
-            engine: (data.searchbar_engine as string | undefined)?.replace('s_', '') || 'google',
+            engine: SEARCHBAR_ENGINES.find((searchEngine) => searchEngine === engine) || 'google',
             suggestions: false,
         }
     }
