@@ -7,7 +7,7 @@
     width: 100%;
     min-width: 15em;
     max-width: var(--searchbar-width, 30em);
-    border-radius: 10px;
+    border-radius: var(--searchbar-radius);
     box-shadow: rgb(0 0 0 / 0.24) 0px 3px 8px;
 }
 
@@ -43,7 +43,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    border-radius: 10px;
+    border-radius: var(--searchbar-radius);
     background-color: var(--searchbar-background);
     border: 1px solid #fff1;
     backdrop-filter: blur(2em);

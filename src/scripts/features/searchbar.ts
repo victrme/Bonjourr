@@ -34,6 +34,20 @@ const customEngineForm = networkForm('f_sbrequest')
 
 let socket: WebSocket | undefined
 const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
+const engineDetails: Record<SearchEngines, { name: string; url: string }> = {
+    default: { name: '', url: '' },
+    google: { name: 'Google', url: 'https://www.google.com/search?q=%s' },
+    ddg: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s' },
+    startpage: { name: 'Startpage', url: 'https://www.startpage.com/do/search?query=%s' },
+    qwant: { name: 'Qwant', url: 'https://www.qwant.com/?q=%s' },
+    yahoo: { name: 'Yahoo', url: 'https://search.yahoo.com/search?q=%s' },
+    bing: { name: 'Bing', url: 'https://www.bing.com/search?q=%s' },
+    brave: { name: 'Brave', url: 'https://search.brave.com/search?q=%s' },
+    ecosia: { name: 'Ecosia', url: 'https://www.ecosia.org/search?q=%s' },
+    lilo: { name: 'Lilo', url: 'https://search.lilo.org/?q=%s' },
+    baidu: { name: 'Baidu', url: 'https://www.baidu.com/s?wd=%s' },
+    custom: { name: 'Custom', url: '' },
+}
 
 const domsuggestions = document.getElementById('sb-suggestions') as HTMLUListElement | undefined
 const domcontainer = document.getElementById('sb_container') as HTMLDivElement | undefined
@@ -46,7 +60,7 @@ const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine'
 const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
-const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
+
 const setWidth = (value = 30) =>
     document.documentElement.style.setProperty('--searchbar-width', `${value.toString()}em`)
 const setBackground = (value = '#fff2') => {
@@ -57,6 +71,8 @@ const setBackground = (value = '#fff2') => {
 }
 
 export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
+    setDefaultPlaceholder(init)
+
     if (update) {
         updateSearchbar(update)
         return
@@ -68,7 +84,7 @@ export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
         setEngine(init?.engine)
         setRequest(init?.request)
         setNewtab(init?.newtab)
-        setPlaceholder(init?.placeholder)
+        setPlaceholder(init?.placeholder, init?.engine)
         setSuggestions(init?.suggestions)
         setBackground(init?.background)
 
@@ -107,6 +123,7 @@ async function updateSearchbar({
     if (isValidEngine(engine)) {
         toggleSettingsDropdown('searchbar_request', engine === 'custom')
         searchbar.engine = engine
+        setPlaceholder(searchbar.placeholder, searchbar.engine)
         setEngine(engine)
     }
 
@@ -127,7 +144,7 @@ async function updateSearchbar({
 
     if (placeholder !== undefined) {
         searchbar.placeholder = placeholder
-        setPlaceholder(placeholder)
+        setPlaceholder(placeholder, searchbar.engine)
     }
 
     if (background) {
@@ -179,26 +196,12 @@ function isValidUrl(string: string): boolean {
 }
 
 function createSearchUrl(val: string, engine: string): string {
-    const urls: Record<SearchEngines, string> = {
-        default: '',
-        google: 'https://www.google.com/search?q=%s',
-        ddg: 'https://duckduckgo.com/?q=%s',
-        startpage: 'https://www.startpage.com/do/search?query=%s',
-        qwant: 'https://www.qwant.com/?q=%s',
-        yahoo: 'https://search.yahoo.com/search?q=%s',
-        bing: 'https://www.bing.com/search?q=%s',
-        brave: 'https://search.brave.com/search?q=%s',
-        ecosia: 'https://www.ecosia.org/search?q=%s',
-        lilo: 'https://search.lilo.org/?q=%s',
-        baidu: 'https://www.baidu.com/s?wd=%s',
-        custom: domcontainer?.dataset.request || '',
-    }
-
     if (!isValidEngine(engine)) {
         return 'about:blank'
     }
 
-    if (engine === 'custom' && !urls.custom) {
+    const url = engine === 'custom' ? domcontainer?.dataset.request || '' : engineDetails[engine].url
+    if (engine === 'custom' && !url) {
         return 'about:blank'
     }
 
@@ -206,7 +209,7 @@ function createSearchUrl(val: string, engine: string): string {
     const query = encodeURIComponent(val ?? '')
     const localizedEngine = tradThis(engine)
 
-    result = localizedEngine.includes('%s') ? localizedEngine : urls[engine]
+    result = localizedEngine.includes('%s') ? localizedEngine : url
     result = result.replace('%s', query)
 
     return result
@@ -515,4 +518,17 @@ function searchbarShortcut(event: KeyboardEvent): void {
 
 function isValidEngine(str = ''): str is SearchEngines {
     return SEARCHBAR_ENGINES.includes(str as SearchEngines)
+}
+
+const setPlaceholder = (value = '', engine: SearchEngines = 'default') => {
+    const placeholder = value ? value.replace('$engine', engineDetails[engine].name) : tradThis('Search')
+    domsearchbar?.setAttribute('placeholder', placeholder)
+}
+
+// translates the default placeholder on first init
+function setDefaultPlaceholder(init?: Searchbar): void {
+    if (init && init.placeholder === '--sb-default-placeholder--') {
+        init.placeholder = tradThis('Search')
+        setPlaceholder(init.placeholder, init.engine)
+    }
 }
