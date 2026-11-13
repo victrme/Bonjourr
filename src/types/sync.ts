@@ -152,6 +152,8 @@ export interface Searchbar {
     suggestions: boolean
     placeholder: string
     background?: string
+    voice?: boolean
+    voiceLang?: string
 }
 
 export interface Font {
