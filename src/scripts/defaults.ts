@@ -195,6 +195,7 @@ export const SYNC_DEFAULT: Sync = {
         engine: 'default',
         request: '',
         placeholder: '',
+        placeholder: '--sb-default-placeholder--',
     },
     quotes: {
         on: false,

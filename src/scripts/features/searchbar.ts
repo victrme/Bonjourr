@@ -56,7 +56,16 @@ const setBackground = (value = '#fff2') => {
         ?.classList.toggle('opaque', value.includes('#fff') && opacityFromHex(value) > 7)
 }
 
+function setDefaultPlaceholder(init?: Searchbar): void {
+    if (init && init.placeholder === '--sb-default-placeholder--') {
+        init.placeholder = tradThis('Search')
+        setPlaceholder(init.placeholder)
+    }
+}
+
 export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
+    setDefaultPlaceholder(init)
+    
     if (update) {
         updateSearchbar(update)
         return
