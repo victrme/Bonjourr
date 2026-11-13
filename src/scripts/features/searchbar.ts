@@ -46,7 +46,7 @@ const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine'
 const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
-const setPlaceholder = (value = '') => domsearchbar?.setAttribute('placeholder', value)
+
 const setWidth = (value = 30) =>
     document.documentElement.style.setProperty('--searchbar-width', `${value.toString()}em`)
 const setBackground = (value = '#fff2') => {
@@ -70,7 +70,7 @@ export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
         setEngine(init?.engine)
         setRequest(init?.request)
         setNewtab(init?.newtab)
-        setPlaceholder(init?.placeholder)
+        setPlaceholder(init?.placeholder, init?.engine)
         setSuggestions(init?.suggestions)
         setBackground(init?.background)
 
@@ -109,6 +109,7 @@ async function updateSearchbar({
     if (isValidEngine(engine)) {
         toggleSettingsDropdown('searchbar_request', engine === 'custom')
         searchbar.engine = engine
+        setPlaceholder(searchbar.placeholder, searchbar.engine)
         setEngine(engine)
     }
 
@@ -129,7 +130,7 @@ async function updateSearchbar({
 
     if (placeholder !== undefined) {
         searchbar.placeholder = placeholder
-        setPlaceholder(placeholder)
+        setPlaceholder(placeholder, searchbar.engine)
     }
 
     if (background) {
@@ -519,9 +520,30 @@ function isValidEngine(str = ''): str is SearchEngines {
     return SEARCHBAR_ENGINES.includes(str as SearchEngines)
 }
 
+const setPlaceholder = (value = '', engine: SearchEngines = 'default') => {
+    const engineNames: Record<SearchEngines, string> = {
+        default: '',
+        google: 'Google',
+        ddg: 'DuckDuckGo',
+        startpage: 'Startpage',
+        qwant: 'Qwant',
+        yahoo: 'Yahoo',
+        bing: 'Bing',
+        brave: 'Brave',
+        ecosia: 'Ecosia',
+        lilo: 'Lilo',
+        baidu: 'Baidu',
+        custom: 'Custom',
+    }
+
+    const placeholder = value ? value.replace('$engine', engineNames[engine]) : tradThis('Search')
+    domsearchbar?.setAttribute('placeholder', placeholder)
+}
+
+// translates the default placeholder on first init
 function setDefaultPlaceholder(init?: Searchbar): void {
     if (init && init.placeholder === '--sb-default-placeholder--') {
         init.placeholder = tradThis('Search')
-        setPlaceholder(init.placeholder)
+        setPlaceholder(init.placeholder, init.engine)
     }
 }
