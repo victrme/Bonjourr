@@ -186,6 +186,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_favicon', data.favicon ?? '')
     setInput('i_tabtitle', data.tabtitle ?? '')
     setInput('i_solid-background', data.backgrounds.color ?? '#185A63')
+    setInput('i_solid-background-dark', data.backgrounds.colordark ?? data.backgrounds.color ?? '#185A63')
     setInput('i_texture', data.backgrounds.texture.type ?? 'none')
     setInput('i_texture-size', data.backgrounds.texture.size ?? '220')
     setInput('i_texture-opacity', data.backgrounds.texture.opacity ?? '0.1')
@@ -247,6 +248,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_showall', data.showall)
     setCheckbox('i_settingshide', data.hide?.settingsicon ?? false)
     setCheckbox('i_background-mute-videos', data.backgrounds.mute ?? true)
+    setCheckbox('i_solid-background-darkmode', data.backgrounds.colordark !== undefined)
     setCheckbox('i_quicklinks', data.quicklinks)
     setCheckbox('i_linkgroups', data?.linkgroups?.on)
     setCheckbox('i_linknewtab', data.linknewtab)
@@ -273,6 +275,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setCheckbox('i_supporters_notif', data.supporters?.enabled ?? true)
 
     colorInput('solid-background', data.backgrounds.color)
+    colorInput('solid-background-dark', data.backgrounds.colordark ?? data.backgrounds.color)
     colorInput('texture-color', data.backgrounds.texture.color ?? '#ffffff')
     colorInput('font-color', data.font.color)
 
@@ -529,6 +532,18 @@ function initOptionsEvents(): void {
 
     paramId('i_solid-background').addEventListener('input', function (): void {
         backgroundUpdate({ color: this.value })
+    })
+
+    onclickdown(paramId('i_solid-background-darkmode'), (_, target) => {
+        backgroundUpdate({ colordarkmode: target.checked })
+    })
+
+    paramId('b_solid-background-dark').addEventListener('click', function (): void {
+        paramId('i_solid-background-dark').click()
+    })
+
+    paramId('i_solid-background-dark').addEventListener('input', function (): void {
+        backgroundUpdate({ colordark: this.value })
     })
 
     paramId('i_background-provider').addEventListener('input', function (): void {
