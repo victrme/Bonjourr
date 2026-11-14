@@ -194,7 +194,7 @@ export const SYNC_DEFAULT: Sync = {
         suggestions: true,
         engine: 'default',
         request: '',
-        placeholder: '',
+        placeholder: '--sb-default-placeholder--',
     },
     quotes: {
         on: false,
