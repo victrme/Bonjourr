@@ -58,6 +58,7 @@ const sectionMatching: Record<string, Section> = {
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
 const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
+const searchBarActions = domdialog?.querySelector('#searchbar-actions')
 
 let eventLocation: EventLocation
 
@@ -357,7 +358,7 @@ function handleContextMenuEvents(): void {
     // for backgrounds buttons, see handleBackgroundActions()
 }
 
-const searchBarActions = domdialog.querySelector('#searchbar-actions')
+
 
 export function initSearchBarActionsEvents(): void {
     searchBarActions?.querySelectorAll<HTMLButtonElement>('button').forEach(function (btn): void {
@@ -371,6 +372,7 @@ export function handleSearchBarActions(searchEngine: SearchEngines | undefined):
     // for each switch engine button
     searchBarActions?.querySelectorAll<HTMLButtonElement>('button').forEach((button) => {
         button.classList.toggle('selected', button.dataset.engine === searchEngine)
+        closeContextMenu()
     })
 }
 

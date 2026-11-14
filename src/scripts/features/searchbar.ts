@@ -116,7 +116,8 @@ async function updateSearchbar({
     suggestions,
     width,
 }: SearchbarUpdate): Promise<void> {
-    const { searchbar } = await storage.sync.get('searchbar')
+    const data = await storage.sync.get()
+    const { searchbar } = data
 
     if (!searchbar) {
         return
@@ -182,6 +183,13 @@ async function updateSearchbar({
     }
 
     eventDebounce({ searchbar })
+
+    // so that settingsInit() has up to date data if settings are changed before init 
+    document.dispatchEvent(
+        new CustomEvent('updateSettingsBeforeInit', {
+            detail: data,
+        }),
+    )
 }
 
 //
