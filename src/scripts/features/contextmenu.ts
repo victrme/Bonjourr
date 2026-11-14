@@ -5,9 +5,11 @@ import { debounce } from '../utils/debounce.ts'
 import { onclickdown } from 'clickdown/mod'
 import { backgroundUpdate, toggleMuteStatus } from './backgrounds/index.ts'
 import { quotes } from './quotes.ts'
+import { searchbar } from './searchbar.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
 import { storage } from '../storage.ts'
 import type { Backgrounds } from '../../types/sync.ts'
+import type { SearchEngines } from '../../types/shared.ts'
 
 interface EventLocation {
     widgets: {
@@ -96,7 +98,11 @@ export function openContextMenu(event: Event): void {
     }
 
     // hides/resets content from previous context menu
-    for (const node of domdialog.querySelectorAll('label, button, hr, #background-actions, input, #pomodoro-info')) {
+    for (
+        const node of domdialog.querySelectorAll(
+            'label, button, hr, #background-actions, input, #pomodoro-info, #searchbar-actions',
+        )
+    ) {
         node.classList.remove('on')
 
         if (node instanceof HTMLInputElement) {
@@ -126,6 +132,10 @@ export function openContextMenu(event: Event): void {
 
     if (eventLocation.widgets.quotes) {
         showTheseElements('#b_interface-quotes-refresh')
+    }
+
+    if (eventLocation.widgets.searchbar) {
+        showTheseElements('#searchbar-actions')
     }
 
     if (clickedOnWidgets) {
@@ -345,6 +355,23 @@ function handleContextMenuEvents(): void {
     })
 
     // for backgrounds buttons, see handleBackgroundActions()
+}
+
+const searchBarActions = domdialog.querySelector('#searchbar-actions')
+
+export function initSearchBarActionsEvents(): void {
+    searchBarActions?.querySelectorAll<HTMLButtonElement>('button').forEach(function (btn): void {
+        onclickdown(btn, () => {
+            searchbar(undefined, { engine: btn.dataset.engine })
+        })
+    })
+}
+
+export function handleSearchBarActions(searchEngine: SearchEngines | undefined): void {
+    // for each switch engine button
+    searchBarActions?.querySelectorAll<HTMLButtonElement>('button').forEach((button) => {
+        button.classList.toggle('selected', button.dataset.engine === searchEngine)
+    })
 }
 
 export function handleBackgroundActions(backgrounds: Backgrounds): void {

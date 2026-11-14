@@ -1655,7 +1655,7 @@ function setCheckbox(id: string, cat: boolean): void {
     checkbox.checked = cat
 }
 
-function setInput(id: string, val: string | number): void {
+export function setInput(id: string, val: string | number): void {
     const input = paramId(id) as HTMLInputElement
     input.value = typeof val === 'string' ? val : val?.toString()
 }

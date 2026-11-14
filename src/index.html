@@ -381,6 +381,46 @@
                     </button>
                 </div>
             </div>
+
+            <div id="searchbar-actions">
+                <h3>Search engine</h3>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="default"
+                    title="Switch to default search engine"
+                    aria-label="Switch to default search engine"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Default</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="google"
+                    title="Switch to Google"
+                    aria-label="Switch to default search engine"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Google</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="ddg"
+                    title="Switch to DuckDuckGo"
+                    aria-label="Switch to default search engine"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">DuckDuckGo</span>
+                </button>
+            </div>
         </dialog>
 
         <dialog id="element-mover" class="hidden">

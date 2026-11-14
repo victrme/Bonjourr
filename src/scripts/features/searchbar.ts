@@ -10,7 +10,8 @@ import { parse } from '../utils/parse.ts'
 import type { SearchEngines } from '../../types/shared.ts'
 import type { Searchbar } from '../../types/sync.ts'
 import { networkForm } from '../shared/form.ts'
-import { toggleSettingsDropdown } from '../settings.ts'
+import { setInput, toggleSettingsDropdown } from '../settings.ts'
+import { handleSearchBarActions, initSearchBarActionsEvents } from './contextmenu.ts'
 
 type SearchbarUpdate = {
     engine?: string
@@ -56,7 +57,6 @@ const dombuttons = document.getElementById('sb-buttons') as HTMLDivElement | und
 const emptyButton = document.getElementById('sb_empty')
 
 const display = (shown = false) => domcontainer?.classList.toggle('hidden', !shown)
-const setEngine = (value = 'google') => domcontainer?.setAttribute('data-engine', value)
 const setRequest = (value = '') => domcontainer?.setAttribute('data-request', stringMaxSize(value, 512))
 const setNewtab = (value = false) => domcontainer?.setAttribute('data-newtab', value.toString())
 const setSuggestions = (value = true) => domcontainer?.setAttribute('data-suggestions', value.toString())
@@ -81,6 +81,7 @@ export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
     try {
         display(init?.on)
         setWidth(init?.width)
+        handleSearchBarActions(init?.engine)
         setEngine(init?.engine)
         setRequest(init?.request)
         setNewtab(init?.newtab)
@@ -88,6 +89,7 @@ export function searchbar(init?: Searchbar, update?: SearchbarUpdate): void {
         setSuggestions(init?.suggestions)
         setBackground(init?.background)
 
+        initSearchBarActionsEvents()
         dombuttons?.addEventListener('click', focusSearchbar)
         emptyButton?.addEventListener('click', removeInputText)
         domcontainer?.addEventListener('submit', submitSearch)
@@ -125,6 +127,7 @@ async function updateSearchbar({
         searchbar.engine = engine
         setPlaceholder(searchbar.placeholder, searchbar.engine)
         setEngine(engine)
+        setInput('i_sbengine', engine)
     }
 
     if (suggestions !== undefined) {
@@ -518,6 +521,11 @@ function searchbarShortcut(event: KeyboardEvent): void {
 
 function isValidEngine(str = ''): str is SearchEngines {
     return SEARCHBAR_ENGINES.includes(str as SearchEngines)
+}
+
+const setEngine = (value = 'google') => {
+    handleSearchBarActions(value as SearchEngines)
+    domcontainer?.setAttribute('data-engine', value)
 }
 
 const setPlaceholder = (value = '', engine: SearchEngines = 'default') => {

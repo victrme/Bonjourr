@@ -6,7 +6,7 @@ dialog#contextmenu {
     width: 240px;
     padding: 6px;
     margin: 0;
-    z-index: 4;
+    z-index: 5;
     transition: opacity 0.05s;
 }
 
@@ -241,4 +241,33 @@ dialog#contextmenu #background-actions button:disabled {
 dialog#contextmenu #pomodoro-info hr,
 #pomodoro-info.on {
     display: flex;
+}
+
+/* searchbar actions */
+
+#searchbar-actions {
+    display: none;
+    /* flex-direction: column;
+    opacity: 0.8;
+    font-style: italic;
+    font-size: 0.8em;
+    text-align: left; */
+}
+
+#searchbar-actions.on {
+    display: block;
+}
+
+dialog#contextmenu #searchbar-actions button {
+    display: flex;
+}
+
+#searchbar-actions button svg {
+    visibility: hidden;
+    opacity: 0;
+}
+
+#searchbar-actions button.selected svg {
+    visibility: visible;
+    opacity: 1;
 }
