@@ -298,15 +298,15 @@
 
     <symbol
         id="contextmenu-checkmark"
-        width="24"
-        height="24"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
     >
         <path
-            d="M10.5858 13.4142L7.75735 10.5858L6.34314 12L10.5858 16.2427L17.6568 9.1716L16.2426 7.75739L10.5858 13.4142Z"
+            d="m10.586 13.414-2.829-2.828-1.414 1.414 4.243 4.243 7.071-7.071-1.414-1.415z"
             fill="currentColor"
+            fill-rule="nonzero"
+            transform="matrix(1.74521 0 0 1.74521 -8.94244 -8.94249)"
         />
     </symbol>
 </svg>

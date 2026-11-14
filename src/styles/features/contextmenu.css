@@ -258,8 +258,17 @@ dialog#contextmenu #pomodoro-info hr,
     display: block;
 }
 
+#searchbar-actions h4 {
+    text-align: left;
+    padding-inline: 15px;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
 dialog#contextmenu #searchbar-actions button {
     display: flex;
+    padding-block: 2px;
 }
 
 #searchbar-actions button svg {
