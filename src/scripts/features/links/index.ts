@@ -300,7 +300,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
     }
 
     li.id = link._id
-    anchor.href = stringMaxSize(link.url, 512)
+    anchor.href = stringMaxSize(link.url, 4096)
     span.textContent = createTitle(link)
 
     if (style !== 'text') {
@@ -639,7 +639,7 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
         }
 
         if (titledom && urldom && url !== undefined) {
-            link.url = stringMaxSize(url, 512)
+            link.url = stringMaxSize(url, 4096)
             urldom.href = link.url
             titledom.textContent = createTitle(link)
         }
@@ -901,7 +901,7 @@ function setRows(row: string): void {
 
 export function validateLink(title: string, url: string, parent?: string): LinkElem {
     const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
-    const sanitizedUrl = stringMaxSize(url, 512)
+    const sanitizedUrl = stringMaxSize(url, 4096)
 
     const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
     const noProtocol = !startsWithEither(['https://', 'http://'])
