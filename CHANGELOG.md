@@ -1,3 +1,34 @@
+## 22.4.0
+
+### New features
+- **Search bar**:
+   - Now round for a more modern look!
+   - Right click on the right of the search bar for easy search engine switching
+   - New `$engine` placeholder variable can now be set
+- Import a settings file with the `cmd/ctrl + shift + option + i` keybind 
+
+### Bug fixes
+- No more custom context menu on whole search bar (#904)
+- Search results opened with "Open in new tab" no longer flash the wallpaper color before the destination loads (#734, thanks @mvanhorn!)
+- Improved background preloading and resolution (thanks @ilkis! #951 & #950)
+- Empty folders now get automatically deleted (thanks @sidhesh-tavare! #956)
+- Clock date now gets updated at midnight (thanks @ilkis! #972)
+- Quotes no longer initialize when disabled (thanks @jansel! #952)
+- Fixed a border-radius glitch on the search bar with very large font size
+- Removed blue glow on tap on Android devices (thanks @walway!)
+- More reliable dark mode toggling (#901)
+- Layout toolbox no longer messes with Quick Links titles (#868)
+- Settings panel has the right settings data if you click "next background" before opening it (#975)
+- Removed New Tab favicon field on Edge (again... #700)
+- Optically centred pomodoro start button
+
+### Localization updates (thank you!!)
+- **New language**: 🇧🇩 Bengali by @flameydev 🔥
+- 🇧🇾 Belarusian by @The518thGuy
+- 🇮🇩 Indonesian by @stevenfelix505 
+- 🇵🇱 Polish by @arklanq 
+- 🇹🇷 Turkish by @SwiftExplorer567 
+
 ## 22.3.0
 
 ### New features:
