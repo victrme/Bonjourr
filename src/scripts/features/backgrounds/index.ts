@@ -244,7 +244,10 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
 
     document.dispatchEvent(
         new CustomEvent('updateSettingsBeforeInit', {
-            detail: data,
+            detail: {
+                key: 'backgrounds',
+                value: data.backgrounds,
+            },
         }),
     )
 

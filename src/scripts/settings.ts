@@ -51,7 +51,13 @@ export function settingsInit(sync: Sync, local: Local): void {
     settingsInitLocal = local
 
     document.addEventListener('updateSettingsBeforeInit', (e) => {
-        settingsInitSync = (e as CustomEvent).detail
+        const { key, value } = (e as CustomEvent).detail
+
+        // replaces the incoming key (backgrounds, searchbar...) with up to date data
+        settingsInitSync = {
+            ...settingsInitSync,
+            [key]: value,
+        }
     })
 
     document.body?.addEventListener('keydown', settingsInitEvent)
