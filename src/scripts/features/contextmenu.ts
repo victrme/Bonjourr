@@ -8,6 +8,8 @@ import { quotes } from './quotes.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
 import { storage } from '../storage.ts'
 import type { Backgrounds } from '../../types/sync.ts'
+import type { Advanced } from '../../types/sync.ts'
+import { isAltModeShortcut } from './alt-mode.ts'
 
 interface EventLocation {
     widgets: {
@@ -56,6 +58,11 @@ const sectionMatching: Record<string, Section> = {
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
 const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
+let altModeSettings: Pick<Advanced, 'altMode' | 'altModeShortcut'> = { altMode: true, altModeShortcut: 'alt' }
+
+export function setAltModeSettings(advanced: Advanced): void {
+    altModeSettings = advanced
+}
 
 let eventLocation: EventLocation
 
@@ -244,7 +251,7 @@ function showTheseElements(query: string): void {
 
 queueMicrotask(() => {
     document.addEventListener('contextmenu', (event) => {
-        if (event.altKey) { // if alt + right click, then regular OS context menu
+        if (isAltModeShortcut(altModeSettings, event)) {
             closeContextMenu()
             return
         }

@@ -14,7 +14,10 @@ import { storage } from '../../storage.ts'
 import type { Link, LinkElem } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
-export type Treenode = browser.bookmarks.BookmarkTreeNode
+export type Treenode = Omit<chrome.bookmarks.BookmarkTreeNode, 'children' | 'syncing'> & {
+    children?: Treenode[]
+    syncing?: boolean
+}
 
 type BookmarksFolder = {
     title: string
@@ -294,7 +297,7 @@ async function getBookmarkTree(): Promise<Treenode[] | undefined> {
     let topsites = globalThis.startupTopsites
 
     if (!treenode) {
-        treenode = await EXTENSION?.bookmarks?.getTree() as browser.bookmarks.BookmarkTreeNode[]
+        treenode = await EXTENSION?.bookmarks?.getTree()
     }
     if (!topsites) {
         topsites = await EXTENSION?.topSites?.get()

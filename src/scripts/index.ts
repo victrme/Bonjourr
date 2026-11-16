@@ -7,6 +7,7 @@ import { moveElements } from './features/move/index.ts'
 import { hideElements } from './features/hide.ts'
 import { customFont } from './features/fonts.ts'
 import { quickLinks } from './features/links/index.ts'
+import { setAltModeSettings } from './features/contextmenu.ts'
 import { searchbar } from './features/searchbar.ts'
 import { customCss } from './features/css.ts'
 import { weather } from './features/weather/index.ts'
@@ -14,7 +15,6 @@ import { quotes } from './features/quotes.ts'
 import { pomodoro } from './features/pomodoro.ts'
 import { notes } from './features/notes.ts'
 import { clock } from './features/clock/index.ts'
-import './features/contextmenu.ts'
 
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
 import { setTranslationCache, traduction } from './utils/translations.ts'
@@ -68,6 +68,8 @@ async function startup(): Promise<void> {
 
     await setTranslationCache(sync.lang, local)
 
+    setAltModeSettings(sync.advanced)
+
     displayInterface(undefined, sync)
     traduction(null, sync.lang)
     userDate(sync.clock.timezone)
@@ -95,7 +97,7 @@ async function startup(): Promise<void> {
     tabsTracking()
 
     if (sync.advanced.altMode) {
-        altMode()
+        altMode(sync.advanced)
     }
 
     document.documentElement.dataset.system = SYSTEM_OS as string

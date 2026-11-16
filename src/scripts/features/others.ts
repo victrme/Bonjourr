@@ -5,6 +5,9 @@ import { eventDebounce } from '../utils/debounce.ts'
 import { tradThis } from '../utils/translations.ts'
 import { storage } from '../storage.ts'
 import { isTypingTarget } from './links/helpers.ts'
+import { isAltModeShortcut } from './alt-mode.ts'
+
+import type { Advanced } from '../../types/sync.ts'
 
 export function favicon(val?: string, isEvent?: true): void {
     function createFavicon(emoji?: string): void {
@@ -129,15 +132,15 @@ export function textShadow(init?: number, event?: number): void {
     }
 }
 
-export function altMode(): void {
+export function altMode(advanced: Advanced): void {
     document.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (event.key === 'Alt' && !isTypingTarget(event.target)) {
+        if (isAltModeShortcut(advanced, event) && !isTypingTarget(event.target)) {
             document.documentElement.dataset.altMode = 'true'
         }
-    })
+    }, { capture: true })
 
     document.addEventListener('keyup', (event: KeyboardEvent) => {
-        if (event.key === 'Alt') {
+        if (event.key === 'Alt' || ((advanced.altModeShortcut ?? 'alt') === 'alt-shift' && event.key === 'Shift')) {
             document.documentElement.dataset.altMode = 'false'
         }
     })
