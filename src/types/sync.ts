@@ -240,4 +240,6 @@ export interface Advanced {
     altMode: boolean
     // disables escape key to toggle settings
     escKey: boolean
+    // disables link group selection using mouse wheel
+    mouseWheelOnGroups: boolean
 }

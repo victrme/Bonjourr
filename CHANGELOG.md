@@ -2,9 +2,10 @@
 
 ### New features
 - **Search bar**:
-   - Now round for a more modern look!
+   - Now round with a default "Search" placeholder for a more modern look!
    - Right click on the right of the search bar for easy search engine switching
    - New `$engine` placeholder variable can now be set
+- New `mouseWheelOnGroups` [advanced setting](https://bonjourr.fr/docs/customisation/hidden-features/#advanced-settings) to disable mouse wheel on link group selection
 - Import a settings file with the `cmd/ctrl + shift + option + i` keybind 
 
 ### Bug fixes
@@ -14,6 +15,7 @@
 - Empty folders now get automatically deleted (thanks @sidhesh-tavare! #956)
 - Clock date now gets updated at midnight (thanks @ilkis! #972)
 - Quotes no longer initialize when disabled (thanks @jansel! #952)
+- Quick Links URLs can be a lot longer (#973)
 - Fixed a border-radius glitch on the search bar with very large font size
 - Removed blue glow on tap on Android devices (thanks @walway!)
 - More reliable dark mode toggling (#901)

@@ -11,6 +11,16 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function addMouseWheelOnGroupsToAdvanced(data: Import): Import {
+    if (!data.advanced) {
+        data.advanced = SYNC_DEFAULT.advanced
+    }
+
+    data.advanced.mouseWheelOnGroups = data.advanced.mouseWheelOnGroups ?? SYNC_DEFAULT.advanced.mouseWheelOnGroups
+
+    return data
+}
+
 export function addAdvancedOptions(data: Import): Import {
     if (!data.advanced) {
         data.advanced = SYNC_DEFAULT.advanced

@@ -21,10 +21,12 @@ export function initGroups(data: Sync, init?: true): void {
     createGroups(data.linkgroups)
 
     // navigating through groups with scroll wheel
-    document.querySelector('#link-mini')?.addEventListener('wheel', (event) => {
-        changeGroup(event)
-        event.preventDefault()
-    }, { passive: false })
+    if (data.advanced.mouseWheelOnGroups) {
+        document.querySelector('#link-mini')?.addEventListener('wheel', (event) => {
+            changeGroup(event)
+            event.preventDefault()
+        }, { passive: false })
+    }
 }
 
 function createGroups(linkgroups: LinkGroups): void {
