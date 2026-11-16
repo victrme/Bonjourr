@@ -5,6 +5,7 @@
    - Now round with a default "Search" placeholder for a more modern look!
    - Right click on the right of the search bar for easy search engine switching
    - New `$engine` placeholder variable can now be set
+- Support for prefers-reduced-motion
 - New `mouseWheelOnGroups` [advanced setting](https://bonjourr.fr/docs/customisation/hidden-features/#advanced-settings) to disable mouse wheel on link group selection
 - Import a settings file with the `cmd/ctrl + shift + option + i` keybind 
 

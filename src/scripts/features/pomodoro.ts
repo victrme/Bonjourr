@@ -416,7 +416,11 @@ export function togglePomodoroFocus(focus: boolean): void {
 
     // if not switching, no animation (for when toggling from page refresh or smt)
     // also animation won't play if the tab isn't open
-    if (switching && document.visibilityState === 'visible') {
+    if (
+        switching &&
+        document.visibilityState === 'visible' &&
+        !globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
         const originalRect = pomodoroContainer.getBoundingClientRect()
 
         // Clone the element

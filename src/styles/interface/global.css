@@ -13,7 +13,12 @@
     font-weight: var(--font-weight);
     text-shadow: var(--text-shadow-interface);
     grid-template-areas: var(--grid);
-    transition: opacity var(--load-time-transition), transform 0.33s;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+    #interface {
+        transition: opacity var(--load-time-transition), transform 0.33s;
+    }
 }
 
 @supports not (min-height: 100dvh) {
