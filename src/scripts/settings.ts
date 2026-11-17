@@ -51,7 +51,13 @@ export function settingsInit(sync: Sync, local: Local): void {
     settingsInitLocal = local
 
     document.addEventListener('updateSettingsBeforeInit', (e) => {
-        settingsInitSync = (e as CustomEvent).detail
+        const { key, value } = (e as CustomEvent).detail
+
+        // replaces the incoming key (backgrounds, searchbar...) with up to date data
+        settingsInitSync = {
+            ...settingsInitSync,
+            [key]: value,
+        }
     })
 
     document.body?.addEventListener('keydown', settingsInitEvent)
@@ -1655,7 +1661,7 @@ function setCheckbox(id: string, cat: boolean): void {
     checkbox.checked = cat
 }
 
-function setInput(id: string, val: string | number): void {
+export function setInput(id: string, val: string | number): void {
     const input = paramId(id) as HTMLInputElement
     input.value = typeof val === 'string' ? val : val?.toString()
 }

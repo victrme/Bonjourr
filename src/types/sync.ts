@@ -1,4 +1,12 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets, SearchEngines } from './shared.ts'
+import type {
+    BackgroundImage,
+    BackgroundVideo,
+    Frequency,
+    Link,
+    PomodoroMode,
+    SearchEngines,
+    Widgets,
+} from './shared.ts'
 
 export interface Sync {
     advanced: Advanced
