@@ -3,6 +3,14 @@ import { siteLangs } from '../langs.ts'
 
 import type { Local, Translations } from '../../types/local.ts'
 
+type TranslationScope = 'interface' | 'settings' | 'all'
+
+const translationScopes: Record<TranslationScope, string> = {
+    interface: ':is(#show-settings, #contextmenu)',
+    settings: '#settings',
+    all: ':is(#show-settings, #contextmenu, #settings)',
+}
+
 let trns: Translations | undefined
 let currentTrnsLang = 'en'
 
@@ -87,6 +95,19 @@ export function getLang(): string {
 
 export function tradThis(str: string): string {
     return trns ? (trns[str] ?? str) : str
+}
+
+// this also sets aria-labels 
+export function translateAriaLabels(scope: keyof typeof translationScopes): void {
+    for (const element of document.querySelectorAll<HTMLElement>(
+        `${translationScopes[scope]} [title]`,
+    )) {
+        const title = element.dataset.originalTitle ?? element.getAttribute('title') ?? ''
+
+        element.dataset.originalTitle = title
+        element.setAttribute('title', tradThis(title))
+        element.setAttribute('aria-label', tradThis(title))
+    }
 }
 
 export function countryCodeToLanguageCode(lang: string): string {

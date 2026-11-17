@@ -22,7 +22,7 @@ aside {
 
 @media screen and (prefers-reduced-motion: no-preference) {
     aside {
-        transition: transform 0.33s, background-color 0.33s; 
+        transition: transform 0.33s, background-color 0.33s;
     }
 }
 
@@ -53,7 +53,6 @@ aside.init .dropdown {
 .all .as,
 .dropdown.shown {
     visibility: visible;
-    
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {

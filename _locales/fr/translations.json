@@ -143,7 +143,7 @@
     "Playback speed": "Vitesse de lecture",
     "Loop fade": "Fondu en boucle",
     "Mute videos": "Désactiver le son des vidéos",
-    "Options": "Possibilités",
+    "Options": "Options",
     "Use the button above to import files from your device and set them as backgrounds in Bonjourr.": "Importez des fichiers depuis votre appareil pour les utiliser en tant qu'arrière-plan dans Bonjourr.",
     "Frequency": "Fréquence",
     "Daylight": "Lumière du jour",
@@ -454,5 +454,9 @@
     "URLs": "URL",
     "Use a similar browser like Brave or Vivaldi": "Utilisez un navigateur similaire comme Brave ou Vivaldi",
     "What to do from here?": "Que faire à partir d'ici ?",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "Toggle settings menu": "Ouvrir les réglages",
+    "Open Bonjourr's Ko-fi page": "Ouvrir la page Ko-fi de Bonjourr",
+    "Open Bonjourr's extension store page": "Noter Bonjourr sur la page de store",
+    "Close notification": "Fermer la notification"
 }

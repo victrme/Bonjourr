@@ -184,7 +184,7 @@ async function updateSearchbar({
 
     eventDebounce({ searchbar })
 
-    // so that settingsInit() has up to date data if settings are changed before init 
+    // so that settingsInit() has up to date data if settings are changed before init
     document.dispatchEvent(
         new CustomEvent('updateSettingsBeforeInit', {
             detail: {

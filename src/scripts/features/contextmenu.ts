@@ -358,8 +358,6 @@ function handleContextMenuEvents(): void {
     // for backgrounds buttons, see handleBackgroundActions()
 }
 
-
-
 export function initSearchBarActionsEvents(): void {
     searchBarActions?.querySelectorAll<HTMLButtonElement>('button').forEach(function (btn): void {
         onclickdown(btn, () => {

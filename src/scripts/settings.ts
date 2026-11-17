@@ -21,7 +21,7 @@ import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton, webkitRangeTrackColor } from './shared/dom.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
-import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
+import { toggleTraduction, tradThis, traduction, translateAriaLabels } from './utils/translations.ts'
 import { settingsNotifications } from './utils/notifications.ts'
 import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
@@ -135,7 +135,7 @@ function settingsInitEvent(event: Event): void {
         initWorldClocksAndTimezone(sync)
         updateSettingsJson(sync)
         updateSettingsEvent()
-        translateAriaLabels()
+        translateAriaLabels('settings')
         settingsDrawerBar()
         loadCallbacks()
 
@@ -1225,15 +1225,6 @@ function translatePlaceholders(): void {
     }
 }
 
-function translateAriaLabels(): void {
-    for (const element of document.querySelectorAll('[title]')) {
-        const title = element.getAttribute('title') ?? ''
-
-        element.setAttribute('title', tradThis(title))
-        element.setAttribute('aria-label', tradThis(title))
-    }
-}
-
 function localiseSiteLinks(): void {
     const siteLang = getLangForSite()
 
@@ -1273,7 +1264,7 @@ async function switchLangs(nextLang: Langs): Promise<void> {
     customFont(undefined, { lang: true })
     settingsFooter()
     translatePlaceholders()
-    translateAriaLabels()
+    translateAriaLabels('all')
     supportersNotifications(undefined, { translate: true })
     setModeGlider()
 }

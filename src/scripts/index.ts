@@ -17,7 +17,7 @@ import { clock } from './features/clock/index.ts'
 import './features/contextmenu.ts'
 
 import { displayInterface, onInterfaceDisplay } from './shared/display.ts'
-import { setTranslationCache, traduction } from './utils/translations.ts'
+import { setTranslationCache, traduction, translateAriaLabels } from './utils/translations.ts'
 import { operaExtensionExplainer } from './startup/opera.ts'
 import { setPotatoComputerMode } from './startup/potato.ts'
 import { suntime, userDate } from './shared/time.ts'
@@ -70,6 +70,7 @@ async function startup(): Promise<void> {
 
     displayInterface(undefined, sync)
     traduction(null, sync.lang)
+    translateAriaLabels('interface')
     userDate(sync.clock.timezone)
     suntime(local.lastWeather?.sunrise, local.lastWeather?.sunset)
     weather({ sync: sync, lastWeather: local.lastWeather })
