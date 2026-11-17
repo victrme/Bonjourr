@@ -1423,10 +1423,10 @@ function drawerDragEvents(): void {
 
 function copySettings(): void {
     const copybtn = document.querySelector('#b_settings-copy span')
-    const pre = document.getElementById('settings-data')
+    const pre = paramId('settings-data')
 
     try {
-        navigator.clipboard.writeText(pre?.textContent ?? '{}')
+        navigator.clipboard.writeText(pre?.value ?? '{}')
 
         if (copybtn) {
             copybtn.textContent = tradThis('Copied!')
@@ -1560,12 +1560,12 @@ export function updateSettingsJson(data?: Sync): void {
     }
 
     function updateTextArea(data: Sync): void {
-        const pre = document.getElementById('settings-data')
+        const pre = paramId('settings-data')
 
         if (pre && data.about) {
             const orderedJson = stringify(data)
             data.about.browser = PLATFORM
-            pre.textContent = orderedJson
+            pre.value = orderedJson
         }
     }
 }
