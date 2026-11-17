@@ -6,9 +6,9 @@ import type { Local, Translations } from '../../types/local.ts'
 type TranslationScope = 'interface' | 'settings' | 'all'
 
 const translationScopes: Record<TranslationScope, string> = {
-    interface: ':is(#show-settings, #contextmenu)',
+    interface: ':is(#show-settings, #contextmenu, #interface)',
     settings: '#settings',
-    all: ':is(#show-settings, #contextmenu, #settings)',
+    all: ':is(#show-settings, #contextmenu, #interface, #settings)',
 }
 
 let trns: Translations | undefined
@@ -97,7 +97,7 @@ export function tradThis(str: string): string {
     return trns ? (trns[str] ?? str) : str
 }
 
-// this also sets aria-labels 
+// takes titles, translates them and sets them as aria-labels
 export function translateAriaLabels(scope: keyof typeof translationScopes): void {
     for (const element of document.querySelectorAll<HTMLElement>(
         `${translationScopes[scope]} [title]`,
