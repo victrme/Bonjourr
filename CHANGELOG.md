@@ -32,6 +32,7 @@
 - 🇮🇩 Indonesian by @stevenfelix505 
 - 🇵🇱 Polish by @arklanq 
 - 🇹🇷 Turkish by @SwiftExplorer567 
+- 🇧🇷 Brazilian Portuguese by @adilsonfsantos
 
 ## 22.3.0
 
