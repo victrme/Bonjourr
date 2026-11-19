@@ -11,6 +11,16 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function addLateEveningToCustomGreetings(data: Import): Import {
+    if (!data.greetingscustom) {
+        data.greetingscustom = SYNC_DEFAULT.greetingscustom
+    }
+
+    data.greetingscustom.lateevening = ''
+
+    return data
+}
+
 export function addMouseWheelOnGroupsToAdvanced(data: Import): Import {
     if (!data.advanced) {
         data.advanced = SYNC_DEFAULT.advanced

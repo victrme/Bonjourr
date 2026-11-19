@@ -7,6 +7,7 @@
    - New `$engine` placeholder variable can now be set
 - Support for prefers-reduced-motion
 - New `mouseWheelOnGroups` [advanced setting](https://bonjourr.fr/docs/customisation/hidden-features/#advanced-settings) to disable mouse wheel on link group selection
+- New "late evening" custom greeting slot (from 11PM to 2:59AM)
 - Import a settings file with the `cmd/ctrl + shift + option + i` keybind 
 
 ### Bug fixes

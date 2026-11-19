@@ -203,6 +203,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
     setInput('i_greetafternoon', data.greetingscustom?.afternoon ?? '')
     setInput('i_greetevening', data.greetingscustom?.evening ?? '')
+    setInput('i_greetlateevening', data.greetingscustom?.lateevening ?? '')
     setInput('i_greetnight', data.greetingscustom?.night ?? '')
     setInput('i_textshadow', data.textShadow ?? 0.2)
     setInput('i_noteswidth', data.notes?.width || 50)
@@ -778,6 +779,9 @@ function initOptionsEvents(): void {
     paramId(`i_greetevening`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { evening: this.value } })
     })
+    paramId(`i_greetlateevening`).addEventListener('input', function (): void {
+        clock(undefined, { greetingscustom: { lateevening: this.value } })
+    })
     paramId(`i_greetnight`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { night: this.value } })
     })
@@ -790,6 +794,9 @@ function initOptionsEvents(): void {
     })
     paramId(`i_greetevening`).addEventListener('change', () => {
         paramId(`i_greetevening`).blur()
+    })
+    paramId(`i_greetlateevening`).addEventListener('change', () => {
+        paramId(`i_greetlateevening`).blur()
     })
     paramId(`i_greetnight`).addEventListener('change', () => {
         paramId(`i_greetnight`).blur()
@@ -1209,6 +1216,7 @@ function translatePlaceholders(): void {
         ['i_greetmorning', 'Hello, $name!'],
         ['i_greetafternoon', 'Good afternoon'],
         ['i_greetevening', 'Good evening'],
+        ['i_greetlateevening', 'Good evening'],
         ['i_greetnight', 'Good night'],
         ['i_tabtitle', 'New tab'],
         ['i_sbrequest', 'Search query: %s'],

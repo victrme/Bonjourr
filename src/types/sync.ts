@@ -40,6 +40,7 @@ export interface Sync {
         morning: string
         afternoon: string
         evening: string
+        lateevening: string
         night: string
     }
     notes?: Notes

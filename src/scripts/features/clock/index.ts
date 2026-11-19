@@ -29,6 +29,7 @@ interface ClockUpdate {
         morning?: string
         afternoon?: string
         evening?: string
+        lateevening?: string
         night?: string
     }
     timezone?: string

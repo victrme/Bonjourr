@@ -180,6 +180,7 @@ export const SYNC_DEFAULT: Sync = {
         morning: '',
         afternoon: '',
         evening: '',
+        lateevening: '',
         night: '',
     },
     notes: {
