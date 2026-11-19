@@ -540,7 +540,7 @@ const setEngine = (value = 'google') => {
 }
 
 const setPlaceholder = (value = '', engine: SearchEngines = 'default') => {
-    const placeholder = value ? value.replace('$engine', engineDetails[engine].name) : tradThis('Search')
+    const placeholder = value ? value.replace('$engine', engineDetails[engine].name) : ''
     domsearchbar?.setAttribute('placeholder', placeholder)
 }
 
