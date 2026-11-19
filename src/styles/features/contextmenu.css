@@ -113,7 +113,8 @@ dialog#contextmenu button * {
     pointer-events: none;
 }
 
-dialog#contextmenu button > svg, dialog#contextmenu button .iconContainer {
+dialog#contextmenu button > svg,
+dialog#contextmenu button .iconContainer {
     height: 18px;
     width: 18px;
 }

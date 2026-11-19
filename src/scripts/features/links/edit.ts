@@ -192,12 +192,12 @@ function toggleEditInputs(): string[] {
     domiconurl.value = ''
     domtitle.value = ''
 
-    if (container.mini) {
+    if (target.addgroup) {
+        inputs = ['title*', 'add'] // * for required inputs
+        setSubmitOnEnter('edit-add')
+    } else if (container.mini) {
         if (target.synced) {
             inputs = ['pin', 'delete']
-        } else if (target.addgroup) {
-            inputs = ['title*', 'add'] // * for required inputs
-            setSubmitOnEnter('edit-add')
         } else if (target.title) {
             inputs = ['title', 'delete', 'pin', 'apply']
         }

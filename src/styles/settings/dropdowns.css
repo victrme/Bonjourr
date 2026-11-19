@@ -122,7 +122,15 @@
 /* Dropdowns: Quicklinks, Notes, Searchbar, and Quotes Options */
 
 #quicklinks_options.shown {
-    max-height: 465px;
+    max-height: 2000px;
+}
+
+#linkgroups_options.shown {
+    max-height: 600px;
+}
+
+#linkgroups_all_options.shown {
+    max-height: 400px;
 }
 
 #notes_options.shown {
