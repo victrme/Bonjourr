@@ -5,7 +5,13 @@ import type { Sync } from '../../../types/sync.ts'
 
 export type DateFormat = Sync['dateformat']
 
-export function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateFormat, timezone: string): void {
+export function clockDate(
+    wrapper: HTMLElement,
+    date: Date,
+    dateformat: DateFormat,
+    timezone: string,
+    customdatestring?: string,
+): void {
     const datedom = wrapper.querySelector('.clock-date') as HTMLElement
     const aa = wrapper.querySelector('.clock-date-aa') as HTMLElement
     const bb = wrapper.querySelector('.clock-date-bb') as HTMLElement
@@ -47,55 +53,59 @@ export function clockDate(wrapper: HTMLElement, date: Date, dateformat: DateForm
         cc.textContent = weekday
     }
 
-    // if
+    if (dateformat === 'custom' && customdatestring) {
+        custom.textContent = customFormatDate(date, customdatestring, lang)
+    }
 
     if (lang === 'vi' && (timezone === 'auto' || timezone === 'Asia/Ho_Chi_Minh')) {
         secondary.textContent = getVnCalendar(date)
     } else {
         secondary.textContent = ''
     }
-
-    // custom.textContent = customFormatDate(date, 'It is currently {l}, {j}. {F} {Y}', lang)
 }
 
 // for custom dates
 type DateFormatter = (date: Date, locale: string) => string | number
 
 // custom implementation of PHP's date formatter
-// inspired by https://gist.github.com/kubiqsk/c60207a3075104df7cc1822a95053ecd
+// loosely inspired by https://gist.github.com/kubiqsk/c60207a3075104df7cc1822a95053ecd
 const dateTokens: Record<string, DateFormatter | undefined> = {
-    d: (date) => String(date.getDate()).padStart(2, '0'),
-    j: (date) => date.getDate(),
+    // Day
+    d: date => String(date.getDate()).padStart(2, '0'),
+    j: date => date.getDate(),
 
+    // Weekday
     D: (date, locale) =>
-        new Intl.DateTimeFormat(locale, {
-            weekday: 'short',
-        }).format(date),
-
+        new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date),
     l: (date, locale) =>
-        new Intl.DateTimeFormat(locale, {
-            weekday: 'long',
-        }).format(date),
+        new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(date),
 
-    m: (date) => String(date.getMonth() + 1).padStart(2, '0'),
-    n: (date) => date.getMonth() + 1,
-
+    // Month
+    m: date => String(date.getMonth() + 1).padStart(2, '0'),
+    n: date => date.getMonth() + 1,
     F: (date, locale) =>
-        new Intl.DateTimeFormat(locale, {
-            month: 'long',
-        }).format(date),
-
+        new Intl.DateTimeFormat(locale, { month: 'long' }).format(date),
     M: (date, locale) =>
-        new Intl.DateTimeFormat(locale, {
-            month: 'short',
-        }).format(date),
+        new Intl.DateTimeFormat(locale, { month: 'short' }).format(date),
 
-    y: (date) => String(date.getFullYear()).slice(-2),
-    Y: (date) => date.getFullYear(),
+    // Year
+    y: date => String(date.getFullYear()).slice(-2),
+    Y: date => date.getFullYear(),
+
+    // Time
+    H: date => String(date.getHours()).padStart(2, '0'),
+    h: date => String(date.getHours() % 12 || 12).padStart(2, '0'),
+    i: date => String(date.getMinutes()).padStart(2, '0'),
+    s: date => String(date.getSeconds()).padStart(2, '0'),
+    a: date => date.getHours() < 12 ? 'am' : 'pm',
 }
 
-export function customFormatDate(date: Date, format: string, locale = navigator.language): string {
-    return format.replace(/\{([a-zA-Z]+)\}/g, (match, token: string) => {
+export function customFormatDate(
+    date: Date,
+    format: string,
+    locale = navigator.language,
+): string {
+    return format.replace(/\$([a-zA-Z])/g, (match, token: string) => {
         const formatter = dateTokens[token]
         return formatter ? String(formatter(date, locale)) : match
     })

@@ -924,7 +924,43 @@
                 <option value="eu" class="trn">Day date month</option>
                 <option value="us" class="trn">Day, month date</option>
                 <option value="cn" class="trn">Month date day</option>
+                <option value="custom" class="trn">Custom</option>
             </select>
+        </div>
+
+        <div id="custom_date" class="dropdown">
+            <hr />
+            <div class="wrapper">
+                <span>
+                    <label for="i_customdate" class="trn">Custom date format</label>
+                    <button
+                        class="tooltip ttcustomdate"
+                        title="How does this work?"
+                    >
+                        ?
+                    </button>
+                </span>
+
+                <input
+                    id="i_customdate"
+                    name="customdate"
+                    type="text"
+                    placeholder="$F $j $Y"
+                    maxlength="64"
+                    autocomplete="off"
+                    spellcheck="false"
+                />
+            </div>
+
+            <p class="tooltiptext dropdown ttcustomdate">
+                <span class="trn">Set your date format using variables.</span>
+                <a
+                    class="trn site-link"
+                    href="https://bonjourr.fr/docs/widgets/time-and-date/#custom-dates"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >Learn more</a>
+            </p>
         </div>
 
         <div class="as as_timedate dropdown">

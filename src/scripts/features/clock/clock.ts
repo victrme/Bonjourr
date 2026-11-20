@@ -3,7 +3,7 @@ import { displayGreetings } from './greetings.ts'
 import { clockDate } from './date.ts'
 import { fixunits } from './helpers.ts'
 
-import type { Clock, WorldClock } from '../../../types/sync.ts'
+import type { Clock, Sync, WorldClock } from '../../../types/sync.ts'
 import type { DateFormat } from './date.ts'
 import type { Greetings } from './greetings.ts'
 
@@ -11,6 +11,7 @@ export interface ClockStartOptions {
     clock: Clock
     world: WorldClock[]
     dateformat: DateFormat
+    customdate: Sync['customdate']
     greetings: Greetings
 }
 
@@ -18,7 +19,7 @@ let clockInterval: ReturnType<typeof setTimeout>
 let clockVisibilityListener: (() => void) | null = null
 
 export function startClock(options: ClockStartOptions): void {
-    const { clock, world, dateformat, greetings } = options
+    const { clock, world, dateformat, customdate, greetings } = options
 
     document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
     document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
@@ -81,7 +82,7 @@ export function startClock(options: ClockStartOptions): void {
             }
 
             if (isNewDay || firstStart) {
-                clockDate(domclock, date, dateformat, timezone)
+                clockDate(domclock, date, dateformat, timezone, customdate)
                 displayedDays[index] = day
             }
 
