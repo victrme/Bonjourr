@@ -270,8 +270,16 @@ function displayPopup(type: 'review' | 'announce', showIcon = false): void {
 
     if (type === 'review') {
         desc.textContent = tradThis(REVIEW_TEXT)
-        buttons.appendChild(createPopupButton(REVIEW_URLS[BROWSER], tradThis('Review'), tradThis('Open Bonjourr\'s extension store page')))
-        buttons.appendChild(createPopupButton('https://ko-fi.com/bonjourr', tradThis('Donate'), tradThis('Open Bonjourr\'s Ko-fi page')))
+        buttons.appendChild(
+            createPopupButton(
+                REVIEW_URLS[BROWSER],
+                tradThis('Review'),
+                tradThis("Open Bonjourr's extension store page"),
+            ),
+        )
+        buttons.appendChild(
+            createPopupButton('https://ko-fi.com/bonjourr', tradThis('Donate'), tradThis("Open Bonjourr's Ko-fi page")),
+        )
     }
 
     if (type === 'announce') {
@@ -305,7 +313,7 @@ function createPopupButton(href: string, text: string, title?: string): HTMLAnch
     if (title) {
         anchor.title = title
     }
-    
+
     anchor.addEventListener('pointerdown', removePopupTrigger)
 
     return anchor

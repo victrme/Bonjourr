@@ -99,9 +99,11 @@ export function tradThis(str: string): string {
 
 // takes titles, translates them and sets them as aria-labels
 export function translateAriaLabels(scope: keyof typeof translationScopes): void {
-    for (const element of document.querySelectorAll<HTMLElement>(
-        `${translationScopes[scope]} [title]`,
-    )) {
+    for (
+        const element of document.querySelectorAll<HTMLElement>(
+            `${translationScopes[scope]} [title]`,
+        )
+    ) {
         const title = element.dataset.originalTitle ?? element.getAttribute('title') ?? ''
 
         element.dataset.originalTitle = title
