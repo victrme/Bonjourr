@@ -65,7 +65,6 @@ export function clock(init?: Sync, event?: ClockUpdate): void {
         clockUpdate(event)
         return
     }
-    
 
     const clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
     const world = init?.worldclocks ?? { ...SYNC_DEFAULT.worldclocks }

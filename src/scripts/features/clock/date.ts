@@ -67,37 +67,61 @@ export function clockDate(
 // for custom dates
 type DateFormatter = (date: Date, locale: string) => string | number
 
-// custom implementation of PHP's date formatter
-// loosely inspired by https://gist.github.com/kubiqsk/c60207a3075104df7cc1822a95053ecd
+// Custom implementation inspired by Ruby/Python strftime
 const dateTokens: Record<string, DateFormatter | undefined> = {
-    // Day
-    d: date => String(date.getDate()).padStart(2, '0'),
-    j: date => date.getDate(),
-
-    // Weekday
-    D: (date, locale) =>
+    // Days
+    a: (date, locale) => // Abbreviated weekday name (e.g. Sun)
         new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date),
-    l: (date, locale) =>
+    A: (date, locale) => // Full weekday name (e.g. Sunday)
         new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(date),
+    w: date => date.getDay(), // Weekday number, Sunday = 0 (0–6)
+    u: date => date.getDay() || 7, // ISO weekday number, Monday = 1 (1–7)
+    d: date => String(date.getDate()).padStart(2, '0'), // Day of the month, zero-padded (01–31)
+    e: date => date.getDate(), // Day of the month, no leading zero (1–31)
+    o: date => { // English ordinal for day of the month
+        const day = date.getDate()
 
-    // Month
-    m: date => String(date.getMonth() + 1).padStart(2, '0'),
-    n: date => date.getMonth() + 1,
-    F: (date, locale) =>
-        new Intl.DateTimeFormat(locale, { month: 'long' }).format(date),
-    M: (date, locale) =>
+        if (day >= 11 && day <= 13) return 'th'
+
+        switch (day % 10) {
+            case 1: return 'st'
+            case 2: return 'nd'
+            case 3: return 'rd'
+            default: return 'th'
+        }
+    },
+    j: date => { // Day of the year, zero-padded (001–366)
+        const start = new Date(date.getFullYear(), 0, 0)
+        const diff = date.getTime() - start.getTime()
+        return String(Math.floor(diff / 86400000)).padStart(3, '0')
+    },
+
+    // Weeks
+    U: date => { // Week number, Sunday as first day (00–53)
+        const start = new Date(date.getFullYear(), 0, 1)
+        const firstSunday = new Date(start)
+        firstSunday.setDate(start.getDate() + (7 - start.getDay()) % 7)
+        if (date < firstSunday) return '00'
+        return String(Math.floor((date.getTime() - firstSunday.getTime()) / 604800000) + 1).padStart(2, '0')
+    },
+    V: date => { // ISO week number, Monday as first day (01–53)
+        const target = new Date(date)
+        target.setDate(target.getDate() + 4 - (target.getDay() || 7))
+        const yearStart = new Date(target.getFullYear(), 0, 1)
+        return String(Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)).padStart(2, '0')
+    },
+
+    // Months
+    b: (date, locale) => // Abbreviated month name (e.g. Jan)
         new Intl.DateTimeFormat(locale, { month: 'short' }).format(date),
+    B: (date, locale) => // Full month name (e.g. January)
+        new Intl.DateTimeFormat(locale, { month: 'long' }).format(date),
+    m: date => String(date.getMonth() + 1).padStart(2, '0'), // Month number, zero-padded (01–12)
 
-    // Year
-    y: date => String(date.getFullYear()).slice(-2),
-    Y: date => date.getFullYear(),
-
-    // Time
-    H: date => String(date.getHours()).padStart(2, '0'),
-    h: date => String(date.getHours() % 12 || 12).padStart(2, '0'),
-    i: date => String(date.getMinutes()).padStart(2, '0'),
-    s: date => String(date.getSeconds()).padStart(2, '0'),
-    a: date => date.getHours() < 12 ? 'am' : 'pm',
+    // Years
+    y: date => String(date.getFullYear()).slice(-2), // Two-digit year (00–99)
+    Y: date => date.getFullYear(), // Four-digit year (e.g. 2026)
+    C: date => Math.floor(date.getFullYear() / 100), // Century (e.g. 20 for 2026)
 }
 
 export function customFormatDate(
@@ -105,7 +129,9 @@ export function customFormatDate(
     format: string,
     locale = navigator.language,
 ): string {
-    return format.replace(/\$([a-zA-Z])/g, (match, token: string) => {
+    return format.replace(/%([a-zA-Z%])/g, (match, token: string) => {
+        if (token === '%') return '%'
+
         const formatter = dateTokens[token]
         return formatter ? String(formatter(date, locale)) : match
     })

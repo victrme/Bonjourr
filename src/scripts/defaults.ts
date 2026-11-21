@@ -113,7 +113,7 @@ export const SYNC_DEFAULT: Sync = {
     time: true,
     main: true,
     dateformat: 'auto',
-    customdate: '$l, $j. $F $Y',
+    customdate: '%A, %e %B %Y',
     quicklinks: true,
     textShadow: 0.2,
     announcements: 'major',
