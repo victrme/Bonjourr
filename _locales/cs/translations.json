@@ -235,6 +235,8 @@
     "Day date month": "Den, datum, měsíc",
     "Day, month date": "Den, měsíc, datum",
     "Month date day": "Měsíc, datum, den",
+    "Custom date format": "Vlastní formát datumu",
+    "Set your date format using variables.": "Nastavte formát datumu pomocí proměnných.",
     "World clocks": "Světové hodiny",
     "Regions": "Regiony",
     "Time zone": "Časové pásmo",

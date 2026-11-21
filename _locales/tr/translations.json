@@ -235,6 +235,8 @@
     "Day date month": "Gün tarih ay",
     "Day, month date": "Gün, ay tarih",
     "Month date day": "Ay tarih gün",
+    "Custom date format": "Özel tarih biçimi",
+    "Set your date format using variables.": "Değişkenleri kullanarak tarih biçimini ayarlayın.",
     "World clocks": "Dünya saatleri",
     "Regions": "Bölgeler",
     "Time zone": "Saat dilimi",

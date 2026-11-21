@@ -72,58 +72,80 @@ type DateFormatter = (date: Date, locale: string) => string | number
 // https://www.foragoodstrftime.com/
 const dateTokens: Record<string, DateFormatter | undefined> = {
     // Days
-    a: (date, locale) => // Abbreviated weekday name (e.g. Sun)
+    a: (date, locale) =>
+        // Abbreviated weekday name (e.g. Sun)
         new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date),
-    A: (date, locale) => // Full weekday name (e.g. Sunday)
+    A: (date, locale) =>
+        // Full weekday name (e.g. Sunday)
         new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(date),
-    w: date => date.getDay(), // Weekday number, Sunday = 0 (0–6)
-    u: date => date.getDay() || 7, // ISO weekday number, Monday = 1 (1–7)
-    d: date => String(date.getDate()).padStart(2, '0'), // Day of the month, zero-padded (01–31)
-    e: date => date.getDate(), // Day of the month, no leading zero (1–31)
-    o: date => { // English ordinal for day of the month
+    w: (date) => date.getDay(), // Weekday number, Sunday = 0 (0–6)
+    u: (date) => date.getDay() || 7, // ISO weekday number, Monday = 1 (1–7)
+    d: (date) => String(date.getDate()).padStart(2, '0'), // Day of the month, zero-padded (01–31)
+    e: (date) => date.getDate(), // Day of the month, no leading zero (1–31)
+    o: (date) => { // English ordinal for day of the month
         const day = date.getDate()
 
         if (day >= 11 && day <= 13) return 'th'
 
         switch (day % 10) {
-            case 1: return 'st'
-            case 2: return 'nd'
-            case 3: return 'rd'
-            default: return 'th'
+            case 1:
+                return 'st'
+            case 2:
+                return 'nd'
+            case 3:
+                return 'rd'
+            default:
+                return 'th'
         }
     },
-    j: date => { // Day of the year, zero-padded (001–366)
-        const start = new Date(date.getFullYear(), 0, 0)
-        const diff = date.getTime() - start.getTime()
-        return String(Math.floor(diff / 86400000)).padStart(3, '0')
+
+    j: (date) => { // Day of the year, zero-padded (001–366)
+        const year = date.getFullYear()
+        const start = Date.UTC(year, 0, 1)
+        const current = Date.UTC(year, date.getMonth(), date.getDate())
+        const day = Math.floor((current - start) / 86400000) + 1
+
+        return String(day).padStart(3, '0')
     },
 
     // Weeks
-    U: date => { // Week number, Sunday as first day (00–53)
-        const start = new Date(date.getFullYear(), 0, 1)
-        const firstSunday = new Date(start)
-        firstSunday.setDate(start.getDate() + (7 - start.getDay()) % 7)
-        if (date < firstSunday) return '00'
-        return String(Math.floor((date.getTime() - firstSunday.getTime()) / 604800000) + 1).padStart(2, '0')
+    U: (date) => { // Week number, Sunday as first day (00–53)
+        const start = Date.UTC(date.getFullYear(), 0, 1)
+        const current = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+        const startWeekday = new Date(start).getUTCDay()
+        const firstSunday = start + (7 - startWeekday) % 7 * 86400000
+        const week = current < firstSunday ? 0 : Math.floor((current - firstSunday) / (7 * 86400000)) + 1
+
+        return String(week).padStart(2, '0')
     },
-    V: date => { // ISO week number, Monday as first day (01–53)
-        const target = new Date(date)
-        target.setDate(target.getDate() + 4 - (target.getDay() || 7))
-        const yearStart = new Date(target.getFullYear(), 0, 1)
-        return String(Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7)).padStart(2, '0')
+    V: (date) => { // ISO week number, Monday as first day (01–53)
+        const target = new Date(
+            Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+        )
+        const weekday = target.getUTCDay() || 7
+        target.setUTCDate(target.getUTCDate() + 4 - weekday)
+
+        const yearStart = Date.UTC(target.getUTCFullYear(), 0, 1)
+        const week = Math.ceil(
+            ((target.getTime() - yearStart) / 86400000 + 1) / 7,
+        )
+
+        return String(week).padStart(2, '0')
     },
 
     // Months
-    b: (date, locale) => // Abbreviated month name (e.g. Jan)
+    b: (date, locale) =>
+        // Abbreviated month name (e.g. Jan)
         new Intl.DateTimeFormat(locale, { month: 'short' }).format(date),
-    B: (date, locale) => // Full month name (e.g. January)
+    B: (date, locale) =>
+        // Full month name (e.g. January)
         new Intl.DateTimeFormat(locale, { month: 'long' }).format(date),
-    m: date => String(date.getMonth() + 1).padStart(2, '0'), // Month number, zero-padded (01–12)
+    m: (date) => String(date.getMonth() + 1).padStart(2, '0'), // Month number, zero-padded (01–12)
 
     // Years
-    y: date => String(date.getFullYear()).slice(-2), // Two-digit year (00–99)
-    Y: date => date.getFullYear(), // Four-digit year (e.g. 2026)
-    C: date => Math.floor(date.getFullYear() / 100), // Century (e.g. 20 for 2026)
+    y: (date) => String(date.getFullYear()).slice(-2), // Two-digit year (00–99)
+    Y: (date) => date.getFullYear(), // Four-digit year (e.g. 2026)
+    C: (date) => Math.floor(date.getFullYear() / 100), // Century (e.g. 20 for 2026)
 }
 
 export function customFormatDate(

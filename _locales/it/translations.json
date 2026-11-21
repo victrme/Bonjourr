@@ -235,6 +235,8 @@
     "Day date month": "Giorno data mese",
     "Day, month date": "Giorno, mese data",
     "Month date day": "Mese data giorno",
+    "Custom date format": "Formato data personalizzato",
+    "Set your date format using variables.": "Imposta il formato della data usando le variabili.",
     "World clocks": "Orologi del mondo",
     "Regions": "Regioni",
     "Time zone": "Fuso orario",
