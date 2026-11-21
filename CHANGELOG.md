@@ -5,7 +5,8 @@
    - Now round with a default "Search" placeholder for a more modern look!
    - Right click on the right of the search bar for easy search engine switching (#975)
    - New `$engine` placeholder variable can now be set
-- Support for prefers-reduced-motion
+- New [custom date format](https://bonjourr.fr/docs/widgets/time-and-date/#custom-dates) field with variables
+- Support for [prefers-reduced-motion](https://css-tricks.com/almanac/rules/m/media/prefers-reduced-motion/)
 - New `mouseWheelOnGroups` [advanced setting](https://bonjourr.fr/docs/customisation/hidden-features/#advanced-settings) to disable mouse wheel on link group selection
 - New "late evening" custom greeting slot (from 11PM to 2:59AM)
 - Import a settings file with the `cmd/ctrl + shift + option + i` keybind 

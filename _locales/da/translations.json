@@ -235,6 +235,8 @@
     "Day date month": "Dag dato måned",
     "Day, month date": "Dag, måned dato",
     "Month date day": "Måned dato dag",
+    "Custom date format": "Brugerdefineret datoformat",
+    "Set your date format using variables.": "Angiv dit datoformat med variabler.",
     "World clocks": "Verdens ure",
     "Regions": "Regioner",
     "Time zone": "Tidszone",

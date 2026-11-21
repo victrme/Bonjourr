@@ -235,6 +235,8 @@
     "Day date month": "Dag dato måned",
     "Day, month date": "Dag, måned dato",
     "Month date day": "Måned dato dag",
+    "Custom date format": "Egendefinert datoformat",
+    "Set your date format using variables.": "Velg datoformat ved hjelp av variabler.",
     "World clocks": "Klokker fra hele verden",
     "Regions": "Regioner",
     "Time zone": "Tidssone",

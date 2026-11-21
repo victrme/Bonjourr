@@ -11,6 +11,14 @@ import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
 
+export function addCustomDateFormat(data: Import): Import {
+    if (data.customdate === undefined) {
+        data.customdate = SYNC_DEFAULT.customdate
+    }
+
+    return data
+}
+
 export function addLateEveningToCustomGreetings(data: Import): Import {
     if (!data.greetingscustom) {
         data.greetingscustom = SYNC_DEFAULT.greetingscustom

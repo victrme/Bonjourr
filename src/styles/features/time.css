@@ -607,3 +607,15 @@
 .clock-date-secondary::after {
     content: '\200b';
 }
+
+.clock-date-custom {
+    display: none;
+}
+
+.clock-date-custom:not(:empty) {
+    display: block;
+}
+
+.clock-date:has(.clock-date-custom:not(:empty)) > :not(.clock-date-custom) {
+    display: none;
+}

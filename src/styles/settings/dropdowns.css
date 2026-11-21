@@ -153,6 +153,11 @@
     max-height: 370px;
 }
 
+/* Dropdowns: time and dates */
+#custom_date.shown {
+    max-height: 110px;
+}
+
 /* Dropdowns: Settings management Options */
 
 #disabled-sync.shown {
