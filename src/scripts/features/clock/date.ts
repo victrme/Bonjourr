@@ -25,6 +25,7 @@ export function clockDate(
     const month = new Intl.DateTimeFormat(lang, { month: 'long' }).format(date)
     const weekday = new Intl.DateTimeFormat(lang, { weekday: 'long' }).format(date)
 
+    custom.textContent = ''
     datedom.classList.remove('eu', 'us', 'cn')
     datedom.classList.add(dateformat)
 
@@ -68,6 +69,7 @@ export function clockDate(
 type DateFormatter = (date: Date, locale: string) => string | number
 
 // Custom implementation inspired by Ruby/Python strftime
+// https://www.foragoodstrftime.com/
 const dateTokens: Record<string, DateFormatter | undefined> = {
     // Days
     a: (date, locale) => // Abbreviated weekday name (e.g. Sun)
