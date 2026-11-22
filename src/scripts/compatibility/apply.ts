@@ -35,11 +35,14 @@ export function filterData(from: 'update' | 'import', current: Sync, target?: Pa
             newcurrent = deepmergeAll(newcurrent, newtarget) as Sync
 
             // After merge only
-            newcurrent = removeLinkgroupDuplicates(newcurrent)
             newcurrent = removeWorldClocksDuplicate(newcurrent, newtarget)
             newcurrent = toggleMoveWidgets(newcurrent, newtarget)
         } else {
             newcurrent = newtarget as Sync
+        }
+
+        if (newcurrent.linkgroups) {
+            newcurrent = removeLinkgroupDuplicates(newcurrent)
         }
     }
 
