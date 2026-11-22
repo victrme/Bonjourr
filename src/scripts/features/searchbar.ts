@@ -250,6 +250,9 @@ function submitSearch(e: Event): void {
             disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
             text: val,
         })
+
+        if (newtab) removeInputText()
+
         return
     }
 
@@ -259,8 +262,10 @@ function submitSearch(e: Event): void {
     const domainUrl = hasProtocol ? val : `https://${val}`
     const searchUrl = createSearchUrl(val, engine)
     const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
+
     if (newtab) {
         globalThis.open(url, '_blank', 'noopener')
+        removeInputText()
         return
     }
 
