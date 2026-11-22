@@ -129,7 +129,12 @@ function settingsInitEvent(event: Event): void {
     initOptionsEvents()
     settingsFooter()
 
-    if (isToggle) settingsToggle(event as CustomEvent)
+    if (isToggle) {
+        // gives time for settings panel to init before toggling on (for toggle-settings event)
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => settingsToggle(event as CustomEvent))
+        })
+    }
 
     // 3. Can be deferred
 
