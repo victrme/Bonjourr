@@ -241,7 +241,8 @@ function submitSearch(e: Event): void {
         return
     }
 
-    if (socket) {
+    // closes socket if not open in new tab
+    if (socket && !newtab) {
         socket.close()
     }
 
@@ -251,7 +252,10 @@ function submitSearch(e: Event): void {
             text: val,
         })
 
-        if (newtab) removeInputText()
+        if (newtab) {
+            removeInputText()
+            hideResultsAndSuggestions()
+        }
 
         return
     }
@@ -266,6 +270,7 @@ function submitSearch(e: Event): void {
     if (newtab) {
         globalThis.open(url, '_blank', 'noopener')
         removeInputText()
+        hideResultsAndSuggestions()
         return
     }
 
@@ -371,14 +376,6 @@ function initSuggestions(): void {
         lastSelected?.setAttribute('aria-selected', 'true')
     }
 
-    function hideResultsAndSuggestions(): void {
-        const children = Object.values(domsuggestions?.children ?? [])
-        for (const child of children) {
-            child.classList.remove('shown')
-        }
-        domsuggestions?.classList.remove('shown')
-    }
-
     async function createSuggestionSocket(): Promise<void> {
         socket = await apiWebSocket('suggestions')
 
@@ -399,6 +396,14 @@ function initSuggestions(): void {
     emptyButton?.addEventListener('click', hideResultsAndSuggestions)
 
     createSuggestionSocket()
+}
+
+function hideResultsAndSuggestions(): void {
+    const children = Object.values(domsuggestions?.children ?? [])
+    for (const child of children) {
+        child.classList.remove('shown')
+    }
+    domsuggestions?.classList.remove('shown')
 }
 
 function suggestions(results: Suggestions): void {
