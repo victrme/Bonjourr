@@ -36,7 +36,7 @@ const customEngineForm = networkForm('f_sbrequest')
 let socket: WebSocket | undefined
 const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
 const engineDetails: Record<SearchEngines, { name: string; url: string }> = {
-    default: { name: '', url: '' },
+    default: { name: 'Google', url: '' },
     google: { name: 'Google', url: 'https://www.google.com/search?q=%s' },
     ddg: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s' },
     startpage: { name: 'Startpage', url: 'https://www.startpage.com/do/search?query=%s' },
@@ -241,7 +241,7 @@ function submitSearch(e: Event): void {
         return
     }
 
-    // closes socket if not open in new tab
+    // closes suggestion socket if not open in new tab
     if (socket && !newtab) {
         socket.close()
     }
