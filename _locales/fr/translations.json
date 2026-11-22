@@ -303,7 +303,7 @@
     "Suggestions": "Suggestions",
     "Search engine": "Moteur de recherche",
     "Choose search engine": "Moteur de recherche",
-    "Change the endpoint of the search bar.": "Modifiez le point de terminaison de la barre de recherche.",
+    "Change the endpoint of the search bar.": "Choisissez sur quel moteur rechercher.",
     "google": "https://www.google.fr/search?q=%s",
     "duckduckgo": "https://duckduckgo.com/?q=%s&kl=fr-fr",
     "startpage": "https://www.startpage.com/do/search?query=%s&language=francais",

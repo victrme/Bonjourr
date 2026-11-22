@@ -557,7 +557,6 @@ const setPlaceholder = (value = '', engine: SearchEngines = 'default') => {
 // translates the default placeholder on first init
 function setDefaultPlaceholder(init?: Searchbar): void {
     if (init && init.placeholder === '--sb-default-placeholder--') {
-        init.placeholder = tradThis('Search')
-        setPlaceholder(init.placeholder, init.engine)
+        updateSearchbar({ placeholder: tradThis('Search') })
     }
 }
