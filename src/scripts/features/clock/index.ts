@@ -22,6 +22,7 @@ interface ClockUpdate {
     analog?: boolean
     seconds?: boolean
     dateformat?: string
+    customdate?: string
     greeting?: string
     greetingsize?: string
     greetingsmode?: string
@@ -68,6 +69,7 @@ export function clock(init?: Sync, event?: ClockUpdate): void {
     const clock = init?.clock ?? { ...SYNC_DEFAULT.clock }
     const world = init?.worldclocks ?? { ...SYNC_DEFAULT.worldclocks }
     const dateformat = init?.dateformat || 'eu'
+    const customdate = init?.customdate ?? SYNC_DEFAULT.customdate
     const greetings: Greetings = {
         name: init?.greeting || '',
         mode: init?.greetingsmode || 'auto',
@@ -75,7 +77,7 @@ export function clock(init?: Sync, event?: ClockUpdate): void {
     }
 
     try {
-        startClock({ clock, world, greetings, dateformat })
+        startClock({ clock, world, greetings, dateformat, customdate })
         greetingSize(init?.greetingsize)
         analogStyle(init?.analogstyle)
         clockSize(clock.size)
@@ -100,6 +102,13 @@ async function clockUpdate(update: ClockUpdate): Promise<void> {
     if (isDateFormat(update.dateformat)) {
         data.dateformat = update.dateformat
         storage.sync.set({ dateformat: update.dateformat })
+
+        toggleSettingsDropdown('custom_date', update.dateformat === 'custom')
+    }
+
+    if (update.customdate !== undefined) {
+        data.customdate = update.customdate
+        storage.sync.set({ customdate: update.customdate })
     }
 
     if (update.greeting !== undefined) {
@@ -212,12 +221,14 @@ async function clockUpdate(update: ClockUpdate): Promise<void> {
         worldclocks: data.worldclocks,
         analogstyle: analogstyle,
         dateformat: data.dateformat,
+        customdate: data.customdate,
     })
 
     startClock({
         clock: data.clock,
         world: data.worldclocks,
         dateformat: data.dateformat,
+        customdate: data.customdate,
         greetings: {
             name: data.greeting,
             mode: data.greetingsmode,

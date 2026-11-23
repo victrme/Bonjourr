@@ -235,6 +235,8 @@
     "Day date month": "요일 일 월",
     "Day, month date": "요일, 월 일",
     "Month date day": "월 일 요일",
+    "Custom date format": "사용자 지정 날짜 형식",
+    "Set your date format using variables.": "변수를 사용하여 날짜 형식을 설정하세요.",
     "World clocks": "세계 시계",
     "Regions": "지역",
     "Time zone": "시간대",

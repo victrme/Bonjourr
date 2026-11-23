@@ -235,6 +235,8 @@
     "Day date month": "Dan datum mesec",
     "Day, month date": "Dan, mesec datum",
     "Month date day": "Mesec datum dan",
+    "Custom date format": "Prilagođeni format datuma",
+    "Set your date format using variables.": "Podesite format datuma pomoću promenljivih.",
     "World clocks": "Svetsko vreme",
     "Regions": "Regioni",
     "Time zone": "Vremenska zona",

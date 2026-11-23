@@ -206,6 +206,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_pagewidth', data.pagewidth || 1600)
     setInput('i_pagegap', data.pagegap ?? 1)
     setInput('i_dateformat', data.dateformat || 'eu')
+    setInput('i_customdate', data.customdate ?? '')
     setInput('i_greeting', data.greeting ?? '')
     setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
     setInput('i_greetafternoon', data.greetingscustom?.afternoon ?? '')
@@ -330,6 +331,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     toggleSettingsDropdown('ampm_position', data.clock.ampmlabel && data.clock.ampm)
     toggleSettingsDropdown('worldclocks_options', data.clock.worldclocks)
     toggleSettingsDropdown('weather_provider', data.weather?.moreinfo === 'custom')
+    toggleSettingsDropdown('custom_date', data.dateformat === 'custom')
     toggleSettingsDropdown('searchbar_request', data.searchbar?.engine === 'custom')
 
     // the events for these are in toggleWidgetInSettings()
@@ -697,6 +699,10 @@ function initOptionsEvents(): void {
 
     paramId('i_dateformat').addEventListener('change', function (this): void {
         clock(undefined, { dateformat: this.value })
+    })
+
+    paramId('i_customdate').addEventListener('input', function (this: HTMLInputElement): void {
+        clock(undefined, { customdate: this.value })
     })
 
     paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement): void {

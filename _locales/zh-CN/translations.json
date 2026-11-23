@@ -235,6 +235,8 @@
     "Day date month": "星期 日期 月份",
     "Day, month date": "星期，月份 日期",
     "Month date day": "月份 日期 星期",
+    "Custom date format": "自定义日期格式",
+    "Set your date format using variables.": "使用变量设置日期格式。",
     "World clocks": "世界时钟",
     "Regions": "地区",
     "Time zone": "时区",

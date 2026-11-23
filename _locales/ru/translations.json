@@ -235,6 +235,8 @@
     "Day date month": "День число месяц",
     "Day, month date": "День, месяц число",
     "Month date day": "Месяц число день",
+    "Custom date format": "Произвольный формат даты",
+    "Set your date format using variables.": "Задайте формат даты с помощью переменных.",
     "World clocks": "Мировые часы",
     "Regions": "Регионы",
     "Time zone": "Часовой пояс",

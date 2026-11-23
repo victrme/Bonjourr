@@ -46,7 +46,8 @@ export interface Sync {
     notes?: Notes
     hide?: Hide
     dark: 'auto' | 'system' | 'enable' | 'disable'
-    dateformat: 'auto' | 'eu' | 'us' | 'cn'
+    dateformat: 'auto' | 'eu' | 'us' | 'cn' | 'custom'
+    customdate: string
     backgrounds: Backgrounds
     clock: Clock
     analogstyle?: AnalogStyle

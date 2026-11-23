@@ -235,6 +235,8 @@
     "Day date month": "[Thứ] [Ngày] [Tháng]",
     "Day, month date": "[Thứ], [Tháng] [Ngày]",
     "Month date day": "[Tháng] [Ngày] [Thứ]",
+    "Custom date format": "Định dạng ngày tùy chỉnh",
+    "Set your date format using variables.": "Thiết lập định dạng ngày bằng cách sử dụng biến.",
     "World clocks": "Đồng hồ thế giới",
     "Regions": "Khu vực",
     "Time zone": "Múi giờ",

@@ -235,6 +235,8 @@
     "Day date month": "Päivä päivämäärä kuukausi",
     "Day, month date": "Päivä, kuukausi päivämäärä",
     "Month date day": "Kuukausi päivämäärä päivä",
+    "Custom date format": "Mukautettu päivämäärämuoto",
+    "Set your date format using variables.": "Aseta päivämäärämuoto muuttujilla.",
     "World clocks": "Maailman kellot",
     "Regions": "Alueet",
     "Time zone": "Aikavyöhyke",

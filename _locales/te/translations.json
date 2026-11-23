@@ -235,6 +235,8 @@
     "Day date month": "వారం, తేదీ, నెల",
     "Day, month date": "వారం, నెల, తేదీ",
     "Month date day": "నెల, తేదీ, వారం",
+    "Custom date format": "అనుకూల తేదీ ఫార్మాట్",
+    "Set your date format using variables.": "వేరియబుల్స్ ఉపయోగించి మీ తేదీ ఫార్మాట్‌ను సెట్ చేయండి.",
     "World clocks": "ప్రపంచ గడియారాలు",
     "Regions": "ప్రాంతాలు",
     "Time zone": "సమయ మండలం",
