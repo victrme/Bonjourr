@@ -234,6 +234,7 @@
     word-wrap: break-word;
     text-align: center;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -381,6 +382,10 @@
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.075s;
+}
+
+.link.clicking:not(.no-alt) .link-icon::before {
+    background-color: rgb(34 34 34 / 0.6);
 }
 
 [data-alt-mode='true'] .link:not(.no-alt) .link-icon::before {

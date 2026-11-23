@@ -129,6 +129,7 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     document.addEventListener('keydown', (event) => {
         openLinksWithKeyboard(init.sync.advanced, event)
     })
+    document.addEventListener('keyup', removeLinkClicking)
 
     if (sync.linkgroups.synced.length > 0) {
         await initBookmarkSync(sync)
@@ -973,28 +974,34 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
 function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
     if (isTypingTarget(event.target) || !advanced.altMode) return
 
-    const { altKey, ctrlKey, metaKey, code } = event
-    const isNotAltComboKey = !altKey || ctrlKey || metaKey
-    const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))
+    const { altKey, ctrlKey, metaKey } = event
+    if (!altKey || ctrlKey || metaKey) return
 
-    if (isNotAltComboKey || isNaN(codeNumber)) {
-        return
-    }
-
-    const links = document.querySelectorAll<HTMLLIElement>('.link')
-    const link = links[codeNumber - 1]
-
-    if (!link) {
-        return
-    }
+    const link = getKeyboardLink(event)
+    if (!link) return
 
     event.preventDefault()
 
     if (link.classList.contains('link-folder')) {
         folderClick(event, link)
     } else {
+        link.classList.add('clicking')
         link.querySelector('a')?.click()
     }
+}
+
+function getKeyboardLink(event: KeyboardEvent): HTMLLIElement | undefined {
+    const codeNumber = parseInt(event.code.replace('Digit', '').replace('Numpad', ''))
+
+    if (isNaN(codeNumber)) return
+
+    const links = document.querySelectorAll<HTMLLIElement>('.link')
+    return links[codeNumber - 1]
+}
+
+function removeLinkClicking(event: KeyboardEvent): void {
+    const link = getKeyboardLink(event)
+    link?.classList.remove('clicking')
 }
 
 // no way to do this in CSS with the pinned groups :(

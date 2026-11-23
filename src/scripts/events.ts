@@ -87,6 +87,7 @@ function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
     if (advanced.altMode && type === 'keydown' && shiftKey && altKey && (ctrlKey || metaKey) && code === 'KeyI') {
         const fileImportInput = document.getElementById('file-import') as HTMLInputElement
 
+        // opens settings otherwise import won't work
         if (document.querySelector('#settings.init')) {
             document.dispatchEvent(new CustomEvent('toggle-settings'))
         }
