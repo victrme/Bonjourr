@@ -164,15 +164,7 @@ function initSupportersModal(): void {
         }
     })
 
-    // close when esc key
-    document.addEventListener('keyup', (event) => {
-        const hasDataset = document.documentElement.dataset.supportersModal !== undefined
-        const isEscape = event.key === 'Escape'
-
-        if (isEscape && hasDataset) {
-            toggleSupportersModal(false)
-        }
-    })
+    document.addEventListener('close-supporters-modal', () => toggleSupportersModal(false))
 }
 
 function toggleSupportersModal(toggle: boolean): void {

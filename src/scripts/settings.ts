@@ -60,7 +60,7 @@ export function settingsInit(sync: Sync, local: Local): void {
         }
     })
 
-    document.body?.addEventListener('keydown', settingsInitEvent)
+    document.addEventListener('toggle-settings', settingsInitEvent)
     showsettings?.addEventListener('pointerdown', settingsInitEvent)
 
     const openSettingsButtonsFromContextMenu = document.body.querySelectorAll<HTMLButtonElement>(
@@ -80,8 +80,8 @@ function settingsInitEvent(event: Event): void {
 
     const settingsAreHidden = settings?.classList.contains('hidden')
     const isLeftClick = (event as PointerEvent)?.button === 0
-    const isEscape = (event as KeyboardEvent)?.code === 'Escape'
-    const canOpenSettings = settingsAreHidden && (isEscape || isLeftClick)
+    const isToggle = event.type === 'toggle-settings'
+    const canOpenSettings = settingsAreHidden && (isToggle || isLeftClick)
 
     if (!canOpenSettings) {
         return
@@ -116,7 +116,7 @@ function settingsInitEvent(event: Event): void {
         }, 0)
     }
 
-    document.body?.removeEventListener('keydown', settingsInitEvent)
+    document.removeEventListener('toggle-settings', settingsInitEvent)
     showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 
     showall(sync.showall, false)
@@ -128,6 +128,13 @@ function settingsInitEvent(event: Event): void {
     initOptionsValues(sync, local)
     initOptionsEvents()
     settingsFooter()
+
+    if (isToggle) {
+        // gives time for settings panel to init before toggling on (for toggle-settings event)
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => settingsToggle(event as CustomEvent))
+        })
+    }
 
     // 3. Can be deferred
 
