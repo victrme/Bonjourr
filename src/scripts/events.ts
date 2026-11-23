@@ -72,7 +72,7 @@ function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
 
         const rect = linkList.getBoundingClientRect()
 
-        // dodgy implementation but way more efficient than adding event more complexity to populateDialogWithEditLink(), that thing will be rewritten in the future to make it bearable
+        // dodgy implementation but way more efficient than adding even more complexity to populateDialogWithEditLink(), that thing should be rewritten in the future to make it bearable
         linkList.dispatchEvent(
             new MouseEvent('contextmenu', {
                 bubbles: true,
@@ -86,6 +86,10 @@ function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
     // import settings file with cmd/ctrl + shift + option + i
     if (advanced.altMode && type === 'keydown' && shiftKey && altKey && (ctrlKey || metaKey) && code === 'KeyI') {
         const fileImportInput = document.getElementById('file-import') as HTMLInputElement
+
+        if (document.querySelector('#settings.init')) {
+            document.dispatchEvent(new CustomEvent('toggle-settings'))
+        }
 
         if (fileImportInput) {
             event.preventDefault()

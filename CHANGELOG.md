@@ -19,6 +19,7 @@
 - Improved background preloading and resolution (thanks @ilkis! #951 & #950)
 - Settings panel has the right settings data if you click "next background" before opening it (#975)
 - Fixed a bug where the settings management textarea wouldn't be up to date (#976)
+- Better `esc` key handling (no longer triggers multiple actions at once) (thanks @mvanhorn! #983)
 - Empty folders now get automatically deleted (thanks @sidhesh-tavare! #956)
 - Quick Links URLs can be a lot longer (#973)
 - Layout toolbox no longer messes with Quick Links titles (#868)
