@@ -16,12 +16,9 @@ globalThis.window.addEventListener('load', function () {
         if (helpHotkey) {
             toggleHelpMode()
         }
-
-        // when help mode is open, escape to quit
-        if (key === 'Escape' && helpModeShown) {
-            toggleHelpMode(false)
-        }
     })
+
+    document.addEventListener('close-help-mode', () => toggleHelpMode(false))
 })
 
 function displayHelpModePrompt() {

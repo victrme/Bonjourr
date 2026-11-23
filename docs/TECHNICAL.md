@@ -23,7 +23,7 @@ Bonjourr strictly follows Deno's built-in formatting and linting rules.
 
 ### Testing
 
-- Run all tests everytime
+- Run all tests every time
 - Run All Tests: `deno task test`
 
 ---

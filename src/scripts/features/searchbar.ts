@@ -36,7 +36,7 @@ const customEngineForm = networkForm('f_sbrequest')
 let socket: WebSocket | undefined
 const domainPattern = /^(?!.*\s)(?:https?:\/\/)?([a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9-]{2,})/i
 const engineDetails: Record<SearchEngines, { name: string; url: string }> = {
-    default: { name: '', url: '' },
+    default: { name: 'Google', url: '' },
     google: { name: 'Google', url: 'https://www.google.com/search?q=%s' },
     ddg: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=%s' },
     startpage: { name: 'Startpage', url: 'https://www.startpage.com/do/search?query=%s' },
@@ -241,7 +241,8 @@ function submitSearch(e: Event): void {
         return
     }
 
-    if (socket) {
+    // closes suggestion socket if not open in new tab
+    if (socket && !newtab) {
         socket.close()
     }
 
@@ -250,6 +251,12 @@ function submitSearch(e: Event): void {
             disposition: newtab ? 'NEW_TAB' : 'CURRENT_TAB',
             text: val,
         })
+
+        if (newtab) {
+            removeInputText()
+            hideResultsAndSuggestions()
+        }
+
         return
     }
 
@@ -259,8 +266,11 @@ function submitSearch(e: Event): void {
     const domainUrl = hasProtocol ? val : `https://${val}`
     const searchUrl = createSearchUrl(val, engine)
     const url = isValidUrl(domainUrl) ? domainUrl : searchUrl
+
     if (newtab) {
         globalThis.open(url, '_blank', 'noopener')
+        removeInputText()
+        hideResultsAndSuggestions()
         return
     }
 
@@ -366,14 +376,6 @@ function initSuggestions(): void {
         lastSelected?.setAttribute('aria-selected', 'true')
     }
 
-    function hideResultsAndSuggestions(): void {
-        const children = Object.values(domsuggestions?.children ?? [])
-        for (const child of children) {
-            child.classList.remove('shown')
-        }
-        domsuggestions?.classList.remove('shown')
-    }
-
     async function createSuggestionSocket(): Promise<void> {
         socket = await apiWebSocket('suggestions')
 
@@ -394,6 +396,14 @@ function initSuggestions(): void {
     emptyButton?.addEventListener('click', hideResultsAndSuggestions)
 
     createSuggestionSocket()
+}
+
+function hideResultsAndSuggestions(): void {
+    const children = Object.values(domsuggestions?.children ?? [])
+    for (const child of children) {
+        child.classList.remove('shown')
+    }
+    domsuggestions?.classList.remove('shown')
 }
 
 function suggestions(results: Suggestions): void {
@@ -547,7 +557,6 @@ const setPlaceholder = (value = '', engine: SearchEngines = 'default') => {
 // translates the default placeholder on first init
 function setDefaultPlaceholder(init?: Searchbar): void {
     if (init && init.placeholder === '--sb-default-placeholder--') {
-        init.placeholder = tradThis('Search')
-        setPlaceholder(init.placeholder, init.engine)
+        updateSearchbar({ placeholder: tradThis('Search') })
     }
 }
