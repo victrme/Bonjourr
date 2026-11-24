@@ -68,7 +68,7 @@ If you just want to say thank you and support our work, here's some ideas:
 
 ## ☕ Donate
 
-If you feel like we've earned it and you want to support independant open source developpers, we'll gladly accept your donations! It motivates us to keep improving Bonjourr and makes it feel more real :)
+If you feel like we've earned it and you want to support independent open source developers, we'll gladly accept your donations! It motivates us to keep improving Bonjourr and makes it feel more real :)
 
 **As a token of our appreciation, donating will also get your name [featured in Bonjourr](https://bonjourr.fr/docs/settings-management/notifications/#supporters-notification) for the entire month after you donate!**
 
@@ -138,7 +138,7 @@ If you feel like we've earned it and you want to support independant open source
 
 ## 👨‍💻 On pull requests
 
-Bonjourr is open to pull requests, but they do need to be in the spirit of the extension. If you'd like to add a feature, please [open an issue](https://github.com/victrme/Bonjourr/issues) before you start working on it so we can discuss of its implementation. Additionaly, please read our [technical documentation](https://github.com/victrme/Bonjourr/blob/master/docs/TECHNICAL.md).
+Bonjourr is open to pull requests, but they do need to be in the spirit of the extension. If you'd like to add a feature, please [open an issue](https://github.com/victrme/Bonjourr/issues) before you start working on it so we can discuss of its implementation. Additionally, please read our [technical documentation](https://github.com/victrme/Bonjourr/blob/master/docs/TECHNICAL.md).
 
 ## 🏃‍♂️ Running Bonjourr
 

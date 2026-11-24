@@ -25,37 +25,37 @@ export function userActions(advanced: Advanced): void {
 function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
     const { ctrlKey, metaKey, shiftKey, code, type } = event
 
-    const domsuggestions = document.getElementById('sb-suggestions')
-
     if (code === 'Escape') {
-        if (domsuggestions?.classList.contains('shown')) {
-            domsuggestions?.classList.remove('shown')
+        if (type !== 'keydown') return
+        if (event.repeat) {
+            event.preventDefault()
             return
         }
 
         const open = isOpen()
-        const keyup = event.type === 'keyup'
+        const suggestions = document.getElementById('sb-suggestions')
 
-        if (open.contextmenu) {
+        if (document.querySelector('#help-mode.shown')) {
+            document.dispatchEvent(new Event('close-help-mode'))
+        } else if (document.documentElement.dataset.supportersModal !== undefined) {
+            document.dispatchEvent(new Event('close-supporters-modal'))
+        } else if (suggestions?.classList.contains('shown')) {
+            suggestions.classList.remove('shown')
+        } else if (open.contextmenu) {
             document.dispatchEvent(new Event('close-edit'))
-        } //
-        else if (advanced.escKey && open.settings && keyup) {
+        } else if (advanced.escKey && open.settings) {
             document.dispatchEvent(new CustomEvent('toggle-settings'))
-        } //
-        else if (open.selectall) {
+        } else if (open.selectall) {
             document.dispatchEvent(new Event('remove-select-all'))
-        } //
-        else if (open.folder) {
+        } else if (open.folder) {
             document.dispatchEvent(new Event('close-folder'))
-        } //
-        else if (advanced.escKey && keyup) {
-            // condition to avoid conflicts with esc key on supporters modal
-            // likely to be improved
-            if (document.documentElement.dataset.supportersModal === undefined) {
-                document.dispatchEvent(new CustomEvent('toggle-settings'))
-            }
+        } else if (advanced.escKey) {
+            document.dispatchEvent(new CustomEvent('toggle-settings'))
+        } else {
+            return
         }
 
+        event.preventDefault()
         return
     }
 
@@ -73,7 +73,7 @@ function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
 
         const rect = linkList.getBoundingClientRect()
 
-        // dodgy implementation but way more efficient than adding event more complexity to populateDialogWithEditLink(), that thing will be rewritten in the future to make it bearable
+        // dodgy implementation but way more efficient than adding even more complexity to populateDialogWithEditLink(), that thing should be rewritten in the future to make it bearable
         linkList.dispatchEvent(
             new MouseEvent('contextmenu', {
                 bubbles: true,
@@ -89,6 +89,11 @@ function keyboardUserActions(advanced: Advanced, event: KeyboardEvent): void {
         type === 'keydown' && isAltModeShortcut(advanced, event) && shiftKey && (ctrlKey || metaKey) && code === 'KeyI'
     ) {
         const fileImportInput = document.getElementById('file-import') as HTMLInputElement
+
+        // opens settings otherwise import won't work
+        if (document.querySelector('#settings.init')) {
+            document.dispatchEvent(new CustomEvent('toggle-settings'))
+        }
 
         if (fileImportInput) {
             event.preventDefault()

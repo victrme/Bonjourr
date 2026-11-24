@@ -8,14 +8,14 @@ const navigator = globalThis.navigator as Navigator
 const iosUA = 'iPad Simulator|iPhone Simulator|iPod Simulator|iPad|iPhone|iPod'.split('|')
 const mobileUA = 'Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini'.split('|')
 
-export const CURRENT_VERSION = '22.3.0'
+export const CURRENT_VERSION = '22.4.0'
 
 export const API_DOMAIN = 'https://services.bonjourr.fr'
 
 export const ENVIRONNEMENT: 'PROD' | 'DEV' | 'TEST' = globalThis.ENV ?? 'TEST'
 
-// attributes an ID to this tab to keep track of them
-export const TAB_ID = crypto.randomUUID()
+export const TAB_ID = Date.now().toString(36) + Math.random().toString(36).slice(2)
+
 export const tabsBc = new BroadcastChannel('bonjourr_tabs')
 
 export const SYSTEM_OS = iosUA.includes(navigator.platform) ||
@@ -99,6 +99,7 @@ export const SYNC_DEFAULT: Sync = {
         altMode: true,
         altModeShortcut: 'alt',
         escKey: true,
+        mouseWheelOnGroups: true,
     },
     showall: false,
     lang: DEFAULT_LANG,
@@ -113,6 +114,7 @@ export const SYNC_DEFAULT: Sync = {
     time: true,
     main: true,
     dateformat: 'auto',
+    customdate: '%A, %e %B %Y',
     quicklinks: true,
     textShadow: 0.2,
     announcements: 'major',
@@ -180,6 +182,7 @@ export const SYNC_DEFAULT: Sync = {
         morning: '',
         afternoon: '',
         evening: '',
+        lateevening: '',
         night: '',
     },
     notes: {
@@ -195,7 +198,7 @@ export const SYNC_DEFAULT: Sync = {
         suggestions: true,
         engine: 'default',
         request: '',
-        placeholder: '',
+        placeholder: '--sb-default-placeholder--',
     },
     quotes: {
         on: false,

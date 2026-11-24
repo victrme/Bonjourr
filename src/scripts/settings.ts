@@ -21,7 +21,7 @@ import { openSettingsButtonEvent } from './features/contextmenu.ts'
 
 import { colorInput, fadeOut, inputThrottle, turnRefreshButton, webkitRangeTrackColor } from './shared/dom.ts'
 import { BROWSER, IS_MOBILE, PLATFORM, SYNC_DEFAULT } from './defaults.ts'
-import { toggleTraduction, tradThis, traduction } from './utils/translations.ts'
+import { toggleTraduction, tradThis, traduction, translateAriaLabels } from './utils/translations.ts'
 import { settingsNotifications } from './utils/notifications.ts'
 import { getPermissions } from './utils/permissions.ts'
 import { opacityFromHex } from './shared/generic.ts'
@@ -51,10 +51,16 @@ export function settingsInit(sync: Sync, local: Local): void {
     settingsInitLocal = local
 
     document.addEventListener('updateSettingsBeforeInit', (e) => {
-        settingsInitSync = (e as CustomEvent).detail
+        const { key, value } = (e as CustomEvent).detail
+
+        // replaces the incoming key (backgrounds, searchbar...) with up to date data
+        settingsInitSync = {
+            ...settingsInitSync,
+            [key]: value,
+        }
     })
 
-    document.body?.addEventListener('keydown', settingsInitEvent)
+    document.addEventListener('toggle-settings', settingsInitEvent)
     showsettings?.addEventListener('pointerdown', settingsInitEvent)
 
     const openSettingsButtonsFromContextMenu = document.body.querySelectorAll<HTMLButtonElement>(
@@ -74,8 +80,8 @@ function settingsInitEvent(event: Event): void {
 
     const settingsAreHidden = settings?.classList.contains('hidden')
     const isLeftClick = (event as PointerEvent)?.button === 0
-    const isEscape = (event as KeyboardEvent)?.code === 'Escape'
-    const canOpenSettings = settingsAreHidden && (isEscape || isLeftClick)
+    const isToggle = event.type === 'toggle-settings'
+    const canOpenSettings = settingsAreHidden && (isToggle || isLeftClick)
 
     if (!canOpenSettings) {
         return
@@ -110,7 +116,7 @@ function settingsInitEvent(event: Event): void {
         }, 0)
     }
 
-    document.body?.removeEventListener('keydown', settingsInitEvent)
+    document.removeEventListener('toggle-settings', settingsInitEvent)
     showsettings?.removeEventListener('pointerdown', settingsInitEvent)
 
     showall(sync.showall, false)
@@ -123,13 +129,20 @@ function settingsInitEvent(event: Event): void {
     initOptionsEvents()
     settingsFooter()
 
+    if (isToggle) {
+        // gives time for settings panel to init before toggling on (for toggle-settings event)
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => settingsToggle(event as CustomEvent))
+        })
+    }
+
     // 3. Can be deferred
 
     setTimeout(() => {
         initWorldClocksAndTimezone(sync)
         updateSettingsJson(sync)
         updateSettingsEvent()
-        translateAriaLabels()
+        translateAriaLabels('settings')
         settingsDrawerBar()
         loadCallbacks()
 
@@ -193,10 +206,12 @@ function initOptionsValues(data: Sync, local: Local): void {
     setInput('i_pagewidth', data.pagewidth || 1600)
     setInput('i_pagegap', data.pagegap ?? 1)
     setInput('i_dateformat', data.dateformat || 'eu')
+    setInput('i_customdate', data.customdate ?? '')
     setInput('i_greeting', data.greeting ?? '')
     setInput('i_greetmorning', data.greetingscustom?.morning ?? '')
     setInput('i_greetafternoon', data.greetingscustom?.afternoon ?? '')
     setInput('i_greetevening', data.greetingscustom?.evening ?? '')
+    setInput('i_greetlateevening', data.greetingscustom?.lateevening ?? '')
     setInput('i_greetnight', data.greetingscustom?.night ?? '')
     setInput('i_textshadow', data.textShadow ?? 0.2)
     setInput('i_noteswidth', data.notes?.width || 50)
@@ -316,6 +331,7 @@ function initOptionsValues(data: Sync, local: Local): void {
     toggleSettingsDropdown('ampm_position', data.clock.ampmlabel && data.clock.ampm)
     toggleSettingsDropdown('worldclocks_options', data.clock.worldclocks)
     toggleSettingsDropdown('weather_provider', data.weather?.moreinfo === 'custom')
+    toggleSettingsDropdown('custom_date', data.dateformat === 'custom')
     toggleSettingsDropdown('searchbar_request', data.searchbar?.engine === 'custom')
 
     // the events for these are in toggleWidgetInSettings()
@@ -685,6 +701,10 @@ function initOptionsEvents(): void {
         clock(undefined, { dateformat: this.value })
     })
 
+    paramId('i_customdate').addEventListener('input', function (this: HTMLInputElement): void {
+        clock(undefined, { customdate: this.value })
+    })
+
     paramId('i_timehide').addEventListener('change', function (this: HTMLInputElement): void {
         hideElements({ clock: this.value === 'clock', date: this.value === 'date' }, { isEvent: true })
     })
@@ -772,6 +792,9 @@ function initOptionsEvents(): void {
     paramId(`i_greetevening`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { evening: this.value } })
     })
+    paramId(`i_greetlateevening`).addEventListener('input', function (): void {
+        clock(undefined, { greetingscustom: { lateevening: this.value } })
+    })
     paramId(`i_greetnight`).addEventListener('input', function (): void {
         clock(undefined, { greetingscustom: { night: this.value } })
     })
@@ -784,6 +807,9 @@ function initOptionsEvents(): void {
     })
     paramId(`i_greetevening`).addEventListener('change', () => {
         paramId(`i_greetevening`).blur()
+    })
+    paramId(`i_greetlateevening`).addEventListener('change', () => {
+        paramId(`i_greetlateevening`).blur()
     })
     paramId(`i_greetnight`).addEventListener('change', () => {
         paramId(`i_greetnight`).blur()
@@ -1203,6 +1229,7 @@ function translatePlaceholders(): void {
         ['i_greetmorning', 'Hello, $name!'],
         ['i_greetafternoon', 'Good afternoon'],
         ['i_greetevening', 'Good evening'],
+        ['i_greetlateevening', 'Good evening'],
         ['i_greetnight', 'Good night'],
         ['i_tabtitle', 'New tab'],
         ['i_sbrequest', 'Search query: %s'],
@@ -1216,15 +1243,6 @@ function translatePlaceholders(): void {
 
     for (const [id, text] of cases) {
         document.getElementById(id)?.setAttribute('placeholder', tradThis(text))
-    }
-}
-
-function translateAriaLabels(): void {
-    for (const element of document.querySelectorAll('[title]')) {
-        const title = element.getAttribute('title') ?? ''
-
-        element.setAttribute('title', tradThis(title))
-        element.setAttribute('aria-label', tradThis(title))
     }
 }
 
@@ -1267,7 +1285,7 @@ async function switchLangs(nextLang: Langs): Promise<void> {
     customFont(undefined, { lang: true })
     settingsFooter()
     translatePlaceholders()
-    translateAriaLabels()
+    translateAriaLabels('all')
     supportersNotifications(undefined, { translate: true })
     setModeGlider()
 }
@@ -1423,10 +1441,10 @@ function drawerDragEvents(): void {
 
 function copySettings(): void {
     const copybtn = document.querySelector('#b_settings-copy span')
-    const pre = document.getElementById('settings-data')
+    const pre = paramId('settings-data')
 
     try {
-        navigator.clipboard.writeText(pre?.textContent ?? '{}')
+        navigator.clipboard.writeText(pre?.value ?? '{}')
 
         if (copybtn) {
             copybtn.textContent = tradThis('Copied!')
@@ -1560,12 +1578,12 @@ export function updateSettingsJson(data?: Sync): void {
     }
 
     function updateTextArea(data: Sync): void {
-        const pre = document.getElementById('settings-data')
+        const pre = paramId('settings-data')
 
         if (pre && data.about) {
             const orderedJson = stringify(data)
             data.about.browser = PLATFORM
-            pre.textContent = orderedJson
+            pre.value = orderedJson
         }
     }
 }
@@ -1655,7 +1673,7 @@ function setCheckbox(id: string, cat: boolean): void {
     checkbox.checked = cat
 }
 
-function setInput(id: string, val: string | number): void {
+export function setInput(id: string, val: string | number): void {
     const input = paramId(id) as HTMLInputElement
     input.value = typeof val === 'string' ? val : val?.toString()
 }

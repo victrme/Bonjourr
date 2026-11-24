@@ -1,6 +1,6 @@
 import { addGridWidget, defaultLayouts, gridParse, gridStringify, removeGridWidget } from '../features/move/helpers.ts'
 import { countryCodeToLanguageCode } from '../utils/translations.ts'
-import { SYNC_DEFAULT } from '../defaults.ts'
+import { SEARCHBAR_ENGINES, SYNC_DEFAULT } from '../defaults.ts'
 import { oldJSONToCSV } from '../features/quotes.ts'
 import { randomString } from '../shared/generic.ts'
 import { bundleLinks } from '../utils/bundlelinks.ts'
@@ -10,6 +10,34 @@ import type { Link, LinkElem, OldSync, Widgets } from '../../types/shared.ts'
 import type { Sync } from '../../types/sync.ts'
 
 type Import = Partial<Sync>
+
+export function addCustomDateFormat(data: Import): Import {
+    if (data.customdate === undefined) {
+        data.customdate = SYNC_DEFAULT.customdate
+    }
+
+    return data
+}
+
+export function addLateEveningToCustomGreetings(data: Import): Import {
+    if (!data.greetingscustom) {
+        data.greetingscustom = SYNC_DEFAULT.greetingscustom
+    }
+
+    data.greetingscustom.lateevening = ''
+
+    return data
+}
+
+export function addMouseWheelOnGroupsToAdvanced(data: Import): Import {
+    if (!data.advanced) {
+        data.advanced = SYNC_DEFAULT.advanced
+    }
+
+    data.advanced.mouseWheelOnGroups = data.advanced.mouseWheelOnGroups ?? SYNC_DEFAULT.advanced.mouseWheelOnGroups
+
+    return data
+}
 
 export function addAdvancedOptions(data: Import): Import {
     data.advanced = data.advanced ?? SYNC_DEFAULT.advanced
@@ -139,11 +167,13 @@ export function hideArrayToObject(data: Import): Import {
 
 export function booleanSearchbarToObject(data: Import): Import {
     if (typeof data.searchbar === 'boolean') {
+        const engine = (data.searchbar_engine as string | undefined)?.replace('s_', '') || 'google'
+
         data.searchbar = {
             ...SYNC_DEFAULT.searchbar,
             on: data.searchbar as boolean,
             newtab: data.searchbar_newtab as boolean,
-            engine: (data.searchbar_engine as string | undefined)?.replace('s_', '') || 'google',
+            engine: SEARCHBAR_ENGINES.find((searchEngine) => searchEngine === engine) || 'google',
             suggestions: false,
         }
     }

@@ -19,18 +19,20 @@ export function displayGreetings({ mode, name, custom }: Greetings): void {
 
     const rare = oneInFive
     const hour = date.getHours()
-    let period: 'night' | 'morning' | 'afternoon' | 'evening'
+    let period: 'night' | 'morning' | 'afternoon' | 'evening' | 'lateevening'
 
     if (hour < 3) {
-        period = 'evening'
+        period = 'lateevening'
     } else if (hour < 5) {
         period = 'night'
     } else if (hour < 12) {
         period = 'morning'
     } else if (hour < 18) {
         period = 'afternoon'
-    } else {
+    } else if (hour < 23) {
         period = 'evening'
+    } else {
+        period = 'lateevening'
     }
 
     if (mode === 'custom' && custom && custom[period]) {
@@ -43,6 +45,7 @@ export function displayGreetings({ mode, name, custom }: Greetings): void {
             morning: 'Good morning',
             afternoon: 'Good afternoon',
             evening: 'Good evening',
+            lateevening: 'Good evening',
             night: ['Good night', 'Sweet dreams'][rare],
         }
 

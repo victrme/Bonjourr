@@ -295,4 +295,18 @@
         <path d="M21 9H3" />
         <path d="M21 15H3" />
     </symbol>
+
+    <symbol
+        id="contextmenu-checkmark"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <path
+            d="m10.586 13.414-2.829-2.828-1.414 1.414 4.243 4.243 7.071-7.071-1.414-1.415z"
+            fill="currentColor"
+            fill-rule="nonzero"
+            transform="matrix(1.74521 0 0 1.74521 -8.94244 -8.94249)"
+        />
+    </symbol>
 </svg>

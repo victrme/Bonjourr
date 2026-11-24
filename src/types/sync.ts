@@ -1,4 +1,12 @@
-import type { BackgroundImage, BackgroundVideo, Frequency, Link, PomodoroMode, Widgets } from './shared.ts'
+import type {
+    BackgroundImage,
+    BackgroundVideo,
+    Frequency,
+    Link,
+    PomodoroMode,
+    SearchEngines,
+    Widgets,
+} from './shared.ts'
 
 export interface Sync {
     advanced: Advanced
@@ -32,12 +40,14 @@ export interface Sync {
         morning: string
         afternoon: string
         evening: string
+        lateevening: string
         night: string
     }
     notes?: Notes
     hide?: Hide
     dark: 'auto' | 'system' | 'enable' | 'disable'
-    dateformat: 'auto' | 'eu' | 'us' | 'cn'
+    dateformat: 'auto' | 'eu' | 'us' | 'cn' | 'custom'
+    customdate: string
     backgrounds: Backgrounds
     clock: Clock
     analogstyle?: AnalogStyle
@@ -146,7 +156,7 @@ export interface Searchbar {
     on: boolean
     width?: number
     newtab: boolean
-    engine: string
+    engine: SearchEngines
     request: string
     opacity?: number
     suggestions: boolean
@@ -241,6 +251,8 @@ export interface Advanced {
     altModeShortcut: AltModeShortcut
     // disables escape key to toggle settings
     escKey: boolean
+    // disables link group selection using mouse wheel
+    mouseWheelOnGroups: boolean
 }
 
 export type AltModeShortcut = 'alt' | 'alt-shift'

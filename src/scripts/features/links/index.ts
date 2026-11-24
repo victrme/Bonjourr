@@ -129,6 +129,7 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     document.addEventListener('keydown', (event) => {
         openLinksWithKeyboard(init.sync.advanced, event)
     })
+    document.addEventListener('keyup', removeLinkClicking)
 
     if (sync.linkgroups.synced.length > 0) {
         await initBookmarkSync(sync)
@@ -300,7 +301,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
     }
 
     li.id = link._id
-    anchor.href = stringMaxSize(link.url, 512)
+    anchor.href = stringMaxSize(link.url, 4096)
     span.textContent = createTitle(link)
 
     if (style !== 'text') {
@@ -639,7 +640,7 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
         }
 
         if (titledom && urldom && url !== undefined) {
-            link.url = stringMaxSize(url, 512)
+            link.url = stringMaxSize(url, 4096)
             urldom.href = link.url
             titledom.textContent = createTitle(link)
         }
@@ -901,7 +902,7 @@ function setRows(row: string): void {
 
 export function validateLink(title: string, url: string, parent?: string): LinkElem {
     const startsWithEither = (strs: string[]) => strs.some((str) => url.startsWith(str))
-    const sanitizedUrl = stringMaxSize(url, 512)
+    const sanitizedUrl = stringMaxSize(url, 4096)
 
     const isConfig = startsWithEither(['about:', 'chrome://', 'edge://'])
     const noProtocol = !startsWithEither(['https://', 'http://'])
@@ -981,20 +982,31 @@ function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
         return
     }
 
-    const links = document.querySelectorAll<HTMLLIElement>('.link')
-    const link = links[codeNumber - 1]
-
-    if (!link) {
-        return
-    }
+    const link = getKeyboardLink(event)
+    if (!link) return
 
     event.preventDefault()
 
     if (link.classList.contains('link-folder')) {
         folderClick(event, link)
     } else {
+        link.classList.add('clicking')
         link.querySelector('a')?.click()
     }
+}
+
+function getKeyboardLink(event: KeyboardEvent): HTMLLIElement | undefined {
+    const codeNumber = parseInt(event.code.replace('Digit', '').replace('Numpad', ''))
+
+    if (isNaN(codeNumber)) return
+
+    const links = document.querySelectorAll<HTMLLIElement>('.link')
+    return links[codeNumber - 1]
+}
+
+function removeLinkClicking(event: KeyboardEvent): void {
+    const link = getKeyboardLink(event)
+    link?.classList.remove('clicking')
 }
 
 // no way to do this in CSS with the pinned groups :(

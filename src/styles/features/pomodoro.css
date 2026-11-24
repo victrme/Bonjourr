@@ -90,8 +90,10 @@ body.pomodoro-focus:has(#pomodoro_container:not(.hidden)) #interface {
     border-radius: 10em;
     will-change: left, width;
     opacity: 0;
+}
 
-    &.gliding {
+@media screen and (prefers-reduced-motion: no-preference) {
+    .glider.gliding {
         transition: left 0.2s ease, width 0.2s ease;
     }
 }

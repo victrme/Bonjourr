@@ -3,7 +3,7 @@ import { displayGreetings } from './greetings.ts'
 import { clockDate } from './date.ts'
 import { fixunits } from './helpers.ts'
 
-import type { Clock, WorldClock } from '../../../types/sync.ts'
+import type { Clock, Sync, WorldClock } from '../../../types/sync.ts'
 import type { DateFormat } from './date.ts'
 import type { Greetings } from './greetings.ts'
 
@@ -11,6 +11,7 @@ export interface ClockStartOptions {
     clock: Clock
     world: WorldClock[]
     dateformat: DateFormat
+    customdate: Sync['customdate']
     greetings: Greetings
 }
 
@@ -18,7 +19,7 @@ let clockInterval: ReturnType<typeof setTimeout>
 let clockVisibilityListener: (() => void) | null = null
 
 export function startClock(options: ClockStartOptions): void {
-    const { clock, world, dateformat, greetings } = options
+    const { clock, world, dateformat, customdate, greetings } = options
 
     document.getElementById('time')?.classList.toggle('is-analog', clock.analog)
     document.getElementById('time')?.classList.toggle('seconds', clock.seconds)
@@ -42,6 +43,8 @@ export function startClock(options: ClockStartOptions): void {
     // <!> First timezone becomes global timezone
     // <!> for everything in Bonjourr !
     setUserDate(clocks[0].timezone)
+
+    const displayedDays: string[] = []
 
     start(true)
     clearInterval(clockInterval)
@@ -69,7 +72,8 @@ export function startClock(options: ClockStartOptions): void {
             const domclock = getClock(index)
             const domregion = domclock.querySelector<HTMLElement>('.clock-region')
             const date = userDate(timezone)
-            const isNextHour = date.getMinutes() === 0
+            const day = date.toDateString()
+            const isNewDay = displayedDays[index] !== day
 
             if (clock.analog) {
                 analog(domclock, clock, timezone)
@@ -77,8 +81,9 @@ export function startClock(options: ClockStartOptions): void {
                 digital(domclock, clock, timezone)
             }
 
-            if (isNextHour || firstStart) {
-                clockDate(domclock, date, dateformat, timezone)
+            if (isNewDay || firstStart) {
+                clockDate(domclock, date, dateformat, timezone, customdate)
+                displayedDays[index] = day
             }
 
             if (domregion) {

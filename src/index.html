@@ -46,7 +46,7 @@
                         id="e-url"
                         type="text"
                         name="e-url"
-                        maxlength="512"
+                        maxlength="4096"
                         autocomplete="off"
                         autocorrect="off"
                         autocapitalize="off"
@@ -145,8 +145,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="time_title"
-                    title="Open the time settings"
-                    aria-label="Open the time settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-time"></use>
@@ -157,8 +155,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="main_title"
-                    title="Open the weather settings"
-                    aria-label="Open the weather settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-weather"></use>
@@ -169,8 +165,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="quotes_title"
-                    title="Open the quotes settings"
-                    aria-label="Open the quotes settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-quotes"></use>
@@ -181,8 +175,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="pomodoro_title"
-                    title="Open the pomodoro settings"
-                    aria-label="Open the pomodoro settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-pomodoro"></use>
@@ -193,8 +185,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="background_title"
-                    title="Open the background settings"
-                    aria-label="Open the background settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-background"></use>
@@ -205,8 +195,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="notes_title"
-                    title="Open the notes settings"
-                    aria-label="Open the notes settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-notes"></use>
@@ -217,8 +205,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="searchbar_title"
-                    title="Open the search bar settings"
-                    aria-label="Open the search bar settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-searchbar"></use>
@@ -230,8 +216,6 @@
                 <!-- <button
                     data-action="openTheseSettings"
                     data-attribute="layout_title"
-                    title="Open the layout settings"
-                    aria-label="Open the layout settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-layout"></use>
@@ -243,8 +227,6 @@
                 <button
                     data-action="openTheseSettings"
                     data-attribute="links_title"
-                    title="Open the quick links settings"
-                    aria-label="Open the quick links settings"
                 >
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-links"></use>
@@ -252,7 +234,7 @@
                     <span class="trn">Edit quick links settings</span>
                 </button>
 
-                <button data-action="add-new-link" title="Create a new quick link" aria-label="Create a new quick link">
+                <button data-action="add-new-link">
                     <svg class="contextmenu-icon" aria-hidden="true">
                         <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-add"></use>
                     </svg>
@@ -270,8 +252,6 @@
             <button
                 id="b_interface-quotes-refresh"
                 class="refresh-btn"
-                title="Switch to the next quote"
-                aria-label="Switch to the next quote"
             >
                 <span class="iconContainer">
                     <svg class="contextmenu-icon" aria-hidden="true">
@@ -290,7 +270,6 @@
                         id="b_interface-background-mute"
                         class="not-safari"
                         title="Enable or disable background video sound"
-                        aria-label="Enable or disable background video sound"
                     >
                         <span id="interface-background-mute-icon" class="iconContainer">
                             <svg class="contextmenu-icon" aria-hidden="true">
@@ -311,8 +290,6 @@
 
                     <button
                         id="b_interface-background-download"
-                        title="Download the current background"
-                        aria-label="Download the current background"
                         class="idle"
                     >
                         <span id="idle-download" class="iconContainer">
@@ -345,8 +322,6 @@
 
                     <button
                         id="b_interface-background-pause"
-                        title="Lock the current background"
-                        aria-label="Lock the current background"
                     >
                         <span id="interface-background-pause-icon" class="iconContainer">
                             <svg class="contextmenu-icon" aria-hidden="true">
@@ -368,8 +343,6 @@
                     <button
                         id="b_interface-background-refresh"
                         class="refresh-btn"
-                        title="Change to another background"
-                        aria-label="Change to another background"
                     >
                         <span class="iconContainer">
                             <svg class="contextmenu-icon" aria-hidden="true">
@@ -380,6 +353,130 @@
                         <span class="trn">Next background</span>
                     </button>
                 </div>
+            </div>
+
+            <div id="searchbar-actions">
+                <h4 class="trn">Choose search engine</h4>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="default"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Default</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="google"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Google</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="ddg"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">DuckDuckGo</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="startpage"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Startpage</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="qwant"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Qwant</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="yahoo"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Yahoo</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="bing"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Bing</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="brave"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Brave</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="ecosia"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Ecosia</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="lilo"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Lilo</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="baidu"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Baidu</span>
+                </button>
+
+                <button
+                    data-action="switch-engine"
+                    data-engine="custom"
+                >
+                    <svg class="contextmenu-icon" aria-hidden="true">
+                        <use href="src/assets/interface/contextmenu-sprites.svg#contextmenu-checkmark"></use>
+                    </svg>
+                    <span class="trn">Custom</span>
+                </button>
             </div>
         </dialog>
 
@@ -514,6 +611,7 @@
                             <span class="clock-date-bb-separator"></span>
                             <span class="clock-date-cc"></span>
                             <span class="clock-date-secondary"></span>
+                            <span class="clock-date-custom"></span>
                         </p>
                     </div>
                 </div>
@@ -566,11 +664,11 @@
                     />
 
                     <div id="sb-buttons">
-                        <button id="sb_empty" aria-label="Empty search" type="button" disabled>✕</button>
+                        <button id="sb_empty" title="Empty search" type="button" disabled>✕</button>
 
                         <hr />
 
-                        <button id="sb_submit" aria-label="Submit search" type="submit" disabled>
+                        <button id="sb_submit" title="Submit search" type="submit" disabled>
                             <svg class="default-search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                 <path
                                     fill="currentColor"
@@ -678,7 +776,7 @@
         </div>
 
         <div id="show-settings" data-hide="settingsicon">
-            <button aria-label="Toggle settings menu" title="Toggle settings menu">
+            <button title="Toggle settings menu">
                 <svg xmlns="http://www.w3.org/2000/svg" width="199.66" height="199.93" viewBox="0 0 52.83 52.9">
                     <path
                         fill="var(--icon-color, #fff)"

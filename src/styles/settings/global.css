@@ -18,7 +18,12 @@ aside {
     overflow-x: hidden;
     touch-action: pan-y;
     box-sizing: border-box;
-    transition: transform 0.33s, background-color 0.33s;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+    aside {
+        transition: transform 0.33s, background-color 0.33s;
+    }
 }
 
 aside.hidden {
@@ -43,13 +48,22 @@ aside.init .dropdown {
     max-height: 0;
     overflow: hidden;
     visibility: hidden;
-    transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0.3s;
 }
 
 .all .as,
 .dropdown.shown {
     visibility: visible;
-    transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+    .dropdown {
+        transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0.3s;
+    }
+
+    .all .as,
+    .dropdown.shown {
+        transition: max-height 0.3s, padding 0.2s, margin 0.2s, visibility 0s 0s;
+    }
 }
 
 aside.change-theme .tooltip,

@@ -2,12 +2,12 @@ Bonjourr é uma alternativa moderna a extensões como Momentum e Tabliss, combin
 
 🏆 Selecionado nos Favoritos do Google Chrome de 2023
 
-🌄 Bonito por padrão
+🌄 Bonito e minimalista por padrão
 - Planos de fundo dinâmicos em 4K e vídeo que mudam de clima conforme o horário do dia
 - Interface limpa inspirada no iOS
-- Desempenho leve e fluido
+- Desempenho suave, rápido e leve
 
-⚡️ Ferramentas de produtividade
+⚡️ Poderosas ferramentas de produtividade sempre que você precisar
 - Gerencie seus favoritos com os Links Rápidos
 - Barra de pesquisa compatível com todos os mecanismos de busca, incluindo personalizados
 - Notas e listas de tarefas em Markdown
@@ -17,16 +17,15 @@ Bonjourr é uma alternativa moderna a extensões como Momentum e Tabliss, combin
 
 🎨 Personalização completa
 - Controle preciso sobre planos de fundo, favoritos e layout
-- Relógio analógico com vários estilos
+- Personalização profunda do relógio analógico ou digital
 - Fontes personalizadas e estilos CSS
 - Modo escuro
-- Opções flexíveis de aparência
 - Disponível em 43 idiomas
 
 🔒 Privacidade em primeiro lugar
-Bonjourr não coleta nenhum dado, não exige conta e solicita apenas as permissões essenciais. Os planos de fundo são criados por pessoas e não utilizam IA generativa. Totalmente open source e transparente.
+Bonjourr não coleta nenhum dado, não exige conta ou login e solicita apenas as permissões essenciais. Os planos de fundo são criados por pessoas e não utilizam IA generativa. Totalmente open source e transparente.
 
 👨‍💻 Desenvolvido de forma independente
-Bonjourr é criado por dois desenvolvedores independentes que se importam de verdade com design, privacidade e trabalho bem feito — não uma empresa com um roteiro ditado por publicidade ou investidores.
+Bonjourr é criado por dois desenvolvedores independentes que se importam de verdade com design, privacidade e trabalho bem feito — não uma empresa com um plano movido por anúncios ou investidores.
 
-Se você está procurando uma bela página inicial ou nova aba, o Bonjourr foi feito para você.
+Se você está procurando uma página inicial minimalista, personalizável ou uma nova aba focada na produtividade, o Bonjourr reúne tudo isso perfeitamente.

@@ -21,6 +21,10 @@ aside h2 {
     scroll-margin-top: 20px;
 }
 
+.settings-emoji {
+    display: none;
+}
+
 html:dir(rtl) .settings-title {
     place-items: initial;
 }

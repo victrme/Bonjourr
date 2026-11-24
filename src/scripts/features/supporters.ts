@@ -164,15 +164,7 @@ function initSupportersModal(): void {
         }
     })
 
-    // close when esc key
-    document.addEventListener('keyup', (event) => {
-        const hasDataset = document.documentElement.dataset.supportersModal !== undefined
-        const isEscape = event.key === 'Escape'
-
-        if (isEscape && hasDataset) {
-            toggleSupportersModal(false)
-        }
-    })
+    document.addEventListener('close-supporters-modal', () => toggleSupportersModal(false))
 }
 
 function toggleSupportersModal(toggle: boolean): void {
@@ -223,9 +215,11 @@ export async function loadModalData(): Promise<void> {
 
             for (const supporter of supporters) {
                 const parent = supporter.monthly ? monthly : once
-                const li = `<li>${supporter.name}</li>`
 
-                parent?.insertAdjacentHTML('beforeend', li)
+                const li = document.createElement('li')
+                li.textContent = supporter.name
+
+                parent?.appendChild(li)
             }
 
             modal?.classList.add('loaded')

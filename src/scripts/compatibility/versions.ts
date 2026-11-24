@@ -5,7 +5,7 @@ import type { SemVer } from '../utils/semver.ts'
 export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<Sync> {
     const { major, minor } = version
 
-    if (major < 22) {
+    if (major <= 22) {
         data = filter.newLinkIcons(data)
 
         if (minor < 1) {
@@ -19,6 +19,12 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
 
         if (minor < 3) {
             data = filter.addAdvancedOptions(data)
+        }
+
+        if (minor < 4) {
+            data = filter.addMouseWheelOnGroupsToAdvanced(data)
+            data = filter.addLateEveningToCustomGreetings(data)
+            data = filter.addCustomDateFormat(data)
         }
     }
 
