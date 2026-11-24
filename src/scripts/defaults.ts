@@ -97,7 +97,7 @@ export const SYNC_DEFAULT: Sync = {
     },
     advanced: {
         altMode: true,
-        altModeShortcut: 'alt',
+        altModeKeybind: 'alt',
         escKey: true,
         mouseWheelOnGroups: true,
     },

@@ -20,7 +20,7 @@ import { displayInterface } from '../../shared/display.ts'
 import { getHTMLTemplate } from '../../shared/dom.ts'
 import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
-import { isAltModeShortcut } from '../alt-mode.ts'
+import { isAltModeKeybind } from '../alt-mode.ts'
 import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
@@ -975,7 +975,7 @@ function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
     if (isTypingTarget(event.target)) return
 
     const { ctrlKey, metaKey, code } = event
-    const matchesShortcut = isAltModeShortcut(advanced, event, true) && !ctrlKey && !metaKey
+    const matchesShortcut = isAltModeKeybind(advanced, event, true) && !ctrlKey && !metaKey
     const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))
 
     if (!matchesShortcut || isNaN(codeNumber)) {

@@ -2,8 +2,8 @@ import type { Advanced } from '../../types/sync.ts'
 
 type AltModeEvent = Pick<KeyboardEvent, 'altKey' | 'shiftKey'> | Pick<MouseEvent, 'altKey' | 'shiftKey'>
 
-export function isAltModeShortcut(
-    advanced: Pick<Advanced, 'altMode' | 'altModeShortcut'>,
+export function isAltModeKeybind(
+    advanced: Pick<Advanced, 'altMode' | 'altModeKeybind'>,
     event: AltModeEvent,
     exact = false,
 ): boolean {
@@ -11,7 +11,7 @@ export function isAltModeShortcut(
         return false
     }
 
-    if ((advanced.altModeShortcut ?? 'alt') === 'alt-shift') {
+    if ((advanced.altModeKeybind ?? 'alt') === 'alt-shift') {
         return event.shiftKey
     }
 

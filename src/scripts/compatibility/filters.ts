@@ -35,7 +35,7 @@ export function addMoreToAdvancedOptions(data: Import): Import {
     }
 
     data.advanced.mouseWheelOnGroups ??= SYNC_DEFAULT.advanced.mouseWheelOnGroups
-    data.advanced.altModeShortcut ??= SYNC_DEFAULT.advanced.altModeShortcut
+    data.advanced.altModeKeybind ??= SYNC_DEFAULT.advanced.altModeKeybind
     // this function can be reused in future versions if more needs to be added
 
     return data

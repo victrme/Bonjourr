@@ -5,7 +5,7 @@ import { eventDebounce } from '../utils/debounce.ts'
 import { tradThis } from '../utils/translations.ts'
 import { storage } from '../storage.ts'
 import { isTypingTarget } from './links/helpers.ts'
-import { isAltModeShortcut } from './alt-mode.ts'
+import { isAltModeKeybind } from './alt-mode.ts'
 
 import type { Advanced } from '../../types/sync.ts'
 
@@ -134,13 +134,13 @@ export function textShadow(init?: number, event?: number): void {
 
 export function altMode(advanced: Advanced): void {
     document.addEventListener('keydown', (event: KeyboardEvent) => {
-        if (isAltModeShortcut(advanced, event) && !isTypingTarget(event.target)) {
+        if (isAltModeKeybind(advanced, event) && !isTypingTarget(event.target)) {
             document.documentElement.dataset.altMode = 'true'
         }
     }, { capture: true })
 
     document.addEventListener('keyup', (event: KeyboardEvent) => {
-        if (event.key === 'Alt' || ((advanced.altModeShortcut ?? 'alt') === 'alt-shift' && event.key === 'Shift')) {
+        if (event.key === 'Alt' || ((advanced.altModeKeybind ?? 'alt') === 'alt-shift' && event.key === 'Shift')) {
             document.documentElement.dataset.altMode = 'false'
         }
     })

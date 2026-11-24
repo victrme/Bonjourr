@@ -10,7 +10,7 @@ import { turnRefreshButton } from '../shared/dom.ts'
 import type { SearchEngines } from '../../types/shared.ts'
 import { storage } from '../storage.ts'
 import type { Backgrounds, Advanced } from '../../types/sync.ts'
-import { isAltModeShortcut } from './alt-mode.ts'
+import { isAltModeKeybind } from './alt-mode.ts'
 
 interface EventLocation {
     widgets: {
@@ -59,7 +59,7 @@ const sectionMatching: Record<string, Section> = {
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
 const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
-let altModeSettings: Pick<Advanced, 'altMode' | 'altModeShortcut'> = { altMode: true, altModeShortcut: 'alt' }
+let altModeSettings: Pick<Advanced, 'altMode' | 'altModeKeybind'> = { altMode: true, altModeKeybind: 'alt' }
 
 export function setAltModeSettings(advanced: Advanced): void {
     altModeSettings = advanced
@@ -262,7 +262,7 @@ function showTheseElements(query: string): void {
 
 queueMicrotask(() => {
     document.addEventListener('contextmenu', (event) => {
-        if (isAltModeShortcut(altModeSettings, event)) {
+        if (isAltModeKeybind(altModeSettings, event)) {
             closeContextMenu()
             return
         }
