@@ -22,7 +22,7 @@ export function filterByVersion(data: Partial<Sync>, version: SemVer): Partial<S
         }
 
         if (minor < 4) {
-            data = filter.addMouseWheelOnGroupsToAdvanced(data)
+            data = filter.addMoreToAdvancedOptions(data)
             data = filter.addLateEveningToCustomGreetings(data)
             data = filter.addCustomDateFormat(data)
         }

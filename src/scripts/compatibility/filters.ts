@@ -29,19 +29,24 @@ export function addLateEveningToCustomGreetings(data: Import): Import {
     return data
 }
 
-export function addMouseWheelOnGroupsToAdvanced(data: Import): Import {
+export function addMoreToAdvancedOptions(data: Import): Import {
     if (!data.advanced) {
         data.advanced = SYNC_DEFAULT.advanced
     }
 
-    data.advanced.mouseWheelOnGroups = data.advanced.mouseWheelOnGroups ?? SYNC_DEFAULT.advanced.mouseWheelOnGroups
+    data.advanced.mouseWheelOnGroups ??= SYNC_DEFAULT.advanced.mouseWheelOnGroups
+    data.advanced.altModeShortcut ??= SYNC_DEFAULT.advanced.altModeShortcut
+    // this function can be reused in future versions if more needs to be added
 
     return data
 }
 
 export function addAdvancedOptions(data: Import): Import {
+    if (!data.advanced) {
+        data.advanced = SYNC_DEFAULT.advanced
+    }
+
     data.advanced = data.advanced ?? SYNC_DEFAULT.advanced
-    data.advanced.altModeShortcut = data.advanced.altModeShortcut ?? SYNC_DEFAULT.advanced.altModeShortcut
 
     return data
 }
