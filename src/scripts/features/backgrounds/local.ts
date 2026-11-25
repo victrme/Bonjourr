@@ -38,6 +38,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
         const thumbnailsContainer = document.getElementById('thumbnails-container')
         const filesData: Record<string, LocalFileData> = {}
         const newids: string[] = []
+        const newfiles: File[] = []
         let thumbnail: HTMLElement | undefined
 
         if (filelist.length === 0) {
@@ -50,11 +51,14 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
             const infosString = file.size.toString() + file.name + file.lastModified.toString()
             const hashString = hashcode(infosString).toString()
 
-            if (Object.keys(local.backgroundFiles).includes(hashString)) {
+            // Skip files already saved, and same file selected twice
+
+            if (local.backgroundFiles[hashString] || newids.includes(hashString)) {
                 continue
             }
 
             newids.push(hashString)
+            newfiles.push(file)
 
             thumbnail = createThumbnail(hashString)
             thumbnailsContainer?.appendChild(thumbnail)
@@ -70,7 +74,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
         // 2. Compress files for background & thumbnail use
 
         for (let i = 0; i < newids.length; i++) {
-            const file = filelist[i]
+            const file = newfiles[i]
             const id = newids[i]
             const format = file.type.includes('video') ? 'video' : 'image'
 
