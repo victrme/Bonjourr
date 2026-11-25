@@ -133,7 +133,7 @@
 [data-ampm-label='bottom-left'] .digital-am,
 [data-ampm-label='bottom-left'] .digital-pm,
 [data-ampm-label='bottom-right'] .digital-am,
-[data-appm-label='bottom-right'] .digital-pm {
+[data-ampm-label='bottom-right'] .digital-pm {
     vertical-align: text-top;
 }
 
