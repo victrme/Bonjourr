@@ -138,7 +138,7 @@ function gridChange(move: Move, gridpos: { x?: string; y?: string }): void {
     let grid = layout.grid
 
     // step 0: Adds new line
-    const isGridOverflowing = positions.some(([col]) => grid[col + y] === undefined)
+    const isGridOverflowing = positions.some(([_, row]) => grid[row + y] === undefined)
 
     if (isGridOverflowing) {
         if (move.selection === 'single') {
@@ -327,7 +327,7 @@ function elementSelection(move: Move, select: string): void {
     spanButtons(widget)
     gridButtons(widget)
 
-    document.getElementById(`ove-overlay-${widget}`)?.classList.add('selected')
+    document.getElementById(`move-overlay-${widget}`)?.classList.add('selected')
     document.getElementById('element-mover')?.classList.add('active')
 }
 
