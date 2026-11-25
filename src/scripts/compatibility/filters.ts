@@ -114,7 +114,7 @@ export function addAlarmsToPomodoro(data: Import): Import {
     }
 
     data.pomodoro.alarm = data.pomodoro.alarm ?? SYNC_DEFAULT.pomodoro.alarm
-    data.pomodoro.volume = data.pomodoro.volume ?? SYNC_DEFAULT.pomodoro.alarm
+    data.pomodoro.volume = data.pomodoro.volume ?? SYNC_DEFAULT.pomodoro.volume
 
     return data
 }

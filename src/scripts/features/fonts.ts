@@ -279,10 +279,8 @@ function initFontSettings(font?: Font): void {
 async function setAutocompleteSettings(isLangSwitch?: boolean): Promise<void> {
     const dlFontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
 
-    if (isLangSwitch && dlFontfamily?.childNodes) {
-        for (const node of dlFontfamily.childNodes) {
-            node.remove()
-        }
+    if (isLangSwitch && dlFontfamily) {
+        dlFontfamily.replaceChildren()
     }
 
     if (dlFontfamily?.childElementCount === 0) {

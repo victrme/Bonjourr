@@ -1130,7 +1130,7 @@ function initOptionsEvents(): void {
     // Other
 
     if (IS_MOBILE) {
-        const rangeInputs = document.querySelectorAll<HTMLInputElement>("input[type='range'")
+        const rangeInputs = document.querySelectorAll<HTMLInputElement>("input[type='range']")
 
         const reduceSettingsOpacity = (event: TouchEvent) => {
             document.getElementById('settings')?.classList.toggle('see-through', event.type === 'touchstart')

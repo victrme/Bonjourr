@@ -558,7 +558,7 @@ async function updatePomodoro(update: PomodoroUpdate): Promise<void> {
         data.pomodoro.alarm = update.alarm
     }
 
-    if (update.volume) {
+    if (update.volume !== undefined) {
         data.pomodoro.volume = update.volume
     }
 
