@@ -5,12 +5,88 @@ import { tradThis } from '../../utils/translations.ts'
 import type { Link, LinkElem, LinkIconType } from '../../../types/shared.ts'
 import type { Sync } from '../../../types/sync.ts'
 
+export function isLocalUrl(url: string): boolean {
+    try {
+        const { hostname } = new URL(url)
+        const localTlds = [
+            '.local',
+            '.lan',
+            '.internal',
+            '.home.arpa',
+            '.home',
+            '.intranet',
+            '.private',
+            '.corp',
+            '.test',
+            '.localhost',
+        ]
+
+        if (hostname === 'localhost' || hostname === '[::1]' || !hostname.includes('.')) {
+            return true
+        }
+
+        if (localTlds.some((tld) => hostname.endsWith(tld))) {
+            return true
+        }
+
+        return /^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[0-1])\.|100\.(6[4-9]|[7-9]\d|1[0-1]\d|12[0-7])\.)/
+            .test(
+                hostname,
+            )
+    } catch (_) {
+        return false
+    }
+}
+
 export function getDefaultIcon(url: string, refresh?: number): string {
+    if (isLocalUrl(url)) {
+        try {
+            const { origin } = new URL(url)
+            return refresh ? `${origin}/apple-touch-icon.png?r=${refresh}` : `${origin}/apple-touch-icon.png`
+        } catch (_) {
+            //
+        }
+    }
+
     if (refresh) {
         return `${API_DOMAIN}/favicon/blob/${url}?r=${refresh}`
     }
 
     return `${API_DOMAIN}/favicon/blob/${url}`
+}
+
+export function applyLocalIconFallback(img: HTMLImageElement, linkUrl: string, giveUp?: boolean): void {
+    const localhostIcon = `${API_DOMAIN}/favicon/blob/http://localhost`
+    let origin = ''
+
+    try {
+        origin = new URL(linkUrl).origin
+    } catch (_) {
+        //
+    }
+
+    if (!giveUp && origin) {
+        if (img.src.includes('/apple-touch-icon.png')) {
+            img.onerror = () => applyLocalIconFallback(img, linkUrl)
+            img.src = `${origin}/favicon.svg`
+            return
+        }
+
+        if (img.src.includes('/favicon.svg')) {
+            img.onerror = () => applyLocalIconFallback(img, linkUrl)
+            img.src = `${origin}/favicon.png`
+            return
+        }
+
+        if (img.src.includes('/favicon.png')) {
+            img.onerror = () => applyLocalIconFallback(img, linkUrl, true)
+            img.src = `${origin}/favicon.ico`
+            return
+        }
+    }
+
+    img.onerror = null
+    img.src = localhostIcon
 }
 
 export function getSelectedIds(): string[] {

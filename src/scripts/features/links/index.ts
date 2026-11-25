@@ -5,6 +5,7 @@ import { storeIconFile } from './fileicons.ts'
 import { folderClick } from './folders.ts'
 import { startDrag } from './drag.ts'
 import {
+    applyLocalIconFallback,
     createTitle,
     getDefaultIcon,
     getLiFromEvent,
@@ -12,6 +13,7 @@ import {
     getLinksInGroup,
     isElem,
     isLink,
+    isLocalUrl,
     isTypingTarget,
 } from './helpers.ts'
 
@@ -105,7 +107,7 @@ type LinksInit = {
 }
 
 const domlinkblocks = document.getElementById('linkblocks') as HTMLDivElement
-let initIconList: [HTMLImageElement, string][] = []
+let initIconList: [HTMLImageElement, string, string?][] = []
 let selectallTimer: ReturnType<typeof setTimeout>
 
 export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise<void> {
@@ -283,7 +285,7 @@ function createFolder(link: LinkFolder, folderChildren: Link[], style: Sync['lin
         const isIconShown = img && isElem(elem) && style !== 'text'
 
         if (isIconShown) {
-            initIconList.push([img, getIconFromLinkElem(elem)])
+            initIconList.push([img, getIconFromLinkElem(elem), elem.url])
         }
     }
 
@@ -305,7 +307,7 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
     span.textContent = createTitle(link)
 
     if (style !== 'text') {
-        initIconList.push([img, getIconFromLinkElem(link)])
+        initIconList.push([img, getIconFromLinkElem(link), link.url])
     }
 
     if (openInNewtab) {
@@ -316,10 +318,16 @@ function createElem(link: LinkElem, openInNewtab: boolean, style: Sync['linkstyl
 }
 
 function createIcons(local: Local): void {
-    for (const [img, url] of initIconList) {
+    for (const [img, url, linkUrl] of initIconList) {
         if (url.startsWith('link')) {
             img.src = local[`x-icon-${url}`] ?? ''
         } else {
+            if (linkUrl && isLocalUrl(linkUrl)) {
+                img.onerror = () => {
+                    applyLocalIconFallback(img, linkUrl)
+                }
+            }
+
             img.src = url
         }
     }
@@ -332,7 +340,12 @@ function createIcons(local: Local): void {
         )
 
         // if images still haven't loaded after 400ms
-        for (const [img, url] of incomplete) {
+        for (const [img, url, linkUrl] of incomplete) {
+            if (linkUrl && isLocalUrl(linkUrl)) {
+                applyLocalIconFallback(img, linkUrl, true)
+                continue
+            }
+
             img.src = 'src/assets/interface/loading.svg'
 
             const newimg = document.createElement('img')
@@ -601,6 +614,13 @@ function updateLink({ id, title, icon, url, file }: UpdateLink, data: Sync): Syn
 
             if (icon.type === 'auto') {
                 icon.value = undefined
+
+                if (isLocalUrl(link.url)) {
+                    img.onerror = () => {
+                        applyLocalIconFallback(img, link.url)
+                    }
+                }
+
                 img.src = url
             }
 
@@ -810,11 +830,11 @@ function refreshIcons(ids: string[], data: Sync): Sync {
         const link = data[id] as LinkElem
 
         if (link._id) {
-            const unixDate = Date.now().toString()
+            const unixDate = Date.now()
 
             if (!link.icon || link.icon.type === 'auto') {
                 link.icon = link.icon ?? { type: 'auto', value: '' } // when link was just added, it doesn't have the icon property, so creates it
-                link.icon.value = getDefaultIcon(link.url) + `?r=${unixDate}`
+                link.icon.value = getDefaultIcon(link.url, unixDate)
             } else if (link.icon.type === 'url') {
                 link.icon.value = `${link.icon.value}?r=${unixDate}`
             }
