@@ -158,7 +158,7 @@ async function updateGeolocation(geol: string, weather: Weather, lastWeather?: L
     const newWeather = (await requestNewWeather(weather, lastWeather)) ?? lastWeather
 
     if (newWeather) {
-        storage.local.set({ lastWeather })
+        storage.local.set({ lastWeather: newWeather })
         displayWeather(weather, newWeather)
     }
 
