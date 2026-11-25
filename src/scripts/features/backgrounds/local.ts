@@ -37,6 +37,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
     try {
         const thumbnailsContainer = document.getElementById('thumbnails-container')
         const filesData: Record<string, LocalFileData> = {}
+        const newfiles: File[] = []
         const newids: string[] = []
         let thumbnail: HTMLElement | undefined
 
@@ -54,6 +55,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
                 continue
             }
 
+            newfiles.push(file)
             newids.push(hashString)
 
             thumbnail = createThumbnail(hashString)
@@ -70,7 +72,7 @@ export async function addLocalBackgrounds(filelist: FileList | File[], local: Lo
         // 2. Compress files for background & thumbnail use
 
         for (let i = 0; i < newids.length; i++) {
-            const file = filelist[i]
+            const file = newfiles[i]
             const id = newids[i]
             const format = file.type.includes('video') ? 'video' : 'image'
 
@@ -546,10 +548,10 @@ async function handleThumbnailClick(this: HTMLButtonElement, mouseEvent: MouseEv
             if (isSelected) {
                 lastSelectionPos = index
             }
-            if (isSelected && !firstSelectionPos) {
+            if (isSelected && firstSelectionPos === undefined) {
                 firstSelectionPos = index
             }
-            if (isSelection && !selectedPos) {
+            if (isSelection && selectedPos === undefined) {
                 selectedPos = index
             }
         })

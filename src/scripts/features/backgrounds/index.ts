@@ -287,7 +287,7 @@ export async function backgroundUpdate(update: BackgroundUpdate): Promise<void> 
         const isCorrectCollection = collectionName === 'unsplash-images-collections'
         const startsWithUrl = query.startsWith('https://unsplash.com/collections/')
         if (isCorrectCollection && startsWithUrl) {
-            query = query.replace('https://unsplash.com/collections/', '').slice(0, query.indexOf('/'))
+            query = query.replace('https://unsplash.com/collections/', '').split('/')[0]
         }
 
         // 1. Save query
@@ -412,7 +412,7 @@ async function backgroundCacheControl(backgrounds: Backgrounds, local: Local, ne
             applyBackground(backgrounds.pausedImage)
             return
         }
-        if (backgrounds.pausedVideo && backgrounds.videos === 'videos') {
+        if (backgrounds.pausedVideo && backgrounds.type === 'videos') {
             applyBackground(backgrounds.pausedVideo)
             return
         }
