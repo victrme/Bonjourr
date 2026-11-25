@@ -253,14 +253,14 @@ function analogStyle(style: AnalogStyle = structuredClone(defaultAnalogStyle)): 
     let faceNumbers = ['12', '3', '6', '9']
     const lang = getLang()
 
-    if (lang === 'am') {
-        faceNumbers = ['Գ', 'Զ', 'Թ', 'ԺԲ']
+    if (lang === 'hy') {
+        faceNumbers = ['ԺԲ', 'Գ', 'Զ', 'Թ']
     } else if (lang === 'ar') {
-        faceNumbers = ['٣', '٦', '٩', '١٢']
+        faceNumbers = ['١٢', '٣', '٦', '٩']
     } else if (lang === 'fa') {
-        faceNumbers = ['۳', '۶', '۹', '۱۲']
+        faceNumbers = ['۱۲', '۳', '۶', '۹']
     } else if (lang.match(sinogramRegex)) {
-        faceNumbers = ['三', '六', '九', '十二']
+        faceNumbers = ['十二', '三', '六', '九']
     }
 
     spans.forEach((span, i) => {
