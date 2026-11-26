@@ -132,6 +132,12 @@ export const SYNC_DEFAULT: Sync = {
         groups: ['default'],
         pinned: [],
         synced: [],
+        showAll: true,
+        layout: 'horizontal',
+        columns: 'auto',
+        hideEmpty: false,
+        syncTabGroups: true,
+        groupColors: {},
     },
     backgrounds: {
         type: 'images',

@@ -64,6 +64,40 @@ export async function initBookmarkSync(data: Sync): Promise<void> {
 
     if (treenode) {
         browserBookmarkFolders = bookmarkTreeToFolderList(treenode[0], data)
+        attachBookmarkListeners()
+    }
+}
+
+let bookmarkListenersAttached = false
+let bookmarkDebounceTimer: ReturnType<typeof setTimeout> | undefined
+
+function attachBookmarkListeners(): void {
+    if (bookmarkListenersAttached || typeof chrome === 'undefined' || !chrome?.bookmarks) {
+        return
+    }
+
+    const onBookmarkChange = async (): Promise<void> => {
+        if (bookmarkDebounceTimer) {
+            clearTimeout(bookmarkDebounceTimer)
+        }
+        bookmarkDebounceTimer = setTimeout(async () => {
+            const data = await storage.sync.get()
+            if (data?.linkgroups?.synced?.length > 0) {
+                await initBookmarkSync(data)
+                const { initblocks } = await import('./index.ts')
+                initblocks(data)
+            }
+        }, 150)
+    }
+
+    try {
+        chrome.bookmarks.onCreated?.addListener(onBookmarkChange)
+        chrome.bookmarks.onRemoved?.addListener(onBookmarkChange)
+        chrome.bookmarks.onChanged?.addListener(onBookmarkChange)
+        chrome.bookmarks.onMoved?.addListener(onBookmarkChange)
+        bookmarkListenersAttached = true
+    } catch (_) {
+        // Ignored
     }
 }
 

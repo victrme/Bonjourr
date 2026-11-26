@@ -20,7 +20,9 @@
         "service_worker": "src/scripts/service-worker.js"
     },
     "permissions": [
-        "storage"
+        "storage",
+        "tabGroups",
+        "tabs"
     ],
     "optional_permissions": [
         "bookmarks",

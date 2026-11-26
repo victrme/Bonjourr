@@ -30,8 +30,7 @@
                 width="100%"
                 height="100%"
                 result="turbulence"
-            >
-            </feTurbulence>
+            ></feTurbulence>
             <feSpecularLighting
                 surfaceScale="23"
                 specularConstant="1"
@@ -54,6 +53,5 @@
         height="700"
         fill="#ffffff"
         filter="url(#nnnoise-filter)"
-    >
-    </rect>
+    ></rect>
 </svg>
