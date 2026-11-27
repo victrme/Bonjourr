@@ -437,9 +437,11 @@ function suggestions(results: Suggestions): void {
             const querydom = document.createElement('b')
             const enddom = document.createElement('span')
 
+            const queryEnd = queryIndex + input.value.length
+
             startdom.textContent = result.text.slice(0, queryIndex)
-            querydom.textContent = result.text.slice(queryIndex, input.value.length)
-            enddom.textContent = result.text.slice(input.value.length)
+            querydom.textContent = result.text.slice(queryIndex, queryEnd)
+            enddom.textContent = result.text.slice(queryEnd)
 
             resultdom.textContent = ''
             resultdom.appendChild(startdom)
