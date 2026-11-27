@@ -248,8 +248,11 @@ export interface Pomodoro {
 
 export interface Advanced {
     altMode: boolean
+    altModeKeybind: altModeKeybind
     // disables escape key to toggle settings
     escKey: boolean
     // disables link group selection using mouse wheel
     mouseWheelOnGroups: boolean
 }
+
+export type altModeKeybind = 'alt' | 'alt-shift'

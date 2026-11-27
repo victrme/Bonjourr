@@ -20,6 +20,7 @@ import { displayInterface } from '../../shared/display.ts'
 import { getHTMLTemplate } from '../../shared/dom.ts'
 import { eventDebounce } from '../../utils/debounce.ts'
 import { tradThis } from '../../utils/translations.ts'
+import { isAltModeKeybind } from '../alt-mode.ts'
 import { storage } from '../../storage.ts'
 
 import type { Link, LinkElem, LinkFolder, LinkIcon } from '../../../types/shared.ts'
@@ -119,7 +120,6 @@ export async function quickLinks(init?: LinksInit, event?: LinksUpdate): Promise
     }
 
     const { sync, local } = init
-
     // set class before appendBlock, cannot be moved
     domlinkblocks.classList.add(sync.linkstyle ?? 'large')
     domlinkblocks.classList.toggle('titles', sync.linktitles)
@@ -972,10 +972,15 @@ function isLinkStyle(s: string): s is Sync['linkstyle'] {
 }
 
 function openLinksWithKeyboard(advanced: Advanced, event: KeyboardEvent): void {
-    if (isTypingTarget(event.target) || !advanced.altMode) return
+    if (isTypingTarget(event.target)) return
 
-    const { altKey, ctrlKey, metaKey } = event
-    if (!altKey || ctrlKey || metaKey) return
+    const { ctrlKey, metaKey, code } = event
+    const matchesShortcut = isAltModeKeybind(advanced, event, true) && !ctrlKey && !metaKey
+    const codeNumber = parseInt(code.replace('Digit', '').replace('Numpad', ''))
+
+    if (!matchesShortcut || isNaN(codeNumber)) {
+        return
+    }
 
     const link = getKeyboardLink(event)
     if (!link) return

@@ -7,9 +7,10 @@ import { backgroundUpdate, toggleMuteStatus } from './backgrounds/index.ts'
 import { quotes } from './quotes.ts'
 import { searchbar } from './searchbar.ts'
 import { turnRefreshButton } from '../shared/dom.ts'
-import { storage } from '../storage.ts'
-import type { Backgrounds } from '../../types/sync.ts'
 import type { SearchEngines } from '../../types/shared.ts'
+import { storage } from '../storage.ts'
+import type { Backgrounds, Advanced } from '../../types/sync.ts'
+import { isAltModeKeybind } from './alt-mode.ts'
 
 interface EventLocation {
     widgets: {
@@ -58,6 +59,12 @@ const sectionMatching: Record<string, Section> = {
 
 const mainInterface = document.getElementById('interface') as HTMLDivElement
 const domdialog = document.getElementById('contextmenu') as HTMLDialogElement
+let altModeSettings: Pick<Advanced, 'altMode' | 'altModeKeybind'> = { altMode: true, altModeKeybind: 'alt' }
+
+export function setAltModeSettings(advanced: Advanced): void {
+    altModeSettings = advanced
+}
+
 const searchBarActions = domdialog?.querySelector('#searchbar-actions')
 
 let eventLocation: EventLocation
@@ -255,7 +262,7 @@ function showTheseElements(query: string): void {
 
 queueMicrotask(() => {
     document.addEventListener('contextmenu', (event) => {
-        if (event.altKey) { // if alt + right click, then regular OS context menu
+        if (isAltModeKeybind(altModeSettings, event)) {
             closeContextMenu()
             return
         }

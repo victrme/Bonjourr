@@ -1,3 +1,4 @@
+import type { Treenode } from '../scripts/features/links/bookmarks.ts'
 import type { BackgroundFile, Local } from './local.ts'
 import type { langList } from '../scripts/langs.ts'
 import type { Sync } from './sync.ts'
@@ -189,8 +190,8 @@ export interface UnsplashImage {
 
 declare global {
     var pageReady: boolean
-    var startupBookmarks: browser.bookmarks.BookmarkTreeNode[] | undefined
-    var startupTopsites: browser.topSites.MostVisitedURL[] | undefined
+    var startupBookmarks: Treenode[] | undefined
+    var startupTopsites: chrome.topSites.MostVisitedURL[] | undefined
     var startupStorage: {
         sync?: Sync
         local?: Local
