@@ -36,7 +36,7 @@ import { storage } from './storage.ts'
 import { parse } from './utils/parse.ts'
 
 import type { Langs } from '../types/shared.ts'
-import type { Sync } from '../types/sync.ts'
+import type { FontSource, Sync } from '../types/sync.ts'
 import type { Local } from '../types/local.ts'
 
 // Initialization
@@ -961,6 +961,14 @@ function initOptionsEvents(): void {
 
     paramId('i_customfont').addEventListener('pointerenter', () => {
         customFont(undefined, { autocomplete: true })
+    })
+
+    paramId('i_fontsource').addEventListener('change', function (): void {
+        customFont(undefined, { source: this.value as FontSource })
+    })
+
+    onclickdown(paramId('b_loadfonts'), (): void => {
+        customFont(undefined, { loadFonts: true })
     })
 
     paramId('f_customfont').addEventListener('submit', (event) => {

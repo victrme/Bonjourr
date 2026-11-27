@@ -1825,6 +1825,17 @@
 
     <div class="param">
         <div class="wrapper">
+            <label for="i_fontsource" class="trn">Font source</label>
+
+            <select id="i_fontsource">
+                <option class="trn" value="fontsource">Fontsource</option>
+                <option class="trn" value="device">This device</option>
+            </select>
+        </div>
+
+        <hr />
+
+        <div class="wrapper">
             <span>
                 <label for="i_customfont" class="trn">Font family</label>
                 <button
@@ -1839,6 +1850,10 @@
                 <div>
                     <input list="dl_fontfamily" id="i_customfont" type="text" name="customfont" autocomplete="off" />
                     <datalist id="dl_fontfamily"></datalist>
+
+                    <button type="button" id="b_loadfonts" class="trn">
+                        Load the fonts
+                    </button>
 
                     <button type="submit">
                         <span></span>
