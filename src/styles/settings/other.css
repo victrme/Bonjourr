@@ -114,6 +114,31 @@
     text-transform: capitalize;
 }
 
+#b_loadfonts {
+    display: none;
+    flex: none;
+    width: auto;
+    height: 31px;
+    padding: 0 10px;
+    font-size: 12px;
+    white-space: nowrap;
+    background-color: var(--color-input);
+    opacity: 1;
+    max-width: none;
+    visibility: visible;
+}
+#f_customfont.device:not(.loaded) #b_loadfonts {
+    display: block;
+}
+
+#f_customfont.device:not(.loaded) button[type="submit"] {
+    display: none;
+}
+
+.param.source-device .ttfontfamily {
+    display: none;
+}
+
 #i_weight option.hidden {
     display: none;
 }

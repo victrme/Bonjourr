@@ -164,6 +164,8 @@ export interface Searchbar {
     background?: string
 }
 
+export type FontSource = 'fontsource' | 'device'
+
 export interface Font {
     family: string
     size: string
@@ -171,6 +173,7 @@ export interface Font {
     color?: string
     weightlist: string[]
     system?: boolean
+    source?: FontSource
     url?: string
     availWeights?: string[]
 }
