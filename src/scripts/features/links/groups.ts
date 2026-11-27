@@ -1,4 +1,4 @@
-import { getLinksInGroup } from './helpers.ts'
+import { getLinksInFolder, getLinksInGroup } from './helpers.ts'
 import { openContextMenu } from '../contextmenu.ts'
 import { initblocks } from './index.ts'
 import { startDrag } from './drag.ts'
@@ -190,13 +190,19 @@ export function deleteGroup(group: string, data: Sync): Sync {
     }
 
     for (const link of getLinksInGroup(data, group)) {
+        if (link.folder) {
+            for (const child of getLinksInFolder(data, link._id)) {
+                delete data[child._id]
+            }
+        }
+
         delete data[link._id]
     }
 
-    data.linkgroups.selected = group === selected || pinned.includes(group) ? groups[0] : selected
     data.linkgroups.pinned = pinned.filter((p) => p !== group)
     data.linkgroups.synced = synced.filter((g) => g !== group)
     data.linkgroups.groups = groups.filter((g) => g !== group)
+    data.linkgroups.selected = group === selected || pinned.includes(group) ? data.linkgroups.groups[0] : selected
 
     if (groups.length === 2) {
         data.linkgroups.pinned = []
