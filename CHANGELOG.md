@@ -40,6 +40,7 @@
 - 🇵🇱 Polish by @arklanq 
 - 🇹🇷 Turkish by @SwiftExplorer567 
 - 🇧🇷 Brazilian Portuguese by @adilsonfsantos
+- 🇬🇷 Greek by @trlef19
 
 ## 22.3.0
 
