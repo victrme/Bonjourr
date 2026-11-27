@@ -11,7 +11,7 @@ import { storage } from '../storage.ts'
 import { clock } from './clock/index.ts'
 import { hexToRGB } from '../shared/generic.ts'
 
-import type { Font, Sync } from '../../types/sync.ts'
+import type { Font, FontSource, Sync } from '../../types/sync.ts'
 
 interface Fontsource {
     family: string
@@ -27,7 +27,18 @@ type CustomFontUpdate = {
     family?: string
     weight?: string
     color?: string
+    source?: FontSource
+    loadFonts?: true
 }
+
+interface LocalFontsApi {
+    queryLocalFonts?: () => Promise<{ family: string }[]>
+}
+
+const localFonts = globalThis as typeof globalThis & LocalFontsApi
+
+let currentSource: FontSource = 'fontsource'
+let deviceFontFamilies: string[] | undefined
 
 const familyForm = networkForm('f_customfont')
 
@@ -68,6 +79,7 @@ export function customFont(init?: Font, event?: CustomFontUpdate): void {
     if (init) {
         try {
             const font = migrateToNewFormat(init)
+            currentSource = font.source ?? 'fontsource'
             displayFont(font)
             displayInterface('fonts')
 
@@ -84,9 +96,28 @@ export function customFont(init?: Font, event?: CustomFontUpdate): void {
 //	Updates
 //
 
-async function updateCustomFont({ family, weight, size, lang, autocomplete, color }: CustomFontUpdate): Promise<void> {
+async function updateCustomFont({
+    family,
+    weight,
+    size,
+    lang,
+    autocomplete,
+    color,
+    source,
+    loadFonts,
+}: CustomFontUpdate): Promise<void> {
     if (autocomplete) {
         setAutocompleteSettings()
+        return
+    }
+
+    if (loadFonts) {
+        await loadDeviceFonts()
+        return
+    }
+
+    if (source) {
+        await updateFontSource(source)
         return
     }
 
@@ -123,7 +154,15 @@ async function updateCustomFont({ family, weight, size, lang, autocomplete, colo
 
 async function updateFontFamily(data: Sync, family: string): Promise<Font> {
     const iWeight = document.getElementById('i_weight') as HTMLInputElement
-    const familyType = family.length === 0 ? 'none' : systemFontChecker(family) ? 'system' : 'fontsource'
+    let familyType: 'none' | 'device' | 'system' | 'fontsource' = 'fontsource'
+
+    if (family.length === 0) {
+        familyType = 'none'
+    } else if (currentSource === 'device') {
+        familyType = 'device'
+    } else if (systemFontChecker(family)) {
+        familyType = 'system'
+    }
 
     let font: Font = {
         family: '',
@@ -132,6 +171,7 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
         weight: SYSTEM_OS === 'windows' ? '400' : '300',
         weightlist: systemfont.weights,
         color: data.font.color,
+        source: currentSource,
     }
 
     switch (familyType) {
@@ -155,7 +195,8 @@ async function updateFontFamily(data: Sync, family: string): Promise<Font> {
             break
         }
 
-        case 'system': {
+        case 'system':
+        case 'device': {
             font.family = family
             displayFont(font)
             familyForm.accept('i_customfont', family)
@@ -270,36 +311,112 @@ export function setFontColor(color: string): void {
 //	Settings options
 //
 
+function setSourceUI(source: FontSource): void {
+    const isDevice = source === 'device'
+    const hasDeviceFonts = deviceFontFamilies !== undefined
+    const select = document.getElementById('i_fontsource') as HTMLSelectElement
+    const form = document.getElementById('f_customfont') as HTMLFormElement
+    const input = document.getElementById('i_customfont') as HTMLInputElement
+    const param = form.closest('.param')
+
+    currentSource = source
+    select.value = source
+    input.disabled = isDevice && !hasDeviceFonts
+
+    form.classList.toggle('device', isDevice)
+    form.classList.toggle('loaded', hasDeviceFonts)
+    param?.classList.toggle('source-device', isDevice)
+
+    if (isDevice) {
+        renderFontFamilies(deviceFontFamilies ?? [])
+    } else {
+        renderFontFamilies([])
+        setAutocompleteSettings()
+    }
+}
+
+function renderFontFamilies(families: Iterable<string>): void {
+    const fragment = new DocumentFragment()
+
+    for (const family of families) {
+        const option = document.createElement('option')
+        option.value = family
+        option.textContent = family
+        fragment.appendChild(option)
+    }
+
+    document.getElementById('dl_fontfamily')?.replaceChildren(fragment)
+}
+
+async function updateFontSource(source: FontSource): Promise<void> {
+    const data = await storage.sync.get('font')
+
+    data.font.source = source
+    setSourceUI(source)
+    eventDebounce({ font: data.font })
+}
+
+async function loadDeviceFonts(): Promise<void> {
+    const form = document.getElementById('f_customfont') as HTMLFormElement
+    const input = document.getElementById('i_customfont') as HTMLInputElement
+
+    if (!localFonts.queryLocalFonts) {
+        familyForm.warn(tradThis('Device fonts are not supported on this browser'))
+        return
+    }
+
+    try {
+        const fonts = await localFonts.queryLocalFonts()
+        const families = [...new Set(fonts.map((font) => font.family))]
+        families.sort((a, b) => a.localeCompare(b))
+
+        deviceFontFamilies = families
+        renderFontFamilies(families)
+        input.disabled = false
+        form.classList.add('loaded')
+        familyForm.reset()
+    } catch {
+        familyForm.warn(tradThis('Could not load your device fonts'))
+    }
+}
+
 function initFontSettings(font?: Font): void {
+    if (font?.source === 'device') {
+        setSourceUI('device')
+    }
+
     const hasCustomWeights = font && font.weightlist.length > 0
     const weights = hasCustomWeights ? font.weightlist : systemfont.weights
     setWeightSettings(weights)
 }
 
 async function setAutocompleteSettings(isLangSwitch?: boolean): Promise<void> {
+    if (currentSource === 'device') {
+        return
+    }
+
     const dlFontfamily = document.querySelector<HTMLDataListElement>('#dl_fontfamily')
 
-    if (isLangSwitch && dlFontfamily?.childNodes) {
-        for (const node of dlFontfamily.childNodes) {
-            node.remove()
-        }
+    if (isLangSwitch) {
+        renderFontFamilies([])
     }
 
     if (dlFontfamily?.childElementCount === 0) {
         const fontlist = (await (await apiFetch('/fonts'))?.json()) ?? []
-        const fragment = new DocumentFragment()
+        const families: string[] = []
         const requiredSubset = getRequiredSubset()
 
         for (const item of fontlist as Fontsource[]) {
             if (item.subsets.includes(requiredSubset)) {
-                const option = document.createElement('option')
-                option.textContent = item.family
-                option.value = item.family
-                fragment.appendChild(option)
+                families.push(item.family)
             }
         }
 
-        dlFontfamily?.appendChild(fragment)
+        if (currentSource !== 'fontsource') {
+            return
+        }
+
+        renderFontFamilies(families)
     }
 }
 

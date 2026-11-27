@@ -12,11 +12,11 @@
     border: 1px solid #e3e3e3;
     background-image:
         linear-gradient(
-            to left,
-            rgb(var(--color-param) / 0) 0%,
-            rgb(var(--color-param) / 0.9) 55%,
-            rgb(var(--color-param)) 100%
-        ),
+        to left,
+        rgb(var(--color-param) / 0) 0%,
+        rgb(var(--color-param) / 0.9) 55%,
+        rgb(var(--color-param)) 100%
+    ),
         var(--background);
     background-size: 74%;
     background-repeat: no-repeat;
@@ -29,11 +29,11 @@
 html:dir(rtl) #supporters-notif {
     background-image:
         linear-gradient(
-            to right,
-            rgb(var(--color-param) / 0) 0%,
-            rgb(var(--color-param) / 0.9) 55%,
-            rgb(var(--color-param)) 100%
-        ),
+        to right,
+        rgb(var(--color-param) / 0) 0%,
+        rgb(var(--color-param) / 0.9) 55%,
+        rgb(var(--color-param)) 100%
+    ),
         var(--background);
     background-position: left center;
 }

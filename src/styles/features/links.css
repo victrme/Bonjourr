@@ -198,7 +198,8 @@
     /* will-change: transform; */
 }
 
-.link .link-icon, .link .link-index {
+.link .link-icon,
+.link .link-index {
     margin: auto;
     flex-shrink: 0;
     width: var(--icon-size);
@@ -253,7 +254,8 @@
     top: 3.5em;
 }
 
-.titles.small.layout-text-left, .titles.small.layout-text-right {
+.titles.small.layout-text-left,
+.titles.small.layout-text-right {
     text-align: center;
 }
 
